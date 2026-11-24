@@ -1,0 +1,130 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "يرجى اختيار معدل الرسوم",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "آلة تصوير",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "تم",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "PSBT or transaction HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "بث",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "صفقة موقعة بإذاعة",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "المبلغ",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "يستعاض عنه بالرسوم",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "بث",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "رسوم الشبكة",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "أسرع",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "المعاملة الأصلية",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "من",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "الإنجاز المقدر: 10 دقائق",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "تم",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "استمر",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "إلى",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "تعذّر علينا بث معاملتك. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "broadcastSignedTxErrorInvalidTransaction": "لا تبدو هذه معاملة موقّعة صالحة. تأكد من أنك لصقت PSBT أو المعاملة كاملةً.",
+  "broadcastSignedTxErrorInvalidPushTx": "تعذّر علينا قراءة معاملة من هذا الوسم. يُرجى المحاولة بالمسح مرة أخرى.",
+  "replaceByFeeFeeRateDisplay": "المعدل: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
+  "coreScreensFeeRateLabel": "معدل الرسوم",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "مخرج الباقي غير معروف — يتم عرض جميع المخرجات بالتساوي",
+  "coreScreensUnknown": "غير معروف",
+  "coreScreensFetchFailed": "تعذر جلب المعاملة {txid} من Electrum.",
+  "coreScreensInputResolutionFailed": "المدخل غير موجود: المخرج {vout} من {parentTxId} غير موجود.",
+  "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
+  "mempoolServerStatusUnknown": "غير معروف",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "قرّب جهاز Coldcard لاستلام المعاملة الموقّعة عبر NFC",
+  "consolidationDone": "تم",
+  "consolidationFailedBody": "حدث خطأ غير متوقع. أموالك آمنة: لم يتم بث أي معاملة. يرجى المحاولة مرة أخرى.",
+  "consolidationFailedTitle": "فشل الدمج",
+  "consolidationInProgress": "جارٍ الدمج…",
+  "consolidationRequiredTitle": "دمج المحفظة",
+  "consolidationRequiredTitleNamed": "دمج محفظة {walletName}",
+  "consolidationRowAmount": "المبلغ",
+  "consolidationRowNetworkFees": "رسوم الشبكة",
+  "consolidationRowOutputs": "المخرجات",
+  "consolidationRowTransactions": "المعاملات",
+  "consolidationScreenDescription": "قد يؤدي وجود عدد كبير من المخرجات إلى عدم استقرار المحفظة. يؤدي الدمج إلى جمعها في عدد أقل للحفاظ على عمل محفظتك بشكل صحيح.",
+  "consolidationScreenTitle": "دمج",
+  "consolidationSuccessBody": "يتم دمج عملاتك. سيكتمل بمجرد تأكيد الشبكة.",
+  "consolidationSuccessTitle": "بدأ الدمج",
+  "walletLoadFailed": "تعذّر تحميل محافظك. تحقق من اتصالك وحاول مرة أخرى.",
+  "broadcastSignedTxErrorPsbtFinalization": "تعذّر إنهاء المعاملة الموقّعة. تأكد من أنها تحتوي على جميع التوقيعات المطلوبة، ثم حاول مرة أخرى.",
+  "coreScreensOutputsExceedInputs": "المخرجات تتجاوز المدخلات: هذه المعاملة غير صالحة وسترفضها الشبكة.",
+  "broadcastSignedTxErrorAlreadyInChain": "هذه المعاملة موجودة بالفعل في سلسلة الكتل. لم يتبقَّ شيء لبثه.",
+  "broadcastSignedTxErrorRejected": "رفضت الشبكة هذه المعاملة. قد تكون غير مكتملة التوقيع أو غير صالحة أو متعارضة مع دفعة أخرى.",
+  "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية."
+}

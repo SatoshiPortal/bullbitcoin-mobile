@@ -8,10 +8,7 @@ import 'package:secrets/bip85.dart';
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:secrets/custody.dart';
 import 'package:bull_ark/ark_setup.dart'
     show ArkBoardFundingPort, ArkPreferencesRepository;
@@ -30,9 +27,7 @@ class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
-class _Wallets extends Mock implements WalletRegistrations {}
-
-class _Wallet extends Mock implements WalletMetadataModel {}
+class _Wallets extends Mock implements WalletInventory {}
 
 class _Board extends Mock implements ArkBoardFundingPort {}
 
@@ -93,19 +88,25 @@ void main() {
       final settings = _Settings();
       final settingsValue = _SettingsValue();
       final wallets = _Wallets();
-      final wallet = _Wallet();
       final bip85 = _Bip85();
       when(settings.readActiveEnvironment)
           .thenAnswer((_) async => Ok(settingsValue.environment));
       when(settings.readLanguage)
           .thenAnswer((_) async => Ok(settingsValue.language));
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
-      when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
-      when(() => wallet.networkCode).thenReturn('bitcoinRegtest');
-      when(() => wallet.signer).thenReturn(Signer.local);
-      when(() => wallet.isDefault).thenReturn(true);
-      when(() => wallet.masterFingerprint).thenReturn(parent.hex);
-      when(() => wallet.id).thenReturn('live-regtest-wallet');
+      when(() => wallets.walletsForNetwork(BitcoinNetwork.regtest)).thenAnswer(
+        (_) async => Ok(
+          walletSelectionForTesting([
+            walletRegistrationForTesting(
+              id: 'live-regtest-wallet',
+              network: BitcoinNetwork.regtest,
+              isDefault: true,
+              signer: WalletSigner.local,
+              secretFingerprint: parent,
+            ),
+          ]),
+        ),
+      );
       when(() => bip85.list()).thenAnswer((_) async => const Ok([]));
       final admission = SqliteParentCustodyAdmission(
         directory: () async => directory.path,
@@ -114,7 +115,7 @@ void main() {
       locator
         ..registerSingleton<ActiveEnvironmentReader>(settings)
         ..registerSingleton<RuntimeDisplayPreferencesReader>(settings)
-        ..registerSingleton<WalletRegistrations>(wallets)
+        ..registerSingleton<WalletInventory>(wallets)
         ..registerSingleton<Bip85Derivations>(bip85)
         ..registerSingleton<Secrets>(secrets)
         ..registerSingleton<ParentCustodyAdmissionPort>(admission)
@@ -124,6 +125,7 @@ void main() {
 
       final opened = await openArkForeground(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse(arkUrl!),
         primaryEsploraUrl: Uri.parse(esploraUrl!),
         initializeNew: true,

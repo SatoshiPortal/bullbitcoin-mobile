@@ -1,8 +1,9 @@
+import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:satoshifier/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
-    show BackupStatus, RecoverBullFailure, VaultContext;
+    show BackupStatus, RecoverBullFacade, RecoverBullFailure, VaultContext;
 import 'package:bull_recoverbull/storage.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
@@ -15,13 +16,34 @@ import 'package:sync/sync.dart'
 
 import 'models/wallet_metadata_model.dart';
 
+/// Registers the projection still consumed by the application wallet flows.
+void registerWalletProjections(
+  GetIt services,
+  SecretsInventory inventory,
+  SignerDevices signers,
+  SyncFreshness freshness,
+  RecoverBullWalletBackups mainBackups,
+  RecoverBullWalletBackups regtestBackups,
+) {
+  final registrations = SecretsWalletRegistrations(
+    inventory,
+    signers,
+    freshness,
+    mainBackups,
+    regtestBackups,
+    () => services<ActiveEnvironmentReader>().readActiveEnvironment(),
+    (context) => services<RecoverBullFacade>().status(context),
+  );
+  services.registerSingleton<WalletRegistrations>(registrations);
+  services.registerSingleton<InventoryBackupVerification>(registrations);
+}
+
 /// Application wallet values still consumed by repositories in the app shell.
 abstract interface class WalletRegistrations {
   Future<WalletMetadataModel?> fetch(String id);
   Future<List<WalletMetadataModel>> fetchAll();
   Future<void> insert(WalletMetadataModel metadata);
   Future<void> delete(String id);
-  Future<void> recordBackup(WalletMetadataModel metadata);
   Future<void> recordSyncTime(String id, DateTime time);
 }
 
@@ -104,11 +126,6 @@ final class SecretsWalletRegistrations
   @override
   Future<void> delete(String id) async {
     _value(await _inventory.removeWallet(id));
-  }
-
-  @override
-  Future<void> recordBackup(WalletMetadataModel metadata) async {
-    _value(await _backupStore(metadata.networkCode).write(_backup(metadata)));
   }
 
   @override

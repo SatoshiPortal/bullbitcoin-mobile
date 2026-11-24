@@ -2,8 +2,8 @@ import 'package:address_view/address_view.dart';
 import 'package:labels/labels.dart';
 import 'package:receive/receive.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_amount_quotes_usecase.dart';
+import 'package:send/send.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -43,7 +43,7 @@ void main() {
         }
 
         final boundaries = [
-          GetSendAmountQuotesUsecase(settings: settings, read: read).execute,
+          Send.open(preferences: settings, readPrices: read).amountQuotes,
           Receive.open(
             addresses: _ReceiveAddressView(),
             labels: _Labels(),

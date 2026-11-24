@@ -1,8 +1,7 @@
 import 'package:bull_ui/bull_ui.dart' show BullQrCode;
 import 'package:bull_ui/app_theme.dart';
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
+import 'package:receive/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';

@@ -24,6 +24,7 @@ dependencies:
       ref: f5deec21fb0ac2ee507de1f683344b03f8cc92a3
   bull_logger:
   crypto: ^3.0.7
+  decimal: ^3.2.4
   dio: ^5.9.0
   drift: ^2.35.4
   electrum:

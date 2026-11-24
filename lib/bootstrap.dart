@@ -3,13 +3,11 @@ import 'package:primitives/primitives.dart' show Err;
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
-    show AppInitErrorScreen;
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:startup/startup.dart' show AppInitErrorScreen;
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show paymentNotificationChannelId;
-import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
+import 'package:notifications/payment_store.dart' show PaymentNotifications;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
 import 'package:exchange/exchange.dart'
@@ -17,23 +15,33 @@ import 'package:exchange/exchange.dart'
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:legacy_storage/legacy_storage.dart' show LegacyImportFailure;
 import 'package:material_ui/material_ui.dart';
+import 'package:wizard/wizard.dart';
 
 Future<void> startApp() async {
   await runZonedGuarded(
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
-        await runStartupWizard(
-          notificationChannelId: paymentNotificationChannelId,
+        final wizard = WizardFeature.mount();
+        final startup = await wizard.runIfNeeded(
+          notificationChannelId: PaymentNotifications.channelId,
+          branding: WizardBranding(
+            headerLogo: AssetImage(Assets.logos.bbLogoSmall.path),
+            welcomeLogo: AssetImage(Assets.logos.bbLogoWhite.path),
+            welcomePattern: AssetImage(Assets.backgrounds.bgLong.path),
+          ),
           exchangeAllowed: ExchangeAvailability.platformAllowed(
             defaultTargetPlatform == TargetPlatform.iOS
                 ? ExchangePlatform.ios
                 : ExchangePlatform.other,
           ),
         );
-        if (await Bull.init(retryStorage: _retryStorage) case Err(
-          :final failure,
-        )) {
+        if (startup case Err(:final failure)) {
+          _showInitError(failure);
+          return;
+        }
+        if (await Bull.init(retryStorage: _retryStorage, wizard: wizard)
+            case Err(:final failure)) {
           log.severe(
             message: 'App Init Error',
             error: failure,
@@ -92,8 +100,13 @@ Future<void> _retryStorage(LegacyImportFailure failure) async {
 void _showInitError(Object error, {VoidCallback? onRetry}) {
   runApp(
     BullSupportScope(
-      onContactSupport: SupportFacade.contactSupport,
-      child: AppInitErrorScreen(error: error, onRetry: onRetry),
+      onContactSupport: Support.contactSupport,
+      child: AppInitErrorScreen(
+        error: error,
+        onRetry: onRetry,
+        onMachineTranslationSelected: TranslationWarningBottomSheet.show,
+        extraLocalizations: const [SettingsLocalizations.delegate],
+      ),
     ),
   );
   _refreshDiagnosticContextAfterFirstFrame();

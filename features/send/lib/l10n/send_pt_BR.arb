@@ -1,0 +1,130 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "Por favor, selecione uma taxa de taxa",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "Câmara",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "Feito",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "Cole um PSBT ou transação HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "Transmissão",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "Transmissão de transmissão",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "Montante",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "Substituir por taxa",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "Transmissão",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeOriginalTransactionTitle": "Transação original",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensNetworkFeesLabel": "Taxas de rede",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "Mais rápido",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "coreScreensFromLabel": "A partir de",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "Entrega estimada ~ 10 minutos",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Você precisa aumentar a taxa de taxa em pelo menos 1 sat/vbyte em comparação com a transação original",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "doneButton": "Feito",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeFeeRateDisplay": "Taxa de Taxa: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "broadcastSignedTxBroadcastError": "Não foi possível transmitir sua transação. Verifique sua conexão com a internet e tente novamente.",
+  "broadcastSignedTxErrorInvalidTransaction": "Isto não parece uma transação assinada válida. Verifique se você colou o PSBT ou a transação completos.",
+  "broadcastSignedTxErrorInvalidPushTx": "Não foi possível ler uma transação desta etiqueta. Tente escanear novamente.",
+  "coreScreensToLabel": "Para",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensResolvingInputs": "Resolvendo entradas da transação...",
+  "coreScreensFeeRateLabel": "Taxa de comissão",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Saída de troco desconhecida — todas as saídas mostradas igualmente",
+  "coreScreensUnknown": "Desconhecido",
+  "coreScreensFetchFailed": "Não foi possível obter a transação {txid} do Electrum.",
+  "coreScreensInputResolutionFailed": "Entrada não encontrada: a saída {vout} de {parentTxId} não existe.",
+  "coreScreensNoServersAvailable": "Nenhum servidor Electrum disponível.",
+  "mempoolServerStatusUnknown": "Desconhecido",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Aproxime seu Coldcard para receber a transação assinada via NFC",
+  "consolidationDone": "Concluído",
+  "consolidationFailedBody": "Ocorreu um erro inesperado. Seus fundos estão seguros: nenhuma transação foi transmitida. Tente novamente.",
+  "consolidationFailedTitle": "Falha na consolidação",
+  "consolidationInProgress": "Consolidando…",
+  "consolidationRequiredTitle": "Consolidar a carteira",
+  "consolidationRequiredTitleNamed": "Consolidar a carteira {walletName}",
+  "consolidationRowAmount": "Valor",
+  "consolidationRowNetworkFees": "Taxas de rede",
+  "consolidationRowOutputs": "Saídas",
+  "consolidationRowTransactions": "Transações",
+  "consolidationScreenDescription": "Saídas em excesso podem deixar a carteira instável. Consolidá-las as combina em menos para manter sua carteira funcionando corretamente.",
+  "consolidationScreenTitle": "Consolidar",
+  "consolidationSuccessBody": "Suas moedas estão sendo combinadas. Será concluído assim que a rede confirmar.",
+  "consolidationSuccessTitle": "Consolidação iniciada",
+  "walletLoadFailed": "Não foi possível carregar suas carteiras. Verifique sua conexão e tente novamente.",
+  "broadcastSignedTxErrorPsbtFinalization": "Não foi possível finalizar a transação assinada. Confirme se ela contém todas as assinaturas necessárias e tente novamente.",
+  "coreScreensOutputsExceedInputs": "As saídas excedem as entradas: esta transação é inválida e a rede vai rejeitá-la.",
+  "broadcastSignedTxErrorAlreadyInChain": "Esta transação já está na blockchain. Não há mais nada para transmitir.",
+  "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Ela pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais."
+}

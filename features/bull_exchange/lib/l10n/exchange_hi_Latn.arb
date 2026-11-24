@@ -983,5 +983,601 @@
   "dcaAccountUnavailableError": "Aapka account load nahi ho saka. Apna connection jaanchein, sunishchit karein ki aap logged in hain aur phir se koshish karein.",
   "dcaLightningAddressRequiredError": "Apni khareedari paane ke liye ek Lightning address daalein.",
   "dcaReceiveAddressError": "Aapke wallet mein receiving address taiyaar nahi ho saka. Kripya phir se koshish karein.",
-  "dcaOrderCreationError": "Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein."
+  "dcaOrderCreationError": "Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein.",
+  "sellTitle": "Bitcoin Becho",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellSelectWallet": "Wallet Chuniye",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "sellWhichWalletQuestion": "Kis wallet se bechna chahte ho?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "sellExternalWallet": "Bahari wallet",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "sellFromAnotherWallet": "Doosre Bitcoin wallet se becho",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "sellAboveMaxAmountError": "Aap maximum raashi se zyada bechne ki koshish kar rahe ho is wallet se.",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellBelowMinAmountError": "Aap minimum raashi se kam bechne ki koshish kar rahe ho is wallet se.",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellInsufficientBalanceError": "Chunhe wallet mein itna balance nahi hai yeh sell order poora karne ke liye.",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellUnauthenticatedError": "Aap logged in nahi ho. Jaari rakhne ke liye login karo.",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "sellOrderNotFoundError": "Sell order nahi mila. Dobara koshish karo.",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "sellOrderAlreadyConfirmedError": "Yeh sell order pehle hi confirm ho chuka hai.",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "sellSelectNetwork": "Network Chuniye",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "sellHowToPayInvoice": "Yeh invoice kaise pay karna chahte ho?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "sellBitcoinOnChain": "Bitcoin on-chain",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellLightningNetwork": "Lightning Network",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellLiquidNetwork": "Liquid Network",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "sellConfirmPayment": "Payment confirm karo",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellPriceWillRefreshIn": "Kimat refresh hogi ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellOrderNumber": "Order number",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "sellPayoutRecipient": "Payout praaptakarta",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "sellCadBalance": "CAD Balance",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "sellCrcBalance": "CRC Balance",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "sellEurBalance": "EUR Balance",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellUsdBalance": "USD Balance",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellMxnBalance": "MXN Balance",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellArsBalance": "ARS Balance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellCopBalance": "COP Balance",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellPayinAmount": "Payin raashi",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellPayoutAmount": "Payout raashi",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellExchangeRate": "Vinimay dar",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellPayFromWallet": "Wallet se pay karo",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellInstantPayments": "Instant payments",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellSecureBitcoinWallet": "Surakshit Bitcoin wallet",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "sellFeePriority": "Fee Priority",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellFastest": "Sabse tez",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "sellAdvancedSettings": "Advanced Settings",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellAdvancedOptions": "Advanced options",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellReplaceByFeeActivated": "Replace-by-fee chalu hai",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellSelectCoinsManually": "Coins haath se chuniye",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "sellDone": "Ho Gaya",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellPleasePayInvoice": "Yeh invoice pay karo",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "sellBitcoinAmount": "Bitcoin raashi",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellCopyInvoice": "Invoice copy karo",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "sellShowQrCode": "QR code dikhaao",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellQrCode": "QR Code",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellNoInvoiceData": "Koi invoice data nahi hai",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "sellInProgress": "Bechna jari hai...",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "sellGoHome": "Ghar jao",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellOrderCompleted": "Order poora hua!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellBalanceWillBeCredited": "Aapka account balance credit ho jayega jab aapka transaction onchain 1 confirmation le lega.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "payTitle": "Pay Karo",
+  "payDescriptionLabel": "Bhugtan vivaran (vaikalpik)",
+  "payDescriptionHint": "Is bhugtan ke liye ek note jodein",
+  "payPaymentDescription": "Bhugtan vivaran",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "payPaymentInProgress": "Payment Ho Rahi Hai!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "payPriceRefreshIn": "Kimat refresh hogi ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payWhichWallet": "Kis wallet se pay karna chahte ho?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "payExternalWalletDescription": "Doosre Bitcoin wallet se pay karo",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "payRbfActivated": "Replace-by-fee chalu hai",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "copyDialogButton": "Copy Karo",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "closeDialogButton": "Band Karo",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellCompleteKYC": "KYC Poora Karo",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "sellSendPaymentNetworkFees": "Network fees",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "sellSendPaymentContinue": "Continue",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "sellBitcoinPriceLabel": "Bitcoin Price",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "Details dekho",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "KYC ID Verification Baaki Hai",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "Aapko pehle ID verification complete karna hoga",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellLoadingGeneric": "Load ho raha hai...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "payRecipientType": "Recipient type",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "payRecipientName": "Recipient name",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payRecipientDetails": "Recipient details",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "payNoDetailsAvailable": "Koi details uplabdh nahi",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "paySelectWallet": "Wallet Chunein",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "payExternalWallet": "External wallet",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payAboveMaxAmountError": "Is wallet se aap zyada se zyada {amount} pay kar sakte hain.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "payBelowMinAmountError": "Is wallet se aap kam se kam {amount} pay kar sakte hain.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "payInsufficientBalanceError": "Is pay order ko poora karne ke liye selected wallet mein balance kam hai.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "payUnauthenticatedError": "Aap authenticated nahi hain. Jaari rakhne ke liye kripya log in karein.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "paySelectNetwork": "Network Chunein",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payHowToPayInvoice": "Aap is invoice ko kaise pay karna chahte hain?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payConfirmPayment": "Payment Confirm Karein",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "payOrderNumber": "Order number",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payPayinAmount": "Payin amount",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "payPayoutAmount": "Payout amount",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payExchangeRate": "Exchange rate",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "payPayFromWallet": "Wallet se pay karein",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payInstantPayments": "Instant payments",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "paySecureBitcoinWallet": "Surakshit Bitcoin wallet",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payFeePriority": "Fee Priority",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "payFastest": "Sabse tez",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payNetworkFees": "Network fees",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payAdvancedSettings": "Advanced Settings",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payAdvancedOptions": "Advanced options",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySelectCoinsManually": "Coins manually chunein",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payDone": "Ho gaya",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "payContinue": "Aage badhein",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payPleasePayInvoice": "Kripya is invoice ko pay karein",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payBitcoinAmount": "Bitcoin amount",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "payBitcoinPrice": "Bitcoin Price",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "payCopyInvoice": "Invoice Copy karein",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "payShowQrCode": "QR code dikhayein",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "payQrCode": "QR Code",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "payNoInvoiceData": "Koi invoice data uplabdh nahi",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "payInvalidState": "Invalid state",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "payViewDetails": "Details dekhein",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "payCompleted": "Payment Poora Hua!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payOrderDetails": "Order Details",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "paySinpeMonto": "Amount",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeNumeroOrden": "Order number",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "paySinpeNumeroComprobante": "Reference number",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySinpeBeneficiario": "Beneficiary",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "paySinpeOrigen": "Origin",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "viewerTapToCopy": "Copy karne ke liye tap karo",
+  "invoiceViewerTitle": "Invoice",
+  "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
+  "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "sellPayoutBalance": "Mere account balance mein jodein",
+  "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
+  "sellPayoutTitle": "Recipient Select Karo",
+  "sellPayoutNewBadge": "NAYA",
+  "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
+  "sendSelectedUtxosInsufficient": "Chunne hue UTXOs zaruri rashi ke liye kaafi nahi hain",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Amount chuniye",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "amountRequestedLabel": "Maanga gaya amount: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addressLabel": "Address: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "typeLabel": "Type: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "coinsKeychainReceive": "Receive",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Change",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "Insufficient balance",
+  "limitOrdersInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
+  "limitOrdersFundAccount": "Apna account fund karo",
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLandingConnectAccount": "Apna Bull Bitcoin exchange account connect karo",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeLandingRecommendedExchange": "Sujhaya Gaya Bitcoin Exchange",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureSelfCustody": "• Bitcoin seedha self-custody mein kharido",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limit orders aur Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureSellBitcoin": "• Bitcoin becho, Bitcoin mein payment lo",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeFeatureBankTransfers": "• Bank transfers bhejo aur bills pay karo",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureCustomerSupport": "• Customer support se chat karo",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureUnifiedHistory": "• Sabhi transactions ek hi jagah dekho",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeLandingDisclaimerLegal": "Exchange services sirf unhi deshon mein milegi jahan Bull Bitcoin legally operate kar sakta hai aur KYC zaruri ho sakti hai.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency exchange services Bull Bitcoin mobile application mein available nahi hain.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLoginButton": "Login Karo Ya Sign up Karo",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "Bull Bitcoin exchange website par jao",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  }
 }

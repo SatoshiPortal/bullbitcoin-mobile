@@ -6,9 +6,6 @@
   "backupWarningLoseReasonKeystore": "Ihr Gerät den Keystore ungültig macht, wenn Sie die Sperrbildschirm- oder Geräteauthentifizierung ändern",
   "backupWarningLoseReasonCloudRestore": "Sie Ihr Gerät aus einem Cloud-Backup wiederherstellen",
   "backupWarningNoRecovery": "Ohne Backup gibt es keine Möglichkeit, Ihre Wallet wiederherzustellen.",
-  "translationWarningTitle": "KI-generierte Übersetzungen",
-  "translationWarningDescription": "Die meisten Übersetzungen in dieser App wurden mit KI erstellt und können Ungenauigkeiten enthalten. Wenn Sie Fehler bemerken oder bei der Verbesserung der Übersetzungen helfen möchten, können Sie eine Korrektur in unserem GitHub-Repository einreichen.",
-  "translationWarningContributeButton": "Übersetzungen verbessern",
   "translationWarningDismissButton": "Verstanden",
   "payTransactionBroadcast": "Transaktion übertragen",
   "fundExchangeSepaDescriptionExactly": "genau.",
@@ -69,11 +66,9 @@
   "fundExchangeCanadaPostStep5": "5. Bezahlen Sie mit Bargeld oder Debitkarte.",
   "addressViewNoAddressesFound": "Keine Adressen gefunden",
   "backupWalletErrorSaveBackup": "Sicherung konnte nicht gespeichert werden.",
-  "onboardingRecoverYourWallet": "Ihre Wallet wiederherstellen",
   "replaceByFeeErrorNoFeeRateSelected": "Bitte wählen Sie einen Gebührensatz.",
   "transactionSwapDescChainPending": "Ihr Swap wurde erstellt, aber noch nicht gestartet.",
   "coreScreensTransferFeeLabel": "Swap-Gebühr",
-  "onboardingEncryptedVaultDescription": "Stellen Sie Ihre Sicherung über die Cloud mithilfe Ihrer PIN wieder her.",
   "transactionSwapStatusSwapStatus": "Swap-Status",
   "receiveInvoiceCopied": "Invoice in die Zwischenablage kopiert",
   "autoswapUpdateSettingsError": "Fehler beim Aktualisieren der Auto-Swap-Einstellungen.",
@@ -83,12 +78,10 @@
   "importQrDeviceImporting": "Wallet wird importiert…",
   "rbfFastest": "Schnellste",
   "sellSendPaymentTitle": "Zahlung bestätigen",
-  "importWatchOnlyCopiedToClipboard": "In die Zwischenablage kopiert",
   "dcaLightningAddressInvalidError": "Bitte geben Sie eine gültige Lightning-Adresse ein.",
   "backupInstruction4": "Machen Sie keine digitalen Kopien Ihrer Sicherung. Schreiben Sie sie auf einem Stück Papier oder gravieren Sie sie in Metall.",
   "hwKrux": "Krux",
   "transactionFilterTransfer": "Swap",
-  "exchangeLandingRecommendedExchange": "Empfohlene Bitcoin-Börse",
   "receiveConfirming": "Bestätigung läuft… ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -220,10 +213,8 @@
   "rbfCustomFee": "Benutzerdefinierte Gebühren",
   "importQrDeviceFingerprint": "Fingerabdruck",
   "physicalBackupRecommendationText": "Sie sind zuversichtlich in Ihre eigenen Sicherheitsvorkehrungen, um Ihre Bitcoin-Seed-Wörter sicher zu verwahren.",
-  "importWatchOnlyDescriptor": "Descriptor",
   "payPaymentInProgress": "Zahlung läuft!",
   "fundExchangeETransferLabelEmail": "Senden Sie den E-Transfer an diese E-Mail-Adresse.",
-  "bitcoinSettingsTestnetModeTitle": "Testnet-Modus",
   "fromLabel": "Von",
   "sellCompleteKYC": "KYC abschließen",
   "hwConnectTitle": "Hardware-Wallet verbinden",
@@ -318,7 +309,6 @@
   "payExpired": "Abgelaufen",
   "payPaymentSuccessful": "Zahlung erfolgreich",
   "exchangeHomeWithdraw": "Auszahlung",
-  "importMnemonicSegwit": "SegWit",
   "buyContinue": "Fortfahren",
   "swapTransferTitle": "Swap",
   "testBackupSuccessTitle": "Test erfolgreich abgeschlossen!",
@@ -374,7 +364,6 @@
   "mempoolCustomServerUrl": "Server-URL",
   "fundExchangeArsBankTransferTitle": "Banküberweisung",
   "sendServerNetworkFees": "Server-Netzwerkgebühren",
-  "importWatchOnlyImport": "Importieren",
   "backupWalletBackupButton": "Sicherung",
   "sellSendPaymentFeePriority": "Priorität",
   "sellWalletBalance": "Guthaben: {amount}",
@@ -387,7 +376,6 @@
   },
   "sellSelectNetwork": "Netzwerk auswählen",
   "sellSendPaymentOrderNumber": "Bestellnummer",
-  "walletSettingsImportWalletTitle": "Wallet importieren",
   "backupWalletErrorGoogleDriveConnection": "Nicht mit Google Drive verbunden.",
   "payEnterInvoice": "Invoice eingeben",
   "broadcastSignedTxPasteHint": "PSBT oder Transaktions-HEX einfügen.",
@@ -415,7 +403,6 @@
       }
     }
   },
-  "importWalletSeedSigner": "SeedSigner",
   "featureComingSoonTitle": "Funktion kommt bald",
   "swapProgressRefundInProgress": "Swap-Rückerstattung läuft",
   "payBillerName": "Name des Rechnungsstellers",
@@ -473,7 +460,6 @@
   "transactionDetailTransferProgress": "Swap-Fortschritt",
   "sendNormalFee": "Normal",
   "importWalletConnectHardware": "Hardware-Wallet verbinden",
-  "importWalletSectionHardware": "Hardware-Wallets",
   "connectHardwareWalletDescription": "Wählen Sie die Hardware-Wallet aus, die Sie verbinden möchten.",
   "enterPinToContinueMessage": "{pinOrPassword} eingeben, um fortzufahren.",
   "@enterPinToContinueMessage": {
@@ -524,7 +510,6 @@
   "sendInsufficientBalance": "Unzureichendes Guthaben",
   "paySecurityAnswer": "Sicherheitsantwort",
   "importQrDeviceError": "Wallet-Import fehlgeschlagen",
-  "onboardingSplashDescription": "Souveräne, selbstverwahrte reine Bitcoin-Wallet und Bitcoin-Börse.",
   "fundExchangeCrIbanCrcDescriptionEnd": ". Das Guthaben wird Ihrem Konto gutgeschrieben.",
   "payAccount": "Konto",
   "testBackupGoogleDrivePrivacyPart2": "werden nicht ",
@@ -540,7 +525,6 @@
   "exchangeAppSettingsValidationWarning": "Bitte legen Sie vor dem Speichern sowohl die Sprach- als auch die Währungseinstellungen fest.",
   "sellCashPickup": "Bargeldabholung",
   "swapValidationInsufficientBalance": "Unzureichendes Guthaben",
-  "importWatchOnlyExtendedPublicKey": "Erweiterter öffentlicher Schlüssel",
   "autoswapAlwaysBlock": "Hohe Gebühren immer blockieren",
   "walletDeletionConfirmationTitle": "Wallet löschen",
   "sendNetworkFees": "Netzwerkgebühren",
@@ -579,7 +563,6 @@
   "transactionNoteAddTitle": "Notiz hinzufügen",
   "paySecurityAnswerHint": "Sicherheitsantwort eingeben",
   "backupSettingsError": "Fehler",
-  "exchangeFeatureCustomerSupport": "• Chat mit Kundenbetreuung",
   "sellPleasePayInvoice": "Bitte bezahlen Sie diese Rechnung.",
   "fundExchangeMethodCanadaPost": "Bargeld- oder Debit-Zahlung bei Canada Post",
   "payInvoiceDecoded": "Invoice erfolgreich decodiert",
@@ -603,14 +586,12 @@
   "autoswapRecipientRequired": "*",
   "exchangeLandingFeature4": "Banküberweisungen senden und Rechnungen bezahlen",
   "sellSendPaymentPayFromWallet": "Aus Wallet bezahlen",
-  "settingsServiceStatusTitle": "Servicestatus",
   "sellPriceWillRefreshIn": "Der Preis wird aktualisiert in ",
   "buyVerifyIdentity": "Identität verifizieren",
   "exchangeDcaCancelDialogConfirmButton": "Ja, beenden",
   "payEmailHint": "E-Mail-Adresse eingeben",
   "backupWalletGoogleDrivePermissionWarning": "Google wird Sie bitten, personenbezogene Daten mit dieser App zu teilen.",
   "testCompletedSuccessMessage": "Sie können den Zugang zu einer verlorenen Bitcoin-Wallet wiederherstellen.",
-  "importWatchOnlyScanQR": "QR-Code scannen",
   "selectAmountTitle": "Betrag auswählen",
   "routeErrorMessage": "Seite nicht gefunden",
   "connectHardwareWalletPassport": "Foundation Passport",
@@ -632,7 +613,6 @@
   "buyAccelerateTransaction": "Transaktion beschleunigen",
   "backupSettingsTested": "Getestet",
   "receiveLiquidConfirmationMessage": "Bestätigung in wenigen Sekunden.",
-  "settingsSecurityPinTitle": "Sicherheits-PIN",
   "sellArsBalance": "ARS-Guthaben",
   "fundExchangeCanadaPostStep1": "1. Gehen Sie zu einer beliebigen Canada Post-Filiale.",
   "exchangeKycLight": "Basis",
@@ -676,7 +656,6 @@
   "fundExchangeLabelBankAddress": "Adresse unserer Bank",
   "exchangeDcaAddressLabelLiquid": "Liquid-Adresse",
   "backupWalletGoogleDrivePrivacyMessage5": "mit Bull Bitcoin geteilt.",
-  "settingsDevModeUnderstandButton": "Ich verstehe",
   "exchangeFileUploadTitle": "Sicherer Datei-Upload",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Sie sind zuversichtlich in Ihren Sicherheitsvorkehrungen, um Ihre Bitcoin-Seed-Wörter zu verstecken und zu bewahren.",
   "sendErrorAmountAboveSwapLimits": "Betrag über Swap-Grenzwerten.",
@@ -710,14 +689,6 @@
   "exchangeCurrencyDropdownValidation": "Bitte wählen Sie eine Währung.",
   "withdrawConfirmTitle": "Auszahlung bestätigen",
   "payPayeeAccountNumber": "Kontonummer des Empfängers",
-  "importMnemonicBalanceLabel": "Guthaben: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeWarningConfirmation": "Ich bestätige, dass ich nicht von jemand anderem gebeten wurde, Bitcoin für ihn zu kaufen.",
   "confirmSendTitle": "Senden bestätigen",
   "buyKYCLevel1": "Stufe 1 – Basis",
@@ -748,7 +719,6 @@
   "selectCoinsManuallyLabel": "Coins manuell auswählen",
   "buyShouldBuyAtLeast": "Mindestbetrag",
   "payCorporate": "Unternehmen",
-  "onboardingCreateNewWallet": "Neue Wallet erstellen",
   "buyExpressWithdrawalDesc": "Bitcoin sofort nach Zahlung erhalten",
   "backupIdLabel": "Sicherungs-ID:",
   "sellBalanceWillBeCredited": "Ihr Guthaben wird gutgeschrieben, sobald Ihre Transaktion eine Bestätigung in der Blockchain erhalten hat.",
@@ -807,7 +777,6 @@
   "sellSendPaymentContinue": "Fortfahren",
   "coreSwapsStatusPending": "Ausstehend",
   "autoswapTriggerAtBalanceInfoText": "Auto-Swap wird ausgelöst, wenn Ihr Guthaben diesen Höchstbetrag überschreitet.",
-  "exchangeLandingDisclaimerNotAvailable": "Kryptowährungs-Tauschdienste sind in der mobilen App von Bull Bitcoin nicht möglich.",
   "sendCustomFeeRate": "Benutzerdefinierter Gebührensatz",
   "swapErrorAmountExceedsMaximum": "Betrag überschreitet Höchstgrenze.",
   "errorLabel": "Fehler",
@@ -832,7 +801,6 @@
   "sellBitcoinOnChain": "Bitcoin On-Chain",
   "bip85ExperimentalWarning": "Experimentell\nSichern Sie Ihre Ableitungspfade manuell.",
   "addressViewBalance": "Guthaben",
-  "importMnemonicNestedSegwit": "Nested SegWit",
   "sendReplaceByFeeActivated": "Gebührenerhöhung aktiviert",
   "coreSwapsLnReceiveFailed": "Swap fehlgeschlagen.",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Überweisung in US-Dollar (USD)",
@@ -841,12 +809,10 @@
   "hwPassport": "Foundation Passport",
   "fundExchangeMethodRegularSepaSubtitle": "Nur für größere Transaktionen über 30.000 €",
   "walletDetailsSignerDeviceNotSupported": "Nicht unterstützt",
-  "exchangeLandingDisclaimerLegal": "Der Zugang zu den Handelsdiensten ist auf Länder beschränkt, in denen Bull Bitcoin legal tätig ist, und kann eine Identitätsprüfung erfordern.",
   "backupWalletEncryptedVaultTitle": "Verschlüsselter Tresor",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "sellFromAnotherWallet": "Verkauf aus einer anderen Bitcoin-Wallet",
   "automaticallyFetchKeyButton": "Schlüssel automatisch abrufen >>",
-  "importColdcardButtonOpenCamera": "Kamera öffnen",
   "payFeePriority": "Priorität",
   "buyInsufficientBalanceDescription": "Sie haben nicht genügend Guthaben, um diese Bestellung aufzugeben.",
   "sendSelectNetworkFee": "Netzwerkgebühr auswählen",
@@ -867,7 +833,6 @@
   "settingsCurrencyTitle": "Währung",
   "transactionSwapDescChainClaimable": "Die Sperrtransaktion wurde bestätigt. Sie fordern nun das Guthaben an, um Ihren Swap abzuschließen.",
   "sendSwapDetails": "Swap-Details",
-  "onboardingPhysicalBackupDescription": "Stellen Sie Ihre Wallet mit 12 Wörtern wieder her.",
   "pinStatusLoading": "Wird geladen",
   "payTitle": "Zahlen",
   "payDescriptionLabel": "Zahlungsbeschreibung (optional)",
@@ -928,7 +893,6 @@
   "swapConfirmTitle": "Swap bestätigen",
   "testBackupGoogleDrivePrivacyPart1": "Diese Informationen ",
   "connectHardwareWalletKeystone": "Keystone",
-  "importWalletTitle": "Neue Wallet hinzufügen",
   "sendPasteAddressOrInvoice": "Zahlungsadresse oder Invoice einfügen",
   "swapToLabel": "An",
   "payLoadingRecipients": "Empfänger werden geladen…",
@@ -958,7 +922,6 @@
   "fundExchangeLabelBankAccountDetails": "Bankverbindung",
   "payLiquidAddress": "Liquid-Adresse",
   "sellTotalFees": "Gesamtgebühren",
-  "importWatchOnlyUnknown": "Unbekannt",
   "payContinue": "Fortfahren",
   "sendSelectedCoins": "{count} Coins ausgewählt",
   "@sendSelectedCoins": {
@@ -980,7 +943,6 @@
   },
   "payRbfActivated": "Gebührenerhöhung aktiviert",
   "ledgerDefaultWalletLabel": "Ledger-Wallet",
-  "importWalletSpecter": "Specter",
   "customLocationProvider": "Benutzerdefinierter Ort",
   "transactionSwapDescChainCompleted": "Ihr Swap wurde erfolgreich abgeschlossen! Das Guthaben sollte nun in Ihrer Wallet verfügbar sein.",
   "coreSwapsLnSendRefundable": "Swap kann zurückerstattet werden.",
@@ -1005,17 +967,8 @@
   "gotItButton": "Verstanden",
   "sendFeePriority": "Priorität",
   "paySelectCountry": "Land auswählen",
-  "importMnemonicTransactionsLabel": "Transaktionen: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "Referral-Programm",
   "autoswapAlwaysBlockInfoEnabled": "Wenn aktiviert, werden Auto-Swaps mit Gebühren über der festgelegten Grenze immer gesperrt.",
-  "importMnemonicSelectScriptType": "Mnemonic importieren",
   "sellSendPaymentCadBalance": "CAD-Guthaben",
   "fundExchangeCanadaPostStep2": "2. Bitten Sie den Kassierer, den „Loadhub“-QR-Code zu scannen.",
   "exchangeAccountInfoEmailLabel": "E-Mail",
@@ -1062,7 +1015,6 @@
   "fundExchangeJurisdictionEurope": "🇪🇺 Europa (SEPA)",
   "settingsExchangeSettingsTitle": "Handelseinstellungen",
   "sellFeePriority": "Priorität",
-  "exchangeFeatureSelfCustody": "• Bitcoin kaufen und direkt selbst verwahren",
   "payAmountTooHigh": "Höchstbetrag überschritten",
   "sellBankTransfer": "Banküberweisung",
   "replaceByFeeFastestTitle": "Schnellste",
@@ -1085,7 +1037,6 @@
   "addressViewAddressesTitle": "Adressen",
   "transactionSwapProgressPaymentMade": "Zahlung\nErfolgt",
   "coreSwapsChainPending": "Der Swap wurde noch nicht eingeleitet.",
-  "importWalletImportWatchOnly": "Watch-Only importieren",
   "exchangeKycComplete": "Füllen Sie Ihre KYC-Daten aus",
   "enterBackupKeyManuallyDescription": "Wenn Sie Ihren Backup-Schlüssel exportiert haben und ihn selbst an einem separaten Ort gespeichert haben, können Sie ihn hier manuell eingeben. Andernfalls gehen Sie zum vorherigen Bildschirm zurück.",
   "sellBitcoinPriceLabel": "Bitcoin-Preis",
@@ -1132,7 +1083,6 @@
       }
     }
   },
-  "importWalletJade": "Blockstream Jade",
   "payInvalidInvoice": "Ungültige Invoice",
   "receiveTotalFee": "Gesamtgebühren",
   "dcaConfirmFrequency": "Häufigkeit",
@@ -1179,9 +1129,7 @@
   "receiveVerifyAddressOnLedger": "Bitte überprüfen Sie die Adresse auf Ihrem Ledger.",
   "sellSendPaymentCrcBalance": "CRC-Guthaben",
   "backupSettingsKeyWarningBold": "Warnung: Seien Sie vorsichtig, wo Sie den Sicherungsschlüssel speichern.",
-  "exchangeLandingConnectAccount": "Bull Bitcoin-Konto verknüpfen",
   "recoverYourWalletTitle": "Stellen Sie Ihre Wallet wieder her",
-  "importWatchOnlyLabel": "Bezeichnung",
   "settingsAppSettingsTitle": "App-Einstellungen",
   "swapTransferRefundInProgressMessage": "Beim Swap ist ein Fehler aufgetreten. Ihre Rückerstattung läuft.",
   "fundExchangeMethodCanadaPostSubtitle": "Am besten für diejenigen geeignet, die lieber persönlich bezahlen möchten",
@@ -1215,13 +1163,7 @@
   "receiveAwaitingPayment": "Auf Zahlung warten…",
   "onboardingRecover": "Wiederherstellen",
   "receiveQRCode": "QR-Code",
-  "appSettingsDevModeTitle": "Entwickler-Modus",
   "exchangeTestnetBasicAuthTitle": "Zugangsdaten für den Testnet-Handel",
-  "exchangeTestnetBasicAuthDescription": "HTTP-Basisauthentifizierung für die Webseiten des Testnet-Handels (Anmeldung und Identitätsprüfung).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Benutzername",
-  "exchangeTestnetBasicAuthPasswordLabel": "Passwort",
-  "exchangeTestnetBasicAuthClearButton": "Löschen",
-  "exchangeTestnetBasicAuthSaveButton": "Speichern",
   "payDecodeFailed": "Invoice konnte nicht entschlüsselt werden",
   "rbfErrorFeeTooLow": "Sie müssen den Gebührensatz um mindestens 1 sat/vbyte gegenüber der ursprünglichen Transaktion erhöhen.",
   "backupWalletTitle": "Sichern Sie Ihre Wallet",
@@ -1251,7 +1193,6 @@
   "addressCardUsedLabel": "Benutzt",
   "exchangeLandingFeature5": "Chat mit Kundenbetreuung",
   "electrumMainnet": "Mainnet",
-  "importWalletPassport": "Foundation Passport",
   "buyExpressWithdrawalFee": "Express-Gebühr: {amount}",
   "@buyExpressWithdrawalFee": {
     "placeholders": {
@@ -1315,7 +1256,6 @@
       }
     }
   },
-  "importColdcardButtonInstructions": "Anweisungen",
   "sellWhichWalletQuestion": "Aus welcher Wallet möchten Sie verkaufen?",
   "autoswapAlwaysBlockLabel": "Hohe Gebühren immer blockieren",
   "receiveFixedAmount": "Betrag",
@@ -1381,7 +1321,6 @@
   "transactionHistoryTitle": "Transaktionsverlauf",
   "exportTransactionsDescription": "Exportieren Sie alle Transaktionen Ihrer Wallet (Bitcoin, Liquid, Lightning und Swaps) als CSV-Datei. Optional nach Zeitraum filtern.",
   "autoswapSelectWalletRequired": "Wählen Sie eine Bitcoin-Wallet aus *",
-  "exchangeFeatureSellBitcoin": "• Bitcoin verkaufen, mit Bitcoin bezahlt werden",
   "hwSeedSigner": "SeedSigner",
   "payNetworkError": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
   "payWhichWallet": "Aus welcher Wallet möchten Sie bezahlen?",
@@ -1402,7 +1341,6 @@
   "receiveTitle": "Empfangen",
   "transactionSwapInfoRefundableSwap": "Dieser Swap wird innerhalb weniger Sekunden automatisch zurückerstattet. Ist dies nicht der Fall, können Sie eine manuelle Rückerstattung versuchen, indem Sie auf die Schaltfläche „Swap-Rückerstattung wiederholen“ tippen.",
   "payCancelPayment": "Zahlung abbrechen",
-  "onboardingOwnYourMoney": "Übernehmen Sie die Kontrolle über Ihr Geld",
   "allSeedViewTitle": "Seed-Anzeige",
   "connectHardwareWalletLedger": "Ledger",
   "rbfFeeRate": "Gebührensatz: {rate} sat/vbyte",
@@ -1415,7 +1353,6 @@
   },
   "leaveYourPhone": "Ihr Telefon verlassen",
   "sendFastFee": "Schnell",
-  "exchangeBrandName": "BULL BITCOIN",
   "dcaConfirmTitle": "Sparplan bestätigen",
   "fundExchangeCrIbanUsdTransferCodeWarning": "Sie müssen den Transfercode als „Nachricht“ oder „Anweisung“ oder „Beschreibung“ bei der Zahlung hinzufügen. Wenn Sie vergessen, diesen Code einzubeziehen, kann Ihre Zahlung abgelehnt werden.",
   "backupSettingsPhysicalBackup": "Physische Sicherung",
@@ -1434,7 +1371,6 @@
   "payEnterValidAmount": "Bitte geben Sie einen gültigen Betrag ein.",
   "pinButtonRemove": "Sicherheits-PIN entfernen",
   "transactionDetailLabelAddressNotes": "Adressnotizen",
-  "onboardingRecoverWallet": "Wallet wiederherstellen",
   "transactionOrderLabelReferenceNumber": "Referenznummer",
   "backupWalletHowToDecide": "Wie entscheiden?",
   "fundExchangeSpeiInfo": "Machen Sie eine Einzahlung mit SPEI-Überweisung (sofort).",
@@ -1453,14 +1389,11 @@
   "addressCardIndexLabel": "Index:",
   "dcaSetupContinue": "Fortfahren",
   "buyConfirmYouPay": "Sie zahlen",
-  "importWatchOnlyTitle": "Watch-Only importieren",
   "walletDetailsWalletFingerprintLabel": "Wallet-Fingerabdruck",
   "testBackupCreatedAt": "Erstellt am:",
   "transactionStatusPending": "Ausstehend",
-  "settingsSuperuserModeDisabledMessage": "Superuser-Modus deaktiviert.",
   "settingsTermsOfServiceTitle": "Geschäftsbedingungen",
   "importQrDeviceScanning": "Wird gescannt…",
-  "importWalletKeystone": "Keystone",
   "payNewRecipients": "Neue Empfänger",
   "testBackupConfirm": "Bestätigen",
   "backupWalletChooseVaultLocationTitle": "Speicherort wählen",
@@ -1538,12 +1471,9 @@
   "replaceByFeeFastestDescription": "Geschätzte Ausführung ~ 10 Minuten",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2…",
   "exchangeAmountInputValidationZero": "Betrag muss größer als Null sein",
-  "importWatchOnlyRequired": "Erforderlich",
   "payWalletNotSynced": "Wallet nicht synchronisiert. Bitte warten Sie",
   "transactionSwapInfoChainDelay": "Aufgrund der Bestätigungszeiten der Blockchain kann die Durchführung von On-Chain-Swaps einige Zeit in Anspruch nehmen.",
   "sellExchangeRate": "Wechselkurs",
-  "importMnemonicLegacy": "Legacy",
-  "settingsDevModeWarningMessage": "Dieser Modus ist riskant. Durch seine Aktivierung erkennen Sie an, dass Sie Geld verlieren können.",
   "sellTitle": "Bitcoin verkaufen",
   "transactionListToday": "Heute",
   "payFeeRate": "Gebührensatz",
@@ -1586,7 +1516,6 @@
   "receiveNoteLabel": "Notiz",
   "payFirstName": "Vorname",
   "recoverViaCloudDescription": "Stellen Sie Ihr Backup über die Cloud mit Ihrer PIN wieder her.",
-  "importWatchOnlySigningDevice": "Signatur-Gerät",
   "receiveInvoiceExpired": "Invoice abgelaufen",
   "autoswapMinimumThresholdErrorSats": "Mindestschwelle: {amount}",
   "@autoswapMinimumThresholdErrorSats": {
@@ -1633,7 +1562,6 @@
   "buyStandardWithdrawal": "Standardauszahlung",
   "swapContinue": "Fortfahren",
   "transactionDetailLabelTransferFees": "Swap-Gebühren",
-  "importWalletSectionGeneric": "Generische Wallets",
   "backupSettingsNotTested": "Nicht getestet",
   "googleDrivePrivacyMessage": "Google wird Sie bitten, personenbezogene Daten mit dieser App zu teilen.",
   "errorGenericTitle": "Ups! Etwas ist schief gelaufen",
@@ -1661,9 +1589,7 @@
   "buyKycPendingDescription": "Sie müssen zuerst die Identitätsprüfung abschließen.",
   "payBelowMinAmountError": "Der Mindestbetrag, den Sie mit dieser Wallet zahlen können, beträgt {amount}.",
   "autoswapRecipientWalletInfo": "Wählen Sie aus, welche Bitcoin-Wallet das überwiesene Guthaben erhalten soll (erforderlich).",
-  "importWalletKrux": "Krux",
   "swapContinueButton": "Fortfahren",
-  "bitcoinSettingsBroadcastTransactionTitle": "Transaktion senden",
   "sendSignWithLedger": "Mit Ledger signieren",
   "pinSecurityTitle": "Sicherheits-PIN",
   "swapValidationPositiveAmount": "Positiven Betrag eingeben",
@@ -1713,7 +1639,6 @@
   "payInstitutionNumberHint": "Institutsnummer eingeben",
   "sendSlowPaymentWarning": "Zahlung könnte lange dauern.",
   "quickAndEasyTag": "Schnell und einfach",
-  "settingsThemeTitle": "Anzeige & Layout",
   "payEmail": "E-Mail",
   "sendErrorAmountBelowSwapLimits": "Betrag unterhalb der Swap-Grenze.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Erwägen Sie, Sofortzahlungen aufzuladen, um kleinere Zahlungen zu tätigen.",
@@ -1764,14 +1689,11 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "Physische Sicherung",
   "swapFromLabel": "Von",
   "fundExchangeCrIbanCrcDescription": "Senden Sie eine Banküberweisung von Ihrem Bankkonto mit den untenstehenden Daten.",
-  "settingsDevModeWarningTitle": "Entwickler-Modus",
   "rbfOriginalTransaction": "Ursprüngliche Transaktion",
   "payViewRecipient": "Empfänger anzeigen",
   "exchangeAccountInfoUserNumberCopiedMessage": "Benutzernummer in Zwischenablage kopiert",
-  "settingsAppVersionLabel": "App-Version:",
   "payBillerNameValue": "Ausgewählter Rechnungsempfänger",
   "sendSelectCoins": "Wählen Sie Coins.",
   "fundExchangeLabelRoutingNumber": "Bankleitzahl",
@@ -1780,7 +1702,6 @@
   "allSeedViewLoadingMessage": "Das Laden kann eine Weile dauern, wenn sich viele Seeds auf diesem Gerät befinden.",
   "paySelectWallet": "Wallet auswählen",
   "paySecurityQuestionHint": "Sicherheitsfrage eingeben (10–40 Zeichen).",
-  "importWatchOnlyPasteHint": "Fügen Sie xpub, ypub, zpub oder einen Deskriptor ein",
   "sellAccountNumber": "Kontonummer",
   "backupWalletLastKnownEncryptedVault": "Letzte bekannte verschlüsselte Tresordatei:",
   "sendAdvancedOptions": "Erweiterte Optionen",
@@ -1793,9 +1714,7 @@
     }
   },
   "exchangeAccountInfoVerificationLightVerification": "Basisverifizierung",
-  "exchangeFeatureBankTransfers": "• Banküberweisungen tätigen und Rechnungen bezahlen",
   "sellSendPaymentInstantPayments": "Sofortzahlungen",
-  "onboardingRecoverWalletButton": "Wallet wiederherstellen",
   "usePasswordInsteadButton": "Verwenden Sie {pinOrPassword} stattdessen >>",
   "@usePasswordInsteadButton": {
     "placeholders": {
@@ -1819,7 +1738,6 @@
       }
     }
   },
-  "importMnemonicTitle": "Mnemonic importieren",
   "payReplaceByFeeActivated": "Gebührenerhöhung aktiviert",
   "testBackupDoNotShare": "ZEIGE SIE NIEMANDEM",
   "paySinpeNumeroComprobante": "Referenznummer",
@@ -1828,9 +1746,6 @@
   "buyNetworkFeeExplanation": "Die Bitcoin-Netzwerkgebühr wird von dem Betrag, den Sie erhalten, abgezogen und geht an die Bitcoin-Miner.",
   "fundExchangeCrIbanUsdLabelPaymentDescription": "Zahlungsbeschreibung",
   "fundExchangeInfoBeneficiaryNameLeonod": "Der Name des Empfängers sollte LEONOD sein. Wenn Sie etwas anderes setzen, wird Ihre Zahlung abgelehnt.",
-  "importWalletLedger": "Ledger",
-  "importWalletBitBox": "BitBox",
-  "importWalletBitBoxNova": "BitBox Nova",
   "exchangeLandingTitle": "BULL BITCOIN",
   "doneButton": "Fertig",
   "withdrawSuccessTitle": "Abhebung eingeleitet",
@@ -1848,7 +1763,6 @@
     }
   },
   "googleAppleCloudRecommendation": "Google oder Apple Cloud:",
-  "exchangeGoToWebsiteButton": "Zur Webseite von Bull Bitcoin gehen",
   "testWalletTitle": "Test {walletName}",
   "@testWalletTitle": {
     "placeholders": {
@@ -2063,12 +1977,10 @@
   "importColdcardImporting": "Coldcard-Wallet wird importiert…",
   "exchangeDcaHideSettings": "Einstellungen ausblenden",
   "coreScreensPageNotFound": "Seite nicht gefunden",
-  "exchangeFeatureDcaOrders": "• Sparpläne, Limitaufträge und automatische Käufe",
   "payIban": "IBAN",
   "sellSendPaymentPayoutRecipient": "Auszahlungsempfänger",
   "swapInfoDescription": "Swappen Sie Bitcoin nahtlos zwischen Ihren Wallets. Bewahren Sie nur Guthaben für alltägliche Ausgaben in der Wallet für Sofortzahlungen auf.",
   "fundExchangeCanadaPostStep7": "7. Das Guthaben wird innerhalb von 30 Minuten Ihrem Bull-Bitcoin-Konto gutgeschrieben.",
-  "importWatchOnlyDisclaimerDescription": "Stellen Sie sicher, dass der gewählte Ableitungspfad mit dem übereinstimmt, der den angegebenen xpub erzeugt hat. Überprüfen Sie vor der Verwendung die erste abgeleitete Adresse. Ein falscher Pfad kann zum Verlust von Guthaben führen.",
   "fundExchangeWarningTactic8": "Sie drängen Sie zu schneller Zahlung.",
   "encryptedVaultStatusLabel": "Verschlüsselter Tresor",
   "sendConfirmSend": "Senden bestätigen",
@@ -2095,7 +2007,6 @@
   "swapTotalFees": "Gesamtgebühr",
   "payDone": "Fertig",
   "receiveContinue": "Fortfahren",
-  "importWatchOnlyDisclaimerTitle": "Warnung: Ableitungspfad",
   "withdrawConfirmIban": "IBAN",
   "payPayee": "Zahlungsempfänger",
   "sellInProgress": "Verkauf läuft…",
@@ -2111,7 +2022,6 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Dies als Kontonummer hinzufügen",
   "backupWalletSavingToDeviceTitle": "Auf Ihr Gerät speichern",
   "paySwapInProgress": "Swap läuft…",
-  "importMnemonicSyncMessage": "Alle drei Wallet-Typen werden synchronisiert und ihr Guthaben sowie Transaktionen werden bald angezeigt. Sie können warten, bis die Synchronisierung abgeschlossen ist, oder zum Importieren gehen, wenn Sie sicher sind, welchen Wallet-Typ Sie importieren möchten.",
   "coreSwapsLnSendClaimable": "Swap kann eingelöst werden.",
   "autoswapRecipientWalletLabel": "Empfänger-Bitcoin-Wallet",
   "coreScreensConfirmTransfer": "Swap bestätigen",
@@ -2120,7 +2030,6 @@
   "paySendMax": "Max",
   "googleDriveSignInMessage": "Sie müssen sich bei Google Drive anmelden.",
   "importMnemonicSelectType": "Wählen Sie einen Wallet-Typ zum Importieren.",
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministische Entropie",
   "swapTransferAmount": "Swap-Betrag",
   "feePriorityLabel": "Priorität",
   "coreScreensToLabel": "An",
@@ -2235,13 +2144,8 @@
   "walletDetailsNetworkLabel": "Netzwerk",
   "broadcastSignedTxBroadcasting": "Wird übertragen…",
   "broadcastSignedTxBroadcastError": "Wir konnten Ihre Transaktion nicht senden. Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
-  "importWatchOnlyErrorNoWalletSelected": "Öffentlichen Schlüssel oder Deskriptor einfügen oder scannen.",
-  "importWatchOnlyErrorLabelRequired": "Geben Sie Ihrer Wallet vor dem Importieren einen Namen.",
-  "importWatchOnlyErrorInvalidFormat": "Das sieht nicht nach einem gültigen öffentlichen Schlüssel oder Descriptor aus. Überprüfen Sie, was Sie eingefügt haben.",
-  "importWatchOnlyErrorImportFailed": "Wir konnten diese Watch-Only-Wallet nicht importieren. Bitte überprüfen Sie die Angaben und versuchen Sie es erneut.",
   "broadcastSignedTxErrorInvalidTransaction": "Das sieht nicht nach einer gültigen signierten Transaktion aus. Stellen Sie sicher, dass Sie das vollständige PSBT oder die vollständige Transaktion eingefügt haben.",
   "broadcastSignedTxErrorInvalidPushTx": "Wir konnten aus diesem Tag keine Transaktion lesen. Bitte scannen Sie erneut.",
-  "importMnemonicContinue": "Fortfahren",
   "chooseVaultLocationTitle": "Speicherort wählen",
   "testBackupEncryptedVaultTitle": "Verschlüsselter Tresor",
   "fundExchangeLabelInstitutionNumber": "Institutionsnummer",
@@ -2268,7 +2172,6 @@
   "fundExchangeSpeiDescription": "Überweisung mit CLABE",
   "comingSoonDefaultMessage": "Diese Funktion ist derzeit in Entwicklung und wird bald verfügbar sein.",
   "enterBackupKeyManuallyTitle": "Geben Sie den Sicherungsschlüssel manuell ein",
-  "importWalletColdcardQ": "Coldcard Q",
   "backupSettingsStartBackup": "Backup starten",
   "sendReceiveAmount": "Empfangsbetrag",
   "sellNetAmount": "Nettobetrag",
@@ -2298,7 +2201,6 @@
   },
   "swapProgressRefunded": "Swap zurückerstattet",
   "payPaymentHistory": "Zahlungsverlauf",
-  "exchangeFeatureUnifiedHistory": "• Einheitliche Transaktionshistorie",
   "payViewDetails": "Details anzeigen",
   "autoswapSelectWallet": "Wählen Sie eine Bitcoin-Wallet.",
   "autoswapRecipientWalletRequired": "*",
@@ -2312,7 +2214,6 @@
   "sellSendPaymentAdvanced": "Erweiterte Einstellungen",
   "walletDeletionConfirmationCancelButton": "Abbrechen",
   "exchangeDcaCancelDialogCancelButton": "Abbrechen",
-  "importWatchOnlyType": "Typ",
   "passwordLabel": "Passwort",
   "walletBalanceUnconfirmedIncoming": "In Bearbeitung",
   "exchangeAuthOk": "OK",
@@ -2631,45 +2532,10 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Überspringen",
-  "wizardPageIndicator": "SEITE {current} / {total}",
-  "wizardNextButton": "Weiter",
-  "wizardCustomizeTitle": "Passen Sie Ihr Erlebnis an",
-  "wizardCustomizeBody": "Nutzen Sie BULL mit diesen Einstellungen nach Ihren Vorstellungen.",
-  "wizardCustomizeDefaultCurrency": "Standardwährung",
-  "wizardMissionTitle": "Unterstütze die Bull-Mission",
-  "wizardMissionBody1": "Um uns zu helfen, unsere Software zu verbessern und das höchste Maß an Sicherheit, Datenschutz und Benutzerfreundlichkeit zu gewährleisten, kann Ihre App uns Fehlerprotokolle senden, mit denen wir Probleme erkennen und in unseren nächsten Updates schnell beheben können.",
-  "wizardMissionBody2": "Diese Protokolle sind anonymisiert, nicht mit Ihrer IP-Adresse verknüpft und enthalten niemals Informationen über Ihre Transaktionen oder Ihre Identität. Sie sind rein technischer Natur und stellen kein Risiko für Sie dar. Es hilft uns sehr und kostet Sie nichts.",
-  "wizardMissionQuestion": "Sind Sie damit einverstanden, an unserem automatischen Fehlermeldeprogramm teilzunehmen?",
-  "wizardMissionYes": "Ja",
-  "wizardMissionNo": "Nein",
-  "wizardMissionRequired": "Bitte wählen Sie Ja oder Nein, bevor Sie fortfahren.",
-  "wizardJourneyTitle": "Fortschritte auf Ihrem Weg",
-  "wizardJourneyBody": "Wenn Sie BULL Wallet neu nutzen, finden Sie hier einige Funktionen, mit denen Sie Ihre Privatsphäre, Sicherheit und Benutzererfahrung verbessern können.",
-  "wizardJourneyTip1": "Fügen Sie eine Sicherheits-PIN hinzu, um Ihre Wallet zu entsperren.",
-  "wizardJourneyTip2": "Probieren Sie die verschlüsselte Tresor-Sicherung aus.",
-  "wizardJourneyTip3": "Verbinden Sie sich mit Ihrem eigenen Bitcoin-Node.",
-  "wizardJourneyTip4": "Verbinden Sie sich mit Ihrem eigenen Mempool-Explorer.",
-  "wizardJourneyTip5": "Swappen Sie zwischen Bitcoin und Liquid ohne KYC.",
-  "wizardJourneyTip6": "Passen Sie Ihre Autoswap-Einstellungen an.",
-  "wizardJourneyTip7": "Wechseln Sie zwischen Bitcoin (BTC) und Satoshis (sats).",
-  "wizardJourneyTip8": "Erstellen Sie Air-Gap-Transaktionen für Ihre Hardware-Wallet.",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "legacyStorageStepEnsureSwapsCompleted": "Stellen Sie sicher, dass alle Swaps abgeschlossen sind.",
   "legacyStorageStepUninstall": "Deinstallieren Sie die App von Ihrem Gerät.",
   "legacyStorageStepReinstall": "Laden Sie die neueste Version herunter und installieren Sie sie neu.",
   "legacyStorageStepRestoreBackup": "Stellen Sie Ihre Sicherung wieder her.",
-  "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-  "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits",
   "coreScreensResolvingInputs": "Transaktionseingaben werden verarbeitet…",
   "coreScreensFeeRateLabel": "Gebührenrate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -2817,15 +2683,8 @@
   "backupCardSubtitle": "Sichern Sie jetzt Ihre Wallet.",
   "autoswapTargetBalanceLabel": "Ziel-Guthaben Instant Wallet",
   "autoswapMaximumBalanceLabel": "Maximales Guthaben Instant Wallet",
-  "onboardingAdvancedOptionsTitle": "Erweiterte Optionen",
-  "onboardingAdvancedOptionsDescription": "Konfigurieren Sie erweiterte Einstellungen, bevor Sie Ihre Wallet erstellen oder wiederherstellen.",
-  "onboardingAdvancedOptionsCustomElectrum": "Benutzerdefinierter Electrum-Server",
-  "onboardingAdvancedOptionsCustomMempool": "Benutzerdefinierter Mempool-Server",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Benutzerdefinierter Recoverbull-Server",
-  "onboardingAdvancedOptionsFooter": "Sie können diese Einstellungen später in den App-Einstellungen ändern.",
   "appStartupContactSupportMessage": "Kontaktieren Sie die Kundenbetreuung unter app.bullbitcoin.com/support.",
   "importWalletBitboxAndroidOnly": "BitBox wird nur unter Android unterstützt",
-  "importWatchOnlyXpubLabel": "XPUB",
   "mempoolServerStatusUnknown": "Unbekannt",
   "paySinpeReceipt": "SINPE-Beleg",
   "fundExchangeJurisdictionColombia": "🇨🇴 Kolumbien",
@@ -2852,16 +2711,6 @@
   "statusScreenContinue": "Fortfahren",
   "viewerAddressTab": "Adresse",
   "viewerPaymentUriTab": "Zahlungs-URI",
-  "settingsErrorReportingTitle": "Fehlerberichterstattung",
-  "errorReportingProgramTitle": "Programm zur Fehlerberichterstattung",
-  "errorReportingProgramDescriptionP1": "Helfen Sie uns, Bull zu verbessern, indem Sie an unserem Programm zur Fehlerberichterstattung teilnehmen.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sendet anonymisierte Fehlerberichte, wenn etwas nicht funktioniert.",
-  "errorReportingProgramDescriptionP3": "So können wir sehen, wie viele Nutzer von einem Fehler betroffen sind, und Korrekturen entsprechend priorisieren. Ohne diese Berichte können wir die Auswirkungen nicht messen.",
-  "errorReportingProgramDescriptionP4": "Die Berichte werden nur an den Server von Bull gesendet, niemals an Dritte.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin ist quelloffen. Daher können Sie überprüfen, welche Daten gesendet werden.",
-  "errorReportingAcceptButton": "Akzeptieren",
-  "errorReportingCancelButton": "Abbrechen",
-  "errorReportingRestartSnackbar": "Starten Sie die App neu, damit diese Änderung übernommen wird.",
   "appInitErrorTitle": "App konnte nicht gestartet werden",
   "appInitErrorMessage": "Beim Start ist ein Fehler aufgetreten. Bitte starten Sie die App neu. Wenn das Problem weiterhin besteht, teilen Sie Ihre Protokolle und kontaktieren Sie den Support.",
   "appInitErrorShareLogsButton": "Logs übermitteln",
@@ -2873,10 +2722,6 @@
   "allSeedViewErrorFetch": "Seeds konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
-  },
-  "importMnemonicEmptyLabelError": "Zum Importieren einer Mnemonic ist eine Bezeichnung erforderlich",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "allSeedViewErrorDelete": "Seed konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
   "@allSeedViewErrorDelete": {
@@ -2893,123 +2738,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "Coins",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 Coin} other{{count} Coins}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "Eingefroren",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "Verfügbar",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "Nichts eingefroren",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "Sortieren & Filtern",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "{visible} von {total} angezeigt",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 nicht ausgegebener Output} other{{count} nicht ausgegebene Outputs}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "Synchronisieren",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "Alle löschen",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "Betrag: Hoch nach Niedrig",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "Betrag: Niedrig nach Hoch",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "Datum: Neueste",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "Datum: Älteste",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "Schlüsselbund",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "Alle",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "Empfangen",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "Wechselgeld",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "Status",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "Alle",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "Eingefroren",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "Nicht eingefroren",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "Bezeichnungen",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "Zurücksetzen",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "Anwenden",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{1 ausgewählt} other{{count} ausgewählt}}",
   "@coinsSelectedCount": {
@@ -3017,128 +2748,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "Alle auswählen",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "Einfrieren",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "Freigeben",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "Rückgängig",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{1 Coin einfrieren?} other{{count} Coins einfrieren?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "Eingefrorene Coins bleiben in Ihrer Wallet, werden aber von Ausgaben ausgeschlossen, bis Sie sie auftauen.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "Das Einfrieren dieser Coins lässt Sie ohne verfügbares Guthaben zurück.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{1 Coin eingefroren · von Ausgaben ausgeschlossen} other{{count} Coins eingefroren · von Ausgaben ausgeschlossen}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{1 Coin freigegeben} other{{count} Coins freigegeben}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 Best.} other{{count} Best.}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "Ausstehend",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "Noch keine Coins",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "Coins erscheinen hier, sobald Sie Bitcoin empfangen.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "Keine passenden Coins",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "Filter löschen",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "Erneut versuchen",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "Wischen zum Einfrieren · Lange drücken zum Auswählen",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "Ihre Coins konnten nicht geladen werden. Ziehen Sie zum Aktualisieren, um es erneut zu versuchen.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "Die ausgewählten Coins konnten nicht eingefroren werden. Bitte versuchen Sie es erneut.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "Die ausgewählten Coins konnten nicht aufgetaut werden. Bitte versuchen Sie es erneut.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} eingefroren",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -3167,13 +2776,8 @@
   "liquidRiskDisclosureSemanticLabel": "Liquid-Bitcoin-Risikohinweis öffnen",
   "liquidRiskDisclosureTitle": "Risikohinweis zu Liquid Bitcoin in der Wallet für Sofortzahlungen",
   "liquidRiskDisclosureBody": "Das Guthaben in der Wallet für Sofortzahlungen besteht nicht aus „echten“ Bitcoin. Es handelt sich um Liquid Network Bitcoin (L-BTC), einen durch Bitcoin gedeckten Token, der in einem separaten Register, einer sogenannten „Sidechain“, geführt wird.\n\nJeder Liquid Bitcoin ist im Verhältnis 1:1 durch echte Bitcoin gedeckt. Dafür wird ein transparenter Peg-Mechanismus verwendet, der von einem Zusammenschluss aus 15 Unternehmen verwaltet wird. Die von der Liquid Federation gehaltenen Bitcoin-Reserven sind vollständig überprüfbar. Jeder kann nachvollziehen, dass jeder Liquid Bitcoin durch einen echten Bitcoin gedeckt ist.\n\nGuthaben im Liquid Network aufzubewahren ist wesentlich sicherer als die Nutzung einer herkömmlichen verwahrenden Wallet oder einer Börse. Ihr Guthaben als Liquid Bitcoin in der Wallet für Sofortzahlungen zu halten ist jedoch deutlich weniger sicher, als echte Bitcoin in der sicheren Bitcoin-Wallet aufzubewahren.\n\nZahlungen über das Liquid Network sind schneller, günstiger und privater als reguläre Bitcoin-Zahlungen. Sie besitzen die vollständige Selbstverwahrung über die Liquid-Bitcoin-Werte in der Wallet für Sofortzahlungen und benötigen von niemandem eine Erlaubnis, um Zahlungen zu senden oder zu empfangen.\n\nSie allein sind dafür verantwortlich, den Zugriff auf Ihr Wallet-Backup zu sichern. Ohne dieses Backup kann niemand den Zugriff auf Ihre Liquid Bitcoin wiederherstellen.\n\nDer tatsächliche Wert von L-BTC hängt davon ab, ob Sie diese in echte Bitcoin einlösen können. Dies wiederum hängt von Swap-Anbietern ab, die Mitglieder des Liquid Network sind, sowie davon, dass die Liquid Federation weder kompromittiert noch abgeschaltet wird.\n\nSollten Mitglieder der Liquid Federation nicht mehr in der Lage oder nicht mehr bereit sein, Ihre Liquid Bitcoin gegen echte Bitcoin einzulösen, würden die L-BTC-Token wertlos werden.\n\n> Empfehlung\n> Bewahren Sie nur kleine Beträge in der Wallet für Sofortzahlungen auf. Verwahren Sie Ihre Ersparnisse in der sicheren Bitcoin-Wallet oder in einer importierten Hardware-Wallet.\n\n## Was ist die Wallet für Sofortzahlungen?\n\nWenn Sie mit der Wallet für Sofortzahlungen eine Lightning-Zahlung empfangen, wird das Guthaben des Senders tatsächlich von einem externen Swap-Anbieter empfangen, in Liquid Bitcoin umgewandelt und an Ihre Wallet gesendet.\n\nWenn Sie mit dieser Wallet eine Lightning-Zahlung senden, senden Sie tatsächlich eine Liquid-Bitcoin-Zahlung an einen externen Swap-Anbieter. Dieser wandelt sie in echte Bitcoin im Lightning Network um und sendet anschließend eine Lightning-Zahlung an den Empfänger.\n\nDiese Swaps erfolgen vollständig selbstverwahrt und ohne notwendiges Vertrauen. Der Swap-Anbieter kann Ihr Guthaben daher nicht stehlen. Bull Bitcoin ist an der Durchführung dieser Swap-Transaktionen nicht beteiligt und benötigt oder speichert keine personenbezogenen Daten.\n\n## Wofür sollte ich diese Wallet verwenden?\n\nDie Wallet für Sofortzahlungen ermöglicht Ihnen, im Alltag Bitcoin-Zahlungen zu empfangen oder Bitcoin zu kaufen sowie Bitcoin-Zahlungen zu senden oder Bitcoin zu verkaufen, ohne Bitcoin-Netzwerkgebühren zahlen zu müssen.\n\nWenn Sie Händler sind oder Bitcoin ansparen, verwenden Sie diese Wallet für Zahlungen unter 0,01 BTC. Sobald Sie mehr als 0,01 BTC angesammelt haben, übertragen Sie die Bitcoin in die sichere Bitcoin-Wallet oder eine andere selbstverwahrte Bitcoin-Wallet.\n\nWenn Sie Ihre Bitcoin ausgeben möchten, übertragen Sie einen kleinen Betrag in die Wallet für Sofortzahlungen und verwenden Sie ihn für Ihre Ausgaben. Wenn das Guthaben in der Wallet für Sofortzahlungen aufgebraucht ist, laden Sie sie einfach wieder auf.\n\n## Was ist Auto-Swap und wie funktioniert es?\n\nAuto-Swap, auch Auto-Transfer genannt, ist eine von Bull Bitcoin entwickelte Funktion. Sie wandelt Liquid Network Bitcoin (L-BTC) automatisch in Bitcoin (BTC) um, sobald der L-BTC-Betrag in Ihrer Wallet einen festgelegten Grenzwert erreicht.\n\nAuto-Swap ist standardmäßig aktiviert:\n\n- **Maximales Guthaben der Wallet für Sofortzahlungen:** 0,01 BTC\n- **Zielguthaben nach dem Auto-Swap:** 0,005 BTC\n- **Mindestbetrag für die Übertragung:** 0,005 BTC\n\nWenn Ihr Guthaben 0,01 BTC erreicht, wird beim nächsten Öffnen der App eine Übertragung eingeleitet. Der 0,005 BTC übersteigende Betrag wird dabei von L-BTC in BTC umgewandelt.\n\n### Beispiel\n\nWenn Sie über 0,012 L-BTC verfügen und Auto-Swap aktiviert ist, wird eine Übertragung von 0,007 L-BTC eingeleitet. Es verbleiben 0,005 L-BTC und Ihr BTC-Guthaben erhöht sich um 0,007 BTC.\n\n## Wie kann ich L-BTC in die Wallet für Sofortzahlungen einzahlen oder daraus abheben?\n\nUm die Wallet mit „echten“ Bitcoin aufzuladen, tippen Sie auf „Empfangen“ und wählen Sie „Lightning Network“. Um L-BTC abzuheben, tippen Sie auf „Senden“ und fügen Sie eine Lightning-Rechnung ein.\n\n## Wie funktioniert das Backup?\n\nDie Wallet für Sofortzahlungen verwendet dieselben Backup-Seed-Wörter wie die sichere Bitcoin-Wallet. Sie benötigen für beide Wallets nur ein Backup.\n\n## Sollte ich die Wallet für Sofortzahlungen statt einer selbstverwahrten Lightning-Wallet verwenden?\n\nEine selbstverwahrte Lightning-Wallet wie Phoenix Wallet bietet Ihnen ein höheres Maß an Sicherheit. Da Sie sich jedoch um die Verwaltung von Lightning-Kanälen kümmern müssen, kann sie weniger komfortabel und schwieriger zu bedienen sein.\n\nDa zum Öffnen und Schließen von Lightning-Kanälen On-Chain-Transaktionen erforderlich sind und möglicherweise Gebühren an Lightning-Dienstleister anfallen, kann eine vollständig selbstverwahrte Lightning-Wallet in einigen Fällen teurer sein.\n\nWenn Sie eine vollständig selbstverwahrte reine Lightning-Wallet verwenden können und möchten, empfehlen wir Ihnen Phoenix Wallet.\n\n## Wie hoch sind die Transaktionsgebühren?\n\nJede ein- oder ausgehende Zahlung der Wallet für Sofortzahlungen umfasst zwei Transaktionen im Liquid Network. Deren Gebühren sind üblicherweise sehr niedrig und sollten bei etwa 0,00000050 BTC (50 sats) liegen.\n\nWenn Sie mit der sicheren Bitcoin-Wallet Lightning-Zahlungen empfangen oder senden, müssen Sie für jede Zahlung zwei On-Chain-Bitcoin-Transaktionen bezahlen. Dies kann recht teuer sein.\n\nZusätzlich kann der Swap-Anbieter Swap-Gebühren erheben. Derzeit berechnet der Swap-Anbieter Boltz folgende Gebühren:\n\n- **Empfang von Lightning-Zahlungen in der Wallet für Sofortzahlungen:** 0,25 %\n- **Senden von Lightning-Zahlungen aus der Wallet für Sofortzahlungen:** 0,1 %\n- **Empfang von Lightning-Zahlungen in der sicheren Bitcoin-Wallet:** 0,5 %\n- **Senden von Lightning-Zahlungen aus der sicheren Bitcoin-Wallet:** 0,1 %.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Halten Sie Ihr Telefon an die Coldcard, um die signierte Transaktion per NFC zu empfangen.",
-  "importColdcardInvalidWalletData": "Ungültige Coldcard-Wallet-Daten",
-  "importColdcardConnectTitle": "{deviceName} verbinden",
-  "importColdcardConnectDescription": "Importieren Sie den Wallet-Deskriptor von Ihrem {deviceName}",
-  "importColdcardScanNfcSheetTitle": "Halten Sie Ihr Telefon an Ihr {deviceName}, um den Wallet-Deskriptor per NFC zu importieren",
   "consolidationDone": "Fertig",
   "consolidationFailedBody": "Ein unerwarteter Fehler ist aufgetreten. Ihr Guthaben ist sicher – es wurde keine Transaktion gesendet. Bitte versuchen Sie es erneut.",
   "consolidationFailedTitle": "Konsolidierung fehlgeschlagen",
@@ -3193,10 +2797,7 @@
   "dcaReceiveAddressError": "In Ihrer Wallet konnte keine Empfangsadresse vorbereitet werden. Bitte versuchen Sie es erneut.",
   "dcaOrderCreationError": "Der Sparplan konnte nicht erstellt werden. Bitte versuchen Sie es später erneut.",
   "settingsPayjoinDisclaimerTitle": "Payjoin-Hinweis",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin-Hinweis",
-  "settingsPayjoinAdvancedTitle": "Erweiterte Payjoin-Einstellungen",
   "sendPayjoinLabel": "Payjoin",
-  "bitcoinSettingsPayjoinTitle": "Payjoin",
   "receivePayjoinBelowMinimum": "Betrag unter dem Payjoin-Mindestbetrag",
   "receivePayjoinBelowMinimumSubtext": "Diese Zahlung lag unter Ihrem Payjoin-Mindestbetrag und wurde daher als reguläre Transaktion empfangen. Sie können diesen Grenzwert in den Bitcoin-Einstellungen ändern.",
   "receivePayjoinExpired": "Payjoin-Zeitfenster abgelaufen",
@@ -3208,13 +2809,7 @@
   "receiveViewDetails": "Details anzeigen",
   "sendPayjoinFallbackCountdown": "Wechsel zu einer regulären Zahlung in",
   "sendSentWithoutPayjoin": "Ohne Payjoin gesendet: Der Empfänger hat Payjoin nicht abgeschlossen. Daher wurde stattdessen eine Standardtransaktion veröffentlicht.",
-  "settingsPayjoinExpireTitle": "Sitzungsablauf",
-  "settingsPayjoinMinAmountDescription": "Unterhalb dieses Betrags wird Payjoin abgelehnt und die Zahlung stattdessen regulär empfangen.",
-  "settingsPayjoinMinAmountRangeError": "Der Wert muss zwischen {min} und {max} sats liegen",
-  "settingsPayjoinMinAmountTitle": "Mindestbetrag",
   "settingsPayjoinPrivacyGainExplanation": "Payjoin bietet einen erheblichen Schutz vor Blockchain-Analysen: Es widerlegt die Annahme, dass alle Eingänge einer Transaktion derselben Person gehören. Der Nachteil ist ein Datenschutzrisiko: Wenn Sie einen Payjoin annehmen, wird einer Ihrer UTXOs gegenüber der Gegenpartei offengelegt.",
-  "settingsPayjoinServersTitle": "Server",
-  "settingsPayjoinTitle": "Payjoin",
   "settingsPayjoinV1DirectoryLeakExplanation": "Wenn Ihre Gegenpartei eine ältere Payjoin-Version (v1) statt der aktuellen Version (v2) verwendet, kann derselbe UTXO auch gegenüber dem Payjoin-Verzeichnis offengelegt werden – einem Drittanbieter-Relay zur Koordination des Payjoins.",
   "feePrioritySlow": "Langsam",
   "payCompletedDescriptionDetails": "Die Zahlung über {fiatAmount} an {recipient} wurde abgeschlossen.",
@@ -3246,38 +2841,6 @@
   "swapErrorRateLimited": "Zu viele Anfragen. Warten Sie {seconds} Sekunden und versuchen Sie es erneut.",
   "swapErrorRouteUnavailable": "{fromNetwork} → {toNetwork} ist nicht verfügbar.",
   "swapErrorRouteUnavailableGeneric": "Dieser Swap ist nicht verfügbar.",
-  "settingsScreenPrivacyTitle": "Bildschirmschutz",
-  "settingsScreenPrivacyDisabledMessage": "Screenshots sind auf sensiblen Bildschirmen jetzt erlaubt.",
-  "settingsSearchHint": "Einstellungen durchsuchen",
-  "settingsSearchNoResults": "Keine Einstellungen gefunden.",
-  "settingsSearchStartTyping": "Tippen Sie, um Ergebnisse zu sehen.",
-  "settingsSearchMempoolKeywords": "Block-Explorer|Gebührenschätzung|Transaktionsgebühren|Mempool-API",
-  "settingsSearchExchangeKeywords": "Konto|Börsenkonto|Handel|Kaufen und Verkaufen",
-  "settingsSearchStartBackupKeywords": "Sicherung erstellen|Sicherung speichern|Wallet sichern",
-  "settingsSearchRecoverbullKeywords": "Verschlüsselte Sicherung|Cloud-Sicherung|Verschlüsselter Tresor|Tresor-Wiederherstellung",
-  "settingsSearchLabelsKeywords": "Wallet-Labels|Transaktions-Labels|BIP329|Labels importieren|Labels exportieren",
-  "settingsSearchTransactionHistoryKeywords": "Transaktionen exportieren|Transaktionsexport|CSV|Wallet-Verlauf",
-  "settingsSearchAppSettingsKeywords": "App-Voreinstellungen|Anwendungseinstellungen|Allgemeine Einstellungen",
-  "settingsSearchTermsOfServiceKeywords": "Allgemeine Geschäftsbedingungen|AGB|Rechtliches|Nutzungsvereinbarung",
-  "settingsSearchServicesStatusKeywords": "Dienststatus|Systemstatus|Online|Störung",
-  "settingsSearchImportWalletKeywords": "Wallet hinzufügen|Wallet wiederherstellen|Mnemonic importieren|Watch-only-Wallet|Hardware-Wallet",
-  "settingsSearchBroadcastTransactionKeywords": "Signierte Transaktion senden|Transaktion übertragen|Rohtransaktion|Transaktions-Hex|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin-Privatsphäre|Gemeinsame Transaktion|P2EP",
-  "settingsSearchAutoswapKeywords": "Autoswap|Automatischer Swap|Automatische Übertragung|Sofortiges Wallet-Guthaben",
-  "settingsSearchElectrumKeywords": "Bitcoin-Node|Electrum-Node|Eigener Server|Persönlicher Node",
-  "settingsSearchTestnetModeKeywords": "Testnetzwerk|Bitcoin-Testnet|Liquid-Testnet|Testmodus",
-  "settingsSearchSeedViewerKeywords": "Seed-Phrase|Wiederherstellungsphrase|Mnemonic|Sicherungswörter|Seeds anzeigen",
-  "settingsSearchBip85Keywords": "Deterministische Entropie|Abgeleitete Seeds|Abgeleitete Entropie|BIP85",
-  "settingsSearchLanguageKeywords": "Gebietsschema|Übersetzung|Anzeigesprache|Bevorzugte Sprache",
-  "settingsSearchThemeKeywords": "Erscheinungsbild|Design|Dunkelmodus|Hellmodus|Systemdesign",
-  "settingsSearchCurrencyKeywords": "Fiat-Währung|Landeswährung|Standardwährung|Wechselwährung",
-  "settingsSearchSecurityPinKeywords": "PIN-Code|Zugangscode|App-Sperre|Authentifizierung|PIN ändern",
-  "settingsSearchLogsKeywords": "Debug-Protokolle|Diagnoseprotokolle|App-Protokolle|Protokolle exportieren",
-  "settingsSearchDevModeKeywords": "Entwicklermodus|Entwicklungseinstellungen|Debug-Modus|Erweiterte Tests",
-  "settingsSearchTestnetCredentialsKeywords": "Testnet-Zugangsdaten|Testnet-Anmeldung|Testnet-Benutzername|Testnet-Passwort|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "Absturzberichte|Fehlerberichte|Diagnose|Telemetrie|Fehlerprotokolle",
-  "settingsSearchScreenPrivacyKeywords": "Screenshots|Bildschirmaufnahme|Aufnahmeschutz|Privatsphäre",
-  "onboardingBackupVerificationError": "Ihre Wallet wurde wiederhergestellt, aber die Backup-Verifizierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
   "sendErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
   "sendErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
   "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit dem Auftrag überein. Bitte starten Sie die Zahlung erneut.",
@@ -3320,15 +2883,7 @@
   "torSettingsExternalProxyUnavailable": "SOCKS5-Proxy nicht verfügbar",
   "torSettingsExternalProxyUnavailableDescription": "Bull konnte keine Verbindung zum konfigurierten SOCKS5-Proxy herstellen.",
   "settingsBackupTitle": "Sicherung",
-  "settingsSearchBackupKeywords": "Sicherung|Wiederherstellung|Wallet wiederherstellen|Seed sichern",
-  "settingsAppTitle": "App",
-  "settingsWalletTitle": "Wallet",
-  "settingsExchangeTitle": "Handel",
-  "bitcoinSettingsAutoTransferTitle": "Auto-Swap",
-  "bitcoinSettingsElectrumServerTitle": "Electrum-Server-Einstellungen",
-  "bitcoinSettingsMempoolServerTitle": "Mempool-Server-Einstellungen",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
-  "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
   "walletLoadFailed": "Ihre Wallets konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
   "walletWarningElectrumBitcoinDown": "Bitcoin-Server nicht verfügbar",
   "walletWarningElectrumLiquidDown": "Liquid-Server nicht verfügbar",
@@ -3336,8 +2891,6 @@
   "walletWarningElectrumAction": "Tippen Sie, um Ihre Servereinstellungen zu konfigurieren.",
   "walletLoadFailedRetryHint": "Zum Aktualisieren nach unten ziehen und erneut versuchen",
   "settingsErrorSavingSetting": "Diese Einstellung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
-  "settingsErrorConsentNotGiven": "Diese Einstellung erfordert Ihre Bestätigung, bevor sie geändert werden kann.",
-  "settingsErrorLoadingLogs": "Die Diagnoseprotokolle konnten nicht erstellt werden. Bitte versuchen Sie es erneut.",
   "exchangeErrorSigningOut": "Sie konnten nicht vollständig abgemeldet werden. Bitte versuchen Sie es erneut.",
   "exchangeErrorSavingPreferences": "Ihre Einstellungen konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
   "exchangeErrorLoadingAnnouncements": "Ankündigungen konnten nicht geladen werden.",
@@ -3374,10 +2927,6 @@
   "autoBuyWalletRequiredError": "Fügen Sie mindestens eine Standardadresse für Bitcoin, Lightning oder Liquid hinzu.",
   "autoBuyUpdateError": "Der automatische Kauf konnte nicht aktualisiert werden. Versuchen Sie es später erneut.",
   "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
-  "importWatchOnlyErrorNetworkMismatch": "Diese Wallet verwendet derzeit ein anderes Bitcoin-Netzwerk. Wechseln Sie zwischen Mainnet und Testnet und versuchen Sie es erneut.",
-  "importWatchOnlyErrorAlreadyExists": "Diese Wallet wurde bereits importiert.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Netzwerk: Bitcoin-Mainnet",
-  "importWatchOnlyNetworkBitcoinTestnet": "Netzwerk: Bitcoin-Testnet",
   "broadcastSignedTxErrorPsbtFinalization": "Die signierte Transaktion konnte nicht finalisiert werden. Stellen Sie sicher, dass sie alle erforderlichen Signaturen enthält, und versuchen Sie es erneut.",
   "limitOrdersTitle": "Limitaufträge",
   "limitOrdersDashboardDescription": "Kaufen Sie Bitcoin automatisch, sobald Ihr Zielpreis erreicht wird.",
@@ -3450,7 +2999,6 @@
   "fundExchangeErrorNetwork": "Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
   "exchangeErrorNetwork": "Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
   "walletBalancesMayBeStale": "Ihre Guthaben konnten nicht aktualisiert werden und sind möglicherweise nicht aktuell.",
-  "settingsSearchTorKeywords": "Tor-Proxy|Orbot|Onion-Routing|Integriertes Tor|Privatsphäre-Netzwerk",
   "payUnexpectedError": "Ihre Zahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
   "payErrorFeeBelowRelayFloor": "Die Netzwerkgebühr ist zu niedrig. Wählen Sie eine höhere Gebühr.",
   "payErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
@@ -3489,7 +3037,6 @@
   "transactionListPending": "Ausstehend",
   "walletSpTitle": "Silent Payments",
   "walletSpExperimental": "Experimentell",
-  "settingsDevModeSpRevokeFailed": "Die Silent-Payments-Wallet konnte nicht vollständig gelöscht werden. Sie wurde deaktiviert und kann nicht erneut geladen werden. Deaktivieren Sie den Entwicklermodus erneut, um einen weiteren Versuch zu starten.",
   "limitOrdersInsufficientBalance": "Unzureichendes Guthaben",
   "limitOrdersInsufficientBalanceMessage": "Sie haben nicht genug Guthaben, um diese Bestellung zu erstellen.",
   "limitOrdersFundAccount": "Konto aufladen",
@@ -3536,16 +3083,7 @@
   "recipientsVirtualIbanBankAddressHelp": "Die offizielle Bankadresse, falls Ihre Bank diese benötigt.",
   "recipientsConfidentialSepaNameMustMatchHint": "Die Namen Ihres Bankkontos und Ihres virtuellen IBAN-Kontos müssen übereinstimmen, sonst werden Überweisungen automatisch zurückgesendet.",
   "copiedToClipboard": "In die Zwischenablage kopiert",
-  "settingsPayjoinUsersSection": "Mit anderen Nutzern",
-  "settingsPayjoinSendLabel": "Senden",
-  "settingsPayjoinReceiveLabel": "Empfangen",
-  "settingsPayjoinExchangeSection": "Mit der Bull Bitcoin Börse",
-  "settingsPayjoinBuyLabel": "Kaufen",
-  "settingsPayjoinSellLabel": "Verkaufen und Rechnungen bezahlen",
-  "settingsPayjoinExpireMinutesDescription": "Wie lange eine Payjoin-Sitzung geöffnet bleibt, bevor zu einer regulären Zahlung gewechselt wird.",
-  "settingsPayjoinExpireMinutesRangeError": "Der Wert muss zwischen {min} und {max} Minuten liegen",
   "settingsPayjoinSatsUnit": "sats",
-  "settingsPayjoinMinutesUnit": "Min.",
   "recipientsFieldBankAccountIban": "Bankkontonummer (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Auszahlungen erscheinen als Überweisung an Sie selbst mit Ihrem Kontonamen.",
   "sellPayoutBalance": "Meinem Kontoguthaben hinzufügen",
@@ -3570,15 +3108,9 @@
   "passphraseShow": "Passphrase anzeigen",
   "passphraseHide": "Passphrase verbergen",
   "settingsDarkModeTitle": "Dunkelmodus",
-  "settingsSourceCodeTitle": "Quellcode",
   "backgroundTasksTitle": "Hintergrundaufgaben",
   "blockedInSystemSettings": "In den Systemeinstellungen blockiert",
-  "notificationsBlockedMessage": "Benachrichtigungen sind in den Systemeinstellungen blockiert.",
   "notificationsTitle": "Benachrichtigungen",
   "openSystemSettings": "Systemeinstellungen öffnen",
-  "permissionsTitle": "Berechtigungen",
-  "settingsSearchPermissionsKeywords": "Benachrichtigungen|Hintergrundaufgaben|Akku|Hinweise",
-  "wizardBackgroundTasksDescription": "Prüft Zahlungen bei geschlossener App.",
-  "wizardNotificationsDescription": "Erfahren Sie, wann eine Zahlung eingeht.",
   "sendErrorInvoiceExpiryTooShort": "Diese Invoice läuft zu früh ab. Bitten Sie den Empfänger um eine neue Invoice."
 }

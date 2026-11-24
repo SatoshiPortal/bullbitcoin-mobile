@@ -1,7 +1,7 @@
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart';
 
 class RetrySwapsOnRefreshUsecase {
-  final SwapFacade _swaps;
+  final SwapActivity _swaps;
 
   const RetrySwapsOnRefreshUsecase(this._swaps);
 

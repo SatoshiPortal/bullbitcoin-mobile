@@ -3,12 +3,12 @@ import 'package:electrum/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/testing.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
-import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
+import 'package:transactions/setup.dart';
 
 import 'dart:io';
 
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/settings/settings_core_locator.dart';
+import 'package:settings/setup.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';
@@ -173,7 +173,7 @@ void main() {
           ),
         );
         // Wallet's native runtime requires the Payjoin owner's reservation port.
-        PayjoinSetup.setup(services, startRecovery: false);
+        mountPayjoin(services, startRecovery: false);
         wallet.WalletLocator.setup(services);
 
         expect(services.isRegistered<EmbeddedTor>(), isFalse);

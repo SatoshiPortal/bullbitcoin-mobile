@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/payjoin_input_reservation_adapter.dart';
+import 'package:bull_payjoin/setup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

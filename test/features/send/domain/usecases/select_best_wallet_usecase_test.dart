@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 

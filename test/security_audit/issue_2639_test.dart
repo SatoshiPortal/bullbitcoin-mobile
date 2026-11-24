@@ -10,7 +10,7 @@ void main() {
   group('Security audit #2639 PushTx checksum', () {
     test('checksum is verified before payload parsing', () {
       final source = File(
-        'lib/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart',
+        'features/send/lib/src/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart',
       ).readAsStringSync();
       expect(source, contains('sha256.convert(txBytes)'));
       expect(source, contains('Invalid PushTx checksum'));

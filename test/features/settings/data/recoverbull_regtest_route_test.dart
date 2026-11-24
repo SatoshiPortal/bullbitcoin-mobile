@@ -3,9 +3,8 @@ import 'package:preferences/testing.dart';
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/settings/data/recoverbull_settings_adapter.dart';
-import 'package:bb_mobile/features/settings/domain/regtest_recoverbull_profile.dart';
-import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
+import 'package:settings/testing.dart';
+import 'package:settings/setup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';

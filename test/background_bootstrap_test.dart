@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_payment_observer.dart';
+import 'package:notifications/payment_store.dart' show PaymentNotificationStore;
+import 'package:background_tasks/wallet_jobs.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/background_bootstrap.dart';
 import 'package:flutter_test/flutter_test.dart';

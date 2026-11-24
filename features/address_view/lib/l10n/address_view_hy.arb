@@ -25,5 +25,9 @@
   "viewerPaymentUriTab": "Վճարման URI",
   "addressViewErrorWalletNotFound": "Այս դրամապանակը չի գտնվել։",
   "addressViewErrorLoadFailed": "Ձեր հասցեները չհաջողվեց բեռնել։ Խնդրում ենք կրկին փորձել։",
-  "copiedToClipboard": "Պատճենվեց սեղմատախտակին"
+  "copiedToClipboard": "Պատճենվեց սեղմատախտակին",
+  "sendErrorInvalidAddressOrInvoice": "Անվավեր Bitcoin վճարման հասցե կամ ապրանքագիր",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin հասցե",
+  "exchangeDcaAddressLabelLiquid": "Liquid հասցե",
+  "exchangeDcaAddressLabelLightning": "Lightning հասցե"
 }

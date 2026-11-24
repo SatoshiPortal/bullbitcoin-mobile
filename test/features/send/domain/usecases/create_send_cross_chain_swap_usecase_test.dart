@@ -1,29 +1,29 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:signers/signers.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
 class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
 void main() {
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late _MockGetWalletUsecase getWallet;
   late _MockGetReceiveAddressUsecase getReceiveAddress;
   late CreateSendCrossChainSwapUsecase usecase;
 
   setUp(() {
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     getWallet = _MockGetWalletUsecase();
     getReceiveAddress = _MockGetReceiveAddressUsecase();
     usecase = CreateSendCrossChainSwapUsecase(

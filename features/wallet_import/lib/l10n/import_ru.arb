@@ -120,5 +120,85 @@
   "importColdcardMk4Step9": "Нажмите цифру 3, чтобы запустить NFC Coldcard",
   "importColdcardMk4Step10": "Нажмите кнопку «Scan NFC»",
   "importColdcardMk4Step11": "Поднесите NFC телефона к NFC Coldcard",
-  "importColdcardMk4Step12": "Готово!"
+  "importColdcardMk4Step12": "Готово!",
+  "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
+  "importColdcardButtonInstructions": "Инструкции",
+  "importColdcardButtonOpenCamera": "Откройте камеру",
+  "importColdcardConnectDescription": "Импортируйте дескриптор кошелька с вашего {deviceName}",
+  "importColdcardConnectTitle": "Подключение {deviceName}",
+  "importColdcardInvalidWalletData": "Неверные данные кошелька Coldcard",
+  "importColdcardScanNfcSheetTitle": "Поднесите {deviceName}, чтобы импортировать дескриптор кошелька через NFC",
+  "importMnemonicBalanceLabel": "Остаток: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Продолжить",
+  "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
+  "importMnemonicEmptyLabelError": "Для импорта мнемоники необходима метка",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Наследие",
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "importMnemonicSegwit": "Segwit",
+  "importMnemonicSelectScriptType": "Импорт Mnemonic",
+  "importMnemonicSyncMessage": "Все три типа кошельков синхронизируются, и их баланс и транзакции появятся в ближайшее время. Вы можете подождать, пока синхронизация завершится или приступить к импорту, если вы уверены, какой тип кошелька вы хотите импортировать.",
+  "importMnemonicTitle": "Импорт Mnemonic",
+  "importMnemonicTransactionsLabel": "Транзакции: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "importWalletImportMnemonic": "Импорт Mnemonic",
+  "importWalletImportWatchOnly": "Импорт только часов",
+  "importWalletJade": "Жадный блок",
+  "importWalletKeystone": "Keystone",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Паспорт",
+  "importWalletSectionGeneric": "Генерические кошельки",
+  "importWalletSectionHardware": "Аппаратные кошельки",
+  "importWalletSeedSigner": "SeedSigner",
+  "importWalletSpecter": "Specter",
+  "importWalletTitle": "Добавить новый кошелек",
+  "importWatchOnlyCopiedToClipboard": "Копируется в буфер обмена",
+  "importWatchOnlyDescriptor": "Дескриптор",
+  "importWatchOnlyDisclaimerDescription": "Убедитесь, что выбранный вами путь выведения соответствует тому, который произвел данный xpub, проверив первый адрес, полученный из кошелька перед использованием. Использование неправильного пути может привести к потере средств",
+  "importWatchOnlyDisclaimerTitle": "Предупреждение о движении",
+  "importWatchOnlyErrorAlreadyExists": "Этот кошелёк уже импортирован.",
+  "importWatchOnlyErrorImportFailed": "Не удалось импортировать этот кошелёк только для наблюдения. Пожалуйста, проверьте данные и попробуйте снова.",
+  "importWatchOnlyErrorInvalidFormat": "Это не похоже на действительный публичный ключ или дескриптор. Проверьте то, что вы вставили.",
+  "importWatchOnlyErrorLabelRequired": "Дайте кошельку название перед импортом.",
+  "importWatchOnlyErrorNetworkMismatch": "Этот кошелёк сейчас использует другую сеть Bitcoin. Переключитесь между Mainnet и Testnet и повторите попытку.",
+  "importWatchOnlyErrorNoWalletSelected": "Сначала вставьте или отсканируйте публичный ключ или дескриптор.",
+  "importWatchOnlyExtendedPublicKey": "Расширенная общественность Ключ",
+  "importWatchOnlyImport": "Импорт",
+  "importWatchOnlyLabel": "Этикетки",
+  "importWatchOnlyNetworkBitcoinMainnet": "Сеть: основная сеть Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Сеть: тестовая сеть Bitcoin",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub или дескриптор",
+  "importWatchOnlyRequired": "Требуемые",
+  "importWatchOnlyScanQR": "Scan QR",
+  "importWatchOnlySigningDevice": "Устройство сигнализации",
+  "importWatchOnlyTitle": "Импорт только часов",
+  "importWatchOnlyType": "Тип",
+  "importWatchOnlyUnknown": "Неизвестный",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger Wallet",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Scan NFC"
 }

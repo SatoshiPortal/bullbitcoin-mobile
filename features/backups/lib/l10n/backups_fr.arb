@@ -1,0 +1,100 @@
+{
+  "backupSettingsMoneySection": "Sauvegarde des fonds",
+  "backupSettingsDataSection": "Sauvegarde des données",
+  "backupSettingsAutomaticBackup": "Sauvegarde automatique",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sécurisé",
+  "@@locale": "fr",
+  "walletDetailsUnnamedWalletFallback": "Portefeuille sans nom",
+  "backupWalletTitle": "Sauvegarder votre portefeuille",
+  "testBackupTitle": "Tester son backup",
+  "continueButton": "Continuer",
+  "passphraseLabel": "Passphrase",
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "closeDialogButton": "Fermer",
+  "backupSettingsPhysicalBackup": "Sauvegarde physique",
+  "backupSettingsEncryptedVault": "Coffre-fort chiffré",
+  "backupSettingsTested": "Testé",
+  "backupSettingsNotTested": "Non testé",
+  "backupSettingsTestBackup": "Tester la sauvegarde",
+  "backupSettingsStartBackup": "Démarrer la sauvegarde",
+  "backupSettingsViewVaultKey": "Afficher la clé du coffre-fort",
+  "backupSettingsLabelsButton": "Étiquettes",
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "backupWalletImportanceWarning": "Sans sauvegarde, vous finirez par perdre l'accès à votre argent. Il est absolument essentiel d'effectuer une sauvegarde.",
+  "backupWalletEncryptedVaultTitle": "Coffre-fort chiffré",
+  "backupWalletEncryptedVaultDescription": "Sauvegarde anonyme avec chiffrement robuste utilisant votre cloud.",
+  "backupWalletEncryptedVaultTag": "Facile et simple (1 minute)",
+  "backupWalletPhysicalBackupTitle": "Sauvegarde physique",
+  "backupWalletPhysicalBackupDescription": "Écrivez 12 mots sur un morceau de papier. Gardez-les en sécurité et assurez-vous de ne pas les perdre.",
+  "backupWalletPhysicalBackupTag": "Sans tiers de confiance (prenez votre temps)",
+  "backupWalletHowToDecide": "Comment décider ?",
+  "backupWalletHowToDecideBackupModalTitle": "Comment décider",
+  "backupWalletHowToDecideBackupLosePhysical": "L'une des façons les plus courantes de perdre ses Bitcoin est de perdre la sauvegarde physique. Toute personne qui trouve votre sauvegarde physique pourra prendre tous vos Bitcoin. Si vous êtes très confiant de pouvoir bien la cacher et de ne jamais la perdre, c'est une bonne option.",
+  "backupWalletHowToDecideBackupEncryptedVault": "Le coffre-fort chiffré vous protège des voleurs cherchant à voler votre sauvegarde. Il vous empêche également de perdre accidentellement votre sauvegarde puisqu'elle sera stockée dans votre cloud. Les fournisseurs de stockage cloud comme Google ou Apple n'auront pas accès à vos Bitcoin car le mot de passe de chiffrement est trop robuste. Il existe une petite possibilité que le serveur web qui stocke la clé de chiffrement de votre sauvegarde soit compromis. Dans ce cas, la sécurité de la sauvegarde dans votre compte cloud pourrait être à risque.",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Sauvegarde physique : ",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Vous êtes confiant dans vos propres capacités de sécurité opérationnelle pour cacher et préserver vos mots de récupération Bitcoin.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Coffre-fort chiffré : ",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Vous n'êtes pas sûr et vous avez besoin de plus de temps pour en apprendre davantage sur les pratiques de sécurité des sauvegardes.",
+  "backupWalletHowToDecideBackupMoreInfo": "Visitez recoverbull.com pour plus d'informations.",
+  "testBackupWalletTitle": "Tester {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDefaultWallets": "Portefeuilles par défaut",
+  "testBackupConfirm": "Confirmer",
+  "testBackupWriteDownPhrase": "Écrivez votre phrase de récupération\ndans le bon ordre",
+  "testBackupStoreItSafe": "Conservez-la dans un endroit sûr.",
+  "testBackupLastBackupTest": "Dernier test de sauvegarde : {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDoNotShare": "NE PARTAGEZ AVEC PERSONNE",
+  "testBackupTranscribe": "Transcrire",
+  "testBackupDigitalCopy": "Copie numérique",
+  "testBackupScreenshot": "Capture d'écran",
+  "testBackupNext": "Suivant",
+  "testBackupTapWordsInOrder": "Appuyez sur les mots de récupération dans\nle bon ordre",
+  "testBackupWhatIsWordNumber": "Quel est le mot numéro {number} ?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "testBackupAllWordsSelected": "Vous avez sélectionné tous les mots",
+  "testBackupPassphrase": "Passphrase",
+  "testBackupSuccessTitle": "Test réussi !",
+  "testBackupSuccessMessage": "Vous êtes capable de récupérer l'accès à un portefeuille Bitcoin perdu",
+  "testBackupSuccessButton": "Compris",
+  "testBackupErrorIncorrectOrder": "Ordre des mots incorrect. Veuillez réessayer.",
+  "transactionHistoryTitle": "Historique des transactions",
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Inconnu",
+  "testBackupErrorWalletsUnavailable": "Vos portefeuilles n’ont pas pu être chargés. Veuillez réessayer.",
+  "testBackupErrorNoWallets": "Il n’y a aucun portefeuille dont tester la sauvegarde.",
+  "testBackupErrorNoWalletSelected": "Sélectionnez un portefeuille avant de tester sa sauvegarde.",
+  "testBackupErrorSeedUnavailable": "Votre phrase de récupération n’a pas pu être lue. Veuillez réessayer.",
+  "testBackupErrorSeedNotMnemonic": "Ce portefeuille n’a pas de phrase de récupération à tester.",
+  "testBackupErrorCompletionFailed": "Votre phrase de récupération était correcte, mais nous n’avons pas pu enregistrer le résultat. Veuillez réessayer.",
+  "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
+  "passphraseShow": "Afficher la passphrase",
+  "passphraseHide": "Masquer la passphrase",
+  "passphraseWhitespaceWarning": "Les espaces au début ou à la fin font partie de votre passphrase.",
+  "passphraseBackupPrompt": "Saisissez votre passphrase pour vérifier votre sauvegarde.",
+  "passphraseIncorrect": "Passphrase incorrecte.",
+  "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
+  "backupCardTitle": "Protégez vos bitcoins.",
+  "backupCardSubtitle": "Sauvegardez votre portefeuille maintenant."
+}

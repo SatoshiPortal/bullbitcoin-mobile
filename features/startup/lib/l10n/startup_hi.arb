@@ -1,0 +1,80 @@
+{
+  "@@locale": "hi",
+  "appStartupErrorMessage": "ऐप स्टार्टअप में विफल रहा। पूरी तरह से एप्लिकेशन को रोकने और पुनः आरंभ करने की कोशिश करें। यदि त्रुटि बनी रहती है, तो अपने लॉग को समर्थन देने और साझा करने के लिए मुद्दे को रिपोर्ट करें।।",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "errorSharingLogsMessage": "त्रुटि साझा लॉग: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "पुनः प्रयास करें",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "पुनर्प्राप्त करें",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "appStartupErrorTitle": "स्टार्टअप त्रुटि",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupContactSupportButton": "संपर्क समर्थन",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "नहीं मिला",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "appInitErrorTitle": "ऐप शुरू नहीं हो सका",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "लॉग साझा करें",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "अपने बैकअप का उपयोग करें",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "आपके बैकअप की वजह से आपके फंड सुरक्षित हैं।\nपहले ऐप को पुनः आरंभ करने का प्रयास करें; यदि फिर भी विफल हो, तो पुनः इंस्टॉल करें और अपने बैकअप से पुनर्प्राप्त करें।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "कोई बैकअप नहीं?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "ऐप को न हटाएं।\nबचाव के प्रयास के लिए हमारी सहायता टीम से संपर्क करें।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "सहायता से संपर्क करें",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "त्रुटि विवरण दिखाएं",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "deleteLogsTitle": "लॉग्स हटाएं",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "लॉग्स हटा दिए गए",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support पर सपोर्ट से संपर्क करें",
+  "logsShareOptionExport": "निर्यात करें",
+  "logsExportedMessage": "लॉग सफलतापूर्वक निर्यात किए गए",
+  "logsExportFailedMessage": "लॉग निर्यात करने में विफल"
+}

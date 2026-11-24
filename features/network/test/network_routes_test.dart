@@ -1,4 +1,5 @@
 import 'package:preferences/preferences.dart';
+import 'package:secrets/secrets.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
@@ -34,6 +35,8 @@ class _ExternalTor extends Mock implements ExternalTor {}
 class _EmbeddedTor extends Mock implements EmbeddedTor {}
 
 class _MockFees extends Mock implements Fees {}
+
+class _Inventory extends Mock implements WalletInventory {}
 
 void main() {
   testWidgets('mounted settings routes use the supplied services', (
@@ -85,10 +88,8 @@ void main() {
     final feature = NetworkFeature.mount(
       services: services,
       preferences: preferences,
-      bindings: (
-        readDefaultNetwork: () async => const Ok(null),
-        isTorRequired: () async => const Ok(false),
-      ),
+      inventory: _Inventory(),
+      readBackup: (_) async => const Ok(null),
     );
     final router = GoRouter(
       initialLocation: '/settings',

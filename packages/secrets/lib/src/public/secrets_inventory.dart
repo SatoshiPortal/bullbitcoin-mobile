@@ -23,6 +23,7 @@ import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
+import '../domain/metadata_backup_wallet.dart';
 import '../domain/recorded_derivation.dart';
 import '../domain/registered_wallet.dart';
 import '../domain/wallet_registration.dart';
@@ -149,6 +150,22 @@ final class SecretsInventory implements WalletInventory {
   @useResult
   Future<Result<List<RegisteredWallet>, SecretFailure>> listWallets() =>
       _inSession((_) => _wallets.list(defaultViewId));
+
+  @override
+  @useResult
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints() =>
+      _inSession((_) => _wallets.referencedFingerprints(defaultViewId));
+
+  /// Whether the authorized view has any wallet, including on other networks.
+  @useResult
+  Future<Result<bool, SecretFailure>> hasWallets() async =>
+      (await listWallets()).map((wallets) => wallets.isNotEmpty);
+
+  /// Locally signing Bitcoin wallets and their public recovery evidence.
+  @useResult
+  Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>>
+  recoveryWallets() =>
+      _inSession((_) => _wallets.recoveryWallets(defaultViewId));
 
   @useResult
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
@@ -287,6 +304,41 @@ final class SecretsInventory implements WalletInventory {
     lock();
     return _store.close();
   }
+}
+
+/// The metadata backup client cannot fetch raw descriptors from this view.
+extension MetadataBackupInventory on SecretsInventory {
+  @useResult
+  Future<Result<List<MetadataBackupWallet>, SecretFailure>>
+  metadataBackupWallets(Secrets secrets) => _inSession((_) async {
+    final projection = await _wallets.metadataBackupWallets(defaultViewId);
+    if (projection case Err(:final failure)) return Err(failure);
+    final wallets =
+        (projection as Ok<List<MetadataBackupWallet>, SecretFailure>).value;
+    final available = <Fingerprint, bool>{};
+    final verified = <MetadataBackupWallet>[];
+    for (final wallet in wallets) {
+      final reference = wallet.secret;
+      if (reference == null) {
+        verified.add(wallet);
+        continue;
+      }
+      var present = available[reference];
+      if (present == null) {
+        switch (await secrets.fetch(reference)) {
+          case Ok():
+            present = true;
+          case Err(failure: SecretNotFoundFailure()):
+            present = false;
+          case Err(:final failure):
+            return Err(failure);
+        }
+        available[reference] = present;
+      }
+      verified.add(present ? wallet : MetadataBackupWallet(id: wallet.id));
+    }
+    return Ok(List.unmodifiable(verified));
+  });
 }
 
 /// Scope for background sync. Only descriptors in views with an active

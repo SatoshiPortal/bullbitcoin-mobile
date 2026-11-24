@@ -10,7 +10,7 @@ import 'dart:async';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -48,8 +48,6 @@ void main() {
           showWebsiteOnly: (_) => false,
           unavailableRedirectPath: '/home',
           brandAssetPath: 'unused',
-          copy: (_) => fail('unexpected landing route'),
-          onSignIn: (_) {},
           onExit: (_) {},
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,
@@ -133,12 +131,9 @@ void main() {
         showWebsiteOnly: (_) => false,
         unavailableRedirectPath: '/home',
         brandAssetPath: 'unused',
-        copy: (_) => fail('unexpected landing route'),
-        onSignIn: (_) {},
         onExit: (_) {},
       ).settingsRoutes,
-      appSettingsRoutes: const [],
-      onBackupTestSucceeded: (_) {},
+      backupRoutes: const [],
       priceRoutes: const [],
     );
     final manage = settingsRoutes.whereType<GoRoute>().singleWhere(
@@ -235,8 +230,6 @@ void main() {
           showWebsiteOnly: (_) => false,
           unavailableRedirectPath: '/home',
           brandAssetPath: 'unused',
-          copy: (_) => fail('unexpected landing route'),
-          onSignIn: (_) {},
           onExit: (_) {},
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,

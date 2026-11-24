@@ -29,6 +29,7 @@ analyzer:
     - features/**/lib/generated/**
     # Flutter-generated delegates still reference deprecated SDK design exports.
     - lib/generated/**
+    - packages/notifications/lib/generated/**
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
     - "**/*.drift.dart"

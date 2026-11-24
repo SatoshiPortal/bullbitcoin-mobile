@@ -840,5 +840,538 @@
   "dcaAccountUnavailableError": "Профилът ви не можа да бъде зареден. Проверете връзката си, уверете се, че сте влезли, и опитайте отново.",
   "dcaLightningAddressRequiredError": "Въведете Lightning адрес, за да получавате покупките си.",
   "dcaReceiveAddressError": "Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.",
-  "dcaOrderCreationError": "Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно."
+  "dcaOrderCreationError": "Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно.",
+  "closeDialogButton": "Затвори",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "payPleasePayInvoice": "Моля, платете тази фактура.",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payPayinAmount": "Входяща сума",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellAdvancedOptions": "Разширени настройки",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySinpeBeneficiario": "Получател",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "payInstantPayments": "Моментални плащания",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellReplaceByFeeActivated": "Replace-by-fee е активирана",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payPayoutAmount": "Сума за изплащане",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payNetworkFees": "Такси за мрежата",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payAboveMaxAmountError": "Максималната сума, която можете да платите с този портфейл, е {amount}.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "payPaymentInProgress": "Плащането е в процес на обработка!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "sellCompleteKYC": "Завършете KYC верификацията",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payPayFromWallet": "Плати от портфейла",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payLightningNetwork": "Лайтнинг мрежа",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellExternalWallet": "Външен портфейл",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payInvalidState": "Невалидно състояние",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "sellBelowMinAmountError": "Опитвате се да продадете под минималната сума, която може да се продаде с този портфейл.",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellEurBalance": "Баланс EUR",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellSelectNetwork": "Изберете мрежа",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payNoInvoiceData": "Няма налични данни за фактура",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "paySinpeMonto": "Сума",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "sellOrderAlreadyConfirmedError": "Тази поръчка за продажба вече е потвърдена.",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "paySinpeEnviado": "SINPE изпратено!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payNoDetailsAvailable": "Няма налични детайли",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "sellShowQrCode": "Покажете QR кода",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellSecureBitcoinWallet": "Сигурен портфейл за Биткойн",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payShowQrCode": "Покажете QR кода",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "paySinpeOrigen": "Произход",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payRecipientType": "Тип получател",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellOrderCompleted": "Поръчката е завършена!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellPleasePayInvoice": "Моля, платете тази фактура.",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "paySelectNetwork": "Изберете мрежа",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "sellCadBalance": "Баланс CAD",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "payInsufficientBalanceError": "Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за плащане.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellPriceWillRefreshIn": "Цената ще се обнови след ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "Баланс ARS",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellPayFromWallet": "Плати от портфейла",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellBitcoinAmount": "Сума в биткойни",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellBalanceWillBeCredited": "Балансът ви ще бъде кредитиран, след като вашата транзакция получи 1 потвърждение в блокчейн.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "payExchangeRate": "Курс на обмен",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "copyDialogButton": "Копирай",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payQrCode": "QR код",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellLightningNetwork": "Лайтнинг мрежа",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "Моментални плащания",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellDone": "Готово",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellBitcoinOnChain": "Биткойн в блокчейна",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellFromAnotherWallet": "Продайте от друг биткойн портфейл",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payFeePriority": "Приоритет на таксата",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellNoInvoiceData": "Няма налични данни за фактура",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "sellHowToPayInvoice": "Как искате да платите тази фактура?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payTitle": "Плати",
+  "payDescriptionLabel": "Описание на плащането (по избор)",
+  "payDescriptionHint": "Добавете бележка към това плащане",
+  "payPaymentDescription": "Описание на плащането",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellQrCode": "QR код",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellGoHome": "Отиди на началната страница",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellInsufficientBalanceError": "Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за продажба.",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellSelectWallet": "Изберете портфейл",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "payContinue": "Продължи",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "Replace-by-fee е активирана",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellCopyInvoice": "Копирай инвойс",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "payExternalWalletDescription": "Платете от друг биткойн портфейл",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "sellFeePriority": "Приоритет на таксата",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "Входяща сума",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "payBitcoinPrice": "Цена на Биткойн",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "sellMxnBalance": "Баланс MXN",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellCopBalance": "Баланс COP",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellPayoutAmount": "Сума за изплащане",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellWhichWalletQuestion": "От кой портфейл искате да продавате?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "payHowToPayInvoice": "Как искате да платите тази фактура?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "payWhichWallet": "От кой портфейл искате да платите?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "sellFastest": "Най-бързият",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payCopyInvoice": "Копирайте фактурата",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellCrcBalance": "Баланс CRC",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "paySelectCoinsManually": "Изберете монетите ръчно",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payPriceRefreshIn": "Цената ще се обнови след ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payBitcoinAmount": "Сума в биткойни",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellExchangeRate": "Курс на обмен",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "Продайте биткойн",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "sellUsdBalance": "Баланс USD",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "payOrderNumber": "Номер на поръчка",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "Номер на поръчка",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "payBelowMinAmountError": "Минималната сума, която можете да платите с този портфейл, е {amount}.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellPayoutRecipient": "Получател на изплащане",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "payLiquidNetwork": "Liquid мрежа",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "paySelectWallet": "Изберете портфейл",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "paySinpeNumeroComprobante": "==WEBLATE_PART==\nРеференционен номер",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "Сигурен портфейл за Биткойн",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payRecipientName": "Име на получателя",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payConfirmPayment": "Потвърди плащането",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "sellConfirmPayment": "Потвърдете плащането",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellSelectCoinsManually": "Изберете монетите ръчно",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payNotAvailable": "Н/А",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "Най-бързият",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payExternalWallet": "Външен портфейл",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payOrderDetails": "Детайли за поръчката",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "sellAboveMaxAmountError": "Опитвате се да продадете над максималната сума, която може да се продаде с този портфейл.",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellLiquidNetwork": "Liquid мрежа",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "sellOrderNotFoundError": "Поръчката за продажба не беше намерена. Моля, опитайте отново.",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "payAdvancedOptions": "Разширени настройки",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "payRecipientDetails": "Детайли за получателя",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "sellOrderNumber": "Номер на поръчка",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "payDone": "Готово",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellInProgress": "Продажбата е в ход...",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "payAdvancedSettings": "Разширени настройки",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payCompleted": "Плащането завършено!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "payBitcoinOnchain": "Биткойн в блокчейна",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellAdvancedSettings": "Разширени настройки",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payViewDetails": "Виж подробности",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "viewerTapToCopy": "Натиснете за копиране",
+  "invoiceViewerTitle": "Фактура",
+  "paySinpeReceipt": "SINPE разписка",
+  "sellSendPaymentNetworkFees": "Мрежови такси",
+  "sellSendPaymentContinue": "Продължи",
+  "sellBitcoinPriceLabel": "Цена на Bitcoin",
+  "sellViewDetailsButton": "Виж детайлите",
+  "sellKycPendingTitle": "Изчаква се проверка на самоличността (KYC)",
+  "sellKycPendingDescription": "Първо трябва да завършите проверка на самоличността",
+  "sellLoadingGeneric": "Зареждане...",
+  "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
+  "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "copiedToClipboard": "Копирано в клипборда",
+  "sellPayoutBalance": "Добавяне към баланса по моята сметка",
+  "sellPayoutSepaDescription": "Тегленията се показват като изпратени от Leonod",
+  "sellPayoutTitle": "Избор на получател",
+  "sellPayoutNewBadge": "НОВО",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
+  "sendSelectedUtxosInsufficient": "Избраните UTXO не покриват необходимата сума",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Изберете сума",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "Тип: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "Адрес: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Заявена сума: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "Получаване",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Ресто",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "Недостатъчен баланс",
+  "limitOrdersInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
+  "limitOrdersFundAccount": "Захрани сметката си",
+  "exchangeBrandName": "BULL BITCOIN",
+  "exchangeLandingConnectAccount": "Свържете сметката си в борсата Bull Bitcoin",
+  "exchangeLandingRecommendedExchange": "Препоръчана борса за Bitcoin",
+  "exchangeFeatureSelfCustody": "• Купувайте Bitcoin директно в самостоятелно попечителство",
+  "exchangeFeatureDcaOrders": "• DCA, лимитни поръчки и автопокупка",
+  "exchangeFeatureSellBitcoin": "• Продавайте Bitcoin, получавайте плащане в Bitcoin",
+  "exchangeFeatureBankTransfers": "• Изпращайте банкови преводи и плащайте сметки",
+  "exchangeFeatureCustomerSupport": "• Разговаряйте с клиентска поддръжка",
+  "exchangeFeatureUnifiedHistory": "• Обединена история на транзакциите",
+  "exchangeLandingDisclaimerLegal": "Достъпът до услугите на борсата ще бъде ограничен само до държави, в които Bull Bitcoin може законно да оперира, и може да изисква KYC.",
+  "exchangeLandingDisclaimerNotAvailable": "Услугите за обмен на криптовалута не са налични в мобилното приложение Bull Bitcoin.",
+  "exchangeLoginButton": "Вход или регистрация",
+  "exchangeGoToWebsiteButton": "Отиди на уебсайта на борсата Bull Bitcoin"
 }

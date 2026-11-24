@@ -1,0 +1,79 @@
+{
+  "@@locale": "tr",
+  "onboardingRecoverYourWallet": "Cüzdanını yeniden keşfedin",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "onboardingEncryptedVaultDescription": "Yedeklerinizi PIN'inizi kullanarak bulut aracılığıyla yeniden keşfedin.",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingSplashDescription": "Egemen kendini tutuklama Bitcoin cüzdanı ve Bitcoin- sadece değişim servisi.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingEncryptedVault": "Encrypted to",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingCreateNewWallet": "Yeni Cüzdan Oluştur",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "onboardingPhysicalBackupDescription": "Cüzdanınızı 12 kelime ile yeniden keşfedin.",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "settingsLanguageTitle": "Dil Dili",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Recover",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "onboardingBullBitcoin": "Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "Kendi Paranı Kendi Paranız",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingRecoverWallet": "Recover Cüzdan",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "onboardingPhysicalBackup": "Fiziksel yedekleme",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "onboardingRecoverWalletButton": "Recover Cüzdan",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "continueButton": "Devam etmeye devam et",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "torSettingsTitle": "Tor Ayarları",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "walletSetupErrorTryAgain": "Cüzdanınızı ayarlarken bir şeyler ters gitti. Lütfen tekrar deneyin.",
+  "onboardingAdvancedOptionsTitle": "Gelişmiş Seçenekler",
+  "onboardingAdvancedOptionsDescription": "Cüzdanınızı oluşturmadan veya kurtarmadan önce gelişmiş ayarları yapılandırın",
+  "onboardingAdvancedOptionsCustomElectrum": "Özel Electrum Sunucusu",
+  "onboardingAdvancedOptionsCustomMempool": "Özel Mempool Sunucusu",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
+  "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
+  "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin."
+}

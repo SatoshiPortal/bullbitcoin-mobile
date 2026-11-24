@@ -6,19 +6,25 @@ WalletRegistration walletRegistrationForTesting({
   required String id,
   required Network network,
   bool isDefault = false,
+  ScriptType scriptType = ScriptType.bip84,
+  String? derivationPath,
   WalletSigner signer = WalletSigner.none,
+  Fingerprint? masterFingerprint,
+  Fingerprint? secretFingerprint,
 }) => WalletRegistration(
   id: id,
   network: network,
-  scriptType: ScriptType.bip84,
+  scriptType: scriptType,
   signer: signer,
-  secretFingerprint: null,
-  masterFingerprint: null,
-  derivationPath: null,
+  masterFingerprint: masterFingerprint,
+  secretFingerprint: secretFingerprint,
+  derivationPath: derivationPath,
   label: null,
   birthday: null,
   isDefault: isDefault,
 );
 
-WalletSelection walletSelectionForTesting(List<WalletRegistration> wallets) =>
-    WalletSelection(wallets, isComplete: true);
+WalletSelection walletSelectionForTesting(
+  List<WalletRegistration> wallets, {
+  bool isComplete = true,
+}) => WalletSelection(wallets, isComplete: isComplete);

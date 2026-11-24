@@ -10,6 +10,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  crypto: ^3.0.7
   flutter:
     sdk: flutter
   bip329_labels: ^2.0.0

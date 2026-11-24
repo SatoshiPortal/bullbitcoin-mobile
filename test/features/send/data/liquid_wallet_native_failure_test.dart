@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:fees/fees.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
@@ -18,7 +18,7 @@ import 'package:sync/sync.dart' show SyncStorageFailure;
 
 class _Metadata extends Mock implements WalletRegistrations {}
 
-class _Frozen extends Mock implements SyncFreezesDatasource {}
+class _Frozen extends Mock implements CoinFreezes {}
 
 class _Sdk extends Mock implements BullSdkApi {}
 

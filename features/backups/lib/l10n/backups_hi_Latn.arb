@@ -1,0 +1,237 @@
+{
+  "globalDefaultBitcoinWalletLabel": "Surakshit Bitcoin",
+  "@@locale": "hi_Latn",
+  "walletDetailsUnnamedWalletFallback": "Bina Naam Ka Wallet",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "retry": "Dobara Try Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "backupWalletTitle": "Wallet ka backup lo",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "testBackupTitle": "Wallet backup test karo",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "continueButton": "Aage Badho",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "closeDialogButton": "Band Karo",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "backupSettingsPhysicalBackup": "Physical Backup",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupSettingsEncryptedVault": "Encrypted Vault",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsTested": "Test Ho Chuka",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsNotTested": "Test Nahi Hua",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupSettingsTestBackup": "Backup Test Karo",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupSettingsStartBackup": "Backup Shuru Karo",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "backupSettingsViewVaultKey": "Vault Key Dekho",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "backupSettingsLabelsButton": "Labels",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletImportanceWarning": "Backup ke bina aap apna paisa kho doge. Backup karna bahut zaroori hai.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "backupWalletEncryptedVaultTitle": "Encrypted vault",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "backupWalletEncryptedVaultDescription": "Aapke cloud se strong encryption ke saath anonymous backup.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletEncryptedVaultTag": "Aasaan aur seedha (1 minute)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletPhysicalBackupTitle": "Physical backup",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupWalletPhysicalBackupDescription": "12 words kaagaz pe likh lo. Unhe safe rakho aur khoona mat.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "backupWalletPhysicalBackupTag": "Trustless (apna waqt lo)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupWalletHowToDecide": "Kaise decide karein?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "Kaise decide karein",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "Zyaadatar log Bitcoin isliye kho dete hain kyunki physical backup kho jaata hai. Jo koi bhi physical backup paata hai woh saare Bitcoin le sakta hai. Agar aap confident ho ki use acche se chhupa sakte ho aur kabhi nahi khoyenge, toh yeh accha option hai.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "Encrypted vault backup chori hone se bachata hai. Cloud mein store hone ki wajah se accidentally kho bhi nahi sakta. Google ya Apple ko Bitcoin ka access nahi milega kyunki encryption password bahut strong hai. Ek chhoti si possibility hai ki backup key store karne wala web server hack ho sakta hai. Us case mein cloud backup ka risk ho sakta hai.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Physical backup: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Jab aap apni Bitcoin seed words chhupane aur sambhalne mein confident ho.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Encrypted vault: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Jab aap sure nahi ho aur backup security ke baare mein aur seekhna chahte ho.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "Zyaada jaankari ke liye recoverbull.com dekhein.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "testBackupWalletTitle": "{walletName} Test Karo",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDefaultWallets": "Default Wallets",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupConfirm": "Confirm Karo",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupWriteDownPhrase": "Recovery phrase sahi order mein\nlikh lo",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupStoreItSafe": "Ise safe jagah rakh lo.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupLastBackupTest": "Pichla backup test: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDoNotShare": "KISI KO MAT BATAO",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "testBackupTranscribe": "Likh Lo",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupDigitalCopy": "Digital copy",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "testBackupScreenshot": "Screenshot",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "testBackupNext": "Aage",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupTapWordsInOrder": "Recovery words sahi\norder mein tap karo",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupWhatIsWordNumber": "Word number {number} kya hai?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "testBackupAllWordsSelected": "Aapne saare words select kar liye",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "testBackupPassphrase": "Passphrase",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupSuccessTitle": "Test kamyabi se poora hua!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupSuccessMessage": "Aap khoye hue Bitcoin wallet ka access wapas pa sakte ho",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "testBackupSuccessButton": "Theek hai",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupErrorIncorrectOrder": "Word order galat hai. Phir se try karo.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "transactionHistoryTitle": "Lenden Itihaas",
+  "coreScreensUnknown": "Unknown",
+  "testBackupErrorWalletsUnavailable": "Aapke wallet load nahin ho sake. Kripya phir se prayas karein.",
+  "testBackupErrorNoWallets": "Backup jaanchne ke liye koi wallet nahin hai.",
+  "testBackupErrorNoWalletSelected": "Backup jaanchne se pehle ek wallet chunein.",
+  "testBackupErrorSeedUnavailable": "Aapka recovery phrase padha nahin ja saka. Kripya phir se prayas karein.",
+  "testBackupErrorSeedNotMnemonic": "Is wallet mein jaanchne ke liye koi recovery phrase nahin hai.",
+  "testBackupErrorCompletionFailed": "Aapka recovery phrase sahi tha, lekin hum parinaam save nahin kar sake. Kripya phir se prayas karein.",
+  "backupCardTitle": "Apne bitcoin ko surakshit rakho.",
+  "backupCardSubtitle": "Abhi apne wallet ka backup lo."
+}

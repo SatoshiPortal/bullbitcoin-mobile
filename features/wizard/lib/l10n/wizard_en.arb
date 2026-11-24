@@ -1,0 +1,147 @@
+{
+  "@@locale": "en",
+  "settingsLanguageTitle": "Language",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "Own your Money",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingSplashDescription": "Sovereign self custody Bitcoin wallet and Bitcoin-only exchange service.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "getStartedButton": "Get started",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "wizardSkipButton": "Skip",
+  "@wizardSkipButton": {
+    "description": "Top-right action in the install/upgrade wizard that finishes it immediately with current selections"
+  },
+  "wizardPageIndicator": "PAGE {current} / {total}",
+  "@wizardPageIndicator": {
+    "description": "Eyebrow label above each wizard page title indicating progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wizardNextButton": "Next",
+  "@wizardNextButton": {
+    "description": "Primary action that advances the wizard to the next page"
+  },
+  "wizardCustomizeTitle": "Customize your experience",
+  "@wizardCustomizeTitle": {
+    "description": "Title of the wizard's settings/customize page"
+  },
+  "wizardCustomizeBody": "Use BULL on your own terms with these settings.",
+  "@wizardCustomizeBody": {
+    "description": "Subtitle on the wizard's settings/customize page"
+  },
+  "wizardCustomizeDefaultCurrency": "Default currency",
+  "@wizardCustomizeDefaultCurrency": {
+    "description": "Label for the default fiat currency row on the wizard customize page"
+  },
+  "wizardMissionTitle": "Help the Bull mission",
+  "@wizardMissionTitle": {
+    "description": "Title of the wizard's error-reporting consent page"
+  },
+  "wizardMissionBody1": "To help us improve our software and make sure we offer the highest level of security, privacy and usability, your app can send us error logs that allow us to detect issues and fix them quickly in our next updates.",
+  "@wizardMissionBody1": {
+    "description": "First explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionBody2": "These logs are anonymized, are not linked to your IP address, and never share any information about your transactions or your identity. They are purely technical and do not put you at any risk. It's very helpful for us, and doesn't cost anything to you.",
+  "@wizardMissionBody2": {
+    "description": "Second explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionQuestion": "Do you accept to be part of our automated issue reporting program?",
+  "@wizardMissionQuestion": {
+    "description": "Yes/No question on the wizard error-reporting page"
+  },
+  "wizardMissionYes": "Yes",
+  "@wizardMissionYes": {
+    "description": "Affirmative response button on the wizard error-reporting page"
+  },
+  "wizardMissionNo": "No",
+  "@wizardMissionNo": {
+    "description": "Negative response button on the wizard error-reporting page"
+  },
+  "wizardMissionRequired": "Please choose Yes or No before continuing.",
+  "@wizardMissionRequired": {
+    "description": "Snackbar shown when the user tries to leave the wizard without answering the error-reporting question"
+  },
+  "wizardJourneyTitle": "Progress on your journey",
+  "@wizardJourneyTitle": {
+    "description": "Title of the wizard's final tips page"
+  },
+  "wizardJourneyBody": "If you are new to BULL wallet, here are a few features you can take advantage of to improve your privacy, security and user experience.",
+  "@wizardJourneyBody": {
+    "description": "Intro paragraph on the wizard journey/tips page"
+  },
+  "wizardJourneyTip1": "Add a security PIN to unlock your wallet",
+  "@wizardJourneyTip1": {
+    "description": "Tip 1 on the wizard journey page"
+  },
+  "wizardJourneyTip2": "Try the encrypted vault backup",
+  "@wizardJourneyTip2": {
+    "description": "Tip 2 on the wizard journey page"
+  },
+  "wizardJourneyTip3": "Connect to your own Bitcoin node",
+  "@wizardJourneyTip3": {
+    "description": "Tip 3 on the wizard journey page"
+  },
+  "wizardJourneyTip4": "Connect to your own Mempool explorer",
+  "@wizardJourneyTip4": {
+    "description": "Tip 4 on the wizard journey page"
+  },
+  "wizardJourneyTip5": "Swap between Bitcoin and Liquid with no KYC",
+  "@wizardJourneyTip5": {
+    "description": "Tip 5 on the wizard journey page"
+  },
+  "wizardJourneyTip6": "Customize your autoswap settings",
+  "@wizardJourneyTip6": {
+    "description": "Tip 6 on the wizard journey page"
+  },
+  "wizardJourneyTip7": "Switch between Bitcoin (BTC) and Satoshis (sats)",
+  "@wizardJourneyTip7": {
+    "description": "Tip 7 on the wizard journey page"
+  },
+  "wizardJourneyTip8": "Create air-gapped transactions for your hardware wallet",
+  "@wizardJourneyTip8": {
+    "description": "Tip 8 on the wizard journey page"
+  },
+  "settingsDarkModeTitle": "Dark Mode",
+  "@settingsDarkModeTitle": {
+    "description": "App settings switch: on uses the dark theme, off the light theme."
+  },
+  "backgroundTasksTitle": "Background Tasks",
+  "@backgroundTasksTitle": {
+    "description": "Switch that lets the app check for payments while it is closed."
+  },
+  "blockedInSystemSettings": "Blocked in system settings",
+  "@blockedInSystemSettings": {
+    "description": "Shown under a switch when the system refused the permission."
+  },
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": "Switch for the system permission to show payment notifications."
+  },
+  "wizardBackgroundTasksDescription": "Check payments while closed.",
+  "@wizardBackgroundTasksDescription": {
+    "description": "Short line under the background tasks switch of the wizard."
+  },
+  "wizardNotificationsDescription": "Know when a payment arrives.",
+  "@wizardNotificationsDescription": {
+    "description": "Short line under the notifications switch of the wizard."
+  }
+}

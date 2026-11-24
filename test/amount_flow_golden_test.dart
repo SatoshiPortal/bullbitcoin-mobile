@@ -1,21 +1,23 @@
+import 'package:secrets/testing.dart';
+import 'package:secrets/secrets.dart' show WalletSigner;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
-import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
+import 'package:receive/testing.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
+import 'package:settings/testing.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -34,6 +36,17 @@ class _Receive extends Mock implements ReceiveBloc {}
 class _Transfer extends Mock implements TransferBloc {}
 
 class _Settings extends Mock implements SettingsCubit {}
+
+SwapWallet _swapWallet(bool liquid) => SwapWallet(
+  walletRegistrationForTesting(
+    id: liquid ? 'liquid' : 'bitcoin',
+    network: liquid ? LiquidNetwork.mainnet : BitcoinNetwork.mainnet,
+    isDefault: false,
+    signer: WalletSigner.local,
+  ),
+  BigInt.from(1250000),
+  false,
+);
 
 Wallet _wallet(bool liquid) => Wallet(
   origin: liquid ? 'liquid' : 'bitcoin',
@@ -87,7 +100,8 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         Device.screen = const Size(390, 844);
         final wallet = _wallet(false);
-        final liquid = _wallet(true);
+        final swapBitcoin = _swapWallet(false);
+        final swapLiquid = _swapWallet(true);
         final send = _Send();
         final receive = _Receive();
         final transfer = _Transfer();
@@ -149,10 +163,18 @@ void main() {
         when(() => send.stream).thenAnswer((_) => sendStates.stream);
         when(() => send.isSpMode).thenReturn(false);
         when(() => send.preparedMaxAmountSat).thenReturn(max ? 1249580 : null);
+        final receiveWallet = ReceiveWallet(
+          id: wallet.id,
+          network: wallet.network.shared,
+          signsLocally: wallet.signsLocally,
+          scriptType: wallet.scriptType,
+          balanceSat: wallet.balanceSat,
+          label: wallet.label,
+        );
         when(() => receive.state).thenReturn(
           ReceiveState(
-            wallet: wallet,
-            wallets: [wallet],
+            wallet: receiveWallet,
+            wallets: [receiveWallet],
             walletAdmitted: true,
             type: ReceiveType.bitcoin,
             bitcoinUnit: BitcoinUnit.sats,
@@ -173,9 +195,9 @@ void main() {
         when(() => receive.stream).thenAnswer((_) => const Stream.empty());
         when(() => transfer.state).thenReturn(
           TransferState(
-            wallets: [wallet, liquid],
-            fromWallet: liquid,
-            toWallet: wallet,
+            wallets: [swapBitcoin, swapLiquid],
+            fromWallet: swapLiquid,
+            toWallet: swapBitcoin,
             bitcoinUnit: BitcoinUnit.sats,
             amount: '25000',
             amountQuotes: quotes,

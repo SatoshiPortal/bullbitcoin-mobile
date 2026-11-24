@@ -1,0 +1,134 @@
+{
+  "@@locale": "hi_Latn",
+  "mempoolServerStatusUnknown": "Pata Nahi",
+  "@mempoolServerStatusUnknown": {
+    "description": "Status label when mempool server status is unknown"
+  },
+  "continueButton": "Aage Badho",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "replaceByFeeBroadcastButton": "Broadcast Karo",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Original transaction se kam se kam 1 sat/vbyte zyaada fee rate rakhni hogi",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "Kripya fee rate select karo",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeFastestDescription": "Estimated delivery ~ 10 minute",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "replaceByFeeFastestTitle": "Sabse Tez",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeFeeRateDisplay": "Fee Rate: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeOriginalTransactionTitle": "Original transaction",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeScreenTitle": "Replace by fee",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "doneButton": "Ho Gaya",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "broadcastSignedTxBroadcast": "Broadcast Karo",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxBroadcastError": "Hum aapka transaction broadcast nahi kar sake. Apna internet connection jaanchein aur phir se koshish karein.",
+  "broadcastSignedTxErrorInvalidTransaction": "Yeh valid signed transaction nahi lagta. Pakka karein ki aapne poora PSBT ya transaction paste kiya hai.",
+  "broadcastSignedTxErrorInvalidPushTx": "Hum is tag se koi transaction nahi padh sake. Kripya phir se scan karein.",
+  "broadcastSignedTxPageTitle": "Signed transaction broadcast karo",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "broadcastSignedTxPasteHint": "PSBT ya transaction HEX paste karo",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxCameraButton": "Camera",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "broadcastSignedTxDoneButton": "Ho Gaya",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "coreScreensFromLabel": "Se",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensToLabel": "Ko",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensAmountLabel": "Amount",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensNetworkFeesLabel": "Network fees",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Signed transaction NFC se receive karne ke liye apna Coldcard tap karo",
+  "coreScreensResolvingInputs": "Transaction inputs resolve ho rahe hain...",
+  "coreScreensFeeRateLabel": "Fee Rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output pata nahi hai — sabhi outputs barabar dikhaye gaye hain",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Electrum se transaction {txid} fetch nahi ho saka.",
+  "coreScreensInputResolutionFailed": "Input nahi mila: {parentTxId} ka output {vout} exist nahi karta.",
+  "coreScreensNoServersAvailable": "Koi Electrum server uplabdh nahi hai.",
+  "consolidationDone": "Done",
+  "consolidationFailedBody": "Ek anapekshit truti hui. Aapka dhan surakshit hai: koi lenden prasarit nahi kiya gaya. Kripya punah prayas karein.",
+  "consolidationFailedTitle": "Samekan viphal",
+  "consolidationInProgress": "Samekit kiya ja raha hai…",
+  "consolidationRequiredTitle": "Wallet samekit karein",
+  "consolidationRequiredTitleNamed": "{walletName} wallet samekit karein",
+  "consolidationRowAmount": "Rashi",
+  "consolidationRowNetworkFees": "Network shulk",
+  "consolidationRowOutputs": "Output",
+  "consolidationRowTransactions": "Lenden",
+  "consolidationScreenDescription": "Bahut adhik output wallet ko asthir kar sakte hain. Samekan unhe kam mein jod deta hai taaki aapka wallet sahi se kaam kare.",
+  "consolidationScreenTitle": "Samekit karein",
+  "consolidationSuccessBody": "Aapke coins jode ja rahe hain. Network confirm karne par yeh pura hoga.",
+  "consolidationSuccessTitle": "Samekan prarambh hua",
+  "walletLoadFailed": "Aapke wallet load nahi ho sake. Apna connection check karein aur dobara koshish karein.",
+  "broadcastSignedTxErrorPsbtFinalization": "Signed transaction ko final nahin kiya ja saka. Pakka karen ki ismein sabhi zaroori signatures hain, phir dobara koshish karen.",
+  "coreScreensOutputsExceedInputs": "Outputs inputs se zyada hain: yeh transaction invalid hai aur network ise reject kar dega.",
+  "broadcastSignedTxErrorAlreadyInChain": "Yeh transaction pehle se hi blockchain mein hai. Broadcast karne ke liye kuch bhi baaki nahin hai.",
+  "broadcastSignedTxErrorRejected": "Network ne is transaction ko reject kar diya. Yeh adhoora signed, invalid, ya kisi doosre payment se conflict mein ho sakta hai.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai."
+}

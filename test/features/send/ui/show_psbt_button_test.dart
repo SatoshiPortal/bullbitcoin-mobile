@@ -1,5 +1,4 @@
 import 'package:signers/routes.dart';
-import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Sats, ScriptType;
 import 'package:spend/spend.dart';
@@ -7,7 +6,7 @@ import 'package:spend/testing.dart';
 import 'package:signers/signers.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';

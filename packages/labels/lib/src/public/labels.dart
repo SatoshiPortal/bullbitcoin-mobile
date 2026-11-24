@@ -7,7 +7,11 @@ import 'package:secrets/secrets.dart';
 import '../data/labels_import.dart';
 import '../data/labels_store.dart';
 import '../data/frozen_utxos_freeze_store.dart';
+import '../data/label_backup_repository.dart';
 import '../data/reserved_address_port_impl.dart';
+import '../domain/label_backup_scope.dart';
+import '../domain/labels_merge.dart';
+import '../domain/labels_snapshot.dart';
 
 import 'package:drift/drift.dart';
 import 'package:labels/src/data/bip329_codec.dart';
@@ -35,6 +39,7 @@ import 'package:sync/sync.dart';
 /// Label persistence and BIP-329 import and export.
 class Labels {
   final LabelsStore? _store;
+  final LabelBackups backup;
   final FreezeStorePort _freezes;
   final ReservedAddressPort _reservedAddresses;
   final FetchLabelsUsecase _fetchLabels;
@@ -47,6 +52,7 @@ class Labels {
 
   Labels._({
     required this._freezes,
+    required this.backup,
     required this._reservedAddresses,
     this._store,
     required this._fetchLabels,
@@ -123,6 +129,9 @@ class Labels {
     final freezes = WalletFreezeAdapter(sync: sync, openWallet: openWallet);
     return Labels._(
       store: store,
+      backup: LabelBackups._(
+        LabelBackupRepository(database: database, walletFreeze: freezes),
+      ),
       freezes: FrozenUtxosFreezeStore(database: database),
       reservedAddresses: ReservedAddressPortImpl(repository),
       fetchLabels: FetchLabelsUsecase(repository),
@@ -191,6 +200,33 @@ class Labels {
 
   Future<Result<void, LabelFailure>> trash(int id) =>
       _trashLabelUsecase.execute(id);
+}
+
+/// Operations are scoped by the caller's current authorized wallet inventory.
+final class LabelBackups {
+  final LabelBackupRepository _repository;
+
+  const LabelBackups._(this._repository);
+
+  Stream<void> get changes => _repository.changes;
+
+  @useResult
+  Future<Result<LabelsSnapshot, LabelFailure>> capture(
+    LabelBackupScope scope,
+  ) => _repository.capture(scope);
+
+  @useResult
+  Future<Result<MergePlan, LabelFailure>> preview(
+    LabelBackupScope scope,
+    LabelsSnapshot incoming,
+  ) => _repository.preview(scope, incoming);
+
+  @useResult
+  Future<Result<ApplyReport, LabelFailure>> apply(
+    LabelBackupScope scope,
+    MergePlan plan,
+    MergeChoices choices,
+  ) => _repository.apply(scope, plan, choices);
 }
 
 Label _toLabel(ApplicationLabel label) => Label(

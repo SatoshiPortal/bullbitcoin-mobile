@@ -1,5 +1,6 @@
-import 'package:access/access.dart' show Access;
 import 'package:address_view/routes.dart' show AddressViewFeature;
+import 'package:labels/labels.dart' show Labels;
+import 'package:access/access.dart' show Access;
 import 'package:all_seed_view/setup.dart';
 import 'package:bip85/bip85.dart';
 import 'package:secrets/custody.dart';
@@ -9,9 +10,12 @@ import 'package:transactions/setup.dart';
 
 import '../transactions/support/transaction_ui_actions.dart';
 
+import 'package:coins/setup.dart' show CoinsFeature;
 import 'package:fees/fees.dart';
+import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
 import 'package:wallet_import/wallet_import.dart';
+import 'package:onboarding/setup.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
@@ -30,21 +34,24 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:labels/labels.dart' show Labels;
 import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
-import 'package:secrets/secrets.dart';
+import 'package:receive/setup.dart';
+import 'package:secrets/secrets.dart' hide Language;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
+import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
-import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:spend/spend.dart' show Spend;
+import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
 
 import 'package:silent/setup.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 class PricePreferences extends Mock
     implements
@@ -75,11 +82,27 @@ class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
 
+class _MockElectrum extends Mock implements Electrum {}
+
+class _MockElectrumTransactions extends Mock implements ElectrumTransactions {}
+
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
 class _UnusedSwapServers extends Mock implements SwapServerSettings {}
 
-class _UnusedSwaps extends Mock implements BoltzSwaps {}
+class _SwapRoutes extends Fake implements SwapFeature {
+  @override
+  final List<GoRoute> routes = [
+    swapSettingsRoute(_UnusedSwapRouting(), _UnusedSwapServers()),
+  ];
+
+  @override
+  GoRoute get autoswapSettingsRoute => GoRoute(
+    name: 'autoswapSettings',
+    path: 'autoswap-settings',
+    builder: (_, _) => const SizedBox.shrink(),
+  );
+}
 
 class _UnusedLabels extends Mock implements Labels {}
 
@@ -89,6 +112,8 @@ class _UnusedReferences extends Mock implements SeedReferencePort {}
 
 class _UnusedCustodyAdmission extends Mock
     implements ParentCustodyAdmissionPort {}
+
+class _UnusedSwaps extends Mock implements BoltzSwaps {}
 
 void main() {
   testWidgets(
@@ -139,26 +164,20 @@ void main() {
         ),
       );
       final networkServices = GetIt.asNewInstance();
-      networkServices.registerSingleton<Fees>(_MockFees());
+      final fees = _MockFees();
+      networkServices.registerSingleton<Fees>(fees);
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
           preferences: _UnusedPreferences(),
-          bindings: (
-            readDefaultNetwork: () async => const Ok(null),
-            isTorRequired: () async => const Ok(false),
-          ),
+          inventory: inventoryFixture.inventory,
+          readBackup: (_) async => const Ok(null),
         ),
       );
       locator.registerSingleton(
         FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
       );
-      locator.registerSingleton(
-        SwapFeature.mount(
-          routing: _UnusedSwapRouting(),
-          servers: _UnusedSwapServers(),
-        ),
-      );
+      locator.registerSingleton<SwapFeature>(_SwapRoutes());
       locator.registerSingleton(
         SilentFeature.mount(
           preferences: SilentPreferences(),
@@ -173,11 +192,36 @@ void main() {
         ),
       );
       final preferences = PricePreferences();
+      final electrum = _MockElectrum();
+      when(() => electrum.transactions).thenReturn(_MockElectrumTransactions());
+      locator.registerSingleton<Spend>(FakeSpend());
+      locator.registerSingleton<Fees>(fees);
+      locator.registerSingleton<Electrum>(electrum);
+      locator.registerSingleton<ActiveEnvironmentReader>(preferences);
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
           environment: preferences,
           amountDisplay: preferences,
           display: preferences,
+        ),
+      );
+      locator.registerSingleton(
+        CoinsFeature.mount<String>(
+          resolveWalletKey: (_) async =>
+              throw StateError('Unexpected coins wallet lookup'),
+          loadWallet: (_) async =>
+              throw StateError('Unexpected coins wallet read'),
+          foreground: () async => throw StateError('Unexpected coins sync'),
+          labels: _UnusedLabels(),
+          preferences: preferences,
+          poll: (_) async {},
+          watchRevisions: (_) => const Stream.empty(),
+          watchStartedSyncs: (_) => const Stream.empty(),
+          watchFinishedSyncs: (_) => const Stream.empty(),
+          walletId: (id) => id,
+          missingWalletRedirect: '/wallet-home',
+          onSend: (_, _, _) async {},
+          onSweep: (_, _, _) async {},
         ),
       );
       final secrets = Secrets(scratchDirectory: () async => directory.path);
@@ -216,6 +260,30 @@ void main() {
           preferences: ImportPreferences(),
           servers: ElectrumServers(),
           secrets: secrets,
+          inventory: inventory,
+          admission: _UnusedCustodyAdmission(),
+          provisionMnemonic: ({
+            required parent,
+            required secrets,
+            required admission,
+            required network,
+            required scriptType,
+            label,
+          }) => throw StateError('Unexpected mnemonic provisioning'),
+          provisionDescriptor: ({
+            required descriptor,
+            required signer,
+            required label,
+          }) => throw StateError('Unexpected descriptor provisioning'),
+          provisionXpub: ({
+            required xpub,
+            required network,
+            required scriptType,
+            required label,
+          }) => throw StateError('Unexpected xpub provisioning'),
+          networkOf: (_) => null,
+          onExit: (_) {},
+          onImported: (_) {},
           qrIllustration: const AssetImage('unused.png'),
         ),
       );
@@ -241,6 +309,47 @@ void main() {
           scope: (child) => child,
         ),
       );
+      final receiveServices = GetIt.asNewInstance()
+        ..registerSingleton<ActiveEnvironmentReader>(preferences);
+      locator.registerSingleton(
+        ReceiveFeature.mount(
+          receiveServices,
+          rootNavigatorKey: AppRouter.rootNavigatorKey,
+          inventory: inventory,
+          loadWallet: (_) => throw StateError('Unexpected receive wallet read'),
+          readSigner: (_) => throw StateError('Unexpected receive signer read'),
+          poll: (_, {required isActive}) async {},
+          refreshAfterLightningPayment: () async {},
+          orderSwaps: () => throw StateError('Unexpected receive order read'),
+          createOrder: ({required wallet, required amountSat, note}) =>
+              throw StateError('Unexpected receive order creation'),
+          setPayjoinEnabled: (_, {required requestConsent}) =>
+              throw StateError('Unexpected Payjoin consent change'),
+          openHome: (_) {},
+          openPayjoinSettings: (_) {},
+          successAnimation: const AssetImage('unused.gif'),
+          orderSwapUnderReview: (_) => const SizedBox(),
+        ),
+      );
+      const unusedImage = AssetImage('unused.png');
+      locator.registerSingleton(
+        OnboardingFeature.mount(
+          createWallet: () => throw StateError('Unexpected wallet creation'),
+          recoverWallet: ({
+            required mnemonicWords,
+            required language,
+            required passphrase,
+          }) => throw StateError('Unexpected wallet recovery'),
+          walletImport: locator<ImportFeature>(),
+          onWalletReady: (_) {},
+          languageOf: (_) => Language.unitedStatesEnglish,
+          changeLanguage: (_, _) {},
+          logo: const SizedBox.shrink(),
+          background: unusedImage,
+          encryptedBackupIcon: unusedImage,
+          physicalBackupIcon: unusedImage,
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -261,17 +370,28 @@ void main() {
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<Spend>();
+        await locator.unregister<Fees>();
+        await locator.unregister<Electrum>();
+        await locator.unregister<ActiveEnvironmentReader>();
         await locator.unregister<SwapFeature>();
         await locator.unregister<ImportFeature>();
+        await locator.unregister<OnboardingFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<CoinsFeature>();
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
+        await locator.unregister<ReceiveFeature>();
+        await receiveServices.reset();
         await transactionServices.reset();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });
       // Exercise the actual production route configuration, not a test GoRouter.
       expect(router.configuration.findMatch(Uri.parse('/ark')).isError, false);
+      expect(router.namedLocation('receiveBitcoin'), '/receive/bitcoin');
+      expect(router.namedLocation('receiveLightning'), '/receive/lightning');
+      expect(router.namedLocation('receiveLiquid'), '/receive/liquid');
       expect(router.namedLocation('settings'), '/settings');
       expect(router.namedLocation('search'), '/settings/search');
       expect(
@@ -281,6 +401,10 @@ void main() {
       expect(
         router.namedLocation('backupOptions'),
         '/settings/backup-settings/backup-options',
+      );
+      expect(
+        router.namedLocation('testPhysicalBackupFlow'),
+        '/settings/backup-settings/test-physical-backup-flow',
       );
       expect(
         router.namedLocation('torSettings'),
@@ -294,6 +418,10 @@ void main() {
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
       expect(router.namedLocation('swapSettings'), '/swap-settings');
+      expect(
+        router.namedLocation('autoswapSettings'),
+        '/settings/autoswap-settings',
+      );
       expect(router.namedLocation('spSetup'), '/sp-setup');
       expect(router.namedLocation('spWalletDetail'), '/sp-wallet-detail');
       expect(

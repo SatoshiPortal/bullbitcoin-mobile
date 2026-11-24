@@ -1,0 +1,31 @@
+{
+  "@@locale": "pt",
+  "onboardingRecoverYourWallet": "Recupere sua carteira",
+  "onboardingEncryptedVaultDescription": "Recupere seu backup via nuvem usando seu PIN.",
+  "onboardingSplashDescription": "Soberana auto custódia Bitcoin carteira e serviço de troca apenas Bitcoin.",
+  "onboardingEncryptedVault": "Vault criptografado",
+  "onboardingCreateNewWallet": "Criar nova carteira",
+  "onboardingPhysicalBackupDescription": "Recupere sua carteira através de 12 palavras.",
+  "settingsLanguageTitle": "Língua",
+  "onboardingRecover": "Recuperar",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "Possuir seu dinheiro",
+  "onboardingRecoverWallet": "Recuperar Carteira",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "onboardingPhysicalBackup": "Backup físico",
+  "onboardingRecoverWalletButton": "Recuperar Carteira",
+  "continueButton": "Continue",
+  "torSettingsTitle": "Configurações do Tor",
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "walletSetupErrorTryAgain": "Algo correu mal ao configurar a sua carteira. Por favor, tente novamente.",
+  "onboardingAdvancedOptionsTitle": "Opções avançadas",
+  "onboardingAdvancedOptionsDescription": "Configure as definições avançadas antes de criar ou recuperar a sua carteira",
+  "onboardingAdvancedOptionsCustomElectrum": "Servidor Electrum personalizado",
+  "onboardingAdvancedOptionsCustomMempool": "Servidor Mempool personalizado",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Servidor Recoverbull personalizado",
+  "onboardingAdvancedOptionsFooter": "Pode alterar estas definições mais tarde nas definições da aplicação",
+  "onboardingBackupVerificationError": "A sua carteira foi recuperada, mas a verificação da cópia de segurança não pôde ser concluída. Por favor, tente novamente."
+}

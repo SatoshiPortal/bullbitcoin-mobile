@@ -1,5 +1,5 @@
 name: swap_feature
-description: Swap settings for Bull Bitcoin.
+description: Wallet transfers and automatic swaps for Bull Bitcoin.
 publish_to: none
 version: 0.1.0
 environment:
@@ -10,7 +10,28 @@ flutter:
   generate: true
   uses-material-design: true
 dependencies:
+  address_view:
+  bloc_concurrency: ^0.3.0
+  bull_ark:
+  bull_logger:
+  bull_pricer:
   bull_ui:
+  coins:
+  decimal: ^3.2.4
+  dio: ^5.9.0
+  fees:
+  fees_feature:
+  labels:
+  material_ui: ^1.11.0
+  preferences:
+  receive:
+  satoshifier:
+  secrets:
+  send:
+  signers:
+  spend:
+  sync:
+  transactions:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -27,5 +48,4 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   freezed: ^4.0.0
-  material_ui: ^1.11.0
   mocktail: ^1.0.4

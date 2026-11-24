@@ -84,10 +84,8 @@ class ImportLabelsUsecase {
 
     final verified = <({String? walletId, String txId, int vout})>[];
     for (final entry in byWallet.entries) {
-      final owned = await _walletFreeze.getOwnedOutpoints(walletId: entry.key);
-      final ownedSet = {for (final p in owned) '${p.txId}:${p.vout}'};
       verified.addAll(
-        entry.value.where((o) => ownedSet.contains('${o.txId}:${o.vout}')),
+        await _walletFreeze.ownedImportedFreezes(entry.key, entry.value),
       );
     }
     await _walletFreeze.freeze(verified);

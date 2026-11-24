@@ -8,57 +8,43 @@ import 'package:path/path.dart' as p;
 
 // Source-edge baseline generated once from 4c3385e6c (2026-11-07).
 // These edges include legacy violations, not architectural permission.
-// Networks owner moves and captured-network consumers: see the per-edge review
-// in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
+// This baseline includes the reviewed network-owner moves and captured-network
+// consumers (2026-11-07); do not regenerate it blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
-// Swap still imports the wallet repository and uses wallet navigation.
 // Silent receives a fingerprint reader through composition, not a wallet import.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
-// These four edges are documented in FEATURES.md.
+// See the dependency notes in the consuming members' READMEs. Ark also uses
+// the published camera scanner.
 // QR and NFC consumers use the scanning feature's public capabilities; its
-// implementation has no dependencies on those consumers (see FEATURES.md).
+// implementation has no dependencies on those consumers.
 // Label Editor publishes the existing note, label and import/export UI. Its
 // consumers use that surface while data-only consumers depend on the package.
-// Wallet reader ownership (2026-11-22): see FEATURES.md for the address,
-// coin, receive and history edges that replace the legacy wallet placements.
-// Exchange workspace UI consumers use the published routes (see FEATURES.md).
+// Wallet reader ownership (2026-11-22): see ARCHITECTURE.md, "Wallet readers".
+// Exchange workspace UI consumers use the published routes.
+// Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
+// Settings consumes Receive's disclaimer and typed Wallet Import navigation.
+// Wallet Import owns mnemonic input and scanning; Wallet uses its data types.
 const _allowedTargets = <String, String>{
-  'address_view': 'label_editor',
+  'address_view': 'label_editor scanning silent',
+  'ark': 'scanning',
   'all_seed_view': 'access',
-  'app_startup':
-      'access logs mnemonic_entry onboarding recoverbull settings wallet',
-  'autoswap': 'address_view swap wallet',
-  'backup_settings': 'backups recoverbull settings test_wallet_backup wallet',
-  'backups': 'recoverbull',
-  'broadcast_signed_tx': 'address_view scanning wallet',
-  'bull_exchange': 'bitcoin_price',
-  'coins': 'address_view bitcoin_price wallet',
-  'consolidation': 'wallet',
-  'exchange': 'address_view bull_exchange transactions wallet',
-  'import_coldcard': 'scanning signers wallet_import',
-  'import_mnemonic': 'mnemonic_entry wallet wallet_import',
-  'import_wallet': 'import_coldcard import_mnemonic import_watch_only_wallet settings signers wallet_import',
-  'import_watch_only_wallet': 'scanning signers wallet wallet_import',
-  'limit_orders': 'address_view bull_exchange exchange wallet',
+  'backups': 'access label_editor physical_backup_verification recoverbull',
+  'bull_exchange': 'bitcoin_price coins fees',
+  'coins': 'address_view bitcoin_price',
+  'exchange': 'address_view bull_exchange overview transactions wallet',
   'network': 'recoverbull',
-  'onboarding':
-      'mnemonic_entry network recoverbull settings wallet wallet_import',
-  'pay': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
-  'receive':
-      'address_view label_editor settings signers swap transactions wallet',
-  'replace_by_fee': 'fees wallet',
+  'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
+  'overview': 'bitcoin_price quick_actions silent swap',
+  'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
-  'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
-  'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
-  'support': 'bull_exchange',
-  'swap': 'address_view ark coins consolidation fees send transactions wallet',
-  'test_wallet_backup':
-      'access onboarding physical_backup_verification recoverbull wallet',
+  'send': 'address_view ark coins fees label_editor receive scanning signers silent swap transactions wallet',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network overview quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
+  'startup': 'access logs mnemonic_entry recoverbull',
+  'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backup_settings backups bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
-  'wallet_import': 'signers',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions wallet_import',
+  'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };
 
@@ -151,8 +137,8 @@ void main() {
       final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
       for (final path in [
         'lib/features/send/presentation/bloc/send_cubit.dart',
-        'lib/features/settings/presentation/bloc/settings_cubit.dart',
-        'lib/features/swap/presentation/transfer_bloc.dart',
+        'features/settings/lib/src/presentation/bloc/settings_cubit.dart',
+        'features/swap/lib/src/presentation/transfer_bloc.dart',
       ]) {
         expect(
           File(path).readAsStringSync(),

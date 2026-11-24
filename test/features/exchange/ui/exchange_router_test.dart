@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/testing.dart';
+import 'package:bb_mobile/generated/novlang/novlang_bull_exchange_localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:novlang/novlang.dart';
 
 class _Exchange extends Mock implements ExchangeFacade {}
 
@@ -37,6 +39,28 @@ ExchangeRouterConfig _config({
 );
 
 void main() {
+  test('landing copy retains the App Store vocabulary override', () async {
+    final apple = await const NovlangExchangeLocalizationsDelegate(
+      NovlangPolicy.apple,
+    ).load(const Locale('en'));
+    final unrestricted = await const NovlangExchangeLocalizationsDelegate(
+      NovlangPolicy.none,
+    ).load(const Locale('en'));
+
+    expect(
+      apple.exchangeLandingConnectAccount,
+      'Connect your Bull Bitcoin account',
+    );
+    expect(
+      unrestricted.exchangeLandingConnectAccount,
+      'Connect your Bull Bitcoin exchange account',
+    );
+    expect(
+      apple.exchangeLandingDisclaimerLegal,
+      unrestricted.exchangeLandingDisclaimerLegal,
+    );
+  });
+
   testWidgets('support login preserves the authentication source and draft', (
     tester,
   ) async {
@@ -160,7 +184,10 @@ void main() {
         child: MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            ExchangeLocalizations.delegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: router,
         ),
@@ -234,7 +261,10 @@ void main() {
         child: MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            ExchangeLocalizations.delegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: router,
         ),

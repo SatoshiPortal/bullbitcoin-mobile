@@ -1,26 +1,26 @@
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncBusyFailure;
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
+import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:meta/meta.dart';
 
 /// Runs a wallet sync round.
 ///
-/// The wallet-owned coordinator throws `SyncCoordinatorException` aggregating
+/// The Overview coordinator throws `SyncCoordinatorException` aggregating
 /// per-kind failures. This usecase maps those to a typed wallet failure.
 class SyncWalletsUsecase {
-  final SyncCoordinator _syncCoordinator;
+  final Future<void> Function({SyncTrigger trigger}) _sync;
 
-  const SyncWalletsUsecase(this._syncCoordinator);
+  const SyncWalletsUsecase(this._sync);
 
   @useResult
   Future<Result<void, WalletFailure>> execute({
     SyncTrigger trigger = SyncTrigger.automatic,
   }) async {
     try {
-      await _syncCoordinator.sync(trigger: trigger);
+      await _sync(trigger: trigger);
       return const Ok(null);
     } catch (e) {
       if (e is SyncCoordinatorException &&

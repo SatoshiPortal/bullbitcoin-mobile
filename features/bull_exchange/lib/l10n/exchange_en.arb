@@ -2951,5 +2951,934 @@
   "buyQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
   "@buyQuoteExpiredError": {
     "description": "Shown on the buy confirmation when the price lock expired before the order was confirmed; nothing was bought."
+  },
+  "sellTitle": "Sell Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellSelectWallet": "Select Wallet",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "sellWhichWalletQuestion": "Which wallet do you want to sell from?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "sellExternalWallet": "External wallet",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "sellFromAnotherWallet": "Sell from another Bitcoin wallet",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "sellAboveMaxAmountError": "You are trying to sell above the maximum amount that can be sold with this wallet.",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellBelowMinAmountError": "You are trying to sell below the minimum amount that can be sold with this wallet.",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this sell order.",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "sellOrderNotFoundError": "The sell order was not found. Please try again.",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "sellOrderAlreadyConfirmedError": "This sell order has already been confirmed.",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "sellSelectNetwork": "Select Network",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "sellHowToPayInvoice": "How do you want to pay this invoice?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "sellBitcoinOnChain": "Bitcoin on-chain",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellLightningNetwork": "Lightning Network",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellLiquidNetwork": "Liquid Network",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "sellConfirmPayment": "Confirm payment",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellPriceWillRefreshIn": "Price will refresh in ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellOrderNumber": "Order number",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "sellPayoutRecipient": "Payout recipient",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "sellCadBalance": "CAD Balance",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "sellCrcBalance": "CRC Balance",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "sellEurBalance": "EUR Balance",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellUsdBalance": "USD Balance",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellMxnBalance": "MXN Balance",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellArsBalance": "ARS Balance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellCopBalance": "COP Balance",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellPayinAmount": "Payin amount",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellPayoutAmount": "Payout amount",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellExchangeRate": "Exchange rate",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellPayFromWallet": "Pay from wallet",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellInstantPayments": "Instant payments",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellSecureBitcoinWallet": "Secure Bitcoin wallet",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "sellFeePriority": "Fee Priority",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellFastest": "Fastest",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "sellAdvancedSettings": "Advanced Settings",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellAdvancedOptions": "Advanced options",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellReplaceByFeeActivated": "Replace-by-fee activated",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellSelectCoinsManually": "Select coins manually",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "sellDone": "Done",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellPleasePayInvoice": "Please pay this invoice",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "sellBitcoinAmount": "Bitcoin amount",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellCopyInvoice": "Copy invoice",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "sellShowQrCode": "Show QR code",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellQrCode": "QR Code",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellNoInvoiceData": "No invoice data available",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "sellInProgress": "Sell in progress…",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "sellGoHome": "Go home",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellOrderCompleted": "Order completed!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellBalanceWillBeCredited": "Your account balance will be credited after your transaction receives 1 confirmation onchain.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "sellYouSold": "You sold {amount} for {fiatAmount}",
+  "@sellYouSold": {
+    "description": "Success message with the amount sold and the fiat amount received",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
+        "type": "String"
+      }
+    }
+  },
+  "payTitle": "Pay",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "payDescriptionLabel": "Payment description (optional)",
+  "@payDescriptionLabel": {
+    "description": "Label for the optional payment description input in the pay flow"
+  },
+  "payDescriptionHint": "Add a note for this payment",
+  "@payDescriptionHint": {
+    "description": "Hint text for the optional payment description input in the pay flow"
+  },
+  "payPaymentDescription": "Payment description",
+  "@payPaymentDescription": {
+    "description": "Label for the payment description on the pay confirmation screen"
+  },
+  "payRecipientType": "Recipient type",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "payRecipientName": "Recipient name",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payRecipientDetails": "Recipient details",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "payNoDetailsAvailable": "No details available",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "paySelectWallet": "Select Wallet",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "payExternalWallet": "External wallet",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payAboveMaxAmountError": "The maximum you can pay with this wallet is {amount}.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payBelowMinAmountError": "The minimum you can pay with this wallet is {amount}.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this pay order.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "payUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "paySelectNetwork": "Select Network",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payHowToPayInvoice": "How do you want to pay this invoice?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payConfirmPayment": "Confirm Payment",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "payOrderNumber": "Order number",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payPayinAmount": "Payin amount",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "payPayoutAmount": "Payout amount",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payExchangeRate": "Exchange rate",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "payPayFromWallet": "Pay from wallet",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payInstantPayments": "Instant payments",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "paySecureBitcoinWallet": "Secure Bitcoin wallet",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payFeePriority": "Fee Priority",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "payFastest": "Fastest",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payNetworkFees": "Network fees",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payAdvancedSettings": "Advanced Settings",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payAdvancedOptions": "Advanced options",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySelectCoinsManually": "Select coins manually",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payDone": "Done",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "payContinue": "Continue",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payPleasePayInvoice": "Please pay this invoice",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payBitcoinAmount": "Bitcoin amount",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "payBitcoinPrice": "Bitcoin Price",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "payCopyInvoice": "Copy Invoice",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "payShowQrCode": "Show QR code",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "payQrCode": "QR Code",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "payNoInvoiceData": "No invoice data available",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "payInvalidState": "Invalid state",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "payViewDetails": "View details",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "payCompleted": "Payment Completed!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "payCompletedDescriptionDetails": "The payment of {fiatAmount} to {recipient} has been completed.",
+  "@payCompletedDescriptionDetails": {
+    "description": "Description for payment completed, with the fiat amount and the recipient",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payOrderDetails": "Order Details",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "paySinpeMonto": "Amount",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeNumeroOrden": "Order number",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "paySinpeNumeroComprobante": "Reference number",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySinpeBeneficiario": "Beneficiary",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "paySinpeOrigen": "Origin",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "payPaymentInProgress": "Payment In Progress!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "payPaymentInProgressDescriptionDetails": "The payment of {fiatAmount} to {recipient} will be sent after your transaction receives 1 confirmation onchain.",
+  "@payPaymentInProgressDescriptionDetails": {
+    "description": "Description for payment in progress, before the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "payPaymentPayinConfirmedDescriptionDetails": "Your transaction is confirmed. The payment of {fiatAmount} to {recipient} is being processed.",
+  "@payPaymentPayinConfirmedDescriptionDetails": {
+    "description": "Description for payment in progress, once the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "payPriceRefreshIn": "Price will refresh in ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payWhichWallet": "Which wallet do you want to pay from?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "payExternalWalletDescription": "Pay from another Bitcoin wallet",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "payRbfActivated": "Replace-by-fee activated",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "copyDialogButton": "Copy",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellCompleteKYC": "Complete KYC",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "sellSendPaymentNetworkFees": "Network fees",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "sellSendPaymentContinue": "Continue",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "exchangeSendingPayment": "Sending payment…",
+  "@exchangeSendingPayment": {
+    "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
+  },
+  "exchangePaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "@exchangePaymentSentRefreshingOrder": {
+    "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
+  },
+  "sellBitcoinPriceLabel": "Bitcoin Price",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "View details",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "KYC ID Verification Pending",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "You must complete ID verification first",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellLoadingGeneric": "Loading…",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
+  },
+  "invoiceViewerTitle": "Invoice",
+  "@invoiceViewerTitle": {
+    "description": "Title shown in the invoice viewer detail dialog"
+  },
+  "payjoinViaPayjoin": "via Payjoin",
+  "@payjoinViaPayjoin": {
+    "description": "Suffix appended to a completed order summary when the payment used payjoin"
+  },
+  "payjoinViaRegularSend": "via regular send",
+  "@payjoinViaRegularSend": {
+    "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
+  },
+  "sellDepositAddress": "Deposit address",
+  "@sellDepositAddress": {
+    "description": "Sell confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "payDepositAddress": "Deposit address",
+  "@payDepositAddress": {
+    "description": "Pay confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "sellDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@sellDepositAddressChangedError": {
+    "description": "Sell: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "payDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@payDepositAddressChangedError": {
+    "description": "Pay: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "sellUnexpectedError": "Your sell order could not be completed right now. Please try again or contact support.",
+  "@sellUnexpectedError": {
+    "description": "Generic catch-all shown for any unexpected sell failure. Deliberately does not include the raw reason: this arm previously returned the exception text verbatim to the user (#1895)."
+  },
+  "sellErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@sellErrorFeeBelowRelayFloor": {
+    "description": "Shown when the built sell payin fee falls under the network relay floor. Actionable: the user must raise the fee. Wording matches the send equivalent."
+  },
+  "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@sellErrorFeesUnavailable": {
+    "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "payUnexpectedError": "Your payment could not be completed right now. Please try again or contact support.",
+  "@payUnexpectedError": {
+    "description": "Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895)."
+  },
+  "payErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@payErrorFeeBelowRelayFloor": {
+    "description": "Shown when a built pay payin's fee is under the network relay floor, so no node would accept it. Actionable: the user must raise the fee."
+  },
+  "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@payErrorFeesUnavailable": {
+    "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
+  },
+  "withdrawRecipientsPrompt": "Where and how should we send the money?",
+  "@withdrawRecipientsPrompt": {
+    "description": "Instructions on recipients screen"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "sellQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@sellQuoteExpiredError": {
+    "description": "Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid."
+  },
+  "exchangePaymentSentPastDeadline": "Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
+  "@exchangePaymentSentPastDeadline": {
+    "description": "Shown on the sell or pay confirmation after the payin was broadcast, when the exchange reports the order deadline expired before it saw the payment."
+  },
+  "exchangePaymentSentLeave": "Leave",
+  "@exchangePaymentSentLeave": {
+    "description": "Button that leaves the sell or pay confirmation once the exchange reports the payment arrived past the order deadline."
+  },
+  "payQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@payQuoteExpiredError": {
+    "description": "Shown on the pay confirmation when the price lock expired before the payment was sent; nothing was paid."
+  },
+  "sellPayoutBalance": "Add to my account balance",
+  "@sellPayoutBalance": {
+    "description": "EUR Sell payout option matching BBX: credit the user's exchange account balance."
+  },
+  "sellPayoutSepaDescription": "Withdrawals appear as sent by Leonod",
+  "@sellPayoutSepaDescription": {
+    "description": "EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod."
+  },
+  "sellPayoutTitle": "Select recipient",
+  "@sellPayoutTitle": {
+    "description": "Title for the EUR Sell payout selection screen, matching BBX Select recipient."
+  },
+  "sellPayoutNewBadge": "NEW",
+  "@sellPayoutNewBadge": {
+    "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
+  },
+  "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
+  "@walletSpendAwaitingObservation": {
+    "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
+  },
+  "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
+  "@sendPayjoinSpendPaused": {
+    "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
+  },
+  "exchangePayinNetworkMismatch": "The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.",
+  "@exchangePayinNetworkMismatch": {
+    "description": "Sell and Pay refuse to create the order when the selected wallet belongs to a different chain or environment."
+  },
+  "walletSpendBusy": "The wallet is busy. Try again in a moment.",
+  "@walletSpendBusy": {
+    "description": "Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments."
+  },
+  "broadcastSignedTxErrorOutcomeUnknown": "We couldn't confirm that your transaction was broadcast. Check a block explorer before trying again.",
+  "@broadcastSignedTxErrorOutcomeUnknown": {
+    "description": "Broadcast Transaction error when the failure does not show whether the transaction reached the network"
+  },
+  "sendSelectedUtxosInsufficient": "Selected utxos does not cover required amount",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Select amount",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "amountRequestedLabel": "Amount requested: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addressLabel": "Address: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "typeLabel": "Type: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "coinsKeychainReceive": "Receive",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Change",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "@limitOrdersIntroTitle": {
+    "description": "Title of the Limit Order introduction step"
+  },
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "@limitOrdersIntroDescription": {
+    "description": "Description of how Limit Orders work"
+  },
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "@limitOrdersIntroBulletPrice": {
+    "description": "Limit Order introduction bullet about the target price"
+  },
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "@limitOrdersIntroBulletBalance": {
+    "description": "Limit Order introduction bullet about account balance"
+  },
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "@limitOrdersIntroBulletExecution": {
+    "description": "Limit Order introduction bullet about payout"
+  },
+  "limitOrdersTargetTitle": "Choose your target price",
+  "@limitOrdersTargetTitle": {
+    "description": "Title of the Limit Order target-price step"
+  },
+  "limitOrdersPaymentMethod": "Payment method",
+  "@limitOrdersPaymentMethod": {
+    "description": "Label for the fiat balance used by a Limit Order"
+  },
+  "limitOrdersCurrentPrice": "Current index price",
+  "@limitOrdersCurrentPrice": {
+    "description": "Label for the current Bitcoin index price"
+  },
+  "limitOrdersDiscount": "Discount from current price",
+  "@limitOrdersDiscount": {
+    "description": "Label for the Limit Order discount percentage"
+  },
+  "limitOrdersAmountTitle": "Set the amount",
+  "@limitOrdersAmountTitle": {
+    "description": "Title of the Limit Order fiat-amount step"
+  },
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "@limitOrdersAvailableBalance": {
+    "description": "Available fiat balance",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "@limitOrdersEstimatedBitcoin": {
+    "description": "Estimated bitcoin amount for a Limit Order",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "@limitOrdersWalletTitle": {
+    "description": "Title of the Limit Order wallet-selection step"
+  },
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "@limitOrdersWalletDescription": {
+    "description": "Explains the Limit Order payout wallet"
+  },
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "@limitOrdersManageDefaultWallets": {
+    "description": "Opens default-wallet settings from Limit Orders"
+  },
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "@limitOrdersWalletBitcoin": {
+    "description": "Bitcoin on-chain Limit Order payout option"
+  },
+  "limitOrdersWalletLightning": "Lightning address",
+  "@limitOrdersWalletLightning": {
+    "description": "Lightning Limit Order payout option"
+  },
+  "limitOrdersWalletLiquid": "Liquid address",
+  "@limitOrdersWalletLiquid": {
+    "description": "Liquid Limit Order payout option"
+  },
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "@limitOrdersConfirmationTitle": {
+    "description": "Title of the Limit Order confirmation step"
+  },
+  "limitOrdersBalancePayment": "{currency} balance",
+  "@limitOrdersBalancePayment": {
+    "description": "Fiat balance used to fund the order",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "@limitOrdersTermsNotice": {
+    "description": "Terms and spread notice before creating a Limit Order"
+  },
+  "limitOrdersConfirm": "Confirm",
+  "@limitOrdersConfirm": {
+    "description": "Creates the Limit Order"
+  },
+  "limitOrdersCreatedTitle": "Limit order active",
+  "@limitOrdersCreatedTitle": {
+    "description": "Title shown after a Limit Order is created"
+  },
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "@limitOrdersCreatedMessage": {
+    "description": "Success summary after creating a Limit Order",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "@limitOrdersBackToExchange": {
+    "description": "Returns from Limit Order success to the Exchange dashboard"
+  },
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "@limitOrderInvalidTargetError": {
+    "description": "Shown for an invalid Limit Order target price"
+  },
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "@limitOrderInvalidAmountError": {
+    "description": "Shown for an invalid Limit Order fiat amount"
+  },
+  "limitOrdersYourWalletsTitle": "Your wallets",
+  "@limitOrdersYourWalletsTitle": {
+    "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
+  },
+  "limitOrdersLightningAddressLabel": "Lightning address",
+  "@limitOrdersLightningAddressLabel": {
+    "description": "Label for the manual lightning-address field in the limit-order destination step"
+  },
+  "limitOrdersLightningAddressError": "Enter a valid lightning address, not an invoice",
+  "@limitOrdersLightningAddressError": {
+    "description": "Error shown when the entered lightning destination is not a valid lightning address"
+  },
+  "limitOrdersAmountBelowOnchainMin": "Amount is below the on-chain minimum of {amount}",
+  "@limitOrdersAmountBelowOnchainMin": {
+    "description": "Buy-limit error when a limit order amount is below the on-chain minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountBelowLiquidMin": "Amount is below the Liquid minimum of {amount}",
+  "@limitOrdersAmountBelowLiquidMin": {
+    "description": "Buy-limit error when a limit order amount is below the Liquid minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountAboveLightningMax": "Amount is above the Lightning maximum of {amount}",
+  "@limitOrdersAmountAboveLightningMax": {
+    "description": "Buy-limit error when a limit order amount is above the Lightning maximum; {amount} is the maximum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersViewOrder": "View order details",
+  "@limitOrdersViewOrder": {
+    "description": "Opens the created Limit Order details from the success screen"
+  },
+  "limitOrdersInsufficientBalance": "Insufficient balance",
+  "@limitOrdersInsufficientBalance": {
+    "description": "Title of the info card shown when the user has no funded balance to create a limit order"
+  },
+  "limitOrdersInsufficientBalanceMessage": "You do not have enough balance to create this order.",
+  "@limitOrdersInsufficientBalanceMessage": {
+    "description": "Message of the info card shown when the user has no funded balance to create a limit order"
+  },
+  "limitOrdersFundAccount": "Fund your account",
+  "@limitOrdersFundAccount": {
+    "description": "Button that opens the fund exchange flow when the user has no balance to create a limit order"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLandingConnectAccount": "Connect your Bull Bitcoin exchange account",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureSelfCustody": "• Buy Bitcoin straight to self-custody",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limit orders and Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureSellBitcoin": "• Sell Bitcoin, get paid with Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeFeatureBankTransfers": "• Send bank transfers and pay bills",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureCustomerSupport": "• Chat with customer support",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureUnifiedHistory": "• Unified transaction history",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeLandingDisclaimerLegal": "Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency exchange services are not available in the Bull Bitcoin mobile application.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLoginButton": "Login Or Sign up",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "Go to Bull Bitcoin exchange website",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   }
 }

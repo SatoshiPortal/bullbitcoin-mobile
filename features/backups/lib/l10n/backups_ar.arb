@@ -1,0 +1,236 @@
+{
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "testBackupWriteDownPhrase": "اكتبي عبارة استردادك\nفي الأمر الصحيح",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupDigitalCopy": "نسخة رقمية",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "backupWalletEncryptedVaultTag": "سهلة وبسيطة (دقيقة واحدة)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "واحدة من أكثر الطرق شيوعاً التي يخسر بها الناس بيتكوين هو أنهم يفقدون الدعم المادي أي شخص يجد دعمك الفيزيائي سيكون قادراً على أخذ (بيتكوين) إذا كنت واثقاً جداً أنك تستطيع إخفاءه جيداً ولا تفقده أبداً فهو خيار جيد.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupTapWordsInOrder": "تخطي كلمات الاسترداد في\nالأمر الصحيح",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupDefaultWallets": "الجدار الافتراضي",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupSuccessTitle": "اكتمل الاختبار بنجاح!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "جواز السفر",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupAllWordsSelected": "لقد اخترت كل الكلمات",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupWalletPhysicalBackupTag": "عديم الثقة (خذ وقتك)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupSettingsTested": "تم اختبارها",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "Labels",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "الخزنة المشفرة تمنعك من اللصوص الذين يبحثون عن سرقة دعمك كما أنه يمنعك من فقدان دعمك عن طريق الخطأ بما أنه سيخزن في سحابتك متعهدي تخزين السحاب مثل (جوجل) أو (آبل) لن يتمكنوا من الوصول إلى (بيتكوين) الخاص بك لأن كلمة سر التشفير قوية جداً هناك احتمال صغير أن خادم الشبكة الذي يخزن مفتاح التشفير الخاص بك يمكن أن يتعرض للخطر. في هذه الحالة، أمن الدعم في حسابك السحابي قد يكون في خطر.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "testBackupTranscribe": "Transcribe",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupErrorIncorrectOrder": "أمر غير صحيح أرجوك حاول مرة أخرى.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletEncryptedVaultTitle": "الخزنة المشفرة",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "walletDetailsUnnamedWalletFallback": "غير مسماة",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "الدعم المادي: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "testBackupTitle": "افحص محفظتك",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "closeDialogButton": "اقترب",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "backupWalletPhysicalBackupDescription": "أكتب 12 كلمة على قطعة من الورق أبقيهم بأمان وتأكدي من عدم فقدانهم.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "passphraseLabel": "جواز السفر",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupNext": "التالي",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupScreenshot": "Screenshot",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "backupWalletTitle": "دعم محفظتك",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "transactionHistoryTitle": "سجل المعاملات",
+  "backupSettingsPhysicalBackup": "الدعم المادي",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "كيف تقرر؟?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "testBackupConfirm": "Confirm",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupLastBackupTest": "آخر اختبار احتياطي: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "لم يختبر",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "كيفية تقرير",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "testBackupWalletTitle": "اختبار {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "testBackupDoNotShare": "لا تتجول مع أي شخص",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "backupSettingsViewVaultKey": "View Vault المفتاح",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "testBackupSuccessButton": "حصلت عليه",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupStoreItSafe": "تخزينه في مكان آمن.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "ما هو رقم الكلمة {number}؟?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "دعم مجهول مع تشفير قوي باستخدام سحابتك.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletImportanceWarning": "بدون دعم، ستخسر في النهاية الوصول إلى مالك من المهم للغاية أن نقدم الدعم.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "continueButton": "استمر",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "testBackupSuccessMessage": "أنت قادر على استعادة الدخول إلى محفظة بيتكوين المفقودة",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "backupSettingsTestBackup": "احتياطي الاختبار",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletPhysicalBackupTitle": "الدعم المادي",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupSettingsEncryptedVault": "الخزنة المشفرة",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "ابدأوا",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "أنت واثق من قدراتك الأمنية للعمليات الخاصة لإخفاء وحفظ كلماتك البذرة.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "زيارة لإستعادة المعلومات.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "السرداب المشفرة: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "أنت لست متأكداً و تحتاج المزيد من الوقت لتتعلم عن الممارسات الأمنية الإحتياطية.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "coreScreensUnknown": "غير معروف",
+  "testBackupErrorWalletsUnavailable": "تعذّر تحميل محافظك. حاول مرة أخرى.",
+  "testBackupErrorNoWallets": "لا توجد محفظة لاختبار نسختها الاحتياطية.",
+  "testBackupErrorNoWalletSelected": "اختر محفظة قبل اختبار نسختها الاحتياطية.",
+  "testBackupErrorSeedUnavailable": "تعذّرت قراءة عبارة الاسترداد الخاصة بك. حاول مرة أخرى.",
+  "testBackupErrorSeedNotMnemonic": "لا تحتوي هذه المحفظة على عبارة استرداد لاختبارها.",
+  "testBackupErrorCompletionFailed": "كانت عبارة الاسترداد صحيحة، لكن لم نتمكن من حفظ النتيجة. حاول مرة أخرى.",
+  "backupCardTitle": "احمِ بيتكوين الخاص بك.",
+  "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن."
+}

@@ -1,0 +1,299 @@
+import 'package:background_tasks/background_tasks.dart';
+import 'package:exchange/exchange.dart';
+import 'package:preferences/preferences.dart';
+import 'package:wizard/src/domain/entity/wizard_choices.dart';
+import 'package:wizard/src/domain/repository/wizard_repository.dart';
+import 'package:wizard/src/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:primitives/primitives.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockWizardRepository extends Mock implements WizardRepository {}
+
+class _MockSettingsRepository extends Mock implements Preferences {}
+
+class _Intervals implements BackgroundSyncIntervalRepository {
+  _Intervals(this.stored);
+
+  BackgroundSyncInterval stored;
+  bool failWrite = false;
+  int writes = 0;
+
+  @override
+  Future<BackgroundSyncInterval> read() async => stored;
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> write(
+    BackgroundSyncInterval interval,
+  ) async {
+    writes++;
+    if (failWrite) return const Err(BackgroundSyncIntervalFailure());
+    stored = interval;
+    return const Ok(null);
+  }
+}
+
+void main() {
+  late _MockWizardRepository wizard;
+  late _MockSettingsRepository settings;
+  late _Intervals intervals;
+  late ApplyPendingWizardChoicesUsecase usecase;
+
+  setUpAll(() {
+    registerFallbackValue(Language.unitedStatesEnglish);
+    registerFallbackValue(AppThemeMode.system);
+    registerFallbackValue(const WizardChoices());
+  });
+
+  setUp(() {
+    wizard = _MockWizardRepository();
+    settings = _MockSettingsRepository();
+    intervals = _Intervals(BackgroundSyncInterval.hours6);
+    usecase = ApplyPendingWizardChoicesUsecase(
+      wizardRepository: wizard,
+      settingsRepository: settings,
+      intervals: intervals,
+      applyExchangeAccess: (_) async =>
+          const Err(ExchangeSessionClearFailure()),
+    );
+    when(() => wizard.clearPending()).thenAnswer((_) async {});
+    when(() => wizard.savePending(any())).thenAnswer((_) async {});
+    when(() => wizard.markComplete()).thenAnswer((_) async {});
+    when(() => settings.setLanguage(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setThemeMode(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setErrorReportingEnabled(any()))
+        .thenAnswer((_) async => const Ok(null));
+  });
+
+  test('short-circuits when nothing is staged', () async {
+    when(() => wizard.readPending()).thenAnswer((_) async => null);
+
+    await usecase.execute();
+
+    verify(() => wizard.readPending()).called(1);
+    verifyNoMoreInteractions(wizard);
+    verifyZeroInteractions(settings);
+  });
+
+  test(
+    'flushes only fields the user touched then clears + marks complete',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          language: Language.franceFrench,
+          themeMode: AppThemeMode.dark,
+          defaultCurrency: 'EUR',
+          reportingConsent: true,
+          // theme + consent only — language and currency must NOT be flushed.
+          touched: {WizardField.themeMode, WizardField.reportingConsent},
+        ),
+      );
+
+      await usecase.execute();
+
+      verify(() => settings.setThemeMode(AppThemeMode.dark)).called(1);
+      verify(() => settings.setErrorReportingEnabled(true)).called(1);
+      verifyNever(() => settings.setLanguage(any()));
+      verifyNever(() => settings.setCurrency(any()));
+      verify(() => wizard.clearPending()).called(1);
+      verify(() => wizard.markComplete()).called(1);
+    },
+  );
+
+  test(
+    'skips reportingConsent flush when value is null even if touched',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          // touched but value left null — apply must not push a bogus
+          // false to settings.
+          touched: {WizardField.reportingConsent},
+        ),
+      );
+
+      await usecase.execute();
+
+      verifyNever(() => settings.setErrorReportingEnabled(any()));
+      verify(() => wizard.clearPending()).called(1);
+      verify(() => wizard.markComplete()).called(1);
+    },
+  );
+
+  test('flushes all four fields when all are touched', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        language: Language.franceFrench,
+        themeMode: AppThemeMode.light,
+        defaultCurrency: 'CAD',
+        reportingConsent: false,
+        touched: {
+          WizardField.language,
+          WizardField.themeMode,
+          WizardField.defaultCurrency,
+          WizardField.reportingConsent,
+        },
+      ),
+    );
+
+    await usecase.execute();
+
+    verify(() => settings.setLanguage(Language.franceFrench)).called(1);
+    verify(() => settings.setThemeMode(AppThemeMode.light)).called(1);
+    verify(() => settings.setCurrency('CAD')).called(1);
+    verify(() => settings.setErrorReportingEnabled(false)).called(1);
+    verify(() => wizard.clearPending()).called(1);
+    verify(() => wizard.markComplete()).called(1);
+  });
+
+  // A transient storage error must not cost the user what they picked during
+  // onboarding: the pending choices stay so the next launch retries them.
+  test('keeps a failed choice pending for the next launch', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        language: Language.unitedStatesEnglish,
+        themeMode: AppThemeMode.dark,
+        defaultCurrency: 'CAD',
+        reportingConsent: false,
+        touched: {WizardField.defaultCurrency},
+      ),
+    );
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Err(PreferencesWriteFailure('nope')));
+
+    await usecase.execute();
+
+    final staged =
+        verify(() => wizard.savePending(captureAny())).captured.single
+            as WizardChoices;
+    expect(staged.touched, {WizardField.defaultCurrency});
+    expect(staged.defaultCurrency, 'CAD');
+    verifyNever(() => wizard.clearPending());
+    // Still complete: re-running onboarding would be worse than a quiet retry.
+    verify(() => wizard.markComplete()).called(1);
+  });
+
+  test(
+    'only the failed choice stays pending, not the ones that landed',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          language: Language.unitedStatesEnglish,
+          themeMode: AppThemeMode.dark,
+          defaultCurrency: 'CAD',
+          reportingConsent: false,
+          touched: {
+            WizardField.language,
+            WizardField.themeMode,
+            WizardField.defaultCurrency,
+          },
+        ),
+      );
+      when(() => settings.setCurrency(any()))
+          .thenAnswer((_) async => const Err(PreferencesWriteFailure('nope')));
+
+      await usecase.execute();
+
+      // Re-staging language and theme would re-apply them next launch, and so
+      // reset either one if the user has changed it in Settings since.
+      final staged =
+          verify(() => wizard.savePending(captureAny())).captured.single
+              as WizardChoices;
+      expect(staged.touched, {WizardField.defaultCurrency});
+      verify(() => wizard.markComplete()).called(1);
+    },
+  );
+  test(
+    'retains exchange choice when the capability rejects the write',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          exchangeAccess: false,
+          touched: {WizardField.exchangeAccess},
+        ),
+      );
+      await usecase.execute();
+      final staged =
+          verify(() => wizard.savePending(captureAny())).captured.single
+              as WizardChoices;
+      expect(staged.exchangeAccess, isFalse);
+      expect(staged.touched, {WizardField.exchangeAccess});
+      verifyNever(() => wizard.clearPending());
+    },
+  );
+
+  test('clears exchange choice only after successful application', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(touched: {WizardField.exchangeAccess}),
+    );
+    var applied = false;
+    final applying = ApplyPendingWizardChoicesUsecase(
+      wizardRepository: wizard,
+      settingsRepository: settings,
+      intervals: intervals,
+      applyExchangeAccess: (enabled) async {
+        applied = enabled;
+        return const Ok(null);
+      },
+    );
+    await applying.execute();
+    expect(applied, isTrue);
+    verify(() => wizard.clearPending()).called(1);
+  });
+
+  for (final (stored, enabled, expected) in [
+    (BackgroundSyncInterval.hours6, false, BackgroundSyncInterval.off),
+    (BackgroundSyncInterval.off, true, BackgroundSyncInterval.fallback),
+    (BackgroundSyncInterval.hours6, true, BackgroundSyncInterval.hours6),
+  ]) {
+    test(
+      'background tasks $enabled over ${stored.name} store ${expected.name}',
+      () async {
+        intervals.stored = stored;
+        when(() => wizard.readPending()).thenAnswer(
+          (_) async => WizardChoices(
+            backgroundTasks: enabled,
+            touched: const {WizardField.backgroundTasks},
+          ),
+        );
+        await usecase.execute();
+        expect(intervals.stored, expected);
+        expect(intervals.writes, stored == expected ? 0 : 1);
+        verify(() => wizard.clearPending()).called(1);
+      },
+    );
+  }
+
+  test('untouched background tasks keep the stored interval', () async {
+    intervals.stored = BackgroundSyncInterval.off;
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(touched: {WizardField.language}),
+    );
+    await usecase.execute();
+    expect(intervals.stored, BackgroundSyncInterval.off);
+    expect(intervals.writes, 0);
+  });
+
+  test(
+    'keeps the background choice pending when it cannot be stored',
+    () async {
+      intervals.failWrite = true;
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          backgroundTasks: false,
+          touched: {WizardField.backgroundTasks},
+        ),
+      );
+      await usecase.execute();
+      final staged =
+          verify(() => wizard.savePending(captureAny())).captured.single
+              as WizardChoices;
+      expect(staged.touched, {WizardField.backgroundTasks});
+      expect(staged.backgroundTasks, isFalse);
+      verifyNever(() => wizard.clearPending());
+    },
+  );
+}

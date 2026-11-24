@@ -1,0 +1,130 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "เลือกค่าธรรมเนียม",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "กล้อง",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "อย่าลืม",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "วาง PSBT หรือการทําธุรกรรม HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "ออกอากาศ",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "ออกอากาศ",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "จํานวน",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "กด",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "แทนที่ค่าธรรมเนียม",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "ออกอากาศ",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "ค่าธรรมเนียมเครือข่าย",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "รวดเร็ว",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "ธุรกรรมทั่วไป",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "จาก",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "ราคาโดยประมาณ ~ 10 นาที",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "อย่าลืม",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "อ่านต่อ",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "ไปที่",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "เราไม่สามารถเผยแพร่ธุรกรรมของคุณได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง",
+  "broadcastSignedTxErrorInvalidTransaction": "นี่ดูเหมือนจะไม่ใช่ธุรกรรมที่ลงนามแล้วที่ถูกต้อง กรุณาตรวจสอบว่าคุณวาง PSBT หรือธุรกรรมครบถ้วนแล้ว",
+  "broadcastSignedTxErrorInvalidPushTx": "เราไม่สามารถอ่านธุรกรรมจากแท็กนี้ได้ กรุณาสแกนอีกครั้ง",
+  "replaceByFeeFeeRateDisplay": "ค่าธรรมเนียม: {feeRate} นั่ง/Vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
+  "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "ไม่ทราบเอาต์พุตทอน — แสดงเอาต์พุตทั้งหมดเท่าเทียมกัน",
+  "coreScreensUnknown": "ไม่ทราบ",
+  "coreScreensFetchFailed": "ไม่สามารถดึงธุรกรรม {txid} จาก Electrum",
+  "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
+  "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้",
+  "mempoolServerStatusUnknown": "ไม่ทราบ",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "แตะ Coldcard ของคุณเพื่อรับธุรกรรมที่เซ็นแล้วผ่าน NFC",
+  "consolidationDone": "เสร็จสิ้น",
+  "consolidationFailedBody": "เกิดข้อผิดพลาดที่ไม่คาดคิด เงินของคุณปลอดภัย: ไม่มีการเผยแพร่ธุรกรรมใด ๆ โปรดลองอีกครั้ง",
+  "consolidationFailedTitle": "การรวมล้มเหลว",
+  "consolidationInProgress": "กำลังรวม…",
+  "consolidationRequiredTitle": "รวมกระเป๋าเงิน",
+  "consolidationRequiredTitleNamed": "รวมกระเป๋าเงิน {walletName}",
+  "consolidationRowAmount": "จำนวน",
+  "consolidationRowNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "consolidationRowOutputs": "เอาต์พุต",
+  "consolidationRowTransactions": "ธุรกรรม",
+  "consolidationScreenDescription": "เอาต์พุตที่มากเกินไปอาจทำให้กระเป๋าเงินไม่เสถียร การรวมจะรวมเข้าด้วยกันให้น้อยลงเพื่อให้กระเป๋าเงินทำงานอย่างถูกต้อง",
+  "consolidationScreenTitle": "รวม",
+  "consolidationSuccessBody": "เหรียญของคุณกำลังถูกรวมเข้าด้วยกัน จะเสร็จสมบูรณ์เมื่อเครือข่ายยืนยัน",
+  "consolidationSuccessTitle": "เริ่มการรวมแล้ว",
+  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง",
+  "broadcastSignedTxErrorPsbtFinalization": "ไม่สามารถสรุปธุรกรรมที่ลงนามแล้วได้ โปรดตรวจสอบว่ามีลายเซ็นที่จำเป็นครบถ้วนแล้วลองอีกครั้ง",
+  "coreScreensOutputsExceedInputs": "เอาต์พุตมากกว่าอินพุต: ธุรกรรมนี้ไม่ถูกต้องและเครือข่ายจะปฏิเสธ",
+  "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
+  "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
+  "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
+  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน"
+}

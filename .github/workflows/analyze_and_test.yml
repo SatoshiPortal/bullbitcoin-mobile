@@ -78,6 +78,9 @@ jobs:
             while IFS= read -r path; do
               file_count=$((file_count + 1))
               case "$path" in
+                WORKSPACE.md|DEPENDENCIES.md)
+                  run_app_checks=true
+                  ;;
                 *.md|docs/*|LICENSE|.gitignore|.git-blame-ignore-revs|.github/ISSUE_TEMPLATE/*)
                   ;;
                 *)
@@ -269,6 +272,10 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make analyze
 
+      - name: Workspace dependency docs should be current
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make workspace-graph-check
+
       - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
@@ -315,7 +322,7 @@ jobs:
     needs: prepare-x64
     name: Unit tests (shard ${{ matrix.shard }} of 3)
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:

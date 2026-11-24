@@ -1,45 +1,42 @@
+import 'package:secrets/testing.dart';
+import 'package:secrets/secrets.dart' show WalletSigner;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, LiquidNetwork, NetworkEnv;
+import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:primitives/primitives.dart' show LiquidNetwork, Sats;
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
-import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, Result, ScriptType;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok, Result;
+import 'package:swap_feature/testing.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSpend extends Mock implements Spend {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockWalletRepository extends Mock implements LoadSwapWalletsUsecase {}
 
 class _MockPreferences extends Mock implements Preferences {}
 
 class _MockGetReceiveAddress extends Mock implements AddressView {}
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 class _MockLabels extends Mock implements Labels {}
 
-Wallet _wallet({required bool liquid}) => Wallet(
-  origin: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
-  network: liquid ? Network.liquidTestnet : Network.bitcoinTestnet,
-  isDefault: true,
-  xpubFingerprint: 'fingerprint',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'external',
-  internalPublicDescriptor: 'internal',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.from(liquid ? 3000000 : 0),
+SwapWallet _wallet({required bool liquid}) => SwapWallet(
+  walletRegistrationForTesting(
+    id: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
+    network: liquid ? LiquidNetwork.testnet : BitcoinNetwork.testnet,
+    isDefault: true,
+    signer: WalletSigner.local,
+  ),
+  BigInt.from(liquid ? 3000000 : 0),
+  false,
 );
 
 OrderSwapRecord _record({
@@ -93,7 +90,7 @@ void main() {
   late _MockPreferences settingsRepository;
   late _MockSpend spend;
   late _MockGetReceiveAddress getReceiveAddress;
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late _MockLabels labelsFacade;
   late ExchangeAutoswapProvider provider;
   late List<Duration> delays;
@@ -142,7 +139,7 @@ void main() {
     settingsRepository = _MockPreferences();
     spend = _MockSpend();
     getReceiveAddress = _MockGetReceiveAddress();
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     labelsFacade = _MockLabels();
     delays = [];
     provider = ExchangeAutoswapProvider(
@@ -164,10 +161,9 @@ void main() {
         ),
       ),
     );
-    when(() => walletRepository.getWallets(environment: Environment.testnet))
-        .thenAnswer(
-          (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
-        );
+    when(() => walletRepository.execute(NetworkEnv.testnet)).thenAnswer(
+      (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
+    );
     when(() => swapFacade.getPendingOrders())
         .thenAnswer((_) async => const Ok([]));
     when(

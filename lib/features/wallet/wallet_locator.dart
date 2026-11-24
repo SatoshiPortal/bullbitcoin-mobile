@@ -1,16 +1,12 @@
+import 'package:notifications/payment_store.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:secrets/custody.dart';
 import 'package:preferences/preferences.dart';
-import 'package:receive/receive.dart' show Receive;
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
 import 'package:bull_ark/ark_wallet_setup.dart';
 
-import 'domain/usecases/get_default_wallet_network_usecase.dart';
-import 'domain/usecases/is_tor_required_usecase.dart';
-
-import 'data/catalog_wallet_secret_references_repository.dart';
-import 'domain/repositories/wallet_secret_references_repository.dart';
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'domain/usecases/create_network_wallet_usecase.dart';
 import 'presentation/network_wallet_setup_cubit.dart';
@@ -18,15 +14,14 @@ import 'presentation/network_wallet_setup_cubit.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
 
-import 'data/payment_notifications.dart';
-import 'data/wallet_payment_observer.dart';
+import 'package:settings/settings.dart' show LanguageExtension;
 
-import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
+import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
+
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -35,7 +30,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:sync/inventory.dart';
-import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:silent/silent.dart';
@@ -45,12 +40,13 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
     as core;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
@@ -58,15 +54,36 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+import 'package:wallet_import/setup.dart'
+    show
+        ProvisionDescriptorWallet,
+        ProvisionMnemonicWallet,
+        ProvisionXpubWallet;
 
 class WalletLocator {
-  static void setup(GetIt locator, {Receive Function()? receive}) {
+  static ({
+    ProvisionMnemonicWallet mnemonic,
+    ProvisionDescriptorWallet descriptor,
+    ProvisionXpubWallet xpub,
+  })
+  importOperations(GetIt services) {
+    final repository = services<WalletRepository>();
+    return (
+      mnemonic: repository.importWallet,
+      descriptor: repository.importDescriptor,
+      xpub: repository.importWatchOnlyXpub,
+    );
+  }
+
+  static void setup(GetIt locator) {
+    OverviewSynchronization overviewSync() =>
+        locator<OverviewSynchronization>();
     Future<WalletKey> keyFor(String id) =>
         WalletSyncBinding.keyForId(locator<WalletRegistrations>(), id);
     Future<BitcoinSpendStatus> spendStatus(
@@ -85,24 +102,19 @@ class WalletLocator {
       }
     }
 
-    locator.registerFactory<WalletSecretReferencesRepository>(
-      () => CatalogWalletSecretReferencesRepository(
-        locator<WalletRegistrations>(),
-      ),
-    );
     locator.registerFactory<LoadNetworkWalletSetupUsecase>(
       () => LoadNetworkWalletSetupUsecase(
         locator<DeveloperEnvironmentReader>(),
-        locator<WalletSecretReferencesRepository>(),
+        locator<SecretsInventory>(),
         locator<Secrets>(),
       ),
     );
     locator.registerFactory<CreateNetworkWalletUsecase>(
       () => CreateNetworkWalletUsecase(
         locator<DeveloperEnvironmentReader>(),
-        locator<WalletSecretReferencesRepository>(),
+        locator<SecretsInventory>(),
         locator<Secrets>(),
-        locator<CreateDefaultWalletsUsecase>(),
+        locator<DefaultWalletProvisioning>(),
       ),
     );
     locator.registerFactory<NetworkWalletSetupCubit>(
@@ -115,31 +127,13 @@ class WalletLocator {
       () => BroadcastObservationFollowUp(
         spendStatus: spendStatus,
         pollWallet: (id, {required isActive}) =>
-            locator<SyncCoordinator>().pollWallet(id, isActive: isActive),
+            overviewSync().coordinator.pollWallet(id, isActive: isActive),
       ),
       dispose: (followUp) => followUp.dispose(),
     );
     locator.registerLazySingleton<WalletFacade>(
       () => WalletFacade(
-        locator<WalletNativeRuntime>().changes,
-        readDefaultWalletNetwork: () =>
-            locator<GetDefaultWalletNetworkUsecase>().execute(),
-        readTorRequirement: () => locator<IsTorRequiredUsecase>().execute(),
-        nextReceiveAddress: receive == null
-            ? null
-            : (id, {excludedAddresses = const {}}) async =>
-                  (await receive().nextUnusedAddress(
-                    id,
-                    excludedAddresses: excludedAddresses,
-                  )).mapErr(
-                    (failure) => WalletStorageFailure(failure.logMessage),
-                  ),
         spendStatus: spendStatus,
-        receiveAddress: receive == null
-            ? null
-            : (id) async =>
-                  (await receive().transferAddress(id))
-                      .mapErr((_) => const WalletDiscoveryUnavailableFailure()),
         broadcastSpend: locator<BroadcastObservationFollowUp>().wrap((
           id,
           transaction, {
@@ -173,22 +167,45 @@ class WalletLocator {
             return false;
           }
         },
-        pollWallet: (id, {required isActive}) =>
-            locator<SyncCoordinator>().pollWallet(id, isActive: isActive),
-        discoverWallet: (id) => locator<SyncCoordinator>().discoverWallet(id),
-        syncFinished: locator<ForegroundWalletSync>().finished.map((_) {}),
-        syncPassActivity: locator<SyncCoordinator>().syncPassActivity,
-        isSyncPassActive: () => locator<SyncCoordinator>().isSyncPassActive,
       ),
     );
-    locator.registerFactory<CreateDefaultWalletsUsecase>(
-      () => CreateDefaultWalletsUsecase(
+    locator.registerLazySingleton<DefaultWalletRepair>(
+      () => DefaultWalletRepair(locator<Secrets>(), (secret, network) async {
+        await locator<WalletRepository>().createWallet(
+          secret: secret,
+          network: Network.fromEnvironment(
+            environment: network.env,
+            isLiquid: network is LiquidNetwork,
+          ),
+          scriptType: ScriptType.bip84,
+          isDefault: true,
+        );
+      }),
+    );
+    locator.registerFactory<DefaultWalletProvisioning>(
+      () => DefaultWalletProvisioning(
         secrets: locator<Secrets>(),
-        settingsRepository: locator<ActiveEnvironmentReader>(),
-        walletRepository: locator<WalletRepository>(),
-        resumeProvisioning: () async => WalletSyncBinding.value(
+        inventory: locator<SecretsInventory>(),
+        environment: () async =>
+            (await locator<ActiveEnvironmentReader>().readActiveEnvironment())
+                .fold(
+                  (value) => value.networkEnv,
+                  (_) => throw Exception('Preferences read failed'),
+                ),
+        resume: () async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().resumeProvisioning(),
         ),
+        create: (secret, network, birthday) =>
+            locator<WalletRepository>().createWallet(
+              secret: secret,
+              network: Network.fromEnvironment(
+                environment: network.env,
+                isLiquid: network is LiquidNetwork,
+              ),
+              scriptType: ScriptType.bip84,
+              isDefault: true,
+              birthday: birthday,
+            ),
       ),
     );
 
@@ -245,10 +262,13 @@ class WalletLocator {
       locator.registerLazySingleton<PaymentNotificationStore>(
         () => PaymentNotificationStore(
           () async => (await getApplicationDocumentsDirectory()).path,
-          () async => ((await locator<Preferences>().fetch()).fold(
-            (value) => value,
-            (failure) => throw Exception('Preferences read failed'),
-          )).language,
+          () async {
+            final settings = (await locator<Preferences>().fetch()).fold(
+              (value) => value,
+              (_) => throw Exception('Preferences read failed'),
+            );
+            return PaymentNotifications.gateway(settings.language?.locale);
+          },
         ),
         dispose: (store) => store.close(),
       );
@@ -272,16 +292,12 @@ class WalletLocator {
       return WalletRepository(
         native: locator<WalletNativeRuntime>(),
         walletRegistrations: locator<WalletRegistrations>(),
-        wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: sync.synchronize,
         syncStarted: sync.started,
         syncFinished: sync.finished,
       );
     });
-    locator.registerFactory<DefaultWalletsFacade>(
-      () => DefaultWalletsFacade(locator<CreateDefaultWalletsUsecase>()),
-    );
     locator.registerFactory<CheckBackupNeededUsecase>(
       () => CheckBackupNeededUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -326,7 +342,7 @@ class WalletLocator {
     locator.registerFactory<DeleteWalletUsecase>(
       () => DeleteWalletUsecase(
         locator<core.DeleteWalletUsecase>(),
-        locator<SwapFacade>(),
+        locator<OrderSwaps>(),
       ),
     );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
@@ -352,7 +368,7 @@ class WalletLocator {
     );
 
     locator.registerFactory<SyncWalletsUsecase>(
-      () => SyncWalletsUsecase(locator<SyncCoordinator>()),
+      () => SyncWalletsUsecase(overviewSync().coordinator.sync),
     );
     locator.registerFactory<WatchWalletSyncEventsUsecase>(
       () => WatchWalletSyncEventsUsecase(
@@ -368,10 +384,10 @@ class WalletLocator {
           locator<AmountDisplayPreferencesReader>(),
         ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-          locator<WalletFacade>(),
+          locator<WalletNativeRuntime>().changes,
         ),
         retrySwapsOnRefreshUsecase: RetrySwapsOnRefreshUsecase(
-          locator<SwapFacade>(),
+          locator<SwapActivity>(),
         ),
         checkSpWalletSetupForWalletUsecase:
             locator<CheckSpWalletSetupForWalletUsecase>(),

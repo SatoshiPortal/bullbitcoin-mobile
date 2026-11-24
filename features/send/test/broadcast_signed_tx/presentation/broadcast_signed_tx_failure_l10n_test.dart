@@ -1,0 +1,66 @@
+import 'package:send/src/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
+import 'package:send/src/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
+import 'package:send/setup.dart' show SendLocalizations;
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('finalization failure maps to its localized message', (
+    tester,
+  ) async {
+    late String message;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: SendLocalizations.localizationsDelegates,
+        supportedLocales: SendLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            message = const PsbtFinalizationFailure().toTranslated(context);
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    final l10n = await SendLocalizations.delegate.load(const Locale('en'));
+
+    expect(message, l10n.broadcastSignedTxErrorPsbtFinalization);
+    expect(message, isNot(l10n.broadcastSignedTxErrorInvalidTransaction));
+  });
+
+  testWidgets('each broadcast failure has its own localized message', (
+    tester,
+  ) async {
+    const failures = <BroadcastSignedTxFailure>[
+      BroadcastFailedFailure(),
+      TransactionAlreadyInChainFailure(),
+      TransactionRejectedFailure(),
+      BroadcastOutcomeUnknownFailure(),
+      BroadcastNetworkNotEnabledFailure(),
+    ];
+    late List<String> messages;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: SendLocalizations.localizationsDelegates,
+        supportedLocales: SendLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            messages = [
+              for (final failure in failures) failure.toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    final l10n = await SendLocalizations.delegate.load(const Locale('en'));
+
+    expect(messages, [
+      l10n.broadcastSignedTxBroadcastError,
+      l10n.broadcastSignedTxErrorAlreadyInChain,
+      l10n.broadcastSignedTxErrorRejected,
+      l10n.broadcastSignedTxErrorOutcomeUnknown,
+      l10n.broadcastSignedTxErrorNetworkNotEnabled,
+    ]);
+    expect(messages.toSet(), hasLength(failures.length));
+  });
+}

@@ -43,7 +43,6 @@ final class _Spends {
   );
 
   WalletFacade get facade => WalletFacade(
-    const Stream.empty(),
     broadcastSpend:
         (
           walletId,
@@ -96,7 +95,7 @@ void main() {
         wallet: spends.facade,
         bitcoinBlockchainRepository: bitcoin,
         settingsRepository: settings,
-        walletUtxoRepository: EmptyFrozenOutpoints(),
+        coins: EmptyFrozenOutpoints(),
       );
 
   final built = UnsignedSpend(

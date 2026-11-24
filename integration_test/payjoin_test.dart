@@ -1,7 +1,6 @@
 import 'dart:io' show Platform;
 
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/transactions/public/prepare_payjoin_original.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -11,6 +10,7 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:spend/payjoin.dart';
 import 'package:spend/spend.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;

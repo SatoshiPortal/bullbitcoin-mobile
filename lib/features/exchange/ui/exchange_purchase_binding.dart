@@ -1,7 +1,7 @@
 import 'package:transactions/transactions.dart';
 import 'package:transactions/routes.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:address_view/payment_destination.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
@@ -26,12 +26,14 @@ ExchangePurchaseHost exchangePurchaseHost(GetIt locator) => (
   payjoinSessions: () => locator<PayjoinSessions>(),
   payjoinReceiver: () => locator<PayjoinReceiver>(),
   payjoinPolicy: () => locator<PayjoinPolicyAccess>(),
-  pollWallet: (id) =>
-      locator<WalletFacade>().pollWallet(id, isActive: () => true),
+  pollWallet: (id) => locator<OverviewSynchronization>().coordinator.pollWallet(
+    id,
+    isActive: () => true,
+  ),
   labelOrders: (orders) =>
       locator<Transactions>().labelCompletedExchangeOrders(orders),
   validateBitcoinAddress: (raw) async =>
-      (await const WalletPaymentDestinationFacade().validate(
+      (await const PaymentDestinations().validate(
         raw,
         acceptedTypes: const {PaymentDestinationType.bitcoin},
       ))?.address,
@@ -57,7 +59,6 @@ ExchangePurchaseHost exchangePurchaseHost(GetIt locator) => (
               PaymentDestinationType.lightningAddress,
           },
         },
-        allowLnurl: type != WalletAddressType.lightning,
         keyboardType: type == WalletAddressType.lightning
             ? TextInputType.emailAddress
             : TextInputType.text,

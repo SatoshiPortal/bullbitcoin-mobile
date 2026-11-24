@@ -22,7 +22,12 @@ enum QrImportDevice {
 typedef WatchOnlyImportRequest = ({WatchOnlyInput input, String label});
 
 abstract final class ImportNavigation {
-  // The scanner and confirmation routes are mounted in the app on storage-05.
+  static const homeName = 'importWalletHome';
+  static const homePath = '/import-wallet-home';
+
+  static Future<void> open(BuildContext context) =>
+      context.pushNamed<void>(homeName);
+
   static const watchOnlyScannerName = 'scan';
   static const watchOnlyScannerPath = '/import-watch-only-scanner';
   static const watchOnlyConfirmationName = 'import';

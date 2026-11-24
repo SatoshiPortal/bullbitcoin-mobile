@@ -149,17 +149,17 @@
   "@app__exchangeTestnetBasicAuthTitle_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthTitle."
   },
-  "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth for the testnet account web pages (login and KYC).",
-  "@app__exchangeTestnetBasicAuthDescription_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthDescription."
-  },
   "app__walletDeletionErrorOngoingSwaps_apple": "You cannot delete a wallet with ongoing transfers.",
   "@app__walletDeletionErrorOngoingSwaps_apple": {
     "description": "Apple (App Store) wording for the root catalogue key walletDeletionErrorOngoingSwaps."
   },
-  "app__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
-  "@app__onboardingSplashDescription_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key onboardingSplashDescription."
+  "onboarding__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
+  "wizard__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
+  "@onboarding__onboardingSplashDescription_apple": {
+    "description": "Apple (App Store) wording for the onboarding catalogue key onboardingSplashDescription."
+  },
+  "@wizard__onboardingSplashDescription_apple": {
+    "description": "Apple (App Store) wording for the wizard catalogue key onboardingSplashDescription."
   },
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin transfers will take time to confirm.",
   "@app__sendSlowPaymentWarningDescription_apple": {
@@ -810,16 +810,16 @@
   "@app__autoswapAlwaysBlockDisabledInfo_apple": {
     "description": "Apple (App Store) wording for the root catalogue key autoswapAlwaysBlockDisabledInfo."
   },
-  "app__exchangeLandingConnectAccount_apple": "Connect your Bull Bitcoin account",
-  "@app__exchangeLandingConnectAccount_apple": {
+  "bull_exchange__exchangeLandingConnectAccount_apple": "Connect your Bull Bitcoin account",
+  "@bull_exchange__exchangeLandingConnectAccount_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeLandingConnectAccount."
   },
-  "app__exchangeLandingRecommendedExchange_apple": "Recommended Bitcoin Account",
-  "@app__exchangeLandingRecommendedExchange_apple": {
+  "bull_exchange__exchangeLandingRecommendedExchange_apple": "Recommended Bitcoin Account",
+  "@bull_exchange__exchangeLandingRecommendedExchange_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeLandingRecommendedExchange."
   },
-  "app__exchangeGoToWebsiteButton_apple": "Go to the Bull Bitcoin website",
-  "@app__exchangeGoToWebsiteButton_apple": {
+  "bull_exchange__exchangeGoToWebsiteButton_apple": "Go to the Bull Bitcoin website",
+  "@bull_exchange__exchangeGoToWebsiteButton_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeGoToWebsiteButton."
   },
   "app__exchangeSupportChatWalletIssuesInfo_apple": "This chat is only for account related issues in Funding/Buy/Sell/Withdraw/Pay.\nFor wallet related issues, join the telegram group by clicking here.",
@@ -862,13 +862,13 @@
   "@app__logoutConfirmationDescription_apple": {
     "description": "Apple (App Store) wording for the root catalogue key logoutConfirmationDescription."
   },
-  "app__wizardJourneyTip5_apple": "Transfer between Bitcoin and Liquid with no KYC",
-  "@app__wizardJourneyTip5_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key wizardJourneyTip5."
+  "wizard__wizardJourneyTip5_apple": "Transfer between Bitcoin and Liquid with no KYC",
+  "@wizard__wizardJourneyTip5_apple": {
+    "description": "Apple (App Store) wording for the wizard catalogue key wizardJourneyTip5."
   },
-  "app__wizardJourneyTip6_apple": "Customize your auto transfer settings",
-  "@app__wizardJourneyTip6_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key wizardJourneyTip6."
+  "wizard__wizardJourneyTip6_apple": "Customize your auto transfer settings",
+  "@wizard__wizardJourneyTip6_apple": {
+    "description": "Apple (App Store) wording for the wizard catalogue key wizardJourneyTip6."
   },
   "app__transactionSwapOpenWithin24h_apple": "Open the app within 24 hours to complete your transfer.",
   "@app__transactionSwapOpenWithin24h_apple": {
@@ -917,14 +917,6 @@
   "@app__swapErrorRouteUnavailableGeneric_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapErrorRouteUnavailableGeneric."
   },
-  "app__settingsExchangeTitle_apple": "Account",
-  "@app__settingsExchangeTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeTitle."
-  },
-  "app__bitcoinSettingsAutoTransferTitle_apple": "Auto Transfer",
-  "@app__bitcoinSettingsAutoTransferTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key bitcoinSettingsAutoTransferTitle."
-  },
   "app__autoBuyInfoMessage_apple": "Any amount added to your account will be converted to Bitcoin at the current rate and sent to your wallet.",
   "@app__autoBuyInfoMessage_apple": {
     "description": "Apple (App Store) wording for the root catalogue key autoBuyInfoMessage."
@@ -932,10 +924,6 @@
   "app__limitOrdersBackToExchange_apple": "Back to Account",
   "@app__limitOrdersBackToExchange_apple": {
     "description": "Apple (App Store) wording for the root catalogue key limitOrdersBackToExchange."
-  },
-  "app__settingsPayjoinExchangeSection_apple": "With the Bull Bitcoin account",
-  "@app__settingsPayjoinExchangeSection_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key settingsPayjoinExchangeSection."
   },
   "app__exchangePaymentSentPastDeadline_apple": "Payment sent. Bull Bitcoin reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
   "@app__exchangePaymentSentPastDeadline_apple": {
@@ -963,5 +951,71 @@
   },
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemonic",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Delete transfer mnemonic?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "This removes the transfer master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing transfers are unaffected."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "This removes the transfer master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing transfers are unaffected.",
+  "receive__receiveTransferFee_apple": "Transfer Fee",
+  "@receive__receiveTransferFee_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key receiveTransferFee."
+  },
+  "receive__swapErrorAmountBelowMinimum_apple": "Amount is below minimum transfer amount: {min} sats",
+  "@receive__swapErrorAmountBelowMinimum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorAmountBelowMinimum.",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "receive__swapErrorAmountAboveMaximum_apple": "Amount exceeds maximum transfer amount: {max} sats",
+  "@receive__swapErrorAmountAboveMaximum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorAmountAboveMaximum.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receive__swapTransferTitle_apple": "Transfer",
+  "@receive__swapTransferTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferTitle."
+  },
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Rate unavailable. Please try again later.",
+  "@receive__bitcoinPriceExchangeRateUnavailable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key bitcoinPriceExchangeRateUnavailable."
+  },
+  "receive__swapErrorRouteUnavailableGeneric_apple": "This transfer is not available.",
+  "@receive__swapErrorRouteUnavailableGeneric_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorRouteUnavailableGeneric."
+  },
+  "settings__swapRestoreTitle_apple": "Transfer restore",
+  "@settings__swapRestoreTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRestoreTitle."
+  },
+  "settings__settingsExchangeSettingsTitle_apple": "Account Settings",
+  "@settings__settingsExchangeSettingsTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeSettingsTitle."
+  },
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet account credentials",
+  "@settings__exchangeTestnetBasicAuthTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthTitle."
+  },
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth for the testnet account web pages (login and KYC).",
+  "@settings__exchangeTestnetBasicAuthDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthDescription."
+  },
+  "settings__autoswapSettingsTitle_apple": "Auto Transfer Settings",
+  "@settings__autoswapSettingsTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapSettingsTitle."
+  },
+  "settings__settingsExchangeTitle_apple": "Account",
+  "@settings__settingsExchangeTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeTitle."
+  },
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Auto Transfer",
+  "@settings__bitcoinSettingsAutoTransferTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key bitcoinSettingsAutoTransferTitle."
+  },
+  "settings__settingsPayjoinExchangeSection_apple": "With the Bull Bitcoin account",
+  "@settings__settingsPayjoinExchangeSection_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsPayjoinExchangeSection."
+  }
 }

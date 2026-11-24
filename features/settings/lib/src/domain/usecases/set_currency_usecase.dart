@@ -1,0 +1,19 @@
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:settings/src/domain/settings_failure.dart';
+import 'package:meta/meta.dart';
+
+class SetCurrencyUsecase {
+  final Preferences _settingsRepository;
+
+  const SetCurrencyUsecase({required this._settingsRepository});
+
+  @useResult
+  Future<Result<void, SettingsFailure>> execute(String currencyCode) async {
+    final result = await _settingsRepository.setCurrency(currencyCode);
+
+    return result.mapErr(
+      (failure) => SettingsStorageFailure(failure.logMessage),
+    );
+  }
+}

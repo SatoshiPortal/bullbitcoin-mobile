@@ -3,7 +3,7 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'dart:typed_data';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:address_view/address_view.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';

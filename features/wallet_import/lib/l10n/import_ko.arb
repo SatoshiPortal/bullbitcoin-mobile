@@ -356,5 +356,204 @@
   "importColdcardMk4Step10": "\"Scan NFC\" 버튼을 클릭하세요",
   "importColdcardMk4Step11": "휴대폰의 NFC를 Coldcard NFC 위에 올려두세요",
   "importColdcardMk4Step12": "완료되었습니다!",
-  "recipientsInfoLabel": "라벨"
+  "recipientsInfoLabel": "라벨",
+  "bitboxScreenDefaultWalletLabel": "BitBox 지갑",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "관련 기사",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "카메라 열기",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "{deviceName} 기기에서 지갑 디스크립터를 가져옵니다.",
+  "importColdcardConnectTitle": "{deviceName} 연결",
+  "importColdcardInvalidWalletData": "잘못된 Coldcard 지갑 데이터",
+  "importColdcardScanNfcSheetTitle": "{deviceName} 기기를 태그하여 NFC로 지갑 디스크립터를 가져오세요",
+  "importMnemonicBalanceLabel": "밸런스: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "계속하기",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
+  "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "이름 *",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "연락처",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "사이트맵",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "수입 Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "모든 3개의 지갑 유형은 동기화이고 그들의 균형 및 거래는 곧 나타납니다. sync가 완료될 때까지 기다릴 수 있고, 지갑 유형이 가져올지 확인해야 합니다.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "수입 Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "거래 : {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "콜드 카드 Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "수입 Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "가져오기 watch-only",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "블록스트림 옥",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "키스톤",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "한국어",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "연락처",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "기초 여권",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "일반 지갑",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "하드웨어 지갑",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "비밀번호",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "관련 상품",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "새로운 지갑 추가",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "클립보드에 복사",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "연구분야",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "이용하기 전에 지갑에서 파생 된 첫 번째 주소를 확인하여 주어진 Xpub를 생산 한 것으로 일치 경로를 확인합니다. 잘못된 경로를 사용하여 자금의 손실로 이어질 수 있습니다",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "Derivation 경로 경고",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "이 지갑은 이미 가져왔습니다.",
+  "importWatchOnlyErrorImportFailed": "이 조회 전용 지갑을 가져올 수 없습니다. 정보를 확인한 후 다시 시도하세요.",
+  "importWatchOnlyErrorInvalidFormat": "유효한 공개 키나 디스크립터가 아닌 것 같습니다. 붙여넣은 내용을 다시 확인하세요.",
+  "importWatchOnlyErrorLabelRequired": "가져오기 전에 지갑 이름을 입력하세요.",
+  "importWatchOnlyErrorNetworkMismatch": "이 지갑은 현재 다른 Bitcoin 네트워크를 사용하고 있습니다. Mainnet과 Testnet 사이를 전환한 후 다시 시도하세요.",
+  "importWatchOnlyErrorNoWalletSelected": "먼저 공개 키나 디스크립터를 붙여넣거나 스캔하세요.",
+  "importWatchOnlyExtendedPublicKey": "회사 소개 이름 *",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "제품정보",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "이름 *",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "네트워크: 비트코인 메인넷",
+  "importWatchOnlyNetworkBitcoinTestnet": "네트워크: 비트코인 테스트넷",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub 또는 디지터",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "견적 요청",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "QR 코드",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "관련 제품",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "가져오기 watch-only",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "제품정보",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "이름 *",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger 지갑",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "이름 *",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "검사 NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
 }

@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Payjoin setup uses the production and regtest cutovers from the composition root', () {
     final init = File('lib/init.dart').readAsStringSync();
-    final setup = File('lib/features/wallet/public/payjoin_setup.dart')
+    final setup = File('features/transactions/lib/src/data/payjoin_setup.dart')
         .readAsStringSync();
 
     expect(

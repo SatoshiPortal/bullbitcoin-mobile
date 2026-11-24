@@ -1,0 +1,324 @@
+import 'package:bull_ui/app_theme.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
+import 'package:send/src/send_localizations.dart';
+import 'package:send/src/consolidation/presentation/consolidation_cubit.dart';
+import 'package:send/src/consolidation/presentation/consolidation_state.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAlertCard,
+        BullButton,
+        BullFadingLinearProgress,
+        BullText,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
+
+/// Confirmation + progress screen for consolidating a Liquid wallet. Styled to
+/// match the Send confirm screen (top bar, header, info rows, primary button).
+///
+/// Consolidation is a set of self-transactions (many outputs → a few), so it
+/// broadcasts through the same Liquid pipeline as a normal send: review →
+/// broadcasting → success (or the failure banner). All logic lives in
+/// [ConsolidationCubit].
+class ConsolidationScreen extends StatelessWidget {
+  const ConsolidationScreen({super.key, required this.selectBalanceSat});
+
+  final int? Function(BuildContext, String) selectBalanceSat;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ConsolidationCubit, ConsolidationState>(
+      builder: (context, state) {
+        final broadcasting = state.status == ConsolidationStatus.broadcasting;
+        return Scaffold(
+          appBar: AppBar(
+            forceMaterialTransparency: true,
+            automaticallyImplyLeading: false,
+            flexibleSpace: BullTopBar(
+              title: context.loc.consolidationScreenTitle,
+              onBack: () => Navigator.of(context).maybePop(),
+            ),
+          ),
+          body: Column(
+            children: [
+              BullFadingLinearProgress(
+                height: 3,
+                trigger: broadcasting,
+                backgroundColor: context.appColors.background,
+                foregroundColor: context.appColors.primary,
+              ),
+              Expanded(
+                child: _Body(state: state, selectBalanceSat: selectBalanceSat),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _Body extends StatelessWidget {
+  const _Body({required this.state, required this.selectBalanceSat});
+
+  final int? Function(BuildContext, String) selectBalanceSat;
+
+  final ConsolidationState state;
+
+  @override
+  Widget build(BuildContext context) {
+    switch (state.status) {
+      case ConsolidationStatus.broadcasting:
+        return const _BroadcastingView();
+      case ConsolidationStatus.success:
+        return const _SuccessView();
+      case ConsolidationStatus.idle:
+      case ConsolidationStatus.failed:
+        return _ReviewView(state: state, selectBalanceSat: selectBalanceSat);
+    }
+  }
+}
+
+class _ReviewView extends StatelessWidget {
+  const _ReviewView({required this.state, required this.selectBalanceSat});
+
+  final int? Function(BuildContext, String) selectBalanceSat;
+
+  final ConsolidationState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final consolidation = context.read<ConsolidationCubit>();
+    final balanceSat = selectBalanceSat(context, state.walletId);
+    if (balanceSat == null) return Text(context.loc.walletLoadFailed);
+    final before = state.utxoCount;
+    final after = state.transactionCount;
+    final feeSat = state.feeSat;
+    const dash = '—';
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (state.status == ConsolidationStatus.failed) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: BullAlertCard(
+                title: context.loc.consolidationFailedTitle,
+                body: context.loc.consolidationFailedBody,
+              ),
+            ),
+            const Gap(24),
+          ],
+          _Header(balanceSat: balanceSat),
+          const Gap(16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: BullText(
+              context.loc.consolidationScreenDescription,
+              style: context.bullType.body,
+              color: context.appColors.onSurfaceVariant,
+              textAlign: TextAlign.center,
+              maxLines: 5,
+            ),
+          ),
+          const Gap(40),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _InfoRow(
+                  title: context.loc.consolidationRowOutputs,
+                  details: before == null || after == null
+                      ? _valueText(context, dash)
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _valueText(context, '$before'),
+                            const Gap(8),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 16,
+                              color: context.appColors.onSurfaceVariant,
+                            ),
+                            const Gap(8),
+                            _valueText(context, '$after'),
+                          ],
+                        ),
+                ),
+                _divider(context),
+                _InfoRow(
+                  title: context.loc.consolidationRowAmount,
+                  details: _valueText(context, FormatAmount.sats(balanceSat)),
+                ),
+                _divider(context),
+                _InfoRow(
+                  title: context.loc.consolidationRowNetworkFees,
+                  details: _valueText(
+                    context,
+                    feeSat == null ? dash : FormatAmount.sats(feeSat),
+                  ),
+                ),
+                _divider(context),
+                _InfoRow(
+                  title: context.loc.consolidationRowTransactions,
+                  details: _valueText(context, after == null ? dash : '$after'),
+                ),
+              ],
+            ),
+          ),
+          const Gap(40),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: BullButton.primary(
+              label: context.loc.consolidationScreenTitle,
+              onPressed: consolidation.canSubmit
+                  ? consolidation.consolidate
+                  : null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _valueText(BuildContext context, String value) => BullText(
+    value,
+    style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+    color: context.appColors.secondary,
+    textAlign: TextAlign.end,
+  );
+
+  Widget _divider(BuildContext context) =>
+      Container(height: 1, color: context.appColors.secondaryFixedDim);
+}
+
+/// Label/value row matching the Send confirm screen's `InfoRow`.
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({required this.title, required this.details});
+
+  final String title;
+  final Widget details;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          BullText(
+            title,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
+            color: context.appColors.onSurfaceVariant,
+          ),
+          const Gap(24),
+          Expanded(child: details),
+        ],
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({required this.balanceSat});
+
+  final int balanceSat;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.center,
+          height: 72,
+          width: 72,
+          decoration: BoxDecoration(
+            color: context.appColors.secondaryFixedDim,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.sync, size: 32, color: context.appColors.secondary),
+        ),
+        const Gap(16),
+        BullText(
+          context.loc.consolidationScreenTitle,
+          style: context.bullType.body,
+          color: context.appColors.secondary,
+        ),
+        const Gap(4),
+        BullText(
+          FormatAmount.sats(balanceSat),
+          style: context.bullType.headline,
+          color: context.appColors.secondary,
+        ),
+      ],
+    );
+  }
+}
+
+class _BroadcastingView extends StatelessWidget {
+  const _BroadcastingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(color: context.appColors.primary),
+          const Gap(24),
+          BullText(
+            context.loc.consolidationInProgress,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+            color: context.appColors.secondary,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SuccessView extends StatelessWidget {
+  const _SuccessView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BullText(
+              context.loc.consolidationSuccessTitle,
+              style: context.bullType.subtitle.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+              color: context.appColors.secondary,
+              textAlign: TextAlign.center,
+            ),
+            const Gap(8),
+            BullText(
+              context.loc.consolidationSuccessBody,
+              style: context.bullType.body,
+              color: context.appColors.onSurfaceVariant,
+              textAlign: TextAlign.center,
+              maxLines: 4,
+            ),
+            const Gap(24),
+            BullButton.secondary(
+              label: context.loc.consolidationDone,
+              onPressed: () => Navigator.of(context).maybePop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

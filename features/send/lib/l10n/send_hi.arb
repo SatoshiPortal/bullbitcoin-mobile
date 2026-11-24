@@ -1,0 +1,131 @@
+{
+  "@@locale": "hi",
+  "replaceByFeeErrorNoFeeRateSelected": "कृपया शुल्क दर का चयन करें",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "एनएफसी",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "कैमरा",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "दान",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "PSBT या लेनदेन HEX पेस्ट करें",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "प्रसारण",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "प्रसारण हस्ताक्षरित लेनदेन",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "राशि",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "पुशटेक्स",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "शुल्क द्वारा बदलें",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "प्रसारण",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "नेटवर्क शुल्क",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "सबसे तेज़",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "मूल लेनदेन",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "से",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "अनुमानित प्रसव ~ 10 मिनट",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "दान",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "आपको मूल लेन-देन की तुलना में कम से कम 1 sat/vbyte द्वारा शुल्क दर बढ़ाने की आवश्यकता है",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "जारी",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "करने के लिए",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "हम आपका ट्रांज़ैक्शन ब्रॉडकास्ट नहीं कर सके। अपना इंटरनेट कनेक्शन जाँचें और फिर से कोशिश करें।",
+  "broadcastSignedTxErrorInvalidTransaction": "यह एक मान्य साइन्ड ट्रांज़ैक्शन नहीं लगता। पक्का करें कि आपने पूरा PSBT या ट्रांज़ैक्शन पेस्ट किया है।",
+  "broadcastSignedTxErrorInvalidPushTx": "हम इस टैग से कोई ट्रांज़ैक्शन नहीं पढ़ सके। कृपया फिर से स्कैन करें।",
+  "replaceByFeeFeeRateDisplay": "शुल्क दर: {feeRate}",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolServerStatusUnknown": "अज्ञात",
+  "coreScreensResolvingInputs": "लेन-देन इनपुट हल किए जा रहे हैं...",
+  "coreScreensFeeRateLabel": "शुल्क दर",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "परिवर्तन आउटपुट अज्ञात — सभी आउटपुट समान रूप से दिखाए गए",
+  "coreScreensUnknown": "अज्ञात",
+  "coreScreensFetchFailed": "Electrum से लेन-देन {txid} प्राप्त नहीं हो सका।",
+  "coreScreensInputResolutionFailed": "इनपुट नहीं मिला: {parentTxId} का आउटपुट {vout} मौजूद नहीं है।",
+  "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "हस्ताक्षरित लेनदेन को NFC के ज़रिए प्राप्त करने के लिए अपने कोल्डकार्ड को टैप करें",
+  "consolidationDone": "पूर्ण",
+  "consolidationFailedBody": "एक अनपेक्षित त्रुटि हुई। आपका धन सुरक्षित है: कोई लेनदेन प्रसारित नहीं किया गया। कृपया पुनः प्रयास करें।",
+  "consolidationFailedTitle": "समेकन विफल",
+  "consolidationInProgress": "समेकित किया जा रहा है…",
+  "consolidationRequiredTitle": "वॉलेट समेकित करें",
+  "consolidationRequiredTitleNamed": "{walletName} वॉलेट समेकित करें",
+  "consolidationRowAmount": "राशि",
+  "consolidationRowNetworkFees": "नेटवर्क शुल्क",
+  "consolidationRowOutputs": "आउटपुट",
+  "consolidationRowTransactions": "लेनदेन",
+  "consolidationScreenDescription": "बहुत अधिक आउटपुट वॉलेट को अस्थिर कर सकते हैं। समेकन उन्हें कम में जोड़ देता है ताकि आपका वॉलेट सही ढंग से काम करे।",
+  "consolidationScreenTitle": "समेकित करें",
+  "consolidationSuccessBody": "आपके सिक्के जोड़े जा रहे हैं। नेटवर्क पुष्टि करने पर यह पूरा होगा।",
+  "consolidationSuccessTitle": "समेकन प्रारंभ हुआ",
+  "walletLoadFailed": "आपके वॉलेट लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर से प्रयास करें।",
+  "broadcastSignedTxErrorPsbtFinalization": "हस्ताक्षरित लेनदेन को अंतिम रूप नहीं दिया जा सका। सुनिश्चित करें कि इसमें सभी आवश्यक हस्ताक्षर हैं और फिर से प्रयास करें।",
+  "coreScreensOutputsExceedInputs": "आउटपुट इनपुट से अधिक हैं: यह लेनदेन अमान्य है और नेटवर्क इसे अस्वीकार कर देगा।",
+  "broadcastSignedTxErrorAlreadyInChain": "यह लेनदेन पहले से ही ब्लॉकचेन में है। प्रसारित करने के लिए कुछ भी बाकी नहीं है।",
+  "broadcastSignedTxErrorRejected": "नेटवर्क ने इस लेनदेन को अस्वीकार कर दिया। यह अधूरा हस्ताक्षरित, अमान्य, या किसी अन्य भुगतान से टकराव में हो सकता है।",
+  "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
+  "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।"
+}

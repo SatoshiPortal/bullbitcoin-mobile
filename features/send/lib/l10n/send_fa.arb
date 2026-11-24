@@ -1,0 +1,130 @@
+{
+  "coreScreensFromLabel": "از",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensToLabel": "برای",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensAmountLabel": "مبلغ",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensNetworkFeesLabel": "هزینه های شبکه",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeErrorNoFeeRateSelected": "لطفا نرخ هزینه را انتخاب کنید",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "دوربین",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "انجام کارها",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "PSBT یا معامله HEX را انتخاب کنید",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "پخش Broadcast",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "ارسال قرارداد امضا شده",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "جایگزین با هزینه",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "پخش Broadcast",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeFastestTitle": "سریع ترین",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "معاملات اصلی",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeFastestDescription": "تحویل تخمین زده شده – 10 دقیقه",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "انجام کارها",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "شما نیاز به افزایش نرخ هزینه با حداقل 1 نشست/vbyte در مقایسه با معامله اصلی",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "ادامه",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "broadcastSignedTxBroadcastError": "نتوانستیم تراکنش شما را منتشر کنیم. اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.",
+  "broadcastSignedTxErrorInvalidTransaction": "این به نظر یک تراکنش امضاشده معتبر نمی‌رسد. مطمئن شوید که PSBT یا تراکنش کامل را چسبانده‌اید.",
+  "broadcastSignedTxErrorInvalidPushTx": "نتوانستیم تراکنشی از این برچسب بخوانیم. لطفاً دوباره اسکن کنید.",
+  "replaceByFeeFeeRateDisplay": "نرخ هزینه: {feeRate}",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
+  "coreScreensFeeRateLabel": "نرخ کارمزد",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "خروجی باقی‌مانده نامشخص است — همه خروجی‌ها به طور مساوی نمایش داده می‌شوند",
+  "coreScreensUnknown": "نامشخص",
+  "coreScreensFetchFailed": "دریافت تراکنش {txid} از Electrum ناموفق بود.",
+  "coreScreensInputResolutionFailed": "ورودی یافت نشد: خروجی {vout} از {parentTxId} وجود ندارد.",
+  "coreScreensNoServersAvailable": "هیچ سرور Electrum در دسترس نیست.",
+  "mempoolServerStatusUnknown": "نامشخص",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "برای دریافت تراکنش امضاشده از طریق NFC، Coldcard خود را لمس کنید",
+  "consolidationDone": "تمام",
+  "consolidationFailedBody": "خطای غیرمنتظره‌ای رخ داد. وجوه شما امن است: هیچ تراکنشی ارسال نشد. لطفاً دوباره تلاش کنید.",
+  "consolidationFailedTitle": "تجمیع ناموفق بود",
+  "consolidationInProgress": "در حال تجمیع…",
+  "consolidationRequiredTitle": "تجمیع کیف پول",
+  "consolidationRequiredTitleNamed": "تجمیع کیف پول {walletName}",
+  "consolidationRowAmount": "مبلغ",
+  "consolidationRowNetworkFees": "کارمزد شبکه",
+  "consolidationRowOutputs": "خروجی‌ها",
+  "consolidationRowTransactions": "تراکنش‌ها",
+  "consolidationScreenDescription": "خروجی‌های بیش از حد می‌توانند کیف پول را ناپایدار کنند. تجمیع آن‌ها را در تعداد کمتری ترکیب می‌کند تا کیف پول شما درست کار کند.",
+  "consolidationScreenTitle": "تجمیع",
+  "consolidationSuccessBody": "سکه‌های شما در حال ترکیب هستند. پس از تأیید شبکه کامل می‌شود.",
+  "consolidationSuccessTitle": "تجمیع آغاز شد",
+  "walletLoadFailed": "کیف‌پول‌های شما بارگذاری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "broadcastSignedTxErrorPsbtFinalization": "تراکنش امضاشده نهایی نشد. مطمئن شوید همه امضاهای لازم را دارد و دوباره تلاش کنید.",
+  "coreScreensOutputsExceedInputs": "خروجی‌ها از ورودی‌ها بیشترند: این تراکنش نامعتبر است و شبکه آن را رد خواهد کرد.",
+  "broadcastSignedTxErrorAlreadyInChain": "این تراکنش از قبل در بلاک‌چین ثبت شده است. چیزی برای انتشار باقی نمانده است.",
+  "broadcastSignedTxErrorRejected": "شبکه این تراکنش را رد کرد. ممکن است به‌طور کامل امضا نشده، نامعتبر یا در تعارض با پرداخت دیگری باشد.",
+  "broadcastSignedTxErrorOutcomeUnknown": "نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "انتشار در این شبکه در تنظیمات فعلی فعال نیست."
+}

@@ -1,14 +1,14 @@
+import 'package:secrets/testing.dart';
+import 'package:secrets/secrets.dart' show WalletSigner;
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, Sats, ScriptType;
-import 'package:primitives/primitives.dart' show SignerEntity;
+    show BitcoinNetwork, LiquidNetwork, NetworkEnv;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok, Sats;
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,7 +29,7 @@ class _MockRecordPendingLockup extends Mock
 class _MockDropPendingLockup extends Mock
     implements DropPendingSwapLockupUsecase {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockWalletRepository extends Mock implements LoadSwapWalletsUsecase {}
 
 class _MockPreferences extends Mock implements Preferences {}
 
@@ -39,18 +39,15 @@ class _MockGetReceiveAddress extends Mock implements AddressView {}
 
 class _MockLabels extends Mock implements Labels {}
 
-Wallet _wallet({required bool liquid}) => Wallet(
-  origin: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
-  network: liquid ? Network.liquidTestnet : Network.bitcoinTestnet,
-  isDefault: true,
-  xpubFingerprint: 'fingerprint',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'external',
-  internalPublicDescriptor: 'internal',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.from(liquid ? 3_000_000 : 0),
+SwapWallet _wallet({required bool liquid}) => SwapWallet(
+  walletRegistrationForTesting(
+    id: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
+    network: liquid ? LiquidNetwork.testnet : BitcoinNetwork.testnet,
+    isDefault: true,
+    signer: WalletSigner.local,
+  ),
+  BigInt.from(liquid ? 3_000_000 : 0),
+  false,
 );
 
 Matcher _toWallet(String walletId) =>
@@ -150,10 +147,9 @@ void main() {
         ),
       ),
     );
-    when(() => walletRepository.getWallets(environment: Environment.testnet))
-        .thenAnswer(
-          (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
-        );
+    when(() => walletRepository.execute(NetworkEnv.testnet)).thenAnswer(
+      (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
+    );
     when(() => getReceiveAddress.receiveAddress(walletId: 'liquid-wallet'))
         .thenAnswer(
           (_) async => Ok(

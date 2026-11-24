@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/sp_failure_mapping.dart';
 import 'package:silent/silent.dart';
 import 'package:primitives/primitives.dart' hide Network;

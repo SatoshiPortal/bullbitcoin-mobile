@@ -28,10 +28,9 @@ void main() {
       final settings = _Settings();
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: bitcoin,
-        walletUtxoRepository: EmptyFrozenOutpoints(),
+        coins: EmptyFrozenOutpoints(),
         settingsRepository: settings,
         wallet: WalletFacade(
-          const Stream.empty(),
           broadcastSpend:
               (_, _, {required network, built, owner, replacing}) async =>
                   const Err(
@@ -56,10 +55,9 @@ void main() {
   test('accepted local-record failure remains a successful payment', () async {
     final usecase = BroadcastBitcoinTransactionUsecase(
       bitcoinBlockchainRepository: _Bitcoin(),
-      walletUtxoRepository: EmptyFrozenOutpoints(),
+      coins: EmptyFrozenOutpoints(),
       settingsRepository: _Settings(),
       wallet: WalletFacade(
-        const Stream.empty(),
         broadcastSpend:
             (_, _, {required network, built, owner, replacing}) async =>
                 const Ok(

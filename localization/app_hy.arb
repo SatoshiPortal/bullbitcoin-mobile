@@ -3,11 +3,6 @@
   "fundExchangeRestrictedMessage": "Ֆինանսավորումն անհասանելի է ձեր հաշվի համար։ Լրացուցիչ տեղեկությունների համար խնդրում ենք կապվել աջակցման ծառայության հետ։",
   "backupWarningDescription": "Առանց պահուստային պատճենի՝ դուք կկորցնեք ձեր bitcoin-ի հասանելիությունը, եթե՝",
   "exchangeTestnetBasicAuthTitle": "Testnet փոխանակման հավատարմագրեր",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth՝ testnet փոխանակման վեբ էջերի համար (մուտք և KYC):",
-  "exchangeTestnetBasicAuthUsernameLabel": "Օգտանուն",
-  "exchangeTestnetBasicAuthPasswordLabel": "Գաղտնաբառ",
-  "exchangeTestnetBasicAuthClearButton": "Մաքրել",
-  "exchangeTestnetBasicAuthSaveButton": "Պահպանել",
   "backupWarningLoseReasonLostPhone": "Կորցնեք ձեր հեռախոսը",
   "backupWarningLoseReasonDeletedApp": "Ջնջեք հավելվածը",
   "backupWarningLoseReasonCriticalIssue": "Տեղի ունենա հավելվածի կամ սարքի կրիտիկական խնդիր",
@@ -16,10 +11,6 @@
   "backupWarningNoRecovery": "Առանց պահուստային պատճենի ձեր դրամապանակը վերականգնելու որևէ միջոց չկա։",
   "swapInsufficientFunds": "Անբավարար միջոցներ",
   "broadcastSignedTxBroadcastError": "Չկարողացանք հեռարձակել ձեր գործարքը։ Ստուգեք ձեր ինտերնետ կապը և կրկին փորձեք։",
-  "importWatchOnlyErrorNoWalletSelected": "Նախ փակցրեք կամ սկանավորեք հանրային բանալին կամ դեսկրիպտորը։",
-  "importWatchOnlyErrorLabelRequired": "Ներմուծելուց առաջ անվանեք ձեր դրամապանակը։",
-  "importWatchOnlyErrorInvalidFormat": "Սա վավեր հանրային բանալու կամ դեսկրիպտորի տեսք չունի։ Կրկին ստուգեք այն, ինչ փակցրել եք։",
-  "importWatchOnlyErrorImportFailed": "Չկարողացանք ներմուծել այս միայն-դիտման դրամապանակը։ Խնդրում ենք ստուգել տվյալները և կրկին փորձել։",
   "broadcastSignedTxErrorInvalidTransaction": "Սա վավեր ստորագրված գործարքի տեսք չունի։ Համոզվեք, որ փակցրել եք ամբողջ PSBT-ն կամ գործարքը։",
   "broadcastSignedTxErrorInvalidPushTx": "Չկարողացանք գործարք կարդալ այս պիտակից։ Խնդրում ենք կրկին փորձել սկանավորել։",
   "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
@@ -134,42 +125,7 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Բաց թողնել",
-  "wizardPageIndicator": "ԷՋ {current} / {total}",
-  "wizardNextButton": "Հաջորդ",
-  "wizardCustomizeTitle": "Անհատականացրեք ձեր փորձը",
-  "wizardCustomizeBody": "Օգտագործեք BULL-ը ձեր պայմաններով այս կարգավորումներով։",
-  "wizardCustomizeDefaultCurrency": "Կանխադրված արժույթ",
-  "wizardMissionTitle": "Աջակցեք Bull-ի առաքելությանը",
-  "wizardMissionBody1": "Մեզ օգնելու համար բարելավել ծրագրակազմը և ապահովել անվտանգության, գաղտնիության և օգտագործելիության ամենաբարձր մակարդակը, ձեր հավելվածը կարող է մեզ ուղարկել սխալների գրանցամատյաններ, որոնք թույլ կտան մեզ արագ հայտնաբերել խնդիրները և ուղղել դրանք հաջորդ թարմացումներում։",
-  "wizardMissionBody2": "Այս գրանցամատյանները անանուն են, կապված չեն ձեր IP հասցեի հետ և երբեք չեն կիսում տեղեկություններ ձեր գործարքների կամ ինքնության մասին։ Դրանք զուտ տեխնիկական են և ոչ մի ռիսկի չեն ենթարկում ձեզ։ Դա մեզ համար շատ օգտակար է և ձեզ ոչ մի ծախս չի պատճառում։",
-  "wizardMissionQuestion": "Համաձայն եք մասնակցել մեր ավտոմատ խնդիրների հաշվետվության ծրագրին?",
-  "wizardMissionYes": "Այո",
-  "wizardMissionNo": "Ոչ",
-  "wizardMissionRequired": "Շարունակելուց առաջ խնդրում ենք ընտրել Այո կամ Ոչ։",
-  "wizardJourneyTitle": "Առաջադիմեք ձեր ճանապարհորդության մեջ",
-  "wizardJourneyBody": "Եթե դուք նոր եք BULL դրամապանակին, ահա մի քանի առանձնահատկություններ, որոնք կարող եք օգտագործել ձեր գաղտնիությունը, անվտանգությունը և օգտվողի փորձը բարելավելու համար։",
-  "wizardJourneyTip1": "Ավելացրեք անվտանգության PIN ձեր դրամապանակը բացելու համար",
-  "wizardJourneyTip2": "Փորձեք գաղտնագրված պահոցի կրկնօրինակը",
-  "wizardJourneyTip3": "Միացեք ձեր սեփական Bitcoin հանգույցին",
-  "wizardJourneyTip4": "Միացեք ձեր սեփական Mempool հետազոտողին",
-  "wizardJourneyTip5": "Փոխանակեք Bitcoin-ի և Liquid-ի միջև առանց KYC-ի",
-  "wizardJourneyTip6": "Անհատականացրեք ձեր autoswap կարգավորումները",
-  "wizardJourneyTip7": "Անցեք Bitcoin (BTC) և Satoshis (sats) միջև",
-  "wizardJourneyTip8": "Ստեղծեք air-gap գործարքներ ձեր ապարատային դրամապանակի համար",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "walletSetupErrorTryAgain": "Ինչ-որ բան սխալ գնաց ձեր դրամապանակը կարգավորելիս։ Կրկին փորձեք։",
   "appStartupErrorMessage": "Հավելվածը չհաջողվեց գործարկել։ Փորձեք ամբողջությամբ փակել և նորից բացել այն։ Եթե սխալը շարունակվում է, կապվեք աջակցության հետ և կիսվեք ձեր լոգերով։",
-  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի",
   "coreScreensResolvingInputs": "Լուծվում են գործարքի մուտքերը...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -203,10 +159,6 @@
   "payPaymentDescription": "Վճարման նկարագրություն",
   "transactionHistoryTitle": "Գործարքների պատմություն",
   "exportTransactionsDescription": "Արտահանեք ձեր դրամապանակի բոլոր գործարքները (Bitcoin, Liquid, Lightning և փոխանակումներ) որպես CSV ֆայլ։ Ընտրովի կարող եք զտել ըստ ամսաթվերի։",
-  "importMnemonicEmptyLabelError": "Անվանումն անհրաժեշտ է մնեմոնիկ ներմուծելու համար",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "homeActionBuy": "Գնել",
   "homeActionSell": "Վաճառել",
   "homeActionPay": "Վճարել",
@@ -215,12 +167,6 @@
   "backupCardSubtitle": "Կրկնօրինակեք ձեր դրամապանակը հիմա։",
   "autoswapTargetBalanceLabel": "Ակնթարթային դրամապանակի թիրախային մնացորդ",
   "autoswapMaximumBalanceLabel": "Ակնթարթային դրամապանակի առավելագույն մնացորդ",
-  "onboardingAdvancedOptionsTitle": "Լրացուցիչ ընտրանքներ",
-  "onboardingAdvancedOptionsDescription": "Կարգավորեք լրացուցիչ պարամետրերը ձեր դրամապանակը ստեղծելուց կամ վերականգնելուց առաջ",
-  "onboardingAdvancedOptionsCustomElectrum": "Հատուկ Electrum սերվեր",
-  "onboardingAdvancedOptionsCustomMempool": "Հատուկ Mempool սերվեր",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Հատուկ Recoverbull սերվեր",
-  "onboardingAdvancedOptionsFooter": "Այս կարգավորումները կարող եք փոխել ավելի ուշ Հավելվածի կարգավորումներում",
   "appStartupContactSupportMessage": "Կապվեք աջակցության հետ app.bullbitcoin.com/support հասցեով",
   "importWalletBitboxAndroidOnly": "BitBox-ը աջակցվում է միայն Android-ում",
   "fundExchangeErrorTitleOrdPo404": "Վճարման տարբերակը հասանելի չէ",
@@ -255,123 +201,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "Մետաղադրամներ",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 մետաղադրամ} other{{count} մետաղադրամ}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "Սառեցված",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "Հասանելի",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "Սառեցված չկա",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "Դասավորել և զտել",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "{total}-ից {visible}-ը ցուցադրված է",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 չծախսված ելք} other{{count} չծախսված ելք}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "Համաժամացնել",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "Մաքրել բոլորը",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "Գումար՝ բարձրից ցածր",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "Գումար՝ ցածրից բարձր",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "Ամսաթիվ՝ նորագույն",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "Ամսաթիվ՝ հնագույն",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "Բանալիների շղթա",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "Բոլորը",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "Ստանալ",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "Մանր",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "Սառեցման կարգավիճակ",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "Բոլորը",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "Սառեցված",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "Ապասառեցված",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "Պիտակներ",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "Վերակայել",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "Կիրառել",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{1 ընտրված} other{{count} ընտրված}}",
   "@coinsSelectedCount": {
@@ -382,134 +214,9 @@
       }
     }
   },
-  "coinsSelectAll": "Ընտրել բոլորը",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "Սառեցնել",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "Ապասառեցնել",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "Հետարկել",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Սառեցնե՞լ 1 մետաղադրամ} other{Սառեցնե՞լ {count} մետաղադրամ}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "Սառեցված մետաղադրամները մնում են ձեր դրամապանակում, սակայն բացառվում են ծախսելուց, մինչև դրանք ապասառեցնեք։",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "Այս մետաղադրամները սառեցնելը ձեզ կթողնի առանց հասանելի մնացորդի։",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{1 մետաղադրամ սառեցվեց · բացառված է ծախսելուց} other{{count} մետաղադրամ սառեցվեց · բացառված է ծախսելուց}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{1 մետաղադրամ ապասառեցվեց} other{{count} մետաղադրամ ապասառեցվեց}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 հաստ.} other{{count} հաստ.}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "Սպասման մեջ",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "Դեռ մետաղադրամներ չկան",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "Մետաղադրամները կհայտնվեն այստեղ, երբ բիթքոին ստանաք։",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "Համապատասխան մետաղադրամ չկա",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "Մաքրել զտիչները",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "Կրկնել",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "Սահեցրեք մետաղադրամը՝ սառեցնելու համար · երկար սեղմեք՝ ընտրելու համար",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "Չհաջողվեց բեռնել ձեր մետաղադրամները։ Քաշեք՝ թարմացնելու և կրկին փորձելու համար։",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "Չհաջողվեց սառեցնել ընտրված մետաղադրամները։ Խնդրում ենք կրկին փորձել։",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "Չհաջողվեց ապասառեցնել ընտրված մետաղադրամները։ Խնդրում ենք կրկին փորձել։",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "Ինչ-որ բան սխալ գնաց։ Խնդրում ենք կրկին փորձել։",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} սառեցված",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "logsShareOptionExport": "Արտահանել",
   "logsExportedMessage": "Մատյանները հաջողությամբ արտահանվեցին",
   "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց",
-  "translationWarningTitle": "Արհեստական բանականությամբ ստեղծված թարգմանություններ",
-  "translationWarningDescription": "Այս հավելվածի թարգմանությունների մեծ մասը ստեղծվել է արհեստական բանականության միջոցով և կարող է անճշտություններ պարունակել։ Եթե նկատեք որևէ սխալ կամ ցանկանաք օգնել բարելավել թարգմանությունները, կարող եք ուղղում ուղարկել մեր GitHub պահոցում։",
-  "translationWarningContributeButton": "Օգնել բարելավել թարգմանությունները",
   "translationWarningDismissButton": "Հասկացա",
   "durationSeconds": "{seconds} վայրկյան",
   "coreSwapsStatusPending": "Սպասման մեջ",
@@ -575,18 +282,10 @@
   "fiatCurrencySettingsLabel": "Ֆիատ արժույթ",
   "languageSettingsScreenTitle": "Լեզու",
   "settingsExchangeSettingsTitle": "Փոխանակման կարգավորումներ",
-  "settingsSecurityPinTitle": "Անվտանգության PIN",
   "settingsCurrencyTitle": "Արժույթ",
   "settingsAppSettingsTitle": "Հավելվածի կարգավորումներ",
   "settingsTermsOfServiceTitle": "Ծառայության պայմաններ",
-  "settingsAppVersionLabel": "Հավելվածի տարբերակ․ ",
-  "settingsServiceStatusTitle": "Ծառայությունների կարգավիճակ",
   "settingsLanguageTitle": "Լեզու",
-  "settingsThemeTitle": "Ոճ",
-  "settingsDevModeWarningTitle": "Ծրագրավորողի ռեժիմ",
-  "settingsDevModeWarningMessage": "Այս ռեժիմը վտանգավոր է։ Այն միացնելով՝ դուք հաստատում եք, որ կարող եք կորցնել գումար",
-  "settingsDevModeUnderstandButton": "Հասկանում եմ",
-  "settingsSuperuserModeDisabledMessage": "Գերօգտագործողի ռեժիմն անջատված է։",
   "settingsSuperuserModeUnlockedMessage": "Գերօգտագործողի ռեժիմը բացված է!",
   "walletDetailsUnnamedWalletFallback": "Անանուն դրամապանակ",
   "addressViewAddressesTitle": "Հասցեներ",
@@ -609,13 +308,8 @@
   "mempoolCustomServerUrl": "Սերվերի URL",
   "mempoolCustomServerSaveSuccess": "Հատուկ սերվերը հաջողությամբ պահպանվեց",
   "mempoolServerStatusUnknown": "Անհայտ",
-  "walletSettingsImportWalletTitle": "Ներմուծել դրամապանակ",
-  "bitcoinSettingsBroadcastTransactionTitle": "Հեռարձակել գործարքը",
-  "bitcoinSettingsTestnetModeTitle": "Testnet ռեժիմ",
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 դետերմինիստական էնտրոպիաներ",
   "logSettingsLogsTitle": "Մատյաններ",
   "logSettingsErrorLoadingMessage": "Սխալ մատյանները բեռնելիս․ ",
-  "appSettingsDevModeTitle": "Ծրագրավորողի ռեժիմ",
   "currencySettingsDefaultFiatCurrencyLabel": "Լռելյայն ֆիատ արժույթ",
   "exchangeSettingsAccountInformationTitle": "Հաշվի տեղեկություններ",
   "exchangeSettingsSecuritySettingsTitle": "Անվտանգության կարգավորումներ",
@@ -712,18 +406,9 @@
   "addressCardCopiedMessage": "Հասցեն պատճենվեց սեղմատախտակին",
   "addressCardIndexLabel": "Ինդեքս․ ",
   "addressCardBalanceLabel": "Մնացորդ․ ",
-  "onboardingRecoverYourWallet": "Վերականգնեք ձեր դրամապանակը",
   "onboardingEncryptedVault": "Գաղտնագրված պահոց",
-  "onboardingEncryptedVaultDescription": "Վերականգնեք ձեր պահուստը ամպի միջոցով՝ օգտագործելով ձեր PIN-ը։",
-  "onboardingPhysicalBackup": "Ֆիզիկական պահուստ",
-  "onboardingPhysicalBackupDescription": "Վերականգնեք ձեր դրամապանակը 12 բառերի միջոցով։",
   "onboardingRecover": "Վերականգնել",
   "onboardingBullBitcoin": "Bull Bitcoin",
-  "onboardingOwnYourMoney": "Տիրապետեք ձեր փողերին",
-  "onboardingSplashDescription": "Ինքնիշխան ինքնա-պահպանվող Bitcoin դրամապանակ և միայն-Bitcoin փոխանակման ծառայություն։",
-  "onboardingRecoverWallet": "Վերականգնել դրամապանակը",
-  "onboardingRecoverWalletButton": "Վերականգնել դրամապանակը",
-  "onboardingCreateNewWallet": "Ստեղծել նոր դրամապանակ",
   "sendTitle": "Ուղարկել",
   "sendRecipientAddressOrInvoice": "Ստացողի հասցեն կամ ապրանքագիրը",
   "sendPasteAddressOrInvoice": "Փակցրեք վճարման հասցե կամ ապրանքագիր",
@@ -1293,7 +978,6 @@
   "recoverVia12WordsDescription": "Վերականգնեք ձեր դրամապանակը 12 բառերի միջոցով։",
   "recoverButton": "Վերականգնել",
   "recoverWalletButton": "Վերականգնել դրամապանակը",
-  "importMnemonicTitle": "Ներմուծել մնեմոնիկ",
   "howToDecideBackupTitle": "Ինչպես որոշել",
   "howToDecideBackupText1": "Bitcoin-ը կորցնելու ամենատարածված պատճառներից մեկը ֆիզիկական պահուստը կորցնելն է։ Ցանկացած ոք, ով գտնում է ձեր ֆիզիկական պահուստը, կկարողանա վերցնել ձեր ամբողջ Bitcoin-ը։ Եթե դուք վստահ եք, որ կարող եք լավ թաքցնել այն և երբեք չկորցնել, դա լավ տարբերակ է։",
   "howToDecideBackupText2": "Գաղտնագրված պահոցը պաշտպանում է ձեզ գողերից, ովքեր ցանկանում են գողանալ ձեր պահուստը։ Այն նաև պաշտպանում է ձեզ ձեր պահուստը պատահաբար կորցնելուց, քանի որ այն կպահվի ձեր ամպային պահեստում։ Ամպային պահեստի մատակարարները, ինչպիսիք են Google-ը կամ Apple-ը, հասանելիություն չեն ունենա ձեր Bitcoin-ին, քանի որ գաղտնագրման գաղտնաբառը չափազանց ուժեղ է։ Կա փոքր հավանականություն, որ ձեր պահուստի գաղտնագրման բանալին պահող վեբ սերվերը կարող է վտանգվել։ Այս դեպքում ձեր ամպային հաշվում գտնվող պահուստի անվտանգությունը կարող է վտանգված լինել։",
@@ -1950,27 +1634,8 @@
   "connectHardwareWalletKrux": "Krux",
   "connectHardwareWalletPassport": "Foundation Passport",
   "connectHardwareWalletSeedSigner": "SeedSigner",
-  "importWalletTitle": "Ավելացնել նոր դրամապանակ",
   "importWalletConnectHardware": "Միացնել apparatային դրամապանակ",
   "importWalletImportMnemonic": "Ներմուծել մնեմոնիկ",
-  "importWalletImportWatchOnly": "Ներմուծել միայն-դիտում",
-  "importWalletSectionGeneric": "Ընդհանուր դրամապանակներ",
-  "importWalletSectionHardware": "Apparatային դրամապանակներ",
-  "importWalletColdcardQ": "Coldcard Q",
-  "importWalletColdcardMk4": "Coldcard Mk4",
-  "importWalletLedger": "Ledger",
-  "importWalletJade": "Blockstream Jade",
-  "importWalletKeystone": "Keystone",
-  "importWalletPassport": "Foundation Passport",
-  "importWalletSeedSigner": "SeedSigner",
-  "importWalletSpecter": "Specter",
-  "importWalletKrux": "Krux",
-  "importMnemonicContinue": "Շարունակել",
-  "importMnemonicSelectScriptType": "Ներմուծել մնեմոնիկ",
-  "importMnemonicSyncMessage": "Երեք դրամապանակի տեսակներն էլ համաժամեցվում են, և դրանց մնացորդն ու գործարքները շուտով կհայտնվեն։ Կարող եք սպասել համաժամեցման ավարտին կամ շարունակել ներմուծումը, եթե վստահ եք, թե որ դրամապանակի տեսակն եք ցանկանում ներմուծել։",
-  "importMnemonicSegwit": "Segwit",
-  "importMnemonicNestedSegwit": "Ներդրված Segwit",
-  "importMnemonicLegacy": "Legacy",
   "importMnemonicChecking": "Ստուգվում է...",
   "importMnemonicEmpty": "Դատարկ",
   "importMnemonicHasBalance": "Ունի մնացորդ",
@@ -1979,30 +1644,14 @@
   "importMnemonicImport": "Ներմուծել",
   "importMnemonicImporting": "Ներմուծվում է...",
   "importMnemonicSelectType": "Ընտրեք ներմուծվող դրամապանակի տեսակը",
-  "importMnemonicBalanceLabel": "Մնացորդ․ {amount}",
-  "importMnemonicTransactionsLabel": "Գործարքներ․ {count}",
-  "importWatchOnlyTitle": "Ներմուծել միայն-դիտում",
-  "importWatchOnlyPasteHint": "Փակցրեք xpub, ypub, zpub կամ դեսկրիպտոր",
   "importWatchOnlyXpub": "xpub",
   "importWatchOnlyYpub": "ypub",
   "importWatchOnlyZpub": "zpub",
-  "importWatchOnlyDescriptor": "Դեսկրիպտոր",
-  "importWatchOnlyScanQR": "Սկանավորել QR",
   "importWatchOnlyScriptType": "Սկրիպտի տեսակ",
   "importWatchOnlyFingerprint": "Մատնահետք",
   "importWatchOnlyDerivationPath": "Ածանցման ուղի",
   "importWatchOnlyImportButton": "Ներմուծել միայն-դիտման դրամապանակ",
   "importWatchOnlyCancel": "Չեղարկել",
-  "importWatchOnlyCopiedToClipboard": "Պատճենվեց սեղմատախտակին",
-  "importWatchOnlyType": "Տեսակ",
-  "importWatchOnlySigningDevice": "Ստորագրող սարք",
-  "importWatchOnlyUnknown": "Անհայտ",
-  "importWatchOnlyLabel": "Պիտակ",
-  "importWatchOnlyRequired": "Պարտադիր",
-  "importWatchOnlyImport": "Ներմուծել",
-  "importWatchOnlyExtendedPublicKey": "Ընդլայնված հանրային բանալի",
-  "importWatchOnlyDisclaimerTitle": "Ածանցման ուղու նախազգուշացում",
-  "importWatchOnlyDisclaimerDescription": "Համոզվեք, որ ձեր ընտրած ածանցման ուղին համընկնում է տրված xpub-ը ստեղծած ուղու հետ՝ ստուգելով դրամապանակից ածանցված առաջին հասցեն նախքան օգտագործումը։ Սխալ ուղի օգտագործելը կարող է հանգեցնել միջոցների կորստի",
   "bip85Title": "BIP85 դետերմինիստական էնտրոպիաներ",
   "bip85ExperimentalWarning": "Փորձարարական \nՊահուստավորեք ձեր ածանցման ուղիները ձեռքով",
   "bip85NextMnemonic": "Հաջորդ մնեմոնիկ",
@@ -2046,12 +1695,6 @@
   "importColdcardImporting": "Ներմուծվում է Coldcard դրամապանակը...",
   "importColdcardSuccess": "Coldcard դրամապանակը ներմուծվեց",
   "importColdcardError": "Չհաջողվեց ներմուծել Coldcard-ը",
-  "importColdcardInvalidWalletData": "Coldcard դրամապանակի անվավեր տվյալներ",
-  "importColdcardConnectTitle": "Միացնել {deviceName}",
-  "importColdcardConnectDescription": "Ներմուծեք դրամապանակի դեսկրիպտորը ձեր {deviceName}-ից",
-  "importColdcardScanNfcSheetTitle": "Հպեք ձեր {deviceName}-ը՝ դրամապանակի դեսկրիպտորը NFC-ով ներմուծելու համար",
-  "importColdcardButtonOpenCamera": "Բացել տեսախցիկը",
-  "importColdcardButtonInstructions": "Հրահանգներ",
   "exchangeLandingTitle": "BULL BITCOIN",
   "exchangeLandingConnect": "Միացրեք ձեր Bull Bitcoin փոխանակման հաշիվը",
   "exchangeLandingFeature1": "Գնեք Bitcoin ուղիղ ինքնա-պահպանման",
@@ -2160,10 +1803,8 @@
   "autoswapRecipientRequired": "*",
   "electrumMainnet": "Mainnet",
   "electrumTestnet": "Testnet",
-  "exchangeLandingConnectAccount": "Միացրեք ձեր Bull Bitcoin փոխանակման հաշիվը",
   "statusScreenTryAgain": "Կրկին փորձել",
   "statusScreenContinue": "Շարունակել",
-  "exchangeLandingDisclaimerLegal": "Փոխանակման ծառայությունների հասանելիությունը սահմանափակված կլինի այն երկրներով, որտեղ Bull Bitcoin-ն օրինականորեն կարող է գործել, և կարող է պահանջվել KYC։",
   "exchangeLoginButton": "Մուտք գործել կամ գրանցվել",
   "exchangeAuthLoginFailedTitle": "Մուտքը ձախողվեց",
   "exchangeAuthLoginFailedMessage": "Սխալ առաջացավ, խնդրում ենք կրկին փորձել մուտք գործել։",
@@ -2186,17 +1827,7 @@
   "appStartupErrorTitle": "Գործարկման սխալ",
   "appStartupContactSupportButton": "Կապվել աջակցության հետ",
   "ledgerDefaultWalletLabel": "Ledger դրամապանակ",
-  "exchangeBrandName": "BULL BITCOIN",
-  "exchangeLandingRecommendedExchange": "Առաջարկվող Bitcoin փոխանակման կենտրոն",
-  "exchangeFeatureSelfCustody": "• Գնեք Bitcoin ուղիղ ինքնա-պահպանման",
-  "exchangeFeatureDcaOrders": "• DCA, սահմանային պատվերներ և ինքնաշխատ գնում",
-  "exchangeFeatureSellBitcoin": "• Վաճառեք Bitcoin, ստացեք վճարումը Bitcoin-ով",
-  "exchangeFeatureBankTransfers": "• Ուղարկեք բանկային փոխանցումներ և վճարեք հաշիվները",
-  "exchangeFeatureCustomerSupport": "• Զրուցեք հաճախորդների աջակցության հետ",
-  "exchangeFeatureUnifiedHistory": "• Միասնական գործարքների պատմություն",
   "priceFailedToLoad": "Չհաջողվեց բեռնել գինը",
-  "exchangeLandingDisclaimerNotAvailable": "Կրիպտոարժույթի փոխանակման ծառայությունները հասանելի չեն Bull Bitcoin բջջային հավելվածում։",
-  "exchangeGoToWebsiteButton": "Անցնել Bull Bitcoin փոխանակման կայք",
   "exchangeSupportChatTitle": "Աջակցության զրույց",
   "exchangeSupportChatInputHint": "Մուտքագրեք հաղորդագրություն...",
   "exchangeSupportChatWalletIssuesInfo": "Այս զրույցը միայն փոխանակման հետ կապված խնդիրների համար է՝ Ֆինանսավորում/Գնում/Վաճառք/Հանում/Վճարում բաժիններում։\nԴրամապանակի հետ կապված խնդիրների համար միացեք telegram խմբին՝ սեղմելով այստեղ։",
@@ -2253,7 +1884,6 @@
   "logoutConfirmationDescription": "Համոզվա՞ծ եք, որ ցանկանում եք դուրս գալ ձեր Bull Bitcoin հաշվից։ Փոխանակման գործառույթներին հասանելիություն ունենալու համար ձեզ նորից անհրաժեշտ կլինի մուտք գործել։",
   "logoutConfirmationCancel": "Չեղարկել",
   "logoutConfirmationLogout": "Դուրս գալ",
-  "errorReportingCancelButton": "Չեղարկել",
   "exchangeDcaAddressDisplay": "{addressLabel}՝ {address}",
   "exchangeCurrencyDropdownTitle": "Ընտրեք արժույթ",
   "exchangeCurrencyDropdownValidation": "Խնդրում ենք ընտրել արժույթ",
@@ -2289,15 +1919,6 @@
   "withdrawBelowMinAmountError": "Նվազագույն գումարը {amount} {currency} է",
   "withdrawAboveMaxAmountError": "Առավելագույն գումարը {amount} {currency} է",
   "viewerPaymentUriTab": "Վճարման URI",
-  "settingsErrorReportingTitle": "Սխալների զեկուցում",
-  "errorReportingProgramTitle": "Սխալների զեկուցման ծրագիր",
-  "errorReportingProgramDescriptionP1": "Օգնեք մեզ բարելավել Bull-ը՝ մասնակցելով մեր սխալների զեկուցման ծրագրին։",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin-ն ուղարկում է անանուն սխալի զեկույցներ, երբ ինչ-որ բան փչանում է։",
-  "errorReportingProgramDescriptionP3": "Սա մեզ թույլ է տալիս տեսնել, թե քանի օգտատիրոջ վրա է ազդում յուրաքանչյուր սխալ, և համապատասխանաբար առաջնահերթություն տալ ուղղումներին. առանց դրա, մենք չենք կարող չափել ազդեցությունը։",
-  "errorReportingProgramDescriptionP4": "Զեկույցներն ուղարկվում են միայն Bull-ի սերվեր, երբեք երրորդ կողմերին։",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin-ը բաց կոդով է, ուստի կարող եք ստուգել, թե ինչ է ուղարկվում։",
-  "errorReportingAcceptButton": "Ընդունել",
-  "errorReportingRestartSnackbar": "Վերագործարկեք հավելվածը՝ այս փոփոխությունը կիրառելու համար",
   "backupWarningTitle": "ՀԻՄԱ ՊԱՀՈՒՍՏԱՎՈՐԵՔ ՁԵՐ ԴՐԱՄԱՊԱՆԱԿԸ",
   "backupWarningBackupNow": "ԱՅՈ",
   "backupWarningBackupLater": "ՈՉ, ԵՍ ՀԱՍԿԱՆՈՒՄ ԵՄ ՌԻՍԿԸ",
@@ -2405,13 +2026,10 @@
   "recipientsValidationBillerSelect": "Խնդրում ենք ցանկից ընտրել վճարառու",
   "exchangeFileUploadStatusRejectedBadge": "Մերժված",
   "exchangeFileUploadTapToReupload": "Հպեք՝ նորից վերբեռնելու համար",
-  "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Անսպասելի սխալ տեղի ունեցավ",
   "mempoolErrorUpdateSettingsFailed": "Չհաջողվեց թարմացնել կարգավորումները․ {error}",
   "sendEstimatedDeliveryHours": "ժամեր",
   "sendErrorInsufficientBalanceFrozenHint": "Բավարար ծախսելի մնացորդ չկա — {amount} սառեցված է։ Ապասառեցրեք մետաղադրամները Կառավարել մետաղադրամները բաժնում՝ այն օգտագործելու համար։",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Պատրաստ է",
   "consolidationFailedBody": "Տեղի ունեցավ անսպասելի սխալ։ Ձեր միջոցներն ապահով են. ոչ մի գործարք չի հեռարձակվել։ Խնդրում ենք կրկին փորձել։",
   "consolidationFailedTitle": "Համախմբումը ձախողվեց",
@@ -2431,45 +2049,11 @@
   "dcaReceiveAddressError": "Չհաջողվեց պատրաստել ստացման հասցե ձեր դրամապանակում։ Խնդրում ենք կրկին փորձել։",
   "dcaOrderCreationError": "Չհաջողվեց ստեղծել կրկնվող գնումը։ Խնդրում ենք փորձել ավելի ուշ։",
   "settingsPayjoinDisclaimerTitle": "Payjoin-ի նախազգուշացում",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin-ի նախազգուշացում",
-  "settingsPayjoinAdvancedTitle": "Payjoin-ի ընդլայնված կարգավորումներ",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Այս դրամապանակը չի գտնվել։",
   "addressViewErrorLoadFailed": "Ձեր հասցեները չհաջողվեց բեռնել։ Խնդրում ենք կրկին փորձել։",
   "sendSwapExpiredTitle": "Պատվերի ժամկետը լրացել է",
   "sendSwapExpiredMessage": "Այս պատվերի ժամկետը լրացել է նախքան միջոցներ ուղարկելը։ Ձեր դրամապանակից ոչինչ չի ուղարկվել։",
-  "settingsScreenPrivacyTitle": "Էկրանի գաղտնիություն",
-  "settingsScreenPrivacyDisabledMessage": "Այժմ սքրինշոթերը թույլատրված են զգայուն էկրաններում",
-  "settingsSearchHint": "Որոնել կարգավորումներում",
-  "settingsSearchNoResults": "Կարգավորումներ չեն գտնվել։",
-  "settingsSearchMempoolKeywords": "բլոկների դիտարկիչ|միջնորդավճարի գնահատում|գործարքի միջնորդավճար|մեմփուլի API",
-  "settingsSearchExchangeKeywords": "հաշիվ|բորսայի հաշիվ|առևտուր|գնել և վաճառել",
-  "settingsSearchStartBackupKeywords": "ստեղծել պահուստային պատճեն|պահել պահուստային պատճենը|պահուստավորել դրամապանակը",
-  "settingsSearchRecoverbullKeywords": "գաղտնագրված պահուստային պատճեն|ամպային պահուստավորում|գաղտնագրված պահոց|պահոցի վերականգնում",
-  "settingsSearchLabelsKeywords": "դրամապանակի պիտակներ|գործարքի պիտակներ|BIP329|ներմուծել պիտակները|արտահանել պիտակները",
-  "settingsSearchTransactionHistoryKeywords": "արտահանել գործարքները|գործարքների պատմության արտահանում|CSV|դրամապանակի պատմություն",
-  "settingsSearchAppSettingsKeywords": "հավելվածի նախընտրանքներ|հավելվածի կարգավորումներ|ընդհանուր կարգավորումներ",
-  "settingsSearchTermsOfServiceKeywords": "պայմաններ և դրույթներ|իրավական տեղեկություն|օգտագործողի համաձայնագիր|TOS",
-  "settingsSearchServicesStatusKeywords": "ծառայության վիճակ|համակարգի կարգավիճակ|առցանց|ծառայության խափանում",
-  "settingsSearchImportWalletKeywords": "ավելացնել դրամապանակ|վերականգնել դրամապանակը|ներմուծել մնեմոնիկը|միայն դիտման դրամապանակ|սարքային դրամապանակ",
-  "settingsSearchBroadcastTransactionKeywords": "հեռարձակել ստորագրված գործարքը|ուղարկել գործարքը|հում գործարք|գործարքի տասնվեցական կոդ|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin գաղտնիություն|համատեղ գործարք|P2EP",
-  "settingsSearchAutoswapKeywords": "ավտոմատ սվոփ|ավտոմատ փոխանակում|ավտոմատ փոխանցում|ակնթարթային դրամապանակի մնացորդ",
-  "settingsSearchElectrumKeywords": "բիթքոյնի հանգույց|Electrum հանգույց|ընտրովի սերվեր|անձնական հանգույց",
-  "settingsSearchTestnetModeKeywords": "փորձնական ցանց|բիթքոյնի testnet|Liquid testnet|փորձարկման ռեժիմ",
-  "settingsSearchSeedViewerKeywords": "սիդ արտահայտություն|վերականգնման արտահայտություն|մնեմոնիկ|պահուստային բառեր|դիտել սիդերը",
-  "settingsSearchBip85Keywords": "դետերմինիստական էնտրոպիա|ենթասիդեր|ածանցյալ էնտրոպիա|BIP85",
-  "settingsSearchLanguageKeywords": "տեղայնացում|թարգմանություն|ցուցադրման լեզու|նախընտրելի լեզու",
-  "settingsSearchThemeKeywords": "արտաքին տեսք|մուգ ռեժիմ|բաց ռեժիմ|համակարգի թեմա",
-  "settingsSearchCurrencyKeywords": "ֆիատ արժույթ|տեղական արժույթ|լռելյայն արժույթ|փոխանակման արժույթ",
-  "settingsSearchSecurityPinKeywords": "PIN կոդ|անցակոդ|հավելվածի կողպում|նույնականացում|փոխել PIN-ը",
-  "settingsSearchLogsKeywords": "վրիպազերծման մատյաններ|ախտորոշիչ մատյաններ|հավելվածի մատյաններ|արտահանել մատյանները",
-  "settingsSearchDevModeKeywords": "մշակողի ռեժիմ|մշակման կարգավորումներ|վրիպազերծման ռեժիմ|ընդլայնված փորձարկում",
-  "settingsSearchTestnetCredentialsKeywords": "testnet օգտվողի հավատարմագրեր|testnet մուտք|testnet օգտանուն|testnet գաղտնաբառ|հիմնական նույնականացում",
-  "settingsSearchErrorReportingKeywords": "խափանման հաշվետվություններ|սխալների հաշվետվություններ|ախտորոշում|հեռաչափություն|սխալների մատյաններ",
-  "settingsSearchScreenPrivacyKeywords": "սքրինշոթ|էկրանի ձայնագրում|էկրանի նկարահանման պաշտպանություն|գաղտնիություն",
-  "settingsSearchStartTyping": "Սկսեք մուտքագրել՝ արդյունքները տեսնելու համար։",
-  "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։",
   "sendErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
   "sendErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
@@ -2483,8 +2067,6 @@
   "walletWarningElectrumAction": "Հպեք՝ սերվերի կարգավորումները փոխելու համար",
   "walletLoadFailedRetryHint": "Քաշեք ներքև՝ թարմացնելու և կրկին փորձելու համար",
   "settingsErrorSavingSetting": "Չհաջողվեց պահպանել այդ կարգավորումը։ Խնդրում ենք փորձել կրկին։",
-  "settingsErrorConsentNotGiven": "Այս կարգավորումը փոխելուց առաջ անհրաժեշտ է ձեր հաստատումը։",
-  "settingsErrorLoadingLogs": "Չհաջողվեց պատրաստել ախտորոշիչ գրառումները։ Խնդրում ենք փորձել կրկին։",
   "exchangeErrorSigningOut": "Չհաջողվեց ամբողջությամբ դուրս գալ համակարգից։ Խնդրում ենք փորձել կրկին։",
   "exchangeErrorSavingPreferences": "Չհաջողվեց պահպանել ձեր նախապատվությունները։ Խնդրում ենք փորձել կրկին։",
   "exchangeErrorLoadingAnnouncements": "Չհաջողվեց բեռնել հայտարարությունները։",
@@ -2534,10 +2116,6 @@
   "autoBuyWalletRequiredError": "Ավելացրեք առնվազն մեկ լռելյայն Bitcoin, Lightning կամ Liquid հասցե։",
   "autoBuyUpdateError": "Չհաջողվեց թարմացնել ավտոմատ գնումը։ Փորձեք ավելի ուշ։",
   "withdrawUnexpectedError": "Ձեր հանումը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
-  "importWatchOnlyErrorNetworkMismatch": "Այս դրամապանակն այժմ օգտագործում է Bitcoin-ի այլ ցանց։ Փոխարկեք Mainnet-ի և Testnet-ի միջև, ապա կրկին փորձեք։",
-  "importWatchOnlyErrorAlreadyExists": "Այս դրամապանակն արդեն ներմուծված է։",
-  "importWatchOnlyNetworkBitcoinMainnet": "Ցանց՝ Bitcoin հիմնական ցանց",
-  "importWatchOnlyNetworkBitcoinTestnet": "Ցանց՝ Bitcoin փորձնական ցանց",
   "broadcastSignedTxErrorPsbtFinalization": "Չհաջողվեց վերջնականացնել ստորագրված գործարքը։ Համոզվեք, որ այն պարունակում է բոլոր անհրաժեշտ ստորագրությունները և կրկին փորձեք։",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
@@ -2610,7 +2188,6 @@
   "fundExchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "exchangeErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "walletBalancesMayBeStale": "Ձեր մնացորդները չհաջողվեց թարմացնել, և դրանք կարող են հնացած լինել։",
-  "settingsSearchTorKeywords": "Tor պրոքսի|Orbot|onion երթուղավորում|ներկառուցված Tor|գաղտնիության ցանց",
   "limitOrdersInsufficientBalance": "Անբավարար մնացորդ",
   "limitOrdersInsufficientBalanceMessage": "Այս պատվերը ստեղծելու համար բավարար մնացորդ չունեք։",
   "limitOrdersFundAccount": "Ֆինանսավորեք ձեր հաշիվը",
@@ -2667,22 +2244,15 @@
   "swapUnderReviewTitle": "Փոխանակումը ստուգման փուլում է",
   "swapUnderReviewDescription": "Այս փոխանակումը պահանջում է ձեռքով ստուգում։ Օգնության համար դիմեք աջակցությանը։ Եթե աջակցության հաշիվ չունեք, պարզապես ստեղծեք այն. KYC չի պահանջվում։",
   "swapUnderReviewSupportMessage": "Փոխանակումը ստուգման փուլում է\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Ինքնաշխատ փոխանակում",
   "broadcastSignedTxErrorAlreadyInChain": "Այս գործարքն արդեն բլոկչեյնում է։ Հեռարձակելու այլևս ոչինչ չկա։",
   "broadcastSignedTxErrorRejected": "Ցանցը մերժեց այս գործարքը։ Այն կարող է ամբողջությամբ ստորագրված չլինել, անվավեր լինել կամ հակասել մեկ այլ վճարման։",
   "broadcastSignedTxErrorOutcomeUnknown": "Չհաջողվեց հաստատել, որ ձեր գործարքը հեռարձակվել է։ Նորից փորձելուց առաջ ստուգեք բլոկների դիտարկիչում։",
   "broadcastSignedTxErrorNetworkNotEnabled": "Այս ցանցում հեռարձակումը միացված չէ ընթացիկ կարգավորումներում։",
   "settingsDarkModeTitle": "Մուգ ռեժիմ",
-  "settingsSourceCodeTitle": "Սկզբնական կոդ",
   "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։",
   "backgroundTasksTitle": "Ֆոնային առաջադրանքներ",
   "blockedInSystemSettings": "Արգելափակված է համակարգի կարգավորումներում",
-  "notificationsBlockedMessage": "Ծանուցումները արգելափակված են համակարգի կարգավորումներում։",
   "notificationsTitle": "Ծանուցումներ",
   "openSystemSettings": "Բացել համակարգի կարգավորումները",
-  "permissionsTitle": "Թույլտվություններ",
-  "settingsSearchPermissionsKeywords": "ծանուցումներ|ֆոնային առաջադրանքներ|մարտկոց|ազդանշաններ",
-  "wizardBackgroundTasksDescription": "Ստուգում է վճարումները, երբ հավելվածը փակ է։",
-  "wizardNotificationsDescription": "Իմացեք, երբ վճարում է ստացվում։",
   "sendErrorInvoiceExpiryTooShort": "Այս ապրանքագրի ժամկետը շատ շուտ է լրանում։ Խնդրեք ստացողից նոր ապրանքագիր։"
 }

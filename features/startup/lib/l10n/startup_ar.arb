@@ -1,0 +1,73 @@
+{
+  "appStartupErrorMessage": "فشل تشغيل التطبيق. حاول إيقاف التطبيق بالكامل وإعادة تشغيله. إذا استمر الخطأ، تواصل مع الدعم وشارك السجلات.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "errorSharingLogsMessage": "Error sharing logs: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Recover",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "appStartupErrorTitle": "البداية",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupContactSupportButton": "دعم الاتصال",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "الصفحة",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "appInitErrorTitle": "فشل تشغيل التطبيق",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "مشاركة السجلات",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "استخدم نسختك الاحتياطية",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "أموالك آمنة بفضل نسختك الاحتياطية.\nحاول إعادة تشغيل التطبيق أولاً، وإذا استمر الفشل، أعد تثبيته واسترجع محفظتك باستخدام نسختك الاحتياطية.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "لا توجد نسخة احتياطية؟",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "لا تحذف التطبيق.\nاتصل بفريق الدعم لمحاولة الإنقاذ.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "اتصل بالدعم",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "إظهار تفاصيل الخطأ",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
+  "logsShareOptionExport": "تصدير",
+  "logsExportedMessage": "تم تصدير السجلات بنجاح",
+  "logsExportFailedMessage": "فشل تصدير السجلات",
+  "deleteLogsTitle": "حذف السجلات",
+  "logsDeletedMessage": "تم حذف السجلات"
+}

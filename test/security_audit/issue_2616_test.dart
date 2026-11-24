@@ -12,7 +12,7 @@ void main() {
       'launch result is checked and external opening is not broadcast success',
       () {
         final source = File(
-          'lib/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart',
+          'features/send/lib/src/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart',
         ).readAsStringSync();
         expect(source, contains('final launched = await launchUrl('));
         expect(source, contains('if (!launched)'));

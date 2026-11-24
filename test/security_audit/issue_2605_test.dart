@@ -29,7 +29,16 @@ void main() {
         source,
         contains('if (walletId == null || walletId.isEmpty) continue;'),
       );
-      expect(source, contains('getOwnedOutpoints('));
+      expect(source, contains('ownedImportedFreezes(entry.key, entry.value)'));
+      final ownership = File(
+        'packages/labels/lib/src/domain/wallet_freeze_port.dart',
+      ).readAsStringSync();
+      expect(ownership, contains('getOwnedOutpoints(walletId: walletId)'));
+      expect(ownership, contains('output.walletId == walletId'));
+      expect(
+        ownership,
+        contains('owned.contains((txId: output.txId, vout: output.vout))'),
+      );
     });
   });
 }

@@ -1,0 +1,151 @@
+import 'package:bull_ui/app_theme.dart';
+import 'package:receive/src/ui/receive_localizations.dart';
+import 'package:receive/src/presentation/bloc/receive_bloc.dart';
+import 'package:receive/src/presentation/receive_navigation.dart';
+import 'package:transactions/routes.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullText, BullAmount, BullButton, BullTopBar, Gap, BullTypographyX;
+import 'package:gif/gif.dart';
+
+class ReceivePaymentReceivedScreen extends StatelessWidget {
+  final void Function(BuildContext) openHome;
+
+  final ImageProvider successAnimation;
+
+  const ReceivePaymentReceivedScreen({
+    super.key,
+    required this.openHome,
+    required this.successAnimation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return; // Don't allow back navigation
+        openHome(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: BullTopBar(
+            title: context.loc.receiveTitle,
+            onAction: () => openHome(context),
+          ),
+        ),
+        body: PaymentReceivedPage(successAnimation: successAnimation),
+        // child: AmountPage(),
+      ),
+    );
+  }
+}
+
+class PaymentReceivedPage extends StatelessWidget {
+  final ImageProvider successAnimation;
+
+  const PaymentReceivedPage({super.key, required this.successAnimation});
+
+  @override
+  Widget build(BuildContext context) {
+    // Using read instead of select or watch is ok here,
+    //  since the amounts can not be changed at this point anymore.
+    final amountSat = context.read<ReceiveBloc>().state.confirmedAmountSat;
+    final lnSwap = context.read<ReceiveBloc>().state.getSwap;
+    final fees = lnSwap?.fees?.totalFees(amountSat) ?? 0;
+    final finalAmount = (amountSat ?? 0) - fees;
+    final amountFiat = context
+        .read<ReceiveBloc>()
+        .state
+        .formattedConfirmedAmountFiat;
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: .end,
+        children: [
+          const Spacer(),
+          Gif(
+            image: successAnimation,
+            autostart: Autostart.once,
+            height: 100,
+            width: 100,
+          ),
+          const Gap(20),
+          BullText(
+            context.loc.receivePaymentReceived,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const Gap(24),
+          BullAmount.signedSats(
+            finalAmount,
+            interactive: true,
+            style: context.bullType.headline,
+          ),
+          const Gap(4),
+          BullText(
+            '~$amountFiat',
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+            color: context.appColors.onSurfaceVariant,
+          ),
+          const Spacer(),
+          const ReceiveDetailsButton(),
+          const Gap(16),
+        ],
+      ),
+    );
+  }
+}
+
+class ReceiveDetailsButton extends StatelessWidget {
+  const ReceiveDetailsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: BullButton.secondary(
+        label: context.loc.receiveDetails,
+        onPressed: () {
+          final target = receiveDetailsTarget(
+            context.read<ReceiveBloc>().state,
+          );
+          if (target == null) return;
+          switch (target.kind) {
+            case ReceiveDetailsTargetKind.walletTransaction:
+              if (target.walletId case final walletId?) {
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.wallet(
+                    target.id,
+                    walletId: walletId,
+                  ),
+                );
+              }
+            case ReceiveDetailsTargetKind.orderSwap:
+              TransactionsNavigation.openDetails(
+                context,
+                TransactionDetailsTarget.orderSwap(target.id),
+              );
+            case ReceiveDetailsTargetKind.swap:
+              if (target.walletId case final walletId?) {
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.swap(target.id, walletId: walletId),
+                );
+              }
+            case ReceiveDetailsTargetKind.payjoin:
+              TransactionsNavigation.openDetails(
+                context,
+                TransactionDetailsTarget.payjoin(target.id),
+              );
+          }
+        },
+      ),
+    );
+  }
+}

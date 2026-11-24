@@ -7,9 +7,6 @@
   "backupWarningLoseReasonCloudRestore": "Restaurer votre appareil à partir d'une sauvegarde dans le cloud",
   "backupWarningNoRecovery": "Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
   "@@locale": "fr",
-  "translationWarningTitle": "Traductions générées par IA",
-  "translationWarningDescription": "La plupart des traductions de cette application ont été générées par IA et peuvent contenir des inexactitudes. Si vous remarquez des erreurs ou souhaitez aider à améliorer les traductions, vous pouvez soumettre une correction sur notre dépôt GitHub.",
-  "translationWarningContributeButton": "Aider à améliorer les traductions",
   "translationWarningDismissButton": "Compris",
   "durationSeconds": "{seconds} secondes",
   "@durationSeconds": {
@@ -62,18 +59,10 @@
   "fiatCurrencySettingsLabel": "Devise fiduciaire",
   "languageSettingsScreenTitle": "Langue",
   "settingsExchangeSettingsTitle": "Paramètres d'échange",
-  "settingsSecurityPinTitle": "Code PIN de sécurité",
   "settingsCurrencyTitle": "Devise",
   "settingsAppSettingsTitle": "Paramètres de l'application",
   "settingsTermsOfServiceTitle": "Conditions d'utilisation",
-  "settingsAppVersionLabel": "Version de l'application : ",
-  "settingsServiceStatusTitle": "État des services",
   "settingsLanguageTitle": "Langue",
-  "settingsThemeTitle": "Thème",
-  "settingsDevModeWarningTitle": "Mode développeur",
-  "settingsDevModeWarningMessage": "Ce mode est risqué. En l'activant, vous reconnaissez que vous pourriez perdre de l'argent",
-  "settingsDevModeUnderstandButton": "Je comprends",
-  "settingsSuperuserModeDisabledMessage": "Mode superutilisateur désactivé.",
   "settingsSuperuserModeUnlockedMessage": "Mode superutilisateur déverrouillé !",
   "walletDetailsUnnamedWalletFallback": "Portefeuille sans nom",
   "addressViewAddressesTitle": "Adresses",
@@ -95,19 +84,9 @@
   "mempoolCustomServerDelete": "Delete",
   "mempoolCustomServerUrl": "Server URL",
   "mempoolCustomServerSaveSuccess": "Serveur personnalisé enregistré avec succès",
-  "walletSettingsImportWalletTitle": "Importer un portefeuille",
-  "bitcoinSettingsBroadcastTransactionTitle": "Diffuser une transaction",
-  "bitcoinSettingsTestnetModeTitle": "Mode Testnet",
-  "bitcoinSettingsBip85EntropiesTitle": "Entropies déterministes BIP85",
   "logSettingsLogsTitle": "Journaux",
   "logSettingsErrorLoadingMessage": "Erreur lors du chargement des journaux : ",
-  "appSettingsDevModeTitle": "Mode développeur",
   "exchangeTestnetBasicAuthTitle": "Identifiants de l'échange testnet",
-  "exchangeTestnetBasicAuthDescription": "Authentification HTTP basic pour les pages web de l'échange testnet (connexion et KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Nom d'utilisateur",
-  "exchangeTestnetBasicAuthPasswordLabel": "Mot de passe",
-  "exchangeTestnetBasicAuthClearButton": "Effacer",
-  "exchangeTestnetBasicAuthSaveButton": "Enregistrer",
   "currencySettingsDefaultFiatCurrencyLabel": "Devise fiduciaire par défaut",
   "exchangeSettingsAccountInformationTitle": "Informations du compte",
   "exchangeSettingsSecuritySettingsTitle": "Paramètres de sécurité",
@@ -158,18 +137,9 @@
   "addressCardCopiedMessage": "Adresse copiée dans le presse-papiers",
   "addressCardIndexLabel": "Index : ",
   "addressCardBalanceLabel": "Solde : ",
-  "onboardingRecoverYourWallet": "Restaurez votre portefeuille",
   "onboardingEncryptedVault": "Coffre-fort chiffré",
-  "onboardingEncryptedVaultDescription": "Récupérez votre sauvegarde via le cloud en utilisant votre code PIN.",
-  "onboardingPhysicalBackup": "Sauvegarde physique",
-  "onboardingPhysicalBackupDescription": "Récupérez votre portefeuille via 12 mots.",
   "onboardingRecover": "Restaurer",
   "onboardingBullBitcoin": "Bull Bitcoin",
-  "onboardingOwnYourMoney": "Possédez votre argent",
-  "onboardingSplashDescription": "Portefeuille Bitcoin à auto-garde souveraine et service d'échange exclusivement Bitcoin.",
-  "onboardingRecoverWallet": "Restaurer le portefeuille",
-  "onboardingRecoverWalletButton": "Restaurer le portefeuille",
-  "onboardingCreateNewWallet": "Créer un nouveau portefeuille",
   "sendTitle": "Envoyer",
   "sendRecipientAddressOrInvoice": "Adresse ou facture du destinataire",
   "sendPasteAddressOrInvoice": "Collez une adresse de paiement ou une facture",
@@ -816,7 +786,6 @@
   "recoverVia12WordsDescription": "Récupérez votre portefeuille via 12 mots.",
   "recoverButton": "Récupérer",
   "recoverWalletButton": "Récupérer le portefeuille",
-  "importMnemonicTitle": "Importer une mnémonique",
   "howToDecideBackupTitle": "Comment décider",
   "howToDecideBackupText1": "L'une des façons les plus courantes de perdre ses bitcoins est de perdre la sauvegarde physique. Toute personne qui trouve votre sauvegarde physique pourra prendre tous vos bitcoins. Si vous êtes très confiant de pouvoir bien la cacher et de ne jamais la perdre, c'est une bonne option.",
   "howToDecideBackupText2": "Le coffre-fort chiffré vous protège contre les voleurs cherchant à voler votre sauvegarde. Il vous évite également de perdre accidentellement votre sauvegarde puisqu'elle sera stockée dans votre cloud. Les fournisseurs de stockage cloud comme Google ou Apple n'auront pas accès à vos bitcoins car le mot de passe de chiffrement est trop fort. Il existe une faible possibilité que le serveur web qui stocke la clé de chiffrement de votre sauvegarde soit compromis. Dans ce cas, la sécurité de la sauvegarde dans votre compte cloud pourrait être menacée.",
@@ -1903,26 +1872,8 @@
   "coldcardStep13": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le Coldcard. Scannez-le.",
   "coldcardStep14": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
   "coldcardStep15": "Elle est maintenant prête à être diffusée ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
-  "importWalletTitle": "Ajouter un nouveau portefeuille",
   "importWalletConnectHardware": "Connecter un portefeuille matériel",
   "importWalletImportMnemonic": "Importer une mnémonique",
-  "importWalletImportWatchOnly": "Importer en lecture seule",
-  "importWalletSectionGeneric": "Portefeuilles génériques",
-  "importWalletSectionHardware": "Portefeuilles matériels",
-  "importWalletColdcardQ": "Coldcard Q",
-  "importWalletLedger": "Ledger",
-  "importWalletJade": "Blockstream Jade",
-  "importWalletKeystone": "Keystone",
-  "importWalletPassport": "Foundation Passport",
-  "importWalletSeedSigner": "SeedSigner",
-  "importWalletSpecter": "Specter",
-  "importWalletKrux": "Krux",
-  "importMnemonicContinue": "Continuer",
-  "importMnemonicSelectScriptType": "Importer une mnémonique",
-  "importMnemonicSyncMessage": "Les trois types de portefeuilles se synchronisent et leur solde et transactions apparaîtront bientôt. Vous pouvez attendre la fin de la synchronisation ou procéder à l'importation si vous êtes sûr du type de portefeuille que vous souhaitez importer.",
-  "importMnemonicSegwit": "Segwit",
-  "importMnemonicNestedSegwit": "Nested Segwit",
-  "importMnemonicLegacy": "Legacy",
   "importMnemonicChecking": "Vérification...",
   "importMnemonicEmpty": "Vide",
   "importMnemonicHasBalance": "A un solde",
@@ -1945,48 +1896,14 @@
   "importMnemonicImport": "Importer",
   "importMnemonicImporting": "Importation en cours...",
   "importMnemonicSelectType": "Sélectionnez un type de portefeuille à importer",
-  "importMnemonicBalanceLabel": "Solde : {amount}",
-  "@importMnemonicBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "importMnemonicTransactionsLabel": "Transactions : {count}",
-  "@importMnemonicTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "importWatchOnlyTitle": "Importer en lecture seule",
-  "importWatchOnlyPasteHint": "Coller xpub, ypub, zpub ou descripteur",
-  "importWatchOnlyErrorNoWalletSelected": "Collez ou scannez d'abord une clé publique ou un descripteur.",
-  "importWatchOnlyErrorLabelRequired": "Nommez votre portefeuille avant de l'importer.",
-  "importWatchOnlyErrorInvalidFormat": "Cela ne ressemble pas à une clé publique ou un descripteur valide. Vérifiez ce que vous avez collé.",
-  "importWatchOnlyErrorImportFailed": "Impossible d'importer ce portefeuille en lecture seule. Vérifiez les informations et réessayez.",
   "importWatchOnlyXpub": "xpub",
   "importWatchOnlyYpub": "ypub",
   "importWatchOnlyZpub": "zpub",
-  "importWatchOnlyDescriptor": "Descripteur",
-  "importWatchOnlyScanQR": "Scanner QR",
   "importWatchOnlyScriptType": "Type de script",
   "importWatchOnlyFingerprint": "Empreinte",
   "importWatchOnlyDerivationPath": "Chemin de dérivation",
   "importWatchOnlyImportButton": "Importer le portefeuille en lecture seule",
   "importWatchOnlyCancel": "Annuler",
-  "importWatchOnlyCopiedToClipboard": "Copié dans le presse-papiers",
-  "importWatchOnlyType": "Type",
-  "importWatchOnlySigningDevice": "Appareil de signature",
-  "importWatchOnlyUnknown": "Inconnu",
-  "importWatchOnlyLabel": "Libellé",
-  "importWatchOnlyRequired": "Requis",
-  "importWatchOnlyImport": "Importer",
-  "importWatchOnlyExtendedPublicKey": "Clé publique étendue",
-  "importWatchOnlyDisclaimerTitle": "Avertissement sur le chemin de dérivation",
-  "importWatchOnlyDisclaimerDescription": "Assurez-vous que le chemin de dérivation que vous choisissez correspond à celui qui a produit la xpub donnée, car l'utilisation d'un mauvais chemin peut entraîner une perte de fonds",
   "bip85Title": "Entropies déterministes BIP85",
   "bip85ExperimentalWarning": "Expérimental \nSauvegardez vos chemins de dérivation manuellement",
   "bip85NextMnemonic": "Mnémonique suivante",
@@ -2046,8 +1963,6 @@
   "importColdcardError": "Échec de l'importation du Coldcard",
   "importColdcardInvalidQR": "Code QR Coldcard invalide",
   "importColdcardDescription": "Importez le QR code descripteur de portefeuille de votre Coldcard Q",
-  "importColdcardButtonOpenCamera": "Ouvrir la caméra",
-  "importColdcardButtonInstructions": "Instructions",
   "importColdcardInstructionsTitle": "Instructions Coldcard Q",
   "importColdcardInstructionsStep1": "Connectez-vous à votre appareil Coldcard Q",
   "importColdcardInstructionsStep2": "Entrez une phrase secrète si applicable",
@@ -2170,19 +2085,7 @@
   "ledgerErrorMissingDerivationPathVerify": "Le chemin de dérivation est requis pour la vérification",
   "ledgerErrorMissingScriptTypeVerify": "Le type de script est requis pour la vérification",
   "ledgerDefaultWalletLabel": "Portefeuille Ledger",
-  "exchangeBrandName": "BULL BITCOIN",
-  "exchangeLandingConnectAccount": "Connectez votre compte d'échange Bull Bitcoin",
-  "exchangeLandingRecommendedExchange": "Plateforme d'échange Bitcoin recommandée",
-  "exchangeFeatureSelfCustody": "• Achetez du Bitcoin directement en auto-garde",
-  "exchangeFeatureDcaOrders": "• DCA, ordres limités et achat automatique",
-  "exchangeFeatureSellBitcoin": "• Vendez du Bitcoin, soyez payé en Bitcoin",
-  "exchangeFeatureBankTransfers": "• Envoyez des virements bancaires et payez des factures",
-  "exchangeFeatureCustomerSupport": "• Discutez avec le support client",
-  "exchangeFeatureUnifiedHistory": "• Historique des transactions unifié",
-  "exchangeLandingDisclaimerLegal": "L'accès aux services d'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
-  "exchangeLandingDisclaimerNotAvailable": "Les services d'échange de cryptomonnaies ne sont pas disponibles dans l'application mobile Bull Bitcoin.",
   "exchangeLoginButton": "Se connecter ou s'inscrire",
-  "exchangeGoToWebsiteButton": "Aller sur le site web de l'échange Bull Bitcoin",
   "exchangeAuthLoginFailedTitle": "Échec de la connexion",
   "exchangeAuthLoginFailedMessage": "Une erreur s'est produite, veuillez réessayer de vous connecter.",
   "exchangeAuthLoginFailedOkButton": "OK",
@@ -2564,46 +2467,6 @@
   "statusScreenTryAgain": "Réessayer",
   "statusScreenContinue": "Continuer",
   "autoswapInfoConsentMessage": "Autoswap est actuellement activé mais ne se déclenchera pas tant que vous n'aurez pas donné votre consentement. Souhaitez-vous le garder activé?",
-  "settingsErrorReportingTitle": "Signalement d'erreurs",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "Programme de signalement d'erreurs",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescriptionP1": "Aidez-nous à améliorer Bull Bitcoin en participant à notre programme de signalement d'erreurs. Cela nous aide directement à faire de Bull Bitcoin un meilleur service pour tous.",
-  "@errorReportingProgramDescriptionP1": {
-    "description": "Intro paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP2": "Lorsqu'elle est activée, nous envoyons automatiquement des rapports d'erreurs lorsque des problèmes surviennent dans l'application.",
-  "@errorReportingProgramDescriptionP2": {
-    "description": "Bold paragraph: anonymized error reports fact"
-  },
-  "errorReportingProgramDescriptionP3": "Ces données nous aident à comprendre ce qui se passe pour nos utilisateurs du monde entier et à prioriser les correctifs en conséquence.",
-  "@errorReportingProgramDescriptionP3": {
-    "description": "Impact paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP4": "Nous ne partageons pas ces informations avec des tiers.",
-  "@errorReportingProgramDescriptionP4": {
-    "description": "Privacy paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP5": "Nous utilisons le client open-source de Sentry avec notre propre serveur backend auto-hébergé.",
-  "@errorReportingProgramDescriptionP5": {
-    "description": "Bold paragraph: open source verification fact"
-  },
-  "errorReportingAcceptButton": "Accepter",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "Annuler",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "Relancez l'application pour appliquer ce changement",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "appInitErrorTitle": "Impossible de démarrer l'application",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -2720,41 +2583,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Passer",
-  "wizardPageIndicator": "PAGE {current} / {total}",
-  "wizardNextButton": "Suivant",
-  "wizardCustomizeTitle": "Personnalisez votre expérience",
-  "wizardCustomizeBody": "Utilisez BULL selon vos préférences avec ces paramètres.",
-  "wizardCustomizeDefaultCurrency": "Devise par défaut",
-  "wizardMissionTitle": "Aidez la mission Bull",
-  "wizardMissionBody1": "Pour nous aider à améliorer notre logiciel et garantir le meilleur niveau de sécurité, de confidentialité et d'utilisabilité, votre application peut nous envoyer des journaux d'erreurs qui nous permettent de détecter et corriger les problèmes rapidement dans nos prochaines mises à jour.",
-  "wizardMissionBody2": "Ces journaux sont anonymisés, ne sont pas liés à votre adresse IP, et ne partagent jamais d'informations sur vos transactions ou votre identité. Ils sont purement techniques et ne vous exposent à aucun risque. Cela nous aide énormément, et ne vous coûte rien.",
-  "wizardMissionQuestion": "Acceptez-vous de participer à notre programme de signalement automatique des problèmes ?",
-  "wizardMissionYes": "Oui",
-  "wizardMissionNo": "Non",
-  "wizardMissionRequired": "Veuillez choisir Oui ou Non avant de continuer.",
-  "wizardJourneyTitle": "Progressez dans votre parcours",
-  "wizardJourneyBody": "Si vous découvrez le portefeuille BULL, voici quelques fonctionnalités dont vous pouvez profiter pour améliorer votre confidentialité, votre sécurité et votre expérience utilisateur.",
-  "wizardJourneyTip1": "Ajoutez un PIN de sécurité pour déverrouiller votre portefeuille",
-  "wizardJourneyTip2": "Essayez la sauvegarde chiffrée du coffre",
-  "wizardJourneyTip3": "Connectez-vous à votre propre nœud Bitcoin",
-  "wizardJourneyTip4": "Connectez-vous à votre propre explorateur Mempool",
-  "wizardJourneyTip5": "Échangez entre Bitcoin et Liquid sans KYC",
-  "wizardJourneyTip6": "Personnalisez vos paramètres d'autoswap",
-  "wizardJourneyTip7": "Basculez entre Bitcoin (BTC) et Satoshis (sats)",
-  "wizardJourneyTip8": "Créez des transactions air-gap pour votre portefeuille matériel",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "walletSetupErrorTryAgain": "Une erreur s'est produite lors de la configuration de votre portefeuille. Veuillez réessayer.",
-  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
   "coreScreensResolvingInputs": "Résolution des entrées de la transaction...",
   "coreScreensFeeRateLabel": "Taux de frais",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -2902,22 +2730,12 @@
   "backupCardSubtitle": "Sauvegardez votre portefeuille maintenant.",
   "autoswapTargetBalanceLabel": "Solde cible du portefeuille instantané",
   "autoswapMaximumBalanceLabel": "Solde maximal du portefeuille instantané",
-  "onboardingAdvancedOptionsTitle": "Options avancées",
-  "onboardingAdvancedOptionsDescription": "Configurez les paramètres avancés avant de créer ou de récupérer votre portefeuille",
-  "onboardingAdvancedOptionsCustomElectrum": "Serveur Electrum personnalisé",
-  "onboardingAdvancedOptionsCustomMempool": "Serveur Mempool personnalisé",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Serveur Recoverbull personnalisé",
-  "onboardingAdvancedOptionsFooter": "Vous pourrez modifier ces paramètres plus tard dans les paramètres de l'application",
   "appStartupContactSupportMessage": "Contactez le support sur app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox n'est pris en charge que sur Android",
   "bitcoinPriceExchangeRateUnavailable": "Taux de change indisponible. Veuillez réessayer plus tard.",
   "allSeedViewErrorFetch": "Échec du chargement des mnémoniques. Veuillez réessayer.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
-  },
-  "importMnemonicEmptyLabelError": "Une étiquette est requise pour importer un mnémonique",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "allSeedViewErrorDelete": "Échec de la suppression de la mnémonique. Veuillez réessayer.",
   "@allSeedViewErrorDelete": {
@@ -2931,123 +2749,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "Pièces",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 pièce} other{{count} pièces}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "Gelées",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "Disponible",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "Aucune gelée",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "Trier et filtrer",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "{visible} sur {total} affichées",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 sortie non dépensée} other{{count} sorties non dépensées}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "Synchroniser",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "Tout effacer",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "Montant : décroissant",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "Montant : croissant",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "Date : plus récentes",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "Date : plus anciennes",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "Trousseau",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "Tous",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "Réception",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "Monnaie",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "Statut de gel",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "Tous",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "Gelées",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "Dégelées",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "Étiquettes",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "Réinitialiser",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "Appliquer",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{1 sélectionnée} other{{count} sélectionnées}}",
   "@coinsSelectedCount": {
@@ -3055,128 +2759,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "Tout sélectionner",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "Geler",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "Dégeler",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "Annuler",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Geler 1 pièce ?} other{Geler {count} pièces ?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "Les pièces gelées restent dans votre portefeuille mais sont exclues des dépenses jusqu'à ce que vous les dégeliez.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "Geler ces pièces vous laissera sans solde disponible.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{1 pièce gelée · exclue des dépenses} other{{count} pièces gelées · exclues des dépenses}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{1 pièce dégelée} other{{count} pièces dégelées}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 conf} other{{count} confs}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "En attente",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "Aucune pièce pour l'instant",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "Les pièces apparaîtront ici une fois que vous aurez reçu des bitcoins.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "Aucune pièce correspondante",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "Effacer les filtres",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "Réessayer",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "Balayez une pièce pour la geler · appuyez longuement pour sélectionner",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "Impossible de charger vos pièces. Tirez pour actualiser et réessayer.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "Impossible de geler les pièces sélectionnées. Veuillez réessayer.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "Impossible de dégeler les pièces sélectionnées. Veuillez réessayer.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "Une erreur s'est produite. Veuillez réessayer.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} gelé",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -3213,13 +2795,8 @@
   "fundExchangeJurisdictionColombia": "🇨🇴 Colombie",
   "sendCoordinatingPayjoinTransaction": "Coordination d'une transaction Payjoin.",
   "sendErrorInvoiceExpired": "Cette facture a expiré. Demandez une nouvelle facture au destinataire.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Approchez votre Coldcard pour recevoir la transaction signée via NFC",
-  "importColdcardInvalidWalletData": "Données de portefeuille Coldcard invalides",
-  "importColdcardConnectTitle": "Connecter {deviceName}",
-  "importColdcardConnectDescription": "Importez le descripteur de portefeuille depuis votre {deviceName}",
-  "importColdcardScanNfcSheetTitle": "Approchez votre {deviceName} pour importer le descripteur de portefeuille via NFC",
   "fundExchangeCopDailyLimitWarning": "Si vous dépassez votre limite de transaction quotidienne, la transaction échouera. Vous devrez contacter le support client.",
   "fundExchangeCopSenderName": "Nom de l'expéditeur",
   "fundExchangeCopIssuingBank": "Banque émettrice",
@@ -3233,10 +2810,7 @@
   "viewerAddressTab": "Adresse",
   "viewerPaymentUriTab": "URI de paiement",
   "transactionSwapOpenWithin24h": "Ouvrez l'application dans les 24 heures pour finaliser votre swap.",
-  "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "Solde disponible insuffisant — {amount} est gelé. Dégelez des pièces dans Gérer les pièces pour l'utiliser.",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Terminé",
   "consolidationFailedBody": "Une erreur inattendue s'est produite. Vos fonds sont en sécurité : aucune transaction n'a été diffusée. Veuillez réessayer.",
   "consolidationFailedTitle": "Échec de la consolidation",
@@ -3251,19 +2825,10 @@
   "consolidationScreenTitle": "Consolider",
   "consolidationSuccessBody": "Vos pièces sont en cours de regroupement. Cela se terminera une fois confirmé par le réseau.",
   "consolidationSuccessTitle": "Consolidation démarrée",
-  "settingsPayjoinTitle": "Payjoin",
   "settingsPayjoinPrivacyGainExplanation": "Le payjoin apporte un gain de confidentialité majeur contre l'analyse de la chaîne : il brise l'hypothèse selon laquelle toutes les entrées d'une transaction appartiennent à la même personne. La contrepartie est un risque : accepter un payjoin révèle un de vos UTXOs à votre contrepartie.",
   "settingsPayjoinV1DirectoryLeakExplanation": "Si votre contrepartie utilise une ancienne version du payjoin (v1) plutôt que la version actuelle (v2), ce même UTXO peut aussi être révélé au répertoire payjoin (payjoin directory), un relais tiers utilisé pour coordonner le payjoin.",
-  "settingsPayjoinMinAmountTitle": "Montant minimum",
-  "settingsPayjoinMinAmountDescription": "En dessous de ce montant, le payjoin est refusé et le paiement est reçu normalement.",
-  "settingsPayjoinMinAmountRangeError": "Doit être compris entre {min} et {max} sats",
-  "settingsPayjoinExpireTitle": "Expiration de la session",
-  "settingsPayjoinServersTitle": "Serveurs",
-  "bitcoinSettingsPayjoinTitle": "Payjoin",
   "receivePayjoinFallbackCountdown": "Retour à un paiement normal dans",
   "settingsPayjoinDisclaimerTitle": "Avertissement Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "Avertissement Payjoin",
-  "settingsPayjoinAdvancedTitle": "Réglages avancés du Payjoin",
   "sendPayjoinLabel": "Payjoin",
   "payjoinInProgress": "Payjoin en cours",
   "payjoinSucceeded": "Payjoin réussi",
@@ -3288,8 +2853,6 @@
   "sendSwapExpiredMessage": "Cette commande a expiré avant l'envoi de fonds. Rien n'a été envoyé depuis votre portefeuille.",
   "swapErrorRouteUnavailable": "{fromNetwork} vers {toNetwork} n'est pas disponible.",
   "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible.",
-  "settingsScreenPrivacyTitle": "Confidentialité de l’écran",
-  "settingsScreenPrivacyDisabledMessage": "Les captures d’écran sont désormais autorisées sur les écrans sensibles",
   "torSettingsExternalProxyUnavailable": "Proxy SOCKS5 indisponible",
   "torSettingsExternalProxyUnavailableDescription": "Bull n’a pas pu se connecter au proxy SOCKS5 configuré.",
   "torStatusReady": "Tor prêt",
@@ -3304,7 +2867,6 @@
   "torStatusNotStartedDescription": "Le Tor intégré démarre automatiquement lorsque RecoverBull ou un serveur Bitcoin .onion en a besoin.",
   "torStatusTelemetryUnavailable": "Les chemins des circuits et le débit ne sont pas exposés par le moteur Tor intégré.",
   "torStatusProxyEndpointLabel": "Point de terminaison SOCKS5",
-  "onboardingBackupVerificationError": "Votre portefeuille a été récupéré, mais la vérification de la sauvegarde n'a pas pu être complétée. Veuillez réessayer.",
   "sendErrorSelectedCoinsUnavailable": "Un ou plusieurs coins sélectionnés ne sont plus disponibles. Vérifiez votre sélection et réessayez.",
   "sendErrorSelectedCoinsInsufficient": "Les coins sélectionnés ne couvrent pas le montant et les frais. Sélectionnez plus de coins ou réduisez le montant.",
   "sendErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
@@ -3320,8 +2882,6 @@
   "walletWarningElectrumAction": "Appuyez pour configurer vos paramètres de serveur",
   "walletLoadFailedRetryHint": "Tirez vers le bas pour actualiser et réessayer",
   "settingsErrorSavingSetting": "Ce paramètre n'a pas pu être enregistré. Veuillez réessayer.",
-  "settingsErrorConsentNotGiven": "Ce paramètre nécessite votre confirmation avant d'être modifié.",
-  "settingsErrorLoadingLogs": "Les journaux de diagnostic n'ont pas pu être préparés. Veuillez réessayer.",
   "exchangeErrorSigningOut": "La déconnexion n'a pas pu être menée à bien. Veuillez réessayer.",
   "exchangeErrorSavingPreferences": "Vos préférences n'ont pas pu être enregistrées. Veuillez réessayer.",
   "exchangeErrorLoadingAnnouncements": "Les annonces n'ont pas pu être chargées.",
@@ -3371,10 +2931,6 @@
   "autoBuyWalletRequiredError": "Ajoutez au moins une adresse Bitcoin, Lightning ou Liquid par défaut.",
   "autoBuyUpdateError": "L'achat automatique n'a pas pu être mis à jour. Réessayez plus tard.",
   "withdrawUnexpectedError": "Votre retrait n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
-  "importWatchOnlyErrorNetworkMismatch": "La clé ne correspond pas au réseau Bitcoin sélectionné.",
-  "importWatchOnlyErrorAlreadyExists": "Ce portefeuille est déjà importé.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Réseau : réseau principal Bitcoin",
-  "importWatchOnlyNetworkBitcoinTestnet": "Réseau : réseau de test Bitcoin",
   "broadcastSignedTxErrorPsbtFinalization": "La transaction signée n’a pas pu être finalisée. Vérifiez qu’elle contient toutes les signatures requises, puis réessayez.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
@@ -3447,38 +3003,6 @@
   "fundExchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
   "exchangeErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
   "walletBalancesMayBeStale": "Vos soldes n’ont pas pu être mis à jour et ne sont peut-être pas à jour.",
-  "settingsSearchHint": "Rechercher dans les réglages",
-  "settingsSearchNoResults": "Aucun réglage trouvé.",
-  "settingsSearchMempoolKeywords": "explorateur de blocs|estimation des frais|frais de transaction|API mempool",
-  "settingsSearchExchangeKeywords": "compte|compte de change|trading|acheter et vendre",
-  "settingsSearchStartBackupKeywords": "créer une sauvegarde|enregistrer la sauvegarde|sauvegarder le portefeuille",
-  "settingsSearchRecoverbullKeywords": "sauvegarde chiffrée|sauvegarde cloud|coffre chiffré|récupération du coffre|Recoverbull",
-  "settingsSearchLabelsKeywords": "étiquettes du portefeuille|étiquettes de transactions|BIP329|importer les étiquettes|exporter les étiquettes",
-  "settingsSearchTransactionHistoryKeywords": "exporter les transactions|export des transactions|CSV|historique du portefeuille",
-  "settingsSearchAppSettingsKeywords": "préférences de l’application|paramètres de l’application|paramètres généraux",
-  "settingsSearchTermsOfServiceKeywords": "conditions générales|mentions légales|accord utilisateur|TOS",
-  "settingsSearchServicesStatusKeywords": "état des services|état du système|en ligne|panne",
-  "settingsSearchImportWalletKeywords": "ajouter un portefeuille|restaurer un portefeuille|importer une phrase mnémonique|portefeuille en lecture seule|portefeuille matériel",
-  "settingsSearchBroadcastTransactionKeywords": "diffuser une transaction signée|publier une transaction|transaction brute|hexadécimal de transaction|PSBT",
-  "settingsSearchPayjoinKeywords": "confidentialité Payjoin|transaction collaborative|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "échange automatique|swap automatique|transfert automatique|solde du portefeuille instantané|Autoswap",
-  "settingsSearchElectrumKeywords": "nœud Bitcoin|nœud Electrum|serveur personnalisé|nœud personnel|Electrum",
-  "settingsSearchTestnetModeKeywords": "réseau de test|testnet Bitcoin|testnet Liquid|mode test|Testnet",
-  "settingsSearchSeedViewerKeywords": "phrase seed|phrase de récupération|mnémonique|mots de sauvegarde|afficher les seeds",
-  "settingsSearchBip85Keywords": "entropie déterministe|seeds dérivées|entropie dérivée|BIP85",
-  "settingsSearchLanguageKeywords": "paramètres régionaux|traduction|langue d’affichage|langue préférée",
-  "settingsSearchThemeKeywords": "apparence|mode sombre|mode clair|thème du système",
-  "settingsSearchCurrencyKeywords": "monnaie fiduciaire|devise locale|devise par défaut|devise de conversion",
-  "settingsSearchSecurityPinKeywords": "code PIN|code d’accès|verrouillage de l’application|authentification|modifier le PIN",
-  "settingsSearchLogsKeywords": "journaux de débogage|journaux de diagnostic|journaux de l’application|exporter les journaux",
-  "settingsSearchDevModeKeywords": "mode développeur|paramètres de développement|mode débogage|tests avancés",
-  "settingsSearchTestnetCredentialsKeywords": "identifiants testnet|connexion testnet|nom d’utilisateur testnet|mot de passe testnet|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "rapports de plantage|rapports de bogues|diagnostic|télémétrie|journaux d’erreurs",
-  "settingsSearchScreenPrivacyKeywords": "captures d’écran|enregistrement d’écran|protection contre la capture|confidentialité",
-  "settingsSearchStartTyping": "Commencez à saisir pour voir les résultats.",
-  "settingsSearchBackupKeywords": "sauvegarde|récupération|restaurer le portefeuille|sauvegarde de la seed",
-  "settingsSearchTorKeywords": "proxy Tor|Orbot|routage onion|Tor intégré|réseau de confidentialité|socks5|anonyme",
-  "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille",
   "limitOrdersInsufficientBalance": "Solde insuffisant",
   "limitOrdersInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
   "limitOrdersFundAccount": "Financer votre compte",
@@ -3525,16 +3049,7 @@
   "recipientsVirtualIbanBankAddressHelp": "L'adresse officielle de la banque, au cas où elle serait requise par votre banque.",
   "recipientsConfidentialSepaNameMustMatchHint": "Les noms doivent correspondre entre votre banque et votre IBAN virtuel, sinon les virements seront automatiquement retournés.",
   "copiedToClipboard": "Copié dans le presse-papiers",
-  "settingsPayjoinUsersSection": "Avec d’autres utilisateurs",
-  "settingsPayjoinSendLabel": "Envoyer",
-  "settingsPayjoinReceiveLabel": "Recevoir",
-  "settingsPayjoinExchangeSection": "Avec la plateforme Bull Bitcoin",
-  "settingsPayjoinBuyLabel": "Acheter",
-  "settingsPayjoinSellLabel": "Vendre et payer des factures",
-  "settingsPayjoinExpireMinutesDescription": "Durée pendant laquelle une session payjoin reste ouverte avant de basculer vers un paiement normal.",
-  "settingsPayjoinExpireMinutesRangeError": "Doit être compris entre {min} et {max} minutes",
   "settingsPayjoinSatsUnit": "sats",
-  "settingsPayjoinMinutesUnit": "min",
   "sellQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
   "exchangePaymentSentPastDeadline": "Paiement envoyé. L’exchange indique que le délai de paiement de cette commande a expiré. Conservez l’identifiant de transaction ci-dessous et contactez le support si la commande n’est pas mise à jour.",
   "exchangePaymentSentLeave": "Quitter",
@@ -3559,11 +3074,8 @@
   "walletDiscoverySucceeded": "Recherche terminée",
   "walletDiscoveryFailed": "Impossible de terminer la recherche. Veuillez réessayer.",
   "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}",
-  "importMnemonicScanServerUnavailable": "Impossible de joindre un serveur pour vérifier ce portefeuille. Vous pouvez quand même l'importer.",
-  "importMnemonicScanUnavailable": "Vérification du solde indisponible. Vous pouvez quand même importer ce portefeuille.",
   "electrumRegtest": "Regtest",
   "networkFeatureUnavailable": "Cette fonctionnalité est indisponible sur le réseau sélectionné.",
-  "networkSelectorTitle": "Réseau",
   "networkWalletSetupTitle": "Aucun portefeuille sur ce réseau",
   "networkWalletReuseSecret": "Réutiliser le secret d’un portefeuille existant",
   "walletSpendAwaitingObservation": "Les dépenses sont indisponibles tant que ce portefeuille n’est pas synchronisé et n’a pas vu ses paiements précédents sur le réseau. Actualisez le portefeuille ou recherchez les transactions manquantes, puis réessayez.",
@@ -3594,32 +3106,20 @@
   "exchangeAccessPendingOperations": "Des opérations existantes peuvent continuer. Ouvrez votre compte pour les vérifier avant de vous déconnecter.",
   "exchangeAccessEnableToContinue": "Activez les fonctionnalités de l’exchange dans les réglages pour continuer.",
   "exchangeAccessDisableIncomplete": "La déconnexion est incomplète. Réessayez avant d’utiliser les fonctionnalités de l’exchange.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Achetez, vendez et payez avec Bull Bitcoin directement depuis votre portefeuille.",
-  "quickActionsSettingsTitle": "Actions rapides",
   "exchangeTradingUnavailable": "Les opérations sont indisponibles.",
   "exchangeTradingRetry": "Réessayer",
   "exchangeAccessUnreadable": "Impossible de lire l’accès à la plateforme. Réessayez ou réinitialisez-le.",
   "exchangeAccessReset": "Réinitialiser l’accès à la plateforme",
   "exchangeAccessLogoutIncomplete": "La déconnexion est incomplète. Terminez-la avant d’activer la plateforme.",
   "exchangeAccessRetryLogout": "Terminer la déconnexion",
-  "bitcoinSettingsAutoTransferTitle": "Échange automatique",
   "passphraseWhitespaceWarning": "Les espaces au début ou à la fin font partie de votre passphrase.",
   "passphraseBackupPrompt": "Saisissez votre passphrase pour vérifier votre sauvegarde.",
   "passphraseIncorrect": "Passphrase incorrecte.",
-  "emptyWalletTitle": "Ce wallet semble vide",
-  "emptyWalletMessage": "Ce wallet semble vide. La passphrase est peut-être incorrecte.",
   "correct": "Corriger",
-  "emptyWalletBitcoinOnly": "Aucun historique Bitcoin trouvé. Liquid n’a pas été vérifié.",
-  "onboardingScanUnavailableTitle": "Impossible de vérifier l’historique des transactions Bitcoin.",
-  "onboardingScanUnavailableMessage": "Votre historique Bitcoin n’a pas pu être vérifié. Vous pouvez réessayer ou continuer sans vérification.",
-  "onboardingContinueWithoutChecking": "Continuer sans vérification",
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "settingsDarkModeTitle": "Mode sombre",
-  "settingsSourceCodeTitle": "Code source",
   "parentCustodyMetadataUnavailable": "Les données de sécurité du wallet sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer.",
   "networkWalletReuseNoRecoveryPhrase": "Ce portefeuille n'a pas de phrase de récupération, il ne peut donc pas être réutilisé ici. Importez une phrase de récupération ou créez un nouveau portefeuille.",
-  "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné.",
   "walletTypeBitcoinNetwork": "Réseau Bitcoin",
   "walletTypeLiquidAndLightning": "Liquid et Lightning",
   "walletTypeWatchOnly": "Lecture seule",
@@ -3674,15 +3174,8 @@
   "swapInternalTransferDescription": "Transférez facilement des bitcoins entre vos portefeuilles. Ne gardez dans le portefeuille de paiements instantanés que les fonds nécessaires aux dépenses courantes.",
   "backgroundTasksTitle": "Tâches en arrière-plan",
   "blockedInSystemSettings": "Bloqué dans les réglages du système",
-  "notificationsBlockedMessage": "Les notifications sont bloquées dans les réglages du système.",
   "notificationsTitle": "Notifications",
   "openSystemSettings": "Ouvrir les réglages du système",
-  "permissionsTitle": "Autorisations",
-  "settingsSearchPermissionsKeywords": "notifications|tâches en arrière-plan|batterie|alertes",
-  "wizardBackgroundTasksDescription": "Vérifie les paiements app fermée.",
-  "wizardNotificationsDescription": "Sachez quand un paiement arrive.",
-  "amountInputBitcoin": "Bitcoin",
-  "amountInputTitle": "Saisir les montants en",
   "amountInputStartChanged": "Les montants commencent désormais en {currency}",
   "amountEnteredAtRate": "Vous avez saisi {amount} {currency} · cours de {time}",
   "amountInputHeader": "Montants en",

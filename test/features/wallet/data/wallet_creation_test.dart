@@ -13,7 +13,6 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:sync/write.dart'
     show WalletNativeRuntime, WalletNativeLifecycle;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -23,7 +22,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result, ScriptType, SignerEntity;
 import 'package:sync/sync.dart'
     show
         Balances,
@@ -59,10 +59,11 @@ void main() {
   late SqliteDatabase database;
   late WalletRegistrations metadata;
   late _Native native;
+  late _Values values;
   late WalletRepository repository;
   late Secret secret;
   late WalletMetadataModel row;
-  late WatchOnlyDescriptorEntity descriptor;
+  late WatchOnlyDescriptorInput descriptor;
   late FakeSecureStoragePlatform storage;
   late _Reporter reporter;
 
@@ -84,9 +85,9 @@ void main() {
     registerFallbackValue(row);
     registerFallbackValue(WalletSyncBinding.keyFromMetadata(row));
     final parsed = await WatchOnlyInput.parse(row.externalPublicDescriptor);
-    descriptor = WatchOnlyWalletEntity.fromInput(
-      (parsed as Ok).value as WatchOnlyInput,
-    ) as WatchOnlyDescriptorEntity;
+    descriptor =
+        (parsed as Ok<WatchOnlyInput, ImportFailure>).value
+            as WatchOnlyDescriptorInput;
     directory = await Directory.systemTemp.createTemp('wallet-create-');
     reporter = _Reporter();
     await initializeLogging(directory: directory, reporter: reporter);
@@ -97,7 +98,7 @@ void main() {
     native = _Native();
     when(() => native.prepareCreate(any()))
         .thenAnswer((_) async => const Ok(null));
-    final values = _Values();
+    values = _Values();
     when(() => values.getBalance(key: any(named: 'key'))).thenAnswer(
       (_) async => Balances(
         confirmedSat: BigInt.zero,
@@ -111,7 +112,6 @@ void main() {
     repository = WalletRepository(
       native: native,
       walletRegistrations: metadata,
-      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
         _, {
@@ -129,22 +129,26 @@ void main() {
     });
   });
 
-  Future<Wallet> create(String path) => switch (path) {
-    'secret' => repository.createWallet(
-      secret: secret,
-      network: Network.bitcoinMainnet,
-      scriptType: ScriptType.bip84,
-    ),
-    'descriptor' => repository.importDescriptor(
-      watchOnlyDescriptor: descriptor,
-    ),
-    _ => repository.importWatchOnlyXpub(
-      xpub: row.xpub,
-      network: Network.bitcoinMainnet,
-      scriptType: ScriptType.bip84,
-      label: 'import',
-    ),
-  };
+  Future<String> createSecret() => repository.createWallet(
+    secret: secret,
+    network: Network.bitcoinMainnet,
+    scriptType: ScriptType.bip84,
+  );
+
+  Future<Result<Wallet, ImportWatchOnlyFailure>> importPublic(String path) =>
+      switch (path) {
+        'descriptor' => repository.importDescriptor(
+          descriptor: descriptor,
+          signer: SignerEntity.remote,
+          label: '',
+        ),
+        _ => repository.importWatchOnlyXpub(
+          xpub: row.xpub,
+          network: BitcoinNetwork.mainnet,
+          scriptType: ScriptType.bip84,
+          label: 'import',
+        ),
+      };
 
   Future<SqliteDatabase> independent() async {
     await metadata.fetchAll();
@@ -166,7 +170,7 @@ void main() {
         await release.future;
         return const Ok(null);
       });
-      final creating = create('secret');
+      final creating = createSecret();
       await entered.future;
       try {
         await observer.customStatement('UPDATE settings SET rowid = rowid');
@@ -186,7 +190,7 @@ void main() {
     });
     when(() => native.create(any())).thenAnswer((_) async => const Ok(null));
     try {
-      await create('secret');
+      await createSecret();
       verify(() => native.create(any())).called(1);
     } finally {
       await observer.close();
@@ -205,28 +209,47 @@ void main() {
         );
         return const Err(SyncStorageFailure());
       });
-      await expectLater(
-        create(path),
-        throwsA(
-          isA<WalletSnapshotException>().having(
-            (error) => error.failure,
-            'failure',
-            isA<SyncStorageFailure>(),
+      if (path == 'secret') {
+        await expectLater(
+          createSecret(),
+          throwsA(
+            isA<WalletSnapshotException>().having(
+              (error) => error.failure,
+              'failure',
+              isA<SyncStorageFailure>(),
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        expect(
+          await importPublic(path),
+          isA<Err<Wallet, ImportWatchOnlyFailure>>().having(
+            (outcome) => outcome.failure,
+            'failure',
+            isA<ImportFailedFailure>(),
+          ),
+        );
+      }
       expect(await metadata.fetchAll(), isEmpty);
       expect(
         (await log.readLogs())
             .where((line) => line.split('\t')[1] == 'WARNING')
             .map((line) => line.split('\t')[2]),
-        ['Wallet creation failed catalog row removed'],
+        [
+          'Wallet creation failed catalog row removed',
+          if (path != 'secret')
+            'Failed to import watch-only wallet: WalletSnapshotException',
+        ],
       );
       verifyZeroInteractions(reporter);
       expect(storage.entries, secretsBefore);
       when(() => native.create(any())).thenAnswer((_) async => const Ok(null));
-      final wallet = await create(path);
-      expect((await metadata.fetchAll()).single.id, wallet.id);
+      final walletId = path == 'secret'
+          ? await createSecret()
+          : (await importPublic(
+              path,
+            ) as Ok<Wallet, ImportWatchOnlyFailure>).value.id;
+      expect((await metadata.fetchAll()).single.id, walletId);
       expect(storage.entries, secretsBefore);
       verifyNever(() => native.delete(any()));
     });
@@ -254,12 +277,22 @@ void main() {
       (call) => runtime.create(call.positionalArguments.single as WalletKey),
     );
     try {
-      final wallet = await create('secret');
-      expect((await metadata.fetchAll()).single.id, wallet.id);
+      final walletId = await createSecret();
+      expect((await metadata.fetchAll()).single.id, walletId);
     } finally {
       await runtime.close();
     }
   });
+
+  test(
+    'creating an account returns its committed id without reading balances',
+    () async {
+      when(() => native.create(any())).thenAnswer((_) async => const Ok(null));
+      final id = await createSecret();
+      expect((await metadata.fetchAll()).single.id, id);
+      verifyNever(() => values.getBalance(key: any(named: 'key')));
+    },
+  );
 
   test('existing metadata survives a rejected creation', () async {
     final existing = row.copyWith(label: 'original');
@@ -267,7 +300,7 @@ void main() {
     when(() => native.create(any()))
         .thenThrow(const FileSystemException('injected'));
     await expectLater(
-      create('secret'),
+      createSecret(),
       throwsA(isA<WalletAlreadyExistsException>()),
     );
     expect(await metadata.fetch(row.id), existing);
@@ -283,7 +316,7 @@ void main() {
       return const Ok(null);
     });
     final rejected = expectLater(
-      create('secret'),
+      createSecret(),
       throwsA(isA<WalletAlreadyExistsException>()),
     );
     await prepared.future;
@@ -308,14 +341,20 @@ void main() {
       await release.future;
       return const Ok(null);
     });
-    final first = create('xpub');
+    final first = importPublic('xpub');
     await entered.future;
     final second = expectLater(
-      create('xpub'),
-      throwsA(isA<WalletAlreadyExistsException>()),
+      importPublic('xpub'),
+      completion(
+        isA<Err<Wallet, ImportWatchOnlyFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<WalletAlreadyExistsFailure>(),
+        ),
+      ),
     );
     release.complete();
-    final wallet = await first;
+    final wallet = (await first as Ok<Wallet, ImportWatchOnlyFailure>).value;
     await second;
     expect((await metadata.fetchAll()).single.id, wallet.id);
     expect(attempts, 1);

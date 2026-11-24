@@ -1,14 +1,16 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:transactions/testing.dart';
 
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,7 +22,7 @@ class _Labels extends Mock implements RefreshTransactionLabelsUsecase {}
 
 class _Wallets extends Mock implements GetWalletsUsecase {}
 
-class _Sync extends Mock implements SyncWalletUsecase {}
+class _Sync extends Mock implements WalletRepository {}
 
 class _Wallet extends Mock implements Wallet {}
 
@@ -85,9 +87,13 @@ void main() {
     final second = Completer<void>();
     final revisions = StreamController<WalletRevisionState>.broadcast();
     final finishes = StreamController<Wallet>.broadcast();
-    final coordinator = SyncCoordinator(
-      getWalletsUsecase: wallets,
-      syncWalletUsecase: sync,
+    final coordinator = SyncCoordinator<Wallet, WalletFailure>(
+      walletKey: (wallet) =>
+          WalletKey(id: wallet.id, network: wallet.network.shared),
+      classifyFailure: (failure) =>
+          (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+      getWallets: wallets.execute,
+      syncWallet: sync.sync,
     );
     final facade = walletHistoryEvents(
       revisions.stream,
@@ -102,7 +108,7 @@ void main() {
     var walletRuns = 0;
     for (final entry in [(a, first), (b, second)]) {
       when(
-        () => sync.execute(
+        () => sync.sync(
           entry.$1,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),

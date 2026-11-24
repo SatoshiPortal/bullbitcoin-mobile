@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/owner_database.dart';
 import 'package:meta/meta.dart';
@@ -61,6 +62,44 @@ final class RecoverBullWalletBackups {
             .into(_database.recoverbullWalletBackups)
             .insertOnConflictUpdate(backupUsageCompanion(usage));
       });
+
+  /// Records a successful challenge for the verified secret in this store.
+  @useResult
+  Future<Result<void, RecoverBullFailure>> recordPhysicalVerification({
+    required String walletId,
+    required Fingerprint fingerprint,
+  }) async {
+    try {
+      final table = _database.recoverbullWalletBackups;
+      final verifiedWallet = table.createAlias('verified_wallet');
+      final changed =
+          await (_database.update(table)..where(
+                (row) =>
+                    row.secretFingerprint.equals(fingerprint.hex) &
+                    existsQuery(
+                      _database.selectOnly(verifiedWallet)
+                        ..addColumns([verifiedWallet.walletId])
+                        ..where(
+                          verifiedWallet.walletId.equals(walletId) &
+                              verifiedWallet.secretFingerprint.equals(
+                                fingerprint.hex,
+                              ),
+                        ),
+                    ),
+              ))
+              .write(
+                RecoverbullWalletBackupsCompanion(
+                  physicalBackupTested: const Value(true),
+                  latestPhysicalBackup: Value(
+                    DateTime.now().millisecondsSinceEpoch,
+                  ),
+                ),
+              );
+      return changed == 0 ? const Err(VaultStorageFailure()) : const Ok(null);
+    } on Exception catch (error) {
+      return Err(recoverBullStorageFailure(error));
+    }
+  }
 
   @useResult
   Future<Result<void, RecoverBullFailure>> remove(String walletId) =>

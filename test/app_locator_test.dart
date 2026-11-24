@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import 'package:swap_feature/swap_feature.dart';
 import 'package:labels/testing.dart';
 import 'package:electrum/testing.dart';
 import 'package:preferences/testing.dart';
@@ -6,9 +8,10 @@ import 'package:ark/ark.dart';
 import 'package:ark/funding.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletFacade, WalletFailure;
+import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
@@ -31,13 +34,11 @@ import 'dart:io';
 
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/app_database_testing.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
-import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/foreground_wallet_startup.dart';
+import 'package:startup/startup.dart';
 import 'package:drift/native.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -105,10 +106,8 @@ void main() {
     late InventoryFixture inventoryFixture;
     late PathProviderPlatform previousPaths;
     SharedPreferencesAsyncPlatform? previousPreferences;
-    var composed = false;
     final parent = Fingerprint('00112233');
     setUp(() async {
-      composed = false;
       directory = await Directory.systemTemp.createTemp('ark-root-custody-');
       previousPaths = PathProviderPlatform.instance;
       PathProviderPlatform.instance = _Paths(directory.path);
@@ -120,18 +119,14 @@ void main() {
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      inventoryFixture = await InventoryFixture.open(directory);
+      inventoryFixture = await InventoryFixture.open(
+        directory,
+        withSignerDevices: true,
+      );
       inventoryFixture.register(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
-      if (composed) {
-        if (locator.checkLazySingletonInstanceExists<OrderSwapWatcher>()) {
-          locator<OrderSwapWatcher>().dispose();
-          await locator<AutoswapWatcher>().dispose();
-        }
-        locator<SyncCoordinator>().dispose();
-      }
       await locator.reset();
       await inventoryFixture.close();
       await database.close();
@@ -177,7 +172,6 @@ void main() {
         ),
         isA<Ok>(),
       );
-      composed = true;
     }
 
     Future<void> publishAccount() async {
@@ -218,16 +212,20 @@ void main() {
       );
       inventoryFixture.inventory.lock();
       await compose(startWatchers: true);
+      final swap = locator<SwapFeature>();
+      expect(swap.routes.map((route) => route.path), [
+        '/swap',
+        '/swap-settings',
+      ]);
+      expect(
+        swap.routes.first.routes.cast<GoRoute>().map((route) => route.path),
+        ['/swap/confirm', '/swap/in-progress'],
+      );
+      expect(swap.autoswapSettingsRoute.path, 'autoswap-settings');
 
       expect(locator<SilentFeature>().foregroundWatchersStarted, isFalse);
-      expect(
-        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
-        isFalse,
-      );
-      expect(
-        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
-        isFalse,
-      );
+      expect(locator<SwapFeature>().isWatchingOrders, isFalse);
+      expect(locator<SwapFeature>().isWatchingAutoswap, isFalse);
 
       expect(
         (await inventoryFixture.inventory.unlock(pin))
@@ -236,14 +234,8 @@ void main() {
       );
       await locator<ForegroundWalletStartup>().start();
       expect(locator<SilentFeature>().foregroundWatchersStarted, isTrue);
-      expect(
-        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
-        isTrue,
-      );
-      expect(
-        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
-        isTrue,
-      );
+      expect(locator<SwapFeature>().isWatchingOrders, isTrue);
+      expect(locator<SwapFeature>().isWatchingAutoswap, isTrue);
     });
 
     test('profile initialization cannot recreate a lost registry over surviving custody', () async {
@@ -257,8 +249,22 @@ void main() {
       funding.close();
       Directory('${directory.path}/ark/native').createSync(recursive: true);
       await compose(initialize: true);
-      await setupArkForeground(
+      await ArkForegroundHost.setup(
         locator,
+        inventory: locator<SecretsInventory>(),
+        boardFunding: () => arkBoardFundingBinding(
+          authority: locator<SqliteArkFundingReservations>(),
+          runtime: locator<WalletNativeRuntime>(),
+          inventory: locator<SecretsInventory>(),
+          synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+            key,
+            locator<WalletCatalogPort>(),
+            reason: SyncReason.manual,
+          ),
+          secrets: locator<Secrets>(),
+          fees: locator<Fees>(),
+          custody: locator<ParentCustodyAdmissionPort>(),
+        ),
         arkUrl: Uri.parse('http://ark.regtest'),
         primaryEsploraUrl: Uri.parse('http://chain.regtest'),
         initializeNew: true,
@@ -422,15 +428,14 @@ void main() {
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      final inventoryFixture = await InventoryFixture.open(directory);
+      final inventoryFixture = await InventoryFixture.open(
+        directory,
+        withSignerDevices: true,
+      );
       inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
-      var composed = false;
       addTearDown(() async {
-        if (composed) {
-          locator<SyncCoordinator>().dispose();
-        }
         await locator.reset();
         await inventoryFixture.close();
         await database.close();
@@ -465,28 +470,9 @@ void main() {
         startAutoswapWatcher: false,
       );
       expect(result, isA<Ok>());
-      composed = true;
       await locator<ForegroundWalletStartup>().start();
       expect(nativeTor.calls, 1);
       expect(locator<WalletRepository>(), isA<WalletRepository>());
-      final wallets = locator<WalletFacade>();
-      expect(
-        await wallets.defaultWalletNetwork(),
-        isA<Ok<NetworkEnv?, WalletFailure>>().having(
-          (result) => result.value,
-          'default wallet environment',
-          isNull,
-        ),
-      );
-      expect(
-        await wallets.isTorRequired(),
-        isA<Ok<bool, WalletFailure>>().having(
-          (result) => result.value,
-          'Tor required',
-          isFalse,
-        ),
-      );
-
       const id = 'wpkh([01234567/84h/0h/0h])';
       final key = WalletKey(id: id, network: BitcoinNetwork.mainnet);
       final catalog = locator<WalletCatalogPort>();
@@ -544,7 +530,10 @@ void main() {
     final electrumDatabase = ElectrumTestDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
     registerTestOwnerDatabases(locator);
-    final inventoryFixture = await InventoryFixture.open(directory);
+    final inventoryFixture = await InventoryFixture.open(
+      directory,
+      withSignerDevices: true,
+    );
     inventoryFixture.register(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
@@ -600,7 +589,7 @@ void main() {
       isA<ElectrumSaveFailure>(),
     );
     expect(locator.isRegistered<WalletRepository>(), isFalse);
-    expect(locator.isRegistered<SyncCoordinator>(), isFalse);
+    expect(locator.isRegistered<OverviewSynchronization>(), isFalse);
     expect(locator.isRegistered<SilentFeature>(), isFalse);
     expect(
       await electrumDatabase.select(electrumDatabase.electrumServers).get(),

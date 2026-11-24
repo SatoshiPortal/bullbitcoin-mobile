@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

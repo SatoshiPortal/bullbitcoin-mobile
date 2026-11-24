@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
@@ -26,7 +26,7 @@ class LiquidWalletRepository implements LiquidSendPort {
   final Secrets _secrets;
   final Future<Result<sync.Wallet, SyncFailure>> Function(sync.WalletKey)
   _wallet;
-  final SyncFreezesDatasource _freezes;
+  final CoinFreezes _freezes;
 
   final Future<Result<void, SyncFailure>> Function(
     String address,
@@ -38,7 +38,7 @@ class LiquidWalletRepository implements LiquidSendPort {
     required this._walletRegistrations,
     required this._secrets,
     required this._wallet,
-    required SyncFreezesDatasource freezesDatasource,
+    required CoinFreezes freezesDatasource,
     Future<Result<void, SyncFailure>> Function(String address, Network network)?
     validateAddress,
   }) : _freezes = freezesDatasource,

@@ -1,177 +1,65 @@
+import 'package:backups/testing.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
-import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, ScriptType;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:primitives/primitives.dart' show SignerEntity;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+import 'dart:io';
 
-class _MockSettingsRepository extends Mock implements Preferences {}
+import '../../../support/inventory_fixture.dart';
 
-class _MockCompletePhysicalBackupVerificationUsecase extends Mock
-    implements CompletePhysicalBackupVerificationUsecase {}
-
-/// Deliberately leaky: a driver reason quoting a filesystem path. It may not
-/// travel further than logMessage.
-const _rawReason = 'DriftRemoteException: locked at /data/user/0/app.sqlite';
-
-const _settings = SettingsEntity(
-  environment: Environment.mainnet,
-  bitcoinUnit: BitcoinUnit.sats,
-  currencyCode: 'USD',
-);
-
-Wallet _wallet({bool tested = false}) => Wallet(
-  origin: 'w1',
-  masterFingerprint: '73c5da0a',
-  network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
-  scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
-  confirmedBalanceSat: BigInt.zero,
-  isPhysicalBackupTested: tested,
-);
+class _Environment implements ActiveEnvironmentReader {
+  @override
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async => const Ok(Environment.mainnet);
+}
 
 void main() {
-  group('CheckBackupUsecase', () {
-    late _MockWalletRepository wallets;
-    late _MockSettingsRepository settings;
-    late CheckBackupUsecase usecase;
+  setUp(() => FakeSecureStoragePlatform().install());
 
-    setUp(() {
-      wallets = _MockWalletRepository();
-      settings = _MockSettingsRepository();
-      usecase = CheckBackupUsecase(
-        walletRepository: wallets,
-        settingsRepository: settings,
-        backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
-      );
-      when(() => settings.fetch()).thenAnswer((_) async => Ok(_settings));
-    });
-
-    void stubWallets(List<Wallet> value) => when(
-      () => wallets.getWallets(
-        onlyDefaults: any(named: 'onlyDefaults'),
-        environment: any(named: 'environment'),
-      ),
-    ).thenAnswer((_) async => Ok(value));
-
-    test('no default wallets is Ok(false), not a failure: a fresh install '
-        'legitimately has none', () async {
-      stubWallets(const <Wallet>[]);
-
-      final result = await usecase.execute();
-
-      expect((result as Ok<bool, TestWalletBackupFailure>).value, isFalse);
-    });
-
-    test(
-      'reports true as soon as one default wallet has been tested',
-      () async {
-        stubWallets([_wallet(), _wallet(tested: true)]);
-
-        final result = await usecase.execute();
-
-        expect((result as Ok<bool, TestWalletBackupFailure>).value, isTrue);
-      },
+  test('an empty bitcoin inventory produces a distinct failure', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'backup-inventory-',
     );
-
-    test('a failed read retains its typed failure and cannot authorize PIN '
-        'creation', () async {
-      when(
-        () => wallets.getWallets(
-          onlyDefaults: any(named: 'onlyDefaults'),
-          environment: any(named: 'environment'),
-        ),
-      ).thenThrow(Exception(_rawReason));
-
-      final result = await usecase.execute();
-
-      switch (result) {
-        case Ok():
-          fail('a failed read must not be reported as a backup answer');
-        case Err(:final failure):
-          expect(failure, isA<TestWalletBackupWalletsUnavailableFailure>());
-          expect(failure.logMessage, isNot(contains('app.sqlite')));
-      }
-      expect(await usecase.hasVerifiedBackup(), isFalse);
-    });
+    addTearDown(() => directory.delete(recursive: true));
+    final fixture = await InventoryFixture.open(directory);
+    addTearDown(fixture.close);
+    final result = await LoadWalletsForNetworkUsecase(
+      fixture.inventory,
+      _Environment(),
+      (_) => fail('No backup records should be queried'),
+    ).execute();
+    expect(
+      result,
+      isA<Err<List<BackupWallet>, TestWalletBackupFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<TestWalletBackupNoWalletsFailure>(),
+      ),
+    );
   });
 
-  group('LoadWalletsForNetworkUsecase', () {
-    late _MockWalletRepository wallets;
-    late _MockSettingsRepository settings;
-    late LoadWalletsForNetworkUsecase usecase;
-
-    setUp(() {
-      wallets = _MockWalletRepository();
-      settings = _MockSettingsRepository();
-      usecase = LoadWalletsForNetworkUsecase(
-        walletRepository: wallets,
-        settingsRepository: settings,
-      );
-      when(() => settings.fetch()).thenAnswer((_) async => Ok(_settings));
-    });
-
-    test('reports an empty list as a distinct failure, not an empty Ok, so '
-        'callers cannot trip over .first', () async {
-      when(
-        () => wallets.getWallets(
-          onlyDefaults: any(named: 'onlyDefaults'),
-          onlyBitcoin: any(named: 'onlyBitcoin'),
-          environment: any(named: 'environment'),
-        ),
-      ).thenAnswer((_) async => Ok(const <Wallet>[]));
-
-      final result = await usecase.execute();
-
-      switch (result) {
-        case Ok():
-          fail('an empty wallet list must not be reported as success');
-        case Err(:final failure):
-          expect(failure, isA<TestWalletBackupNoWalletsFailure>());
-      }
-    });
-
-    test(
-      'maps a thrown read to a sanitized failure, raw reason logs-only',
-      () async {
-        when(
-          () => wallets.getWallets(
-            onlyDefaults: any(named: 'onlyDefaults'),
-            onlyBitcoin: any(named: 'onlyBitcoin'),
-            environment: any(named: 'environment'),
-          ),
-        ).thenThrow(Exception(_rawReason));
-
-        final result = await usecase.execute();
-
-        switch (result) {
-          case Ok():
-            fail('a thrown read must not be reported as wallets');
-          case Err(:final failure):
-            expect(failure, isA<TestWalletBackupWalletsUnavailableFailure>());
-            expect(failure.logMessage, contains('app.sqlite'));
-        }
-      },
+  test('an unavailable inventory produces a typed failure', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'backup-inventory-',
+    );
+    addTearDown(() => directory.delete(recursive: true));
+    final fixture = await InventoryFixture.open(directory);
+    await fixture.close();
+    final result = await LoadWalletsForNetworkUsecase(
+      fixture.inventory,
+      _Environment(),
+      (_) => fail('No backup records should be queried'),
+    ).execute();
+    expect(
+      result,
+      isA<Err<List<BackupWallet>, TestWalletBackupFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<TestWalletBackupWalletsUnavailableFailure>(),
+      ),
     );
   });
 
@@ -228,33 +116,6 @@ void main() {
           // to carry a raw reason.
           expect(failure.logMessage, isNull);
       }
-    });
-  });
-
-  group('CompleteBackupVerificationUsecase', () {
-    test('maps the onboarding exception, which carries e.toString(), into '
-        'this feature\'s family', () async {
-      final inner = _MockCompletePhysicalBackupVerificationUsecase();
-      when(() => inner.execute()).thenThrow(Exception(_rawReason));
-
-      final result = await CompleteBackupVerificationUsecase(inner).execute();
-
-      switch (result) {
-        case Ok():
-          fail('a failed completion must not be reported as recorded');
-        case Err(:final failure):
-          expect(failure, isA<TestWalletBackupCompletionFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
-      }
-    });
-
-    test('returns Ok when the verification is recorded', () async {
-      final inner = _MockCompletePhysicalBackupVerificationUsecase();
-      when(() => inner.execute()).thenAnswer((_) async {});
-
-      final result = await CompleteBackupVerificationUsecase(inner).execute();
-
-      expect(result, isA<Ok<void, TestWalletBackupFailure>>());
     });
   });
 }

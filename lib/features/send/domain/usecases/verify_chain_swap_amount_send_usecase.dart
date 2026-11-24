@@ -1,13 +1,13 @@
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
+import 'package:spend/legacy_exceptions.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/read_send_recipient_amount_usecase.dart';
 
 class VerifyChainSwapAmountSendUsecase {
-  final WalletRepository _walletRepository;
+  final ReadSendRecipientAmountUsecase _recipientAmount;
 
-  VerifyChainSwapAmountSendUsecase({required this._walletRepository});
+  VerifyChainSwapAmountSendUsecase({required this._recipientAmount});
 
   /// Checks that [psbtOrPset] pays exactly the lockup of a send-side swap
   /// ([ChainSwap] or [LnSendSwap]) to its lockup address.
@@ -18,7 +18,7 @@ class VerifyChainSwapAmountSendUsecase {
   }) async {
     final result = await verifySwapLockup(
       swap,
-      amountTo: (address) => _walletRepository.getAmountSentToAddress(
+      amountTo: (address) => _recipientAmount.execute(
         psbtOrPset: psbtOrPset,
         address: address,
         walletId: walletId,

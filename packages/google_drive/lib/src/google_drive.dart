@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_logger/bull_logger.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -13,11 +14,14 @@ import 'google_drive_failure.dart';
 import 'google_drive_file_metadata.dart';
 
 class GoogleDrive {
-  static const _metadataFields =
-      'nextPageToken,files(id, name, createdTime, modifiedTime)';
+  static const _fileFields =
+      'id,name,createdTime,modifiedTime,size,md5Checksum';
+  static const _metadataFields = 'nextPageToken,files($_fileFields)';
   static const _metadataPageSize = 1000;
   static const _scopes = ['https://www.googleapis.com/auth/drive.appdata'];
   static final _sharedGoogle = GoogleSignIn(scopes: _scopes);
+  static final _pendingSignIns = Expando<int>();
+  static final _clientReferences = Expando<int>();
   final GoogleSignIn _google;
 
   drive.DriveApi? _driveApi;
@@ -46,6 +50,8 @@ class GoogleDrive {
         }
       },
       onError: (Object error, StackTrace stack) {
+        _authenticationEpoch++;
+        _clearClient();
         log.warning('google_drive.authentication.unavailable');
       },
     );
@@ -54,6 +60,13 @@ class GoogleDrive {
   /// Prompts for sign-in if necessary and opens the account's app folder.
   @useResult
   Future<Result<void, GoogleDriveFailure>> connect() => _run(_connect);
+
+  /// The currently bound account, without probing or refreshing its grant.
+  String? get account =>
+      _currentAccount?.email == _authenticatedAccount &&
+          _google.currentUser?.email == _authenticatedAccount
+      ? _authenticatedAccount
+      : null;
 
   /// Returns the authenticated account, or null when silent sign-in is
   /// unavailable. Silent sign-in avoids sign-in and token recovery prompts.
@@ -88,7 +101,20 @@ class GoogleDrive {
     required String filename,
     required List<int> bytes,
     required String mimeType,
-  }) => _run(() => _write(filename, bytes, mimeType));
+  }) => _run(() async {
+    await _write(filename, bytes, mimeType, returnMetadata: false);
+  });
+
+  @useResult
+  Future<Result<GoogleDriveFileMetadata, GoogleDriveFailure>> createFile({
+    required String filename,
+    required List<int> bytes,
+    required String mimeType,
+  }) => _run(
+    () async => decodeDriveFile(
+      await _write(filename, bytes, mimeType, returnMetadata: true),
+    ),
+  );
 
   @useResult
   Future<Result<void, GoogleDriveFailure>> deleteFile(String fileId) =>
@@ -102,6 +128,39 @@ class GoogleDrive {
     }
     try {
       return Ok(await action());
+    } on _DriveAuthenticationCancelledException {
+      return Err(
+        _disposed
+            ? const GoogleDriveDisposedFailure()
+            : const GoogleDriveAuthorizationRequiredFailure(),
+      );
+    } on _DriveSignInCancelledException {
+      return const Err(GoogleDriveCancelledFailure());
+    } on PlatformException catch (error) {
+      return Err(switch (error.code) {
+        'sign_in_canceled' => const GoogleDriveCancelledFailure(),
+        'sign_in_required' => const GoogleDriveAuthorizationRequiredFailure(),
+        _ => const GoogleDriveUnavailableFailure(),
+      });
+    } on drive.DetailedApiRequestError catch (error) {
+      final reasons = error.errors.map((item) => item.reason).toSet();
+      return Err(switch (error.status) {
+        401 => const GoogleDriveAuthorizationRequiredFailure(),
+        404 => const GoogleDriveNotFoundFailure(),
+        403
+            when reasons.contains('insufficientPermissions') ||
+                reasons.contains('appNotAuthorizedToFile') =>
+          const GoogleDrivePermissionRevokedFailure(),
+        403
+            when reasons.contains('storageQuotaExceeded') ||
+                reasons.contains('quotaExceeded') =>
+          const GoogleDriveQuotaExceededFailure(),
+        403
+            when !reasons.contains('rateLimitExceeded') &&
+                !reasons.contains('userRateLimitExceeded') =>
+          const GoogleDriveInvalidResponseFailure(),
+        _ => const GoogleDriveUnavailableFailure(),
+      });
     } on _DriveFileTooLargeException {
       return const Err(GoogleDriveTooLargeFailure());
     } on FormatException {
@@ -124,7 +183,21 @@ class GoogleDrive {
     required int epoch,
   }) async {
     final authenticate = _authenticatedClient;
-    if (authenticate != null) return await authenticate();
+    if (authenticate != null) {
+      final client = await authenticate();
+      if (client == null) return null;
+      // Test transports can be reused during account replacement.
+      if (_client case final _DriveClientLease lease
+          when identical(lease.client, client)) {
+        return lease;
+      }
+      _clientReferences[client] = (_clientReferences[client] ?? 0) + 1;
+      return _DriveClientLease(client, () {
+        final remaining = (_clientReferences[client] ?? 1) - 1;
+        _clientReferences[client] = remaining == 0 ? null : remaining;
+        if (remaining == 0) client.close();
+      });
+    }
     // The v6 account.authentication getter always enables interactive recovery.
     // Request tokens directly so discovery cannot launch a recovery prompt.
     final tokens = await GoogleSignInPlatform.instance.getTokens(
@@ -165,7 +238,8 @@ class GoogleDrive {
   void _checkAccount(String account, int epoch) {
     if (_disposed ||
         _authenticationEpoch != epoch ||
-        _currentAccount?.email != account) {
+        _currentAccount?.email != account ||
+        _google.currentUser?.email != account) {
       throw const _DriveAuthenticationCancelledException();
     }
   }
@@ -176,6 +250,7 @@ class GoogleDrive {
     if (_disposed || api == null || account == null) {
       throw const _DriveAuthenticationCancelledException();
     }
+    _checkAccount(account, _authenticationEpoch);
     return (api: api, account: account, epoch: _authenticationEpoch);
   }
 
@@ -183,8 +258,8 @@ class GoogleDrive {
     if (_disposed) throw const _DriveAuthenticationCancelledException();
     try {
       final beforeAuthentication = _authenticationEpoch;
-      final account = await _google.signIn();
-      if (account == null) throw Exception('Drive sign-in unavailable');
+      final account = await _signIn(interactive: true);
+      if (account == null) throw const _DriveSignInCancelledException();
       _acceptAccount(account, beforeAuthentication);
       final epoch = _authenticationEpoch;
 
@@ -208,7 +283,7 @@ class GoogleDrive {
     if (_disposed) throw const _DriveAuthenticationCancelledException();
     try {
       final beforeAuthentication = _authenticationEpoch;
-      final account = await _google.signInSilently(suppressErrors: false);
+      final account = await _signIn(interactive: false);
       _acceptAccount(account, beforeAuthentication);
       final epoch = _authenticationEpoch;
       if (account == null) {
@@ -243,11 +318,32 @@ class GoogleDrive {
   }
 
   Future<void> _revokeAccess() async {
+    final connection = _connection();
+    _checkAccount(connection.account, connection.epoch);
+    if (_google.currentUser?.email != connection.account) {
+      throw const _DriveAuthenticationCancelledException();
+    }
+    if ((_pendingSignIns[_google] ?? 0) > 0) {
+      throw const _DriveBusyException();
+    }
     try {
       await _google.disconnect();
       _currentAccount = null;
+      _authenticationEpoch++;
     } finally {
       _clearClient();
+    }
+  }
+
+  Future<GoogleSignInAccount?> _signIn({required bool interactive}) async {
+    _pendingSignIns[_google] = (_pendingSignIns[_google] ?? 0) + 1;
+    try {
+      return interactive
+          ? await _google.signIn()
+          : await _google.signInSilently(suppressErrors: false);
+    } finally {
+      final remaining = (_pendingSignIns[_google] ?? 1) - 1;
+      _pendingSignIns[_google] = remaining == 0 ? null : remaining;
     }
   }
 
@@ -350,6 +446,7 @@ class GoogleDrive {
       previous,
       element,
     ) {
+      _checkAccount(connection.account, connection.epoch);
       if (previous.length + element.length > maxBytes) {
         throw const _DriveFileTooLargeException();
       }
@@ -360,19 +457,30 @@ class GoogleDrive {
   }
 
   Future<void> _delete(String fileId) async {
-    await _connection().api.files.delete(fileId);
+    final connection = _connection();
+    await connection.api.files.delete(fileId);
+    _checkAccount(connection.account, connection.epoch);
   }
 
-  Future<void> _write(String filename, List<int> bytes, String mimeType) async {
+  Future<drive.File> _write(
+    String filename,
+    List<int> bytes,
+    String mimeType, {
+    required bool returnMetadata,
+  }) async {
     final file = drive.File()
       ..name = filename
       ..mimeType = mimeType
       ..parents = ['appDataFolder'];
 
-    await _connection().api.files.create(
+    final connection = _connection();
+    final created = await connection.api.files.create(
       file,
       uploadMedia: drive.Media(Stream.value(bytes), bytes.length),
+      $fields: returnMetadata ? _fileFields : null,
     );
+    _checkAccount(connection.account, connection.epoch);
+    return created;
   }
 }
 
@@ -385,6 +493,33 @@ final class GoogleDriveMetadataPage {
 
 final class _DriveAuthenticationCancelledException implements Exception {
   const _DriveAuthenticationCancelledException();
+}
+
+final class _DriveSignInCancelledException implements Exception {
+  const _DriveSignInCancelledException();
+}
+
+final class _DriveBusyException implements Exception {
+  const _DriveBusyException();
+}
+
+final class _DriveClientLease extends http.BaseClient {
+  final http.Client client;
+  final void Function() _release;
+  bool _closed = false;
+
+  _DriveClientLease(this.client, this._release);
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) =>
+      client.send(request);
+
+  @override
+  void close() {
+    if (_closed) return;
+    _closed = true;
+    _release();
+  }
 }
 
 final class _DriveFileTooLargeException implements Exception {

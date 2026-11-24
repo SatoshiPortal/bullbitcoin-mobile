@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:swap_feature/swap_feature.dart';
+import 'package:swap_feature/src/swap_feature.dart' show swapSettingsRoute;
 import 'package:swap_feature/src/presentation/swap_settings_failure_l10n.dart';
 import 'package:swaps/swaps.dart';
 
@@ -66,7 +67,7 @@ void main() {
       when(() => routing.setExchangeFallbackEnabled(true))
           .thenAnswer((_) async => const Ok(null));
 
-      final feature = SwapFeature.mount(routing: routing, servers: servers);
+      final settings = swapSettingsRoute(routing, servers);
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -78,7 +79,7 @@ void main() {
               ),
             ),
           ),
-          ...feature.routes,
+          settings,
         ],
       );
       addTearDown(router.dispose);

@@ -2443,4 +2443,722 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Bán Bitcoin';
+
+  @override
+  String get sellSelectWallet => 'Chọn ví';
+
+  @override
+  String get sellWhichWalletQuestion => 'Bạn muốn bán từ ví nào?';
+
+  @override
+  String get sellExternalWallet => 'Ví bên ngoài';
+
+  @override
+  String get sellFromAnotherWallet => 'Bán từ một ví Bitcoin khác';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'Bạn đang cố bán vượt quá số tiền tối đa có thể bán bằng ví này.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'Bạn đang cố bán dưới số tiền tối thiểu có thể bán bằng ví này.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Số dư trong ví đã chọn không đủ để hoàn tất đơn bán này.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Bạn chưa được xác thực. Vui lòng đăng nhập để tiếp tục.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'Không tìm thấy đơn bán. Vui lòng thử lại.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError => 'Đơn bán này đã được xác nhận.';
+
+  @override
+  String get sellSelectNetwork => 'Chọn mạng';
+
+  @override
+  String get sellHowToPayInvoice =>
+      'Bạn muốn thanh toán hóa đơn này bằng cách nào?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'Mạng Lightning';
+
+  @override
+  String get sellLiquidNetwork => 'Mạng Liquid';
+
+  @override
+  String get sellConfirmPayment => 'Xác nhận thanh toán';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Giá sẽ được làm mới sau ';
+
+  @override
+  String get sellOrderNumber => 'Số đơn hàng';
+
+  @override
+  String get sellPayoutRecipient => 'Người nhận chi trả';
+
+  @override
+  String get sellCadBalance => 'Số dư CAD';
+
+  @override
+  String get sellCrcBalance => 'Số dư CRC';
+
+  @override
+  String get sellEurBalance => 'Số dư EUR';
+
+  @override
+  String get sellUsdBalance => 'Số dư USD';
+
+  @override
+  String get sellMxnBalance => 'Số dư MXN';
+
+  @override
+  String get sellArsBalance => 'Số dư ARS';
+
+  @override
+  String get sellCopBalance => 'Số dư COP';
+
+  @override
+  String get sellPayinAmount => 'Số tiền thanh toán';
+
+  @override
+  String get sellPayoutAmount => 'Số tiền chi trả';
+
+  @override
+  String get sellExchangeRate => 'Tỷ giá';
+
+  @override
+  String get sellPayFromWallet => 'Thanh toán từ ví';
+
+  @override
+  String get sellInstantPayments => 'Thanh toán tức thời';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Ví Bitcoin an toàn';
+
+  @override
+  String get sellFeePriority => 'Mức độ ưu tiên phí';
+
+  @override
+  String get sellFastest => 'Nhanh nhất';
+
+  @override
+  String get sellAdvancedSettings => 'Cài đặt nâng cao';
+
+  @override
+  String get sellAdvancedOptions => 'Tùy chọn nâng cao';
+
+  @override
+  String get sellReplaceByFeeActivated =>
+      'Đã kích hoạt thay thế bằng phí (RBF)';
+
+  @override
+  String get sellSelectCoinsManually => 'Chọn coin thủ công';
+
+  @override
+  String get sellDone => 'Xong';
+
+  @override
+  String get sellPleasePayInvoice => 'Vui lòng thanh toán hóa đơn này';
+
+  @override
+  String get sellBitcoinAmount => 'Số lượng Bitcoin';
+
+  @override
+  String get sellCopyInvoice => 'Sao chép hóa đơn';
+
+  @override
+  String get sellShowQrCode => 'Hiện mã QR';
+
+  @override
+  String get sellQrCode => 'Mã QR';
+
+  @override
+  String get sellNoInvoiceData => 'Không có dữ liệu hóa đơn';
+
+  @override
+  String get sellInProgress => 'Đang bán...';
+
+  @override
+  String get sellGoHome => 'Về trang chủ';
+
+  @override
+  String get sellOrderCompleted => 'Đơn hàng đã hoàn tất!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Số dư tài khoản của bạn sẽ được cộng sau khi giao dịch của bạn nhận được 1 xác nhận on-chain.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Thanh toán';
+
+  @override
+  String get payDescriptionLabel => 'Mô tả thanh toán (tùy chọn)';
+
+  @override
+  String get payDescriptionHint => 'Thêm ghi chú cho khoản thanh toán này';
+
+  @override
+  String get payPaymentDescription => 'Mô tả thanh toán';
+
+  @override
+  String get payRecipientType => 'Loại người nhận';
+
+  @override
+  String get payRecipientName => 'Tên người nhận';
+
+  @override
+  String get payRecipientDetails => 'Chi tiết người nhận';
+
+  @override
+  String get payNoDetailsAvailable => 'Không có chi tiết nào';
+
+  @override
+  String get paySelectWallet => 'Chọn ví';
+
+  @override
+  String get payExternalWallet => 'Ví bên ngoài';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Số tiền tối đa bạn có thể thanh toán bằng ví này là $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Số tiền tối thiểu bạn có thể thanh toán bằng ví này là $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Số dư trong ví đã chọn không đủ để hoàn tất đơn thanh toán này.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Bạn chưa được xác thực. Vui lòng đăng nhập để tiếp tục.';
+
+  @override
+  String get paySelectNetwork => 'Chọn mạng';
+
+  @override
+  String get payHowToPayInvoice =>
+      'Bạn muốn thanh toán hóa đơn này bằng cách nào?';
+
+  @override
+  String get payLightningNetwork => 'Mạng Lightning';
+
+  @override
+  String get payLiquidNetwork => 'Mạng Liquid';
+
+  @override
+  String get payConfirmPayment => 'Xác nhận thanh toán';
+
+  @override
+  String get payOrderNumber => 'Số đơn hàng';
+
+  @override
+  String get payPayinAmount => 'Số tiền thanh toán';
+
+  @override
+  String get payPayoutAmount => 'Số tiền chi trả';
+
+  @override
+  String get payExchangeRate => 'Tỷ giá';
+
+  @override
+  String get payPayFromWallet => 'Thanh toán từ ví';
+
+  @override
+  String get payInstantPayments => 'Thanh toán tức thời';
+
+  @override
+  String get paySecureBitcoinWallet => 'Ví Bitcoin an toàn';
+
+  @override
+  String get payFeePriority => 'Mức độ ưu tiên phí';
+
+  @override
+  String get payFastest => 'Nhanh nhất';
+
+  @override
+  String get payNetworkFees => 'Phí mạng';
+
+  @override
+  String get payAdvancedSettings => 'Cài đặt nâng cao';
+
+  @override
+  String get payAdvancedOptions => 'Tùy chọn nâng cao';
+
+  @override
+  String get paySelectCoinsManually => 'Chọn coin thủ công';
+
+  @override
+  String get payDone => 'Xong';
+
+  @override
+  String get payContinue => 'Tiếp tục';
+
+  @override
+  String get payPleasePayInvoice => 'Vui lòng thanh toán hóa đơn này';
+
+  @override
+  String get payBitcoinAmount => 'Số lượng Bitcoin';
+
+  @override
+  String get payBitcoinPrice => 'Giá Bitcoin';
+
+  @override
+  String get payCopyInvoice => 'Sao chép hóa đơn';
+
+  @override
+  String get payShowQrCode => 'Hiện mã QR';
+
+  @override
+  String get payQrCode => 'Mã QR';
+
+  @override
+  String get payNoInvoiceData => 'Không có dữ liệu hóa đơn';
+
+  @override
+  String get payInvalidState => 'Trạng thái không hợp lệ';
+
+  @override
+  String get payViewDetails => 'Xem chi tiết';
+
+  @override
+  String get paySinpeReceipt => 'Biên lai SINPE';
+
+  @override
+  String get payCompleted => 'Thanh toán đã hoàn tất!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'Chi tiết đơn hàng';
+
+  @override
+  String get paySinpeMonto => 'Số tiền';
+
+  @override
+  String get paySinpeNumeroOrden => 'Số đơn hàng';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Số tham chiếu';
+
+  @override
+  String get paySinpeBeneficiario => 'Người thụ hưởng';
+
+  @override
+  String get paySinpeOrigen => 'Nguồn';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'Thanh toán đang xử lý!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Giá sẽ được làm mới sau ';
+
+  @override
+  String get payWhichWallet => 'Bạn muốn thanh toán từ ví nào?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'Thanh toán từ một ví Bitcoin khác';
+
+  @override
+  String get payRbfActivated => 'Đã kích hoạt thay thế bằng phí (RBF)';
+
+  @override
+  String get copyDialogButton => 'Sao chép';
+
+  @override
+  String get closeDialogButton => 'Đóng';
+
+  @override
+  String get sellCompleteKYC => 'Hoàn tất KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Phí mạng';
+
+  @override
+  String get sellSendPaymentContinue => 'Tiếp tục';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Giá Bitcoin';
+
+  @override
+  String get sellViewDetailsButton => 'Xem chi tiết';
+
+  @override
+  String get sellKycPendingTitle => 'Đang chờ xác minh danh tính KYC';
+
+  @override
+  String get sellKycPendingDescription =>
+      'Bạn phải hoàn tất xác minh danh tính trước';
+
+  @override
+  String get sellLoadingGeneric => 'Đang tải...';
+
+  @override
+  String get viewerTapToCopy => 'Nhấn để sao chép';
+
+  @override
+  String get invoiceViewerTitle => 'Hóa đơn';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Phí mạng quá thấp. Hãy chọn mức phí cao hơn.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Đã sao chép vào bộ nhớ tạm';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'Thêm vào số dư tài khoản của tôi';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Các khoản rút tiền hiển thị là được gửi bởi Leonod';
+
+  @override
+  String get sellPayoutTitle => 'Chọn người nhận';
+
+  @override
+  String get sellPayoutNewBadge => 'MỚI';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'Không thể xác nhận giao dịch của bạn đã được phát sóng. Hãy kiểm tra trên trình khám phá khối trước khi thử lại.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Các UTXO đã chọn không đủ để đáp ứng số tiền cần thiết';
+
+  @override
+  String get selectAmountTitle => 'Chọn số tiền';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Số tiền yêu cầu: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Địa chỉ: ';
+
+  @override
+  String get typeLabel => 'Loại: ';
+
+  @override
+  String get coinsKeychainReceive => 'Nhận';
+
+  @override
+  String get coinsKeychainChange => 'Tiền thừa';
+
+  @override
+  String get limitOrdersIntroTitle => 'Open a limit order';
+
+  @override
+  String get limitOrdersIntroDescription =>
+      'Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.';
+
+  @override
+  String get limitOrdersIntroBulletPrice =>
+      'Your order remains active until the target index price is reached.';
+
+  @override
+  String get limitOrdersIntroBulletBalance =>
+      'The purchase uses the selected fiat balance when the order executes.';
+
+  @override
+  String get limitOrdersIntroBulletExecution =>
+      'Bitcoin is sent to the default wallet you select.';
+
+  @override
+  String get limitOrdersTargetTitle => 'Choose your target price';
+
+  @override
+  String get limitOrdersPaymentMethod => 'Payment method';
+
+  @override
+  String get limitOrdersCurrentPrice => 'Current index price';
+
+  @override
+  String get limitOrdersDiscount => 'Discount from current price';
+
+  @override
+  String get limitOrdersAmountTitle => 'Set the amount';
+
+  @override
+  String limitOrdersAvailableBalance(String amount) {
+    return 'Available: $amount';
+  }
+
+  @override
+  String limitOrdersEstimatedBitcoin(String amount) {
+    return 'Estimated bitcoin: $amount';
+  }
+
+  @override
+  String get limitOrdersWalletTitle => 'Choose a payout wallet';
+
+  @override
+  String get limitOrdersWalletDescription =>
+      'Bitcoin will be sent to this default wallet when the order executes.';
+
+  @override
+  String get limitOrdersManageDefaultWallets => 'Manage default wallets';
+
+  @override
+  String get limitOrdersWalletBitcoin => 'Bitcoin address';
+
+  @override
+  String get limitOrdersWalletLightning => 'Lightning address';
+
+  @override
+  String get limitOrdersWalletLiquid => 'Liquid address';
+
+  @override
+  String get limitOrdersConfirmationTitle => 'Confirm limit order';
+
+  @override
+  String limitOrdersBalancePayment(String currency) {
+    return '$currency balance';
+  }
+
+  @override
+  String get limitOrdersTermsNotice =>
+      'By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.';
+
+  @override
+  String get limitOrdersConfirm => 'Confirm limit order';
+
+  @override
+  String get limitOrdersCreatedTitle => 'Limit order active';
+
+  @override
+  String limitOrdersCreatedMessage(String amount, String price) {
+    return 'Your order will buy $amount when the index price reaches $price.';
+  }
+
+  @override
+  String get limitOrdersBackToExchange => 'Back to Exchange';
+
+  @override
+  String get limitOrderInvalidTargetError =>
+      'Choose a target price below the current index price.';
+
+  @override
+  String get limitOrderInvalidAmountError =>
+      'Enter an amount greater than zero and no more than your available balance.';
+
+  @override
+  String get limitOrdersYourWalletsTitle => 'Your wallets';
+
+  @override
+  String get limitOrdersLightningAddressLabel => 'Lightning address';
+
+  @override
+  String get limitOrdersLightningAddressError =>
+      'Enter a valid lightning address, not an invoice';
+
+  @override
+  String limitOrdersAmountBelowOnchainMin(String amount) {
+    return 'Amount is below the on-chain minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountBelowLiquidMin(String amount) {
+    return 'Amount is below the Liquid minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountAboveLightningMax(String amount) {
+    return 'Amount is above the Lightning maximum of $amount';
+  }
+
+  @override
+  String get limitOrdersViewOrder => 'View order details';
+
+  @override
+  String get limitOrdersInsufficientBalance => 'Số dư không đủ';
+
+  @override
+  String get limitOrdersInsufficientBalanceMessage =>
+      'Bạn không có đủ số dư để tạo đơn hàng này.';
+
+  @override
+  String get limitOrdersFundAccount => 'Nạp tiền vào tài khoản của bạn';
+
+  @override
+  String get exchangeBrandName => 'BULL BITCOIN';
+
+  @override
+  String get exchangeLandingConnectAccount =>
+      'Kết nối tài khoản sàn giao dịch Bull Bitcoin của bạn';
+
+  @override
+  String get exchangeLandingRecommendedExchange =>
+      'Sàn giao dịch Bitcoin được khuyến nghị';
+
+  @override
+  String get exchangeFeatureSelfCustody =>
+      '• Mua Bitcoin trực tiếp vào ví tự quản';
+
+  @override
+  String get exchangeFeatureDcaOrders => '• DCA, lệnh giới hạn và tự động mua';
+
+  @override
+  String get exchangeFeatureSellBitcoin =>
+      '• Bán Bitcoin, nhận thanh toán bằng Bitcoin';
+
+  @override
+  String get exchangeFeatureBankTransfers =>
+      '• Gửi chuyển khoản ngân hàng và thanh toán hóa đơn';
+
+  @override
+  String get exchangeFeatureCustomerSupport =>
+      '• Trò chuyện với bộ phận hỗ trợ khách hàng';
+
+  @override
+  String get exchangeFeatureUnifiedHistory => '• Lịch sử giao dịch hợp nhất';
+
+  @override
+  String get exchangeLandingDisclaimerLegal =>
+      'Quyền truy cập vào các dịch vụ sàn giao dịch sẽ bị giới hạn ở các quốc gia mà Bull Bitcoin có thể hoạt động hợp pháp và có thể yêu cầu KYC.';
+
+  @override
+  String get exchangeLandingDisclaimerNotAvailable =>
+      'Các dịch vụ sàn giao dịch tiền mã hóa không khả dụng trong ứng dụng di động Bull Bitcoin.';
+
+  @override
+  String get exchangeLoginButton => 'Đăng nhập hoặc đăng ký';
+
+  @override
+  String get exchangeGoToWebsiteButton =>
+      'Đến trang web sàn giao dịch Bull Bitcoin';
 }

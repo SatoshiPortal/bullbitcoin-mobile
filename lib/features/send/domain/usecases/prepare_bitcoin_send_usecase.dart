@@ -6,10 +6,9 @@ import 'package:primitives/primitives.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_send_port.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -23,17 +22,17 @@ typedef PreparedBitcoinSend = ({
 class PrepareBitcoinSendUsecase {
   final PayjoinSessions _payjoin;
   final BitcoinSendPort _bitcoinWalletRepository;
-  final WalletUtxoRepository _walletUtxoRepository;
+  final Coins _coins;
   late final ValidateBitcoinSelectionUsecase _validateBitcoinSelectionUsecase;
 
   PrepareBitcoinSendUsecase({
     required PayjoinSessions payjoinSessions,
-    required this._walletUtxoRepository,
+    required this._coins,
     required this._bitcoinWalletRepository,
   }) : _payjoin = payjoinSessions {
     _validateBitcoinSelectionUsecase = ValidateBitcoinSelectionUsecase(
       payjoinSessions: _payjoin,
-      walletUtxoRepository: _walletUtxoRepository,
+      coins: _coins,
     );
   }
 

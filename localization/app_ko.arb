@@ -30,10 +30,6 @@
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "translationWarningContributeButton": "번역을 개선하는 데 도움이",
-  "@translationWarningContributeButton": {
-    "description": "Button to open GitHub repository for translations"
-  },
   "sellSendPaymentAboveMax": "이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -197,10 +193,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "지갑을 복구",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "요금 선택",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -212,10 +204,6 @@
   "coreScreensTransferFeeLabel": "스왑 수수료",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "PIN을 사용하여 클라우드를 통해 백업을 복구합니다.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "Swap 상태",
   "@transactionSwapStatusSwapStatus": {
@@ -257,10 +245,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "importWatchOnlyCopiedToClipboard": "클립보드에 복사",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
   "dcaLightningAddressInvalidError": "이용 약관",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -276,10 +260,6 @@
   "transactionFilterTransfer": "스왑",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "exchangeLandingRecommendedExchange": "Bitcoin 교환",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
   },
   "receiveConfirming": "확인... ({count}/{required})",
   "@receiveConfirming": {
@@ -572,10 +552,6 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "이 앱의 대부분의 번역은 AI를 사용하여 생성되었으며 부정확할 수 있습니다. 오류를 발견하거나 번역 개선에 도움을 주고 싶으시다면, GitHub 저장소에서 수정 사항을 제출할 수 있습니다.",
-  "@translationWarningDescription": {
-    "description": "Description explaining that translations are AI-generated and may be inaccurate"
-  },
   "languageSettingsScreenTitle": "* 이름",
   "@languageSettingsScreenTitle": {
     "description": "The title of the language settings screen"
@@ -728,10 +704,6 @@
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
   },
-  "importWatchOnlyDescriptor": "연구분야",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "결제 진행 중!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -739,10 +711,6 @@
   "fundExchangeETransferLabelEmail": "이 이메일에 E-transfer 보내기",
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
-  },
-  "bitcoinSettingsTestnetModeTitle": "Testnet 형태",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
   },
   "fromLabel": "내 계정",
   "@fromLabel": {
@@ -1094,10 +1062,6 @@
   "@exchangeHomeWithdraw": {
     "description": "Withdraw button label"
   },
-  "importMnemonicSegwit": "사이트맵",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "계속하기",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1272,10 +1236,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "제품정보",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "backupWalletBackupButton": "지원하다",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
@@ -1304,10 +1264,6 @@
   "sellSendPaymentAdvanced": "고급 설정",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "수입 지갑",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google 드라이브에 연결 실패",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -1390,10 +1346,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importWalletSeedSigner": "비밀번호",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "기능 곧 출시",
   "@featureComingSoonTitle": {
@@ -1569,14 +1521,6 @@
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
   },
-  "importWatchOnlyType": "제품정보",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "하드웨어 지갑",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
-  },
   "connectHardwareWalletDescription": "연결하려는 하드웨어 지갑을 선택하십시오",
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
@@ -1694,10 +1638,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "Sovereign 자체 custody Bitcoin 지갑과 Bitcoin 전용 교환 서비스.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -1765,10 +1705,6 @@
   "swapValidationInsufficientBalance": "충분한 균형",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "회사 소개 이름 *",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "autoswapAlwaysBlock": "항상 블록 높은 비용",
   "@autoswapAlwaysBlock": {
@@ -1934,10 +1870,6 @@
   "@backupSettingsError": {
     "description": "Header text for error message display"
   },
-  "exchangeFeatureCustomerSupport": "· 고객 지원",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
   "sellPleasePayInvoice": "결제하기",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
@@ -2042,10 +1974,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "서비스 상태",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "가격은 상쾌합니다 ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -2073,10 +2001,6 @@
   "testCompletedSuccessMessage": "Bitcoin 지갑에 액세스 할 수 있습니다",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "importWatchOnlyScanQR": "QR 코드",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "walletBalanceUnconfirmedIncoming": "진행 중",
   "@walletBalanceUnconfirmedIncoming": {
@@ -2146,10 +2070,6 @@
   "exchangeAuthOk": "이름 *",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "안전 Pin",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "지원하다",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2331,10 +2251,6 @@
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
   },
-  "settingsDevModeUnderstandButton": "나는 이해",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
-  },
   "exchangeFileUploadTitle": "보안 파일 업로드",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -2487,15 +2403,6 @@
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
   },
-  "importMnemonicBalanceLabel": "밸런스: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeWarningConfirmation": "나는 내가 다른 사람에 의해 Bitcoin을 구입하는 것을 요청하지 않다는 것을 확인합니다.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
@@ -2566,10 +2473,6 @@
   "payCorporate": "회사연혁",
   "@payCorporate": {
     "description": "Label for corporate checkbox"
-  },
-  "onboardingCreateNewWallet": "새 지갑 만들기",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
   },
   "buyExpressWithdrawalDesc": "지불 후에 즉시 Bitcoin를 받으십시오",
   "@buyExpressWithdrawalDesc": {
@@ -2802,10 +2705,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency 교환 서비스는 Bull Bitcoin 모바일 애플리케이션에서 사용할 수 없습니다.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "주문 수수료율",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2907,10 +2806,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "importMnemonicNestedSegwit": "연락처",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "Replace-by-fee 활성화",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2943,10 +2838,6 @@
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
   },
-  "exchangeLandingDisclaimerLegal": "교환 서비스에 대한 액세스는 Bull Bitcoin이 합법적으로 작동 할 수있는 국가에 제한되며 KYC가 필요할 수 있습니다.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
-  },
   "backupWalletEncryptedVaultTitle": "암호화된 vault",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2962,10 +2853,6 @@
   "automaticallyFetchKeyButton": "자동 Fetch 키 >>",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "importColdcardButtonOpenCamera": "카메라 열기",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "payFeePriority": "요금 우선",
   "@payFeePriority": {
@@ -3015,10 +2902,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "translationWarningTitle": "AI-Generated 번역",
-  "@translationWarningTitle": {
-    "description": "Title for the AI translation warning bottom sheet"
-  },
   "addressViewAddress": "이름 *",
   "@addressViewAddress": {
     "description": "Label for address field"
@@ -3050,10 +2933,6 @@
   "sendSwapDetails": "Swap 세부사항",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "12 단어를 통해 지갑을 복구.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "제품정보",
   "@pinStatusLoading": {
@@ -3280,10 +3159,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "새로운 지갑 추가",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "결제 주소 또는 송장",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3377,10 +3252,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "이름 *",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "계속하기",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -3422,10 +3293,6 @@
   "ledgerDefaultWalletLabel": "Ledger 지갑",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "importWalletSpecter": "관련 상품",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "customLocationProvider": "주문 위치",
   "@customLocationProvider": {
@@ -3504,15 +3371,6 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "거래 : {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "관련 기사",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
@@ -3520,10 +3378,6 @@
   "autoswapAlwaysBlockInfoEnabled": "활성화하면 설정한 한도를 초과하는 수수료의 자동 스왑은 항상 차단됩니다",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
-  },
-  "importMnemonicSelectScriptType": "수입 Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "sellSendPaymentCadBalance": "자료실 (주)",
   "@sellSendPaymentCadBalance": {
@@ -3693,10 +3547,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• Bitcoin을 Self-custody로 구매하십시오",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "금액은 최대를 초과",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -3761,10 +3611,6 @@
   "coreSwapsChainPending": "스왑이 아직 초기화되지 않았습니다.",
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
-  },
-  "importWalletImportWatchOnly": "가져오기 watch-only",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
   },
   "coldcardStep9": "거래가 Coldcard에 수입되면 목적지 주소와 금액을 검토하십시오.",
   "@coldcardStep9": {
@@ -3935,10 +3781,6 @@
       }
     }
   },
-  "importWalletJade": "블록스트림 옥",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
   "payInvalidInvoice": "잘못된 청구서",
   "@payInvalidInvoice": {
     "description": "Error message when invoice format is invalid"
@@ -4100,17 +3942,9 @@
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
   },
-  "exchangeLandingConnectAccount": "Bull Bitcoin 교환 계정 연결",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
-  },
   "recoverYourWalletTitle": "지갑을 복구",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "이름 *",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "앱 설정",
   "@settingsAppSettingsTitle": {
@@ -4229,16 +4063,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Dev 모드",
   "exchangeTestnetBasicAuthTitle": "Testnet 거래소 자격 증명",
-  "exchangeTestnetBasicAuthDescription": "Testnet 거래소 웹 페이지(로그인 및 KYC)를 위한 HTTP 기본 인증.",
-  "exchangeTestnetBasicAuthUsernameLabel": "사용자 이름",
-  "exchangeTestnetBasicAuthPasswordLabel": "비밀번호",
-  "exchangeTestnetBasicAuthClearButton": "지우기",
-  "exchangeTestnetBasicAuthSaveButton": "저장",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "인보이스를 해독",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4336,10 +4161,6 @@
   "electrumMainnet": "메인넷",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
-  },
-  "importWalletPassport": "기초 여권",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
   },
   "buyExpressWithdrawalFee": "익스프레스 요금: {amount}",
   "@buyExpressWithdrawalFee": {
@@ -4537,10 +4358,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importColdcardButtonInstructions": "관련 기사",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "sellWhichWalletQuestion": "어떤 지갑에서 판매하고 싶습니까?",
   "@sellWhichWalletQuestion": {
@@ -4766,10 +4583,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "• Bitcoin을 판매, Bitcoin으로 지불",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "비밀번호",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4824,10 +4637,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "당신의 돈을 소유",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "씨 뷰어",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4856,10 +4665,6 @@
   "sendFastFee": "빠른 속도",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "비트 코인",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "통계 없음",
   "@exchangeStatisticsNoData": {
@@ -4921,10 +4726,6 @@
   "coldcardInstructionsTitle": "Coldcard Q 지침",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "지갑 복구",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "참고 번호",
   "@transactionOrderLabelReferenceNumber": {
@@ -4998,10 +4799,6 @@
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
   },
-  "importWatchOnlyTitle": "가져오기 watch-only",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "cancel": "이름 *",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -5018,10 +4815,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "슈퍼 유저 모드 비활성화.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "이용 약관",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -5029,10 +4822,6 @@
   "importQrDeviceScanning": "스캔 ...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "importWalletKeystone": "키스톤",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "새로운 수상자",
   "@payNewRecipients": {
@@ -5264,10 +5053,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "importWatchOnlyRequired": "견적 요청",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "지갑은 동기화되지 않습니다. 오시는 길",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -5279,14 +5064,6 @@
   "sellExchangeRate": "환율",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "이름 *",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
-  },
-  "settingsDevModeWarningMessage": "이 모드는 위험합니다. 이를 통해 돈을 잃을 수 있음을 인정합니다",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "비트코인",
   "@sellTitle": {
@@ -5429,10 +5206,6 @@
   "recoverViaCloudDescription": "PIN을 사용하여 클라우드를 통해 백업을 복구합니다.",
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
-  },
-  "importWatchOnlySigningDevice": "관련 제품",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
   },
   "receiveInvoiceExpired": "청구서 만료",
   "@receiveInvoiceExpired": {
@@ -5580,10 +5353,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "일반 지갑",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "시험되지 않음",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -5673,17 +5442,9 @@
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
   },
-  "importWalletKrux": "한국어",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
-  },
   "swapContinueButton": "계속하기",
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
-  },
-  "bitcoinSettingsBroadcastTransactionTitle": "방송 거래",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
   },
   "sendSignWithLedger": "Ledger로 로그인",
   "@sendSignWithLedger": {
@@ -5787,10 +5548,6 @@
   "quickAndEasyTag": "빠르고 & 쉬운",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "settingsThemeTitle": "이름 *",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "이름 *",
   "@payEmail": {
@@ -5945,10 +5702,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "물리적 백업",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "내 계정",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5956,10 +5709,6 @@
   "fundExchangeCrIbanCrcDescription": "아래 세부 사항을 사용하여 은행 계좌에서 은행 송금을 보내십시오 ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
-  },
-  "settingsDevModeWarningTitle": "Dev 모드",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
   },
   "rbfOriginalTransaction": "Original 거래",
   "@rbfOriginalTransaction": {
@@ -5972,10 +5721,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "사용자 번호 clipboard에 복사",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "앱 버전: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "선정된 빌러 이름",
   "@payBillerNameValue": {
@@ -6009,10 +5754,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub 또는 디지터",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "계좌번호",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -6038,17 +5779,9 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "· 은행 송금 및 지불 청구서 발송",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "즉시 결제",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "지갑 복구",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "{pinOrPassword} 대신 >>",
   "@usePasswordInsteadButton": {
@@ -6088,10 +5821,6 @@
       }
     }
   },
-  "importMnemonicTitle": "수입 Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "payReplaceByFeeActivated": "Replace-by-fee 활성화",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
@@ -6123,10 +5852,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "비만의 이름은 LEONOD이어야합니다. 당신이 다른 것을 넣으면, 당신의 지불은 거절될 것입니다.",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "연락처",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "exchangeLandingTitle": "비트 코인",
   "@exchangeLandingTitle": {
@@ -6169,10 +5894,6 @@
   "googleAppleCloudRecommendation": "Google 또는 애플 클라우드: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "Bull Bitcoin 교환 웹 사이트로 이동",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "테스트 {walletName}",
   "@testWalletTitle": {
@@ -6831,10 +6552,6 @@
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
   },
-  "exchangeFeatureDcaOrders": "• DCA, 제한 주문 및 자동 구매",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
   "payIban": "아이반",
   "@payIban": {
     "description": "Label for IBAN field"
@@ -6854,10 +6571,6 @@
   "autoswapSaveButton": "제품 정보",
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
-  },
-  "importWatchOnlyDisclaimerDescription": "이용하기 전에 지갑에서 파생 된 첫 번째 주소를 확인하여 주어진 Xpub를 생산 한 것으로 일치 경로를 확인합니다. 잘못된 경로를 사용하여 자금의 손실로 이어질 수 있습니다",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
   },
   "fundExchangeWarningTactic8": "그들은 신속하게 행동하고 있습니다",
   "@fundExchangeWarningTactic8": {
@@ -6917,10 +6630,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "Derivation 경로 경고",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "withdrawConfirmIban": "아이반",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -6962,10 +6671,6 @@
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
   },
-  "importMnemonicSyncMessage": "모든 3개의 지갑 유형은 동기화이고 그들의 균형 및 거래는 곧 나타납니다. sync가 완료될 때까지 기다릴 수 있고, 지갑 유형이 가져올지 확인해야 합니다.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
-  },
   "coreSwapsLnSendClaimable": "Swap은 청구 될 준비가되어 있습니다.",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
@@ -7001,10 +6706,6 @@
   "importMnemonicSelectType": "지갑 유형 선택하기",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 신생 동물",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
   "swapTransferAmount": "스왑 금액",
   "@swapTransferAmount": {
@@ -7326,10 +7027,6 @@
   },
   "broadcastSignedTxBroadcasting": "방송...",
   "broadcastSignedTxBroadcastError": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.",
-  "importWatchOnlyErrorNoWalletSelected": "먼저 공개 키나 디스크립터를 붙여넣거나 스캔하세요.",
-  "importWatchOnlyErrorLabelRequired": "가져오기 전에 지갑 이름을 입력하세요.",
-  "importWatchOnlyErrorInvalidFormat": "유효한 공개 키나 디스크립터가 아닌 것 같습니다. 붙여넣은 내용을 다시 확인하세요.",
-  "importWatchOnlyErrorImportFailed": "이 조회 전용 지갑을 가져올 수 없습니다. 정보를 확인한 후 다시 시도하세요.",
   "broadcastSignedTxErrorInvalidTransaction": "유효한 서명된 거래가 아닌 것 같습니다. PSBT나 거래 전체를 붙여넣었는지 확인하세요.",
   "broadcastSignedTxErrorInvalidPushTx": "이 태그에서 거래를 읽을 수 없습니다. 다시 스캔해 주세요.",
   "@broadcastSignedTxBroadcasting": {
@@ -7338,10 +7035,6 @@
   "receivePayjoinActivated": "Payjoin 활성화",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
-  "importMnemonicContinue": "계속하기",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
   },
   "chooseVaultLocationTitle": "Vault 위치 선택",
   "@chooseVaultLocationTitle": {
@@ -7423,10 +7116,6 @@
   "enterBackupKeyManuallyTitle": "백업 키를 수동으로 입력",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "importWalletColdcardQ": "콜드 카드 Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "백업하기",
   "@backupSettingsStartBackup": {
@@ -7528,10 +7217,6 @@
   "payPaymentHistory": "지불 역사",
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
-  },
-  "exchangeFeatureUnifiedHistory": "• 통합된 거래 내역",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "payViewDetails": "더 보기",
   "@payViewDetails": {
@@ -7657,41 +7342,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "건너뛰기",
-  "wizardPageIndicator": "페이지 {current} / {total}",
-  "wizardNextButton": "다음",
-  "wizardCustomizeTitle": "경험을 맞춤 설정하세요",
-  "wizardCustomizeBody": "이러한 설정으로 BULL을 원하는 방식으로 사용하세요.",
-  "wizardCustomizeDefaultCurrency": "기본 통화",
-  "wizardMissionTitle": "Bull의 미션을 지원하세요",
-  "wizardMissionBody1": "저희가 소프트웨어를 개선하고 최고 수준의 보안, 개인 정보 보호 및 사용성을 제공할 수 있도록, 앱이 오류 로그를 보내 다음 업데이트에서 문제를 빠르게 감지하고 수정할 수 있게 해드릴 수 있습니다.",
-  "wizardMissionBody2": "이 로그는 익명화되며, IP 주소와 연결되지 않고, 거래나 신원에 대한 정보를 절대 공유하지 않습니다. 순전히 기술적이며 어떠한 위험에도 노출되지 않습니다. 저희에게는 매우 도움이 되며 사용자에게는 비용이 들지 않습니다.",
-  "wizardMissionQuestion": "자동화된 문제 보고 프로그램에 참여하시겠습니까?",
-  "wizardMissionYes": "예",
-  "wizardMissionNo": "아니오",
-  "wizardMissionRequired": "계속하기 전에 예 또는 아니오를 선택해 주세요.",
-  "wizardJourneyTitle": "여정에서 진전을 이루세요",
-  "wizardJourneyBody": "BULL 지갑이 처음이라면, 개인 정보 보호, 보안 및 사용자 경험을 향상시키기 위해 활용할 수 있는 몇 가지 기능을 소개합니다.",
-  "wizardJourneyTip1": "지갑 잠금 해제를 위한 보안 PIN 추가",
-  "wizardJourneyTip2": "암호화된 볼트 백업 시도",
-  "wizardJourneyTip3": "자체 Bitcoin 노드에 연결",
-  "wizardJourneyTip4": "자체 Mempool 익스플로러에 연결",
-  "wizardJourneyTip5": "KYC 없이 Bitcoin과 Liquid 간 스왑",
-  "wizardJourneyTip6": "autoswap 설정 맞춤화",
-  "wizardJourneyTip7": "Bitcoin (BTC)와 Satoshis (sats) 간 전환",
-  "wizardJourneyTip8": "하드웨어 지갑을 위한 air-gap 거래 생성",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "walletSetupErrorTryAgain": "지갑을 설정하는 중 문제가 발생했습니다. 다시 시도해 주세요.",
-  "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
   "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
   "coreScreensFeeRateLabel": "수수료율",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7728,19 +7378,9 @@
   "backupCardSubtitle": "지금 지갑을 백업하세요.",
   "autoswapTargetBalanceLabel": "목표 즉시 지갑 잔액",
   "autoswapMaximumBalanceLabel": "최대 즉시 지갑 잔액",
-  "onboardingAdvancedOptionsTitle": "고급 옵션",
-  "onboardingAdvancedOptionsDescription": "지갑을 생성하거나 복구하기 전에 고급 설정을 구성하세요",
-  "onboardingAdvancedOptionsCustomElectrum": "사용자 지정 Electrum 서버",
-  "onboardingAdvancedOptionsCustomMempool": "사용자 지정 Mempool 서버",
-  "onboardingAdvancedOptionsCustomRecoverbull": "사용자 지정 Recoverbull 서버",
-  "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "sendEstimatedDeliveryHours": "시간",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -7750,123 +7390,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "코인",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, other{코인 {count}개}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "동결됨",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "사용 가능",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "동결된 코인 없음",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "정렬 및 필터",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "{total}개 중 {visible}개 표시",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, other{미사용 출력 {count}개}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "동기화",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "모두 지우기",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "금액: 높은순",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "금액: 낮은순",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "날짜: 최신순",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "날짜: 오래된순",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "키체인",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "전체",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "받기",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "잔돈",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "동결 상태",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "전체",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "동결됨",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "동결 해제됨",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "라벨",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "초기화",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "적용",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, other{{count}개 선택됨}}",
   "@coinsSelectedCount": {
@@ -7874,128 +7400,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "모두 선택",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "동결",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "동결 해제",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "실행 취소",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, other{코인 {count}개를 동결하시겠습니까?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "동결된 코인은 지갑에 그대로 남아 있지만, 동결을 해제하기 전까지 사용에서 제외됩니다.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "이 코인들을 동결하면 사용 가능한 잔액이 남지 않습니다.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, other{코인 {count}개 동결됨 · 사용에서 제외됨}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, other{코인 {count}개 동결 해제됨}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, other{{count} confs}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "대기 중",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "아직 코인이 없습니다",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "비트코인을 받으면 여기에 코인이 표시됩니다.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "일치하는 코인 없음",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "필터 지우기",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "다시 시도",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "코인을 밀어 동결 · 길게 눌러 선택",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "코인을 불러올 수 없습니다. 아래로 당겨 새로고침하여 다시 시도하세요.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "선택한 코인을 동결할 수 없습니다. 다시 시도하세요.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "선택한 코인의 동결을 해제할 수 없습니다. 다시 시도하세요.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "문제가 발생했습니다. 다시 시도하세요.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, other{UTXO {count}개}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} 동결됨",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -8065,26 +7469,11 @@
   "sendErrorInvoiceExpired": "이 인보이스는 만료되었습니다. 수취인에게 새 인보이스를 요청하세요.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "더 작은 금액을 결제하려면 Instant Payment Wallet에 자금을 충전하는 것을 고려해 보세요.",
   "sendErrorInsufficientBalanceFrozenHint": "사용 가능한 잔액이 부족합니다 — 동결된 금액: {amount}. 코인 관리에서 동결을 해제하여 사용하세요.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Coldcard를 태그하여 NFC로 서명된 트랜잭션을 받으세요",
-  "importColdcardInvalidWalletData": "잘못된 Coldcard 지갑 데이터",
-  "importColdcardConnectTitle": "{deviceName} 연결",
-  "importColdcardConnectDescription": "{deviceName} 기기에서 지갑 디스크립터를 가져옵니다.",
-  "importColdcardScanNfcSheetTitle": "{deviceName} 기기를 태그하여 NFC로 지갑 디스크립터를 가져오세요",
   "priceFailedToLoad": "가격을 불러오지 못했습니다",
   "statusScreenTryAgain": "다시 시도",
   "statusScreenContinue": "계속",
-  "settingsErrorReportingTitle": "오류 보고",
-  "errorReportingProgramTitle": "오류 보고 프로그램",
-  "errorReportingProgramDescriptionP1": "오류 보고 프로그램에 참여하여 Bull을 개선하는 데 도움을 주세요.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin은 문제가 발생하면 익명화된 오류 보고서를 전송합니다.",
-  "errorReportingProgramDescriptionP3": "이를 통해 각 버그가 얼마나 많은 사용자에게 영향을 미치는지 파악하고 그에 따라 수정 우선순위를 정할 수 있습니다. 이 정보가 없으면 영향 범위를 측정할 방법이 없습니다.",
-  "errorReportingProgramDescriptionP4": "보고서는 오직 Bull 서버로만 전송되며, 제3자에게 전달되지 않습니다.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin은 오픈소스이므로 전송되는 내용을 직접 확인할 수 있습니다.",
-  "errorReportingAcceptButton": "수락",
-  "errorReportingCancelButton": "취소",
-  "errorReportingRestartSnackbar": "이 변경 사항을 적용하려면 앱을 재시작하세요",
   "backupWarningTitle": "지금 바로 지갑을 백업하세요",
   "backupWarningBackupNow": "예",
   "backupWarningBackupLater": "아니요, 위험을 이해했습니다",
@@ -8191,9 +7580,6 @@
   "recipientsFieldPayeeAccountNumber": "수취인 계좌번호",
   "exchangeFileUploadStatusRejectedBadge": "거부됨",
   "exchangeFileUploadTapToReupload": "탭하여 다시 업로드",
-  "importWatchOnlyXpubLabel": "XPUB",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "완료",
   "consolidationFailedBody": "예기치 않은 오류가 발생했습니다. 자금은 안전하며 어떤 거래도 브로드캐스트되지 않았습니다. 다시 시도해 주세요.",
   "consolidationFailedTitle": "통합 실패",
@@ -8213,45 +7599,11 @@
   "dcaReceiveAddressError": "지갑에서 수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
   "dcaOrderCreationError": "반복 구매를 생성할 수 없습니다. 나중에 다시 시도해 주세요.",
   "settingsPayjoinDisclaimerTitle": "Payjoin 고지사항",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin 고지사항",
-  "settingsPayjoinAdvancedTitle": "Payjoin 고급 설정",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
   "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요.",
   "sendSwapExpiredTitle": "주문 만료",
   "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다.",
-  "settingsScreenPrivacyTitle": "화면 개인정보 보호",
-  "settingsScreenPrivacyDisabledMessage": "이제 민감한 화면에서 스크린샷이 허용됩니다",
-  "settingsSearchHint": "설정 검색",
-  "settingsSearchNoResults": "설정을 찾을 수 없습니다.",
-  "settingsSearchMempoolKeywords": "블록 탐색기|수수료 추정|거래 수수료|멤풀 API",
-  "settingsSearchExchangeKeywords": "계정|거래소 계정|거래|매수 및 매도",
-  "settingsSearchStartBackupKeywords": "백업 생성|백업 저장|지갑 백업",
-  "settingsSearchRecoverbullKeywords": "암호화 백업|클라우드 백업|암호화 보관소|보관소 복구",
-  "settingsSearchLabelsKeywords": "지갑 라벨|거래 라벨|BIP329|라벨 가져오기|라벨 내보내기",
-  "settingsSearchTransactionHistoryKeywords": "거래 내보내기|거래 내역 내보내기|CSV|지갑 기록",
-  "settingsSearchAppSettingsKeywords": "앱 환경설정|애플리케이션 설정|일반 설정",
-  "settingsSearchTermsOfServiceKeywords": "이용 약관|법률 정보|사용자 계약|TOS",
-  "settingsSearchServicesStatusKeywords": "서비스 상태|시스템 상태|온라인|서비스 중단",
-  "settingsSearchImportWalletKeywords": "지갑 추가|지갑 복구|니모닉 가져오기|읽기 전용 지갑|하드웨어 지갑",
-  "settingsSearchBroadcastTransactionKeywords": "서명된 거래 전파|거래 푸시|원시 거래|거래 16진수|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin 개인정보 보호|협업 거래|P2EP",
-  "settingsSearchAutoswapKeywords": "자동 스왑|자동 교환|자동 전송|즉시 지갑 잔액",
-  "settingsSearchElectrumKeywords": "비트코인 노드|Electrum 노드|사용자 지정 서버|개인 노드",
-  "settingsSearchTestnetModeKeywords": "테스트 네트워크|비트코인 테스트넷|Liquid 테스트넷|테스트 모드",
-  "settingsSearchSeedViewerKeywords": "시드 구문|복구 구문|니모닉|백업 단어|시드 보기",
-  "settingsSearchBip85Keywords": "결정론적 엔트로피|하위 시드|파생 엔트로피|BIP85",
-  "settingsSearchLanguageKeywords": "로케일|번역|표시 언어|선호 언어",
-  "settingsSearchThemeKeywords": "화면 모양|다크 모드|라이트 모드|시스템 테마",
-  "settingsSearchCurrencyKeywords": "법정화폐|현지 통화|기본 통화|환전 통화",
-  "settingsSearchSecurityPinKeywords": "PIN 코드|암호|앱 잠금|인증|PIN 변경",
-  "settingsSearchLogsKeywords": "디버그 로그|진단 로그|앱 로그|로그 내보내기",
-  "settingsSearchDevModeKeywords": "개발자 모드|개발 설정|디버그 모드|고급 테스트",
-  "settingsSearchTestnetCredentialsKeywords": "테스트넷 사용자 자격 증명|테스트넷 로그인|테스트넷 사용자 이름|테스트넷 비밀번호|기본 인증",
-  "settingsSearchErrorReportingKeywords": "충돌 보고서|버그 보고서|진단|원격 측정|오류 로그",
-  "settingsSearchScreenPrivacyKeywords": "스크린샷|화면 녹화|화면 캡처 보호|개인정보 보호",
-  "settingsSearchStartTyping": "결과를 보려면 입력을 시작하세요.",
-  "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요.",
   "sendErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sendErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
   "sendErrorExchangeOrderMismatch": "이 결제가 주문과 더 이상 일치하지 않습니다. 결제를 다시 시작하세요.",
@@ -8265,8 +7617,6 @@
   "walletWarningElectrumAction": "탭하여 서버 설정을 구성하세요",
   "walletLoadFailedRetryHint": "아래로 당겨 새로 고친 후 다시 시도하세요",
   "settingsErrorSavingSetting": "해당 설정을 저장할 수 없습니다. 다시 시도해 주세요.",
-  "settingsErrorConsentNotGiven": "이 설정을 변경하려면 확인이 필요합니다.",
-  "settingsErrorLoadingLogs": "진단 로그를 준비할 수 없습니다. 다시 시도해 주세요.",
   "exchangeErrorSigningOut": "완전히 로그아웃되지 않았습니다. 다시 시도해 주세요.",
   "exchangeErrorSavingPreferences": "설정을 저장할 수 없습니다. 다시 시도해 주세요.",
   "exchangeErrorLoadingAnnouncements": "공지사항을 불러올 수 없습니다.",
@@ -8316,10 +7666,6 @@
   "autoBuyWalletRequiredError": "기본 Bitcoin, Lightning 또는 Liquid 주소를 하나 이상 추가하세요.",
   "autoBuyUpdateError": "자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.",
   "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
-  "importWatchOnlyErrorNetworkMismatch": "이 지갑은 현재 다른 Bitcoin 네트워크를 사용하고 있습니다. Mainnet과 Testnet 사이를 전환한 후 다시 시도하세요.",
-  "importWatchOnlyErrorAlreadyExists": "이 지갑은 이미 가져왔습니다.",
-  "importWatchOnlyNetworkBitcoinMainnet": "네트워크: 비트코인 메인넷",
-  "importWatchOnlyNetworkBitcoinTestnet": "네트워크: 비트코인 테스트넷",
   "broadcastSignedTxErrorPsbtFinalization": "서명된 거래를 완료할 수 없습니다. 필요한 모든 서명이 포함되어 있는지 확인한 후 다시 시도하세요.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
@@ -8392,7 +7738,6 @@
   "fundExchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "exchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "walletBalancesMayBeStale": "잔액을 업데이트하지 못해 최신 상태가 아닐 수 있습니다.",
-  "settingsSearchTorKeywords": "Tor 프록시|Orbot|어니언 라우팅|내장 Tor|개인정보 보호 네트워크",
   "limitOrdersInsufficientBalance": "충분한 균형",
   "limitOrdersInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
   "limitOrdersFundAccount": "계정 생성",
@@ -8449,22 +7794,15 @@
   "swapUnderReviewTitle": "검토 중인 스왑",
   "swapUnderReviewDescription": "이 스왑은 수동 검토가 필요합니다. 지원팀에 문의하세요. 지원 계정이 없다면 계정만 만들면 되며 KYC는 필요하지 않습니다.",
   "swapUnderReviewSupportMessage": "검토 중인 스왑\n주문 ID: {orderId}\n요청 ID: {requestId}\n주문 번호: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "자동 스왑",
   "broadcastSignedTxErrorAlreadyInChain": "이 거래는 이미 블록체인에 있습니다. 더 이상 브로드캐스트할 것이 없습니다.",
   "broadcastSignedTxErrorRejected": "네트워크가 이 거래를 거부했습니다. 서명이 완전하지 않거나, 유효하지 않거나, 다른 결제와 충돌할 수 있습니다.",
   "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
   "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다.",
   "settingsDarkModeTitle": "다크 모드",
-  "settingsSourceCodeTitle": "소스 코드",
   "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
   "backgroundTasksTitle": "백그라운드 작업",
   "blockedInSystemSettings": "시스템 설정에서 차단됨",
-  "notificationsBlockedMessage": "시스템 설정에서 알림이 차단되어 있습니다.",
   "notificationsTitle": "알림",
   "openSystemSettings": "시스템 설정 열기",
-  "permissionsTitle": "권한",
-  "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고",
-  "wizardBackgroundTasksDescription": "앱이 닫혀 있어도 결제를 확인합니다.",
-  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다.",
   "sendErrorInvoiceExpiryTooShort": "이 인보이스는 너무 빨리 만료됩니다. 수취인에게 새 인보이스를 요청하세요."
 }

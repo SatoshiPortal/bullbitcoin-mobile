@@ -1,0 +1,58 @@
+import 'package:exchange/exchange.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/pay/ui/widgets/sinpe_receipt_card.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullShapesX, Gap, BullTypographyX;
+import 'package:go_router/go_router.dart';
+
+Future<void> showSinpeReceiptBottomSheet(
+  BuildContext context,
+  FiatPaymentOrder order,
+) async {
+  await BullBottomSheet.show(
+    context: context,
+    child: SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Gap(12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.appColors.outline.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(context.bullShapes.dot),
+                ),
+              ),
+              const Gap(16),
+              Row(
+                children: [
+                  const Spacer(),
+                  Text(
+                    context.loc.paySinpeReceipt,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    tooltip: context.loc.closeDialogButton,
+                    onPressed: () => context.pop(),
+                    color: context.appColors.onSurface,
+                    icon: const Icon(Icons.close_sharp),
+                  ),
+                ],
+              ),
+              SinpeReceiptCard(order: order, showSuccessAnimation: false),
+              const Gap(16),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}

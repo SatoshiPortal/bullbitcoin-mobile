@@ -1,22 +1,15 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart'
     as chains
     show BitcoinNetwork, LiquidNetwork;
 import 'package:silent/localizations.dart';
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
-import '../../../coins/public/coins.dart' show CoinsRoute;
-import '../widgets/send_leave_payment_dialog.dart';
-import '../widgets/send_grouped_address.dart';
+import 'package:coins/coins.dart' show CoinsNavigation;
 
 import 'dart:async';
 
-import 'send_payment_page.dart';
-import 'send_payment_review.dart';
-import '../widgets/send_payment_settings.dart';
-import '../widgets/send_custom_fee_editor.dart';
-import '../widgets/send_whole_balance_dialog.dart';
 import '../../domain/send_custom_fee_policy.dart';
 
 import '../widgets/send_ark_routing_actions.dart';
@@ -26,11 +19,10 @@ import 'package:primitives/primitives.dart'
 
 import 'dart:math' as math;
 
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/internal_recipient_policy.dart';
 
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
+import 'package:address_view/payment_destination.dart'
     show FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards, WalletTypeL10n;
@@ -52,10 +44,9 @@ import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
 import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
-import 'package:bb_mobile/features/send/ui/widgets/send_info_row.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart';
 import 'package:transactions/routes.dart';
-import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';

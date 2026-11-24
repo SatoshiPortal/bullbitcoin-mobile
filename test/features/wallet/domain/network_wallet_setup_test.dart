@@ -1,12 +1,6 @@
-import 'package:bb_mobile/features/wallet/data/catalog_wallet_secret_references_repository.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,13 +12,9 @@ import 'package:secrets/testing.dart';
 
 class _Settings extends Mock implements Preferences {}
 
-class _References extends Mock implements WalletSecretReferencesRepository {}
+class _References extends Mock implements WalletInventory {}
 
-class _CreateDefaults extends Mock implements CreateDefaultWalletsUsecase {}
-
-class _Metadata extends Mock implements WalletRegistrations {}
-
-class _Row extends Mock implements WalletMetadataModel {}
+class _CreateDefaults extends Mock implements DefaultWalletProvisioning {}
 
 void main() {
   late _Settings settings;
@@ -54,7 +44,8 @@ void main() {
     create = _CreateDefaults();
     when(() => settings.readDeveloperEnvironment())
         .thenAnswer((_) async => Ok(regtest));
-    when(() => references.list()).thenAnswer((_) async => Ok([secret.id]));
+    when(() => references.referencedFingerprints())
+        .thenAnswer((_) async => Ok([secret.id]));
     when(
       () => create.execute(
         secret: any(named: 'secret'),
@@ -74,24 +65,11 @@ void main() {
             isDevModeEnabled: regtest.isDevModeEnabled,
           )),
         );
-        final localRow = _Row();
-        when(() => localRow.masterFingerprint).thenReturn(secret.id.hex);
-        when(() => localRow.signer).thenReturn(Signer.local);
-        // A public descriptor origin has no local secret by design.
-        final remoteRow = _Row();
-        when(() => remoteRow.masterFingerprint).thenReturn('deadbeef');
-        when(() => remoteRow.signer).thenReturn(Signer.remote);
-        final metadata = _Metadata();
-        when(metadata.fetchAll).thenAnswer((_) async => [remoteRow, localRow]);
-        final catalog = CatalogWalletSecretReferencesRepository(metadata);
-        final allReferences = await catalog.list();
-        expect((allReferences as Ok).value, [
-          Fingerprint.tryParse('deadbeef'),
-          secret.id,
-        ]);
+        when(references.referencedFingerprints)
+            .thenAnswer((_) async => Ok([Fingerprint('deadbeef'), secret.id]));
         final result = await LoadNetworkWalletSetupUsecase(
           settings,
-          catalog,
+          references,
           secrets,
         ).execute();
         expect(
@@ -134,7 +112,7 @@ void main() {
       passphrase: 'TREZOR',
       language: bip39.Language.english,
     ) as Ok<Secret, SecretFailure>).value;
-    when(() => references.list())
+    when(() => references.referencedFingerprints())
         .thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));
     final result = await LoadNetworkWalletSetupUsecase(
       settings,
@@ -187,7 +165,7 @@ void main() {
             .network,
         NetworkEnv.mainnet,
       );
-      verifyNever(() => references.list());
+      verifyNever(() => references.referencedFingerprints());
     },
   );
 
@@ -271,7 +249,7 @@ void main() {
       verify(
         () => create.execute(secret: null, expectedNetwork: NetworkEnv.regtest),
       ).called(1);
-      verifyNever(() => references.list());
+      verifyNever(() => references.referencedFingerprints());
       expect(storage.reads, reads);
     },
   );

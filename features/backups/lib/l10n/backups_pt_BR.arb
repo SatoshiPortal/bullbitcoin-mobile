@@ -1,0 +1,236 @@
+{
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
+  "testBackupDigitalCopy": "Cópia digital",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "testBackupWriteDownPhrase": "Escreva sua frase de recuperação\nna ordem correta",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "backupWalletEncryptedVaultTag": "Fácil e simples (1 minuto)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "testBackupDefaultWallets": "Carteiras padrão",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupTapWordsInOrder": "Toque nas palavras de recuperação no\nordem certa",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupSuccessTitle": "Teste concluído com sucesso!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "Passphrase",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "backupWalletPhysicalBackupTag": "Trustless (ter o seu tempo)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "testBackupAllWordsSelected": "Selecionou todas as palavras",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupSettingsRecoverBullSettings": "Recuperação",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupSettingsTested": "Testado",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "Etiquetas",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "testBackupTranscribe": "Transcrição",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Você está confiante em suas próprias capacidades de segurança operacional para esconder e preservar suas palavras de semente Bitcoin.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletEncryptedVaultTitle": "Vault criptografado",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "testBackupErrorIncorrectOrder": "Ordem de palavra incorreta. Por favor, tente novamente.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "O cofre encriptado impede-te de ladrões que procuram roubar o teu apoio. Ele também impede que você perca acidentalmente seu backup, uma vez que ele será armazenado em sua nuvem. Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Há uma pequena possibilidade de que o servidor web que armazena a chave de criptografia do seu backup possa ser comprometida. Neste caso, a segurança do backup em sua conta na nuvem pode estar em risco.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "walletDetailsUnnamedWalletFallback": "Carteira sem nome",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "Visite o Recoverbull.com para obter mais informações.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Vault criptografado: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "testBackupTitle": "Teste o backup da sua carteira",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Backup físico: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletPhysicalBackupDescription": "Escreva 12 palavras em um pedaço de papel. Mantenha-os seguros e certifique-se de não perdê-los.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "testBackupNext": "Próximo",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "closeDialogButton": "Fechar",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupScreenshot": "Tiro de tela",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "backupWalletTitle": "Faça backup da sua carteira",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "testBackupLastBackupTest": "Último teste de backup: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsPhysicalBackup": "Backup físico",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "Como decidir?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "testBackupConfirm": "Confirmação",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "backupSettingsNotTested": "Não testado",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "Como decidir",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "backupSettingsViewVaultKey": "Ver o Vault Chaveiro",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "testBackupStoreItSafe": "Armazená-lo em algum lugar seguro.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "Qual é o número da palavra {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Backup anônimo com criptografia forte usando sua nuvem.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "testBackupWalletTitle": "Teste {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Você não tem certeza e precisa de mais tempo para aprender sobre práticas de segurança de backup.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "testBackupSuccessMessage": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "backupWalletPhysicalBackupTitle": "Backup físico",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "testBackupSuccessButton": "Entendido",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupDoNotShare": "NÃO COMPLEMENTAR COM NINGUÉM",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "backupSettingsTestBackup": "Teste de backup",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletImportanceWarning": "Sem um backup, você eventualmente perderá o acesso ao seu dinheiro. É criticamente importante fazer um backup.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "backupSettingsEncryptedVault": "Vault criptografado",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "Iniciar backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "transactionHistoryTitle": "Histórico de transações",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensUnknown": "Desconhecido",
+  "testBackupErrorWalletsUnavailable": "Não foi possível carregar suas carteiras. Tente novamente.",
+  "testBackupErrorNoWallets": "Não há nenhuma carteira cujo backup possa ser testado.",
+  "testBackupErrorNoWalletSelected": "Selecione uma carteira antes de testar seu backup.",
+  "testBackupErrorSeedUnavailable": "Não foi possível ler sua frase de recuperação. Tente novamente.",
+  "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
+  "testBackupErrorCompletionFailed": "Sua frase de recuperação estava correta, mas não conseguimos salvar o resultado. Tente novamente.",
+  "backupCardTitle": "Proteja seus bitcoins.",
+  "backupCardSubtitle": "Faça o backup da sua carteira agora."
+}

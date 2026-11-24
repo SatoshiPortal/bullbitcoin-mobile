@@ -1,608 +1,474 @@
-import 'package:primitives/primitives.dart'
-    show Err, Fingerprint, NetworkEnv, Ok, ScriptType;
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:secrets/secrets.dart' as s;
+import 'package:primitives/primitives.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-class _Settings extends Mock implements Preferences {}
-
-class _Wallets extends Mock implements WalletRepository {}
-
-class _Wallet extends Mock implements Wallet {}
+class _Inventory extends Mock implements WalletInventory {}
 
 void main() {
-  final words = [...List.filled(11, 'abandon'), 'about'];
   late FakeSecureStoragePlatform storage;
-  late s.Secrets secrets;
-  late _Settings settings;
-  late _Wallets wallets;
-  late CreateDefaultWalletsUsecase create;
-  late s.Secret stored;
+  late Secrets secrets;
+  late _Inventory inventory;
+  late List<WalletRegistration> registrations;
+  late List<Network> created;
+  late Network? failNetwork;
+  late Object failure;
+  late List<Secret> received;
+  late DefaultWalletProvisioning provisioning;
 
-  setUp(() async {
+  setUp(() {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = s.Secrets(scratchDirectory: () async => '/tmp');
-    stored = (await secrets.import(
-      words: words,
-      language: bip39.Language.english,
-    ) as Ok<s.Secret, s.SecretFailure>).value;
-    registerFallbackValue(stored);
-    registerFallbackValue(Network.bitcoinMainnet);
-    registerFallbackValue(ScriptType.bip84);
-    settings = _Settings();
-    wallets = _Wallets();
-    when(() => settings.readActiveEnvironment())
-        .thenAnswer((_) async => Ok(Environment.mainnet));
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
-    create = CreateDefaultWalletsUsecase(
-      secrets: secrets,
-      settingsRepository: settings,
-      walletRepository: wallets,
-    );
-  });
-
-  void stubCreation(List<s.Secret> received) {
-    when(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: any(named: 'network'),
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).thenAnswer((invocation) async {
-      received.add(invocation.namedArguments[#secret] as s.Secret);
-      return _Wallet();
-    });
-  }
-
-  test(
-    'captured network mismatch refuses before provisioning or custody writes',
-    () async {
-      var resumed = false;
-      final fenced = CreateDefaultWalletsUsecase(
-        secrets: secrets,
-        settingsRepository: settings,
-        walletRepository: wallets,
-        resumeProvisioning: () async {
-          resumed = true;
-        },
-      );
-      final before = Map<String, String>.of(storage.entries);
-      expect(
-        (await fenced.execute(
-          secret: stored,
-          expectedNetwork: NetworkEnv.regtest,
-        ) as Err).failure,
-        isA<DefaultWalletNetworkChangedFailure>(),
-      );
-      expect(resumed, isFalse);
-      expect(storage.entries, before);
-      verifyZeroInteractions(wallets);
-    },
-  );
-
-  test('regtest creates both defaults on regtest after native provisioning resumes', () async {
-    var resumed = false;
-    when(settings.readActiveEnvironment)
-        .thenAnswer((_) async => Ok(Environment.regtest));
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.regtest,
-      ),
-    ).thenAnswer((_) async {
-      expect(resumed, isTrue);
-      return const Ok<List<Wallet>, WalletFailure>([]);
-    });
-    final networks = <Network>[];
-    when(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: any(named: 'network'),
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).thenAnswer((invocation) async {
-      networks.add(invocation.namedArguments[#network] as Network);
-      return _Wallet();
-    });
-    final networkCreate = CreateDefaultWalletsUsecase(
-      secrets: secrets,
-      settingsRepository: settings,
-      walletRepository: wallets,
-      resumeProvisioning: () async {
-        resumed = true;
-      },
-    );
-    expect(
-      await networkCreate.execute(
-        secret: stored,
-        expectedNetwork: NetworkEnv.regtest,
-      ),
-      isA<Ok>(),
-    );
-    expect(networks, [Network.bitcoinRegtest, Network.liquidRegtest]);
-  });
-
-  for (final supplied in [null, '', 'incorrect', 'synthetic-passphrase']) {
-    test(
-      'partial protected defaults verify complete recovery input (candidate: ${supplied == null
-          ? 'handle'
-          : supplied.isEmpty
-          ? 'empty'
-          : supplied == 'incorrect'
-          ? 'wrong'
-          : 'correct'})',
-      () async {
-        final protected = (await secrets.import(
-          words: words,
-          passphrase: 'synthetic-passphrase',
-          language: bip39.Language.english,
-        ) as Ok<s.Secret, s.SecretFailure>).value;
-        final bitcoin = _Wallet();
-        final liquid = _Wallet();
-        when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
-        when(() => bitcoin.masterFingerprint).thenReturn(protected.id.hex);
-        when(
-          () => wallets.getWallets(
-            onlyDefaults: true,
-            environment: Environment.mainnet,
-          ),
-        ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([bitcoin]));
-        when(
-          () => wallets.createWallet(
-            secret: any(named: 'secret'),
-            network: Network.liquidMainnet,
-            scriptType: ScriptType.bip84,
-            isDefault: true,
-            birthday: null,
-          ),
-        ).thenAnswer((invocation) async {
-          expect(
-            (invocation.namedArguments[#secret] as s.Secret).id,
-            protected.id,
-          );
-          return liquid;
-        });
-        final before = Map<String, String>.of(storage.entries);
-        final result = await create.execute(
-          secret: supplied == null ? protected : null,
-          mnemonicWords: supplied == null ? null : words,
-          language: supplied == null ? null : bip39.Language.english,
-          passphrase: supplied ?? '',
-        );
-        if (supplied == null || supplied == 'synthetic-passphrase') {
-          expect((result as Ok).value, [bitcoin, liquid]);
-        } else {
-          expect(
-            (result as Err).failure,
-            isA<DefaultWalletAlreadyExistsFailure>(),
-          );
-          verifyNever(
-            () => wallets.createWallet(
-              secret: any(named: 'secret'),
-              network: any(named: 'network'),
-              scriptType: ScriptType.bip84,
-              isDefault: true,
-              birthday: null,
-            ),
-          );
-        }
-        expect(storage.entries, before);
-        verifyNever(
-          () => wallets.deleteWallet(walletId: any(named: 'walletId')),
-        );
-      },
-    );
-  }
-
-  test('creates both default wallets from a non-English mnemonic', () async {
-    final imported = await secrets.import(
-      words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],
-      language: bip39.Language.japanese,
-    );
-    final secret = switch (imported) {
-      Ok(:final value) => value,
-      Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-    };
-    final received = <s.Secret>[];
-    stubCreation(received);
-
-    expect((await create.execute(secret: secret) as Ok).value, hasLength(2));
-    expect(received.map((r) => r.id), [secret.id, secret.id]);
-    for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
-      verify(
-        () => wallets.createWallet(
-          secret: any(named: 'secret'),
-          network: network,
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-          birthday: null,
+    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    inventory = _Inventory();
+    registrations = [];
+    created = [];
+    failNetwork = null;
+    failure = Exception('temporary failure');
+    received = [];
+    registerFallbackValue(BitcoinNetwork.mainnet);
+    when(() => inventory.walletsForNetwork(any())).thenAnswer((
+      invocation,
+    ) async {
+      final network = invocation.positionalArguments.single as Network;
+      return Ok(
+        walletSelectionForTesting(
+          registrations.where((wallet) => wallet.network == network).toList(),
         ),
-      ).called(1);
-    }
-  });
-
-  test('both default wallets retain the supplied passphrase secret', () async {
-    final protected = (await secrets.import(
-      words: words,
-      passphrase: 'synthetic-passphrase',
-      language: bip39.Language.english,
-    ) as Ok<s.Secret, s.SecretFailure>).value;
-    final received = <s.Secret>[];
-    stubCreation(received);
-    expect((await create.execute(secret: protected) as Ok).value, hasLength(2));
-    expect(received.map((secret) => secret.id), [protected.id, protected.id]);
-    expect(received.every((secret) => secret.info.hasPassphrase), isTrue);
-  });
-
-  test(
-    'words and passphrase import and reuse the same protected secret',
-    () async {
-      final received = <s.Secret>[];
-      stubCreation(received);
-      for (var i = 0; i < 2; i++) {
-        final result = await create.execute(
-          mnemonicWords: words,
-          language: bip39.Language.english,
-          passphrase: 'synthetic-passphrase',
-        );
-        expect((result as Ok).value, hasLength(2));
-      }
-      expect(received, hasLength(4));
-      expect(received.every((secret) => secret.info.hasPassphrase), isTrue);
-      expect(
-        received.every((secret) => secret.id == received.first.id),
-        isTrue,
       );
-      expect(received.first.id, isNot(stored.id));
-    },
-  );
-
-  test(
-    'words resolving to a stored non-English duplicate use that entry',
-    () async {
-      // Valid in both the English and the French wordlists: one seed, so the
-      // English import resolves to the French entry already stored.
-      const shared = [
-        'crucial', 'million', 'voyage', 'sentence', 'mobile', 'suspect', //
-        'double', 'minute', 'virus', 'noble', 'junior', 'wagon',
-      ];
-      storage.entries.clear();
-      final imported = await secrets.import(
-        words: shared,
-        language: bip39.Language.french,
-      );
-      final french = switch (imported) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      final persisted = Map<String, String>.of(storage.entries);
-      final received = <s.Secret>[];
-      stubCreation(received);
-
-      expect(
-        (await create.execute(
-          mnemonicWords: shared,
-          language: bip39.Language.english,
-        ) as Ok).value,
-        hasLength(2),
-      );
-      expect(received.map((r) => r.id), [french.id, french.id]);
-      expect(received.first.info.language, bip39.Language.french);
-      expect(storage.entries, persisted);
-    },
-  );
-
-  test('a passphrase without words is rejected before wallet access', () async {
-    await expectLater(
-      create.execute(passphrase: 'synthetic-passphrase'),
-      throwsArgumentError,
-    );
-    await expectLater(
-      create.execute(secret: stored, passphrase: 'synthetic-passphrase'),
-      throwsArgumentError,
-    );
-    verifyZeroInteractions(settings);
-    verifyZeroInteractions(wallets);
-  });
-
-  test(
-    'words without their language are rejected before wallet access',
-    () async {
-      await expectLater(
-        create.execute(mnemonicWords: words),
-        throwsArgumentError,
-      );
-      await expectLater(
-        create.execute(language: bip39.Language.french),
-        throwsArgumentError,
-      );
-      verifyZeroInteractions(settings);
-      verifyZeroInteractions(wallets);
-    },
-  );
-
-  test('a seed-only secret is refused as needing a mnemonic', () async {
-    // BIP32 test vector 1: seed 000102…0f, master fingerprint 3442193e.
-    storage.entries['seed_3442193e'] =
-        '{"bytes":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],'
-        '"runtimeType":"bytes"}';
-    final seedOnly = (await secrets.fetch(
-      Fingerprint('3442193e'),
-    ) as Ok<s.Secret, s.SecretFailure>).value;
-    expect(seedOnly.info.language, isNull);
-    expect(
-      (await create.execute(secret: seedOnly) as Err).failure,
-      isA<DefaultWalletMnemonicRequiredFailure>(),
-    );
-    verifyZeroInteractions(wallets);
-    verifyZeroInteractions(settings);
-  });
-
-  for (final failedAttempt in [1, 2]) {
-    test(
-      'physical restore retries after wallet $failedAttempt fails',
-      () async {
-        storage.entries.clear();
-        var attempts = 0;
-        final bitcoin = _Wallet();
-        final liquid = _Wallet();
-        when(() => bitcoin.id).thenReturn('bitcoin');
-        when(() => bitcoin.masterFingerprint).thenReturn(stored.id.hex);
-        when(() => wallets.deleteWallet(walletId: 'bitcoin'))
-            .thenAnswer((_) async => const Ok<void, WalletFailure>(null));
-        when(
-          () => wallets.createWallet(
-            secret: any(named: 'secret'),
-            network: any(named: 'network'),
-            scriptType: ScriptType.bip84,
-            isDefault: true,
-            birthday: null,
-          ),
-        ).thenAnswer((invocation) async {
-          attempts++;
-          final secret = invocation.namedArguments[#secret] as s.Secret;
-          expect(secret.id, stored.id);
-          expect(secret.info.hasPassphrase, isFalse);
-          if (attempts == failedAttempt) {
-            throw Exception('temporary wallet creation failure');
-          }
-          return invocation.namedArguments[#network] == Network.bitcoinMainnet
-              ? bitcoin
-              : liquid;
-        });
-
-        expect(
-          (await create.execute(
-            mnemonicWords: words,
-            language: bip39.Language.english,
-          ) as Err).failure,
-          isA<DefaultWalletCreationFailure>(),
-        );
-        final persisted = Map<String, String>.of(storage.entries);
-        expect(persisted, contains('seed_${stored.id.hex}'));
-        if (failedAttempt == 2) {
-          verifyNever(() => wallets.deleteWallet(walletId: 'bitcoin'));
+    });
+    when(() => inventory.readWallet(any())).thenAnswer((invocation) async {
+      final id = invocation.positionalArguments.single as String;
+      return Ok(registrations.singleWhere((wallet) => wallet.id == id));
+    });
+    provisioning = DefaultWalletProvisioning(
+      secrets: secrets,
+      inventory: inventory,
+      environment: () async => NetworkEnv.mainnet,
+      resume: () async {},
+      create: (secret, network, birthday) async {
+        created.add(network);
+        received.add(secret);
+        if (network == failNetwork) {
+          failNetwork = null;
+          throw failure;
         }
-
-        expect(
-          (await create.execute(
-            mnemonicWords: words,
-            language: bip39.Language.english,
-          ) as Ok).value,
-          [bitcoin, liquid],
-        );
-        expect(storage.entries, persisted);
-        expect(
-          await secrets.import(words: words, language: bip39.Language.english),
-          isA<Err<s.Secret, s.SecretFailure>>().having(
-            (result) => result.failure,
-            'failure',
-            isA<s.SecretAlreadyExistsFailure>(),
+        final id = network.toString();
+        registrations.add(
+          walletRegistrationForTesting(
+            id: id,
+            network: network,
+            signer: WalletSigner.local,
+            isDefault: true,
+            masterFingerprint: secret.id,
+            secretFingerprint: secret.id,
           ),
         );
+        return id;
       },
     );
+  });
+
+  test('returns committed defaults with the same local secret', () async {
+    final result = await provisioning.execute();
+    expect(result, isA<Ok<List<WalletRegistration>, DefaultWalletFailure>>());
+    final wallets =
+        (result as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    expect(wallets.map((wallet) => wallet.network), [
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]);
+    expect(wallets.first.secretFingerprint, wallets.last.secretFingerprint);
+    expect(created, [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]);
+  });
+
+  test(
+    'incomplete inventory prevents secret generation and account creation',
+    () async {
+      when(() => inventory.walletsForNetwork(BitcoinNetwork.mainnet))
+          .thenAnswer(
+            (_) async => Ok(walletSelectionForTesting([], isComplete: false)),
+          );
+      final result = await provisioning.execute();
+      expect(
+        result,
+        isA<Err<List<WalletRegistration>, DefaultWalletFailure>>(),
+      );
+      expect((result as Err).failure, isA<DefaultWalletStorageFailure>());
+      expect(created, isEmpty);
+      expect(storage.entries, isEmpty);
+    },
+  );
+
+  for (final failedNetwork in <Network>[
+    BitcoinNetwork.mainnet,
+    LiquidNetwork.mainnet,
+  ]) {
+    test('restoration resumes after failure on $failedNetwork', () async {
+      final words = [...List.filled(11, 'abandon'), 'about'];
+      failNetwork = failedNetwork;
+      final first = await provisioning.execute(
+        mnemonicWords: words,
+        language: Language.english,
+      );
+      expect((first as Err).failure, isA<DefaultWalletCreationFailure>());
+      final before = Map<String, String>.of(storage.entries);
+      final recovered = await provisioning.execute(
+        mnemonicWords: words,
+        language: Language.english,
+      );
+      final wallets =
+          (recovered as Ok<List<WalletRegistration>, DefaultWalletFailure>)
+              .value;
+      expect(wallets.map((wallet) => wallet.network), [
+        BitcoinNetwork.mainnet,
+        LiquidNetwork.mainnet,
+      ]);
+      expect(wallets.first.secretFingerprint, wallets.last.secretFingerprint);
+      expect(storage.entries, before);
+      if (failedNetwork == LiquidNetwork.mainnet) {
+        expect(
+          created.where((network) => network == BitcoinNetwork.mainnet),
+          hasLength(1),
+        );
+      }
+    });
   }
 
   test('a Liquid StateError preserves Bitcoin and resumes the same protected custody', () async {
     final protected = (await secrets.import(
-      words: words,
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
       passphrase: 'synthetic-passphrase',
-      language: bip39.Language.english,
-    ) as Ok<s.Secret, s.SecretFailure>).value;
-    final bitcoin = _Wallet();
-    final liquid = _Wallet();
-    when(() => bitcoin.id).thenReturn('bitcoin');
-    when(() => bitcoin.masterFingerprint).thenReturn(protected.id.hex);
-    when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
-    when(() => liquid.network).thenReturn(Network.liquidMainnet);
-    final persisted = <Wallet>[];
-    final received = <s.Secret>[];
-    var failLiquid = true;
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
-    ).thenAnswer(
-      (_) async => Ok<List<Wallet>, WalletFailure>(List.of(persisted)),
-    );
-    when(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: any(named: 'network'),
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).thenAnswer((invocation) async {
-      received.add(invocation.namedArguments[#secret] as s.Secret);
-      final network = invocation.namedArguments[#network] as Network;
-      if (network == Network.liquidMainnet && failLiquid) {
-        failLiquid = false;
-        throw StateError('synthetic failure');
-      }
-      final wallet = network == Network.bitcoinMainnet ? bitcoin : liquid;
-      persisted.add(wallet);
-      return wallet;
-    });
-    when(() => wallets.deleteWallet(walletId: 'bitcoin')).thenAnswer((_) async {
-      persisted.remove(bitcoin);
-      return const Ok<void, WalletFailure>(null);
-    });
-
-    expect(
-      (await create.execute(secret: protected) as Err).failure,
-      isA<DefaultWalletCreationFailure>(),
-    );
-    expect(persisted, [bitcoin]);
-    verifyNever(() => wallets.deleteWallet(walletId: 'bitcoin'));
-
-    expect((await create.execute(secret: protected) as Ok).value, [
-      bitcoin,
-      liquid,
+    ) as Ok<Secret, SecretFailure>).value;
+    failNetwork = LiquidNetwork.mainnet;
+    failure = StateError('synthetic failure');
+    final first = await provisioning.execute(secret: protected);
+    expect((first as Err).failure, isA<DefaultWalletCreationFailure>());
+    expect(registrations.map((wallet) => wallet.network), [
+      BitcoinNetwork.mainnet,
     ]);
-    expect(persisted, [bitcoin, liquid]);
+    final before = Map<String, String>.of(storage.entries);
+    final resumed = await provisioning.execute(secret: protected);
+    final wallets =
+        (resumed as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    expect(wallets.map((wallet) => wallet.network), [
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]);
+    expect(created, [
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]);
     expect(received.every((secret) => secret.id == protected.id), isTrue);
+    expect(storage.entries, before);
   });
 
   test(
     'a settings StateError returns a typed failure before wallet access',
     () async {
-      when(() => settings.readActiveEnvironment())
-          .thenThrow(StateError('synthetic failure'));
+      final failing = DefaultWalletProvisioning(
+        secrets: secrets,
+        inventory: inventory,
+        environment: () async => throw StateError('synthetic failure'),
+        resume: () async {},
+        create: (_, _, _) async => fail('creation should not start'),
+      );
       expect(
-        (await create.execute(secret: stored) as Err).failure,
+        (await failing.execute() as Err).failure,
         isA<DefaultWalletUnexpectedFailure>(),
       );
-      verifyZeroInteractions(wallets);
+      expect(storage.entries, isEmpty);
+      verifyZeroInteractions(inventory);
     },
   );
 
-  test('failure preserves a secret that predates restoration', () async {
-    final persisted = Map<String, String>.of(storage.entries);
-    when(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: any(named: 'network'),
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).thenThrow(Exception('temporary wallet creation failure'));
-
-    expect(
-      (await create.execute(
-        mnemonicWords: words,
-        language: bip39.Language.english,
-      ) as Err).failure,
-      isA<DefaultWalletCreationFailure>(),
-    );
-    verify(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: Network.bitcoinMainnet,
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).called(1);
-    expect(storage.entries, persisted);
+  test('both default wallets retain the supplied passphrase secret', () async {
+    final protected = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+      passphrase: 'synthetic-passphrase',
+    ) as Ok<Secret, SecretFailure>).value;
+    final wallets = (await provisioning.execute(
+      secret: protected,
+    ) as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    expect(wallets.map((wallet) => wallet.secretFingerprint), [
+      protected.id,
+      protected.id,
+    ]);
+    expect(received.map((secret) => secret.id), [protected.id, protected.id]);
+    expect(received.every((secret) => secret.info.hasPassphrase), isTrue);
   });
 
-  for (final useHandle in [false, true]) {
+  test('a passphrase without words is rejected before wallet access', () async {
+    final stored = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+    ) as Ok<Secret, SecretFailure>).value;
+    await expectLater(
+      provisioning.execute(secret: stored, passphrase: 'synthetic-passphrase'),
+      throwsArgumentError,
+    );
+    verifyZeroInteractions(inventory);
+    expect(created, isEmpty);
+  });
+
+  for (final candidate in ['', 'incorrect', 'synthetic-passphrase']) {
     test(
-      'restoration refuses a complete existing pair (handle: $useHandle)',
+      'partial protected defaults require the matching passphrase $candidate',
       () async {
-        final bitcoin = _Wallet();
-        final liquid = _Wallet();
-        when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
-        when(() => liquid.network).thenReturn(Network.liquidMainnet);
-        when(
-          () => wallets.getWallets(
-            onlyDefaults: true,
-            environment: Environment.mainnet,
+        final words = [...List.filled(11, 'abandon'), 'about'];
+        final secret = (await secrets.import(
+          words: words,
+          language: Language.english,
+          passphrase: 'synthetic-passphrase',
+        ) as Ok<Secret, SecretFailure>).value;
+        registrations.add(
+          walletRegistrationForTesting(
+            id: 'bitcoin',
+            network: BitcoinNetwork.mainnet,
+            isDefault: true,
+            signer: WalletSigner.local,
+            masterFingerprint: secret.id,
+            secretFingerprint: secret.id,
           ),
-        ).thenAnswer(
-          (_) async => Ok<List<Wallet>, WalletFailure>([bitcoin, liquid]),
         );
         final before = Map<String, String>.of(storage.entries);
-        final reads = storage.reads;
-        expect(
-          (await create.execute(
-            secret: useHandle ? stored : null,
-            mnemonicWords: useHandle ? null : words,
-            language: useHandle ? null : bip39.Language.english,
-          ) as Err).failure,
-          isA<DefaultWalletAlreadyExistsFailure>(),
+        final result = await provisioning.execute(
+          mnemonicWords: words,
+          language: Language.english,
+          passphrase: candidate,
         );
+        if (candidate == 'synthetic-passphrase') {
+          expect(
+            (result as Ok<List<WalletRegistration>, DefaultWalletFailure>)
+                .value,
+            hasLength(2),
+          );
+          expect(created, [LiquidNetwork.mainnet]);
+        } else {
+          expect(
+            (result as Err).failure,
+            isA<DefaultWalletAlreadyExistsFailure>(),
+          );
+          expect(created, isEmpty);
+        }
         expect(storage.entries, before);
-        expect(storage.reads, reads);
-        verifyNever(
-          () => wallets.createWallet(
-            secret: any(named: 'secret'),
-            network: any(named: 'network'),
-            scriptType: ScriptType.bip84,
-            isDefault: true,
-            birthday: null,
-          ),
-        );
       },
     );
   }
 
-  test('creation reuses complete defaults without reading custody', () async {
-    final bitcoin = _Wallet();
-    final liquid = _Wallet();
-    when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
-    when(() => liquid.network).thenReturn(Network.liquidMainnet);
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
-    ).thenAnswer(
-      (_) async => Ok<List<Wallet>, WalletFailure>([bitcoin, liquid]),
-    );
+  test(
+    'a partial setup with unavailable custody never generates a replacement',
+    () async {
+      final fingerprint = Fingerprint('deadbeef');
+      registrations.add(
+        walletRegistrationForTesting(
+          id: 'bitcoin',
+          network: BitcoinNetwork.mainnet,
+          isDefault: true,
+          signer: WalletSigner.local,
+          masterFingerprint: fingerprint,
+          secretFingerprint: fingerprint,
+        ),
+      );
+      final result = await provisioning.execute();
+      expect((result as Err).failure, isA<DefaultWalletSecretFailure>());
+      expect(storage.entries, isEmpty);
+      expect(created, isEmpty);
+    },
+  );
+
+  test('complete defaults are reused without custody access and cannot be restored over', () async {
+    final fingerprint = Fingerprint('deadbeef');
+    for (final network in <Network>[
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]) {
+      registrations.add(
+        walletRegistrationForTesting(
+          id: network.toString(),
+          network: network,
+          isDefault: true,
+          signer: WalletSigner.local,
+          masterFingerprint: fingerprint,
+          secretFingerprint: fingerprint,
+        ),
+      );
+    }
     final reads = storage.reads;
-    expect((await create.execute() as Ok).value, [bitcoin, liquid]);
+    expect((await provisioning.execute() as Ok).value, registrations);
+    expect(
+      (await provisioning.execute(
+        mnemonicWords: [...List.filled(11, 'abandon'), 'about'],
+        language: Language.english,
+      ) as Err).failure,
+      isA<DefaultWalletAlreadyExistsFailure>(),
+    );
     expect(storage.reads, reads);
+    expect(created, isEmpty);
   });
 
-  test('a partial setup with unavailable custody never generates a replacement secret', () async {
-    final bitcoin = _Wallet();
-    when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
-    when(() => bitcoin.masterFingerprint).thenReturn('deadbeef');
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([bitcoin]));
-    final before = Map<String, String>.of(storage.entries);
-    final reads = storage.reads;
+  test(
+    'invalid recovery arguments fail before reading the inventory',
+    () async {
+      await expectLater(
+        provisioning.execute(passphrase: 'phrase'),
+        throwsArgumentError,
+      );
+      await expectLater(
+        provisioning.execute(mnemonicWords: ['abandon']),
+        throwsArgumentError,
+      );
+      await expectLater(
+        provisioning.execute(language: Language.english),
+        throwsArgumentError,
+      );
+      verifyZeroInteractions(inventory);
+    },
+  );
+
+  test(
+    'environment mismatch refuses before resuming or custody writes',
+    () async {
+      var resumed = false;
+      final fenced = DefaultWalletProvisioning(
+        secrets: secrets,
+        inventory: inventory,
+        environment: () async => NetworkEnv.mainnet,
+        resume: () async {
+          resumed = true;
+        },
+        create: (_, _, _) async => fail('creation should not start'),
+      );
+      final result = await fenced.execute(expectedNetwork: NetworkEnv.regtest);
+      expect(
+        (result as Err).failure,
+        isA<DefaultWalletNetworkChangedFailure>(),
+      );
+      expect(resumed, isFalse);
+      expect(storage.entries, isEmpty);
+      verifyZeroInteractions(inventory);
+    },
+  );
+
+  test('non-English mnemonic retains its language when restoring', () async {
+    final words = [...List.filled(11, 'あいこくしん'), 'あおぞら'];
+    final result = await provisioning.execute(
+      mnemonicWords: words,
+      language: Language.japanese,
+    );
+    final wallets =
+        (result as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    final loaded = await secrets.fetch(
+      wallets.first.secretFingerprint as Fingerprint,
+    );
     expect(
-      (await create.execute() as Err).failure,
-      isA<DefaultWalletSecretFailure>(),
+      (loaded as Ok<Secret, SecretFailure>).value.info.language,
+      Language.japanese,
+    );
+    expect(wallets.first.secretFingerprint, wallets.last.secretFingerprint);
+  });
+
+  test('a seed-only secret is refused before inventory access', () async {
+    storage.entries['seed_3442193e'] = '{"bytes":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"runtimeType":"bytes"}';
+    final secret = (await secrets.fetch(
+      Fingerprint('3442193e'),
+    ) as Ok<Secret, SecretFailure>).value;
+    final result = await provisioning.execute(secret: secret);
+    expect(
+      (result as Err).failure,
+      isA<DefaultWalletMnemonicRequiredFailure>(),
+    );
+    verifyZeroInteractions(inventory);
+  });
+
+  test('a different secret cannot replace a partial default', () async {
+    final secret = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+    ) as Ok<Secret, SecretFailure>).value;
+    final existing = Fingerprint('deadbeef');
+    registrations.add(
+      walletRegistrationForTesting(
+        id: 'bitcoin',
+        network: BitcoinNetwork.mainnet,
+        isDefault: true,
+        signer: WalletSigner.local,
+        masterFingerprint: existing,
+        secretFingerprint: existing,
+      ),
+    );
+    final before = Map<String, String>.of(storage.entries);
+    expect(
+      (await provisioning.execute(secret: secret) as Err).failure,
+      isA<DefaultWalletAlreadyExistsFailure>(),
     );
     expect(storage.entries, before);
-    expect(storage.reads, greaterThan(reads));
+    expect(created, isEmpty);
   });
+
+  test(
+    'regtest resumes native provisioning before reading or creating accounts',
+    () async {
+      var resumed = false;
+      final regtest = DefaultWalletProvisioning(
+        secrets: secrets,
+        inventory: inventory,
+        environment: () async => NetworkEnv.regtest,
+        resume: () async {
+          resumed = true;
+        },
+        create: (secret, network, birthday) async {
+          expect(resumed, isTrue);
+          created.add(network);
+          final id = network.toString();
+          registrations.add(
+            walletRegistrationForTesting(
+              id: id,
+              network: network,
+              signer: WalletSigner.local,
+              isDefault: true,
+              masterFingerprint: secret.id,
+              secretFingerprint: secret.id,
+            ),
+          );
+          return id;
+        },
+      );
+      expect(
+        await regtest.execute(expectedNetwork: NetworkEnv.regtest),
+        isA<Ok>(),
+      );
+      expect(created, [BitcoinNetwork.regtest, LiquidNetwork.regtest]);
+    },
+  );
+
+  test(
+    'repair refuses a public-only fingerprint as a secret reference',
+    () async {
+      var created = false;
+      final repair = DefaultWalletRepair(secrets, (_, _) async {
+        created = true;
+      });
+      final result = await repair.execute(
+        [
+          walletRegistrationForTesting(
+            id: 'watch-only',
+            network: BitcoinNetwork.mainnet,
+            isDefault: true,
+            signer: WalletSigner.none,
+            masterFingerprint: Fingerprint('deadbeef'),
+          ),
+        ],
+        bitcoin: BitcoinNetwork.mainnet,
+        liquid: LiquidNetwork.mainnet,
+      );
+      expect(result, isA<Err<bool, ProvisioningFailure>>());
+      expect(created, isFalse);
+      expect(storage.entries, isEmpty);
+    },
+  );
 }
