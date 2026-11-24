@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "გამოხმაურების გაგზავნა",
+  "feedbackClose": "დახურვა",
+  "feedbackLoadError": "ფორმის ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "feedbackRetry": "ხელახლა ცდა",
+  "feedbackShakeTitle": "რამე არ არის რიგზე?",
+  "feedbackShakeBody": "გაუგზავნეთ გუნდს შეცდომის ანგარიში ან იდეა.",
+  "feedbackShakeDismiss": "ახლა არა",
+  "feedbackSearchKeywords": "გამოხმაურება, შეცდომა, ბაგი, ანგარიში, იდეა, შეთავაზება, პრობლემა, კონტაქტი"
+}

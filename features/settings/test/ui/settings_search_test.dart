@@ -387,6 +387,7 @@ void main() {
           isDevModeEnabled: true,
           accountReady: true,
           backgroundTasksAvailable: true,
+          feedbackAvailable: true,
           environment: environment,
         );
         final unique = items.map((item) => item.id).toSet();
@@ -404,6 +405,7 @@ List<SettingsItem> _englishItems({
   bool isDevModeEnabled = false,
   bool accountReady = false,
   bool backgroundTasksAvailable = false,
+  bool feedbackAvailable = false,
   NetworkEnv environment = NetworkEnv.mainnet,
 }) {
   final localization = SettingsLocalizationsEn();
@@ -414,6 +416,7 @@ List<SettingsItem> _englishItems({
     isDevModeEnabled: isDevModeEnabled,
     accountReady: accountReady,
     backgroundTasksAvailable: backgroundTasksAvailable,
+    feedbackAvailable: feedbackAvailable,
   );
 }
 

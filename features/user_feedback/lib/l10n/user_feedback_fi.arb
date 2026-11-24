@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Lähetä palautetta",
+  "feedbackClose": "Sulje",
+  "feedbackLoadError": "Lomaketta ei voitu ladata. Tarkista yhteys ja yritä uudelleen.",
+  "feedbackRetry": "Yritä uudelleen",
+  "feedbackShakeTitle": "Jokin vialla?",
+  "feedbackShakeBody": "Lähetä tiimille virheraportti tai idea.",
+  "feedbackShakeDismiss": "Ei nyt",
+  "feedbackSearchKeywords": "palaute, virhe, bugi, raportti, idea, ehdotus, ongelma, yhteys"
+}

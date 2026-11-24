@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "إرسال ملاحظات",
+  "feedbackClose": "إغلاق",
+  "feedbackLoadError": "تعذّر تحميل النموذج. تحقق من اتصالك وحاول مرة أخرى.",
+  "feedbackRetry": "إعادة المحاولة",
+  "feedbackShakeTitle": "هل هناك مشكلة؟",
+  "feedbackShakeBody": "أرسل إلى الفريق بلاغًا عن خطأ أو فكرة.",
+  "feedbackShakeDismiss": "ليس الآن",
+  "feedbackSearchKeywords": "ملاحظات, خطأ, بلاغ, فكرة, اقتراح, مشكلة, تواصل"
+}

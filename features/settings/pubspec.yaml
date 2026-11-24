@@ -63,6 +63,7 @@ dependencies:
   transactions:
   unorm_dart: ^0.3.2
   url_launcher: ^6.3.2
+  user_feedback:
   wallet_import:
 
 dev_dependencies:

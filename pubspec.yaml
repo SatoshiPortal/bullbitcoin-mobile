@@ -73,6 +73,7 @@ workspace:
   - features/recoverbull
   - features/backup_metadata
   - features/physical_backup_verification
+  - features/user_feedback
   - packages/rust_bindings
   - packages/onion
   - packages/boltz_stream
@@ -143,6 +144,7 @@ dependencies:
   bull_recoverbull:
   backup_metadata:
   bull_logs:
+  user_feedback:
   swaps:
   bull_quick_actions:
   flutter_bloc: ^9.1.1

@@ -1,0 +1,34 @@
+{
+  "feedbackTitle": "Send feedback",
+  "@feedbackTitle": {
+    "description": "Settings row, sheet title and button that open the feedback form"
+  },
+  "feedbackClose": "Close",
+  "@feedbackClose": {
+    "description": "Tooltip of the button that closes the feedback sheet"
+  },
+  "feedbackLoadError": "Couldn't load the feedback form. Check your connection and try again.",
+  "@feedbackLoadError": {
+    "description": "Shown when the feedback form cannot be loaded"
+  },
+  "feedbackRetry": "Try again",
+  "@feedbackRetry": {
+    "description": "Button that reloads the feedback form"
+  },
+  "feedbackShakeTitle": "Something not right?",
+  "@feedbackShakeTitle": {
+    "description": "Title of the prompt shown after the user shakes the phone"
+  },
+  "feedbackShakeBody": "Send the team a bug report or an idea.",
+  "@feedbackShakeBody": {
+    "description": "Body of the prompt shown after the user shakes the phone"
+  },
+  "feedbackShakeDismiss": "Not now",
+  "@feedbackShakeDismiss": {
+    "description": "Button that dismisses the shake prompt"
+  },
+  "feedbackSearchKeywords": "feedback, bug, report, idea, suggestion, problem, contact",
+  "@feedbackSearchKeywords": {
+    "description": "Comma-separated Settings search keywords for the feedback row"
+  }
+}

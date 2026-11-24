@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Envoyer un commentaire",
+  "feedbackClose": "Fermer",
+  "feedbackLoadError": "Impossible de charger le formulaire. Vérifiez votre connexion et réessayez.",
+  "feedbackRetry": "Réessayer",
+  "feedbackShakeTitle": "Un problème ?",
+  "feedbackShakeBody": "Envoyez à l'équipe un rapport de bug ou une idée.",
+  "feedbackShakeDismiss": "Plus tard",
+  "feedbackSearchKeywords": "commentaire, bug, signaler, idée, suggestion, problème, contact"
+}

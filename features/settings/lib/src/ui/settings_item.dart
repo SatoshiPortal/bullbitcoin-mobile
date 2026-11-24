@@ -32,6 +32,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:user_feedback/user_feedback.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 import '../settings_menu.dart';
@@ -68,6 +69,7 @@ enum SettingsItemId {
   currency,
   securityPin,
   logs,
+  feedback,
   sourceCode,
   tor,
   screenPrivacy,
@@ -207,6 +209,7 @@ List<SettingsItem> settingsItemsOf(
     isSpWalletSetup: isSpWalletSetup,
     accountReady: accountReady,
     backgroundTasksAvailable: backgroundSyncAvailable,
+    feedbackAvailable: UserFeedbackFeature.isAvailable,
     environment: context.select(
       (SettingsCubit cubit) => cubit.state.storedSettings?.activeNetwork,
     ),
@@ -220,6 +223,7 @@ List<SettingsItem> buildSettingsItems({
   bool isSpWalletSetup = false,
   bool accountReady = false,
   bool backgroundTasksAvailable = false,
+  bool feedbackAvailable = false,
   required NetworkEnv? environment,
 }) {
   final english = SettingsLocalizationsEn();
@@ -426,6 +430,23 @@ List<SettingsItem> buildSettingsItems({
         [english.logSettingsLogsTitle],
       ),
     ),
+    if (feedbackAvailable)
+      SettingsItem(
+        id: SettingsItemId.feedback,
+        section: SettingsItemSection.root,
+        title: UserFeedbackFeature.settingsTitle(localization.localeName),
+        path: path(
+          SettingsItemSection.root,
+          UserFeedbackFeature.settingsTitle(localization.localeName),
+        ),
+        icon: Icons.chat_bubble_outline,
+        open: (context) =>
+            UserFeedbackFeature.open(context, screen: 'settings'),
+        keywords: {
+          ...UserFeedbackFeature.settingsKeywords(localization.localeName),
+          ...UserFeedbackFeature.settingsKeywords('en'),
+        }.toList(),
+      ),
     SettingsItem(
       id: SettingsItemId.sourceCode,
       section: SettingsItemSection.root,

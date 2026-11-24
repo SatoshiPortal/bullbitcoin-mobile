@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Gửi phản hồi",
+  "feedbackClose": "Đóng",
+  "feedbackLoadError": "Không tải được biểu mẫu. Hãy kiểm tra kết nối và thử lại.",
+  "feedbackRetry": "Thử lại",
+  "feedbackShakeTitle": "Có gì không ổn?",
+  "feedbackShakeBody": "Gửi cho đội ngũ báo cáo lỗi hoặc ý tưởng.",
+  "feedbackShakeDismiss": "Để sau",
+  "feedbackSearchKeywords": "phản hồi, lỗi, báo cáo, ý tưởng, đề xuất, vấn đề, liên hệ"
+}

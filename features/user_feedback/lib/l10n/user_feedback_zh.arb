@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "发送反馈",
+  "feedbackClose": "关闭",
+  "feedbackLoadError": "无法加载反馈表单。请检查网络连接后重试。",
+  "feedbackRetry": "重试",
+  "feedbackShakeTitle": "遇到问题了？",
+  "feedbackShakeBody": "向团队报告错误或分享想法。",
+  "feedbackShakeDismiss": "以后再说",
+  "feedbackSearchKeywords": "反馈, 错误, 漏洞, 报告, 想法, 建议, 问题, 联系"
+}
