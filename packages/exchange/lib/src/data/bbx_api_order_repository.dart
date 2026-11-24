@@ -92,25 +92,23 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       );
 
   @override
-  Future<Result<BuyOrder, ExchangeFailure>> placeBuyOrder({
+  Future<ExchangeWrite<BuyOrder>> placeBuyOrder({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
     required bool isOwner,
     String? payjoinBip21,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.createOrderBuy(
-        fiatCurrency: currency.code,
-        network: BtcNetworkWire.orderNetwork(network),
-        isOwner: isOwner,
-        address: payjoinBip21 == null ? toAddress : null,
-        bip21URI: payjoinBip21,
-        fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
-        bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
-      ),
-      creatingOrder: true,
+  }) => _orderCreate(
+    'placeBuyOrder',
+    (api) => api.orders.createOrderBuy(
+      fiatCurrency: currency.code,
+      network: BtcNetworkWire.orderNetwork(network),
+      isOwner: isOwner,
+      address: payjoinBip21 == null ? toAddress : null,
+      bip21URI: payjoinBip21,
+      fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+      bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
     ),
   );
 
@@ -279,22 +277,14 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   }
 
   Future<Result<T, ExchangeFailure>> _readOrder<T extends Order>(
-    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> request, {
-    bool creatingOrder = false,
-  }) async {
-    final result = await request;
-    if (result case Err(:final failure)
-        when creatingOrder && _isRefusal(failure)) {
-      log.warning('Exchange order creation refused', error: '$failure');
-    }
-    return switch (result) {
-      Ok(:final value) => _mapOrder<T>(value),
-      Err(failure: bbx.BbxOrderLimitFailure(:final apiCode, :final code))
-          when !creatingOrder =>
-        Err(ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code)),
-      Err(:final failure) => Err(_mapFailure(failure)),
-    };
-  }
+    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> request,
+  ) async => switch (await request) {
+    Ok(:final value) => _mapOrder<T>(value),
+    Err(failure: bbx.BbxOrderLimitFailure(:final apiCode, :final code)) => Err(
+      ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code),
+    ),
+    Err(:final failure) => Err(_mapFailure(failure)),
+  };
 
   /// Creates an order through [_orderWrite], logging a refusal by its codes
   /// only (the server's text can quote the request).

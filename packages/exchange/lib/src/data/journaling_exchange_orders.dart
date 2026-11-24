@@ -134,7 +134,7 @@ final class JournalingExchangeOrders implements ExchangeOrders {
   );
 
   @override
-  Future<Result<BuyOrder, ExchangeFailure>> placeBuyOrder({
+  Future<ExchangeWrite<BuyOrder>> placeBuyOrder({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
