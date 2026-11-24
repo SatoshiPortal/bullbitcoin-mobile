@@ -4,7 +4,6 @@ import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:bull_ark/src/presentation/ark_board_cubit.dart';
 import 'package:bull_ark/src/presentation/ark_operation_cubit.dart';
 import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
-import 'package:bull_ark/src/ui/ark_exit_request_screen.dart';
 import 'package:bull_ark/src/ui/ark_vtxos_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,7 +101,11 @@ Future<List<ArkFlowFrame>> arkFlowFrames() async {
   frames.add(
     ArkFlowFrame(
       'VtxoFlowDetails',
-      ArkVtxosScreen(snapshot: vtxos.view(), onRenew: (_) {}),
+      ArkVtxosScreen(
+        snapshot: vtxos.view(),
+        renewalThresholdBlocks: 1008,
+        onRenew: (_) async => false,
+      ),
       arrange: (tester) async {
         await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
         await tester.pump();
@@ -135,70 +138,59 @@ Future<List<ArkFlowFrame>> arkFlowFrames() async {
     ),
   );
   frames.add(ArkFlowFrame('VtxoFlowRenewed', renewed.screen));
+  Future<void> settle(WidgetTester tester) => tester.pumpAndSettle();
+  Future<void> openStart(WidgetTester tester) async {
+    await tester.pumpAndSettle();
+    request.review(tester).onPressed();
+    await tester.pumpAndSettle();
+  }
+
   frames.add(
     ArkFlowFrame(
       'ExitFlowChoose',
-      ArkExitRequestScreen(snapshot: request.inventory(), onReview: (_) {}),
+      request.exitScreen(request.ExitClient()),
+      arrange: settle,
     ),
   );
-  for (final other in [false, true]) {
-    final destination = other
-        ? 'bcrt1qotherpublicreturnfixture'
-        : 'bcrt1qpublicreturnfixture';
-    final rig = review.Rig(
-      request: ArkQuoteRequest.emergencyExit(
-        ids: ['selected'],
-        destination: destination,
-        feeRate: FeeRate(2),
-        maxClaimFee: Sats.fromInt(500),
-      ),
-    );
-    rig.client.quoted = Ok(
-      ArkQuote(
-        id: 'public-emergency-quote',
-        account: account(),
-        generation: 2,
-        chainSource: Uri.parse('http://localhost:3000'),
-        configGeneration: 1,
-        kind: ArkOperationKind.emergencyExit,
-        amount: Sats.fromInt(1234),
-        fee: Sats.fromInt(100),
-        net: Sats.fromInt(1134),
-        selectedIds: ['selected'],
-        destination: destination,
-        feeRate: FeeRate(2),
-        maxClaimFee: Sats.fromInt(500),
-        confirmedReserveExposure: Sats.fromInt(100),
-        observedTip: 100,
-        validUntil: DateTime.utc(2030),
-      ),
-    );
-    await rig.cubit.load();
-    frames.add(
-      ArkFlowFrame(
-        other ? 'ExitFlowReviewOther' : 'ExitFlowReview',
-        rig.screen,
-        arrange: other
-            ? (tester) async {
-                await tester.ensureVisible(find.text(destination));
-                await tester.pump();
-              }
-            : null,
-      ),
-    );
-  }
-  final noFunds = review.Rig(
-    request: ArkQuoteRequest.emergencyExit(
-      ids: ['selected'],
-      destination: 'bcrt1qpublicreturnfixture',
-      feeRate: FeeRate(2),
-      maxClaimFee: Sats.fromInt(500),
+  frames.add(
+    ArkFlowFrame(
+      'ExitFlowReview',
+      request.exitScreen(request.ExitClient()),
+      arrange: openStart,
     ),
   );
-  noFunds.cubit.emit(
-    const ArkOperationFailed(ArkPaymentInsufficientFundsFailure()),
+  frames.add(
+    ArkFlowFrame(
+      'ExitFlowReviewOther',
+      request.exitScreen(request.ExitClient()),
+      arrange: (tester) async {
+        await openStart(tester);
+        tester
+            .widget<BullPickerRow>(
+              find.widgetWithText(BullPickerRow, 'Another Bitcoin wallet'),
+            )
+            .onPressed
+            ?.call();
+        await tester.pumpAndSettle();
+        await request.edit(
+          tester,
+          'Bitcoin address',
+          'bcrt1qotherpublicreturnfixture',
+        );
+        await tester.pump(const Duration(milliseconds: 600));
+        await tester.pumpAndSettle();
+      },
+    ),
   );
-  frames.add(ArkFlowFrame('ExitFlowNoFunds', noFunds.screen));
+  frames.add(
+    ArkFlowFrame(
+      'ExitFlowNoFunds',
+      request.exitScreen(
+        request.ExitClient()..failure = const ArkInsufficientFundsFailure(),
+      ),
+      arrange: settle,
+    ),
+  );
   for (final entry in [
     ('ExitFlowStarted', ArkExitStatus.pending),
     ('ExitFlowClaimable', ArkExitStatus.claimable),
@@ -214,7 +206,7 @@ Future<List<ArkFlowFrame>> arkFlowFrames() async {
           ),
         ).screen,
         arrange: (tester) async {
-          final row = find.byType(BullBorderedTile);
+          final row = exits.exitRows();
           await tester.tap(row.first);
           await tester.pump();
         },

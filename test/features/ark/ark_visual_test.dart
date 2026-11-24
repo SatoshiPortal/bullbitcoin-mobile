@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:bull_ui/bull_ui.dart' show BullAmountScope, BullAmountSnapshot;
 
 import '../../../features/ark/test/ark_visual_fixtures.dart';
@@ -16,6 +18,9 @@ import 'ark_shell_visual_fixtures.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
+    // Home remembers the Ark balance it showed; here in memory.
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
     await (FontLoader(
       'MaterialIcons',
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
@@ -49,7 +54,9 @@ void main() {
               ArkLocalizations.delegate,
               ...GlobalMaterialLocalizations.delegates,
             ],
-            home: RepaintBoundary(
+            // Around the navigator, so a sheet over the screen is captured
+            // and reads the same amount preferences.
+            builder: (context, navigator) => RepaintBoundary(
               key: boundary,
               child: BullAmountScope(
                 snapshot: const BullAmountSnapshot(
@@ -58,9 +65,10 @@ void main() {
                   isReady: true,
                 ),
                 writeUnit: (_) async => false,
-                child: screen,
+                child: navigator ?? const SizedBox.shrink(),
               ),
             ),
+            home: screen,
           ),
         );
         await tester.pump();
