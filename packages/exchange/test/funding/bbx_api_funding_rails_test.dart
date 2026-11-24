@@ -59,6 +59,11 @@ Map<String, dynamic> _rpcError(String apiCode) => {
 Map<String, Object?> _sent(FakeBbxHttp http) =>
     http.requests.single.data as Map<String, Object?>;
 
+/// A read that got [answer]. [ReadGot] has no value equality, so the answer
+/// is compared, not the wrapper.
+Matcher _got(FundingAnswer answer) =>
+    isA<ReadGot<FundingAnswer>>().having((read) => read.value, 'value', answer);
+
 ProcessorCodeRequest _request(ProcessorCodeFundingRail rail) =>
     ProcessorCodeRequest(rail, userNumber: 4242, consent: _consent);
 
@@ -97,8 +102,8 @@ void main() {
 
       expect(
         read,
-        const ReadGot<FundingAnswer>(
-          FundingInstructionsGot(
+        _got(
+          const FundingInstructionsGot(
             FundingInstructionRows([
               InstructionRow(InstructionField.beneficiaryName, 'Bull Bitcoin'),
               InstructionRow(
@@ -160,7 +165,7 @@ void main() {
             .funding
             .instructions(_session, _request(const SinpeMovilFundingRail()));
 
-        expect(read, ReadGot<FundingAnswer>(FundingRefused(refusal)));
+        expect(read, _got(FundingRefused(refusal)));
       });
     }
 
@@ -218,7 +223,7 @@ void main() {
         });
         expect(
           read,
-          ReadGot<FundingAnswer>(
+          _got(
             FundingInstructionsGot(
               FundingInstructionLink(Uri.parse('https://pay.example/cop')),
             ),
@@ -253,8 +258,8 @@ void main() {
         body: {
           'result': {
             'elements': [
-              {'code': 'BC01', 'name': 'Bank one'},
-              {'code': ' ', 'name': 'No code'},
+              {'code': 'BC01', 'name': 'Bank one', 'accountTypes': <Object?>[]},
+              {'code': ' ', 'name': 'No code', 'accountTypes': <Object?>[]},
             ],
           },
         },
