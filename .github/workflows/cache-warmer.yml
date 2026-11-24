@@ -26,10 +26,10 @@ on:
 permissions:
   contents: read
 
-# Only the newest develop push matters for cache freshness.
+# Let a started warm finish: a cold warm can outlast the interval between develop merges, and cancelling it discards the work before its save steps. GitHub keeps at most one pending run per group and replaces it with the newest push, so the queue stays bounded.
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   warm:
@@ -40,8 +40,8 @@ jobs:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
     runs-on: ${{ matrix.runner }}
-    # A cold warm compiles every Rust crate for the host (~17 min on x64).
-    timeout-minutes: 45
+    # A cold warm compiles every Rust crate for the host and runs every member's build_runner (40-55 min on 2026-11-24). With 45 minutes, the x64 leg timed out during setup and skipped its save steps in every sampled run since 2026-11-23.
+    timeout-minutes: 90
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
