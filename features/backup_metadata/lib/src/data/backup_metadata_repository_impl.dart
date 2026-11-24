@@ -305,14 +305,11 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     BackupScope scope,
     StorageSession session,
     StoredObject? object,
-    String? envelopeDigest,
+    String envelopeDigest,
   ) async {
     if (object == null) return false;
     if (object.durability == Durability.durable) return true;
-    if (scope.destination != BackupDestination.folder ||
-        envelopeDigest == null) {
-      return false;
-    }
+    if (scope.destination != BackupDestination.folder) return false;
 
     final result = await session.read(object, maxBytes: backupMetadataMaxBytes);
     if (result case Err(
@@ -520,6 +517,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       return Ok(await _store.locked(action));
     } on _OperationFailure catch (error) {
       return Err(error.failure);
+    } on BackupMetadataStoreNotReady {
+      return const Err(BackupMetadataNotReadyFailure());
     } on SqliteException {
       return const Err(BackupMetadataUnexpectedFailure());
     } on FileSystemException {
