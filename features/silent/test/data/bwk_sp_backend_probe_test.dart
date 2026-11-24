@@ -31,6 +31,28 @@ void main() {
     expect(failure.logMessage, isNot(contains('private')));
   });
 
+  test(
+    'tip maps a bridge String failure without exposing its contents',
+    () async {
+      final probe = BwkSpBackendProbe(
+        tip: ({required url}) async => throw 'private backend detail $url',
+      );
+      final result = await probe.blindbitTip('https://private.example');
+      final failure = (result as Err<void, SilentFailure>).failure;
+      expect(failure, isA<SilentBackendUnreachable>());
+      expect(failure.logMessage, isNot(contains('private')));
+    },
+  );
+
+  test('tip propagates programmer errors', () async {
+    final error = StateError('programmer error');
+    final probe = BwkSpBackendProbe(tip: ({required url}) async => throw error);
+    await expectLater(
+      probe.blindbitTip('https://example.com'),
+      throwsA(same(error)),
+    );
+  });
+
   group('BwkSpBackendProbe.testBackend', () {
     BwkSpBackendProbe build({
       Future<void> Function({required String url})? testBlindbit,
