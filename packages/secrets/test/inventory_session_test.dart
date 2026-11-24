@@ -368,26 +368,23 @@ void main() {
     },
   );
 
-  test(
-    'custody references include local seeds outside the view',
-    () async {
-      final storage = _value(
-        await InventoryStore.open(file, admission, existing: true),
-      );
-      addTearDown(storage.close);
-      _value(
-        await inventory.registerWallet(
-          _wallet('wpkh([0a1b2c3d/84h/0h/0h])', '0a1b2c3d'),
-        ),
-      );
-      await storage.database.customStatement('DELETE FROM view_members');
+  test('custody references include local seeds outside the view', () async {
+    final storage = _value(
+      await InventoryStore.open(file, admission, existing: true),
+    );
+    addTearDown(storage.close);
+    _value(
+      await inventory.registerWallet(
+        _wallet('wpkh([0a1b2c3d/84h/0h/0h])', '0a1b2c3d'),
+      ),
+    );
+    await storage.database.customStatement('DELETE FROM view_members');
 
-      expect(_value(await inventory.listWallets()), isEmpty);
-      expect(_value(await inventory.getCustodyFingerprints()), {
-        Fingerprint('0a1b2c3d'),
-      });
-    },
-  );
+    expect(_value(await inventory.listWallets()), isEmpty);
+    expect(_value(await inventory.getCustodyFingerprints()), {
+      Fingerprint('0a1b2c3d'),
+    });
+  });
 
   test('an invalid local custody reference refuses deletion', () async {
     _value(

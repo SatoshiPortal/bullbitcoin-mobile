@@ -48,9 +48,8 @@ void main() {
         final connections = FixtureConnections(['tcp://unused:1']);
         final catalog = _Catalog(Err(failure));
 
-        final result = await synchronization(
-          connections,
-        ).executeKey(key, catalog);
+        final result = await synchronization(connections)
+            .executeKey(key, catalog);
 
         expect(
           result,

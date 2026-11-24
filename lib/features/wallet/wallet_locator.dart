@@ -2,14 +2,11 @@ import 'package:provisioning/provisioning.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 
-
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'domain/usecases/create_network_wallet_usecase.dart';
 import 'presentation/network_wallet_setup_cubit.dart';
 
 import 'package:electrum/electrum.dart' show ElectrumSyncResult;
-
-
 
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:secrets/secrets.dart';
@@ -43,7 +40,6 @@ import 'package:swap_feature/swap_feature.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
-
 
 class WalletLocator {
   static void setup(GetIt locator) {

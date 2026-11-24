@@ -509,10 +509,8 @@ class AppLocator {
         orders: locator<OrderSwaps>(),
         inventory: inventory,
         sync: locator<WalletNativeRuntime>(),
-        synchronize: (key) => locator<ForegroundWalletSynchronization>().executeKey(
-          key,
-          locator<WalletCatalogPort>(),
-        ),
+        synchronize: (key) => locator<ForegroundWalletSynchronization>()
+            .executeKey(key, locator<WalletCatalogPort>()),
         finished: locator<ElectrumSync>().finished.map((event) => event.key),
         signerDevices: () => locator<SignerDevices>(),
         preferences: locator<Preferences>(),

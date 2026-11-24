@@ -61,8 +61,7 @@ class WalletLocator {
       ),
     );
     locator.registerFactory<CheckWalletSyncingUsecase>(
-      () =>
-          CheckWalletSyncingUsecase(locator<ElectrumSync>().isSyncing),
+      () => CheckWalletSyncingUsecase(locator<ElectrumSync>().isSyncing),
     );
   }
 }

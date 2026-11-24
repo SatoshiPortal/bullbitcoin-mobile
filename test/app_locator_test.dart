@@ -256,11 +256,12 @@ void main() {
           authority: locator<SqliteArkFundingReservations>(),
           runtime: locator<WalletNativeRuntime>(),
           inventory: locator<SecretsInventory>(),
-          synchronize: (key) => locator<ForegroundWalletSynchronization>().executeKey(
-            key,
-            locator<WalletCatalogPort>(),
-            reason: SyncReason.manual,
-          ),
+          synchronize: (key) =>
+              locator<ForegroundWalletSynchronization>().executeKey(
+                key,
+                locator<WalletCatalogPort>(),
+                reason: SyncReason.manual,
+              ),
           secrets: locator<Secrets>(),
           fees: locator<Fees>(),
           custody: locator<ParentCustodyAdmissionPort>(),

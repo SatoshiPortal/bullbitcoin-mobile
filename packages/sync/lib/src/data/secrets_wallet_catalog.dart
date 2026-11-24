@@ -25,9 +25,10 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
   /// after an interruption.
   static Future<Result<void, SyncFailure>> Function(WalletKey) removal(
     SecretsInventory inventory,
-  ) => (key) async => (await inventory.removeWallet(
-    key.id,
-  )).mapErr((_) => const SyncStorageFailure());
+  ) =>
+      (key) async =>
+          (await inventory.removeWallet(key.id))
+              .mapErr((_) => const SyncStorageFailure());
 
   factory SecretsWalletCatalog.background(
     BackgroundWalletDescriptors catalog,

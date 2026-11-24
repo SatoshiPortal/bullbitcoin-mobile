@@ -1,6 +1,7 @@
 import '../../../generated/l10n/settings_localizations.dart';
 import '../domain/wallet_details_failure.dart';
 import '../presentation/wallet_details_failure_l10n.dart';
+
 import 'package:bull_ui/bull_ui.dart';
 
 /// Wallet-deletion failure sheet, built on [BullBottomSheet] to match

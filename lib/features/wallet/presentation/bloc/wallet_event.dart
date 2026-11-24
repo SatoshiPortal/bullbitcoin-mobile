@@ -31,7 +31,6 @@ class WalletSyncFinished extends WalletEvent {
   const WalletSyncFinished(this.wallet);
 }
 
-
 class BlockAutoSwapUntilNextExecution extends WalletEvent {
   const BlockAutoSwapUntilNextExecution();
 }

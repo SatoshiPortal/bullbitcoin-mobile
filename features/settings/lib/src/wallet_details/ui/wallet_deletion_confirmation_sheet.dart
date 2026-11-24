@@ -1,4 +1,5 @@
 import '../../../generated/l10n/settings_localizations.dart';
+
 import 'package:bull_ui/bull_ui.dart';
 
 /// Delete-wallet confirmation sheet, built on [BullBottomSheet] so it matches

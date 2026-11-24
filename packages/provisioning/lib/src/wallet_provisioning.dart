@@ -462,17 +462,16 @@ final class _WalletProvisioning implements WalletProvisioning {
     final liquid = network is LiquidNetwork;
     final (prefix, purpose) = switch (script) {
       ScriptType.bip84 => (liquid ? 'elwpkh([*])' : 'wpkh([*])', '84h'),
-      ScriptType.bip49 => (
-        liquid ? 'elsh(wpkh([*]))' : 'sh(wpkh([*]))',
-        '49h',
-      ),
+      ScriptType.bip49 => (liquid ? 'elsh(wpkh([*]))' : 'sh(wpkh([*]))', '49h'),
       ScriptType.bip44 => (liquid ? 'elpkh([*])' : 'pkh([*])', '44h'),
     };
     final origin = prefix.replaceAll(
       '[*]',
       '[$fingerprint/$purpose/$networkPath/0h]',
     );
-    return network.env == NetworkEnv.regtest ? '$origin$_regtestSuffix' : origin;
+    return network.env == NetworkEnv.regtest
+        ? '$origin$_regtestSuffix'
+        : origin;
   }
 
   /// Persisted names are an explicit contract, independent of enum ordering.

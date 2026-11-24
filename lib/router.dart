@@ -215,10 +215,8 @@ class AppRouter {
     payment: () => (
       inventory: locator<SecretsInventory>(),
       native: locator<WalletNativeRuntime>(),
-      synchronize: (key) => locator<ForegroundWalletSynchronization>().executeKey(
-        key,
-        locator<WalletCatalogPort>(),
-      ),
+      synchronize: (key) => locator<ForegroundWalletSynchronization>()
+          .executeKey(key, locator<WalletCatalogPort>()),
       finishedSyncs: locator<ElectrumSync>().finished.map((event) => event.key),
       readSignerDevice: (walletId) => locator<SignerDevices>().read(walletId),
       preferences: locator<Preferences>(),

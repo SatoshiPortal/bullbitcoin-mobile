@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:ark/funding.dart';
 import 'package:path/path.dart' as p;
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart' show SeedReferencePort, SeedReferencesUnavailable;
+import 'package:secrets/secrets.dart'
+    show SeedReferencePort, SeedReferencesUnavailable;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 

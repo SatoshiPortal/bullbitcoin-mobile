@@ -1,6 +1,7 @@
 import '../../../generated/l10n/settings_localizations.dart';
 import '../presentation/wallet_details_failure_l10n.dart';
 import '../presentation/wallet_discovery_cubit.dart';
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

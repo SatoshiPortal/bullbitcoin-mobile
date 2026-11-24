@@ -68,7 +68,6 @@ final class WalletProvisioningSecretFailure extends WalletProvisioningFailure {
 }
 
 /// The inventory, a property owner or the native store refused the write.
-final class WalletProvisioningStorageFailure
-    extends WalletProvisioningFailure {
+final class WalletProvisioningStorageFailure extends WalletProvisioningFailure {
   const WalletProvisioningStorageFailure();
 }

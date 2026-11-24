@@ -96,7 +96,9 @@ final class SignerDevices implements WalletPropertyStore {
     final name = wallet.signerDevice;
     final device = name == null
         ? null
-        : SignerDevice.values.where((device) => device.name == name).firstOrNull;
+        : SignerDevice.values
+              .where((device) => device.name == name)
+              .firstOrNull;
     if (name != null && device == null) {
       return const Err(SignerDeviceUnavailable());
     }
