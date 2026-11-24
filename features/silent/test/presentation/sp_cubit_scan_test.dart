@@ -65,6 +65,34 @@ void main() {
     await notifController.close();
   });
 
+  test('retry after BWK started resumes the native checkpoint', () async {
+    await cubit.load();
+    await cubit.scan(startHeight: 800000);
+    notifController.add(const SpScanStarted(800000, 850000));
+    notifController.add(const SpScanFailed(SilentBackendUnreachable()));
+    await Future<void>.delayed(Duration.zero);
+
+    await cubit.retryScan();
+
+    verifyInOrder([
+      () => scanUsecase.execute(startHeight: 800000),
+      () => scanUsecase.execute(),
+    ]);
+  });
+
+  test('a resumed scan clears the error from the previous attempt', () async {
+    await cubit.load();
+    notifController.add(const SpScanFailed(SilentBackendUnreachable()));
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.error, isA<SilentBackendUnreachable>());
+
+    notifController.add(const SpScanStarted(810000, 850000));
+    notifController.add(const SpScanCompleted());
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state.error, isNull);
+  });
+
   test(
     'ScanStarted notification sets isScanning=true and scan bounds',
     () async {
