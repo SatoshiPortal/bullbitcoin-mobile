@@ -136,6 +136,7 @@ void main() {
         UnknownWriteKind.recipientCreate: 'recipient_create',
         UnknownWriteKind.preferencesSave: 'preferences_save',
         UnknownWriteKind.orderCreate: 'order_create',
+        UnknownWriteKind.payin: 'payin',
       },
     );
     for (final kind in UnknownWriteKind.values) {
