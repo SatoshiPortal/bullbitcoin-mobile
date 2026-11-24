@@ -158,6 +158,8 @@ void main() {
     pending.complete(const Err(DcaOrderCreationFailure()));
     await bloc.close();
     verify(createOrder).called(1);
+  });
+
   test('the form carries the exchange default wallets', () async {
     when(() => getDefaultWallets.execute()).thenAnswer(
       (_) async => const Ok(DefaultWallets(bitcoin: _bitcoinDefault)),
