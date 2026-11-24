@@ -179,6 +179,27 @@ void main() {
 
       expect(repo.scanOnceCount, 1);
     });
+
+    test(
+      'does not scan if the app backgrounds while reading the wallet',
+      () async {
+        final reading = Completer<void>();
+        final release = Completer<void>();
+        when(() => getWallet.execute()).thenAnswer((_) async {
+          reading.complete();
+          await release.future;
+          return Ok(spWallet(lastScannedHeight: tip - 10));
+        });
+
+        final sync = usecase.execute();
+        await reading.future;
+        isForeground = false;
+        release.complete();
+        await sync;
+
+        expect(repo.scanOnceCount, 0);
+      },
+    );
   });
 
   group('SyncSpWalletUsecase leaves the scan to the user', () {
