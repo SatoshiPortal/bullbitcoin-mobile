@@ -18,8 +18,8 @@ import '../pay_fixtures.dart';
 
 final ExchangePayinUi _ui = (
   walletCards: (context, onSelected) => const SizedBox(key: Key('wallets')),
-  addressViewer:
-      (context, text, {style, color, textAlign}) => Text(text, style: style),
+  addressViewer: (context, text, {style, color, textAlign}) =>
+      Text(text, style: style),
   openWalletHome: (context) {},
   openOrder: (context, orderId, {required returnToExchange}) {},
   openPayjoinTransaction: (context, txid) {},
@@ -98,7 +98,7 @@ void main() {
 
   testWidgets('a stalled receipt watch offers Check again', (tester) async {
     final events = <PayFlowEvent>[];
-    final receipt = payReceiptState as PayDone;
+    final receipt = payReceiptState;
     final labels = await _pump(
       tester,
       PayDone(

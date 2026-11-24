@@ -308,7 +308,9 @@ PayinCalls payinCallsOf(
       }
     },
     retryPayjoin: (sessionId) async {
-      await services.payjoinSender.retryProposal(sessionId);
+      if (await services.payjoinSender.retryProposal(sessionId) case Err()) {
+        log.warning('Could not retry the payjoin proposal');
+      }
     },
     journalUnknown: (orderId, network, txid) => exchange.journalUnknownPayin(
       session,

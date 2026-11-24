@@ -93,8 +93,8 @@ final class PayoutRequirementsRunner {
   PayoutRequirementsRunner(
     this._calls,
     this._emit, {
-    VirtualIbanPolicy virtualIban = const VirtualIbanPolicy(),
-  }) : _virtualIban = virtualIban;
+    this._virtualIban = const VirtualIbanPolicy(),
+  });
 
   void run(List<RequirementsEffect> effects) {
     for (final effect in effects) {

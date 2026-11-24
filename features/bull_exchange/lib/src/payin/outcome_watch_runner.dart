@@ -19,8 +19,8 @@ final class OutcomeWatchRunner<O> {
   OutcomeWatchRunner(
     this._read,
     this._emit, {
-    Duration pollEvery = const Duration(seconds: 5),
-  }) : _pollEvery = pollEvery;
+    this._pollEvery = const Duration(seconds: 5),
+  });
 
   void run(OutcomeWatchEffect effect) {
     switch (effect) {
