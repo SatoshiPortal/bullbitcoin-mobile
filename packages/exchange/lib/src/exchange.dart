@@ -578,38 +578,27 @@ final class Exchange {
           (repository) => repository.get(id),
         ),
         create: (draft) async {
-          final result = await limitOrder(
-            ExchangeLimitOrderProblem.create,
-            (repository) => repository.create(draft),
-          );
-          if (result
-              case Err(
-                failure: ExchangeLimitOrderFailure(
-                  problem: ExchangeLimitOrderProblem.createOutcomeUnknown,
-                ),
-              )
-              when recorder != null) {
+          final write = switch (await withClient<ExchangeWrite<LimitOrder>>(
+            (client) async =>
+                Ok(await BbxApiLimitOrderRepository(client).create(draft)),
+            completionCheck: _CompletionCheck.write,
+          )) {
+            Ok(:final value) => value,
+            Err(:final failure) => writeNotRun<LimitOrder>(failure),
+          };
+          if (write is WriteOutcomeUnknown<LimitOrder> && recorder != null) {
             if (await sessionSnapshot() case Ok(:final value)) {
               await recorder.record(
                 UnknownWriteDraft(
                   kind: UnknownWriteKind.limitOrderCreate,
                   environment: value.environment,
                   sessionEpoch: value.epoch,
-                  request: {
-                    'limitPrice': draft.limitPrice.toStringAsFixed(
-                      draft.currency.decimals,
-                    ),
-                    'fiatAmount': draft.fiatAmount.toStringAsFixed(
-                      draft.currency.decimals,
-                    ),
-                    'currency': draft.currency.code,
-                    'address': draft.address,
-                  },
+                  request: draft.journalRequest,
                 ),
               );
             }
           }
-          return result;
+          return write;
         },
         cancel: (id) => limitOrder(
           ExchangeLimitOrderProblem.cancel,

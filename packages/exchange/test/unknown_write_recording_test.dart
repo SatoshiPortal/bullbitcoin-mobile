@@ -403,7 +403,7 @@ void main() {
         ),
       );
 
-      expect(result, isA<Err<LimitOrder, ExchangeFailure>>());
+      expect(result, isA<WriteOutcomeUnknown<LimitOrder>>());
       final entry = journal.entries.single.$1;
       expect(entry.kind, UnknownWriteKind.limitOrderCreate);
       expect(entry.environment, ExchangeEnvironment.testnet);

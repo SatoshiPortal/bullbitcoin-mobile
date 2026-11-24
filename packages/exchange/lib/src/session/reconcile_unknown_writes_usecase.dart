@@ -330,18 +330,29 @@ UnknownWriteSettlement dcaSettlement(
 UnknownWriteSettlement? limitOrderSettlement(
   Map<String, String> request,
   List<LimitOrder> orders,
+) => findCreatedLimitOrder(request, orders) == null
+    ? null
+    : UnknownWriteSettlement.applied;
+
+/// The limit order a create of [request] (`LimitOrderDraft.journalRequest`)
+/// made, in any status, if [orders] holds it. Reconcile and a flow's own
+/// re-read after an unknown outcome use this one match.
+LimitOrder? findCreatedLimitOrder(
+  Map<String, String> request,
+  List<LimitOrder> orders,
 ) {
   final price = double.tryParse(request['limitPrice'] ?? '');
   final amount = double.tryParse(request['fiatAmount'] ?? '');
   if (price == null || amount == null) return null;
-  final matches = orders.any(
-    (order) =>
-        order.address == request['address'] &&
+  for (final order in orders) {
+    if (order.address == request['address'] &&
         order.currencyCode == request['currency'] &&
         (order.limitPrice - price).abs() < 0.005 &&
-        (order.fiatAmount - amount).abs() < 0.005,
-  );
-  return matches ? UnknownWriteSettlement.applied : null;
+        (order.fiatAmount - amount).abs() < 0.005) {
+      return order;
+    }
+  }
+  return null;
 }
 
 /// The default wallet of the type sent holds the address sent: saved.

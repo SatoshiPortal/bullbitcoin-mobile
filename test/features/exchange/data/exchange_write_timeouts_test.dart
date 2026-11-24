@@ -39,15 +39,15 @@ void main() {
         },
       );
       final isTestnet = environment == Environment.testnet;
-      final results = await Future.wait([
-        exchange.limitOrders.create(
-          LimitOrderDraft(
-            limitPrice: 90000,
-            fiatAmount: 100,
-            currency: FiatCurrency.cad,
-            address: 'bc1qaddress',
-          ),
+      final limitOrder = exchange.limitOrders.create(
+        LimitOrderDraft(
+          limitPrice: 90000,
+          fiatAmount: 100,
+          currency: FiatCurrency.cad,
+          address: 'bc1qaddress',
         ),
+      );
+      final results = await Future.wait([
         exchange.recipients.saveRecipient(
           InteracEmailCadDetails.create(
             email: 'recipient@example.invalid',
@@ -64,6 +64,7 @@ void main() {
         ),
       ]);
       expect(results, everyElement(isA<Err<Object?, Failure>>()));
+      expect(await limitOrder, isA<WriteOutcomeUnknown<LimitOrder>>());
       expect(
         await exchange.funding.consent(
           ExchangeSession(

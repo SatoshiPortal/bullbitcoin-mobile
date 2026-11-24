@@ -437,99 +437,73 @@ void main() {
 
       test('a timeout after sending is an unknown outcome', () async {
         expect(
-          _failureOf(
-            await repository(
-              FakeBbxHttp(error: DioExceptionType.receiveTimeout),
-            ).create(draft),
-          ),
-          _problem(ExchangeLimitOrderProblem.createOutcomeUnknown),
+          await repository(FakeBbxHttp(error: DioExceptionType.receiveTimeout))
+              .create(draft),
+          isA<WriteOutcomeUnknown<LimitOrder>>(),
         );
       });
 
       test('a created order that cannot be mapped is an unknown outcome, '
           'without the server value', () async {
-        final failure = _failureOf(
-          await repository(
-            FakeBbxHttp(
-              body: {
-                'result': {..._order, 'fiatAmount': 'fixture-sensitive-amount'},
-              },
-            ),
-          ).create(draft),
-        );
+        final write = await repository(
+          FakeBbxHttp(
+            body: {
+              'result': {..._order, 'fiatAmount': 'fixture-sensitive-amount'},
+            },
+          ),
+        ).create(draft);
         expect(
-          failure,
-          _problem(ExchangeLimitOrderProblem.createOutcomeUnknown),
+          write,
+          isA<WriteOutcomeUnknown<LimitOrder>>().having(
+            (w) => w.reason,
+            'reason',
+            isNot(contains('fixture-sensitive')),
+          ),
         );
-        expect(failure.logMessage, isNot(contains('fixture-sensitive')));
       });
 
       test('a connect timeout was not sent and can be retried', () async {
         expect(
-          _failureOf(
-            await repository(
-              FakeBbxHttp(error: DioExceptionType.connectionTimeout),
-            ).create(draft),
-          ),
-          _problem(ExchangeLimitOrderProblem.create),
+          await repository(
+            FakeBbxHttp(error: DioExceptionType.connectionTimeout),
+          ).create(draft),
+          isA<WriteNotSent<LimitOrder>>(),
         );
       });
 
       test('a 401 is a rejected session', () async {
         expect(
-          _failureOf(
-            await repository(FakeBbxHttp(status: 401, body: {})).create(draft),
-          ),
-          isA<ExchangeSessionRejectedFailure>(),
+          await repository(FakeBbxHttp(status: 401, body: {})).create(draft),
+          isA<WriteSessionRejected<LimitOrder>>(),
         );
       });
 
-      test('an unknown refusal code is a creation failure without the '
-          'message', () async {
-        final failure = _failureOf(
-          await repository(FakeBbxHttp(body: _refusal('ERR_SOMETHING_NEW')))
-              .create(draft),
+      test('a refusal keeps its code, which names the reason', () async {
+        Future<LimitOrderRefusal> refusalOf(String code) async =>
+            switch (await repository(FakeBbxHttp(body: _refusal(code)))
+                .create(draft)) {
+              WriteRefused(:final reason) => limitOrderRefusalOf(reason),
+              final other => fail('not a refusal: $other'),
+            };
+        expect(
+          await refusalOf('ERR_ORDTRG_LOMAX429'),
+          LimitOrderRefusal.maximumActive,
         );
-        expect(failure, _problem(ExchangeLimitOrderProblem.create));
-        expect(failure.logMessage, isNot(contains('sat@example.com')));
+        expect(
+          await refusalOf('ERR_ORDTRG_ADDR400'),
+          LimitOrderRefusal.invalidAddress,
+        );
+        expect(await refusalOf('ERR_SOMETHING_NEW'), LimitOrderRefusal.other);
       });
     });
 
     test('maps the limit order codes to their failures', () async {
       expect(
         _failureOf(
-          await repository(FakeBbxHttp(body: _refusal('ERR_ORDTRG_LOMAX429')))
-              .create(
-                LimitOrderDraft(
-                  limitPrice: 1,
-                  fiatAmount: 1,
-                  currency: FiatCurrency.cad,
-                  address: 'bc1',
-                ),
-              ),
-        ),
-        _problem(ExchangeLimitOrderProblem.maximumActive),
-      );
-      expect(
-        _failureOf(
           await repository(FakeBbxHttp(body: _refusal('ERR_ORDTRG_LO404')))
               .get('lo-1'),
         ),
         _problem(ExchangeLimitOrderProblem.notFound),
-      );
-      expect(
-        _failureOf(
-          await repository(FakeBbxHttp(body: _refusal('ERR_ORDTRG_ADDR400')))
-              .create(
-                LimitOrderDraft(
-                  limitPrice: 1,
-                  fiatAmount: 1,
-                  currency: FiatCurrency.cad,
-                  address: 'bc1',
-                ),
-              ),
-        ),
-        _problem(ExchangeLimitOrderProblem.invalidAddress),
       );
     });
 

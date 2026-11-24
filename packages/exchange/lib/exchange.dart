@@ -34,7 +34,8 @@ export 'src/domain/exchange_kyc_configuration.dart';
 export 'src/domain/exchange_failure.dart';
 export 'src/domain/exchange_environment.dart' show ExchangeEnvironment;
 export 'src/exchange.dart' show Exchange;
-export 'src/domain/exchange_limit_orders.dart' show ExchangeLimitOrders;
+export 'src/domain/exchange_limit_orders.dart'
+    show ExchangeLimitOrders, LimitOrderRefusal, limitOrderRefusalOf;
 export 'src/domain/exchange_funding.dart' show ExchangeFunding;
 export 'src/domain/exchange_virtual_ibans.dart' show ExchangeVirtualIbans;
 export 'src/domain/exchange_orders.dart' show ExchangeOrders;
@@ -44,7 +45,7 @@ export 'src/domain/order_create_journal.dart';
 export 'src/domain/exchange_write_gate.dart';
 export 'src/domain/payin_broadcast.dart';
 export 'src/session/reconcile_unknown_writes_usecase.dart'
-    show UnknownWriteReconciliation, findCreatedOrder;
+    show UnknownWriteReconciliation, findCreatedLimitOrder, findCreatedOrder;
 
 export 'src/payout/order_payout_params.dart';
 export 'src/payout/payout_rail.dart';

@@ -521,6 +521,27 @@ void main() {
         isNull,
       );
     });
+
+    test('the match a flow re-reads with is the same one, and names the '
+        'order', () {
+      final created = _limitOrder();
+      expect(
+        findCreatedLimitOrder(request, [
+          _limitOrder(address: 'bc1qother'),
+          created,
+        ]),
+        same(created),
+      );
+      expect(
+        LimitOrderDraft(
+          limitPrice: 90000,
+          fiatAmount: 100,
+          currency: FiatCurrency.cad,
+          address: 'bc1qlimit',
+        ).journalRequest,
+        request,
+      );
+    });
   });
 
   group('default wallet settlement', () {

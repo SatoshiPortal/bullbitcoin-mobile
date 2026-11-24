@@ -23,4 +23,13 @@ final class LimitOrderDraft {
       throw ArgumentError.value(address, 'address');
     }
   }
+
+  /// What was sent, as the journal records it and as a re-read matches it
+  /// ([findCreatedLimitOrder]): amounts with the currency's decimals.
+  Map<String, String> get journalRequest => {
+    'limitPrice': limitPrice.toStringAsFixed(currency.decimals),
+    'fiatAmount': fiatAmount.toStringAsFixed(currency.decimals),
+    'currency': currency.code,
+    'address': address,
+  };
 }

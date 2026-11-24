@@ -44,52 +44,21 @@ final class BbxApiLimitOrderRepository {
   );
 
   /// A create that may have reached the exchange without a readable answer,
-  /// including a created order the app can't read, is
-  /// [ExchangeLimitOrderProblem.createOutcomeUnknown], never a plain create
-  /// failure the user could retry into a second order.
-  Future<Result<LimitOrder, ExchangeFailure>> create(
-    LimitOrderDraft draft,
-  ) async {
-    final write = await exchangeWrite<bbx.LimitOrder, LimitOrder>(
-      'create the limit order',
-      () => _api.orderTriggers.addLimitOrder(
-        limitPrice: draft.limitPrice.toStringAsFixed(draft.currency.decimals),
-        fiatAmount: draft.fiatAmount.toStringAsFixed(draft.currency.decimals),
-        currencyCode: draft.currency.code,
-        estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
-        address: draft.address,
-      ),
-      _toLimitOrder,
-    );
-    return switch (write) {
-      WriteDone(:final value) => Ok(value),
-      WriteOutcomeUnknown(:final reason) => Err(
-        ExchangeLimitOrderFailure(
-          ExchangeLimitOrderProblem.createOutcomeUnknown,
-          'outcome unknown: $reason',
+  /// including a created order the app can't read, is [WriteOutcomeUnknown],
+  /// never a plain failure the user could retry into a second order. A
+  /// refusal keeps its code (see `limitOrderRefusalOf`).
+  Future<ExchangeWrite<LimitOrder>> create(LimitOrderDraft draft) =>
+      exchangeWrite<bbx.LimitOrder, LimitOrder>(
+        'create the limit order',
+        () => _api.orderTriggers.addLimitOrder(
+          limitPrice: draft.limitPrice.toStringAsFixed(draft.currency.decimals),
+          fiatAmount: draft.fiatAmount.toStringAsFixed(draft.currency.decimals),
+          currencyCode: draft.currency.code,
+          estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
+          address: draft.address,
         ),
-      ),
-      WriteRefused(:final reason) => Err(
-        ExchangeLimitOrderFailure(switch (reason.apiCode) {
-          'ERR_ORDTRG_LOMAX429' => ExchangeLimitOrderProblem.maximumActive,
-          'ERR_ORDTRG_ADDR400' => ExchangeLimitOrderProblem.invalidAddress,
-          _ => ExchangeLimitOrderProblem.create,
-        }, 'refused: $reason'),
-      ),
-      WriteSessionRejected() => const Err(
-        ExchangeSessionRejectedFailure('create the limit order: HTTP 401'),
-      ),
-      WriteNotSent(reason: ExchangeNotSentReason.signedOut) => const Err(
-        ExchangeNotAuthenticatedFailure(),
-      ),
-      WriteNotSent(:final reason) => Err(
-        ExchangeLimitOrderFailure(
-          ExchangeLimitOrderProblem.create,
-          'not sent: ${reason.name}',
-        ),
-      ),
-    };
-  }
+        _toLimitOrder,
+      );
 
   Future<Result<LimitOrder, ExchangeFailure>> cancel(String id) => _guard(
     'cancel the limit order',
