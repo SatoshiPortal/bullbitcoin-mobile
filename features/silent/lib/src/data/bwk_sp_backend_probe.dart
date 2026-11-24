@@ -31,6 +31,9 @@ class BwkSpBackendProbe implements SpBackendProbePort {
       return const Ok(null);
     } on Exception catch (_) {
       return const Err(SilentBackendUnreachable('SP tip probe failed'));
+    } on String catch (_) {
+      // FRB exposes Rust Result<u32, String> failures as thrown strings.
+      return const Err(SilentBackendUnreachable('SP tip probe failed'));
     }
   }
 
