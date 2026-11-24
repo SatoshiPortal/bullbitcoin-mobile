@@ -37,6 +37,47 @@ final class _HeldResponse implements HttpClientAdapter {
 }
 
 void main() {
+  test('a session change between history pages never mixes accounts', () async {
+    var epoch = 0;
+    final http = _HeldResponse();
+    final exchange = exchangeWithTransportForTesting(
+      readSession: () async => Ok((
+        environment: ExchangeEnvironment.testnet,
+        epoch: epoch,
+        apiKey: 'synthetic-session-key',
+      )),
+      openClient: (endpoint, readKey) => bbxForTesting(
+        endpoint: endpoint.toString(),
+        adapter: http,
+        readActiveApiKey: readKey,
+      ),
+    );
+    final pending = exchange.orders(ExchangeEnvironment.testnet).getOrders();
+    await http.started.future;
+    epoch++;
+    http.response.complete(
+      ResponseBody.fromString(
+        jsonEncode({
+          'result': {
+            'elements': [orderJsonFixture()],
+          },
+        }),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      ),
+    );
+    expect(
+      await pending,
+      isA<Err<List<Order>, ExchangeFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<ExchangeOperationStaleFailure>(),
+      ),
+    );
+    expect(http.requests, hasLength(1));
+  });
   test('order requests never select credentials for another backend', () async {
     final exchange = exchangeWithTransportForTesting(
       readSession: () async => const Ok((
