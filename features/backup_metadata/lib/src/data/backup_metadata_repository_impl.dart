@@ -211,7 +211,24 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       state.discardIntent(scope);
       return;
     }
-    await _verify(state, scope, session, listed, object, intent);
+    final read = await session.read(object, maxBytes: backupMetadataMaxBytes);
+    if (read case Err(failure: BackupStorageTooLargeFailure())) {
+      // Our own writes never exceed the cap, so the listed bytes are not the
+      // ones this intent wrote.
+      state.discardIntent(scope);
+      return;
+    }
+    final bytes = _storageValue(read);
+    if (sha256.convert(bytes).toString() != intent.envelopeDigest) {
+      // The bytes were read back in full and differ from what this intent
+      // wrote: the mismatch is confirmed, not a transient read failure, which
+      // keeps the intent by throwing above. Retire the intent without
+      // acknowledging or pruning the damaged object, so this run uploads a
+      // fresh generation under a new name instead of reconciling it forever.
+      state.discardIntent(scope);
+      return;
+    }
+    await _confirm(state, scope, session, listed, object, intent);
   }
 
   Future<void> _create(
@@ -244,10 +261,13 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       ),
     );
     state.recordCreated(scope, object.id);
-    await _verify(state, scope, session, listed, object, intent);
+    await _verifyCreated(state, scope, session, listed, object, intent);
   }
 
-  Future<void> _verify(
+  /// Confirms an object this run has just created. A mismatch keeps the
+  /// intent: the write's response may still be in flight, and a later run
+  /// reconciles it.
+  Future<void> _verifyCreated(
     BackupMetadataState state,
     BackupScope scope,
     StorageSession session,
@@ -269,6 +289,17 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     if (sha256.convert(bytes).toString() != intent.envelopeDigest) {
       throw const _OperationFailure.unexpected();
     }
+    await _confirm(state, scope, session, listed, object, intent);
+  }
+
+  Future<void> _confirm(
+    BackupMetadataState state,
+    BackupScope scope,
+    StorageSession session,
+    Map<String, StoredObject> listed,
+    StoredObject object,
+    BackupIntent intent,
+  ) async {
     final refreshed = await _list(session);
     listed
       ..clear()
