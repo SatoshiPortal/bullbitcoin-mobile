@@ -106,6 +106,11 @@ sealed class PayoutRail<D extends RecipientDetails> {
     interacAnswer: ready.interac?.answer,
   );
 
+  /// [saved], a recipient the exchange just saved from this rail's form, as
+  /// a recipient of this rail; null when it isn't one. The server stores a
+  /// Confidential SEPA recipient as a SEPA one.
+  Recipient? adopt(Recipient saved) => saved.rail == this ? saved : null;
+
   /// The same account on the rail the user can fall back to when a
   /// requirement of this one can't be met (Confidential SEPA → SEPA), or
   /// null when there is none.
@@ -273,6 +278,14 @@ final class ConfidentialSepaRail extends PayoutRail<SepaEurDetails> {
 
   @override
   RecipientDetails fallback(SepaEurDetails details) => details.asRegular();
+
+  @override
+  Recipient? adopt(Recipient saved) {
+    final details = saved.details;
+    return details is SepaEurDetails
+        ? saved.withDetails(details.asConfidential())
+        : null;
+  }
 }
 
 final class SpeiClabeRail extends PayoutRail<SpeiClabeMxnDetails> {

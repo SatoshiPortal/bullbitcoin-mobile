@@ -2,6 +2,7 @@ import 'package:exchange/src/recipients/domain/entities/recipient_details.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_type.dart';
 import 'package:exchange/src/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 @immutable
 class RecipientDetailsInput {
@@ -79,6 +80,58 @@ class RecipientDetailsInput {
     this.documentId,
     this.documentType,
   });
+
+  /// The same input for an account owned as [isOwner] says. The recipient
+  /// pick step applies its filter's owner here, so a recipient created
+  /// under an "own" filter is created as owned (RCP-9).
+  RecipientDetailsInput withOwner(bool isOwner) => RecipientDetailsInput(
+    recipientType: recipientType,
+    isOwner: isOwner,
+    label: label,
+    isDefault: isDefault,
+    email: email,
+    name: name,
+    securityQuestion: securityQuestion,
+    securityAnswer: securityAnswer,
+    payeeName: payeeName,
+    payeeCode: payeeCode,
+    payeeAccountNumber: payeeAccountNumber,
+    institutionNumber: institutionNumber,
+    transitNumber: transitNumber,
+    accountNumber: accountNumber,
+    defaultComment: defaultComment,
+    iban: iban,
+    isCorporate: isCorporate,
+    firstname: firstname,
+    lastname: lastname,
+    corporateName: corporateName,
+    virtualPayeeStatus: virtualPayeeStatus,
+    clabe: clabe,
+    institutionCode: institutionCode,
+    phone: phone,
+    debitcard: debitcard,
+    ownerName: ownerName,
+    phoneNumber: phoneNumber,
+    claveUniform: claveUniform,
+    bankCode: bankCode,
+    accountType: accountType,
+    bankAccount: bankAccount,
+    bankName: bankName,
+    documentId: documentId,
+    documentType: documentType,
+  );
+
+  /// [toDomain], with a missing or invalid field as an error instead of a
+  /// throw. The error text is for logs only.
+  Result<RecipientDetails, String> tryToDomain() {
+    // toDomain throws StateError for a missing field, ArgumentError from the
+    // value objects, and a TypeError on a null it asserts away.
+    try {
+      return Ok(toDomain());
+    } on Object catch (e) {
+      return Err(e.runtimeType.toString());
+    }
+  }
 
   // Input → VO
   RecipientDetails toDomain() {

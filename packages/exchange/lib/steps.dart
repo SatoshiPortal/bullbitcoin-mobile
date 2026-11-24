@@ -11,6 +11,7 @@ export 'src/steps/kyc_gate.dart';
 export 'src/steps/order_quote.dart';
 export 'src/steps/outcome_watch.dart';
 export 'src/steps/pick.dart';
+export 'src/steps/recipient_pick.dart';
 export 'src/steps/requirements_step.dart';
 export 'src/steps/restriction_gate.dart';
 export 'src/steps/server_confirm.dart';
