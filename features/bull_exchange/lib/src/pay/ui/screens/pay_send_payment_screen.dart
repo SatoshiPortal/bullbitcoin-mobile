@@ -9,7 +9,6 @@ import 'package:bull_exchange/src/pay/presentation/pay_bloc.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_failure_l10n.dart';
 import 'package:bull_exchange/src/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

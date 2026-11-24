@@ -1,7 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';

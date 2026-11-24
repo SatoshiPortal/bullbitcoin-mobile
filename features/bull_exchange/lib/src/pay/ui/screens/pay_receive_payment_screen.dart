@@ -8,7 +8,6 @@ import 'package:bull_exchange/src/recipients/presentation/payout_rail_l10n.dart'
 
 import 'package:bull_exchange/src/pay/presentation/pay_bloc.dart';
 import 'package:bull_exchange/src/pay/ui/widgets/pay_qr_bottom_sheet.dart';
-import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

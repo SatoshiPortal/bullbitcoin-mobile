@@ -132,7 +132,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           ),
         ],
         const Gap(16.0),
-        switch (selectedType.rail) {
+        switch (selectedType?.rail) {
           InteracEmailRail() => InteracEmailCadForm(
             hookError: widget.hookError,
           ),
@@ -162,6 +162,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           ),
           PseRail() => BankAccountCopForm(hookError: widget.hookError),
           NequiRail() => NequiCopForm(hookError: widget.hookError),
+          null => const SizedBox.shrink(),
         },
       ],
     );
