@@ -16,3 +16,4 @@ export 'src/steps/server_confirm.dart';
 export 'src/steps/session_gate.dart';
 export 'src/steps/step_hooks.dart';
 export 'src/steps/step_next.dart';
+export 'src/steps/virtual_iban_step.dart';
