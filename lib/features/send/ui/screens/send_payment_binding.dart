@@ -2,10 +2,11 @@ part of 'send_screen.dart';
 
 /// Owns ephemeral mono UI state; transaction intent remains in SendCubit.
 final class _SendPaymentSession {
-  _SendPaymentSession(this.cubit)
+  _SendPaymentSession(this.cubit, this.confirm)
     : amountController = TextEditingController(text: cubit.state.amount),
       unit = ValueNotifier(cubit.state.bitcoinUnit ?? BitcoinUnit.btc);
   final SendCubit cubit;
+  final Future<void> Function() confirm;
   final TextEditingController amountController;
   final FocusNode amountFocus = FocusNode();
   final ValueNotifier<BitcoinUnit> unit;
@@ -726,9 +727,7 @@ final class _SendPaymentSession {
         );
         if (!_disposed && note != null) cubit.noteChanged(note);
       },
-      onConfirm: fee == null || state.disableConfirmSend
-          ? null
-          : cubit.onConfirmTransactionClicked,
+      onConfirm: fee == null || state.disableConfirmSend ? null : confirm,
     );
   }
 }

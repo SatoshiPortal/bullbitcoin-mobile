@@ -1,4 +1,5 @@
 {
+  "retry": "Dobara Try Karo",
   "@@locale": "hi_Latn",
   "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
   "@oopsSomethingWentWrong": {

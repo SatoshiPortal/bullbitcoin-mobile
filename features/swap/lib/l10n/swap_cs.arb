@@ -1,4 +1,5 @@
 {
+  "retry": "Zkusit znovu",
   "@@locale": "cs",
   "save": "Čeština",
   "@save": {

@@ -21,6 +21,8 @@ Brightness-invariant tokens are static consts, from the design system:
 - **`BullLoaderTheme`** — which animation `BullLoader` plays (`BullLoaderStyle.cubes` or `.spinner`); Bull's is `BullLoaderTheme.standard` (cubes), and an app picks another with `bullUiExtensions(loader: …)`.
 - **Icons** via `BullIcon(BullIcons.…)`.
 
+`BullPaymentAnimation` uses `sensors_plus` for decorative accelerometer roll on Android and iOS. It does not require motion data to render, and it does not open the sensor stream when motion is reduced or the route is inactive. Payment features own the actual status and supply localized text to `BullPaymentTransition`.
+
 **Tokens are fixed — never scaled by screen size.** Responsiveness is a *layout* concern
 (breakpoints, `LayoutBuilder`, max-width wrappers, adaptive columns), not a token concern; text
 already honours the user's `MediaQuery.textScaler`. The catalogue (`packages/bull_ui_catalogue`)

@@ -1,4 +1,5 @@
 {
+  "retry": "Повторить",
   "@@locale": "ru",
   "save": "Сохранить",
   "oopsSomethingWentWrong": "Упс! Что-то не так",

@@ -1,4 +1,5 @@
 {
+  "retry": "ხელახლა ცდა",
   "@@locale": "ka",
   "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
   "save": "შენახვა",

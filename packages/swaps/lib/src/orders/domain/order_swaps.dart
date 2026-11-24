@@ -67,10 +67,12 @@ abstract interface class OrderSwaps implements ReadOrderSwaps {
     required bool isPsbt,
   });
 
+  /// [requireReady] rejects an order already marked as an uncertain broadcast.
   @useResult
   Future<Result<OrderSwapRecord, SwapFailure>> markBroadcastUnknown(
-    String localId,
-  );
+    String localId, {
+    bool requireReady = false,
+  });
 
   @useResult
   Future<Result<OrderSwapRecord, SwapFailure>> markPayinBroadcast({

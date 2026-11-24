@@ -1,4 +1,5 @@
 {
+  "retry": "다시 시도",
   "@@locale": "ko",
   "save": "제품 정보",
   "@save": {

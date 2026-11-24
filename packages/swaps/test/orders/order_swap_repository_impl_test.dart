@@ -964,6 +964,39 @@ void main() {
     expect(row.signedPayinTransaction, 'signed-pset');
   });
 
+  test('first-broadcast admission rejects an already unknown payin', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+    await _create(repository);
+    await repository.savePreparedPayin(
+      localId: 'local-1',
+      signedTransaction: 'signed-pset',
+      isPsbt: false,
+    );
+    final first = await repository.markBroadcastUnknown(
+      'local-1',
+      requireReady: true,
+    );
+    final second = await repository.markBroadcastUnknown(
+      'local-1',
+      requireReady: true,
+    );
+    expect(first, isA<Ok<OrderSwapRecord, SwapFailure>>());
+    expect(second, isA<Err<OrderSwapRecord, SwapFailure>>());
+    final row = await database.select(database.orderSwaps).getSingle();
+    expect(row.localStatus, OrderSwapLocalStatus.broadcastUnknown.name);
+    expect(row.signedPayinTransaction, 'signed-pset');
+  });
+
   test('rejects an unknown broadcast after the deadline', () async {
     when(
       () => remote.createOrderSwap(

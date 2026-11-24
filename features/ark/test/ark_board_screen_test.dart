@@ -24,6 +24,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInfoBar,
         BullInputText,
         BullLoader,
+        BullPaymentTransition,
         BullSuccessScreen,
         BullText,
         Row,
@@ -270,6 +271,11 @@ void main() {
       );
     await review(tester, rig);
     button(tester, 'Confirm').onPressed();
+    await tester.pump();
+    tester
+        .widget<BullPaymentTransition>(find.byType(BullPaymentTransition))
+        .onSkip
+        ?.call();
     await tester.pumpAndSettle();
     expect(find.text('Boarding started'), findsOneWidget);
     expect(find.text('990 sats'), findsOneWidget);
@@ -427,7 +433,7 @@ void main() {
     await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
   });
 
-  testWidgets('Confirm keeps the review on screen while it submits', (
+  testWidgets('View status reveals the locked review during Board submission', (
     tester,
   ) async {
     final rig = Rig();
@@ -443,6 +449,10 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(rig.cubit.state, isA<ArkBoardBusy>());
+    expect(find.byType(BullPaymentTransition), findsOneWidget);
+    expect(find.text('Confirm board'), findsNothing);
+    await tester.tap(find.text('View status'));
+    await tester.pump();
     expect(find.text('Confirm board'), findsOneWidget);
     expect(button(tester, 'Confirm').disabled, true);
     expect(find.byType(BullLoader), findsNothing);

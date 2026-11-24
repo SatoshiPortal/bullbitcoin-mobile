@@ -1,4 +1,5 @@
 {
+  "retry": "Tentar novamente",
   "@@locale": "pt",
   "save": "Salvar",
   "oopsSomethingWentWrong": "Oops! Algo correu mal",

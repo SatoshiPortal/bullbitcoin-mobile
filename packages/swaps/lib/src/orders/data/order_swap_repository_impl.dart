@@ -494,8 +494,13 @@ class OrderSwapRepositoryImpl implements OrderSwaps {
 
   @override
   Future<Result<OrderSwapRecord, SwapFailure>> markBroadcastUnknown(
-    String localId,
-  ) => _updateLocalRecord(localId, (record) {
+    String localId, {
+    bool requireReady = false,
+  }) => _updateLocalRecord(localId, (record) {
+    if (requireReady &&
+        record.localStatus != OrderSwapLocalStatus.readyToBroadcast) {
+      throw const _InvalidOrderSwapTransition('Payin was already submitted');
+    }
     if (record.localStatus != OrderSwapLocalStatus.readyToBroadcast &&
         record.localStatus != OrderSwapLocalStatus.broadcastUnknown) {
       throw _InvalidOrderSwapTransition(
