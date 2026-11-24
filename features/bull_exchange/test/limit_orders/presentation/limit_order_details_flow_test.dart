@@ -1,0 +1,160 @@
+import 'package:bull_exchange/src/limit_orders/presentation/limit_order_cancel.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_flow.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/steps.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../limit_order_fixtures.dart';
+
+final _active = limitOrder();
+final _cancelled = limitOrder(status: LimitOrderStatus.cancelled);
+
+LimitDetailsState _apply(
+  LimitDetailsState state,
+  List<LimitDetailsEvent> events,
+) {
+  var next = state;
+  for (final event in events) {
+    next = transitionLimitDetails(next, event).state;
+  }
+  return next;
+}
+
+final _loading = limitDetailsStart(limitSession, _active.id).state;
+final _failed = _apply(_loading, const [
+  DetailsLoaded(1, ReadUnreachable('down', isNetwork: true)),
+]);
+final _shown = _apply(_loading, [DetailsLoaded(1, ReadGot(_active))]);
+final _cancelling = _apply(_shown, const [
+  DetailsCancelChanged(CancelPressed()),
+]);
+final _cancelledShown = _apply(_cancelling, [
+  DetailsCancelChanged(CancelAnswered(1, CancelAnsweredOrder(_cancelled))),
+]);
+const _ended = DetailsSessionEnded(changed: false);
+const _closed = DetailsClosed(changed: false);
+
+final _states = <String, LimitDetailsState>{
+  'loading': _loading,
+  'failed': _failed,
+  'shown': _shown,
+  'cancelling': _cancelling,
+  'ended': _ended,
+  'closed': _closed,
+};
+
+final _events = <String, LimitDetailsEvent>{
+  'loaded': DetailsLoaded(1, ReadGot(_active)),
+  'retry': const DetailsRetryPressed(),
+  'cancel': const DetailsCancelChanged(CancelPressed()),
+  'back': const DetailsBackPressed(),
+  'session': const DetailsSessionChanged(limitOtherSession),
+};
+
+const _moves = <(String, String), Type>{
+  ('loading', 'loaded'): DetailsShown,
+  ('loading', 'back'): DetailsClosed,
+  ('loading', 'session'): DetailsSessionEnded,
+  ('failed', 'retry'): DetailsLoading,
+  ('failed', 'back'): DetailsClosed,
+  ('failed', 'session'): DetailsSessionEnded,
+  ('shown', 'cancel'): DetailsShown,
+  ('shown', 'back'): DetailsClosed,
+  ('shown', 'session'): DetailsSessionEnded,
+  ('cancelling', 'session'): DetailsSessionEnded,
+  ('ended', 'back'): DetailsClosed,
+};
+
+void main() {
+  test('the sample states are the ones they name', () {
+    expect(_failed, isA<DetailsFailed>());
+    expect(_shown, isA<DetailsShown>());
+    expect(
+      _cancelling,
+      isA<DetailsShown>().having(
+        (s) => s.cancel,
+        'cancel',
+        isA<CancelSending>(),
+      ),
+    );
+  });
+
+  group('every (state, event) pair', () {
+    for (final MapEntry(key: stateName, value: state) in _states.entries) {
+      for (final MapEntry(key: eventName, value: event) in _events.entries) {
+        final expected = _moves[(stateName, eventName)];
+        test('$stateName + $eventName', () {
+          final next = transitionLimitDetails(state, event);
+          if (expected == null) {
+            expect(identical(next.state, state), isTrue, reason: '$next');
+            expect(next.effects, isEmpty);
+          } else {
+            expect(next.state.runtimeType, expected);
+          }
+        });
+      }
+    }
+  });
+
+  test('every state is reachable', () {
+    final reached = <Type>{limitDetailsStart(null, 'x').state.runtimeType};
+    for (final state in _states.values) {
+      reached.add(state.runtimeType);
+      for (final event in _events.values) {
+        reached.add(transitionLimitDetails(state, event).state.runtimeType);
+      }
+    }
+    expect(reached, {
+      DetailsLoading,
+      DetailsFailed,
+      DetailsShown,
+      DetailsSessionEnded,
+      DetailsClosed,
+    });
+  });
+
+  test('the first read and a Retry read the order with their attempt', () {
+    expect(limitDetailsStart(limitSession, 'lo-1').effects, [
+      const DetailsRead('lo-1', 1),
+    ]);
+    expect(
+      transitionLimitDetails(_failed, const DetailsRetryPressed()).effects,
+      [const DetailsRead('lo-1', 2)],
+    );
+  });
+
+  test('Back while the cancel runs is a stay', () {
+    expect(
+      identical(
+        transitionLimitDetails(_cancelling, const DetailsBackPressed()).state,
+        _cancelling,
+      ),
+      isTrue,
+    );
+  });
+
+  test('leaving after a cancel says the order changed', () {
+    expect(
+      transitionLimitDetails(_cancelledShown, const DetailsBackPressed()).state,
+      const DetailsClosed(changed: true),
+    );
+    expect(
+      transitionLimitDetails(_shown, const DetailsBackPressed()).state,
+      const DetailsClosed(changed: false),
+    );
+  });
+
+  test('a session ended during the cancel reloads the list on leaving', () {
+    final ended = transitionLimitDetails(
+      _cancelling,
+      const DetailsCancelChanged(
+        CancelAnswered(1, CancelAnsweredSessionRejected()),
+      ),
+    ).state;
+    expect(ended, const DetailsSessionEnded(changed: true));
+    expect(
+      transitionLimitDetails(ended, const DetailsBackPressed()).state,
+      const DetailsClosed(changed: true),
+    );
+  });
+}

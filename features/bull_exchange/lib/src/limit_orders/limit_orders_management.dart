@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'domain/usecases/can_create_limit_order_usecase.dart';
 import 'limit_orders_navigation.dart';
-import 'presentation/limit_order_details_cubit.dart';
+import 'presentation/limit_order_details_bloc.dart';
 import 'presentation/limit_orders_cubit.dart';
 import 'ui/screens/limit_order_details_screen.dart';
 import 'ui/widgets/limit_orders_dashboard_card.dart';
@@ -17,7 +17,15 @@ GoRoute limitOrderDetailsRoute(Exchange Function() exchange) => GoRoute(
     final id = state.pathParameters['orderId'];
     if (id == null) return const SizedBox.shrink();
     return BlocProvider(
-      create: (_) => LimitOrderDetailsCubit(id, exchange().limitOrders)..load(),
+      create: (_) {
+        final capability = exchange();
+        return LimitDetailsBloc(
+          calls: (session) => limitDetailsCallsOf(capability, session),
+          session: capability.currentSession,
+          orderId: id,
+          accessChanges: capability.watchAccess(),
+        );
+      },
       child: const LimitOrderDetailsScreen(),
     );
   },
