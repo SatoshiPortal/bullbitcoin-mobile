@@ -233,6 +233,34 @@ void main() {
   }
 
   test(
+    'a persistently damaged pending upload is retired and replaced',
+    () async {
+      storage = MemoryBackupStorage(destination: BackupDestination.folder);
+      await enable();
+      storage.failAfterCreate = true;
+      expect((await run()).actionNeeded, isNotNull);
+      final damaged = objectById('1');
+      final damagedBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
+      storage.objects[damaged] = damagedBytes;
+      storage.failAfterCreate = false;
+
+      final repaired = await run();
+
+      expect(repaired.pendingChanges, isFalse);
+      expect(repaired.lastDurableBackup, isNotNull);
+      expect(
+        storage.created,
+        2,
+        reason: 'a confirmed mismatch must not block the group forever',
+      );
+      expect(storage.objects, hasLength(2));
+      expect(storage.objects[damaged], orderedEquals(damagedBytes));
+      expect(storage.objects[objectById('2')], orderedEquals(envelopeFor(0)));
+      expect(storage.deleted, isEmpty);
+    },
+  );
+
+  test(
     'folder repairs unchanged digest when latest receipt no longer matches',
     () async {
       await seedFolderGenerations();
