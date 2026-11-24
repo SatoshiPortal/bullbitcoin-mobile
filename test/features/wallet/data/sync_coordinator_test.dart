@@ -85,7 +85,11 @@ void main() {
           (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
       readWallet: readWallet.execute,
       readNetwork: () async => network,
-      getWallets: getWallets.execute,
+      getWallets: ({onlyBitcoin, onlyLiquid}) async =>
+          (await getWallets.execute(
+            onlyBitcoin: onlyBitcoin,
+            onlyLiquid: onlyLiquid,
+          )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
       syncWallet: syncWallet.sync,
       syncSwaps: syncSwaps.call,
       // Deferred so a test can swap the behaviour after construction, the way
@@ -1116,7 +1120,11 @@ void main() {
             (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
         readWallet: readWallet.execute,
         readNetwork: () async => network,
-        getWallets: getWallets.execute,
+        getWallets: ({onlyBitcoin, onlyLiquid}) async =>
+            (await getWallets.execute(
+              onlyBitcoin: onlyBitcoin,
+              onlyLiquid: onlyLiquid,
+            )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
         syncWallet: syncWallet.sync,
         now: () => clock,
       );
