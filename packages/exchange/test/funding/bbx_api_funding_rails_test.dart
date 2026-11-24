@@ -59,12 +59,12 @@ Map<String, dynamic> _rpcError(String apiCode) => {
 Map<String, Object?> _sent(FakeBbxHttp http) =>
     http.requests.single.data as Map<String, Object?>;
 
-ProcessorCodeRequest _request(ProcessorCodeRail rail) =>
+ProcessorCodeRequest _request(ProcessorCodeFundingRail rail) =>
     ProcessorCodeRequest(rail, userNumber: 4242, consent: _consent);
 
 void main() {
   group('instructions', () {
-    for (final rail in FundingRails.all.whereType<ProcessorCodeRail>()) {
+    for (final rail in FundingRails.all.whereType<ProcessorCodeFundingRail>()) {
       test('${rail.name} sends its code and shows only its fields', () async {
         final http = FakeBbxHttp(body: _everyField);
 
@@ -83,7 +83,7 @@ void main() {
           case FundingInstructionRows(:final rows):
             expect([for (final row in rows) row.field], rail.fields);
           case FundingInstructionQr(:final payload):
-            expect(rail, const CanadaPostRail());
+            expect(rail, const CanadaPostFundingRail());
             expect(payload, 'ABC123');
           case FundingInstructionLink():
             fail('a processor-code rail never answers a link');
@@ -93,7 +93,7 @@ void main() {
 
     test('the e-Transfer answer is the account user number', () async {
       final read = await testExchange(FakeBbxHttp(body: _everyField)).funding
-          .instructions(_session, _request(const EmailETransferRail()));
+          .instructions(_session, _request(const EmailETransferFundingRail()));
 
       expect(
         read,
@@ -122,7 +122,7 @@ void main() {
             },
           },
         ),
-      ).funding.instructions(_session, _request(const SpeiRail()));
+      ).funding.instructions(_session, _request(const SpeiFundingRail()));
 
       expect(read, isA<ReadMalformed<FundingAnswer>>());
     });
@@ -141,7 +141,7 @@ void main() {
       };
 
       final read = await testExchange(FakeBbxHttp(body: answer)).funding
-          .instructions(_session, _request(const BankWireRail()));
+          .instructions(_session, _request(const BankWireFundingRail()));
 
       expect(read, isA<ReadGot<FundingAnswer>>());
     });
@@ -158,7 +158,7 @@ void main() {
       test('$apiCode is the refusal ${refusal.name}', () async {
         final read = await testExchange(FakeBbxHttp(body: _rpcError(apiCode)))
             .funding
-            .instructions(_session, _request(const SinpeMovilRail()));
+            .instructions(_session, _request(const SinpeMovilFundingRail()));
 
         expect(read, ReadGot<FundingAnswer>(FundingRefused(refusal)));
       });
@@ -167,7 +167,7 @@ void main() {
     test('an unknown refusal code is not a refusal', () async {
       final read = await testExchange(
         FakeBbxHttp(body: _rpcError('ERR_SOMETHING_NEW')),
-      ).funding.instructions(_session, _request(const SinpeMovilRail()));
+      ).funding.instructions(_session, _request(const SinpeMovilFundingRail()));
 
       expect(read, isA<ReadUnreachable<FundingAnswer>>());
     });
@@ -175,7 +175,7 @@ void main() {
     test('a timeout is unreachable over the network', () async {
       final read = await testExchange(
         FakeBbxHttp(error: DioExceptionType.receiveTimeout),
-      ).funding.instructions(_session, _request(const SinpeMovilRail()));
+      ).funding.instructions(_session, _request(const SinpeMovilFundingRail()));
 
       expect(
         read,
@@ -190,7 +190,7 @@ void main() {
     test('a 401 rejects the session', () async {
       final read = await testExchange(
         FakeBbxHttp(status: 401, body: {'error': 'unauthorized'}),
-      ).funding.instructions(_session, _request(const SinpeMovilRail()));
+      ).funding.instructions(_session, _request(const SinpeMovilFundingRail()));
 
       expect(read, isA<ReadSessionRejected<FundingAnswer>>());
     });
@@ -319,7 +319,7 @@ void main() {
     final read = await testExchange(
       http,
       isTestnet: true,
-    ).funding.instructions(_session, _request(const SpeiRail()));
+    ).funding.instructions(_session, _request(const SpeiFundingRail()));
 
     expect(http.requests, isEmpty);
     expect(read, isA<ReadUnreachable<FundingAnswer>>());

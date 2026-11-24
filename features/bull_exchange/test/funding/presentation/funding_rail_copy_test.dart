@@ -39,7 +39,7 @@ void main() {
       expect(tile.subtitle, isNotEmpty, reason: rail.name);
       final copy = rail.instructionsCopy(context);
       expect(copy.title, isNotEmpty, reason: rail.name);
-      if (rail is ProcessorCodeRail) {
+      if (rail is ProcessorCodeFundingRail) {
         expect(
           copy.fields.keys.toSet(),
           rail.fields.toSet(),
@@ -55,7 +55,7 @@ void main() {
     await _context(
       tester,
       FundingInstructionsView(
-        rail: const SinpeMovilRail(),
+        rail: const SinpeMovilFundingRail(),
         instructions: const FundingInstructionRows([
           InstructionRow(InstructionField.phoneNumber, '88888888'),
           InstructionRow(InstructionField.beneficiaryName, 'Bull Bitcoin'),
@@ -74,7 +74,7 @@ void main() {
     await _context(
       tester,
       FundingInstructionsView(
-        rail: const CopBankTransferRail(),
+        rail: const CopBankTransferFundingRail(),
         instructions: FundingInstructionLink(link),
         onOpenLink: (uri) => opened = uri,
       ),

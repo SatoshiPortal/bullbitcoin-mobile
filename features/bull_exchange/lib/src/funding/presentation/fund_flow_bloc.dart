@@ -68,7 +68,7 @@ class FundFlowBloc extends Bloc<FundFlowEvent, FundFlowState> {
         attempt,
         await _funding.institutions(
           session,
-          const CopBankTransferRail().jurisdiction,
+          const CopBankTransferFundingRail().jurisdiction,
         ),
       ),
       FundFetchInstructions(:final attempt, :final request) =>

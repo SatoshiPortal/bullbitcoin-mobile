@@ -66,51 +66,52 @@ extension FundingRailCopy on FundingRail {
   FundingTileCopy tile(BuildContext context) {
     final l = context.loc;
     return switch (this) {
-      EmailETransferRail() => FundingTileCopy(
+      EmailETransferFundingRail() => FundingTileCopy(
         l.fundExchangeMethodEmailETransfer,
         l.fundExchangeMethodEmailETransferSubtitle,
       ),
-      BankWireRail() => FundingTileCopy(
+      BankWireFundingRail() => FundingTileCopy(
         l.fundExchangeMethodBankTransferWire,
         l.fundExchangeMethodBankTransferWireSubtitle,
       ),
-      OnlineBillPaymentRail() => FundingTileCopy(
+      OnlineBillPaymentFundingRail() => FundingTileCopy(
         l.fundExchangeMethodOnlineBillPayment,
         l.fundExchangeMethodOnlineBillPaymentSubtitle,
       ),
-      CanadaPostRail() => FundingTileCopy(
+      CanadaPostFundingRail() => FundingTileCopy(
         l.fundExchangeMethodCanadaPost,
         l.fundExchangeMethodCanadaPostSubtitle,
       ),
-      ConfidentialSepaRail() => FundingTileCopy(
+      ConfidentialSepaFundingRail() => FundingTileCopy(
         l.fundExchangeMethodConfidentialSepa,
         l.fundExchangeMethodConfidentialSepaSubtitle,
       ),
-      InstantSepaRail() => FundingTileCopy(
+      InstantSepaFundingRail() => FundingTileCopy(
         l.fundExchangeMethodInstantSepa,
         l.fundExchangeMethodInstantSepaSubtitle,
       ),
-      RegularSepaRail() => FundingTileCopy(
+      RegularSepaFundingRail() => FundingTileCopy(
         l.fundExchangeMethodRegularSepa,
         l.fundExchangeMethodRegularSepaSubtitle,
       ),
-      SpeiRail() => FundingTileCopy(
+      SpeiFundingRail() => FundingTileCopy(
         l.fundExchangeSpeiTransfer,
         l.fundExchangeSpeiSubtitle,
       ),
-      SinpeMovilRail() => FundingTileCopy(
+      SinpeMovilFundingRail() => FundingTileCopy(
         l.fundExchangeCostaRicaMethodSinpeTitle,
         l.fundExchangeCostaRicaMethodSinpeSubtitle,
       ),
-      CostaRicaIbanCrcRail() => FundingTileCopy(
+      CostaRicaIbanCrcFundingRail() => FundingTileCopy(
         l.fundExchangeCostaRicaMethodIbanCrcTitle,
         l.fundExchangeCostaRicaMethodIbanCrcSubtitle,
       ),
-      CostaRicaIbanUsdRail() => FundingTileCopy(
+      CostaRicaIbanUsdFundingRail() => FundingTileCopy(
         l.fundExchangeCostaRicaMethodIbanUsdTitle,
         l.fundExchangeCostaRicaMethodIbanUsdSubtitle,
       ),
-      ArsBankTransferRail() || CopBankTransferRail() => FundingTileCopy(
+      ArsBankTransferFundingRail() ||
+      CopBankTransferFundingRail() => FundingTileCopy(
         l.fundExchangeBankTransfer,
         l.fundExchangeBankTransferSubtitle,
       ),
@@ -126,7 +127,7 @@ extension FundingRailCopy on FundingRail {
       ],
     ];
     return switch (this) {
-      EmailETransferRail() => FundingInstructionsCopy(
+      EmailETransferFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeETransferTitle,
         intro: [
           [CopyPart(l.fundExchangeETransferDescription)],
@@ -146,7 +147,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      BankWireRail() => FundingInstructionsCopy(
+      BankWireFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeBankTransferWireTitle,
         intro: [
           [CopyPart(l.fundExchangeBankTransferWireDescription)],
@@ -184,7 +185,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      OnlineBillPaymentRail() => FundingInstructionsCopy(
+      OnlineBillPaymentFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeOnlineBillPaymentTitle,
         intro: [
           [CopyPart(l.fundExchangeOnlineBillPaymentDescription)],
@@ -200,7 +201,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      CanadaPostRail() => FundingInstructionsCopy(
+      CanadaPostFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeCanadaPostTitle,
         steps: [
           l.fundExchangeCanadaPostStep1,
@@ -217,10 +218,10 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      ConfidentialSepaRail() => FundingInstructionsCopy(
+      ConfidentialSepaFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeMethodConfidentialSepa,
       ),
-      InstantSepaRail() => FundingInstructionsCopy(
+      InstantSepaFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeSepaTitle,
         intro: sepaIntro,
         notice: l.fundExchangeInstantSepaInfo,
@@ -245,7 +246,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      RegularSepaRail() => FundingInstructionsCopy(
+      RegularSepaFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeSepaTitle,
         intro: sepaIntro,
         notice: l.fundExchangeRegularSepaInfo,
@@ -267,7 +268,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      SpeiRail() => FundingInstructionsCopy(
+      SpeiFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeSpeiTitle,
         intro: [
           [CopyPart(l.fundExchangeSpeiDescription)],
@@ -282,7 +283,7 @@ extension FundingRailCopy on FundingRail {
           InstructionField.transferCode: FieldCopy(l.fundExchangeLabelMemo),
         },
       ),
-      SinpeMovilRail() => FundingInstructionsCopy(
+      SinpeMovilFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeSinpeTitle,
         intro: [
           [
@@ -304,7 +305,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      CostaRicaIbanCrcRail() => FundingInstructionsCopy(
+      CostaRicaIbanCrcFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeCrIbanCrcTitle,
         intro: [
           [
@@ -329,7 +330,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      CostaRicaIbanUsdRail() => FundingInstructionsCopy(
+      CostaRicaIbanUsdFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeCrIbanUsdTitle,
         intro: [
           [
@@ -354,7 +355,7 @@ extension FundingRailCopy on FundingRail {
           ),
         },
       ),
-      ArsBankTransferRail() => FundingInstructionsCopy(
+      ArsBankTransferFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeArsBankTransferTitle,
         intro: [
           [CopyPart(l.fundExchangeArsBankTransferDescription)],
@@ -366,7 +367,7 @@ extension FundingRailCopy on FundingRail {
           InstructionField.cvu: FieldCopy(l.fundExchangeLabelCvu),
         },
       ),
-      CopBankTransferRail() => FundingInstructionsCopy(
+      CopBankTransferFundingRail() => FundingInstructionsCopy(
         title: l.fundExchangeBankTransfer,
         intro: [
           [CopyPart(l.fundExchangeCopRedirectMessage, bold: true)],

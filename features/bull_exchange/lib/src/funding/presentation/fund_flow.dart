@@ -620,7 +620,7 @@ FundFlowNext _afterConsent(
   FundingRail rail,
   ConsentGiven consent,
 ) => switch (rail) {
-  ProcessorCodeRail() => _fetch(
+  ProcessorCodeFundingRail() => _fetch(
     open,
     ProcessorCodeRequest(
       rail,
@@ -630,11 +630,11 @@ FundFlowNext _afterConsent(
     const FundFromPicking(),
     1,
   ),
-  CopBankTransferRail() => FundFlowNext(
+  CopBankTransferFundingRail() => FundFlowNext(
     FundInstitutions(open, consent, const ContextLoading(1)),
     const [FundLoadInstitutions(1)],
   ),
-  ConfidentialSepaRail() => FundFlowNext(FundVirtualIban(open, consent)),
+  ConfidentialSepaFundingRail() => FundFlowNext(FundVirtualIban(open, consent)),
 };
 
 FundFlowNext _fetch(
@@ -691,7 +691,7 @@ FundFlowNext _institutions(FundInstitutions state, FundFlowEvent event) {
       return FundFlowNext(
         FundPicking(
           state.open,
-          const CopBankTransferRail().jurisdiction,
+          const CopBankTransferFundingRail().jurisdiction,
           state.consent,
         ),
       );
@@ -746,7 +746,7 @@ FundFlowNext _copInput(FundCopInput state, FundFlowEvent event) =>
       FundBackPressed() => FundFlowNext(
         FundPicking(
           state.open,
-          const CopBankTransferRail().jurisdiction,
+          const CopBankTransferFundingRail().jurisdiction,
           state.consent,
         ),
       ),
@@ -770,7 +770,7 @@ FundFlowNext _virtualIban(FundVirtualIban state, FundFlowEvent event) =>
       FundRegularSepaChosen() => _fetch(
         state.open,
         ProcessorCodeRequest(
-          const RegularSepaRail(),
+          const RegularSepaFundingRail(),
           userNumber: state.open.account.userNumber,
           consent: state.consent,
         ),
@@ -780,7 +780,7 @@ FundFlowNext _virtualIban(FundVirtualIban state, FundFlowEvent event) =>
       FundBackPressed() => FundFlowNext(
         FundPicking(
           state.open,
-          const ConfidentialSepaRail().jurisdiction,
+          const ConfidentialSepaFundingRail().jurisdiction,
           state.consent,
         ),
       ),

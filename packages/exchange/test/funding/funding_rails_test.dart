@@ -22,27 +22,27 @@ void main() {
 
   test('each jurisdiction lists the methods it had, in the same order', () {
     expect(FundingRails.of(Jurisdiction.canada), const [
-      EmailETransferRail(),
-      BankWireRail(),
-      OnlineBillPaymentRail(),
-      CanadaPostRail(),
+      EmailETransferFundingRail(),
+      BankWireFundingRail(),
+      OnlineBillPaymentFundingRail(),
+      CanadaPostFundingRail(),
     ]);
     expect(FundingRails.of(Jurisdiction.europe), const [
-      ConfidentialSepaRail(),
-      InstantSepaRail(),
-      RegularSepaRail(),
+      ConfidentialSepaFundingRail(),
+      InstantSepaFundingRail(),
+      RegularSepaFundingRail(),
     ]);
-    expect(FundingRails.of(Jurisdiction.mexico), const [SpeiRail()]);
+    expect(FundingRails.of(Jurisdiction.mexico), const [SpeiFundingRail()]);
     expect(FundingRails.of(Jurisdiction.costaRica), const [
-      SinpeMovilRail(),
-      CostaRicaIbanCrcRail(),
-      CostaRicaIbanUsdRail(),
+      SinpeMovilFundingRail(),
+      CostaRicaIbanCrcFundingRail(),
+      CostaRicaIbanUsdFundingRail(),
     ]);
     expect(FundingRails.of(Jurisdiction.argentina), const [
-      ArsBankTransferRail(),
+      ArsBankTransferFundingRail(),
     ]);
     expect(FundingRails.of(Jurisdiction.colombia), const [
-      CopBankTransferRail(),
+      CopBankTransferFundingRail(),
     ]);
   });
 
@@ -52,7 +52,7 @@ void main() {
     }
     expect(
       FundingRails.of(ExchangeCatalog.usd.jurisdiction),
-      contains(const CostaRicaIbanUsdRail()),
+      contains(const CostaRicaIbanUsdFundingRail()),
     );
   });
 
@@ -67,9 +67,9 @@ void main() {
     () {
       for (final rail in FundingRails.all) {
         expect(rail.preStep, switch (rail) {
-          CopBankTransferRail() => FundingPreStep.institutionAndAmount,
-          ConfidentialSepaRail() => FundingPreStep.virtualIban,
-          ProcessorCodeRail() => FundingPreStep.none,
+          CopBankTransferFundingRail() => FundingPreStep.institutionAndAmount,
+          ConfidentialSepaFundingRail() => FundingPreStep.virtualIban,
+          ProcessorCodeFundingRail() => FundingPreStep.none,
         }, reason: rail.name);
       }
     },
@@ -77,7 +77,7 @@ void main() {
 
   test('payment processor codes are the ones the app always sent', () {
     final codes = {
-      for (final rail in FundingRails.all.whereType<ProcessorCodeRail>())
+      for (final rail in FundingRails.all.whereType<ProcessorCodeFundingRail>())
         rail.name: rail.paymentProcessorCode,
     };
     expect(codes, {
@@ -97,17 +97,20 @@ void main() {
 
   test('the wire rail does not require the IBAN or account number it never '
       'shows (03 §12.4)', () {
-    expect(const BankWireRail().fields, isNot(contains(InstructionField.iban)));
+    expect(
+      const BankWireFundingRail().fields,
+      isNot(contains(InstructionField.iban)),
+    );
   });
 
   test('Canada Post presents a QR code, the others rows', () {
     const row = InstructionRow(InstructionField.transferCode, 'C0DE');
     expect(
-      const CanadaPostRail().present(const [row]),
+      const CanadaPostFundingRail().present(const [row]),
       const FundingInstructionQr('C0DE'),
     );
     expect(
-      const SpeiRail().present(const [row]),
+      const SpeiFundingRail().present(const [row]),
       const FundingInstructionRows([row]),
     );
   });

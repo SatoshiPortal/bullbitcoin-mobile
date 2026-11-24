@@ -44,7 +44,7 @@ final class FundingAccount {
   /// only when the account can use it.
   List<FundingRail> railsIn(Jurisdiction jurisdiction) => [
     for (final rail in FundingRails.of(jurisdiction))
-      if (rail is! ConfidentialSepaRail ||
+      if (rail is! ConfidentialSepaFundingRail ||
           confidentialSepa != ConfidentialSepaAvailability.unavailable)
         rail,
   ];
@@ -115,7 +115,7 @@ sealed class FundingRequest {
 
 final class ProcessorCodeRequest extends FundingRequest {
   @override
-  final ProcessorCodeRail rail;
+  final ProcessorCodeFundingRail rail;
 
   /// The e-Transfer secret answer; from the loaded account (03 §12.3).
   final int userNumber;
@@ -150,7 +150,7 @@ final class CopPaymentRequest extends FundingRequest {
   }) : super._(consent);
 
   @override
-  CopBankTransferRail get rail => const CopBankTransferRail();
+  CopBankTransferFundingRail get rail => const CopBankTransferFundingRail();
 
   @override
   bool operator ==(Object other) =>

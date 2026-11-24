@@ -42,7 +42,7 @@ final _open = FundOpen(_session, _acct, _cleared);
 final _banks = [FundingInstitution.create(code: 'BC01', name: 'Bank')];
 final _amount = CopAmount.parse('50000')!;
 
-const _eTransfer = EmailETransferRail();
+const _eTransfer = EmailETransferFundingRail();
 final _req = ProcessorCodeRequest(_eTransfer, userNumber: 7, consent: _consent);
 final _copReq = CopPaymentRequest(
   institution: _banks.first,
@@ -50,7 +50,7 @@ final _copReq = CopPaymentRequest(
   consent: _consent,
 );
 final _sepaReq = ProcessorCodeRequest(
-  const RegularSepaRail(),
+  const RegularSepaFundingRail(),
   userNumber: 7,
   consent: _consent,
 );
@@ -107,7 +107,7 @@ final _events = <FundFlowEvent>[
   const FundRetryPressed(), // 4
   const FundJurisdictionPicked(Jurisdiction.europe), // 5
   const FundRailPicked(_eTransfer), // 6
-  const FundRailPicked(CopBankTransferRail()), // 7
+  const FundRailPicked(CopBankTransferFundingRail()), // 7
   const FundConsentAccepted(), // 8
   const FundConsentSubmitted(1, WriteDone(null)), // 9
   const FundConsentVerified(1, ReadGot(true)), // 10
@@ -142,7 +142,7 @@ final _events = <FundFlowEvent>[
   const FundSessionChanged(_otherSession), // 23
   const FundSessionChanged(null), // 24
   FundAccountLoaded(1, ReadGot(_restrictedAcct)), // 25
-  const FundRailPicked(ConfidentialSepaRail()), // 26
+  const FundRailPicked(ConfidentialSepaFundingRail()), // 26
   const FundJurisdictionPicked(Jurisdiction.colombia), // 27
 ];
 
@@ -331,13 +331,13 @@ void main() {
     test('Confidential SEPA asks for consent too (FUND-4)', () {
       final next = transitionFundFlow(
         FundPicking(_open, Jurisdiction.europe, null),
-        const FundRailPicked(ConfidentialSepaRail()),
+        const FundRailPicked(ConfidentialSepaFundingRail()),
       );
       expect(
         next.state,
         FundConsenting(
           _open,
-          const ConfidentialSepaRail(),
+          const ConfidentialSepaFundingRail(),
           const ConsentAsking(),
         ),
       );
@@ -358,8 +358,8 @@ void main() {
         _cleared,
       );
       expect(FundPicking(open, Jurisdiction.europe, null).rails, const [
-        InstantSepaRail(),
-        RegularSepaRail(),
+        InstantSepaFundingRail(),
+        RegularSepaFundingRail(),
       ]);
     });
 
@@ -389,7 +389,7 @@ void main() {
       ).state;
       final wire = transitionFundFlow(
         back,
-        const FundRailPicked(BankWireRail()),
+        const FundRailPicked(BankWireFundingRail()),
       ).state;
       expect(wire, isA<FundFetching>());
       final late = transitionFundFlow(

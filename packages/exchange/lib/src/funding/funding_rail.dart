@@ -43,8 +43,8 @@ enum FundingPreStep {
 /// A rail whose instructions are the answer to the user's payment processor
 /// code. Only the [fields] it shows are required from the answer, so a field
 /// the rail never shows can't break it (03 §12.4).
-sealed class ProcessorCodeRail extends FundingRail {
-  const ProcessorCodeRail();
+sealed class ProcessorCodeFundingRail extends FundingRail {
+  const ProcessorCodeFundingRail();
 
   String get paymentProcessorCode;
 
@@ -59,8 +59,8 @@ sealed class ProcessorCodeRail extends FundingRail {
       FundingInstructionRows(rows);
 }
 
-final class EmailETransferRail extends ProcessorCodeRail {
-  const EmailETransferRail();
+final class EmailETransferFundingRail extends ProcessorCodeFundingRail {
+  const EmailETransferFundingRail();
 
   @override
   String get name => 'emailETransfer';
@@ -82,8 +82,8 @@ final class EmailETransferRail extends ProcessorCodeRail {
   ];
 }
 
-final class BankWireRail extends ProcessorCodeRail {
-  const BankWireRail();
+final class BankWireFundingRail extends ProcessorCodeFundingRail {
+  const BankWireFundingRail();
 
   @override
   String get name => 'bankWire';
@@ -109,8 +109,8 @@ final class BankWireRail extends ProcessorCodeRail {
   ];
 }
 
-final class OnlineBillPaymentRail extends ProcessorCodeRail {
-  const OnlineBillPaymentRail();
+final class OnlineBillPaymentFundingRail extends ProcessorCodeFundingRail {
+  const OnlineBillPaymentFundingRail();
 
   @override
   String get name => 'onlineBillPayment';
@@ -129,8 +129,8 @@ final class OnlineBillPaymentRail extends ProcessorCodeRail {
 }
 
 /// Canada Post shows its code as a QR code.
-final class CanadaPostRail extends ProcessorCodeRail {
-  const CanadaPostRail();
+final class CanadaPostFundingRail extends ProcessorCodeFundingRail {
+  const CanadaPostFundingRail();
 
   @override
   String get name => 'canadaPost';
@@ -149,8 +149,8 @@ final class CanadaPostRail extends ProcessorCodeRail {
       FundingInstructionQr(rows.single.value);
 }
 
-final class ConfidentialSepaRail extends FundingRail {
-  const ConfidentialSepaRail();
+final class ConfidentialSepaFundingRail extends FundingRail {
+  const ConfidentialSepaFundingRail();
 
   @override
   String get name => 'confidentialSepa';
@@ -162,8 +162,8 @@ final class ConfidentialSepaRail extends FundingRail {
   FundingPreStep get preStep => FundingPreStep.virtualIban;
 }
 
-final class InstantSepaRail extends ProcessorCodeRail {
-  const InstantSepaRail();
+final class InstantSepaFundingRail extends ProcessorCodeFundingRail {
+  const InstantSepaFundingRail();
 
   @override
   String get name => 'instantSepa';
@@ -185,8 +185,8 @@ final class InstantSepaRail extends ProcessorCodeRail {
   ];
 }
 
-final class RegularSepaRail extends ProcessorCodeRail {
-  const RegularSepaRail();
+final class RegularSepaFundingRail extends ProcessorCodeFundingRail {
+  const RegularSepaFundingRail();
 
   @override
   String get name => 'regularSepa';
@@ -208,8 +208,8 @@ final class RegularSepaRail extends ProcessorCodeRail {
   ];
 }
 
-final class SpeiRail extends ProcessorCodeRail {
-  const SpeiRail();
+final class SpeiFundingRail extends ProcessorCodeFundingRail {
+  const SpeiFundingRail();
 
   @override
   String get name => 'spei';
@@ -229,8 +229,8 @@ final class SpeiRail extends ProcessorCodeRail {
   ];
 }
 
-final class SinpeMovilRail extends ProcessorCodeRail {
-  const SinpeMovilRail();
+final class SinpeMovilFundingRail extends ProcessorCodeFundingRail {
+  const SinpeMovilFundingRail();
 
   @override
   String get name => 'sinpeMovil';
@@ -248,8 +248,8 @@ final class SinpeMovilRail extends ProcessorCodeRail {
   ];
 }
 
-final class CostaRicaIbanCrcRail extends ProcessorCodeRail {
-  const CostaRicaIbanCrcRail();
+final class CostaRicaIbanCrcFundingRail extends ProcessorCodeFundingRail {
+  const CostaRicaIbanCrcFundingRail();
 
   @override
   String get name => 'costaRicaIbanCrc';
@@ -265,8 +265,8 @@ final class CostaRicaIbanCrcRail extends ProcessorCodeRail {
 }
 
 /// The only USD rail: USD is a Costa Rica market (C1).
-final class CostaRicaIbanUsdRail extends ProcessorCodeRail {
-  const CostaRicaIbanUsdRail();
+final class CostaRicaIbanUsdFundingRail extends ProcessorCodeFundingRail {
+  const CostaRicaIbanUsdFundingRail();
 
   @override
   String get name => 'costaRicaIbanUsd';
@@ -288,8 +288,8 @@ const _costaRicaIbanFields = [
   InstructionField.cedulaJuridica,
 ];
 
-final class ArsBankTransferRail extends ProcessorCodeRail {
-  const ArsBankTransferRail();
+final class ArsBankTransferFundingRail extends ProcessorCodeFundingRail {
+  const ArsBankTransferFundingRail();
 
   @override
   String get name => 'arsBankTransfer';
@@ -309,8 +309,8 @@ final class ArsBankTransferRail extends ProcessorCodeRail {
 
 /// COP: the user picks the paying bank and the amount; the instructions are
 /// a payment link.
-final class CopBankTransferRail extends FundingRail {
-  const CopBankTransferRail();
+final class CopBankTransferFundingRail extends FundingRail {
+  const CopBankTransferFundingRail();
 
   @override
   String get name => 'copBankTransfer';
@@ -325,19 +325,19 @@ final class CopBankTransferRail extends FundingRail {
 /// Every funding rail, in the order the fund screen lists them.
 abstract final class FundingRails {
   static const List<FundingRail> all = [
-    EmailETransferRail(),
-    BankWireRail(),
-    OnlineBillPaymentRail(),
-    CanadaPostRail(),
-    ConfidentialSepaRail(),
-    InstantSepaRail(),
-    RegularSepaRail(),
-    SpeiRail(),
-    SinpeMovilRail(),
-    CostaRicaIbanCrcRail(),
-    CostaRicaIbanUsdRail(),
-    ArsBankTransferRail(),
-    CopBankTransferRail(),
+    EmailETransferFundingRail(),
+    BankWireFundingRail(),
+    OnlineBillPaymentFundingRail(),
+    CanadaPostFundingRail(),
+    ConfidentialSepaFundingRail(),
+    InstantSepaFundingRail(),
+    RegularSepaFundingRail(),
+    SpeiFundingRail(),
+    SinpeMovilFundingRail(),
+    CostaRicaIbanCrcFundingRail(),
+    CostaRicaIbanUsdFundingRail(),
+    ArsBankTransferFundingRail(),
+    CopBankTransferFundingRail(),
   ];
 
   /// The rails of [jurisdiction], in display order.

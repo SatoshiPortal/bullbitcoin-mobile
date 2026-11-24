@@ -153,7 +153,7 @@ List<Page<void>> fundPagesFor(
       copInput(open, institutions, busy: busy),
     ],
     FundFromVirtualIban() => [
-      railMethods(open, const ConfidentialSepaRail()),
+      railMethods(open, const ConfidentialSepaFundingRail()),
       virtualIban(),
     ],
   };
@@ -198,8 +198,8 @@ List<Page<void>> fundPagesFor(
     FundInstitutions(:final open, :final load) => [
       methods(
         FundMethodsPicking(
-          const CopBankTransferRail().jurisdiction,
-          open.account.railsIn(const CopBankTransferRail().jurisdiction),
+          const CopBankTransferFundingRail().jurisdiction,
+          open.account.railsIn(const CopBankTransferFundingRail().jurisdiction),
           busy: load is ContextLoading,
           problem: switch (load) {
             ContextFailed(:final problem) => problem,
@@ -211,11 +211,11 @@ List<Page<void>> fundPagesFor(
       ),
     ],
     FundCopInput(:final open, :final institutions) => [
-      railMethods(open, const CopBankTransferRail()),
+      railMethods(open, const CopBankTransferFundingRail()),
       copInput(open, institutions, busy: false),
     ],
     FundVirtualIban(:final open) => [
-      railMethods(open, const ConfidentialSepaRail()),
+      railMethods(open, const ConfidentialSepaFundingRail()),
       virtualIban(),
     ],
     FundFetching(:final open, :final request, origin: final from) => origin(

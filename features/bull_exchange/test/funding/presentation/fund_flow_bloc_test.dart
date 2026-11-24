@@ -76,13 +76,13 @@ void main() {
     });
 
     await expectLater(bloc.stream, emits(isA<FundPicking>()));
-    bloc.add(const FundRailPicked(EmailETransferRail()));
+    bloc.add(const FundRailPicked(EmailETransferFundingRail()));
     await expectLater(
       bloc.stream,
       emitsInOrder([isA<FundFetching>(), isA<FundShowing>()]),
     );
     expect(funding.sessions, everyElement(_session));
-    expect(funding.requests.single.rail, const EmailETransferRail());
+    expect(funding.requests.single.rail, const EmailETransferFundingRail());
   });
 
   test('another session ends the flow', () async {
