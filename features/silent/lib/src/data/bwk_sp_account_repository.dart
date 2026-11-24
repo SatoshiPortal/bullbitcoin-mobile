@@ -480,6 +480,9 @@ class BwkSpAccountRepository
     try {
       return await control;
     } finally {
+      // A decision may have read the entry revision while the control was
+      // waiting on disk. Its snapshot is no longer valid after the control.
+      _scanRevision++;
       _scanControl = null;
     }
   }
@@ -522,13 +525,20 @@ class BwkSpAccountRepository
     }
     return _controlScan(() async {
       final previous = _pendingScan;
-      // Invalidate the persisted authorization before clearing the native
-      // cursor: a process death between the two must not resume a fresh scan.
-      await _setPendingScan(null);
+      // Persist a pause before clearing the cursor. If the process dies or
+      // cleanup fails, there is no window in which an old resume marker can
+      // authorize a fresh scan or a prior Stop can be lost.
+      if (previous != null && !previous.isPaused) {
+        await _setPendingScan((
+          startHeight: previous.startHeight,
+          isPaused: true,
+        ));
+      }
       final result = _guard(_ffi.clearScanState);
       if (result case Ok()) {
         _retryAutomaticScan = false;
-      } else if (previous != null) {
+        await _setPendingScan(null);
+      } else if (previous != null && !previous.isPaused) {
         await _savePendingScan(previous);
       }
       return result;
@@ -822,6 +832,7 @@ class BwkSpAccountRepository
       // (same phase as the first sync), so the tip only ever moves up.
       if (tip != null && (latest == null || tip > latest)) {
         _latestHeaderTip = tip;
+        _scanRevision++;
         _emit(SilentChainTipChanged(tip));
       }
     }

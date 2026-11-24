@@ -9,6 +9,9 @@ class KeyValueSpAutoScanRepository implements SpAutoScanRepository {
   // Enabled until storage or the user says otherwise, so a read before warmUp
   // never has to guess.
   bool _isEnabled = true;
+  // An explicit opt-out takes effect for the rest of this session even if
+  // the keystore fails to save it. Only a newer, explicit opt-in may undo it.
+  bool _sessionOptOut = false;
   int _writeRevision = 0;
   Future<void> _pendingWrite = Future.value();
 
@@ -21,7 +24,7 @@ class KeyValueSpAutoScanRepository implements SpAutoScanRepository {
   Future<Result<void, SilentFailure>> warmUp() async {
     final revision = _writeRevision;
     await _pendingWrite;
-    if (revision != _writeRevision) return const Ok(null);
+    if (revision != _writeRevision || _sessionOptOut) return const Ok(null);
     switch (await _storage.readAutoScan()) {
       case Err():
         return const Err(SilentUnexpected('Silent auto-scan read failed'));
@@ -36,6 +39,7 @@ class KeyValueSpAutoScanRepository implements SpAutoScanRepository {
   @override
   Future<Result<void, SilentFailure>> save({required bool isEnabled}) {
     _writeRevision++;
+    _sessionOptOut = !isEnabled;
     _isEnabled = isEnabled;
     final write = _pendingWrite.then((_) async {
       return (await _storage.writeAutoScan(
