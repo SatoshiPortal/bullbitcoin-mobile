@@ -42,7 +42,7 @@ There is no SP-specific make target. `make checks` is the local entry point: it 
 
 `make unit-test` picks up the Silent Payments suite under `features/silent/test/` along with the rest of the workspace. To run only this suite, run `fvm flutter test` from `features/silent`.
 
-Automatic scanning runs only in the foreground through `SyncSpWalletUsecase`. It can resume a manual scan that previously started and was not paused with Stop. Other wallets still follow `SpScanPolicy`: a wallet with no cursor or one more than about a month behind the tip needs a manual start. WorkManager does not start Silent Payments scans.
+Automatic scanning runs only in the foreground through `SyncSpWalletUsecase`. It can resume a manual scan that previously started and was not paused with Stop. A failed automatic scan can be retried in the same session, but still follows `SpScanPolicy`: a wallet with no cursor or one more than about a month behind the tip needs a manual start. Stop blocks automatic scans even after reopening the account, until the user starts a scan or clears the scan state. WorkManager does not start Silent Payments scans.
 
 Changing backends reconnects the existing account in place. Service Status only checks the configured Blindbit tip for an admitted Silent Payments wallet; the setup and settings checks also sample the scan data endpoints. Existing configurations without a minimum scan amount retain 600 sats. New configurations default to 1,000 sats, and lowering the amount does not automatically rescan earlier blocks.
 
