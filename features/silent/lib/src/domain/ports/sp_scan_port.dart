@@ -2,6 +2,15 @@ import 'package:primitives/primitives.dart';
 import 'package:silent/src/domain/silent_failure.dart';
 import 'package:meta/meta.dart';
 
+/// The state an automatic scan was decided on.
+///
+/// The sync path reads the snapshot and its tip, then asks for a scan; between
+/// those steps the session can be recycled or the user can stop or clear the
+/// scan. Carrying the revision lets the repository refuse a decision that no
+/// longer applies. The final policy check lives in the repository, so no
+/// callback crosses the port.
+typedef SpAutomaticScanAdmission = ({int revision});
+
 /// The single Dart entry point to the Rust chain scan.
 ///
 /// This port exists to hold exactly one method. `ScanSpWalletUsecase` is the
@@ -16,6 +25,14 @@ abstract interface class SpScanPort {
   /// Run the one-shot scan. `startHeight` overrides where it begins (null
   /// resumes from the last scanned position). Returns as soon as the scan is
   /// spawned; progress arrives on the notification stream.
+  ///
+  /// [automatic] marks a scan the app started on its own: the repository checks
+  /// its revision and a paused marker before spawning anything, and reports
+  /// `Ok(null)` for a decision that no longer applies. An automatic scan never
+  /// writes a resume marker.
   @useResult
-  Future<Result<void, SilentFailure>> scanOnce({int? startHeight});
+  Future<Result<void, SilentFailure>> scanOnce({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  });
 }

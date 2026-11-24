@@ -120,6 +120,18 @@ abstract final class SilentGraph {
     return controller.stream;
   }
 
+  // The single definition of "foreground" the scan path uses: the app is
+  // resumed. A binding that has not reported a state yet is NOT foreground, so
+  // an automatic scan never runs on a guess.
+  static bool _isForegroundState(AppLifecycleState? state) =>
+      state == AppLifecycleState.resumed;
+
+  static bool _isForegroundNow() =>
+      _isForegroundState(WidgetsBinding.instance.lifecycleState);
+
+  static Stream<bool> _foregroundChanges() =>
+      _appLifecycleStates().map(_isForegroundState).distinct();
+
   static void _registerAdapters(GetIt locator) {
     // One datasource each, both lazySingletons: the FFI one owns the live
     // session, and the files one carries the recreate backup across calls, so a
@@ -257,6 +269,7 @@ abstract final class SilentGraph {
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         getSpAutoScanUsecase: locator<GetSpAutoScanUsecase>(),
+        isForeground: _isForegroundNow,
       ),
     );
     locator.registerFactory<ScanSpWalletUsecase>(
@@ -295,9 +308,8 @@ abstract final class SilentGraph {
     // The Blindbit tip the scan follows: one bounded HTTP read, kept out of the
     // wallet data load so no screen waits on it.
     locator.registerFactory<GetSpScanServerTipUsecase>(
-      () => GetSpScanServerTipUsecase(
-        repository: locator<SpAccountRepository>(),
-      ),
+      () =>
+          GetSpScanServerTipUsecase(repository: locator<SpAccountRepository>()),
     );
     locator.registerFactory<GetSpBalanceUsecase>(
       () => GetSpBalanceUsecase(repository: locator<SpAccountRepository>()),

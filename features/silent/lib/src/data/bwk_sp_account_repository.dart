@@ -100,6 +100,11 @@ class BwkSpAccountRepository
   // Serializes marker writes: a launch must not overwrite a stop's pause with
   // its own fresh marker, and a dispose must see the last write finish.
   Future<void> _pendingScanWrite = Future.value();
+  // A queued automatic decision belongs to the session and scan state it read.
+  // Bumped whenever that state changes: a new session, a stop or clear, a
+  // dispose, and every scan-state notification. See
+  // SpAccountRepository.scanRevision.
+  int _scanRevision = 0;
   // Set around an electrum restart, which holds the same lock across a
   // blocking connect.
   bool _restarting = false;
@@ -199,6 +204,7 @@ class BwkSpAccountRepository
         SilentSessionBusy('Silent account already open, opening or closing'),
       );
     }
+    _scanRevision++;
     final pending = _openFromSecret(
       network: network,
       secret: secret,
@@ -353,14 +359,18 @@ class BwkSpAccountRepository
   // reached only via `ScanSpWalletUsecase`. Do not add other callers; the
   // audited scan policy depends on it.
   @override
-  Future<Result<void, SilentFailure>> scanOnce({int? startHeight}) async {
+  Future<Result<void, SilentFailure>> scanOnce({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  }) async {
     if (teardownInProgress || _pendingDispose != null) {
       return const Err(SilentSessionBusy('SP session is closing'));
     }
+    if (!_canLaunchAutomatic(automatic)) return const Ok(null);
     if (_scanning || _scanLaunch != null || _scanControl != null) {
       return const Err(SilentScanBusy('SP scan already scheduled'));
     }
-    final launch = _launchScan(startHeight);
+    final launch = _launchScan(startHeight, automatic);
     _scanLaunch = launch;
     try {
       return await launch;
@@ -369,11 +379,26 @@ class BwkSpAccountRepository
     }
   }
 
-  Future<Result<void, SilentFailure>> _launchScan(int? startHeight) async {
+  // The whole automatic admission check lives here, not in a callback the
+  // caller hands over: the decision must be judged against the state this
+  // repository holds right now.
+  bool _canLaunchAutomatic(SpAutomaticScanAdmission? automatic) =>
+      automatic == null ||
+      (automatic.revision == _scanRevision && _pendingScan?.isPaused != true);
+
+  Future<Result<void, SilentFailure>> _launchScan(
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  ) async {
+    // Only a manual scan owns the marker. An automatic resume adopts what it
+    // found and leaves it in place, so a process death mid-resume still leaves
+    // the same thing to resume next time.
+    final manual = automatic == null;
     final previous = _pendingScan;
     try {
       // A queued marker write has to land before this scan rewrites it.
       await _pendingScanWrite;
+      if (!_canLaunchAutomatic(automatic)) return const Ok(null);
       if (teardownInProgress || _pendingDispose != null) {
         return const Err(SilentSessionBusy('SP session is closing'));
       }
@@ -389,11 +414,15 @@ class BwkSpAccountRepository
           ? selectedHeight
           : null;
       final pending = (startHeight: selectedHeight, isPaused: false);
-      if (pending != previous) await _savePendingScan(pending);
+      if (manual && pending != previous) await _savePendingScan(pending);
       // Saving the marker yields to lifecycle changes and teardown.
       if (teardownInProgress || _pendingDispose != null) {
-        if (pending != previous) await _savePendingScan(previous);
+        if (manual && pending != previous) await _savePendingScan(previous);
         return const Err(SilentSessionBusy('SP session is closing'));
+      }
+      if (!_canLaunchAutomatic(automatic)) {
+        if (manual && pending != previous) await _savePendingScan(previous);
+        return const Ok(null);
       }
       _scanning = true;
       await _ffi.scanOnce(startHeight: effectiveStart);
@@ -402,7 +431,7 @@ class BwkSpAccountRepository
       _scanning = false;
       // The scan did not start, so the marker must not claim it did: restore
       // the one this launch replaced (or drop the one it wrote).
-      await _savePendingScan(previous);
+      if (manual) await _savePendingScan(previous);
       return Err(_mapFfiError(e));
     }
   }
@@ -418,6 +447,9 @@ class BwkSpAccountRepository
     if (_scanControl != null) {
       return const Err(SilentScanBusy('SP scan control already in progress'));
     }
+    // Stop and clear change the scan state, so a decision queued before them
+    // must not be launched afterwards.
+    _scanRevision++;
     final control = _guardResult(body);
     _scanControl = control;
     try {
@@ -483,9 +515,7 @@ class BwkSpAccountRepository
   /// Persist [pending] first, then publish it, so the in-memory marker never
   /// claims a recovery the disk does not have. The returned future throws when
   /// the write fails; see [_savePendingScan] for the best-effort path.
-  Future<void> _setPendingScan(
-    ({int? startHeight, bool isPaused})? pending,
-  ) {
+  Future<void> _setPendingScan(({int? startHeight, bool isPaused})? pending) {
     final dataDir = _sessionDataDir;
     final write = _pendingScanWrite.then((_) async {
       if (dataDir != null) await _files.writePendingScan(dataDir, pending);
@@ -649,6 +679,9 @@ class BwkSpAccountRepository
   }
 
   @override
+  int get scanRevision => _scanRevision;
+
+  @override
   Future<Result<int, SilentFailure>> currentBlockHeight() =>
       _guardAsync(_ffi.blockHeight);
 
@@ -745,6 +778,8 @@ class BwkSpAccountRepository
       }
     }
     _scanning = n.scanRunningAfter ?? _scanning;
+    // Every scan-state event invalidates a decision queued before it.
+    if (n.scanRunningAfter != null) _scanRevision++;
     // A completed scan reached its target: the resume marker is stale. Stop
     // keeps it, flipped to paused, so the gap it left is still known.
     if (n is dom.SpScanCompleted && _pendingScan != null) {
@@ -818,6 +853,7 @@ class BwkSpAccountRepository
   bool get notifStreamTornDown => _notifTornDown;
 
   Future<void> _runDispose() async {
+    _scanRevision++;
     await _scanLaunch;
     await _scanControl;
     // Tear down the Rust session FIRST. This flips the notif-thread shutdown

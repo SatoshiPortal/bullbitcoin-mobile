@@ -94,6 +94,12 @@ abstract interface class SpAccountRepository {
   /// Latest header-store tip seen from header progress, or null if unknown.
   int? chainTip();
 
+  /// Monotonic revision of the session and scan state. An automatic scan reads
+  /// it before deciding, and the repository refuses to launch when the state
+  /// has moved on since: the decision belonged to a session or scan that is no
+  /// longer the one in front of it.
+  int get scanRevision;
+
   /// Latest block available from the live session's Blindbit server. Async: the
   /// tip is read over HTTP, not from the account's electrum cursor, which lags
   /// the Blindbit server the scan follows.
