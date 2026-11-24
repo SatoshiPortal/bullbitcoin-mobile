@@ -357,6 +357,7 @@ void main() {
         expect(await rows(), isEmpty);
         expect(await loggedLines('WARNING'), [
           'Wallet creation failed catalog row removed',
+          if (path != 'secret') 'Watch-only import refused reason=storage',
         ]);
         expect(
           await loggedLines('SEVERE'),
@@ -592,6 +593,16 @@ void main() {
             isA<Err<void, WalletProvisioningFailure>>(),
           );
           expect(await rows(), isEmpty);
+          expect(
+            await loggedLines('WARNING'),
+            [
+              'Wallet creation failed catalog row removed',
+              'Watch-only import refused reason=storage',
+            ],
+            reason:
+                'an operational storage refusal routes one fixed, exportable '
+                'code after the compensation diagnostic',
+          );
           native.onCreate = null;
         }
         expect(
