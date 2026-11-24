@@ -34,7 +34,8 @@ void main() {
       expect(result, isA<Err<void, SilentFailure>>());
       final failure = (result as Err<void, SilentFailure>).failure;
       expect(failure, isA<SilentBackendUnreachable>());
-      expect(failure.logMessage, contains('boom'));
+      expect(failure.logMessage, isNot(contains('boom')));
+      expect(failure.logMessage, isNot(contains('http://bad')));
     });
 
     test('electrum returns Ok on success', () async {
@@ -58,7 +59,7 @@ void main() {
       expect(result, isA<Err<void, SilentFailure>>());
       final failure = (result as Err<void, SilentFailure>).failure;
       expect(failure, isA<SilentBackendUnreachable>());
-      expect(failure.logMessage, contains('no route'));
+      expect(failure.logMessage, isNot(contains('no route')));
     });
   });
 }
