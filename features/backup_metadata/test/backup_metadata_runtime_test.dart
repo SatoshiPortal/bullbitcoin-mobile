@@ -25,14 +25,16 @@ void main() {
   late _Inventory inventory;
   late _Labels labels;
 
-  BackupMetadataRepositoryImpl repository([String? statePath]) =>
-      BackupMetadataRepositoryImpl(
-        store: BackupMetadataStore(path: statePath ?? path),
-        inventory: inventory,
-        labels: labels,
-        codec: const _Codec(),
-        storages: [storage],
-      );
+  BackupMetadataRepositoryImpl repository([
+    String? statePath,
+    BackupMetadataCodec codec = const _Codec(),
+  ]) => BackupMetadataRepositoryImpl(
+    store: BackupMetadataStore(path: statePath ?? path),
+    inventory: inventory,
+    labels: labels,
+    codec: codec,
+    storages: [storage],
+  );
 
   Future<void> enable([String? statePath]) async {
     expect(
@@ -259,6 +261,61 @@ void main() {
       expect(storage.deleted, isEmpty);
     },
   );
+
+  test(
+    'discovery reports a decode failure instead of an empty destination',
+    () async {
+      await enable();
+      await run();
+      final broken = StoredObject(
+        id: 'broken',
+        name: 'bull-data-broken.bip138',
+        size: 6,
+        createdAt: DateTime.utc(2026, 1, 3),
+        durability: Durability.durable,
+      );
+      storage.objects.clear();
+      storage.objects[broken] = Uint8List.fromList(utf8.encode('broken'));
+
+      final result = await repository(
+        null,
+        const _BrokenCodec(),
+      ).discover(storage.destination);
+
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataUnexpectedFailure>(),
+      );
+    },
+  );
+
+  test('discovery keeps a usable copy when another fails to decode', () async {
+    await enable();
+    await run();
+    final usable = objectById('1');
+    storage.objects[StoredObject(
+      id: 'broken',
+      name: 'bull-data-broken.bip138',
+      size: 6,
+      createdAt: DateTime.utc(2026, 1, 3),
+      durability: Durability.durable,
+    )] = Uint8List.fromList(
+      utf8.encode('broken'),
+    );
+
+    final discovered = await repository(
+      null,
+      const _BrokenCodec(),
+    ).discover(storage.destination);
+
+    expect(
+      discovered.fold(
+        (backups) => backups.map((backup) => backup.storedAt),
+        (_) => const <DateTime?>[],
+      ),
+      [usable.createdAt],
+    );
+  });
 
   test(
     'folder repairs unchanged digest when latest receipt no longer matches',
@@ -664,4 +721,26 @@ final class _Ready implements BackupReadinessPort {
 
   @override
   Future<bool> databaseReady() async => true;
+}
+
+final class _BrokenCodec implements BackupMetadataCodec {
+  const _BrokenCodec();
+
+  @override
+  Result<PreparedBackup, BackupMetadataFailure> prepare(
+    BackupGroup group,
+    LabelsSnapshot snapshot,
+  ) => const _Codec().prepare(group, snapshot);
+
+  @override
+  Future<Result<LabelsSnapshot?, BackupMetadataFailure>> decode(
+    BackupGroup group,
+    Uint8List envelope,
+  ) async {
+    final data = utf8.decode(envelope, allowMalformed: true);
+    if (data == 'broken') {
+      return const Err(BackupMetadataUnexpectedFailure());
+    }
+    return const _Codec().decode(group, envelope);
+  }
 }
