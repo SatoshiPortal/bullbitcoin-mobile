@@ -248,6 +248,7 @@ Local path crates are shown and their own manifests are inventoried separately. 
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `boltz-client` | `runtime` | `git (see below)` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `flutter_rust_bridge` | `runtime` | `=2.13.0` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `hex` | `runtime` | `0.4` |
+| [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `lnurl-rs` | `runtime` | `0.9.0` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `openssl` | `runtime` | `0.10.64` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `reqwest` | `runtime` | `0.12` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `rustls` | `runtime` | `0.23` |
