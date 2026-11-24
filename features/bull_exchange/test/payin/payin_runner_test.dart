@@ -33,8 +33,17 @@ final _order = Order.sell(
 ) as SellOrder;
 
 const _target = OnchainDeposit('tb1q');
-const _built = PayinBuilt<PayinSpend>(
+const _spend = PayinWalletSpend(
   'w1',
+  PayinSpendOptions(
+    fee: PayinFeeRate(250),
+    replaceByFee: true,
+    coins: {},
+    payjoin: false,
+  ),
+);
+const _built = PayinBuilt<PayinSpend>(
+  _spend,
   'tx1',
   SignedBitcoinPayin<String>('signed'),
 );
@@ -84,7 +93,7 @@ void main() {
   test('build, send through the gate and journal an unknown send', () {
     fakeAsync((async) {
       runner.run([
-        PayinBuild<PayinSpend>(_order, _target, 'w1', 1),
+        PayinBuild<PayinSpend>(_order, _target, _spend, 1),
         PayinSend<PayinSpend>(_order, _target, 2, _built),
       ]);
       async.flushMicrotasks();

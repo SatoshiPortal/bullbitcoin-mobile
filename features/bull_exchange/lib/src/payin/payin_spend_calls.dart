@@ -102,7 +102,7 @@ PayinCalls payinCallsOf(
       }
       return PayinBuildOk(
         PayinBuilt(
-          effect.walletId,
+          effect.spend,
           txid,
           PayjoinPayin<PreparedBitcoinSpend>(
             prepared: prepared,
@@ -124,7 +124,7 @@ PayinCalls payinCallsOf(
         }
         return PayinBuildOk(
           PayinBuilt(
-            effect.walletId,
+            effect.spend,
             txid,
             SignedBitcoinPayin<SignedBitcoinSpend>(signed),
           ),
@@ -156,7 +156,7 @@ PayinCalls payinCallsOf(
         return switch (decodeLiquidPset(signed.signedPset)) {
           Ok(value: final decoded) => PayinBuildOk(
             PayinBuilt(
-              effect.walletId,
+              effect.spend,
               decoded.txid,
               SignedLiquidPayin<SignedLiquidSpend>(signed),
             ),

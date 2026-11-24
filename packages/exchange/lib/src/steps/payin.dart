@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 
 import '../bitcoin/bitcoin_rail.dart';
 import '../domain/entities/btc_network.dart';
@@ -130,17 +131,104 @@ UnknownWrite? openPayinEntryFor(String orderId, List<UnknownWrite> entries) {
   return null;
 }
 
+/// The fee a payin is built at, chosen on the review before Building.
+@immutable
+sealed class PayinFee extends _PayinValue {
+  const PayinFee();
+}
+
+/// A fee rate in sat per kilo-weight-unit (250 sat/kwu = 1 sat/vB).
+final class PayinFeeRate extends PayinFee {
+  final int satPerKwu;
+
+  const PayinFeeRate(this.satPerKwu);
+
+  @override
+  List<Object?> get props => [satPerKwu];
+}
+
+/// An absolute fee in sats.
+final class PayinFeeAbsolute extends PayinFee {
+  final int sats;
+
+  const PayinFeeAbsolute(this.sats);
+
+  @override
+  List<Object?> get props => [sats];
+}
+
+/// The network's minimum relay fee (Liquid: nothing to choose).
+final class PayinFeeNetworkMinimum extends PayinFee {
+  const PayinFeeNetworkMinimum();
+
+  @override
+  List<Object?> get props => const [];
+}
+
+/// How an app-wallet payin is built: the fee, replace-by-fee, the coins
+/// picked by hand (empty: the wallet picks) and whether a payjoin the order
+/// offers is used. Chosen before Building and carried with it, so a rebuild
+/// after a refused broadcast uses the same choice; a resend of the same
+/// signed transaction never reads it.
+final class PayinSpendOptions extends _PayinValue {
+  final PayinFee fee;
+  final bool replaceByFee;
+  final Set<Outpoint> coins;
+  final bool payjoin;
+
+  const PayinSpendOptions({
+    required this.fee,
+    required this.replaceByFee,
+    required this.coins,
+    required this.payjoin,
+  });
+
+  /// A Liquid payin: the network minimum, no other choice.
+  static const liquid = PayinSpendOptions(
+    fee: PayinFeeNetworkMinimum(),
+    replaceByFee: false,
+    coins: {},
+    payjoin: false,
+  );
+
+  @override
+  List<Object?> get props => [
+    fee,
+    replaceByFee,
+    ([...coins]..sort(_byOutpoint)).join(','),
+    payjoin,
+  ];
+}
+
+int _byOutpoint(Outpoint a, Outpoint b) {
+  final byTx = a.txId.compareTo(b.txId);
+  return byTx != 0 ? byTx : a.vout.compareTo(b.vout);
+}
+
+/// The app wallet a payin is built from and how.
+final class PayinWalletSpend extends _PayinValue {
+  final String walletId;
+  final PayinSpendOptions options;
+
+  const PayinWalletSpend(this.walletId, this.options);
+
+  @override
+  List<Object?> get props => [walletId, options];
+}
+
 /// A signed payin ready to send: [payload] is the wallet's own signed spend
 /// (opaque here), [txid] read from the signed transaction (SELL-12).
 final class PayinBuilt<P> extends _PayinValue {
-  final String walletId;
+  final PayinWalletSpend spend;
   final String txid;
   final P payload;
 
-  const PayinBuilt(this.walletId, this.txid, this.payload);
+  const PayinBuilt(this.spend, this.txid, this.payload);
+
+  String get walletId => spend.walletId;
 
   @override
-  List<Object?> get props => [walletId, txid, payload];
+  List<Object?> get props => [spend, txid, payload];
 }
 
 enum PayinBuildProblem {
@@ -215,12 +303,12 @@ sealed class PayinResume<P> extends _PayinValue {
 }
 
 final class PayinResumeBuild<P> extends PayinResume<P> {
-  final String walletId;
+  final PayinWalletSpend spend;
 
-  const PayinResumeBuild(this.walletId);
+  const PayinResumeBuild(this.spend);
 
   @override
-  List<Object?> get props => [walletId];
+  List<Object?> get props => [spend];
 }
 
 final class PayinResumeSend<P> extends PayinResume<P> {
@@ -338,13 +426,13 @@ sealed class PayinState<P> extends _PayinValue {
 final class PayinBuilding<P> extends PayinState<P> {
   final Order order;
   final DepositTarget target;
-  final String walletId;
+  final PayinWalletSpend spend;
   final int attempt;
 
-  const PayinBuilding(this.order, this.target, this.walletId, this.attempt);
+  const PayinBuilding(this.order, this.target, this.spend, this.attempt);
 
   @override
-  List<Object?> get props => [order, target, walletId, attempt];
+  List<Object?> get props => [order, target, spend, attempt];
 }
 
 /// Sending through the account's write gate.
@@ -753,18 +841,20 @@ sealed class PayinEffect<P> extends _PayinValue {
   const PayinEffect();
 }
 
-/// Prepare and sign the payin of [order] to [target] from [walletId];
+/// Prepare and sign the payin of [order] to [target] as [spend] says;
 /// answer [PayinBuildAnswered] for [attempt]. Never broadcasts.
 final class PayinBuild<P> extends PayinEffect<P> {
   final Order order;
   final DepositTarget target;
-  final String walletId;
+  final PayinWalletSpend spend;
   final int attempt;
 
-  const PayinBuild(this.order, this.target, this.walletId, this.attempt);
+  const PayinBuild(this.order, this.target, this.spend, this.attempt);
+
+  String get walletId => spend.walletId;
 
   @override
-  List<Object?> get props => [order, target, walletId, attempt];
+  List<Object?> get props => [order, target, spend, attempt];
 }
 
 /// Send [built] through the write gate ([runPayinSend]); answer
@@ -862,6 +952,7 @@ PayinNext<P> payinStart<P>(
   required Order order,
   required PayinSource source,
   required DateTime now,
+  required PayinSpendOptions? options,
   UnknownWrite? openEntry,
 }) {
   final rail = source.rail.rail;
@@ -879,12 +970,16 @@ PayinNext<P> payinStart<P>(
   if (order.orderStatus.isTerminal) return StepNext(PayinOrderEnded<P>(order));
   if (_pastDeadline(order, now)) return StepNext(PayinQuoteLapsed<P>(order));
   return switch (source) {
-    PayinFromAppWallet(:final walletId) when rail.canBeAppWallet => _building(
-      order,
-      target,
-      walletId,
-      1,
-    ),
+    PayinFromAppWallet(:final walletId) when rail.canBeAppWallet =>
+      switch (options) {
+        final options? => _building(
+          order,
+          target,
+          PayinWalletSpend(walletId, options),
+          1,
+        ),
+        null => throw ArgumentError.notNull('options'),
+      },
     PayinFromAppWallet() => StepNext(PayinDepositRefused<P>(order)),
     PayinFromExternal() => _external(policy, order, target),
   };
@@ -948,10 +1043,10 @@ Future<PayinSendAnswered<P>> runPayinSend<P>({
 PayinNext<P> _building<P>(
   Order order,
   DepositTarget target,
-  String walletId,
+  PayinWalletSpend spend,
   int attempt,
-) => StepNext(PayinBuilding<P>(order, target, walletId, attempt), [
-  PayinBuild<P>(order, target, walletId, attempt),
+) => StepNext(PayinBuilding<P>(order, target, spend, attempt), [
+  PayinBuild<P>(order, target, spend, attempt),
 ]);
 
 PayinNext<P> _broadcasting<P>(
@@ -1077,7 +1172,7 @@ PayinNext<P>? _watchStep<P>(
 PayinNext<P> _built<P>(
   Order order,
   DepositTarget target,
-  String walletId,
+  PayinWalletSpend spend,
   int attempt,
   PayinBuildResult<P> result,
   DateTime at,
@@ -1091,7 +1186,7 @@ PayinNext<P> _built<P>(
       order,
       target,
       attempt,
-      PayinResumeBuild<P>(walletId),
+      PayinResumeBuild<P>(spend),
       PayinBuildRefused(problem),
     ),
   ),
@@ -1127,7 +1222,7 @@ PayinNext<P> _sent<P>(
       order,
       target,
       attempt,
-      PayinResumeBuild<P>(built.walletId),
+      PayinResumeBuild<P>(built.spend),
       PayinSendRefused(reason),
     ),
   ),
@@ -1171,10 +1266,10 @@ PayinNext<P> _rechecked<P>(
       }
       if (_pastDeadline(order, at)) return StepNext(PayinQuoteLapsed<P>(order));
       return switch (resume) {
-        PayinResumeBuild(:final walletId) => _building(
+        PayinResumeBuild(:final spend) => _building(
           order,
           target,
-          walletId,
+          spend,
           attempt,
         ),
         PayinResumeSend(:final built) => _broadcasting(
@@ -1258,11 +1353,11 @@ PayinNext<P> transitionPayin<P>(
   PayinEvent<P> event,
 ) => switch ((state, event)) {
   (
-    PayinBuilding(:final order, :final target, :final walletId, :final attempt),
+    PayinBuilding(:final order, :final target, :final spend, :final attempt),
     PayinBuildAnswered(attempt: final answered, :final result, :final at),
   )
       when answered == attempt =>
-    _built(order, target, walletId, attempt, result, at),
+    _built(order, target, spend, attempt, result, at),
   (PayinBuilding(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
   (
     PayinBuilding(),

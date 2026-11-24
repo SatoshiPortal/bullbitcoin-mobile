@@ -47,7 +47,14 @@ final _ended = _order(orderStatus: OrderStatus.expired);
 final _moved = _order(address: 'tb1moved');
 
 const _t = OnchainDeposit('tb1q');
-const _built = PayinBuilt<String>('w1', 'tx1', 'signed');
+const _options = PayinSpendOptions(
+  fee: PayinFeeRate(1250),
+  replaceByFee: false,
+  coins: {(txId: 'c1', vout: 0)},
+  payjoin: true,
+);
+const _spend = PayinWalletSpend('w1', _options);
+const _built = PayinBuilt<String>(_spend, 'tx1', 'signed');
 const _policy = PayinPolicy(
   maxPolls: 3,
   maxDuration: Duration(minutes: 30),
@@ -71,27 +78,27 @@ final _otherEntry = _entry('e2', UnknownWriteKind.buyConfirm, 'o-9');
 
 WatchWatching<Order> _w(Order order) => WatchWatching<Order>(order, 0, 0, 1);
 
-final _building = PayinBuilding<String>(_o, _t, 'w1', 1);
+final _building = PayinBuilding<String>(_o, _t, _spend, 1);
 final _broadcasting = PayinBroadcasting<String>(_o, _t, 1, _built);
 final _writeRefused = PayinWriteRefused<String>(_o, _t, 1, _built, _busy);
 final _sendFailed = PayinSendFailed<String>(
   _o,
   _t,
   1,
-  const PayinResumeBuild('w1'),
+  const PayinResumeBuild(_spend),
   const PayinBuildRefused(PayinBuildProblem.insufficientFunds),
 );
 final _rechecking = PayinRechecking<String>(
   _o,
   _t,
   2,
-  const PayinResumeBuild('w1'),
+  const PayinResumeBuild(_spend),
 );
 final _recheckFailed = PayinRecheckFailed<String>(
   _o,
   _t,
   2,
-  const PayinResumeBuild('w1'),
+  const PayinResumeBuild(_spend),
   _unreachable,
 );
 final _negotiating = PayinPayjoinNegotiating<String>(_o, _t, 1, 's1', 'otx');
@@ -253,7 +260,7 @@ final _table = <_S, Map<int, _Next>>{
         _o,
         _t,
         1,
-        const PayinResumeBuild('w1'),
+        const PayinResumeBuild(_spend),
         const PayinSendRefused(PayinRefusal.nodeRejected),
       ),
     ),
@@ -277,7 +284,9 @@ final _table = <_S, Map<int, _Next>>{
   _writeRefused: {40: _toResendCheck, 42: const _Next(_left)},
   _sendFailed: {40: _toRebuildCheck, 42: const _Next(_left)},
   _rechecking: {
-    14: _Next(PayinBuilding(_o, _t, 'w1', 2), [PayinBuild(_o, _t, 'w1', 2)]),
+    14: _Next(PayinBuilding(_o, _t, _spend, 2), [
+      PayinBuild(_o, _t, _spend, 2),
+    ]),
     15: _Next(PayinCompleted(_seen, null)),
     16: _Next(_orderEnded),
     17: _Next(_depositRefused),
@@ -361,6 +370,7 @@ _Next _start(
   order: order,
   source: source,
   now: now ?? _before,
+  options: source is PayinFromAppWallet ? _options : null,
   openEntry: openEntry,
 );
 
@@ -394,8 +404,64 @@ void main() {
     test('an app wallet builds', () {
       expect(
         _start(_o, wallet),
-        _Next(_building, [PayinBuild(_o, _t, 'w1', 1)]),
+        _Next(_building, [PayinBuild(_o, _t, _spend, 1)]),
       );
+    });
+
+    test('the spend options chosen before Building go with the build', () {
+      final build = _start(_o, wallet).effects.single as PayinBuild<String>;
+      expect(build.spend.options, _options);
+      expect(build.walletId, 'w1');
+    });
+
+    test('an app wallet payin needs its spend options', () {
+      expect(
+        () => payinStart<String>(
+          _policy,
+          order: _o,
+          source: wallet,
+          now: _before,
+          options: null,
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('a rebuild after a refused broadcast keeps the options', () {
+      final refused = transitionPayin(
+        _policy,
+        _broadcasting,
+        const PayinSendAnswered(
+          1,
+          GateAdmitted(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
+        ),
+      ).state;
+      expect(
+        refused,
+        isA<PayinSendFailed<String>>().having(
+          (s) => s.resume,
+          'resume',
+          const PayinResumeBuild<String>(_spend),
+        ),
+      );
+    });
+
+    test('options compare by value, coins in any order', () {
+      expect(
+        const PayinSpendOptions(
+          fee: PayinFeeAbsolute(500),
+          replaceByFee: true,
+          coins: {(txId: 'a', vout: 1), (txId: 'b', vout: 0)},
+          payjoin: false,
+        ),
+        const PayinSpendOptions(
+          fee: PayinFeeAbsolute(500),
+          replaceByFee: true,
+          coins: {(txId: 'b', vout: 0), (txId: 'a', vout: 1)},
+          payjoin: false,
+        ),
+      );
+      expect(PayinSpendOptions.liquid.fee, const PayinFeeNetworkMinimum());
     });
 
     test('an external payin shows the deposit and watches the order', () {
