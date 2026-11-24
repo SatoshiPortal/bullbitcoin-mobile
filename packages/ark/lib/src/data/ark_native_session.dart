@@ -61,6 +61,10 @@ abstract interface class ArkNativeSession {
   Future<ArkClaimTransaction> prepareClaim(ArkQuote quote);
   Future<String> broadcast(String rawTransaction);
   Future<ArkReceiveDestination> receive(ArkReceiveRequest request);
+
+  /// When the Ark server schedules the next round, as reported by the server
+  /// itself; each call is a live server request.
+  Future<DateTime> nextRoundStart();
   Future<ArkOperation?> reconcile(ArkOperation operation);
   void close();
 }

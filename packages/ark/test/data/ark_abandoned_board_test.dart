@@ -173,6 +173,48 @@ void main() {
     expect(native.executes, 0);
     expect(native.broadcasts, 0);
   });
+  test(
+    'a Board VTXO Bark lists as locked is classified by the same proof',
+    () async {
+      native.inventoryOverride = [
+        for (final v in native.inventoryOverride ?? const <ArkVtxo>[])
+          v.id == ghost
+              ? ArkVtxo(
+                  id: ghost,
+                  amount: v.amount,
+                  expiryHeight: v.expiryHeight,
+                  state: ArkVtxoState.locked,
+                )
+              : v,
+      ];
+      final snapshot = await synchronize();
+      expect(
+        snapshot.vtxos.singleWhere((v) => v.id == ghost).state,
+        ArkVtxoState.abandonedBoard,
+      );
+      expect(snapshot.pending, Sats.zero);
+      expect(proofs.requests.single, (account, operationId, txid));
+    },
+  );
+  test('a locked Board VTXO without a proof stays locked', () async {
+    proofs.proof = null;
+    native.inventoryOverride = [
+      for (final v in native.inventoryOverride ?? const <ArkVtxo>[])
+        v.id == ghost
+            ? ArkVtxo(
+                id: ghost,
+                amount: v.amount,
+                expiryHeight: v.expiryHeight,
+                state: ArkVtxoState.locked,
+              )
+            : v,
+    ];
+    final snapshot = await synchronize();
+    expect(
+      snapshot.vtxos.singleWhere((v) => v.id == ghost).state,
+      ArkVtxoState.locked,
+    );
+  });
   for (final mismatch in [
     'funding',
     'address',

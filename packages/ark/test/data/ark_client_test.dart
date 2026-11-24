@@ -367,6 +367,219 @@ void main() {
     expect(native.registrations, 1);
     expect(native.broadcasts, 0);
   });
+  Future<void> startExit({int ceiling = 100, List<String>? ids}) async {
+    await client.create(config);
+    final quoted = await client.quote(
+      account,
+      ArkQuoteRequest.emergencyExit(
+        ids: ids ?? [FakeOpener.firstId],
+        destination: 'destination',
+        feeRate: FeeRate(1),
+        maxClaimFee: Sats.fromInt(ceiling),
+      ),
+    );
+    final exit = (quoted as Ok<ArkQuote, ArkWalletFailure>).value;
+    expect(
+      await client.submit(
+        account,
+        ArkSubmission.confirmQuote(quoteId: exit.id, operationId: 'exit'),
+      ),
+      isA<Ok>(),
+    );
+  }
+
+  Future<void> becomeClaimable() async {
+    native.exitDetails = [
+      ArkExit(
+        id: FakeOpener.firstId,
+        amount: Sats.fromInt(10000),
+        status: ArkExitStatus.claimable,
+      ),
+    ];
+    expect(await client.synchronize(account, renew: false), isA<Ok>());
+  }
+
+  Future<void> exitInProgress() async {
+    native.exitDetails = [
+      ArkExit(
+        id: FakeOpener.firstId,
+        amount: Sats.fromInt(10000),
+        status: ArkExitStatus.pending,
+      ),
+    ];
+    expect(await client.synchronize(account, renew: false), isA<Ok>());
+  }
+
+  test('an exit in progress moves forward at the rate Bark picks', () async {
+    await startExit();
+    final executed = native.executes;
+    await exitInProgress();
+    final progressed = await client.progressStartedExits(account);
+    final operation = (progressed as Ok<ArkOperation?, ArkWalletFailure>).value;
+    expect(operation?.kind, ArkOperationKind.exitProgress);
+    expect(native.executes, executed + 1);
+  });
+
+  test('without an exit in progress nothing is broadcast', () async {
+    await client.create(config);
+    final executed = native.executes;
+    final progressed = await client.progressStartedExits(account);
+    expect((progressed as Ok<ArkOperation?, ArkWalletFailure>).value, isNull);
+    expect(native.executes, executed);
+  });
+
+  test('a background client never moves an exit forward', () async {
+    await startExit();
+    await exitInProgress();
+    await client.close();
+    client = build(mode: ArkExecutionMode.backgroundExisting);
+    expect(await client.progressStartedExits(account), isA<Err>());
+  });
+
+  test(
+    'a started exit is claimed once it is claimable, then not again',
+    () async {
+      await startExit();
+      expect(await client.claimAuthorized(account), isA<Ok>());
+      expect(native.broadcasts, 0, reason: 'nothing claimable yet');
+      await becomeClaimable();
+      final claimed = await client.claimAuthorized(account);
+      final operations =
+          (claimed as Ok<List<ArkOperation>, ArkWalletFailure>).value;
+      expect(operations.single.kind, ArkOperationKind.claim);
+      expect(operations.single.actualIds, [FakeOpener.firstId]);
+      expect(native.broadcasts, 1);
+      // The authority is spent: a second pass claims nothing.
+      final again = await client.claimAuthorized(account);
+      expect(
+        (again as Ok<List<ArkOperation>, ArkWalletFailure>).value,
+        isEmpty,
+      );
+      expect(native.broadcasts, 1);
+    },
+  );
+
+  test('a block landing mid-claim is quoted afresh, not given up', () async {
+    await startExit();
+    await becomeClaimable();
+    var mined = 0;
+    native.afterEstimate = () {
+      // One new block between the first quote and its confirmation.
+      if (mined++ == 0) native.tip++;
+    };
+    final claimed = await client.claimAuthorized(account);
+    final operations =
+        (claimed as Ok<List<ArkOperation>, ArkWalletFailure>).value;
+    expect(operations.single.kind, ArkOperationKind.claim);
+    expect(native.broadcasts, 1);
+  });
+
+  test('a chain that keeps moving gives up after a few tries', () async {
+    await startExit();
+    await becomeClaimable();
+    native.afterEstimate = () => native.tip++;
+    final claimed = await client.claimAuthorized(account);
+    expect(
+      claimed,
+      isA<Err<List<ArkOperation>, ArkWalletFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ArkStaleQuoteFailure>(),
+      ),
+    );
+    expect(native.broadcasts, 0);
+  });
+
+  Future<void> exitsAre(Map<String, ArkExitStatus> statuses) async {
+    native.exitDetails = [
+      for (final entry in statuses.entries)
+        ArkExit(
+          id: entry.key,
+          amount: Sats.fromInt(10000),
+          status: entry.value,
+        ),
+    ];
+    expect(await client.synchronize(account, renew: false), isA<Ok>());
+  }
+
+  test(
+    'VTXOs exited together are claimed together, once all are ready',
+    () async {
+      final both = [FakeOpener.firstId, FakeOpener.secondId];
+      await startExit(ids: both);
+      native.claimActual = both;
+      verifier.claimInputs = both;
+      await exitsAre({
+        FakeOpener.firstId: ArkExitStatus.claimable,
+        FakeOpener.secondId: ArkExitStatus.pending,
+      });
+      // One is ready, the other still unrolling: wait, one fee for both.
+      final early = await client.claimAuthorized(account);
+      expect(
+        (early as Ok<List<ArkOperation>, ArkWalletFailure>).value,
+        isEmpty,
+      );
+      expect(native.broadcasts, 0);
+      await exitsAre({
+        FakeOpener.firstId: ArkExitStatus.claimable,
+        FakeOpener.secondId: ArkExitStatus.claimable,
+      });
+      final claimed = await client.claimAuthorized(account);
+      final operation =
+          (claimed as Ok<List<ArkOperation>, ArkWalletFailure>).value.single;
+      expect(operation.actualIds.toSet(), both.toSet());
+      expect(native.broadcasts, 1);
+    },
+  );
+
+  test(
+    'a VTXO that can no longer exit does not hold the others back',
+    () async {
+      await startExit(ids: [FakeOpener.firstId, FakeOpener.secondId]);
+      await exitsAre({
+        FakeOpener.firstId: ArkExitStatus.claimable,
+        FakeOpener.secondId: ArkExitStatus.failed,
+      });
+      final claimed = await client.claimAuthorized(account);
+      final operation =
+          (claimed as Ok<List<ArkOperation>, ArkWalletFailure>).value.single;
+      expect(operation.actualIds, [FakeOpener.firstId]);
+      expect(native.broadcasts, 1);
+    },
+  );
+
+  test('an exit the app did not start is never claimed on its own', () async {
+    await client.create(config);
+    await becomeClaimable();
+    final claimed = await client.claimAuthorized(account);
+    expect(
+      (claimed as Ok<List<ArkOperation>, ArkWalletFailure>).value,
+      isEmpty,
+    );
+    expect(native.broadcasts, 0);
+  });
+
+  test('a claim fee above the recorded ceiling is left for review', () async {
+    await startExit(ceiling: 100);
+    native.claimFee = 500;
+    await becomeClaimable();
+    final claimed = await client.claimAuthorized(account);
+    expect(switch (claimed) {
+      Ok(:final value) => value,
+      Err() => const <ArkOperation>[],
+    }, isEmpty);
+    expect(native.broadcasts, 0);
+  });
+
+  test('a background client never claims', () async {
+    await startExit();
+    await becomeClaimable();
+    await client.close();
+    client = build(mode: ArkExecutionMode.backgroundExisting);
+    expect(await client.claimAuthorized(account), isA<Err>());
+    expect(native.broadcasts, 0);
+  });
+
   test('claim verifies PSBT input evidence before any broadcast', () async {
     await client.create(config);
     final exitQuote = await client.quote(
@@ -531,6 +744,27 @@ void main() {
     expect(native.creates, 1);
     expect(await client.create(config), isA<Ok>());
     expect(native.creates, 1);
+  });
+  test('next round is a foreground-only server read', () async {
+    expect(await client.create(config), isA<Ok>());
+    expect(
+      await client.nextRound(account),
+      isA<Ok<DateTime, ArkWalletFailure>>().having(
+        (ok) => ok.value,
+        'start',
+        DateTime.utc(2026, 11, 19, 12),
+      ),
+    );
+    final background = build(mode: ArkExecutionMode.backgroundExisting);
+    expect(
+      await background.nextRound(account),
+      isA<Err<DateTime, ArkWalletFailure>>().having(
+        (err) => err.failure,
+        'failure',
+        isA<ArkUnavailableFailure>(),
+      ),
+    );
+    await background.close();
   });
   test(
     'child-provider failure leaves an explicit foreground create retry',
