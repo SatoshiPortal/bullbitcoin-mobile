@@ -157,21 +157,6 @@ List<Page<void>> fundPagesFor(
       virtualIban(),
     ],
   };
-  Page<void> problem({
-    String? title,
-    required String message,
-    bool canRetry = false,
-  }) => MaterialPage(
-    key: _problemKey,
-    child: Builder(
-      builder: (context) => FundProblemPage(
-        title: title,
-        message: message,
-        canRetry: canRetry,
-        onEvent: onEvent,
-      ),
-    ),
-  );
 
   return switch (state) {
     FundLoading(:final load) => [

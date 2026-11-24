@@ -36,9 +36,7 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
             },
           ),
       ],
-      onChanged: (value) {
-        if (value != null) onChanged(value);
-      },
+      onChanged: onChanged,
     );
   }
 }

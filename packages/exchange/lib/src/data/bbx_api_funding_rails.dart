@@ -11,7 +11,6 @@ import '../domain/entities/virtual_iban.dart';
 import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../funding/funding_instructions.dart';
-import '../funding/funding_rail.dart';
 import '../funding/funding_request.dart';
 import 'bbx_api_virtual_iban_repository.dart';
 import 'exchange_call_classifier.dart';
@@ -22,10 +21,9 @@ import 'read_user_summary.dart';
 /// (FUND-1).
 final class BbxApiFundingRails {
   final bbx.Bbx _api;
-  final Uri _paymentReturnUrl;
+  final Uri paymentReturnUrl;
 
-  const BbxApiFundingRails(this._api, {required Uri paymentReturnUrl})
-    : _paymentReturnUrl = paymentReturnUrl;
+  const BbxApiFundingRails(this._api, {required this.paymentReturnUrl});
 
   Future<ExchangeRead<FundingAccount>> account() async {
     final summary = await readUserSummary(_api);
@@ -152,7 +150,7 @@ final class BbxApiFundingRails {
     final answer = await _api.orders.getCopPaymentLink(
       bankCode: request.institution.code,
       amount: request.amount.pesos,
-      callbackUrl: _paymentReturnUrl.toString(),
+      callbackUrl: paymentReturnUrl.toString(),
     );
     if (_refusal(answer) case final refusal?) {
       return ReadGot(FundingRefused(refusal));

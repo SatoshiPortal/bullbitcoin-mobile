@@ -1,7 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:exchange/funding.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 
 /// A piece of copy; [bold] parts are emphasised.
 @immutable
