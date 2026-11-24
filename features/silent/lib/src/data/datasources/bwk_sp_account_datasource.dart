@@ -88,8 +88,6 @@ class BwkSpAccountDatasource {
 
   SpBalanceView unifiedBalance() => _live.unifiedBalance();
 
-  bool isScanning() => _live.isScanning();
-
   int? lastScannedHeight() => _live.lastScannedHeight();
 
   Future<String> newTaprootAddress() => _live.newTaprootAddress();

@@ -72,6 +72,8 @@ SilentWallet spWallet({
   Sats? confirmedSat,
   Sats? totalUnifiedSat,
   bool isScanning = false,
+  bool hasPendingScan = false,
+  bool isPendingScanPaused = false,
   int? lastScannedHeight,
 }) {
   final balance = SilentBalance(
@@ -85,6 +87,8 @@ SilentWallet spWallet({
       #spAddress: spAddress,
       #balance: balance,
       #isScanning: isScanning,
+      #hasPendingScan: hasPendingScan,
+      #isPendingScanPaused: isPendingScanPaused,
       #lastScannedHeight: lastScannedHeight,
     }) as SilentWallet;
   } on NoSuchMethodError {
@@ -292,11 +296,7 @@ class FakeSpAccountRepository
 
   @override
   Future<Result<void, SilentFailure>> clearScanState() async {
-    _wallet = SilentWallet(
-      spAddress: _wallet.spAddress,
-      balance: _wallet.balance,
-      isScanning: _wallet.isScanning,
-    );
+    _wallet = _withWallet(hasPendingScan: false, isPendingScanPaused: false);
     return const Ok<void, SilentFailure>(null);
   }
 
@@ -312,14 +312,25 @@ class FakeSpAccountRepository
   /// Replace the snapshot the port reports, for the scan policy tests.
   void setWalletForTest(SilentWallet wallet) => _wallet = wallet;
 
+  // Keeps every field this helper does not override: a test that flips the
+  // scanning flag must not silently drop the pending-scan marker.
+  SilentWallet _withWallet({
+    bool? isScanning,
+    bool? hasPendingScan,
+    bool? isPendingScanPaused,
+  }) => SilentWallet(
+    network: _wallet.network,
+    spAddress: _wallet.spAddress,
+    balance: _wallet.balance,
+    isScanning: isScanning ?? _wallet.isScanning,
+    hasPendingScan: hasPendingScan ?? _wallet.hasPendingScan,
+    isPendingScanPaused: isPendingScanPaused ?? _wallet.isPendingScanPaused,
+    lastScannedHeight: _wallet.lastScannedHeight,
+  );
+
   /// Model a scan already in flight, which owns the session.
   void setScanningForTest(bool isScanning) {
-    _wallet = SilentWallet(
-      spAddress: _wallet.spAddress,
-      balance: _wallet.balance,
-      isScanning: isScanning,
-      lastScannedHeight: _wallet.lastScannedHeight,
-    );
+    _wallet = _withWallet(isScanning: isScanning);
   }
 
   @override

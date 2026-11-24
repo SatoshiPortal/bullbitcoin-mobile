@@ -124,6 +124,8 @@ class EnsureSpSessionUsecase {
           spAddress: wallet.spAddress,
           balance: wallet.balance,
           isScanning: wallet.isScanning,
+          hasPendingScan: wallet.hasPendingScan,
+          isPendingScanPaused: wallet.isPendingScanPaused,
           lastScannedHeight: wallet.lastScannedHeight,
         ),
       ),
