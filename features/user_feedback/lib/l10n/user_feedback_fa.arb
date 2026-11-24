@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "ارسال بازخورد",
+  "feedbackClose": "بستن",
+  "feedbackLoadError": "فرم بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "feedbackRetry": "تلاش دوباره",
+  "feedbackShakeTitle": "مشکلی هست؟",
+  "feedbackShakeBody": "گزارش خطا یا ایده‌ای برای تیم بفرستید.",
+  "feedbackShakeDismiss": "الان نه",
+  "feedbackSearchKeywords": "بازخورد, خطا, باگ, گزارش, ایده, پیشنهاد, مشکل, تماس"
+}

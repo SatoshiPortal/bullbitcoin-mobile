@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Feedback bhejein",
+  "feedbackClose": "Band karein",
+  "feedbackLoadError": "Form load nahin ho saka. Apna connection check karein aur phir se koshish karein.",
+  "feedbackRetry": "Phir se koshish karein",
+  "feedbackShakeTitle": "Kuch theek nahin hai?",
+  "feedbackShakeBody": "Team ko bug report ya koi idea bhejein.",
+  "feedbackShakeDismiss": "Abhi nahin",
+  "feedbackSearchKeywords": "feedback, bug, report, idea, sujhav, samasya, sampark"
+}

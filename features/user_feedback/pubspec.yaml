@@ -1,0 +1,36 @@
+name: user_feedback
+description: In-app feedback. Shake or Settings opens the hosted feedback form in a sheet.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  material_ui: ^1.11.0
+  flutter:
+    sdk: flutter
+  bull_logger:
+  bull_ui:
+  package_info_plus: ^10.2.2
+  screen_privacy:
+  sensors_plus: ^7.1.1
+  webview_flutter: ^4.14.1
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+  plugin:
+    platforms:
+      ios:
+        pluginClass: UserFeedbackPlugin

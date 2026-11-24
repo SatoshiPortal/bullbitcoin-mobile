@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Feedback senden",
+  "feedbackClose": "Schließen",
+  "feedbackLoadError": "Das Formular konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+  "feedbackRetry": "Erneut versuchen",
+  "feedbackShakeTitle": "Stimmt etwas nicht?",
+  "feedbackShakeBody": "Schicke dem Team einen Fehlerbericht oder eine Idee.",
+  "feedbackShakeDismiss": "Nicht jetzt",
+  "feedbackSearchKeywords": "Feedback, Fehler, Bug, melden, Idee, Vorschlag, Problem, Kontakt"
+}

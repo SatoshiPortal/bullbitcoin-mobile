@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Отправить отзыв",
+  "feedbackClose": "Закрыть",
+  "feedbackLoadError": "Не удалось загрузить форму. Проверьте подключение и попробуйте снова.",
+  "feedbackRetry": "Повторить",
+  "feedbackShakeTitle": "Что-то не так?",
+  "feedbackShakeBody": "Отправьте команде сообщение об ошибке или идею.",
+  "feedbackShakeDismiss": "Не сейчас",
+  "feedbackSearchKeywords": "отзыв, ошибка, баг, сообщить, идея, предложение, проблема, контакт"
+}

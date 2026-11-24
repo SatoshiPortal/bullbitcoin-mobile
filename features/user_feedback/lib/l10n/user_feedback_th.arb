@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "ส่งความคิดเห็น",
+  "feedbackClose": "ปิด",
+  "feedbackLoadError": "โหลดแบบฟอร์มไม่ได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "feedbackRetry": "ลองอีกครั้ง",
+  "feedbackShakeTitle": "มีอะไรผิดปกติไหม?",
+  "feedbackShakeBody": "ส่งรายงานข้อผิดพลาดหรือไอเดียให้ทีม",
+  "feedbackShakeDismiss": "ไว้ทีหลัง",
+  "feedbackSearchKeywords": "ความคิดเห็น, บั๊ก, รายงาน, ไอเดีย, ข้อเสนอแนะ, ปัญหา, ติดต่อ"
+}

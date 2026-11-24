@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Odeslat zpětnou vazbu",
+  "feedbackClose": "Zavřít",
+  "feedbackLoadError": "Formulář se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "feedbackRetry": "Zkusit znovu",
+  "feedbackShakeTitle": "Něco není v pořádku?",
+  "feedbackShakeBody": "Pošlete týmu hlášení o chybě nebo nápad.",
+  "feedbackShakeDismiss": "Teď ne",
+  "feedbackSearchKeywords": "zpětná vazba, chyba, bug, nahlásit, nápad, návrh, problém, kontakt"
+}

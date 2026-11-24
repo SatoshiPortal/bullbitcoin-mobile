@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Invia feedback",
+  "feedbackClose": "Chiudi",
+  "feedbackLoadError": "Impossibile caricare il modulo. Controlla la connessione e riprova.",
+  "feedbackRetry": "Riprova",
+  "feedbackShakeTitle": "Qualcosa non va?",
+  "feedbackShakeBody": "Invia al team una segnalazione di bug o un'idea.",
+  "feedbackShakeDismiss": "Non ora",
+  "feedbackSearchKeywords": "feedback, bug, segnalazione, idea, suggerimento, problema, contatto"
+}

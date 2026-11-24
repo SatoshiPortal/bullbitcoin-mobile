@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Ուղարկել կարծիք",
+  "feedbackClose": "Փակել",
+  "feedbackLoadError": "Չհաջողվեց բեռնել ձևը։ Ստուգեք կապը և նորից փորձեք։",
+  "feedbackRetry": "Կրկին փորձել",
+  "feedbackShakeTitle": "Ինչ-որ բան այն չէ՞",
+  "feedbackShakeBody": "Ուղարկեք թիմին սխալի հաշվետվություն կամ գաղափար։",
+  "feedbackShakeDismiss": "Ոչ հիմա",
+  "feedbackSearchKeywords": "կարծիք, սխալ, բագ, հաշվետվություն, գաղափար, առաջարկ, խնդիր, կապ"
+}

@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Αποστολή σχολίων",
+  "feedbackClose": "Κλείσιμο",
+  "feedbackLoadError": "Δεν ήταν δυνατή η φόρτωση της φόρμας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "feedbackRetry": "Δοκιμάστε ξανά",
+  "feedbackShakeTitle": "Κάτι δεν πάει καλά;",
+  "feedbackShakeBody": "Στείλτε στην ομάδα αναφορά σφάλματος ή μια ιδέα.",
+  "feedbackShakeDismiss": "Όχι τώρα",
+  "feedbackSearchKeywords": "σχόλια, σφάλμα, bug, αναφορά, ιδέα, πρόταση, πρόβλημα, επικοινωνία"
+}

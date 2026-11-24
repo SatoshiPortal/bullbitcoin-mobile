@@ -115,4 +115,24 @@ void main() {
 
     expect(find.text('Import wallet destination'), findsOneWidget);
   });
+
+  test('Send feedback is listed only when a feedback form is configured', () {
+    final off = buildSettingsItems(
+      localization: SettingsLocalizationsEn(),
+      environment: NetworkEnv.mainnet,
+    );
+    final on = buildSettingsItems(
+      localization: SettingsLocalizationsEn(),
+      feedbackAvailable: true,
+      environment: NetworkEnv.mainnet,
+    );
+
+    expect(off.where((item) => item.id == SettingsItemId.feedback), isEmpty);
+    final feedback = on.singleWhere(
+      (item) => item.id == SettingsItemId.feedback,
+    );
+    expect(feedback.title, 'Send feedback');
+    expect(feedback.section, SettingsItemSection.root);
+    expect(feedback.keywords, contains('bug'));
+  });
 }

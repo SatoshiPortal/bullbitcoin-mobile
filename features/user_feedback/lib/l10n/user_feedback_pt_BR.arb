@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Enviar feedback",
+  "feedbackClose": "Fechar",
+  "feedbackLoadError": "Não foi possível carregar o formulário. Verifique sua conexão e tente novamente.",
+  "feedbackRetry": "Tentar novamente",
+  "feedbackShakeTitle": "Algo deu errado?",
+  "feedbackShakeBody": "Envie para a equipe um relato de erro ou uma ideia.",
+  "feedbackShakeDismiss": "Agora não",
+  "feedbackSearchKeywords": "feedback, erro, bug, relato, ideia, sugestão, problema, contato"
+}

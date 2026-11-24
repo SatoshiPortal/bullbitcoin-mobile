@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "মতামত পাঠান",
+  "feedbackClose": "বন্ধ করুন",
+  "feedbackLoadError": "ফর্মটি লোড করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "feedbackRetry": "আবার চেষ্টা করুন",
+  "feedbackShakeTitle": "কিছু ঠিক নেই?",
+  "feedbackShakeBody": "টিমকে একটি বাগ রিপোর্ট বা আইডিয়া পাঠান।",
+  "feedbackShakeDismiss": "এখন নয়",
+  "feedbackSearchKeywords": "মতামত, বাগ, রিপোর্ট, আইডিয়া, পরামর্শ, সমস্যা, যোগাযোগ"
+}

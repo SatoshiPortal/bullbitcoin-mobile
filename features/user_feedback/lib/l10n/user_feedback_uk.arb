@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Надіслати відгук",
+  "feedbackClose": "Закрити",
+  "feedbackLoadError": "Не вдалося завантажити форму. Перевірте з'єднання та спробуйте ще раз.",
+  "feedbackRetry": "Спробувати ще раз",
+  "feedbackShakeTitle": "Щось не так?",
+  "feedbackShakeBody": "Надішліть команді звіт про помилку або ідею.",
+  "feedbackShakeDismiss": "Не зараз",
+  "feedbackSearchKeywords": "відгук, помилка, баг, повідомити, ідея, пропозиція, проблема, контакт"
+}

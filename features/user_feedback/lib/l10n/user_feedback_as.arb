@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "মতামত পঠিয়াওক",
+  "feedbackClose": "বন্ধ কৰক",
+  "feedbackLoadError": "ফৰ্মখন ল'ড কৰিব পৰা নগ'ল। সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "feedbackRetry": "পুনৰ চেষ্টা কৰক",
+  "feedbackShakeTitle": "কিবা ঠিক নাই নেকি?",
+  "feedbackShakeBody": "দলটোলৈ বাগ ৰিপ'ৰ্ট বা কোনো আইডিয়া পঠিয়াওক।",
+  "feedbackShakeDismiss": "এতিয়া নহয়",
+  "feedbackSearchKeywords": "মতামত, বাগ, ৰিপ'ৰ্ট, আইডিয়া, পৰামৰ্শ, সমস্যা, যোগাযোগ"
+}

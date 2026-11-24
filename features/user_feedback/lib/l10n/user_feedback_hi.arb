@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "फ़ीडबैक भेजें",
+  "feedbackClose": "बंद करें",
+  "feedbackLoadError": "फ़ॉर्म लोड नहीं हो सका। अपना कनेक्शन जाँचें और फिर से कोशिश करें।",
+  "feedbackRetry": "फिर से कोशिश करें",
+  "feedbackShakeTitle": "कुछ ठीक नहीं है?",
+  "feedbackShakeBody": "टीम को बग रिपोर्ट या कोई सुझाव भेजें।",
+  "feedbackShakeDismiss": "अभी नहीं",
+  "feedbackSearchKeywords": "फ़ीडबैक, बग, रिपोर्ट, सुझाव, विचार, समस्या, संपर्क"
+}

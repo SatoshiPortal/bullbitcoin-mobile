@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Geri bildirim gönder",
+  "feedbackClose": "Kapat",
+  "feedbackLoadError": "Form yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "feedbackRetry": "Tekrar dene",
+  "feedbackShakeTitle": "Bir sorun mu var?",
+  "feedbackShakeBody": "Ekibe bir hata bildirimi veya fikir gönderin.",
+  "feedbackShakeDismiss": "Şimdi değil",
+  "feedbackSearchKeywords": "geri bildirim, hata, bug, bildir, fikir, öneri, sorun, iletişim"
+}

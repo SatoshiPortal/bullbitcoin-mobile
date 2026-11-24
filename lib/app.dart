@@ -26,6 +26,7 @@ import 'dart:async';
 import 'package:preferences/preferences.dart';
 import 'package:exchange/exchange.dart' show Exchange;
 import 'package:bull_ui/app_theme.dart';
+import 'package:user_feedback/user_feedback.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:settings/settings.dart';
@@ -237,11 +238,15 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                                     OnboardingNavigation.go(AppRouter.router),
                                 onUnlocked: () =>
                                     AppLocator.startWalletsAfterUnlock(locator),
-                                app: locator<RecoverBullFeature>().withAlerts(
-                                  child,
-                                  onOpen: () => AppRouter.router.pushNamed(
-                                    'recoverbullFlows',
-                                  ),
+                                app: UserFeedbackFeature.shakeToReport(
+                                  navigatorKey: AppRouter.rootNavigatorKey,
+                                  currentScreen: _currentRouteName,
+                                  child: locator<RecoverBullFeature>()
+                                      .withAlerts(
+                                        child,
+                                        onOpen: () => AppRouter.router
+                                            .pushNamed('recoverbullFlows'),
+                                      ),
                                 ),
                               ),
                             ),
@@ -269,4 +274,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     );
     return locator<BitcoinPriceFeature>().providePrices(child: app);
   }
+}
+
+/// The current route's name (or path pattern), never its parameter values.
+String? _currentRouteName() {
+  final matches = AppRouter.router.routerDelegate.currentConfiguration;
+  if (matches.isEmpty) return null;
+  final route = matches.last.route;
+  return route.name ?? route.path;
 }

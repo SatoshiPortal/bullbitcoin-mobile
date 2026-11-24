@@ -1,0 +1,10 @@
+{
+  "feedbackTitle": "Изпрати отзив",
+  "feedbackClose": "Затвори",
+  "feedbackLoadError": "Формулярът не можа да се зареди. Проверете връзката си и опитайте отново.",
+  "feedbackRetry": "Опитай отново",
+  "feedbackShakeTitle": "Нещо не е наред?",
+  "feedbackShakeBody": "Изпратете на екипа доклад за грешка или идея.",
+  "feedbackShakeDismiss": "Не сега",
+  "feedbackSearchKeywords": "отзив, грешка, бъг, доклад, идея, предложение, проблем, контакт"
+}

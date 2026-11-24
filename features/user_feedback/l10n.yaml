@@ -1,0 +1,7 @@
+arb-dir: lib/l10n
+output-dir: lib/generated/l10n
+template-arb-file: user_feedback_en.arb
+output-localization-file: user_feedback_localizations.dart
+output-class: UserFeedbackLocalizations
+untranslated-messages-file: untranslated-messages.txt
+nullable-getter: false
