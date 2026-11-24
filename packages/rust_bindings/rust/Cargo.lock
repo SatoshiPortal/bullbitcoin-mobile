@@ -705,6 +705,7 @@ dependencies = [
  "flutter_rust_bridge",
  "flutter_rust_bridge_codegen",
  "hex",
+ "lnurl-rs",
  "openssl",
  "reqwest",
  "rustls",

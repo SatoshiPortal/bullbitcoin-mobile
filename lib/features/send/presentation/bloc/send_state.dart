@@ -26,6 +26,7 @@ import 'package:transactions/transactions.dart';
 import 'package:coins/coins.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
+import 'package:bb_mobile/features/send/domain/lnurl_pay_limits.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
@@ -116,6 +117,7 @@ abstract class SendState with _$SendState {
     @Default('') String scannedRawPaymentRequest,
     @Default('') String copiedRawPaymentRequest,
     PaymentRequest? paymentRequest,
+    ({String recipient, LnurlPayLimits limits})? lnurlPay,
     Bolt11PaymentRequest? lightningInvoice,
     @Default([]) List<Wallet> wallets,
     SendWalletView? selectedWallet,
@@ -251,7 +253,18 @@ abstract class SendState with _$SendState {
 
   bool get hasFixedRequestAmount => switch (paymentRequest) {
     Bip21PaymentRequest(:final amountSat) => (amountSat ?? 0) > 0,
+    LnAddressPaymentRequest() => lnurlPayLimits?.fixedAmountSat != null,
     _ => false,
+  };
+
+  LnurlPayLimits? get lnurlPayLimits => switch ((paymentRequest, lnurlPay)) {
+    (
+      LnAddressPaymentRequest(:final address),
+      (recipient: final recipient, :final limits),
+    )
+        when address == recipient =>
+      limits,
+    _ => null,
   };
 
   bool get hasMultipleRecipients => recipientDrafts.length > 1;
@@ -422,7 +435,7 @@ abstract class SendState with _$SendState {
       exchangeRate != null;
 
   int get inputAmountSat {
-    return _amountSat(amount);
+    return lnurlPayLimits?.fixedAmountSat ?? _amountSat(amount);
   }
 
   int recipientAmountSat(SendRecipientDraft recipient) {

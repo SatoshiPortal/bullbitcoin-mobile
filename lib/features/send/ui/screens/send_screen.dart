@@ -1237,6 +1237,24 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             null => null,
                                           },
                                         ),
+                                        if (state.lnurlPayLimits
+                                            case final limits?
+                                            when failure
+                                                is! SendLnurlAmountOutOfBoundsFailure) ...[
+                                          const Gap(8),
+                                          Text(
+                                            context.loc.sendLnurlAmountRange(
+                                              limits.minimumSat,
+                                              limits.maximumSat,
+                                            ),
+                                            style: context.bullType.caption
+                                                .copyWith(
+                                                  color: context
+                                                      .appColors
+                                                      .textMuted,
+                                                ),
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   if (suggestsInstantPayments)
