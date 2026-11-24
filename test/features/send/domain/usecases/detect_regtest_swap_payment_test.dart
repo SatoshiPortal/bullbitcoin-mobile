@@ -90,15 +90,17 @@ void main() {
     }
   }
 
-  test('the Lightning scheme preserves the regtest invoice route', () async {
-    expect(
-      await detect.execute(
-        data: 'lightning:$invoice',
+  for (final scheme in ['lightning', 'LiGhTnInG']) {
+    test('$scheme preserves the regtest invoice route', () async {
+      final request = await detect.execute(
+        data: '$scheme:$invoice',
         environment: NetworkEnv.regtest,
-      ),
-      isA<Bolt11PaymentRequest>(),
-    );
-  });
+      );
+      expect(request, isA<Bolt11PaymentRequest>());
+      expect((request as Bolt11PaymentRequest).invoice, invoice);
+      expect(request.amountSat, 123);
+    });
+  }
 
   for (final input in [
     'ert1invalid',
