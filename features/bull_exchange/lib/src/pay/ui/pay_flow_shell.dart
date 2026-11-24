@@ -455,7 +455,13 @@ class _ReceiptPage extends StatelessWidget {
       body: SafeArea(
         child: BullScrollableColumn(
           children: [
-            if (latest is FiatPaymentOrder) SinpeReceiptCard(order: latest),
+            if (latest is FiatPaymentOrder)
+              SinpeReceiptCard(
+                order: latest,
+                // "Sent" only once the payout completed, as before C5a.
+                showSuccessAnimation:
+                    latest.payoutStatus == OrderPayoutStatus.completed,
+              ),
             const Gap(24),
             const Spacer(),
             if (stalled) ...[
