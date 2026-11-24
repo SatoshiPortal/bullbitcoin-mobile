@@ -74,7 +74,7 @@ class ExchangeSettingsRouter {
     if (config.access case final access?)
       exchangeAccessSettingsRoute(
         host: access,
-        isSuperuser: config.isSuperuser,
+        websiteOnly: config.websiteOnly,
         onOpenAccount: ExchangeSettingsRoute.home.open,
       ),
     GoRoute(
@@ -84,7 +84,9 @@ class ExchangeSettingsRouter {
         isLoggedIn: () => exchangeSignedIn(config.exchange().currentAccess),
         sessionChanges: () =>
             config.exchange().watchAccess().map(exchangeSignedIn),
-        isSuperuser: config.isSuperuser(context),
+        websiteOnly: ExchangePlatform.current.websiteOnly(
+          isSuperuser: config.isSuperuser(context),
+        ),
         title: config.title,
         signedOutMessage: config.signedOutMessage,
         buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(

@@ -77,6 +77,11 @@ final class ExchangeRouteUnavailable extends ExchangeRouteDecision {
   const ExchangeRouteUnavailable();
 }
 
+/// The platform restriction applies: show the website-only landing.
+final class ExchangeRouteWebsiteOnly extends ExchangeRouteDecision {
+  const ExchangeRouteWebsiteOnly();
+}
+
 /// Keyed on the access state (through [ExchangeAvailability]), never on
 /// whether an account summary is loaded (B5).
 ExchangeRouteDecision decideExchangeRoute(
@@ -88,7 +93,8 @@ ExchangeRouteDecision decideExchangeRoute(
     ExchangeAvailability.ready ||
         ExchangeAvailability.signInRequired ||
         ExchangeAvailability.unavailable ||
-        ExchangeAvailability.hidden,
+        ExchangeAvailability.hidden ||
+        ExchangeAvailability.websiteOnly,
   ) =>
     const ExchangeRouteAllowed(),
   (ExchangeRouteNeed.account, ExchangeAvailability.ready) =>
@@ -100,6 +106,8 @@ ExchangeRouteDecision decideExchangeRoute(
     ExchangeAvailability.unavailable || ExchangeAvailability.hidden,
   ) =>
     const ExchangeRouteUnavailable(),
+  (ExchangeRouteNeed.account, ExchangeAvailability.websiteOnly) =>
+    const ExchangeRouteWebsiteOnly(),
 };
 
 /// The sign-in location that resumes [location] once a key is stored.
@@ -140,6 +148,9 @@ class ExchangeRouteGuard {
       ),
       ExchangeRouteUnavailable() => Block.then(
         () => _showUnavailable(router, next.uri),
+      ),
+      ExchangeRouteWebsiteOnly() => Block.then(
+        () => router.push(BullExchangeNavigation.landingPath),
       ),
     };
   }

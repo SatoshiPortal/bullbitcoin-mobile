@@ -8,6 +8,30 @@ const _session = ExchangeSession(
 );
 
 void main() {
+  group('ExchangePlatform.websiteOnly: iOS without superuser only', () {
+    const table = <(ExchangePlatform, bool, bool)>[
+      (ExchangePlatform.ios, false, true),
+      (ExchangePlatform.ios, true, false),
+      (ExchangePlatform.other, false, false),
+      (ExchangePlatform.other, true, false),
+    ];
+    for (final (platform, superuser, websiteOnly) in table) {
+      test('$platform superuser=$superuser', () {
+        expect(platform.websiteOnly(isSuperuser: superuser), websiteOnly);
+        expect(
+          ExchangeAvailability.platformAllowed(
+            platform,
+            isSuperuser: superuser,
+          ),
+          !websiteOnly,
+        );
+      });
+    }
+    test('every platform is in the table', () {
+      expect(table.map((row) => row.$1).toSet(), ExchangePlatform.values);
+    });
+  });
+
   for (final isIOS in [false, true]) {
     for (final superuser in [false, true]) {
       for (final connected in [false, true]) {
@@ -26,7 +50,7 @@ void main() {
               access: access,
             ),
             !allowed
-                ? ExchangeAvailability.hidden
+                ? ExchangeAvailability.websiteOnly
                 : connected
                 ? ExchangeAvailability.ready
                 : ExchangeAvailability.signInRequired,
@@ -78,7 +102,7 @@ void main() {
       );
       expect(
         ExchangeAvailability.resolve(platformAllowed: false, access: access),
-        ExchangeAvailability.hidden,
+        ExchangeAvailability.websiteOnly,
       );
       expect(ExchangeAvailability.canManageAccount(access), manage);
       expect(ExchangeAvailability.canAuthenticate(access), authenticate);

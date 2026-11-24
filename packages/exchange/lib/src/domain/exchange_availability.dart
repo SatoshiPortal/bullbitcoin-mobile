@@ -1,9 +1,28 @@
+import 'dart:io' show Platform;
+
 import 'exchange_access.dart';
 
-enum ExchangePlatform { ios, other }
+enum ExchangePlatform {
+  ios,
+  other;
+
+  static ExchangePlatform get current =>
+      Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other;
+
+  /// The one platform restriction: on iOS without superuser the exchange
+  /// sends the user to the website. Every other platform is unrestricted.
+  bool websiteOnly({required bool isSuperuser}) => switch (this) {
+    ExchangePlatform.ios => !isSuperuser,
+    ExchangePlatform.other => false,
+  };
+}
 
 enum ExchangeAvailability {
+  /// The exchange is off on this device, or a sign-out is still finishing.
   hidden,
+
+  /// The platform restriction applies: use the website.
+  websiteOnly,
   signInRequired,
   ready,
   unavailable;
@@ -11,7 +30,7 @@ enum ExchangeAvailability {
   static bool platformAllowed(
     ExchangePlatform platform, {
     bool isSuperuser = false,
-  }) => platform != ExchangePlatform.ios || isSuperuser;
+  }) => !platform.websiteOnly(isSuperuser: isSuperuser);
 
   /// Account management and support authentication remain available when
   /// platform policy hides activation and trading.
@@ -34,7 +53,7 @@ enum ExchangeAvailability {
     required bool platformAllowed,
     required ExchangeAccess access,
   }) {
-    if (!platformAllowed) return ExchangeAvailability.hidden;
+    if (!platformAllowed) return ExchangeAvailability.websiteOnly;
     return switch (access) {
       ExchangeAccessDisabled() ||
       ExchangeAccessSignOutIncomplete() => ExchangeAvailability.hidden,

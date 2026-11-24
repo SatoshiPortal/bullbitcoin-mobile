@@ -89,6 +89,10 @@ Future<GoRouter> _pumpRouter(
         builder: (_, _) => const Scaffold(body: Text('Target')),
       ),
       GoRoute(
+        path: '/exchange/landing',
+        builder: (_, _) => const Scaffold(body: Text('Website only')),
+      ),
+      GoRoute(
         path: '/exchange/auth',
         builder: (context, state) => Scaffold(
           body: TextButton(
@@ -143,6 +147,8 @@ void main() {
           ExchangeRouteAllowed,
       (ExchangeRouteNeed.open, ExchangeAvailability.hidden):
           ExchangeRouteAllowed,
+      (ExchangeRouteNeed.open, ExchangeAvailability.websiteOnly):
+          ExchangeRouteAllowed,
       (ExchangeRouteNeed.account, ExchangeAvailability.ready):
           ExchangeRouteAllowed,
       (ExchangeRouteNeed.account, ExchangeAvailability.signInRequired):
@@ -151,6 +157,8 @@ void main() {
           ExchangeRouteUnavailable,
       (ExchangeRouteNeed.account, ExchangeAvailability.hidden):
           ExchangeRouteUnavailable,
+      (ExchangeRouteNeed.account, ExchangeAvailability.websiteOnly):
+          ExchangeRouteWebsiteOnly,
     };
 
     test('the table names every pair', () {
@@ -259,6 +267,26 @@ void main() {
       await tester.pumpAndSettle();
       expect(router.routeInformationProvider.value.uri.path, path);
       expect(find.text('Target'), findsOneWidget);
+    });
+  }
+
+  for (final path in ['/buy', '/sell', '/settings/exchange-account-info']) {
+    testWidgets('iOS without superuser: $path opens the website-only landing', (
+      tester,
+    ) async {
+      final exchange = _Exchange();
+      when(exchange.guardTradingEntry)
+          .thenAnswer((_) async => const Ok(ExchangeAvailability.websiteOnly));
+      final router = await _pumpRouter(tester, exchange, path);
+      router.push(path);
+      await tester.pumpAndSettle();
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/exchange/landing',
+      );
+      expect(find.text('Website only'), findsOneWidget);
+      expect(find.text('Target'), findsNothing);
+      expect(find.text('Trading is unavailable.'), findsNothing);
     });
   }
 

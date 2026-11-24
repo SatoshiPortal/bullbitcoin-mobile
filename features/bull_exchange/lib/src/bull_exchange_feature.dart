@@ -132,7 +132,9 @@ final class BullExchangeFeature {
         exchangeSignedIn(exchange().currentAccess);
     return mountBullExchange(
       networkUnavailable: () => exchange().networkUnavailable(),
-      showWebsiteOnly: (context) => Platform.isIOS && !isSuperuser(context),
+      showWebsiteOnly: (context) => ExchangePlatform.current.websiteOnly(
+        isSuperuser: isSuperuser(context),
+      ),
       unavailableRedirectPath: homePath,
       brandAssetPath: brandAssetPath,
       onExit: onExit,

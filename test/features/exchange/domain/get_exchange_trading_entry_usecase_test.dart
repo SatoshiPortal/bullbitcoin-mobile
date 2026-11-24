@@ -31,10 +31,10 @@ void main() {
         expected,
       );
     });
-    test('$access is hidden when platform disallows access', () {
+    test('$access is website-only when platform disallows access', () {
       expect(
         ExchangeAvailability.resolve(platformAllowed: false, access: access),
-        ExchangeAvailability.hidden,
+        ExchangeAvailability.websiteOnly,
       );
     });
   }

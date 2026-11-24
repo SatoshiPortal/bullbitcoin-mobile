@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
 import 'package:preferences/preferences.dart';
@@ -18,9 +16,7 @@ abstract final class BullExchangeServices {
     ExchangePlatform? platform,
   }) {
     final credentials = ExchangeCredentials.open(keychain);
-    final activePlatform =
-        platform ??
-        (Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other);
+    final activePlatform = platform ?? ExchangePlatform.current;
     // The lifecycle and the capability call each other only after opening.
     late final Exchange exchange;
     final access = ExchangeAccessLifecycle.open(

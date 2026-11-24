@@ -18,7 +18,6 @@ abstract final class ExchangeAccessSettingsNavigation {
 
 typedef ExchangeAccessSettingsHost = ({
   ExchangeAccessActions actions,
-  ExchangePlatform platform,
   String Function(BuildContext) description,
   Future<void> Function(BuildContext) onAuthenticate,
   void Function(BuildContext) onDisabled,
@@ -26,7 +25,7 @@ typedef ExchangeAccessSettingsHost = ({
 
 GoRoute exchangeAccessSettingsRoute({
   required ExchangeAccessSettingsHost host,
-  required bool Function(BuildContext) isSuperuser,
+  required bool Function(BuildContext) websiteOnly,
   required void Function(BuildContext) onOpenAccount,
 }) => GoRoute(
   name: ExchangeAccessSettingsNavigation.name,
@@ -39,11 +38,7 @@ GoRoute exchangeAccessSettingsRoute({
     child: Builder(
       builder: (context) => ExchangeAccessSettingsScreen(
         description: host.description(context),
-        activationAllowed: ExchangeAvailability.platformAllowed(
-          host.platform,
-          isSuperuser:
-              host.platform == ExchangePlatform.ios && isSuperuser(context),
-        ),
+        activationAllowed: !websiteOnly(context),
         onBack: () => context.pop(),
         onAuthenticate: () => host.onAuthenticate(context),
         onOpenAccount: () => onOpenAccount(context),

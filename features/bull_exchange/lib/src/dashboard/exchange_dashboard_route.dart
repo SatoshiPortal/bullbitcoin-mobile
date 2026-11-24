@@ -42,10 +42,10 @@ GoRoute exchangeDashboardRoute({
   redirect: (context, _) async {
     if (await networkUnavailable()) return homePath;
     if (!context.mounted) return null;
-    if (!_signedIn(host.currentAccess())) {
+    if (!_signedIn(host.currentAccess()) || showWebsiteOnly(context)) {
       return BullExchangeNavigation.landingPath;
     }
-    return showWebsiteOnly(context) ? homePath : null;
+    return null;
   },
   pageBuilder: (context, state) => NoTransitionPage(
     key: state.pageKey,
