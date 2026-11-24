@@ -3,10 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'domain/usecases/can_create_limit_order_usecase.dart';
 import 'limit_orders_navigation.dart';
 import 'presentation/limit_order_details_bloc.dart';
-import 'presentation/limit_orders_cubit.dart';
+import 'presentation/limit_orders_list_bloc.dart';
 import 'ui/screens/limit_order_details_screen.dart';
 import 'ui/widgets/limit_orders_dashboard_card.dart';
 
@@ -45,12 +44,11 @@ class LimitOrdersManagementCard extends StatelessWidget {
   Widget build(BuildContext context) => BlocProvider(
     create: (_) {
       final capability = exchange();
-      return LimitOrdersCubit(
-        capability.limitOrders,
-        const CanCreateLimitOrderUsecase(),
-        capability.notifications,
+      return LimitOrdersListBloc(
+        calls: limitOrdersListCallsOf(capability, capability.currentSession),
+        notifications: capability.notifications,
         refreshRequests: refreshRequests,
-      )..load();
+      );
     },
     child: const LimitOrdersDashboardCard(),
   );
