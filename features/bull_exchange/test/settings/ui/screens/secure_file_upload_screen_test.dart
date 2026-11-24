@@ -177,6 +177,9 @@ void main() {
       expect(bloc.state, isA<UploadReady>());
     }
     expect(confirmations, 2);
+    // Let the confirmation snackbar time out so no timer outlives the test.
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('no failure means no error banner', (tester) async {
