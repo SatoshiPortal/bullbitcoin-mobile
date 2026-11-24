@@ -452,6 +452,12 @@ List<Page<void>> sellPagesFor(
               state: payin,
               ui: ui,
               onEvent: (event) => onEvent(SellPayinChanged(event)),
+              externalLabels: (
+                refreshIn: context.loc.sellPriceWillRefreshIn,
+                copyInvoice: context.loc.sellCopyInvoice,
+                showQr: context.loc.sellShowQrCode,
+                qrTitle: context.loc.sellQrCode,
+              ),
             ),
           ),
         ),

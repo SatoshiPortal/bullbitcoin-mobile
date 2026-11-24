@@ -423,6 +423,12 @@ List<Page<void>> payPagesFor(
               state: payin,
               ui: ui,
               onEvent: (event) => onEvent(PayPayinChanged(event)),
+              externalLabels: (
+                refreshIn: context.loc.payPriceRefreshIn,
+                copyInvoice: context.loc.payCopyInvoice,
+                showQr: context.loc.payShowQrCode,
+                qrTitle: context.loc.payQrCode,
+              ),
             ),
           ),
         ),

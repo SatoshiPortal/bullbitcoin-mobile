@@ -1,11 +1,25 @@
+import 'dart:async';
+
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/payin_l10n.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/flow_status_page.dart';
+import 'package:bip21_uri/bip21_uri.dart';
+import 'package:bull_exchange/src/payin/exchange_liquid_asset.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, BullTypographyX, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullCountdown,
+        BullQrCode,
+        BullScrollableColumn,
+        BullSnackBar,
+        BullText,
+        BullTypographyX,
+        Gap;
+import 'package:flutter/services.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
@@ -14,6 +28,14 @@ import 'package:material_ui/material_ui.dart';
 /// "Payin screen"). Terminal payin states are the flow's own pages. No page
 /// offers a new send once a payin may be out: Verifying and Unverified only
 /// look it up, Unseen resends the same signed transaction.
+/// The copy of the external payin page; sell and pay ship their own.
+typedef PayinExternalLabels = ({
+  String refreshIn,
+  String copyInvoice,
+  String showQr,
+  String qrTitle,
+});
+
 class PayinView extends StatelessWidget {
   const PayinView({
     super.key,
@@ -21,9 +43,11 @@ class PayinView extends StatelessWidget {
     required this.state,
     required this.ui,
     required this.onEvent,
+    required this.externalLabels,
   });
 
   final String title;
+  final PayinExternalLabels externalLabels;
   final PayinState<PayinSpend> state;
   final ExchangePayinUi ui;
   final void Function(PayinEvent<PayinSpend> event) onEvent;
@@ -144,6 +168,7 @@ class PayinView extends StatelessWidget {
       },
       PayinExternal(:final order, :final target) => _ExternalPayin(
         title: title,
+        labels: externalLabels,
         order: order,
         target: target,
         ui: ui,
@@ -181,6 +206,7 @@ class PayinView extends StatelessWidget {
 class _ExternalPayin extends StatelessWidget {
   const _ExternalPayin({
     required this.title,
+    required this.labels,
     required this.order,
     required this.target,
     required this.ui,
@@ -188,10 +214,27 @@ class _ExternalPayin extends StatelessWidget {
   });
 
   final String title;
+  final PayinExternalLabels labels;
   final Order order;
   final DepositTarget target;
   final ExchangePayinUi ui;
   final VoidCallback onBack;
+
+  /// What another wallet pays: a payment link with the amount on chain and
+  /// on Liquid (with the L-BTC asset), the invoice itself on Lightning.
+  String get _invoice => switch (target) {
+    OnchainDeposit(:final address) => Bip21Uri(
+      scheme: 'bitcoin',
+      address: address,
+      amount: order.payinAmount,
+    ).toString(),
+    LiquidDeposit(:final address) => ExchangeLiquidAsset.paymentUri(
+      address: address,
+      amountBtc: order.payinAmount,
+      isTestnet: order.isTestnet,
+    ),
+    LightningInvoiceDeposit(:final invoice) => invoice,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -214,6 +257,18 @@ class _ExternalPayin extends StatelessWidget {
               context.loc.exchangePayinExternalTitle,
               style: context.bullType.subtitle,
             ),
+            if (order.confirmationDeadline case final deadline?)
+              Row(
+                children: [
+                  Text(
+                    labels.refreshIn,
+                    style: context.bullType.body.copyWith(
+                      color: context.appColors.outline,
+                    ),
+                  ),
+                  BullCountdown(until: deadline),
+                ],
+              ),
             const Gap(16),
             Text(
               '${order.payinAmount} ${order.payinCurrency}',
@@ -226,6 +281,40 @@ class _ExternalPayin extends StatelessWidget {
               context.loc.exchangePayinExternalWaiting,
               style: context.bullType.body,
             ),
+            const Gap(24),
+            Row(
+              children: [
+                Expanded(
+                  child: BullButton.secondary(
+                    label: labels.copyInvoice,
+                    onPressed: () {
+                      unawaited(
+                        Clipboard.setData(ClipboardData(text: _invoice)),
+                      );
+                      BullSnackBar.show(
+                        context,
+                        message: context.loc.copiedToClipboard,
+                      );
+                    },
+                  ),
+                ),
+                const Gap(16),
+                Expanded(
+                  child: BullButton.secondary(
+                    label: labels.showQr,
+                    onPressed: () => unawaited(
+                      BullBottomSheet.show<void>(
+                        context: context,
+                        child: _PayinQrSheet(
+                          title: labels.qrTitle,
+                          data: _invoice,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const Spacer(),
             BullButton.secondary(
               label: context.loc.exchangePaymentSentLeave,
@@ -233,6 +322,46 @@ class _ExternalPayin extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PayinQrSheet extends StatelessWidget {
+  const _PayinQrSheet({required this.title, required this.data});
+
+  final String title;
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BullText(
+                title,
+                style: context.bullType.subtitle,
+                color: context.appColors.secondary,
+              ),
+              IconButton(
+                tooltip: context.loc.closeDialogButton,
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          const Gap(24),
+          Center(
+            child: BullQrCode(data: data, size: 280, semanticsLabel: title),
+          ),
+          const Gap(16),
+        ],
       ),
     );
   }

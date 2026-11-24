@@ -9,6 +9,7 @@ import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
 import 'package:bull_exchange/src/sell/ui/screens/sell_amount_page.dart';
 import 'package:bull_exchange/src/sell/ui/screens/sell_payout_page.dart';
 import 'package:bull_exchange/src/sell/ui/sell_flow_shell.dart';
+import 'package:bull_ui/bull_ui.dart' show BullQrCode;
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -155,6 +156,32 @@ void main() {
         isA<SpendRetryPressed>(),
       ),
     );
+  });
+
+  testWidgets('an external payin offers the countdown, copy and the QR code', (
+    tester,
+  ) async {
+    final paying = sellPayingState as SellPaying;
+    final labels = await _pump(
+      tester,
+      SellPaying(
+        paying.open,
+        paying.request,
+        paying.quoted,
+        PayinExternal<PayinSpend>(
+          sellOrder(),
+          const OnchainDeposit('bc1qdeposit'),
+          WatchWatching<Order>(sellOrder(), 0, 0, 1),
+        ),
+        paying.spend,
+      ),
+    );
+    expect(find.text(labels.sellPriceWillRefreshIn), findsOneWidget);
+    expect(find.text(labels.sellCopyInvoice), findsOneWidget);
+    await tester.ensureVisible(find.text(labels.sellShowQrCode));
+    await tester.tap(find.text(labels.sellShowQrCode));
+    await tester.pumpAndSettle();
+    expect(find.byType(BullQrCode), findsOneWidget);
   });
 
   testWidgets('a refused payin shows Leave, never a send', (tester) async {
