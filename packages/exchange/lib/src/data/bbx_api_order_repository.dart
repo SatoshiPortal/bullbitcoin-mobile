@@ -283,31 +283,9 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     bool creatingOrder = false,
   }) async {
     final result = await request;
-    if (result
-        case Err(
-          failure: bbx.BbxRpcFailure(
-                :final apiCode,
-                :final code,
-                :final requestId,
-              ) ||
-              bbx.BbxOrderLimitFailure(
-                :final apiCode,
-                :final code,
-                :final requestId,
-              ) ||
-              bbx.BbxConfidentialSepaInactiveFailure(
-                :final apiCode,
-                :final code,
-                :final requestId,
-              ),
-        )
-        when creatingOrder) {
-      log.warning(
-        'Exchange order creation refused',
-        error:
-            'apiCode: $apiCode, rpcCode: $code'
-            '${requestId == null ? '' : ', requestId=$requestId'}',
-      );
+    if (result case Err(:final failure)
+        when creatingOrder && _isRefusal(failure)) {
+      log.warning('Exchange order creation refused', error: '$failure');
     }
     return switch (result) {
       Ok(:final value) => _mapOrder<T>(value),
@@ -325,18 +303,29 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function(bbx.Bbx) call,
   ) => _orderWrite<T>(operation, (api) async {
     final result = await call(api);
-    if (result case Err(
-      failure: bbx.BbxRpcFailure(:final apiCode, :final code) ||
-          bbx.BbxOrderLimitFailure(:final apiCode, :final code) ||
-          bbx.BbxConfidentialSepaInactiveFailure(:final apiCode, :final code),
-    )) {
-      log.warning(
-        'Exchange order creation refused',
-        error: {'apiCode': apiCode, 'rpcCode': code},
-      );
+    if (result case Err(:final failure) when _isRefusal(failure)) {
+      log.warning('Exchange order creation refused', error: '$failure');
     }
     return result;
   });
+
+  /// The server read the order and refused it.
+  static bool _isRefusal(bbx.BbxFailure failure) => switch (failure) {
+    bbx.BbxRpcFailure() ||
+    bbx.BbxOrderLimitFailure() ||
+    bbx.BbxConfidentialSepaInactiveFailure() => true,
+    bbx.BbxMissingCredentialFailure() ||
+    bbx.BbxCredentialUnavailableFailure() ||
+    bbx.BbxHttpFailure() ||
+    bbx.BbxTimeoutFailure() ||
+    bbx.BbxConnectionFailure() ||
+    bbx.BbxBadCertificateFailure() ||
+    bbx.BbxRequestCancelledFailure() ||
+    bbx.BbxTransformTimeoutFailure() ||
+    bbx.BbxTransportFailure() ||
+    bbx.BbxOutcomeUnknownFailure() ||
+    bbx.BbxResponseFormatFailure() => false,
+  };
 
   /// Runs the order write [call] in the write session and classifies it. A
   /// reply of another order type, or one that can't be mapped, is

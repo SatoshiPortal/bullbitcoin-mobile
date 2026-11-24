@@ -214,7 +214,7 @@ final class BbxApiLimitOrderRepository {
       case bbx.BbxFailure():
         break;
     }
-    final description = _describe(failure);
+    final description = '$failure';
     log.severe(
       message: 'Failed to $operation',
       error: description,
@@ -252,19 +252,6 @@ final class BbxApiLimitOrderRepository {
       description,
     ),
     _ => ExchangeUnexpectedFailure(description),
-  };
-
-  /// A JSON-RPC error message can quote the request, so only its codes are
-  /// kept.
-  static String _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code, :final apiCode) =>
-      'BbxRpcFailure(code: $code, apiCode: $apiCode)'
-          '${failure.requestIdLabel}',
-    bbx.BbxHttpFailure(:final status) => 'BbxHttpFailure(status: $status)',
-    bbx.BbxTimeoutFailure(:final kind) => 'BbxTimeoutFailure(${kind.name})',
-    bbx.BbxResponseFormatFailure(:final reason) =>
-      'BbxResponseFormatFailure($reason)',
-    _ => failure.runtimeType.toString(),
   };
 }
 

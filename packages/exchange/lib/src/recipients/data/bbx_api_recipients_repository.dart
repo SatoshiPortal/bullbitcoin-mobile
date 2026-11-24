@@ -449,15 +449,8 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
         return const RecipientsNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
         return onApiFailure('Exchange credential unavailable');
-      case bbx.BbxHttpFailure(:final status):
-        log.warning('API refused to $operation — HTTP $status');
-        return onApiFailure();
-      case bbx.BbxRpcFailure(:final code):
-        // The error object can quote the rejected payload: keep its code.
-        log.warning(
-          'API refused to $operation — '
-          'JSON-RPC error code ${code ?? 'unknown'}${failure.requestIdLabel}',
-        );
+      case bbx.BbxHttpFailure() || bbx.BbxRpcFailure():
+        log.warning('API refused to $operation — $failure');
         return onApiFailure();
       case bbx.BbxTimeoutFailure(:final kind):
         log.warning(
@@ -468,7 +461,7 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
         log.warning('Could not reach the API to $operation: connectionError');
         return const RecipientsNetworkFailure();
       default:
-        log.warning('Failed to $operation category=${failure.runtimeType}');
+        log.warning('Failed to $operation — $failure');
         return onApiFailure();
     }
   }

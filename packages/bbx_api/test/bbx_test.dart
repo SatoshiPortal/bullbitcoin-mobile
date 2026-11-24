@@ -183,7 +183,6 @@ void main() {
         failure,
         isA<BbxRpcFailure>().having((f) => f.requestId, 'requestId', requestId),
       );
-      expect(failure.requestIdLabel, ' requestId=$requestId');
       expect(
         failure.toString(),
         'BbxRpcFailure(code: -32603, apiCode: ERR_ORD_500, '
@@ -217,7 +216,32 @@ void main() {
         ),
       );
       expect(unlabelled.requestId, isNull);
-      expect(unlabelled.requestIdLabel, isEmpty);
+      expect('$unlabelled', isNot(contains('requestId')));
+    });
+
+    test('every refusal describes its codes and request id', () {
+      const requestId = 'req-7:0';
+      expect(
+        const BbxOrderLimitFailure(
+          bound: BbxOrderLimitBound.minimum,
+          amount: 20,
+          currency: 'CAD',
+          code: -32603,
+          apiCode: 'ERR_ORD_LIMIT',
+          requestId: requestId,
+        ).toString(),
+        'BbxOrderLimitFailure(bound: minimum, amount: 20.0, currency: CAD, '
+        'code: -32603, apiCode: ERR_ORD_LIMIT, requestId=$requestId)',
+      );
+      expect(
+        const BbxConfidentialSepaInactiveFailure(
+          code: -32603,
+          apiCode: 'ERR_ORD_CSRCP400',
+          requestId: requestId,
+        ).toString(),
+        'BbxConfidentialSepaInactiveFailure(code: -32603, '
+        'apiCode: ERR_ORD_CSRCP400, requestId=$requestId)',
+      );
     });
 
     test('a body that is not an object is a format failure', () async {

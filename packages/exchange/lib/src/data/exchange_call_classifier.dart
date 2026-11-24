@@ -19,9 +19,7 @@ Future<ExchangeWrite<T>> exchangeWrite<R, T>(
   switch (await call()) {
     case Err(:final failure):
       final write = writeOf<T>(failure);
-      log.warning(
-        '$operation: ${_describeWrite(write)} (${_describe(failure)})',
-      );
+      log.warning('$operation: ${_describeWrite(write)} ($failure)');
       return write;
     case Ok(value: final reply):
       try {
@@ -149,14 +147,14 @@ Future<ExchangeRead<T>> exchangeRead<R extends Object, T>(
 ) async {
   switch (await call()) {
     case Err(:final failure):
-      log.warning('$operation failed: ${_describe(failure)}');
+      log.warning('$operation failed: $failure');
       return switch (_readFailure(failure)) {
         _Rejected(:final why) => ReadSessionRejected(why),
         _Unreachable(:final isNetwork) => ReadUnreachable(
-          _describe(failure),
+          '$failure',
           isNetwork: isNetwork,
         ),
-        _Malformed() => ReadMalformed(_describe(failure)),
+        _Malformed() => ReadMalformed('$failure'),
       };
     case Ok(value: null):
       return const ReadMissing();
@@ -184,14 +182,14 @@ Future<ExchangeList<T>> exchangeList<R, T>(
 ) async {
   switch (await call()) {
     case Err(:final failure):
-      log.warning('$operation failed: ${_describe(failure)}');
+      log.warning('$operation failed: $failure');
       return switch (_readFailure(failure)) {
         _Rejected(:final why) => ListSessionRejected(why),
         _Unreachable(:final isNetwork) => ListUnreachable(
-          _describe(failure),
+          '$failure',
           isNetwork: isNetwork,
         ),
-        _Malformed() => ListUnreachable(_describe(failure), isNetwork: false),
+        _Malformed() => ListUnreachable('$failure', isNetwork: false),
       };
     case Ok(value: final reply):
       try {
@@ -262,26 +260,4 @@ String _describeWrite(ExchangeWrite<Object?> write) => switch (write) {
   WriteOutcomeUnknown() => 'outcome unknown',
   WriteNotSent(:final reason) => 'not sent (${reason.name})',
   WriteSessionRejected() => 'session rejected',
-};
-
-/// The failure's codes and kind only: a JSON-RPC message can quote the
-/// request or account details.
-String _describe(bbx.BbxFailure failure) => switch (failure) {
-  bbx.BbxRpcFailure(:final code, :final apiCode) =>
-    'BbxRpcFailure(code: $code, apiCode: $apiCode)',
-  bbx.BbxOrderLimitFailure(:final code, :final apiCode) =>
-    'BbxOrderLimitFailure(code: $code, apiCode: $apiCode)',
-  bbx.BbxConfidentialSepaInactiveFailure(:final code, :final apiCode) =>
-    'BbxConfidentialSepaInactiveFailure(code: $code, apiCode: $apiCode)',
-  bbx.BbxMissingCredentialFailure() ||
-  bbx.BbxCredentialUnavailableFailure() ||
-  bbx.BbxHttpFailure() ||
-  bbx.BbxTimeoutFailure() ||
-  bbx.BbxConnectionFailure() ||
-  bbx.BbxBadCertificateFailure() ||
-  bbx.BbxRequestCancelledFailure() ||
-  bbx.BbxTransformTimeoutFailure() ||
-  bbx.BbxTransportFailure() ||
-  bbx.BbxOutcomeUnknownFailure() ||
-  bbx.BbxResponseFormatFailure() => failure.toString(),
 };

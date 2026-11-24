@@ -165,19 +165,16 @@ final class BbxApiSupportChatRepository {
   ) {
     switch (failure) {
       case bbx.BbxMissingCredentialFailure():
-        log.warning(
-          'Support chat: not authenticated',
-          error: failure.runtimeType,
-        );
+        log.warning('Support chat: not authenticated', error: '$failure');
         return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
         return onFailure('Exchange credential unavailable');
       default:
         log.warning(
-          'Failed to $operation support chat data${failure.requestIdLabel}',
-          error: failure.runtimeType,
+          'Failed to $operation support chat data',
+          error: '$failure',
         );
-        return onFailure('$operation failed: ${failure.runtimeType}');
+        return onFailure('$operation failed: $failure');
     }
   }
 

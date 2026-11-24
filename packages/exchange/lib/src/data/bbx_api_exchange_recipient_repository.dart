@@ -108,7 +108,7 @@ final class BbxApiExchangeRecipientRepository {
         bbx.BbxTimeoutFailure() ||
         bbx.BbxConnectionFailure() => const ExchangeNetworkFailure(),
         _ => ExchangeUnexpectedFailure(
-          'Exchange destination request failed: ${_describe(failure)}',
+          'Exchange destination request failed: $failure',
         ),
       };
 
@@ -126,12 +126,4 @@ final class BbxApiExchangeRecipientRepository {
         '',
     isDefault: recipient.isDefault ?? false,
   );
-
-  /// A JSON-RPC error message can quote the request, so only its code is
-  /// kept.
-  static Object _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code) =>
-      'BbxRpcFailure(code: $code)${failure.requestIdLabel}',
-    _ => failure.runtimeType.toString(),
-  };
 }

@@ -145,8 +145,7 @@ final class BbxApiUserRepository {
           '$operation unreachable: connectionError',
         );
       default:
-        final description =
-            '$operation failed: ${failure.runtimeType}${failure.requestIdLabel}';
+        final description = '$operation failed: $failure';
         log.warning(description, trace: st);
         return onFailure(description);
     }

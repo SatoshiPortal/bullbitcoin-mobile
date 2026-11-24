@@ -4,6 +4,8 @@ import 'package:exchange/src/data/exchange_call_classifier.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
+import 'exchange_log_capture.dart';
+
 Future<Result<R, bbx.BbxFailure>> Function() _fails<R>(
   bbx.BbxFailure failure,
 ) =>
@@ -161,6 +163,56 @@ void main() {
     for (final (name, failure, matcher) in cases) {
       test(name, () async => expect(await write(failure), matcher));
     }
+  });
+
+  group('the request id stays in the log line', () {
+    const refused = bbx.BbxRpcFailure(
+      code: -32603,
+      message: 'refused for jane@example.com',
+      apiCode: 'ERR_ORD_500',
+      requestId: '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0',
+    );
+    const limit = bbx.BbxOrderLimitFailure(
+      bound: bbx.BbxOrderLimitBound.maximum,
+      amount: 500,
+      currency: 'CAD',
+      code: -32603,
+      apiCode: 'ERR_ORD_LIMIT',
+      requestId: 'req-7:0',
+    );
+
+    Future<String> logsOf(Future<void> Function() call) async {
+      final capture = await captureExchangeLogs();
+      await call();
+      return (await capture.logger.readLogs()).join('\n');
+    }
+
+    test('of a refused write, with its codes and never its text', () async {
+      for (final (failure, apiCode) in [
+        (refused, refused.apiCode),
+        (limit, limit.apiCode),
+      ]) {
+        final logs = await logsOf(
+          () =>
+              exchangeWrite<int, int>('placeOrder', _fails(failure), (r) => r),
+        );
+        expect(logs, contains('requestId=${failure.requestId}'));
+        expect(logs, contains('apiCode: $apiCode'));
+        expect(logs, isNot(contains('jane@example.com')));
+      }
+    });
+
+    test('of a failed read and a failed list page', () async {
+      final read = await logsOf(
+        () =>
+            exchangeRead<int, int>('getUserSummary', _fails(refused), (r) => r),
+      );
+      expect(read, contains('requestId=${refused.requestId}'));
+      final list = await logsOf(
+        () => exchangeList<int, int>('listOrders', _fails(refused), (r) => r),
+      );
+      expect(list, contains('requestId=${refused.requestId}'));
+    });
   });
 
   group('writeNotRun', () {

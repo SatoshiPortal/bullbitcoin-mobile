@@ -7,6 +7,11 @@ import 'package:primitives/primitives.dart';
 /// [BbxRpcFailure] keeps the server's text only in [BbxRpcFailure.message],
 /// which [Object.toString] leaves out.
 ///
+/// [toString] is the one log-safe description of a failure: its kind, its
+/// codes and the server's [requestId]. Diagnostics write the failure itself
+/// (`'$failure'`) and never rebuild that text from its fields, so no caller
+/// can drop a field support needs.
+///
 /// [requestId] is the server's identifier for the refused request, the one
 /// value that lets the backend trace it. It is null when the server sent none
 /// or the request never reached it.
@@ -19,13 +24,6 @@ sealed class BbxFailure extends Failure {
   const BbxFailure([this.origin]);
 
   String? get requestId => null;
-
-  /// ` requestId=<id>` to append to a diagnostic line, or nothing when the
-  /// server sent no identifier.
-  String get requestIdLabel {
-    final id = requestId;
-    return id == null ? '' : ' requestId=$id';
-  }
 }
 
 /// Written `requestId=` on purpose: the log sanitizer keeps a token with
@@ -116,7 +114,8 @@ final class BbxOrderLimitFailure extends BbxFailure {
   @override
   String toString() =>
       'BbxOrderLimitFailure(bound: ${bound.name}, amount: $amount, '
-      'currency: $currency${_requestIdSuffix(requestId)})';
+      'currency: $currency, code: $code, apiCode: $apiCode'
+      '${_requestIdSuffix(requestId)})';
 }
 
 /// The server refused a Confidential SEPA order because the recipient's
@@ -136,7 +135,7 @@ final class BbxConfidentialSepaInactiveFailure extends BbxFailure {
 
   @override
   String toString() =>
-      'BbxConfidentialSepaInactiveFailure(code: $code'
+      'BbxConfidentialSepaInactiveFailure(code: $code, apiCode: $apiCode'
       '${_requestIdSuffix(requestId)})';
 }
 
