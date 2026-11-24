@@ -8,6 +8,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullInputText,
+        BullPaymentTransition,
         BullPaymentDestinationInput,
         BullTopBar,
         SizedBox,
@@ -96,6 +97,44 @@ ArkPaymentScreen page(
 );
 
 void main() {
+  testWidgets('skipping a pending payment reveals status without details', (
+    tester,
+  ) async {
+    final r = PaymentRig();
+    final viewed = <String>[];
+    r.client.submitted = Ok(
+      ArkOperation(
+        id: 'payment-1',
+        kind: ArkOperationKind.payment,
+        status: ArkOperationStatus.pending,
+        chainSource: Uri.parse('http://localhost:3000'),
+        configGeneration: 1,
+      ),
+    );
+    await tester.pumpWidget(
+      app(
+        ArkPaymentScreen(
+          cubit: r.cubit,
+          initialDestination: destination,
+          onReconcile: () {},
+          onViewDetails: viewed.add,
+        ),
+      ),
+    );
+    await r.ready();
+    await frame(tester);
+    action(tester, 'Confirm').onPressed();
+    await frame(tester);
+    expect(find.byType(BullPaymentTransition), findsOneWidget);
+    await tester.tap(find.text('View status'));
+    await frame(tester);
+    expect(find.text('Pending'), findsOneWidget);
+    expect(find.text('Payment sent'), findsNothing);
+    expect(find.widgetWithText(BullButton, 'View details'), findsNothing);
+    expect(viewed, isEmpty);
+    expect(r.client.calls.where((call) => call == 'submit').length, 1);
+  });
+
   testWidgets('an unclear payment closes to home and Ark checks it', (
     tester,
   ) async {
@@ -369,11 +408,26 @@ void main() {
         );
         await tester.pumpWidget(app(page(r)));
         await frame(tester);
-        // Started: the app's success screen. Otherwise the flow closes.
+        // Only a completed operation can be announced as sent.
         expect(
           find.text('Payment sent'),
-          started.contains(status) ? findsOneWidget : findsNothing,
+          status == ArkOperationStatus.succeeded
+              ? findsOneWidget
+              : findsNothing,
         );
+        if (started.contains(status) &&
+            status != ArkOperationStatus.succeeded) {
+          expect(
+            find.text(
+              status == ArkOperationStatus.pending
+                  ? 'Pending'
+                  : status == ArkOperationStatus.admitted
+                  ? 'Admitted'
+                  : 'Prepared',
+            ),
+            findsOneWidget,
+          );
+        }
         // A submitted payment never re-arms editing, review or confirm.
         r.cubit.edit();
         await r.cubit.confirm();
