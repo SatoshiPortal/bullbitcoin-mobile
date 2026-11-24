@@ -6,9 +6,8 @@ import '../domain/exchange_write_gate.dart';
 import '../domain/unknown_write_journal.dart';
 import 'step_next.dart';
 
-/// The commit step's output. The server confirm gives [ServerConfirmed];
-/// the payin step (C4) adds its own variant, so every switch over a commit
-/// must name it then.
+/// The commit step's output: [ServerConfirmed] from the server confirm,
+/// [PayinSeen] from the payin (sell, pay).
 @immutable
 sealed class CommittedOrder<C> {
   const CommittedOrder();
@@ -25,6 +24,21 @@ final class ServerConfirmed<C> extends CommittedOrder<C> {
 
   @override
   int get hashCode => Object.hash(ServerConfirmed, confirmed);
+}
+
+/// The exchange saw the payin of [order] ([txid] when the app sent it).
+final class PayinSeen<C> extends CommittedOrder<C> {
+  final C order;
+  final String? txid;
+
+  const PayinSeen(this.order, this.txid);
+
+  @override
+  bool operator ==(Object other) =>
+      other is PayinSeen && other.order == order && other.txid == txid;
+
+  @override
+  int get hashCode => Object.hash(PayinSeen, order, txid);
 }
 
 /// Which write a server confirm is, and how its journal entry is found.
