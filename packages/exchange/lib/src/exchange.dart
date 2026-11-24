@@ -44,6 +44,7 @@ import 'domain/exchange_kyc_configuration.dart';
 import 'domain/exchange_limit_orders.dart';
 import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
+import 'domain/exchange_write_gate.dart';
 import 'domain/unknown_write_journal.dart';
 import 'setup/exchange_access_lifecycle.dart';
 import 'recipients/exchange_recipients.dart';
@@ -167,6 +168,9 @@ final class Exchange {
   final Future<Result<_SessionPoint, ExchangeFailure>> Function()
   _readSessionPoint;
 
+  /// One financial write at a time per account, shared by every flow.
+  final ExchangeWriteGate writeGate;
+
   const Exchange._(
     this._hasPendingOrders,
     this._getOrderStats,
@@ -190,6 +194,7 @@ final class Exchange {
     this._webAuthEndpoints,
     this._unknownWrites,
     this._readSessionPoint,
+    this.writeGate,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -646,6 +651,7 @@ final class Exchange {
       () async => (await sessionSnapshot()).map(
         (s) => (environment: s.environment, epoch: s.epoch),
       ),
+      ExchangeWriteGate(journal: unknownWrites),
     );
   }
 
@@ -1155,6 +1161,7 @@ Exchange exchangeForTesting({
   >
   Function()?
   readSessionPoint,
+  ExchangeWriteGate? writeGate,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -1246,6 +1253,7 @@ Exchange exchangeForTesting({
   null,
   unknownWrites,
   readSessionPoint ?? () => throw StateError('Unexpected session read'),
+  writeGate ?? ExchangeWriteGate(journal: unknownWrites),
 );
 
 Exchange exchangeWithTransportForTesting({
