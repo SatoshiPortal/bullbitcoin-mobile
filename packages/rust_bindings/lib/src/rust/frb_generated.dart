@@ -103,7 +103,7 @@ class BullSdk extends BaseEntrypoint<BullSdkApi, BullSdkApiImpl, BullSdkWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 547985556;
+  int get rustContentHash => 1273377703;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -578,6 +578,8 @@ abstract class BullSdkApi extends BaseApi {
   Future<List<Bip138ExcludedKey>> dartBip138ApiBip138ExcludedKeys({
     required List<String> publicDescriptors,
   });
+
+  Future<int> dartBwkApiSpAccountBlindbitTip({required String url});
 
   Future<String> lwkApiBlockchainBlockchainBroadcastSignedPset({
     required LiquidNetwork network,
@@ -1149,6 +1151,8 @@ abstract class BullSdkApi extends BaseApi {
   String boltzApiSwapStatusSwapStreamStatusToJson({
     required SwapStreamStatus that,
   });
+
+  Future<int> dartBwkApiSpAccountTestBlindbitScanData({required String url});
 
   Future<void> dartBwkApiSpAccountTestBlindbitUrl({required String url});
 
@@ -4769,6 +4773,31 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
         debugName: "bip138_excluded_keys",
         argNames: ["publicDescriptors"],
       );
+
+  @override
+  Future<int> dartBwkApiSpAccountBlindbitTip({required String url}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(url);
+          return wire.wire__dart_bwk__api__sp_account__blindbit_tip(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kDartBwkApiSpAccountBlindbitTipConstMeta,
+        argValues: [url],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kDartBwkApiSpAccountBlindbitTipConstMeta =>
+      const TaskConstMeta(debugName: "blindbit_tip", argNames: ["url"]);
 
   @override
   Future<String> lwkApiBlockchainBlockchainBroadcastSignedPset({
@@ -8872,6 +8901,34 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
       const TaskConstMeta(
         debugName: "swap_stream_status_to_json",
         argNames: ["that"],
+      );
+
+  @override
+  Future<int> dartBwkApiSpAccountTestBlindbitScanData({required String url}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(url);
+          return wire.wire__dart_bwk__api__sp_account__test_blindbit_scan_data(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kDartBwkApiSpAccountTestBlindbitScanDataConstMeta,
+        argValues: [url],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kDartBwkApiSpAccountTestBlindbitScanDataConstMeta =>
+      const TaskConstMeta(
+        debugName: "test_blindbit_scan_data",
+        argNames: ["url"],
       );
 
   @override
@@ -16286,18 +16343,11 @@ class SpAccountImpl extends RustOpaque implements SpAccount {
   Future<void> restartElectrum() => BullSdk.instance.api
       .dartBwkApiSpAccountSpAccountRestartElectrum(that: this);
 
-  /// USER-TRIGGERED ONLY. The bb-mobile app contract is that this method
-  /// is invoked exclusively from `ScanSpWalletUsecase`, which itself is
-  /// invoked exclusively from `SpCubit.scan()` (the Scan button handler).
-  /// Do not call from app lifecycle hooks, route observers, timers, or
-  /// background services. Doing so violates the documented invariant.
+  /// Starts a one-shot scan. The Dart ScanSpWalletUsecase accepts manual starts
+  /// and foreground starts admitted by its wallet sync policy.
   ///
-  /// Not `#[frb(sync)]`: the underlying bwk_sp scan walker is fully
-  /// synchronous and would freeze the Dart UI isolate for the entire
-  /// scan duration if dispatched there. FRB runs `async` methods on a
-  /// worker isolate. The inner mutex is held for the full scan — that
-  /// serializes against other methods, which is acceptable because SP
-  /// scans are user-triggered and rare.
+  /// The Rust bridge dispatches this off the Dart UI isolate. BWK owns the
+  /// scanner worker and publishes progress and terminal notifications.
   ///
   /// Cancellation: `stop_scan` flips `self.scan_cancel` (a clone of the
   /// bwk_sp::Account's internal `scanner_stop`), which causes the scan

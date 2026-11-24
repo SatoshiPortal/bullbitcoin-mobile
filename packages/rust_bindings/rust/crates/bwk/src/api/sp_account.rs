@@ -28,7 +28,7 @@ use bwk_sp::account::config::Config as SpConfig;
 use bwk_sp::account::recipient::{SpRecipientAddress, TxBuilderSpExt};
 use bwk_sp::account::{self as sp_account, Account as SpAccountInner};
 use bwk_sp::receiver::RecipientAddress;
-use bwk_sp::scan::{ScanRuntimeConfig, DEFAULT_FETCH_CONCURRENCY_FACTOR};
+use bwk_sp::scan::{state::ScanState, ScanRuntimeConfig, DEFAULT_FETCH_CONCURRENCY_FACTOR};
 
 use crate::api::types::{
     CoinSource, HeaderProgressPhase, RecipientView, SpBalanceView, SpCoinView, SpError,
@@ -53,9 +53,66 @@ compile_error!(
      Removing this guard requires a deliberate design change."
 );
 
+// First mainnet block served by BlindBit's Silent Payments filters.
+const MAINNET_SCAN_MINIMUM: u32 = 709_656;
+
+fn prepare_mainnet_scan_floor(config: &SpConfig) -> Result<(), String> {
+    if config.network != Network::Bitcoin || config.persistence.is_none() {
+        return Ok(());
+    }
+    let dir = config.account_dir();
+    if !dir.try_exists().map_err(|e| e.to_string())? {
+        return Ok(());
+    }
+    if config.persistence == Some(bwk::persist::PersistenceKind::Sqlite)
+        && !dir
+            .join("account.sqlite")
+            .try_exists()
+            .map_err(|e| e.to_string())?
+    {
+        return Ok(());
+    }
+    let backend =
+        bwk::persist::build_backend(config.persistence, dir).map_err(|e| e.to_string())?;
+    let mut state = ScanState::load_from_backend(MAINNET_SCAN_MINIMUM, backend.clone())
+        .map_err(|e| e.to_string())?;
+
+    // BWK requests saved hashes to detect reorgs and starts the spend sweep at
+    // its own frontier. Both can reach below the receive start passed to BWK.
+    let expired: Vec<_> = state
+        .block_hashes()
+        .range(..MAINNET_SCAN_MINIMUM)
+        .map(|(height, _)| height.to_string())
+        .collect();
+    if !expired.is_empty() {
+        backend
+            .flush_batch(bwk::persist::BLOCK_HASHES_STORE_KEY, &[], &expired)
+            .map_err(|e| e.to_string())?;
+    }
+    let last_unsupported = MAINNET_SCAN_MINIMUM - 1;
+    if state
+        .last_spend_height()
+        .is_some_and(|h| h < last_unsupported)
+    {
+        state.advance_spend_frontier(last_unsupported);
+        state.try_persist().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+// The floor only narrows the range a scan reads. Failing to apply it must not
+// keep the user from opening the account, so a failure is logged and the
+// account opens with its saved state.
+fn clamp_mainnet_scan_floor(config: &SpConfig) {
+    if let Err(e) = prepare_mainnet_scan_floor(config) {
+        log::warn!("SpAccount: mainnet scan floor not applied: {e}");
+    }
+}
+
 #[frb(opaque)]
 pub struct SpAccount {
     inner: Arc<Mutex<SpAccountInner>>,
+    mainnet_birthday: Option<u32>,
     sink: Mutex<Option<StreamSink<SpNotification>>>,
 
     // Cooperative shutdown for the notification-forwarding thread spawned in
@@ -178,10 +235,63 @@ pub fn validate_recipient_address(
 /// Test a blindbit URL by fetching its current block height. Standalone (no live
 /// account); async so the HTTP GET runs off the Dart UI isolate.
 pub fn test_blindbit_url(url: String) -> Result<(), String> {
+    blindbit_tip(url).map(|_| ())
+}
+
+/// Latest block height announced by a Blindbit server. Standalone; async so the
+/// HTTP GET runs off the Dart UI isolate.
+pub fn blindbit_tip(url: String) -> Result<u32, String> {
     let agent = bwk_sp::blindbit::agent().map_err(|e| e.to_string())?;
     bwk_sp::blindbit::block_height(&agent, &url)
-        .map(|_| ())
+        .map(|tip| tip.to_consensus_u32())
         .map_err(|e| e.to_string())
+}
+
+/// Check that a Blindbit server serves the tweaks and both filters the scanner
+/// reads at its announced tip, and return that tip.
+pub fn test_blindbit_scan_data(url: String) -> Result<u32, String> {
+    let agent = bwk_sp::blindbit::agent().map_err(|e| e.to_string())?;
+    let tip = bwk_sp::blindbit::block_height(&agent, &url).map_err(|e| e.to_string())?;
+    // Use the same cut-through fallback as the scanner on servers without /info.
+    let cut_through = bwk_sp::blindbit::info(&agent, &url)
+        .is_ok_and(|info| info.tweaks_cut_through_with_dust_filter);
+    let tweak_route = if cut_through { "tweaks" } else { "tweak-index" };
+    let base = url.trim_end_matches('/');
+    let get = |route: &str| {
+        agent
+            .get(format!("{base}/{route}/{tip}"))
+            .call()
+            .and_then(|mut response| response.body_mut().read_to_string())
+            .map_err(|e| e.to_string())
+    };
+    let tweaks: Vec<String> =
+        serde_json::from_str(&get(tweak_route)?).map_err(|e| e.to_string())?;
+    if tweaks
+        .iter()
+        .any(|tweak| tweak.len() != 66 || !tweak.bytes().all(|byte| byte.is_ascii_hexdigit()))
+    {
+        return Err("Blindbit returned an invalid tweak".to_string());
+    }
+
+    #[derive(serde::Deserialize)]
+    struct ReceiveFilter {
+        block_hash: BlockHash,
+        data: String,
+    }
+    let receive: ReceiveFilter =
+        serde_json::from_str(&get("filter/new-utxos")?).map_err(|e| e.to_string())?;
+    if receive.data.is_empty()
+        || receive.data.len() % 2 != 0
+        || !receive.data.bytes().all(|byte| byte.is_ascii_hexdigit())
+    {
+        return Err("Blindbit returned an invalid receive filter".to_string());
+    }
+    let spent =
+        bwk_sp::blindbit::spent_filter(&agent, &url, tip, None).map_err(|e| e.to_string())?;
+    if spent.block_hash != receive.block_hash {
+        return Err("Blindbit filters disagree about the tip block".to_string());
+    }
+    Ok(tip.to_consensus_u32())
 }
 
 /// Test an electrum URL by connecting and requesting `server.version`. Standalone;
@@ -372,7 +482,12 @@ impl SpAccount {
         header_checkpoint: Option<SpHeaderCheckpoint>,
         scan_runtime: ScanRuntimeConfig,
     ) -> Result<SpAccount, String> {
-        config.birthday_height = birthday_height;
+        let mainnet_birthday = (config.network == Network::Bitcoin).then(|| {
+            birthday_height
+                .unwrap_or(MAINNET_SCAN_MINIMUM)
+                .max(MAINNET_SCAN_MINIMUM)
+        });
+        config.birthday_height = mainnet_birthday.or(birthday_height);
         config.dust_limit = dust_limit;
         config.header_checkpoint = header_checkpoint.map(parse_header_checkpoint).transpose()?;
 
@@ -383,12 +498,14 @@ impl SpAccount {
         }
 
         let config = config.with_persistence(Some(bwk::persist::PersistenceKind::Sqlite));
+        clamp_mainnet_scan_floor(&config);
         let account =
             SpAccountInner::with_runtime_config(config, scan_runtime).map_err(|e| e.to_string())?;
         let scan_cancel = account.cancel_flag();
 
         Ok(SpAccount {
             inner: Arc::new(Mutex::new(account)),
+            mainnet_birthday,
             sink: Mutex::new(None),
             shutdown: Arc::new(AtomicBool::new(false)),
             notif_handle: Mutex::new(None),
@@ -582,11 +699,19 @@ impl SpAccount {
             config.header_checkpoint = Some(parse_header_checkpoint(checkpoint)?);
         }
 
+        let mainnet_birthday = (config.network == Network::Bitcoin).then(|| {
+            config
+                .birthday_height
+                .unwrap_or(MAINNET_SCAN_MINIMUM)
+                .max(MAINNET_SCAN_MINIMUM)
+        });
+        clamp_mainnet_scan_floor(&config);
         let account = SpAccountInner::new(config).map_err(|e| e.to_string())?;
 
         let scan_cancel = account.cancel_flag();
         Ok(SpAccount {
             inner: Arc::new(Mutex::new(account)),
+            mainnet_birthday,
             sink: Mutex::new(None),
             shutdown: Arc::new(AtomicBool::new(false)),
             notif_handle: Mutex::new(None),
@@ -778,6 +903,9 @@ impl SpAccount {
     /// floor.
     #[frb(sync)]
     pub fn min_birthday_height(&self) -> Result<u32, String> {
+        if self.mainnet_birthday.is_some() {
+            return Ok(MAINNET_SCAN_MINIMUM);
+        }
         Ok(lock_inner(&self.inner)?.min_birthday_height())
     }
 
@@ -792,18 +920,11 @@ impl SpAccount {
             .map_err(|e| e.to_string())
     }
 
-    /// USER-TRIGGERED ONLY. The bb-mobile app contract is that this method
-    /// is invoked exclusively from `ScanSpWalletUsecase`, which itself is
-    /// invoked exclusively from `SpCubit.scan()` (the Scan button handler).
-    /// Do not call from app lifecycle hooks, route observers, timers, or
-    /// background services. Doing so violates the documented invariant.
+    /// Starts a one-shot scan. The Dart ScanSpWalletUsecase accepts manual starts
+    /// and foreground starts admitted by its wallet sync policy.
     ///
-    /// Not `#[frb(sync)]`: the underlying bwk_sp scan walker is fully
-    /// synchronous and would freeze the Dart UI isolate for the entire
-    /// scan duration if dispatched there. FRB runs `async` methods on a
-    /// worker isolate. The inner mutex is held for the full scan — that
-    /// serializes against other methods, which is acceptable because SP
-    /// scans are user-triggered and rare.
+    /// The Rust bridge dispatches this off the Dart UI isolate. BWK owns the
+    /// scanner worker and publishes progress and terminal notifications.
     ///
     /// Cancellation: `stop_scan` flips `self.scan_cancel` (a clone of the
     /// bwk_sp::Account's internal `scanner_stop`), which causes the scan
@@ -818,8 +939,17 @@ impl SpAccount {
         // SpAccount is being scanned. Cheap relaxed store.
         self.scan_cancel.store(false, Ordering::Relaxed);
         let mut g = lock_inner(&self.inner)?;
-        // `start_height` overrides where the scan begins (None resumes from the
-        // last scanned position); bwk_sp clamps it to the birthday height.
+        // A legacy account may have a persisted birthday below the filter
+        // range. Retain native resume behavior for cursors already in range.
+        let start_height = match (self.mainnet_birthday, start_height) {
+            (Some(_), Some(height)) => Some(height.max(MAINNET_SCAN_MINIMUM)),
+            (Some(birthday), None) => match g.last_scanned_height() {
+                None => Some(birthday),
+                Some(height) if height < MAINNET_SCAN_MINIMUM - 1 => Some(MAINNET_SCAN_MINIMUM),
+                Some(_) => None,
+            },
+            (None, height) => height,
+        };
         g.start_scan(sp_account::ScanMode::OneShot, start_height)
             .map_err(|e| match e {
                 // Preserved as a variant: callers skip a redundant start
@@ -1504,9 +1634,130 @@ fn map_sp_notification(
 mod tests {
     use super::*;
     use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
+    use std::{
+        io::{BufRead, BufReader, ErrorKind, Write},
+        net::TcpListener,
+        time::Instant,
+    };
     use tempfile::tempdir;
 
     const TEST_MNEMONIC: &str = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+
+    fn serve_blindbit_responses(
+        responses: &'static [(&str, Option<&str>)],
+    ) -> (String, JoinHandle<()>) {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let url = format!("http://{}", listener.local_addr().unwrap());
+        let worker = std::thread::spawn(move || {
+            for (path, body) in responses {
+                let deadline = Instant::now() + Duration::from_secs(5);
+                let (mut socket, _) = loop {
+                    match listener.accept() {
+                        Ok(connection) => break connection,
+                        Err(error)
+                            if error.kind() == ErrorKind::WouldBlock
+                                && Instant::now() < deadline =>
+                        {
+                            std::thread::sleep(Duration::from_millis(5));
+                        }
+                        Err(error) => panic!("Blindbit probe did not request {path}: {error}"),
+                    }
+                };
+                socket.set_nonblocking(false).unwrap();
+                socket
+                    .set_read_timeout(Some(Duration::from_secs(5)))
+                    .unwrap();
+                let mut reader = BufReader::new(&mut socket);
+                let mut line = String::new();
+                reader.read_line(&mut line).unwrap();
+                assert_eq!(line.split_ascii_whitespace().nth(1), Some(*path));
+                loop {
+                    line.clear();
+                    if reader.read_line(&mut line).unwrap() == 0 || line == "\r\n" {
+                        break;
+                    }
+                }
+                let (status, body) = match body {
+                    Some(body) => ("200 OK", *body),
+                    None => ("404 Not Found", "{}"),
+                };
+                write!(
+                    socket,
+                    "HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                    body.len()
+                )
+                .unwrap();
+            }
+        });
+        (url, worker)
+    }
+
+    #[test]
+    fn blindbit_probe_rejects_a_server_that_only_serves_height() {
+        const HEIGHT: &str = r#"{"block_height":199}"#;
+        let (url, worker) = serve_blindbit_responses(&[
+            ("/block-height", Some(HEIGHT)),
+            ("/block-height", Some(HEIGHT)),
+            ("/info", None),
+            ("/tweak-index/199", None),
+        ]);
+        assert_eq!(blindbit_tip(url.clone()).unwrap(), 199);
+        assert!(test_blindbit_scan_data(url).is_err());
+        worker.join().unwrap();
+    }
+
+    #[test]
+    fn blindbit_probe_accepts_the_scan_endpoints_without_info() {
+        const FILTER: &str = r#"{"block_hash":"0000000000000000000000000000000000000000000000000000000000000001","data":"00"}"#;
+        let (url, worker) = serve_blindbit_responses(&[
+            ("/block-height", Some(r#"{"block_height":199}"#)),
+            ("/info", None),
+            ("/tweak-index/199", Some("[]")),
+            ("/filter/new-utxos/199", Some(FILTER)),
+            ("/filter/spent/199", Some(FILTER)),
+        ]);
+        assert_eq!(test_blindbit_scan_data(url).unwrap(), 199);
+        worker.join().unwrap();
+    }
+
+    #[test]
+    fn legacy_mainnet_scan_state_stays_within_the_blindbit_range() {
+        let dir = tempdir().unwrap();
+        let config = SpConfig::new(
+            "legacy".into(),
+            Network::Bitcoin,
+            TEST_MNEMONIC.into(),
+            "http://localhost:3000".into(),
+            dir.path().to_path_buf(),
+        )
+        .with_persistence(Some(bwk::persist::PersistenceKind::Sqlite));
+        let floor = MAINNET_SCAN_MINIMUM;
+        let legacy_birthday = floor - 24;
+        {
+            let backend =
+                bwk::persist::build_backend(config.persistence, config.account_dir()).unwrap();
+            let mut state = ScanState::load_from_backend(legacy_birthday, backend).unwrap();
+            state.advance_frontier(floor - 2, [1; 32]);
+            state.advance_frontier(floor - 1, [2; 32]);
+            state.advance_frontier(floor, [3; 32]);
+            state.advance_spend_frontier(floor - 3);
+            state.try_persist().unwrap();
+        }
+        for _ in 0..2 {
+            prepare_mainnet_scan_floor(&config).unwrap();
+            let backend =
+                bwk::persist::build_backend(config.persistence, config.account_dir()).unwrap();
+            let state = ScanState::load_from_backend(floor, backend).unwrap();
+            assert_eq!(state.birthday_height(), legacy_birthday);
+            assert_eq!(state.last_scanned_height(), Some(floor));
+            assert_eq!(state.next_spend_start(), floor);
+            assert_eq!(
+                state.block_hashes().into_iter().collect::<Vec<_>>(),
+                [(floor, [3; 32])]
+            );
+        }
+    }
 
     fn test_bitcoin_address(network: Network) -> String {
         let secp = Secp256k1::new();
@@ -1747,6 +1998,7 @@ mod tests {
             None,
         )
         .expect("create 1");
+        let sp_address = acc1.sp_address().expect("silent payment address");
 
         // Every reveal must hand out a fresh, never-before-issued address:
         // successive calls advance the receive tip and must all differ. This
@@ -1763,6 +2015,32 @@ mod tests {
                 "reveal {i} reused address {addr}"
             );
         }
+
+        futures_lite_block_on(acc1.dispose()).expect("dispose before server change");
+        acc1.release();
+        let reopened = SpAccount::create_from_mnemonic(
+            "sub-persist".to_string(),
+            SpNetwork::Regtest,
+            TEST_MNEMONIC.to_string(),
+            "http://127.0.0.1:3001".to_string(),
+            String::new(),
+            data_dir,
+            None,
+            None,
+            None,
+        )
+        .expect("reopen after server change");
+        assert_eq!(
+            reopened.sp_address().expect("reopened SP address"),
+            sp_address
+        );
+        let next = reopened
+            .new_taproot_address()
+            .expect("next receive address");
+        assert!(
+            seen.insert(next),
+            "reopen reused a previously revealed address"
+        );
     }
 
     #[test]

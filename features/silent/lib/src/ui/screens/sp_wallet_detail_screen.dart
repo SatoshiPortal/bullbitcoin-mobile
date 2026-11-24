@@ -82,22 +82,37 @@ class SpWalletDetailScreen extends StatelessWidget {
               ),
             if (state.isScanning)
               SliverToBoxAdapter(child: _SpScanStatusStrip(state: state))
-            // Only when the user has to act. With auto scanning keeping up
-            // there is nothing to say, so no row at all.
-            else if (state.needsScanNudge)
+            else if (!state.isLoading && state.minBirthdayHeight != null)
               SliverToBoxAdapter(
-                child: _SpScanNudgeCard(
-                  height: state.lastScannedHeight!,
-                  chainTip: state.chainTip!,
+                child: ListTile(
+                  title: Text(
+                    state.hasPendingScan
+                        ? context.silentLoc.silentScanResumeInterrupted
+                        : !state.hasScannedBefore
+                        ? context.silentLoc.silentWalletScanRequired
+                        : state.isCaughtUp
+                        ? context.silentLoc.silentWalletScanUpToDate
+                        : state.isChainTipReliable
+                        ? context.silentLoc.silentWalletScanBehind
+                        : context.silentLoc.silentWalletScanUnknown,
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.pushNamed(SpRoute.spScan.name),
                 ),
               ),
-            if (state.isBlindbitBehind)
+            if (state.lastScannedHeight case final height?
+                when state.needsScanNudge && !state.isScanning)
+              SliverToBoxAdapter(
+                child: switch (state.chainTip) {
+                  final tip? => _SpScanNudgeCard(height: height, chainTip: tip),
+                  null => const SizedBox.shrink(),
+                },
+              ),
+            if (state.blindbitLag case final lag? when lag.isBehind)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: SpBlindbitBehindCard(
-                    blocksBehind: state.blindbitLag!.blocksBehind,
-                  ),
+                  child: SpBlindbitBehindCard(blocksBehind: lag.blocksBehind),
                 ),
               ),
             if (state.headerValidationStatus ==

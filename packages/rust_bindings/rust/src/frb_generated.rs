@@ -46,7 +46,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 547985556;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1273377703;
 
 // Section: executor
 
@@ -3696,6 +3696,27 @@ fn wire__dart_bip138__api__bip138_excluded_keys_impl(
         },
     )
 }
+fn wire__dart_bwk__api__sp_account__blindbit_tip_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    url: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "blindbit_tip",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_url = url.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, String>((move || {
+                    let output_ok = dart_bwk::api::sp_account::blindbit_tip(api_url)?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__lwk__api__blockchain__blockchain_broadcast_signed_pset_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     network: impl CstDecode<lwk::api::types::LiquidNetwork>,
@@ -6939,6 +6960,27 @@ fn wire__boltz__api__swap_status__swap_stream_status_to_json_impl(
                 let output_ok = boltz::api::swap_status::SwapStreamStatus::to_json(&api_that)?;
                 std::result::Result::Ok(output_ok)
             })())
+        },
+    )
+}
+fn wire__dart_bwk__api__sp_account__test_blindbit_scan_data_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    url: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "test_blindbit_scan_data",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_url = url.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, String>((move || {
+                    let output_ok = dart_bwk::api::sp_account::test_blindbit_scan_data(api_url)?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
         },
     )
 }
@@ -18191,6 +18233,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__blindbit_tip(
+        port_: i64,
+        url: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__dart_bwk__api__sp_account__blindbit_tip_impl(port_, url)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__blockchain__blockchain_broadcast_signed_pset(
         port_: i64,
         network: i32,
@@ -19541,6 +19591,14 @@ mod io {
         that: *mut wire_cst_swap_stream_status,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_stream_status_to_json_impl(that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__test_blindbit_scan_data(
+        port_: i64,
+        url: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__dart_bwk__api__sp_account__test_blindbit_scan_data_impl(port_, url)
     }
 
     #[unsafe(no_mangle)]

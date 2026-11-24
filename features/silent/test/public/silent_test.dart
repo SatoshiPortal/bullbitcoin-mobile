@@ -1,3 +1,5 @@
+import 'package:silent/src/domain/usecases/check_sp_server_status_usecase.dart';
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
@@ -17,6 +19,9 @@ import 'package:silent/src/domain/usecases/watch_sp_updates_usecase.dart';
 import 'package:silent/src/silent.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+class MockCheckSpServerStatusUsecase extends Mock
+    implements CheckSpServerStatusUsecase {}
 
 class MockGetSpWalletUsecase extends Mock implements GetSpWalletUsecase {}
 
@@ -71,6 +76,7 @@ void main() {
     featureGate = MockGetSpFeatureGateUsecase();
     updates = MockWatchSpUpdatesUsecase();
     facade = SilentCapability(
+      checkSpServerStatusUsecase: MockCheckSpServerStatusUsecase(),
       getSpWalletUsecase: getSpWallet,
       isSpScanningUsecase: isScanning,
       checkSpWalletSetupUsecase: MockCheckSpWalletSetupUsecase(),

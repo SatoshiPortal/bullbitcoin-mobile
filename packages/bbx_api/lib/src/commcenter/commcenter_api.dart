@@ -73,6 +73,27 @@ final class CommcenterApi {
     read: (_) {},
   );
 
+  /// The number of support messages sent to the user that they have not
+  /// read. The server answers with the number, or with an object holding it
+  /// as `count`.
+  Future<Result<int, BbxFailure>> getUnreadMessageCount() => _transport.request(
+    endpoint,
+    'getUnreadMessageCount',
+    read: (result) => switch (result) {
+      final int count => count,
+      {'count': final int count} => count,
+      _ => read<int>(result, 'result'),
+    },
+  );
+
+  /// Marks every support message sent to the user as read.
+  Future<Result<void, BbxFailure>> setAllMessagesAsRead() => _transport.request(
+    endpoint,
+    'setAllMessagesAsRead',
+    params: {'isRead': true},
+    read: (_) {},
+  );
+
   /// The attachment [attachmentId] with its file data. A missing result is a
   /// format error.
   Future<Result<SupportAttachment, BbxFailure>> getMessageAttachment(

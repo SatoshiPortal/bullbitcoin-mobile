@@ -308,17 +308,28 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     final result = await request;
     if (result
         case Err(
-          failure: bbx.BbxRpcFailure(:final apiCode, :final code) ||
-              bbx.BbxOrderLimitFailure(:final apiCode, :final code) ||
+          failure: bbx.BbxRpcFailure(
+                :final apiCode,
+                :final code,
+                :final requestId,
+              ) ||
+              bbx.BbxOrderLimitFailure(
+                :final apiCode,
+                :final code,
+                :final requestId,
+              ) ||
               bbx.BbxConfidentialSepaInactiveFailure(
                 :final apiCode,
                 :final code,
+                :final requestId,
               ),
         )
         when creatingOrder) {
       log.warning(
         'Exchange order creation refused',
-        error: {'apiCode': apiCode, 'rpcCode': code},
+        error:
+            'apiCode: $apiCode, rpcCode: $code'
+            '${requestId == null ? '' : ', requestId=$requestId'}',
       );
     }
     return switch (result) {

@@ -22,7 +22,7 @@ typedef BackupIntent = ({
 typedef BackupGeneration = ({
   String objectId,
   String digest,
-  String? envelopeDigest,
+  String envelopeDigest,
   DateTime verifiedAt,
 });
 
@@ -44,24 +44,50 @@ String randomHex(int bytes) {
 
 /// Both isolates must use the same app-private path. The guard's write
 /// transaction is independent of the state database's durable commits.
+///
+/// One database owns the journal, the configured destination and the group
+/// identity mapping together. It has never shipped, so there is no earlier
+/// on-disk layout to migrate from.
 final class BackupMetadataStore {
+  /// The only supported layout. A headless open requires exactly this version.
+  static const schemaVersion = 1;
+
   final String path;
   final Duration lockTimeout;
+
+  /// A background open never creates, initializes or migrates the owner
+  /// database: it proceeds only on a database the foreground already prepared
+  /// at [schemaVersion].
+  final bool background;
 
   const BackupMetadataStore({
     required this.path,
     this.lockTimeout = const Duration(seconds: 30),
+    this.background = false,
   });
 
   Future<T> locked<T>(Future<T> Function(BackupMetadataState) action) async {
-    await File(path).parent.create(recursive: true);
+    if (background) {
+      _requireOwned();
+    } else {
+      await File(path).parent.create(recursive: true);
+    }
     final guard = sqlite3.open('$path.guard');
     try {
       await _acquire(guard);
-      final state = sqlite3.open(path);
+      final state = sqlite3.open(
+        path,
+        mode: background ? OpenMode.readWrite : OpenMode.readWriteCreate,
+      );
       try {
         state.execute('PRAGMA synchronous = FULL');
-        _initialize(state);
+        if (background) {
+          if (state.userVersion != schemaVersion) {
+            throw const BackupMetadataStoreNotReady();
+          }
+        } else {
+          _initialize(state);
+        }
         return await action(BackupMetadataState._(state));
       } finally {
         state.close();
@@ -70,6 +96,38 @@ final class BackupMetadataStore {
       // Closing rolls back the guard transaction, including on error.
       guard.close();
     }
+  }
+
+  /// The installation-stable id of one seed reference and environment.
+  ///
+  /// It uses its own short-lived connection so callers outside [locked] can
+  /// resolve ids without contending with the guard. It never creates,
+  /// initializes or migrates the owner database: null means the foreground has
+  /// not prepared it yet.
+  Future<String?> groupId(String reference, String environment) async {
+    if (!File(path).existsSync()) return null;
+    final state = sqlite3.open(path, mode: OpenMode.readWrite);
+    try {
+      state.execute('PRAGMA busy_timeout = 3000');
+      if (state.userVersion != schemaVersion) return null;
+      final key = [reference, environment];
+      state.execute('''
+        INSERT INTO group_ids (secret_ref, environment, group_id)
+        VALUES (?, ?, lower(hex(randomblob(16))))
+        ON CONFLICT (secret_ref, environment) DO NOTHING
+      ''', key);
+      return state.select('''
+        SELECT group_id FROM group_ids
+        WHERE secret_ref = ? AND environment = ?
+      ''', key).single['group_id']
+          as String;
+    } finally {
+      state.close();
+    }
+  }
+
+  void _requireOwned() {
+    if (!File(path).existsSync()) throw const BackupMetadataStoreNotReady();
   }
 
   Future<void> _acquire(Database guard) async {
@@ -91,19 +149,14 @@ final class BackupMetadataStore {
 
   void _initialize(Database state) {
     final version = state.userVersion;
-    if (version == 2) return;
-    if (version != 0 && version != 1) {
+    if (version == schemaVersion) return;
+    if (version != 0) {
       throw const FormatException('Unknown backup metadata store version');
     }
     state.execute('BEGIN IMMEDIATE');
     try {
-      if (version == 0) {
-        _createSchema(state);
-      } else {
-        // Old acknowledged rows have no known ciphertext digest.
-        state.execute('ALTER TABLE verified ADD COLUMN envelope_digest TEXT');
-      }
-      state.userVersion = 2;
+      _createSchema(state);
+      state.userVersion = schemaVersion;
       state.execute('COMMIT');
     } finally {
       if (state.autocommit == false) state.execute('ROLLBACK');
@@ -127,14 +180,24 @@ final class BackupMetadataStore {
         sequence INTEGER PRIMARY KEY, destination TEXT NOT NULL,
         account TEXT NOT NULL, group_id TEXT NOT NULL, lineage TEXT NOT NULL,
         generation INTEGER NOT NULL, object_id TEXT NOT NULL, digest TEXT NOT NULL,
-        verified_at INTEGER NOT NULL, envelope_digest TEXT,
+        verified_at INTEGER NOT NULL, envelope_digest TEXT NOT NULL,
         UNIQUE (destination, account, lineage, object_id)
+      );
+      CREATE TABLE group_ids (
+        secret_ref TEXT NOT NULL, environment TEXT NOT NULL,
+        group_id TEXT NOT NULL UNIQUE, PRIMARY KEY (secret_ref, environment)
       );
     ''');
     state.execute('INSERT INTO selection VALUES (1, NULL, NULL, 0, ?)', [
       randomHex(16),
     ]);
   }
+}
+
+/// The owner database is absent or not at the foreground's current schema.
+/// Headless callers translate it into a deferred run.
+final class BackupMetadataStoreNotReady implements Exception {
+  const BackupMetadataStoreNotReady();
 }
 
 /// State operations scoped to a held guard. Each operation is committed before
@@ -245,7 +308,7 @@ final class BackupMetadataState {
       (
         objectId: row['object_id'] as String,
         digest: row['digest'] as String,
-        envelopeDigest: row['envelope_digest'] as String?,
+        envelopeDigest: row['envelope_digest'] as String,
         verifiedAt: DateTime.fromMillisecondsSinceEpoch(
           row['verified_at'] as int,
           isUtc: true,

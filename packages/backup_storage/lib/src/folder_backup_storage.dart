@@ -72,6 +72,33 @@ final class FolderBackupStorage implements BackupStorage {
     return _FolderSession(this, grant, pick['name'] as String?);
   });
 
+  @override
+  Future<Result<StorageReadSession, BackupStorageFailure>>
+  authorizeForDiscovery() => _run(_pickerDeadline, (expired) async {
+    final previous = await _readGrant();
+    if (expired()) throw TimeoutException('Folder authorization expired');
+    final pick = await _invokeMap('pick', null);
+    final grant = _FolderGrant(
+      pick['token'] as String,
+      pick['id'] as String,
+      _newRevision(),
+      const {},
+    );
+    // The store, the receipts and the configured grant are untouched: this
+    // pick only names the folder this discovery reads.
+    final retain = grant.token == previous?.token;
+    if (expired()) {
+      if (!retain) await _release(grant.token);
+      throw TimeoutException('Folder selection expired');
+    }
+    return _FolderDiscoverySession(
+      this,
+      grant,
+      pick['name'] as String?,
+      retain: retain,
+    );
+  });
+
   Future<_FolderGrant?> _readGrant() async {
     final state = await _store.read();
     return state == null ? null : _FolderGrant.decode(state);
@@ -135,8 +162,9 @@ final class FolderBackupStorage implements BackupStorage {
   }
 }
 
-final class _FolderSession implements StorageSession {
-  static const _extension = '.bip138';
+/// Shared read capabilities of one folder grant. A discovery view holds a
+/// temporary grant; a session holds the configured one.
+abstract base class _FolderView implements StorageReadSession {
   static const _maxBackupBytes = 4 * 1024 * 1024;
 
   final FolderBackupStorage _storage;
@@ -145,11 +173,72 @@ final class _FolderSession implements StorageSession {
   final StorageAccount account;
   bool _disposed = false;
 
-  _FolderSession(this._storage, this._selection, String? name)
+  _FolderView(this._storage, this._selection, String? name)
     : account = StorageAccount(
         id: sha256.convert(utf8.encode(_selection.accountId)).toString(),
         displayName: name,
       );
+
+  /// Drops this view. A discovery view cannot read or list afterwards.
+  void dispose() => _disposed = true;
+
+  @override
+  Future<Result<Uint8List, BackupStorageFailure>> read(
+    StoredObject object, {
+    required int maxBytes,
+  }) => _run((grant, _) => _read(grant, _nativeId(object), maxBytes));
+
+  Future<Result<T, BackupStorageFailure>> _run<T>(
+    Future<T> Function(_FolderGrant grant, bool Function() expired) operation,
+  );
+
+  Future<Uint8List> _read(_FolderGrant grant, String id, int maxBytes) async {
+    if (maxBytes < 0) {
+      throw const _FolderFailure(BackupStorageTooLargeFailure());
+    }
+    final bytes = await FolderBackupStorage._channel.invokeMethod<Uint8List>(
+      'read',
+      {
+        'token': grant.token,
+        'accountId': grant.accountId,
+        'id': id,
+        'maxBytes': maxBytes,
+      },
+    );
+    if (bytes == null) throw const FormatException();
+    if (bytes.length > maxBytes) {
+      throw const _FolderFailure(BackupStorageTooLargeFailure());
+    }
+    return bytes;
+  }
+
+  String get _idPrefix => '${account.id}:';
+
+  String _nativeId(StoredObject object) {
+    final prefix = _idPrefix;
+    if (!object.id.startsWith(prefix)) {
+      throw const _FolderFailure(BackupStorageNotFoundFailure());
+    }
+    return object.id.substring(prefix.length);
+  }
+
+  StoredObject _object(Map<Object?, Object?> info, Durability durability) =>
+      StoredObject(
+        id: '$_idPrefix${info['id'] as String}',
+        name: info['name'] as String,
+        size: info['size'] as int?,
+        modifiedAt: switch (info['modifiedMs']) {
+          final int ms => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true),
+          _ => null,
+        },
+        durability: durability,
+      );
+}
+
+final class _FolderSession extends _FolderView implements StorageSession {
+  static const _extension = '.bip138';
+
+  _FolderSession(super._storage, super._selection, super.name);
 
   @override
   Future<Result<List<StoredObject>, BackupStorageFailure>> list({
@@ -178,7 +267,7 @@ final class _FolderSession implements StorageSession {
           final bytes = await _read(
             grant,
             entry['id'] as String,
-            _maxBackupBytes,
+            _FolderView._maxBackupBytes,
           );
           if (sha256.convert(bytes).toString() == receipt) {
             durability = Durability.durable;
@@ -194,18 +283,12 @@ final class _FolderSession implements StorageSession {
   });
 
   @override
-  Future<Result<Uint8List, BackupStorageFailure>> read(
-    StoredObject object, {
-    required int maxBytes,
-  }) => _run((grant, _) => _read(grant, _nativeId(object), maxBytes));
-
-  @override
   Future<Result<StoredObject, BackupStorageFailure>> create({
     required String name,
     required String mimeType,
     required Uint8List bytes,
   }) {
-    final expected = bytes.length <= _maxBackupBytes
+    final expected = bytes.length <= _FolderView._maxBackupBytes
         ? Uint8List.fromList(bytes)
         : null;
     return _run((grant, expired) async {
@@ -254,8 +337,11 @@ final class _FolderSession implements StorageSession {
       });
 
   @override
-  void dispose() => _disposed = true;
+  Future<void> close() async {
+    dispose();
+  }
 
+  @override
   Future<Result<T, BackupStorageFailure>> _run<T>(
     Future<T> Function(_FolderGrant grant, bool Function() expired) operation,
   ) => _storage._run(FolderBackupStorage._ioDeadline, (expired) async {
@@ -268,48 +354,75 @@ final class _FolderSession implements StorageSession {
     if (expired()) throw TimeoutException('Folder operation expired');
     return operation(current, expired);
   });
+}
 
-  Future<Uint8List> _read(_FolderGrant grant, String id, int maxBytes) async {
-    if (maxBytes < 0) {
-      throw const _FolderFailure(BackupStorageTooLargeFailure());
+/// Reads a folder the user picked for restore discovery. The pick is never
+/// written to the grant store, so the configured destination and its receipts
+/// stay exactly as they were.
+final class _FolderDiscoverySession extends _FolderView {
+  static const _extension = '.bip138';
+
+  /// True when the picked folder is already the configured one: closing must
+  /// then leave its grant in place.
+  final bool _retain;
+  bool _closed = false;
+
+  _FolderDiscoverySession(
+    super._storage,
+    super._selection,
+    super.name, {
+    required this._retain,
+  });
+
+  @override
+  Future<Result<List<StoredObject>, BackupStorageFailure>> list({
+    required String mimeType,
+    String? namePrefix,
+  }) => _run((grant, expired) async {
+    final entries = await FolderBackupStorage._channel
+        .invokeListMethod<Object?>('list', {
+          'token': grant.token,
+          'accountId': grant.accountId,
+        });
+    if (entries == null) throw const FormatException();
+    final result = <StoredObject>[];
+    for (final entry in entries.cast<Map<Object?, Object?>>()) {
+      final name = entry['name'] as String;
+      if (!name.endsWith(_extension) ||
+          (namePrefix != null && !name.startsWith(namePrefix))) {
+        continue;
+      }
+      if (expired()) throw TimeoutException('Folder listing expired');
+      // No receipts: discovery never proves the durability of a foreign copy.
+      result.add(_object(entry, Durability.pending));
     }
-    final bytes = await FolderBackupStorage._channel.invokeMethod<Uint8List>(
-      'read',
-      {
-        'token': grant.token,
-        'accountId': grant.accountId,
-        'id': id,
-        'maxBytes': maxBytes,
-      },
-    );
-    if (bytes == null) throw const FormatException();
-    if (bytes.length > maxBytes) {
-      throw const _FolderFailure(BackupStorageTooLargeFailure());
-    }
-    return bytes;
+    return result;
+  });
+
+  @override
+  Future<void> close() async {
+    if (_closed) return;
+    _closed = true;
+    dispose();
+    // Releasing a temporary pick is best effort: the configured grant and the
+    // store are never touched here, so a failure leaves nothing inconsistent.
+    await _storage._run(FolderBackupStorage._ioDeadline, (_) async {
+      if (_retain) return;
+      // Another configure may have adopted this exact folder meanwhile.
+      final configured = await _storage._readGrant();
+      if (configured?.token == _selection.token) return;
+      await _storage._release(_selection.token);
+    });
   }
 
-  String get _idPrefix => '${account.id}:';
-
-  String _nativeId(StoredObject object) {
-    final prefix = _idPrefix;
-    if (!object.id.startsWith(prefix)) {
-      throw const _FolderFailure(BackupStorageNotFoundFailure());
-    }
-    return object.id.substring(prefix.length);
-  }
-
-  StoredObject _object(Map<Object?, Object?> info, Durability durability) =>
-      StoredObject(
-        id: '$_idPrefix${info['id'] as String}',
-        name: info['name'] as String,
-        size: info['size'] as int?,
-        modifiedAt: switch (info['modifiedMs']) {
-          final int ms => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true),
-          _ => null,
-        },
-        durability: durability,
-      );
+  @override
+  Future<Result<T, BackupStorageFailure>> _run<T>(
+    Future<T> Function(_FolderGrant grant, bool Function() expired) operation,
+  ) => _storage._run(FolderBackupStorage._ioDeadline, (expired) async {
+    if (_disposed) throw _authorizationRequired;
+    if (expired()) throw TimeoutException('Folder operation expired');
+    return operation(_selection, expired);
+  });
 }
 
 final class _FolderGrant {

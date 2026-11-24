@@ -17,6 +17,20 @@ import '../domain/sync_outcome.dart';
 import '../domain/sync_trigger.dart';
 import '../domain/wallet_discovery_failure.dart';
 
+/// Wallets a pass should sync, and the failure that must fail that pass even
+/// though these wallets were synced.
+///
+/// A selection read only in part — an unreadable row, a storage error on one
+/// network — still syncs every wallet it could read, then fails the pass.
+/// Reporting that pass as successful would stamp the throttle window and hide
+/// the wallets it could not see until a user-triggered pass.
+final class WalletRead<W extends Object, F extends Failure> {
+  final List<W> wallets;
+  final F? incomplete;
+
+  const WalletRead(this.wallets, {this.incomplete});
+}
+
 /// Foreground sync orchestrator.
 ///
 /// Schedules per-kind sync work (bitcoin and liquid) so that:
@@ -87,7 +101,7 @@ class SyncCoordinator<W extends Object, F extends Failure> {
   final Set<(network.NetworkEnv, SyncKind)> _unsupportedLogged = {};
   final Future<network.NetworkEnv> Function()? _readNetwork;
   final Future<Result<W, F>> Function(String)? _readWallet;
-  final Future<Result<List<W>, F>> Function({
+  final Future<Result<WalletRead<W, F>, F>> Function({
     bool? onlyBitcoin,
     bool? onlyLiquid,
   })
@@ -219,7 +233,7 @@ class SyncCoordinator<W extends Object, F extends Failure> {
           return const Err(WalletDiscoveryUnavailableFailure());
         }
         final wallets = switch (result) {
-          Ok(:final value) => value,
+          Ok(:final value) => value.wallets,
           Err() => <W>[],
         };
         final wallet = wallets
@@ -505,29 +519,30 @@ class SyncCoordinator<W extends Object, F extends Failure> {
     pass.waiters.clear();
   }
 
-  /// Syncs every wallet the read returns, or returns the read's failure so
-  /// the round fails.
+  /// Syncs every wallet the read returns, then returns the failure that must
+  /// fail the pass: the read's own failure, or the one it reports for a
+  /// selection it could only read in part.
   ///
   /// Deliberately not degraded to an empty list: `_drainOnce` stamps
-  /// `_lastSuccessAt` for any round that completes normally, so a swallowed
+  /// `_lastSuccessAt` for any pass that completes normally, so a swallowed
   /// read failure would both report a successful sync to pull-to-refresh and
   /// count toward the throttle — suppressing the retries that would recover
   /// from a transient failure.
   Future<F?> _syncAll(
-    Future<Result<List<W>, F>> read, {
+    Future<Result<WalletRead<W, F>, F>> read, {
     required _SyncPass pass,
   }) async {
     switch (await read) {
       case Ok(:final value):
-        pass.wallets = value.length;
-        for (final wallet in value) {
+        pass.wallets = value.wallets.length;
+        for (final wallet in value.wallets) {
           await _syncWallet(
             wallet,
             discover: pass.discover,
             reason: pass.reason,
           );
         }
-        return null;
+        return value.incomplete;
       case Err(:final failure):
         return failure;
     }
@@ -566,7 +581,7 @@ class SyncCoordinator<W extends Object, F extends Failure> {
         case Err():
           return const WalletDiscoveryUnavailableFailure();
         case Ok(:final value):
-          final wallet = value
+          final wallet = value.wallets
               .where((wallet) => _walletKey(wallet).id == walletId)
               .firstOrNull;
           if (wallet == null ||

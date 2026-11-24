@@ -13,7 +13,7 @@ final class SendArkRequest {
 /// Pure classification followed by local Ark account admission. No native
 /// wallet opens for a paste. Existing Bitcoin/BIP21 parsing remains independent.
 final class RecognizeArkAddressUsecase {
-  final ArkFacade? _ark;
+  final ArkAccountsFacade? _ark;
   const RecognizeArkAddressUsecase(this._ark);
   Future<Result<SendArkRequest?, SendFailure>> execute({
     required String input,
@@ -26,7 +26,7 @@ final class RecognizeArkAddressUsecase {
     if (restricted) return const Err(SendArkRouteUnavailableFailure());
     final ark = _ark;
     if (ark == null) return const Err(SendArkRouteUnavailableFailure());
-    switch (await ark.listEnabledAccounts(arkNetwork)) {
+    switch (await ark.listEnabled(arkNetwork)) {
       case Err():
         return const Err(SendArkRouteUnavailableFailure());
       case Ok(value: final accounts) when accounts.isEmpty:

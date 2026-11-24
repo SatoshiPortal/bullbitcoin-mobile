@@ -184,7 +184,8 @@ final class BbxApiLimitOrderRepository {
   /// kept.
   static String _describe(bbx.BbxFailure failure) => switch (failure) {
     bbx.BbxRpcFailure(:final code, :final apiCode) =>
-      'BbxRpcFailure(code: $code, apiCode: $apiCode)',
+      'BbxRpcFailure(code: $code, apiCode: $apiCode)'
+          '${failure.requestIdLabel}',
     bbx.BbxHttpFailure(:final status) => 'BbxHttpFailure(status: $status)',
     bbx.BbxTimeoutFailure(:final kind) => 'BbxTimeoutFailure(${kind.name})',
     bbx.BbxResponseFormatFailure(:final reason) =>

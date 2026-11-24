@@ -12,6 +12,41 @@ import '../../fixtures.dart';
 class _StatusCheck extends Mock implements CheckServiceStatusUsecase {}
 
 void main() {
+  testWidgets('shows the Silent row only after confirmed admission', (
+    tester,
+  ) async {
+    registerFallbackValue(const AllServicesStatus());
+    registerFallbackValue((AllServicesStatus _) {});
+    final check = _StatusCheck();
+    var result = const AllServicesStatus();
+    when(
+      () => check.execute(
+        initialStatus: any(named: 'initialStatus'),
+        onUpdate: any(named: 'onUpdate'),
+      ),
+    ).thenAnswer((_) async => Ok(result));
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: networkTestLocalizationsDelegates,
+        theme: networkTestTheme(),
+        home: ServiceStatusPage(status: buildNetworkStatus(() => check)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Silent Payments'), findsNothing);
+    result = const AllServicesStatus(
+      silent: ServiceStatusInfo(status: ServiceStatus.online),
+    );
+    await tester.tap(find.byTooltip('Refresh service status'));
+    await tester.pumpAndSettle();
+    expect(find.text('Silent Payments'), findsOneWidget);
+    result = const AllServicesStatus();
+    await tester.tap(find.byTooltip('Refresh service status'));
+    await tester.pumpAndSettle();
+    expect(find.text('Silent Payments'), findsNothing);
+  });
+
   testWidgets('a localized refresh action checks service status again', (
     tester,
   ) async {

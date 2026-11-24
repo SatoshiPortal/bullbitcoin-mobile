@@ -1,24 +1,26 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
+import 'package:silent/src/domain/silent_failure.dart';
 import 'package:silent/src/domain/usecases/get_sp_backend_defaults_usecase.dart';
 import 'package:silent/src/domain/usecases/load_sp_backend_config_usecase.dart';
-import 'package:silent/src/domain/usecases/recreate_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:silent/src/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:silent/src/domain/usecases/watch_sp_notification_log_usecase.dart';
 import 'package:silent/src/domain/entities/sp_backend_config.dart';
 import 'package:silent/src/domain/entities/sp_notif_log.dart';
 import 'package:silent/src/presentation/sp_backend_form.dart';
 import 'package:silent/src/presentation/sp_backend_form_mixin.dart';
+import 'package:silent/src/presentation/sp_connection_status.dart';
 import 'package:silent/src/presentation/sp_settings_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Settings backend-config form. The shared network/defaults/URL/test logic
 /// lives in [SpBackendFormMixin]; this cubit adds the saved-config load, the
-/// save-and-recreate action, and the debug notification console.
+/// session reconnection, and the debug notification console.
 class SpSettingsCubit extends Cubit<SpSettingsState>
     with SpBackendFormMixin<SpSettingsState> {
-  final RecreateSpWalletUsecase _recreateSpWalletUsecase;
+  final UpdateSpBackendConfigUsecase _updateSpBackendConfigUsecase;
   final WatchSpNotificationLogUsecase _watchNotificationLogUsecase;
   final TestSpBackendUsecase _testSpBackendUsecase;
   final LoadSpBackendConfigUsecase _loadSpBackendConfigUsecase;
@@ -27,7 +29,7 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
   StreamSubscription<SpNotifLogLine>? _logSub;
 
   SpSettingsCubit({
-    required this._recreateSpWalletUsecase,
+    required this._updateSpBackendConfigUsecase,
     required this._watchNotificationLogUsecase,
     required this._testSpBackendUsecase,
     required this._loadSpBackendConfigUsecase,
@@ -72,6 +74,7 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
       emit(
         state.copyWith(
           initialized: true,
+          minScanAmountSat: stored.minScanAmountSat,
           form: state.form.copyWith(
             network: stored.network,
             blindbitUrl: stored.blindbitUrl,
@@ -102,6 +105,38 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
 
   Future<void> saveBackendConfig() async {
     if (!state.canSave) return;
+    final captured = state;
+    await _save(
+      () => _updateSpBackendConfigUsecase.execute(
+        network: captured.network,
+        blindbitUrl: captured.blindbitUrl,
+        electrumUrl: captured.electrumUrl,
+        fetchConcurrencyFactor: captured.fetchConcurrencyFactor,
+        matchConcurrencyFactor: captured.matchConcurrencyFactor,
+      ),
+    );
+  }
+
+  Future<void> saveMinScanAmount(int amount) async {
+    if (!state.initialized ||
+        state.isSaving ||
+        amount == state.minScanAmountSat) {
+      return;
+    }
+    final network = state.network;
+    await _save(
+      () => _updateSpBackendConfigUsecase.execute(
+        network: network,
+        minScanAmountSat: amount,
+      ),
+      minScanAmountSat: amount,
+    );
+  }
+
+  Future<void> _save(
+    Future<Result<bool, SilentFailure>> Function() update, {
+    int? minScanAmountSat,
+  }) async {
     emit(
       state.copyWith(
         isSaving: true,
@@ -109,18 +144,56 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
         form: state.form.copyWith(error: null),
       ),
     );
-    final result = await _recreateSpWalletUsecase.execute(
-      network: state.network,
-      blindbitUrl: state.blindbitUrl,
-      electrumUrl: state.electrumUrl,
-      fetchConcurrencyFactor: state.fetchConcurrencyFactor,
-      matchConcurrencyFactor: state.matchConcurrencyFactor,
-    );
+    final result = await update();
     if (isClosed) return;
     switch (result) {
-      case Ok():
-        emit(state.copyWith(isSaving: false, saved: true));
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            isSaving: false,
+            saved: value,
+            minScanAmountSat: minScanAmountSat ?? state.minScanAmountSat,
+          ),
+        );
       case Err(:final failure):
+        if (failure is SilentBackendRollbackFailed) {
+          final stored = await _loadSpBackendConfigUsecase.execute();
+          if (isClosed) return;
+          if (stored case Ok(value: final config?)) {
+            emit(
+              state.copyWith(
+                isSaving: false,
+                minScanAmountSat: config.minScanAmountSat,
+                form: state.form.copyWith(
+                  network: config.network,
+                  blindbitUrl: config.blindbitUrl,
+                  electrumUrl: config.electrumUrl,
+                  fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+                  matchConcurrencyFactor: config.matchConcurrencyFactor,
+                  blindbitStatus: SpConnectionStatus.untested,
+                  electrumStatus: SpConnectionStatus.untested,
+                  blindbitStatusError: null,
+                  electrumStatusError: null,
+                  error: failure,
+                ),
+              ),
+            );
+            return;
+          }
+          emit(
+            state.copyWith(
+              isSaving: false,
+              form: state.form.copyWith(
+                blindbitStatus: SpConnectionStatus.untested,
+                electrumStatus: SpConnectionStatus.untested,
+                blindbitStatusError: null,
+                electrumStatusError: null,
+                error: failure,
+              ),
+            ),
+          );
+          return;
+        }
         emit(
           state.copyWith(
             isSaving: false,

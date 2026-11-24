@@ -34,6 +34,7 @@ class _Account extends FakeSpAccountRepository {
     required String electrumUrl,
     int fetchConcurrencyFactor = 12,
     int matchConcurrencyFactor = 1,
+    int minScanAmountSat = 1000,
   }) async {
     final result = await super.createFromSecret(
       network: network,
@@ -42,6 +43,7 @@ class _Account extends FakeSpAccountRepository {
       electrumUrl: electrumUrl,
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
+      minScanAmountSat: minScanAmountSat,
     );
     onCreated?.call();
     return nativeFailure

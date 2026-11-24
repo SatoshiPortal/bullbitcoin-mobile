@@ -5,6 +5,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullButtonSize,
         BullConfirmDialog,
+        BullInputText,
         BullSettingsEntryItem,
         BullShapesX,
         BullSnackBar,
@@ -12,6 +13,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullTypographyX,
         Gap;
 import 'package:silent/src/presentation/silent_l10n.dart';
+import 'package:silent/src/domain/sp_config.dart';
 import 'package:silent/src/presentation/sp_cubit.dart';
 import 'package:silent/src/presentation/sp_failure_l10n.dart';
 import 'package:silent/src/presentation/sp_notification_console_text.dart';
@@ -31,8 +33,7 @@ const double _consoleHeight = 240;
 class SpSettingsScreen extends StatefulWidget {
   const SpSettingsScreen({super.key, required this.exitRedirectPath});
 
-  /// Where deleting the wallet leaves SP for; supplied by the composition root
-  /// so this screen never imports another feature's router.
+  /// Destination after deletion or when settings was opened without a back stack.
   final String exitRedirectPath;
 
   @override
@@ -69,7 +70,18 @@ class _SpSettingsScreenState extends State<SpSettingsScreen> {
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(title: Text(context.silentLoc.silentSettingsTitle)),
+            appBar: AppBar(
+              leading: BackButton(
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(widget.exitRedirectPath);
+                  }
+                },
+              ),
+              title: Text(context.silentLoc.silentSettingsTitle),
+            ),
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -108,10 +120,8 @@ class _BackendConfigSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<SpSettingsCubit>().state;
     final cubit = context.read<SpSettingsCubit>();
-    // A save recreates the session, so it must not start while a revoke is
-    // tearing that same session down. The two live on this one screen.
-    final isRevoking = context.select(
-      (SpCubit cubit) => cubit.state.isRevoking,
+    final isWalletBusy = context.select(
+      (SpCubit cubit) => cubit.state.isRevoking || cubit.state.isScanning,
     );
 
     return Column(
@@ -142,7 +152,7 @@ class _BackendConfigSection extends StatelessWidget {
             ),
           ),
           submit: BullButton.primary(
-            onPressed: (!state.canSave || isRevoking)
+            onPressed: (!state.canSave || isWalletBusy)
                 ? null
                 : () async {
                     final confirmed = await _confirm(
@@ -175,8 +185,12 @@ class _WalletManagementSection extends StatelessWidget {
     );
     // A revoke tears down the session a save is recreating, so the delete entry
     // is blocked while a save runs, not only while the SP cubit is busy.
-    final isSaving = context.select(
-      (SpSettingsCubit cubit) => cubit.state.isSaving,
+    final (isSaving, initialized, minScanAmount) = context.select(
+      (SpSettingsCubit cubit) => (
+        cubit.state.isSaving,
+        cubit.state.initialized,
+        cubit.state.minScanAmountSat,
+      ),
     );
     final disabled = isLoading || isScanning || isSaving;
 
@@ -224,6 +238,17 @@ class _WalletManagementSection extends StatelessWidget {
                     ),
                   ),
           ),
+        ),
+        BullSettingsEntryItem(
+          icon: Icons.filter_alt_outlined,
+          title: context.silentLoc.silentMinScanAmount,
+          subtitle: context.silentLoc.silentMinScanAmountValue(
+            NumberFormat.decimalPattern(context.silentLoc.localeName)
+                .format(minScanAmount),
+          ),
+          onTap: disabled || !initialized
+              ? null
+              : () => _editMinScanAmount(context, minScanAmount),
         ),
         BullSettingsEntryItem(
           icon: Icons.restart_alt,
@@ -281,6 +306,61 @@ class _WalletManagementSection extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+Future<void> _editMinScanAmount(BuildContext context, int currentAmount) async {
+  var text = '$currentAmount';
+  final amount = await showDialog<int>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) {
+        final loc = context.silentLoc;
+        final parsed = int.tryParse(text);
+        return AlertDialog(
+          scrollable: true,
+          title: Text(loc.silentMinScanAmount),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(loc.silentMinScanAmountTradeoff),
+              const Gap(8),
+              Text(loc.silentMinScanAmountRescan),
+              const Gap(16),
+              Semantics(
+                label: loc.silentMinScanAmount,
+                child: BullInputText(
+                  value: text,
+                  digitsOnly: true,
+                  maxLines: 1,
+                  onChanged: (value) => setState(() => text = value),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            BullButton.secondary(
+              label: loc.cancel,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            BullButton.primary(
+              label: loc.save,
+              onPressed:
+                  parsed == null ||
+                      parsed < 0 ||
+                      parsed > SpConfig.maxMinScanAmountSat ||
+                      parsed == currentAmount
+                  ? null
+                  : () => Navigator.of(context).pop(parsed),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+  if (amount != null && context.mounted) {
+    await context.read<SpSettingsCubit>().saveMinScanAmount(amount);
   }
 }
 

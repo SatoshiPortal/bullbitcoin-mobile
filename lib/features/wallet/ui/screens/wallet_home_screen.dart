@@ -27,6 +27,7 @@ class WalletHomeScreen extends StatelessWidget {
   final void Function(BuildContext) onCustomizeQuickActions;
   final ExchangePromptCubit exchangePrompt;
   final void Function(BuildContext) onActivateExchange;
+  final int Function(BuildContext)? watchUnreadSupportMessages;
 
   const WalletHomeScreen({
     super.key,
@@ -41,6 +42,7 @@ class WalletHomeScreen extends StatelessWidget {
     required this.onCustomizeQuickActions,
     required this.exchangePrompt,
     required this.onActivateExchange,
+    this.watchUnreadSupportMessages,
   });
 
   @override
@@ -76,6 +78,7 @@ class WalletHomeScreen extends StatelessWidget {
           onCustomize: onCustomizeQuickActions,
           exchangePrompt: exchangePrompt,
           onActivateExchange: onActivateExchange,
+          unreadSupportMessages: watchUnreadSupportMessages?.call(context) ?? 0,
         ),
       ),
       announcements: announcements,

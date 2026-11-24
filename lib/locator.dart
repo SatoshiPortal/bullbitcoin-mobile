@@ -1,7 +1,7 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
-import 'package:sync/write.dart' show ElectrumSync;
+import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
 
 import 'dart:async';
 
@@ -21,7 +21,7 @@ import 'package:overview/setup.dart';
 import 'package:startup/setup.dart';
 import 'package:startup/startup.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:swaps/swaps.dart' show SwapStartup;
+import 'package:swaps/swaps.dart' show BoltzSwaps, SwapStartup, Swaps;
 import 'package:secrets/storage.dart';
 import 'package:material_ui/material_ui.dart' show AssetImage, Image;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -33,12 +33,10 @@ import 'package:secrets/custody.dart';
 import 'package:bip85/bip85.dart';
 import 'package:all_seed_view/setup.dart';
 import 'package:access/access.dart' show Access;
-import 'package:swaps/swaps.dart' show BoltzSwaps;
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
     show PayjoinLifecycle, PayjoinPolicyAccess;
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
-import 'package:swaps/swaps.dart' show Swaps;
 import 'package:swaps/order_swaps.dart';
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -71,7 +69,6 @@ import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/address_view_setup.dart';
 import 'package:access/setup.dart' show AccessFeature;
@@ -106,11 +103,9 @@ import 'package:sync/sync.dart'
         Sync,
         Wallet,
         SyncFailure,
-        SyncNotFoundFailure,
         SyncStorageFailure,
         WalletConnectionPort,
         WalletKey,
-        WalletSnapshotException,
         WalletCatalogPort;
 
 final GetIt locator = GetIt.instance;
@@ -535,14 +530,7 @@ class AppLocator {
     );
     locator.registerLazySingleton(
       () => CoinsFeature.mount<WalletKey>(
-        resolveWalletKey: (id) async => switch (await inventory.readWallet(
-          id,
-        )) {
-          Ok(:final value) => WalletKey(id: value.id, network: value.network),
-          Err(failure: WalletRegistrationNotFoundFailure()) =>
-            throw const WalletSnapshotException(SyncNotFoundFailure()),
-          Err() => throw const WalletSnapshotException(SyncStorageFailure()),
-        },
+        inventory: inventory,
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
         foreground: locator<WalletNativeRuntime>().foreground,
         labels: locator<Labels>(),
@@ -606,6 +594,7 @@ class AppLocator {
     locator.registerSingleton(
       NetworkFeature.mount(
         services: locator,
+        silent: locator<Silent>(),
         preferences: locator<Preferences>(),
         inventory: inventory,
         readBackup: (id) => locator<RecoverBullWalletBackups>().read(id),

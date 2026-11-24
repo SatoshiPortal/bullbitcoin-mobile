@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullAdvancedOptionsLink,
-        BullShapesX,
         BullText,
         BullTypography,
         Gap,
@@ -113,19 +112,15 @@ class _Actions extends StatelessWidget {
       );
     }
 
-    return Container(
+    return Padding(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.appColors.surfaceFixed,
-        borderRadius: BorderRadius.circular(context.bullShapes.card),
-      ),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
           if (creating || loading) ...[
             Center(
               child: CircularProgressIndicator(
-                color: context.appColors.primaryFixed,
+                color: context.appColors.onPrimaryFixed,
               ),
             ),
           ] else ...[
@@ -136,6 +131,8 @@ class _Actions extends StatelessWidget {
             Center(
               child: BullAdvancedOptionsLink(
                 label: context.loc.onboardingAdvancedOptionsTitle,
+                color: context.appColors.onPrimaryFixed,
+                bold: true,
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute<void>(builder: advancedOptions));

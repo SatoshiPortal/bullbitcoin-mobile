@@ -309,9 +309,9 @@ Refs are taken from the manifests. Cargo patches are source redirects, not addit
 | `Rust: bitbox / bitbox-api (runtime)` | `https://github.com/ben-kaufman/bitbox-api-rs` | `9f20d81686fa8321c11586cbdc967cc11f3ab26a` | — |
 | `Rust: boltz / boltz-client (runtime)` | `https://github.com/SatoshiPortal/boltz-rust` | `6936541d9b2fd223b062ed9b8d3e87e43dff8b95` | — |
 | `Rust: dart_bbqr / bbqr (runtime)` | `https://github.com/SatoshiPortal/bbqr-rust.git` | `b1b3a7f7b9901b1ec320542bfd84411a4860033e` | — |
-| `Rust: dart_bwk / bwk (runtime)` | `https://github.com/SatoshiPortal/bwk` | `a1d8ce26efa5b252e818c2be16d879dd7014e191` | — |
-| `Rust: dart_bwk / bwk-sp (runtime)` | `https://github.com/SatoshiPortal/bwk` | `a1d8ce26efa5b252e818c2be16d879dd7014e191` | — |
-| `Rust: dart_bwk / bwk-tx (runtime)` | `https://github.com/SatoshiPortal/bwk` | `a1d8ce26efa5b252e818c2be16d879dd7014e191` | — |
+| `Rust: dart_bwk / bwk (runtime)` | `https://github.com/SatoshiPortal/bwk` | `b06b78f3c1c7c22cdb4779f6a4eb084e0ab14ee1` | — |
+| `Rust: dart_bwk / bwk-sp (runtime)` | `https://github.com/SatoshiPortal/bwk` | `b06b78f3c1c7c22cdb4779f6a4eb084e0ab14ee1` | — |
+| `Rust: dart_bwk / bwk-tx (runtime)` | `https://github.com/SatoshiPortal/bwk` | `b06b78f3c1c7c22cdb4779f6a4eb084e0ab14ee1` | — |
 | `Rust: lwk / lwk_common (patch crates-io)` | `https://github.com/SatoshiPortal/lwk` | `6ad7a81dccfa37abe322c5871cfae39623880147` | — |
 | `Rust: lwk / lwk_common (runtime)` | `https://github.com/SatoshiPortal/lwk` | `6ad7a81dccfa37abe322c5871cfae39623880147` | — |
 | `Rust: lwk / lwk_jade (patch crates-io)` | `https://github.com/SatoshiPortal/lwk` | `6ad7a81dccfa37abe322c5871cfae39623880147` | — |

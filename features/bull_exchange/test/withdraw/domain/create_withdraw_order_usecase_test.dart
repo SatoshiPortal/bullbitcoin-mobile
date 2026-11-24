@@ -5,6 +5,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/src/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:mocktail/mocktail.dart';
 
 class _MockExchangeOrders extends Mock implements ExchangeOrders {}

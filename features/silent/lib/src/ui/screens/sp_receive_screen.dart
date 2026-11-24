@@ -99,7 +99,12 @@ class _SpReusableAddressTab extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BullInfoCard(
-                title: context.silentLoc.silentReceiveManualScanRequired,
+                title:
+                    context.select(
+                      (SpCubit cubit) => cubit.state.isAutoScanEnabled,
+                    )
+                    ? context.silentLoc.silentScanAutoScanOn
+                    : context.silentLoc.silentReceiveManualScanRequired,
                 description: context.silentLoc.silentReceiveReusableInfo,
                 tagColor: context.bull.tertiary,
                 bgColor: context.bull.tertiaryContainer,

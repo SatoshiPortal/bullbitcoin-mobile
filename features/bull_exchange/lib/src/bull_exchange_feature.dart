@@ -70,6 +70,7 @@ typedef ExchangeSupportChatHost = ({
   String Function(BuildContext) loginLabel,
   String Function(BuildContext, ExchangeFailure) failureMessage,
   void Function(BuildContext, bool fromExchange) onExit,
+  void Function(BuildContext) onMessagesRead,
 });
 
 /// Mounts Exchange routes in their host's navigation slots.
@@ -223,6 +224,8 @@ final class BullExchangeFeature {
         ),
         loginLabel: (context) => context.loc.exchangeLoginButton,
         failureMessage: failureMessage,
+        onMessagesRead: (context) =>
+            unawaited(ExchangeSessionScope.markSupportMessagesRead(context)),
         onExit: (context, fromExchange) {
           if (fromExchange) {
             BullExchangeNavigation.goToDashboard(context);
@@ -303,6 +306,7 @@ BullExchangeFeature mountBullExchange({
             loginLabel: supportChat.loginLabel,
             failureMessage: supportChat.failureMessage,
             onExit: supportChat.onExit,
+            onMessagesRead: supportChat.onMessagesRead,
           ),
     kycRoute,
     settings == null

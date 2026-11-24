@@ -5,7 +5,7 @@ import 'package:address_view/routes.dart';
 import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bull_ark/bull_ark.dart' show ArkFacade;
+import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 import 'package:receive/receive.dart' show Receive;
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:silent/silent.dart' show Silent;
@@ -28,6 +28,7 @@ import 'package:bull_exchange/bull_exchange.dart'
         BuyRoute,
         ExchangeFailureL10n,
         ExchangeHomeAction,
+        ExchangeSessionScope,
         ExchangeTradingGuard,
         PayRoute,
         SellRoute;
@@ -238,8 +239,10 @@ class AppRouter {
       transactions: locator<Transactions>(),
       labels: locator<Labels>(),
       silent: locator<Silent>(),
-      ark: locator.isRegistered<ArkFacade>() ? locator<ArkFacade>() : null,
     ),
+    arkAccounts: () => locator.isRegistered<ArkAccountsFacade>()
+        ? locator<ArkAccountsFacade>()
+        : null,
     openCoins: CoinsNavigation.replace,
     orderUnderReview: (order) => OrderSwapUnderReviewCard(orderSwap: order),
     paymentArrowImage: AssetImage(Assets.icons.rightArrow.path),
@@ -301,6 +304,8 @@ class AppRouter {
                 context.pushNamed(SettingsRoute.quickActions.name),
             exchangePrompt: locator<ExchangePromptCubit>(),
             onActivateExchange: _activateExchange,
+            watchUnreadSupportMessages:
+                ExchangeSessionScope.watchUnreadSupportMessages,
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
             announcements: () => _announcements.carousel(),
           ),

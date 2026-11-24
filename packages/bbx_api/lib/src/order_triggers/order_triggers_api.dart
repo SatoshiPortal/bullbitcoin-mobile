@@ -119,5 +119,10 @@ BbxFailure limitOrderRejection(Object error) {
     {'data': {'code': final String code}} => bbxApiCode(code),
     _ => null,
   };
-  return BbxRpcFailure(code: rpc.code, message: rpc.message, apiCode: code);
+  return BbxRpcFailure(
+    code: rpc.code,
+    message: rpc.message,
+    apiCode: code,
+    requestId: rpc.requestId,
+  );
 }

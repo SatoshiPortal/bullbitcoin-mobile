@@ -48,121 +48,132 @@ class SendPaymentSettings extends StatelessWidget {
   final Widget? change;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            const SizedBox(width: BullSpacing.xxl),
-            Expanded(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: context.bullType.subtitle,
+  Widget build(BuildContext context) {
+    // The control's items and both lookups derive from the same entries, so
+    // every name it emits resolves to a choice: the lookup stays total without
+    // an assertion, and an unknown name is impossible rather than mapped to a
+    // user-visible enum name.
+    final choices = feeChoices.entries.toList(growable: false);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const SizedBox(width: BullSpacing.xxl),
+              Expanded(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: context.bullType.subtitle,
+                ),
               ),
-            ),
-            BullInlineIconButton(
-              onPressed: onClose,
-              tooltip: closeLabel,
-              icon: const BullIcon(BullIcons.close),
-            ),
-          ],
-        ),
-        Flexible(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Gap(BullSpacing.md),
-                Row(
-                  children: [
-                    const BullIcon(BullIcons.schedule),
-                    const Gap(BullSpacing.xs),
-                    Expanded(
-                      child: Text(feeLabel, style: context.bullType.body),
+              BullInlineIconButton(
+                onPressed: onClose,
+                tooltip: closeLabel,
+                icon: const BullIcon(BullIcons.close),
+              ),
+            ],
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Gap(BullSpacing.md),
+                  Row(
+                    children: [
+                      const BullIcon(BullIcons.schedule),
+                      const Gap(BullSpacing.xs),
+                      Expanded(
+                        child: Text(feeLabel, style: context.bullType.body),
+                      ),
+                    ],
+                  ),
+                  const Gap(BullSpacing.sm),
+                  BullSegmented(
+                    items: {for (final choice in choices) choice.key.name},
+                    initialValue: selectedFee.name,
+                    labelBuilder: (value) => choices
+                        .firstWhere((choice) => choice.key.name == value)
+                        .value,
+                    onSelected: (value) => onFeeSelected(
+                      choices
+                          .firstWhere((choice) => choice.key.name == value)
+                          .key,
                     ),
+                    height: BullSpacing.xxl,
+                    fitLabels: true,
+                  ),
+                  const Gap(BullSpacing.xs),
+                  feeDetail,
+                  if (onCustomFeeEdit case final edit?)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: BullInlineTextButton(
+                        onPressed: edit,
+                        child: Text(
+                          editLabel,
+                          style: context.bullType.label.copyWith(
+                            color: context.bull.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (change case final destination?) ...[
+                    const Gap(BullSpacing.lg),
+                    destination,
                   ],
-                ),
-                const Gap(BullSpacing.sm),
-                BullSegmented(
-                  items: {for (final fee in feeChoices.keys) fee.name},
-                  initialValue: selectedFee.name,
-                  labelBuilder: (value) =>
-                      feeChoices[FeeSelection.values.byName(value)]!,
-                  onSelected: (value) =>
-                      onFeeSelected(FeeSelection.values.byName(value)),
-                  height: BullSpacing.xxl,
-                  fitLabels: true,
-                ),
-                const Gap(BullSpacing.xs),
-                feeDetail,
-                if (onCustomFeeEdit case final edit?)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: BullInlineTextButton(
-                      onPressed: edit,
-                      child: Text(
-                        editLabel,
-                        style: context.bullType.label.copyWith(
-                          color: context.bull.primary,
+                  const Gap(BullSpacing.md),
+                  _SettingSwitch(
+                    label: rbfLabel,
+                    value: replaceByFee,
+                    onChanged: onReplaceByFee,
+                  ),
+                  _SettingSwitch(
+                    label: multipleLabel,
+                    value: multipleRecipients,
+                    onChanged: onMultipleRecipients,
+                  ),
+                  const Gap(BullSpacing.md),
+                  Semantics(
+                    button: true,
+                    enabled: onCoins != null,
+                    label: coinsLabel,
+                    excludeSemantics: true,
+                    onTap: onCoins,
+                    child: GestureDetector(
+                      onTap: onCoins,
+                      child: Container(
+                        color: context.bull.transparent,
+                        constraints: const BoxConstraints(
+                          minHeight: BullSpacing.xxl,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                coinsLabel,
+                                style: context.bullType.body,
+                              ),
+                            ),
+                            const BullIcon(BullIcons.chevronRight),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                if (change case final destination?) ...[
                   const Gap(BullSpacing.lg),
-                  destination,
                 ],
-                const Gap(BullSpacing.md),
-                _SettingSwitch(
-                  label: rbfLabel,
-                  value: replaceByFee,
-                  onChanged: onReplaceByFee,
-                ),
-                _SettingSwitch(
-                  label: multipleLabel,
-                  value: multipleRecipients,
-                  onChanged: onMultipleRecipients,
-                ),
-                const Gap(BullSpacing.md),
-                Semantics(
-                  button: true,
-                  enabled: onCoins != null,
-                  label: coinsLabel,
-                  excludeSemantics: true,
-                  onTap: onCoins,
-                  child: GestureDetector(
-                    onTap: onCoins,
-                    child: Container(
-                      color: context.bull.transparent,
-                      constraints: const BoxConstraints(
-                        minHeight: BullSpacing.xxl,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              coinsLabel,
-                              style: context.bullType.body,
-                            ),
-                          ),
-                          const BullIcon(BullIcons.chevronRight),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const Gap(BullSpacing.lg),
-              ],
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 class _SettingSwitch extends StatelessWidget {

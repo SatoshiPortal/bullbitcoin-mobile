@@ -137,6 +137,36 @@ void main() {
     expect(connections.networks, isEmpty);
   });
 
+  test('a freeze on another output does not block an imported input', () async {
+    final otherOutput = (txId: input.txId, vout: input.vout + 1);
+    expect(
+      await freezes.freeze([FrozenOutpoint(otherOutput, origin: 'test')]),
+      isA<Ok>(),
+    );
+    expect(
+      await spend.broadcastImportedBitcoin(
+        transaction: hex,
+        network: BitcoinNetwork.regtest,
+        isPsbt: false,
+      ),
+      _failure<String, SpendDeveloperAuthorizationFailure>(),
+    );
+    expect(connections.networks, [BitcoinNetwork.regtest]);
+  });
+
+  test('an unreadable freeze store refuses import before connection', () async {
+    freezes.failure = const SyncStorageFailure();
+    expect(
+      await spend.broadcastImportedBitcoin(
+        transaction: hex,
+        network: BitcoinNetwork.regtest,
+        isPsbt: false,
+      ),
+      _failure<String, SpendUnavailableFailure>(),
+    );
+    expect(connections.networks, isEmpty);
+  });
+
   test('ordinary selection refuses an input reserved by Payjoin', () async {
     reservations.entries.add(
       InputReservation(

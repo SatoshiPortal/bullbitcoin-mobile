@@ -60,6 +60,7 @@ flowchart TD
   pkg_coins --> pkg_address_view
   pkg_coins --> pkg_bitcoin_price
   pkg_network --> pkg_bull_recoverbull
+  pkg_network --> pkg_silent
   pkg_onboarding --> pkg_bull_recoverbull
   pkg_onboarding --> pkg_mnemonic_entry
   pkg_onboarding --> pkg_network
@@ -282,7 +283,7 @@ flowchart TD
 | [`bull_logs`](features/logs/pubspec.yaml) | `bull_logger`, `bull_ui`, `primitives` | — |
 | [`bull_quick_actions`](features/quick_actions/pubspec.yaml) | `bull_ui`, `primitives` | — |
 | [`bull_recoverbull`](features/recoverbull/pubspec.yaml) | `backup_storage`, `bull_logger`, `bull_tor`, `bull_ui`, `file_system`, `legacy_storage`, `preferences`, `primitives`, `screen_awake`, `screen_privacy`, `secrets` | — |
-| [`coins`](features/coins/pubspec.yaml) | `bull_logger`, `bull_ui`, `labels`, `preferences`, `primitives`, `sync` | — |
+| [`coins`](features/coins/pubspec.yaml) | `bull_logger`, `bull_ui`, `labels`, `preferences`, `primitives`, `secrets`, `sync` | — |
 | [`fees_feature`](features/fees/pubspec.yaml) | `bull_ui`, `fees`, `primitives` | — |
 | [`label_editor`](features/label_editor/pubspec.yaml) | `bull_logger`, `bull_ui`, `file_system`, `labels`, `primitives` | — |
 | [`mnemonic_entry`](features/mnemonic_entry/pubspec.yaml) | `bull_logger`, `bull_ui`, `primitives` | — |

@@ -46,6 +46,8 @@ import 'session/expire_exchange_session_usecase.dart';
 import 'session/get_exchange_account_usecase.dart';
 import 'session/get_exchange_announcements_usecase.dart';
 import 'session/get_exchange_web_settings_usecase.dart';
+import 'session/get_unread_support_message_count_usecase.dart';
+import 'session/mark_support_messages_read_usecase.dart';
 import 'session/save_exchange_preferences_usecase.dart';
 import 'session/watch_exchange_notifications_usecase.dart';
 
@@ -94,6 +96,8 @@ typedef ExchangeChatOperations = ({
   sendMessage,
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(String)
   getAttachment,
+  Future<Result<int, ExchangeFailure>> Function() getUnreadCount,
+  Future<Result<void, ExchangeFailure>> Function() markAllRead,
 });
 
 typedef ExchangeNotificationBindings = ({
@@ -470,6 +474,20 @@ final class Exchange {
           untimed: true,
           credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
         ),
+        getUnreadCount: () => withClient(
+          (client, _) => BbxApiSupportChatRepository(
+            users: client.users,
+            commcenter: client.commcenter,
+          ).getUnreadMessageCount(),
+          credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
+        ),
+        markAllRead: () => withClient(
+          (client, _) => BbxApiSupportChatRepository(
+            users: client.users,
+            commcenter: client.commcenter,
+          ).markAllMessagesRead(),
+          credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
+        ),
       ),
       (
         messages: () => service().messageStream,
@@ -713,6 +731,30 @@ final class Exchange {
   Stream<NotificationMessage> watchAccountChanges() =>
       _currentNotifications?.accountChanges() ?? const Stream.empty();
 
+  Stream<NotificationMessage> watchSupportMessages() =>
+      _currentNotifications?.supportMessages() ?? const Stream.empty();
+
+  @useResult
+  Future<Result<int, ExchangeFailure>>
+  loadCurrentUnreadSupportMessageCount() async {
+    final access = _access;
+    if (access == null) return const Err(ExchangeNotAuthenticatedFailure());
+    return GetUnreadSupportMessageCountUsecase(
+      exchange: this,
+      access: access,
+    ).execute();
+  }
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> markCurrentSupportMessagesRead() async {
+    final access = _access;
+    if (access == null) return const Err(ExchangeNotAuthenticatedFailure());
+    return MarkSupportMessagesReadUsecase(
+      exchange: this,
+      access: access,
+    ).execute();
+  }
+
   @useResult
   Future<Result<void, ExchangeFailure>> openCurrentNotifications({
     bool reconnect = false,
@@ -872,6 +914,15 @@ final class Exchange {
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
 
+  /// The number of support messages the user has not read.
+  @useResult
+  Future<Result<int, ExchangeFailure>> getUnreadSupportMessageCount() =>
+      _chat.getUnreadCount();
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> markSupportMessagesRead() =>
+      _chat.markAllRead();
+
   /// Broadcasts messages and recoverable failures from the active socket.
   /// An [Err] does not close the stream. Failures before opening a socket
   /// (such as an unavailable environment) are returned by the command only.
@@ -982,6 +1033,9 @@ Exchange exchangeForTesting({
             throw StateError('Unexpected chat send'),
         getAttachment: (_) =>
             throw StateError('Unexpected chat attachment request'),
+        getUnreadCount: () =>
+            throw StateError('Unexpected chat unread count request'),
+        markAllRead: () => throw StateError('Unexpected chat mark read'),
       ),
   notifications ??
       (

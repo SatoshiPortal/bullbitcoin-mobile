@@ -67,7 +67,12 @@ final class StatusSession {
     if (_updates.isClosed) return const Err(StatusCheckInterruptedFailure());
     final generation = ++_generation;
     _failure = null;
-    _publish(StatusSnapshot(services: _snapshot.services, isRefreshing: true));
+    _publish(
+      StatusSnapshot(
+        services: _snapshot.services.copyWith(silent: null),
+        isRefreshing: true,
+      ),
+    );
 
     final result = await _check.execute(
       initialStatus: _snapshot.services,

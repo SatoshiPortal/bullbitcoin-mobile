@@ -30,4 +30,10 @@ abstract class SpStorageNames {
 
   /// Every advisory lock the repository clears before reopening an account.
   static const List<String> lockFiles = [lockFile, headerLockFile];
+
+  /// Pending-scan marker inside the account dir. Written before a manual scan
+  /// starts so a restart can resume it, flipped to paused when the user stops
+  /// it, and deleted when the scan completes or the cursor is cleared. Not a
+  /// bwk file: the app owns its name and format.
+  static const String pendingScanFile = '.pending-scan';
 }

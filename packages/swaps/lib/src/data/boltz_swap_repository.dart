@@ -442,6 +442,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       claimBitcoinAddress: bitcoinClaimAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      counterpartyElectrum: await _electrumConnection(isLiquid: true),
       electrum: electrum,
     );
 
@@ -466,6 +467,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       claimLiquidAddress: liquidClaimAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      counterpartyElectrum: await _electrumConnection(isLiquid: false),
       electrum: electrum,
     );
 
@@ -490,6 +492,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      counterpartyElectrum: await _electrumConnection(isLiquid: true),
       electrum: electrum,
     );
 
@@ -514,6 +517,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      counterpartyElectrum: await _electrumConnection(isLiquid: false),
       electrum: electrum,
     );
 
@@ -1050,6 +1054,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           swapId: swapId,
           claimAddress: claimAddressForChainSwaps!,
           isCooperative: isCooperative,
+          counterpartyElectrum: await _electrumConnection(
+            isLiquid: swapType == SwapType.liquidToBitcoin,
+          ),
           electrum: electrum,
         );
       case SwapType.bitcoinToLightning:
@@ -1611,6 +1618,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           swapId: swapId,
           isCooperative: isCooperative,
           refundAddress: refundAddressForChainSwaps!,
+          counterpartyElectrum: await _electrumConnection(
+            isLiquid: swapType == SwapType.bitcoinToLiquid,
+          ),
           electrum: electrum,
         );
     }
@@ -1993,11 +2003,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     classify: classifySwapCreationFailure,
   );
 
-  Future<String> _electrumUrl({required bool isLiquid}) => _electrum.run(
-    isLiquid: isLiquid,
-    environment: _environment,
-    operation: (connection) async => connection.url,
-  );
+  Future<ElectrumConnection> _electrumConnection({required bool isLiquid}) =>
+      _electrum.run(
+        isLiquid: isLiquid,
+        environment: _environment,
+        operation: (connection) async => connection,
+      );
+
+  Future<String> _electrumUrl({required bool isLiquid}) async =>
+      (await _electrumConnection(isLiquid: isLiquid)).url;
 
   /// Refuses a wallet that is unknown or not on [isLiquid]'s chain, before
   /// anything is created.

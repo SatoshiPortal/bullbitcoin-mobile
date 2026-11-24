@@ -1,4 +1,5 @@
 import 'package:send/src/payment/domain/usecases/load_send_display_preferences_usecase.dart';
+import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
 import 'presentation/send_ark_cubit.dart';
@@ -182,7 +183,6 @@ SendCubit createPaymentCubit({
   );
 }
 
-SendArkCubit createPaymentArkCubit(SendPaymentDependencies dependencies) {
-  final ark = dependencies.ark;
-  return SendArkCubit(ark == null ? null : RecognizeArkAddressUsecase(ark));
-}
+SendArkCubit createPaymentArkCubit(ArkAccountsFacade? accounts) => SendArkCubit(
+  accounts == null ? null : RecognizeArkAddressUsecase(accounts),
+);

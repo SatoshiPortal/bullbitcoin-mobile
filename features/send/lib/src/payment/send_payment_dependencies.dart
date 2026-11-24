@@ -1,5 +1,4 @@
 import 'package:address_view/address_view.dart';
-import 'package:bull_ark/bull_ark.dart' show ArkFacade;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:coins/coins.dart';
 import 'package:labels/labels.dart';
@@ -32,5 +31,4 @@ typedef SendPaymentDependencies = ({
   Transactions transactions,
   Labels labels,
   Silent silent,
-  ArkFacade? ark,
 });

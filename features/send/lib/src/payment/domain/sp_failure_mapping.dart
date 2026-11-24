@@ -29,6 +29,7 @@ extension SpFailureToSendFailure on SilentFailure {
     SilentBackendUnreachable() ||
     SilentConfigInvalid() ||
     SilentSetupCleanupFailed() ||
+    SilentBackendRollbackFailed() ||
     SilentBroadcastUncertain() ||
     SilentUnexpected() => null,
   };

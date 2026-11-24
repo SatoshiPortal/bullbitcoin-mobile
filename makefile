@@ -131,8 +131,7 @@ onion-codegen:
 # tables leave the app; its modular outputs must exist before the composer runs.
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
 BUILD_RUNNER_MEMBERS := features/backups features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view features/receive
-BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps features/address_view
-BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import features/startup features/coins features/settings features/onboarding
+BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import features/startup features/coins features/settings features/onboarding features/send
 
 .PHONY: drift-owners-build
 drift-owners-build:
@@ -142,7 +141,6 @@ build-runner: drift-owners-build
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit
 	@set -e; for member in $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_MEMBERS)); do (cd "$$member" && fvm dart run build_runner build --force-jit); done
-	@(cd features/send && fvm dart run build_runner build --force-jit)
 
 .PHONY: btc-map-build-runner
 btc-map-build-runner:
@@ -152,9 +150,13 @@ btc-map-build-runner:
 recoverbull-build-runner:
 	@(cd features/recoverbull && fvm dart run build_runner build --force-jit)
 
-build-runner-watch: drift-owners-build
+# Watches the same canonical members as build-runner, one process each. A shared
+# host cannot afford ~35 idle watchers, so pass MEMBER=<path> to watch exactly
+# one member: `make build-runner-watch MEMBER=features/coins`.
+build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; for member in $(DRIFT_OWNER_PACKAGES) . $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_WATCH_MEMBERS)); do (cd "$$member" && fvm dart run build_runner watch --force-jit) & done; wait'
+	@if [ -z "$(MEMBER)" ]; then $(MAKE) drift-owners-build; fi
+	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; for member in $(if $(MEMBER),$(MEMBER),$(DRIFT_OWNER_PACKAGES) . $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_MEMBERS))); do (cd "$$member" && fvm dart run build_runner watch --force-jit) & done; wait'
 
 translations:
 	@echo "🌐 Generating translations files"

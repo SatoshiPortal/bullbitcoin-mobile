@@ -991,23 +991,8 @@ class BoltzDatasource {
     }
   }
 
-  /// Settings for the chain a chain-swap call does NOT operate on. The native
-  /// side builds a client for both chains and, given none, dials the stored
-  /// URL over TLS with the scheme still attached — which fails on a plain
-  /// `tcp://` server (regtest) with "unexpected end of file" before the real
-  /// chain is ever queried.
-  @visibleForTesting
-  static ElectrumSettings storedElectrumSettings(String url) =>
-      ElectrumSettings(
-        url: url,
-        validateDomain: true,
-        tls: !url.startsWith('tcp://'),
-        timeout: 10,
-      );
-
-  /// The swap object carries the electrum URLs baked in at creation time;
-  /// [electrum] overrides them with a currently-working server so refunds
-  /// are not pinned to a host that has since become unreachable.
+  /// Preserve the configured transport and settings. The native swap stores
+  /// only the Electrum host and port, so its URL cannot identify plaintext TCP.
   ElectrumSettings? _electrumOverride(ElectrumConnection? electrum) =>
       electrum == null
       ? null
@@ -1051,6 +1036,7 @@ class BoltzDatasource {
     required String claimLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1061,7 +1047,7 @@ class BoltzDatasource {
         outAddress: claimLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
-        btcElectrumSettings: storedElectrumSettings(chainSwap.btcElectrumUrl),
+        btcElectrumSettings: _electrumOverride(counterpartyElectrum),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
@@ -1078,6 +1064,7 @@ class BoltzDatasource {
     required String claimBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1089,7 +1076,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
-        lbtcElectrumSettings: storedElectrumSettings(chainSwap.lbtcElectrumUrl),
+        lbtcElectrumSettings: _electrumOverride(counterpartyElectrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1132,6 +1119,7 @@ class BoltzDatasource {
     required String refundBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1143,7 +1131,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
-        lbtcElectrumSettings: storedElectrumSettings(chainSwap.lbtcElectrumUrl),
+        lbtcElectrumSettings: _electrumOverride(counterpartyElectrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1159,6 +1147,7 @@ class BoltzDatasource {
     required String refundLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1170,7 +1159,7 @@ class BoltzDatasource {
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
-        btcElectrumSettings: storedElectrumSettings(chainSwap.btcElectrumUrl),
+        btcElectrumSettings: _electrumOverride(counterpartyElectrum),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
       return signedTxHex;
@@ -1279,21 +1268,19 @@ class BoltzDatasource {
     required String swapId,
     required String claimAddress,
     bool isCooperative = true,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     final chainSwap = await _boltzStore.fetchChainSwap(swapId);
     final override = _electrumOverride(electrum);
+    final counterparty = _electrumOverride(counterpartyElectrum);
     // The claim tx spends Boltz's lockup on the RECEIVING chain.
     final claimOnLiquid = chainSwap.direction == ChainSwapDirection.btcToLbtc;
     final size = await chainSwap.claimTxSize(
       outAddress: claimAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: claimOnLiquid
-          ? storedElectrumSettings(chainSwap.btcElectrumUrl)
-          : override,
-      lbtcElectrumSettings: claimOnLiquid
-          ? override
-          : storedElectrumSettings(chainSwap.lbtcElectrumUrl),
+      btcElectrumSettings: claimOnLiquid ? counterparty : override,
+      lbtcElectrumSettings: claimOnLiquid ? override : counterparty,
     );
     return size.toInt();
   }
@@ -1328,21 +1315,19 @@ class BoltzDatasource {
     required String swapId,
     required String refundAddress,
     bool isCooperative = true,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     final chainSwap = await _boltzStore.fetchChainSwap(swapId);
     final override = _electrumOverride(electrum);
+    final counterparty = _electrumOverride(counterpartyElectrum);
     // The refund tx is built from the lockup on the SENDING chain.
     final refundOnLiquid = chainSwap.direction == ChainSwapDirection.lbtcToBtc;
     final size = await chainSwap.refundTxSize(
       refundAddress: refundAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: refundOnLiquid
-          ? storedElectrumSettings(chainSwap.btcElectrumUrl)
-          : override,
-      lbtcElectrumSettings: refundOnLiquid
-          ? override
-          : storedElectrumSettings(chainSwap.lbtcElectrumUrl),
+      btcElectrumSettings: refundOnLiquid ? counterparty : override,
+      lbtcElectrumSettings: refundOnLiquid ? override : counterparty,
     );
     return size.toInt();
   }

@@ -8,6 +8,7 @@ import 'service_status.dart';
 
 import 'package:electrum/electrum.dart';
 import 'package:fees/fees.dart';
+import 'package:silent/silent.dart';
 
 import 'package:preferences/preferences.dart';
 
@@ -35,6 +36,7 @@ class CheckAllServiceStatusUsecase {
   _checkServerConnection;
   final TorProxyPreferencesReader _preferences;
   final Tor _tor;
+  final Silent _silent;
 
   CheckAllServiceStatusUsecase({
     required this._electrumServers,
@@ -46,6 +48,7 @@ class CheckAllServiceStatusUsecase {
     required this._checkServerConnection,
     required this._preferences,
     required this._tor,
+    required this._silent,
   });
 
   Future<AllServicesStatus> execute({
@@ -56,7 +59,7 @@ class CheckAllServiceStatusUsecase {
     final now = DateTime.now();
 
     try {
-      var current = initialStatus.copyWith(lastChecked: null);
+      var current = initialStatus.copyWith(lastChecked: null, silent: null);
 
       Future<void> publish(
         Future<ServiceStatusInfo> check,
@@ -86,6 +89,11 @@ class CheckAllServiceStatusUsecase {
       }
 
       await Future.wait([
+        () async {
+          final result = await _checkSilent(network);
+          current = current.copyWith(silent: result);
+          onUpdate?.call(current);
+        }(),
         publish(
           _checkInternetConnection(),
           (status, result) => status.copyWith(internetConnection: result),
@@ -137,6 +145,24 @@ class CheckAllServiceStatusUsecase {
       );
       return _createUnknownStatus(now);
     }
+  }
+
+  Future<ServiceStatusInfo?> _checkSilent(NetworkEnv network) async {
+    final bitcoinNetwork = BitcoinNetwork.values.firstWhere(
+      (value) => value.env == network,
+    );
+    final result = await _silent.checkServerStatus(bitcoinNetwork);
+    return switch (result) {
+      Ok(value: SilentServerStatus.online) => ServiceStatusInfo(
+        status: ServiceStatus.online,
+        lastChecked: DateTime.now(),
+      ),
+      Ok(value: SilentServerStatus.offline) => ServiceStatusInfo(
+        status: ServiceStatus.offline,
+        lastChecked: DateTime.now(),
+      ),
+      _ => null,
+    };
   }
 
   Future<ServiceStatusInfo> _checkElectrumServer(

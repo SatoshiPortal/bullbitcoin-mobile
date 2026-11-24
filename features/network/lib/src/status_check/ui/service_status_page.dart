@@ -122,6 +122,13 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                       label: context.loc.statusCheckMempool,
                     ),
                     const SizedBox(height: 12),
+                    if (serviceStatus.silent case final silent?) ...[
+                      _ServiceStatusItem(
+                        service: silent,
+                        label: context.loc.statusCheckSilentPayments,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     _ServiceStatusItem(
                       service: serviceStatus.tor,
                       label: context.loc.statusCheckTor,

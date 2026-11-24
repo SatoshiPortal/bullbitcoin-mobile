@@ -11,6 +11,10 @@ final class InMemoryStorage implements BackupStorage {
   Future<Result<StorageSession, BackupStorageFailure>> authorize({
     required bool interactive,
   }) async => Ok(_Session());
+
+  @override
+  Future<Result<StorageReadSession, BackupStorageFailure>>
+  authorizeForDiscovery() async => Ok(_Session());
 }
 
 final class _Session implements StorageSession {
@@ -89,6 +93,11 @@ final class _Session implements StorageSession {
   Future<Result<void, BackupStorageFailure>> disconnect() async {
     dispose();
     return const Ok(null);
+  }
+
+  @override
+  Future<void> close() async {
+    dispose();
   }
 
   @override

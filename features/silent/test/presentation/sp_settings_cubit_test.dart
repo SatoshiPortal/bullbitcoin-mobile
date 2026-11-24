@@ -7,8 +7,8 @@ import 'package:silent/src/domain/ports/sp_backend_probe_port.dart';
 import 'package:silent/src/domain/repositories/sp_backend_config_repository.dart';
 import 'package:silent/src/domain/usecases/get_sp_backend_defaults_usecase.dart';
 import 'package:silent/src/domain/usecases/load_sp_backend_config_usecase.dart';
-import 'package:silent/src/domain/usecases/recreate_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:silent/src/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:silent/src/presentation/sp_connection_status.dart';
 import 'package:silent/src/domain/usecases/watch_sp_notification_log_usecase.dart';
 import 'package:silent/src/domain/entities/sp_backend_config.dart';
@@ -22,7 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockRecreateSpWalletUsecase extends Mock
-    implements RecreateSpWalletUsecase {}
+    implements UpdateSpBackendConfigUsecase {}
 
 class _MockWatchSpNotificationLogUsecase extends Mock
     implements WatchSpNotificationLogUsecase {}
@@ -79,10 +79,11 @@ void main() {
     List<SpNotifLogLine> seed = const [],
     Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
+    _MockSpBackendConfigRepository? repository,
   }) {
     when(() => logUsecase.execute())
         .thenReturn((log: seed, updates: logController.stream));
-    final configRepo = _MockSpBackendConfigRepository();
+    final configRepo = repository ?? _MockSpBackendConfigRepository();
     final probe = _MockSpBackendProbe();
     when(
       () => configRepo.fetch(),
@@ -102,7 +103,7 @@ void main() {
     );
     recreateUsecase = _MockRecreateSpWalletUsecase();
     return SpSettingsCubit(
-      recreateSpWalletUsecase: recreateUsecase,
+      updateSpBackendConfigUsecase: recreateUsecase,
       watchNotificationLogUsecase: logUsecase,
       testSpBackendUsecase: TestSpBackendUsecase(probe: probe),
       loadSpBackendConfigUsecase: LoadSpBackendConfigUsecase(
@@ -118,12 +119,14 @@ void main() {
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
+        fetchConcurrencyFactor: any(named: 'fetchConcurrencyFactor'),
+        matchConcurrencyFactor: any(named: 'matchConcurrencyFactor'),
       ),
     );
     if (failure != null) {
-      stub.thenAnswer((_) async => Err<void, SilentFailure>(failure));
+      stub.thenAnswer((_) async => Err<bool, SilentFailure>(failure));
     } else {
-      stub.thenAnswer((_) async => const Ok<void, SilentFailure>(null));
+      stub.thenAnswer((_) async => const Ok<bool, SilentFailure>(true));
     }
   }
 
@@ -133,6 +136,8 @@ void main() {
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
+        fetchConcurrencyFactor: any(named: 'fetchConcurrencyFactor'),
+        matchConcurrencyFactor: any(named: 'matchConcurrencyFactor'),
       ),
     );
   }
@@ -206,7 +211,7 @@ void main() {
         );
         stubTestBackend(probe);
         final cubit = SpSettingsCubit(
-          recreateSpWalletUsecase: _MockRecreateSpWalletUsecase(),
+          updateSpBackendConfigUsecase: _MockRecreateSpWalletUsecase(),
           watchNotificationLogUsecase: logUsecase,
           testSpBackendUsecase: TestSpBackendUsecase(probe: probe),
           loadSpBackendConfigUsecase: LoadSpBackendConfigUsecase(
@@ -286,6 +291,8 @@ void main() {
           network: BitcoinNetwork.regtest,
           blindbitUrl: 'http://127.0.0.1:8000',
           electrumUrl: 'tcp://127.0.0.1:50001',
+          fetchConcurrencyFactor: SpConfig.defaultFetchConcurrencyFactor,
+          matchConcurrencyFactor: SpConfig.defaultMatchConcurrencyFactor,
         ),
       ).called(1);
       await cubit.close();
@@ -305,6 +312,48 @@ void main() {
         expect(cubit.state.error, isA<SilentUnexpected>());
         expect(cubit.state.isSaving, isFalse);
         expect(cubit.state.saved, isFalse);
+        await cubit.close();
+      },
+    );
+
+    test(
+      'rollback failure reloads the persisted config without probing',
+      () async {
+        final repository = _MockSpBackendConfigRepository();
+        var probes = 0;
+        final cubit = build(
+          repository: repository,
+          testBlindbit: ({required url}) async {
+            probes++;
+          },
+          testElectrum: ({required url}) async {
+            probes++;
+          },
+        );
+        stubRecreate(failure: const SilentBackendRollbackFailed());
+        await cubit.setNetwork(BitcoinNetwork.regtest);
+        await cubit.testBlindbit();
+        await cubit.testElectrum();
+        final persisted = SpBackendConfig(
+          network: BitcoinNetwork.regtest,
+          blindbitUrl: 'http://persisted.example',
+          electrumUrl: 'tcp://persisted.example:50001',
+          fetchConcurrencyFactor: 3,
+          matchConcurrencyFactor: 4,
+          minScanAmountSat: 42,
+        );
+        when(() => repository.fetch()).thenAnswer((_) async => Ok(persisted));
+
+        await cubit.saveBackendConfig();
+
+        expect(cubit.state.error, isA<SilentBackendRollbackFailed>());
+        expect(cubit.state.blindbitUrl, persisted.blindbitUrl);
+        expect(cubit.state.electrumUrl, persisted.electrumUrl);
+        expect(cubit.state.fetchConcurrencyFactor, 3);
+        expect(cubit.state.matchConcurrencyFactor, 4);
+        expect(cubit.state.minScanAmountSat, 42);
+        expect(cubit.state.canSave, isFalse);
+        expect(probes, 2);
         await cubit.close();
       },
     );

@@ -7,10 +7,14 @@ import 'package:coins/src/data/wallet_utxo_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show WalletInventory;
+import 'package:secrets/testing.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 
 class _Labels extends Mock implements Labels {}
+
+class _Inventory extends Mock implements WalletInventory {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -45,16 +49,26 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
-  WalletUtxoRepositoryImpl repository(sync.Wallet wallet) =>
-      WalletUtxoRepositoryImpl(
-        resolveWalletKey: (id) async {
-          expect(id, walletId);
-          return key;
-        },
-        labelsFacade: labels,
-        loadWallet: (_) async => Ok(wallet),
-        foreground: () async => Ok(owner),
-      );
+  WalletUtxoRepositoryImpl repository(sync.Wallet wallet) {
+    final inventory = _Inventory();
+    when(() => inventory.readWallet(walletId)).thenAnswer(
+      (_) async => Ok(
+        walletRegistrationForTesting(
+          id: walletId,
+          network: BitcoinNetwork.testnet,
+        ),
+      ),
+    );
+    return WalletUtxoRepositoryImpl(
+      inventory: inventory,
+      labelsFacade: labels,
+      loadWallet: (resolved) async {
+        expect(resolved, key);
+        return Ok(wallet);
+      },
+      foreground: () async => Ok(owner),
+    );
+  }
 
   test('coins carry the frozen state sync publishes', () async {
     final wallet = await testWallet(
@@ -96,7 +110,7 @@ void main() {
     );
     addTearDown(broken.close);
     final repository = WalletUtxoRepositoryImpl(
-      resolveWalletKey: (_) async => fail('unexpected wallet lookup'),
+      inventory: _Inventory(),
       labelsFacade: labels,
       loadWallet: (_) async => fail('unexpected wallet load'),
       foreground: () async => Ok(broken),

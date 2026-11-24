@@ -12,6 +12,10 @@ class _FakeProbe implements SpBackendProbePort {
   _FakeProbe(this._result);
 
   @override
+  Future<Result<void, SilentFailure>> blindbitTip(String url) async =>
+      const Ok(null);
+
+  @override
   Future<Result<void, SilentFailure>> testBackend(
     SpBackendKind kind,
     String url,

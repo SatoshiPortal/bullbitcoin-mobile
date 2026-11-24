@@ -25,6 +25,7 @@ import 'package:silent/src/domain/ports/sp_recipient_address_validator_port.dart
 import 'package:silent/src/domain/repositories/sp_account_repository.dart';
 import 'package:silent/src/domain/sp_session_guard.dart';
 import 'package:silent/src/domain/usecases/check_sp_wallet_setup_usecase.dart';
+import 'package:silent/src/domain/usecases/check_sp_server_status_usecase.dart';
 import 'package:silent/src/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:silent/src/domain/usecases/create_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/ensure_sp_session_usecase.dart';
@@ -34,13 +35,14 @@ import 'package:silent/src/domain/usecases/get_sp_backend_defaults_usecase.dart'
 import 'package:silent/src/domain/usecases/get_sp_balance_usecase.dart';
 import 'package:silent/src/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:silent/src/domain/usecases/get_sp_network_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_scan_server_tip_usecase.dart';
 import 'package:silent/src/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/is_sp_scanning_usecase.dart';
 import 'package:silent/src/domain/usecases/is_sp_set_up_now_usecase.dart';
 import 'package:silent/src/domain/usecases/load_sp_backend_config_usecase.dart';
 import 'package:silent/src/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:silent/src/domain/usecases/prepare_sp_payment_usecase.dart';
-import 'package:silent/src/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:silent/src/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:silent/src/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:silent/src/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -119,6 +121,18 @@ abstract final class SilentGraph {
     return controller.stream;
   }
 
+  // The single definition of "foreground" the scan path uses: the app is
+  // resumed. A binding that has not reported a state yet is NOT foreground, so
+  // an automatic scan never runs on a guess.
+  static bool _isForegroundState(AppLifecycleState? state) =>
+      state == AppLifecycleState.resumed;
+
+  static bool _isForegroundNow() =>
+      _isForegroundState(WidgetsBinding.instance.lifecycleState);
+
+  static Stream<bool> _foregroundChanges() =>
+      _appLifecycleStates().map(_isForegroundState).distinct();
+
   static void _registerAdapters(GetIt locator) {
     // One datasource each, both lazySingletons: the FFI one owns the live
     // session, and the files one carries the recreate backup across calls, so a
@@ -137,6 +151,8 @@ abstract final class SilentGraph {
       () => BwkSpAccountRepository(
         ffi: locator<BwkSpAccountDatasource>(),
         files: locator<SpAccountFilesDatasource>(),
+        allowAutomaticScan: () =>
+            _isForegroundNow() && locator<SpAutoScanRepository>().isEnabledNow,
       ),
     );
     locator.registerLazySingleton<SpAccountRepository>(
@@ -234,6 +250,9 @@ abstract final class SilentGraph {
       () => SpTipWatcher(
         watchSpUpdatesUsecase: locator<WatchSpUpdatesUsecase>(),
         syncSpWalletUsecase: locator<SyncSpWalletUsecase>(),
+        watchSpNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
+        foregroundChanges: _foregroundChanges(),
+        initiallyForeground: _isForegroundNow(),
       ),
     );
     locator.registerLazySingleton<SpElectrumReconnectWatcher>(
@@ -256,6 +275,7 @@ abstract final class SilentGraph {
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         getSpAutoScanUsecase: locator<GetSpAutoScanUsecase>(),
+        isForeground: _isForegroundNow,
       ),
     );
     locator.registerFactory<ScanSpWalletUsecase>(
@@ -290,6 +310,12 @@ abstract final class SilentGraph {
     );
     locator.registerFactory<GetSpNetworkUsecase>(
       () => GetSpNetworkUsecase(repository: locator<SpAccountRepository>()),
+    );
+    // The Blindbit tip the scan follows: one bounded HTTP read, kept out of the
+    // wallet data load so no screen waits on it.
+    locator.registerFactory<GetSpScanServerTipUsecase>(
+      () =>
+          GetSpScanServerTipUsecase(repository: locator<SpAccountRepository>()),
     );
     locator.registerFactory<GetSpBalanceUsecase>(
       () => GetSpBalanceUsecase(repository: locator<SpAccountRepository>()),
@@ -354,14 +380,14 @@ abstract final class SilentGraph {
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
       ),
     );
-    locator.registerFactory<RecreateSpWalletUsecase>(
-      () => RecreateSpWalletUsecase(
-        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
-        getSpSecretUsecase: locator<GetSpSecretUsecase>(),
-        repository: locator<SpAccountRepository>(),
+    locator.registerFactory<UpdateSpBackendConfigUsecase>(
+      () => UpdateSpBackendConfigUsecase(
+        gate: locator<GetSpFeatureGateUsecase>(),
+        account: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
-        configRepository: locator<SpBackendConfigRepository>(),
-        ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+        configs: locator<SpBackendConfigRepository>(),
+        ensureSession: locator<EnsureSpSessionUsecase>(),
+        isScanning: locator<IsSpScanningUsecase>(),
         guard: locator<SpSessionGuard>(),
       ),
     );
@@ -390,6 +416,12 @@ abstract final class SilentGraph {
   static void _registerCapability(GetIt locator) {
     locator.registerLazySingleton<SilentCapability>(
       () => SilentCapability(
+        checkSpServerStatusUsecase: CheckSpServerStatusUsecase(
+          config: locator<SpBackendConfigRepository>(),
+          setup: locator<CheckSpWalletSetupUsecase>(),
+          gate: locator<GetSpFeatureGateUsecase>(),
+          probe: locator<SpBackendProbePort>(),
+        ),
         getSpWalletUsecase: locator<GetSpWalletUsecase>(),
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         checkSpWalletSetupUsecase: locator<CheckSpWalletSetupUsecase>(),
@@ -410,6 +442,7 @@ abstract final class SilentGraph {
   static void _registerPresentation(GetIt locator) {
     locator.registerFactory<SpCubit>(
       () => SpCubit(
+        getScanServerTip: locator<GetSpScanServerTipUsecase>(),
         loadSpWalletDataUsecase: locator<LoadSpWalletDataUsecase>(),
         restampSpPaymentTimesUsecase: locator<RestampSpPaymentTimesUsecase>(),
         spNotificationsWatcher: locator<SpNotificationsWatcher>(),
@@ -435,7 +468,7 @@ abstract final class SilentGraph {
     );
     locator.registerFactory<SpSettingsCubit>(
       () => SpSettingsCubit(
-        recreateSpWalletUsecase: locator<RecreateSpWalletUsecase>(),
+        updateSpBackendConfigUsecase: locator<UpdateSpBackendConfigUsecase>(),
         watchNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
         testSpBackendUsecase: locator<TestSpBackendUsecase>(),
         loadSpBackendConfigUsecase: locator<LoadSpBackendConfigUsecase>(),

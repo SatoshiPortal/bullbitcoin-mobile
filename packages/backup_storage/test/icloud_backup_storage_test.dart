@@ -198,6 +198,34 @@ void main() {
     },
   );
 
+  test(
+    'discovery reads a disconnected container without reconnecting it',
+    () async {
+      final session = await authorize();
+      final object = ok(
+        await session.create(
+          name: 'bull-data-1.bip138',
+          mimeType: _mime,
+          bytes: Uint8List.fromList([1]),
+        ),
+      );
+      ok(await session.disconnect());
+      expect(await connections.readRevision(_container) % 2, 1);
+
+      final view = ok(await storage().authorizeForDiscovery());
+      expect(view.account.id, 'first-account');
+      expect(ok(await view.list(mimeType: _mime)).single.id, object.id);
+      expect(await connections.readRevision(_container) % 2, 1);
+
+      await view.close();
+      expect(await connections.readRevision(_container) % 2, 1);
+      expect(
+        _failure(await storage().authorize(interactive: false)),
+        isA<BackupStorageAuthorizationRequiredFailure>(),
+      );
+    },
+  );
+
   test('rejects path components before issuing a file operation', () async {
     final session = await authorize();
     final previous = platform.lastArguments;
