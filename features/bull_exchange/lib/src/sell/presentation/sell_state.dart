@@ -304,15 +304,11 @@ extension SellPaymentStateX on SellPaymentState {
         }
       case OrderPaymentMethod.liquid:
         if (order.sellPayinAddress case final address?) {
-          final amountBtc = order.payinAmount;
-
-          final bip21Uri = Bip21Uri(
-            scheme: 'liquidnetwork',
+          invoiceString = ExchangeLiquidAsset.paymentUri(
             address: address,
-            amount: amountBtc,
-            options: {'assetid': lbtcMainnetAssetId},
+            amountBtc: order.payinAmount,
+            isTestnet: order.isTestnet,
           );
-          invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.lnInvoice:
         invoiceString = order.sellLightningInvoice ?? '';

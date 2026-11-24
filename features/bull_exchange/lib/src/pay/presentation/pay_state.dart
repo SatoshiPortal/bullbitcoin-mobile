@@ -317,16 +317,12 @@ extension PayPaymentStateX on PayPaymentState {
           invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.liquid:
-        if (order.liquidAddress case final String address) {
-          final amountBtc = order.payinAmount;
-
-          final bip21Uri = Bip21Uri(
-            scheme: 'liquidnetwork',
+        if (order.liquidAddress case final address?) {
+          invoiceString = ExchangeLiquidAsset.paymentUri(
             address: address,
-            amount: amountBtc,
-            options: {'assetid': lbtcMainnetAssetId},
+            amountBtc: order.payinAmount,
+            isTestnet: order.isTestnet,
           );
-          invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.lnInvoice:
         if (order.lightningInvoice case final String invoice) {

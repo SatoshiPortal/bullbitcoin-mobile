@@ -4,7 +4,7 @@ import 'package:bull_exchange/src/pay/domain/retry_payjoin_proposal_usecase.dart
 
 import 'dart:async';
 
-import 'package:bull_exchange/src/payin/payin_constants.dart';
+import 'package:bull_exchange/src/payin/exchange_liquid_asset.dart';
 import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_logger/bull_logger.dart' show log;

@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
-import 'package:bull_exchange/src/payin/payin_constants.dart';
+import 'package:bull_exchange/src/payin/exchange_liquid_asset.dart';
 import 'package:sync/sync.dart' show Coin;
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:fees_feature/fee_ui.dart';
