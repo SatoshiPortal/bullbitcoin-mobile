@@ -433,7 +433,11 @@
   },
   "exchangeSupportChatLogDraft": "Here are my logs",
   "@exchangeSupportChatLogDraft": {
-    "description": "Editable support chat draft after attaching diagnostic logs."
+    "description": "Line added to the support chat draft when diagnostic logs are attached (appended to what the user typed, CHAT-8)."
+  },
+  "exchangeSupportChatLoadOlder": "Load earlier messages",
+  "@exchangeSupportChatLoadOlder": {
+    "description": "Support chat: loads the previous page of the thread (CHAT-10: reachable even when the first page fits on screen)"
   },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {

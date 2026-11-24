@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullText,
         BullInlineIconButton,
         BullInputText,
@@ -19,12 +20,12 @@ import '../../data/attachment_picker_repository_impl.dart';
 import '../../domain/usecases/create_log_attachment_usecase.dart';
 import '../../domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import '../../domain/usecases/get_support_chat_messages_usecase.dart';
+import '../../domain/usecases/open_support_chat_attachment_usecase.dart';
 import '../../domain/usecases/pick_image_attachments_usecase.dart';
-import '../../domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import '../../domain/usecases/send_support_chat_message_usecase.dart';
-import '../../presentation/exchange_support_chat_cubit.dart';
 import '../../presentation/exchange_support_chat_failure_l10n.dart';
-import '../../presentation/exchange_support_chat_state.dart';
+import '../../presentation/support_chat_bloc.dart';
+import '../../presentation/support_chat_machine.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({
@@ -46,26 +47,32 @@ class ExchangeSupportChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
-        final cubit = ExchangeSupportChatCubit(
-          getMessagesUsecase: GetSupportChatMessagesUsecase(exchange: exchange),
-          sendMessageUsecase: SendSupportChatMessageUsecase(exchange: exchange),
-          getAttachmentUsecase: GetSupportChatMessageAttachmentUsecase(
+        final messages = GetSupportChatMessagesUsecase(exchange: exchange);
+        final send = SendSupportChatMessageUsecase(exchange: exchange);
+        final pick = PickImageAttachmentsUsecase(
+          repository: AttachmentPickerRepositoryImpl(),
+        );
+        final logs = CreateLogAttachmentUsecase();
+        final open = OpenSupportChatAttachmentUsecase(
+          getAttachment: GetSupportChatMessageAttachmentUsecase(
             exchange: exchange,
           ),
-          resolveUserIdUsecase: ResolveSupportChatUserIdUsecase(
-            exchange: exchange,
-          ),
-          createLogAttachmentUsecase: CreateLogAttachmentUsecase(),
-          pickImageAttachmentsUsecase: PickImageAttachmentsUsecase(
-            repository: AttachmentPickerRepositoryImpl(),
+        );
+        return SupportChatBloc(
+          effects: (
+            fetchPage: (page) =>
+                messages.execute(page: page, pageSize: supportChatPageSize),
+            send: (text, attachments) => send.execute(
+              text: text,
+              attachments: attachments.isEmpty ? null : attachments,
+            ),
+            pickImages: pick.execute,
+            buildLogs: logs.execute,
+            openAttachment: open.execute,
           ),
           notifications: exchange.notifications,
+          draft: initialMessage,
         );
-        if (initialMessage case final message? when message.isNotEmpty) {
-          cubit.updateMessageText(message);
-        }
-        cubit.loadMessages();
-        return cubit;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -111,7 +118,6 @@ class _ChatBody extends StatefulWidget {
 
 class _ChatBodyState extends State<_ChatBody> {
   final ScrollController _scrollController = ScrollController();
-  bool _hasLoadedInitialMessages = false;
 
   @override
   void initState() {
@@ -128,16 +134,9 @@ class _ChatBodyState extends State<_ChatBody> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-
     final position = _scrollController.position;
     if (position.pixels >= position.maxScrollExtent - 200) {
-      final cubit = context.read<ExchangeSupportChatCubit>();
-      final state = cubit.state;
-      if (!state.loadingOlderMessages &&
-          !state.loadingMessages &&
-          _hasLoadedInitialMessages) {
-        cubit.loadOlderMessages();
-      }
+      context.read<SupportChatBloc>().add(const ChatOlderRequested());
     }
   }
 
@@ -146,88 +145,126 @@ class _ChatBodyState extends State<_ChatBody> {
     return Column(
       children: [
         Expanded(
-          child:
-              BlocConsumer<ExchangeSupportChatCubit, ExchangeSupportChatState>(
-                listenWhen: (previous, current) =>
-                    previous.failure != current.failure,
-                listener: (context, state) {
-                  final failure = state.failure;
-                  if (failure != null) {
-                    BullSnackBar.show(
-                      context,
-                      message: failure.toTranslated(context),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state.loadingMessages && state.messages.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (state.messages.isEmpty && !state.loadingMessages) {
-                    return Center(
-                      child: BullText(
-                        context.loc.exchangeSupportChatEmptyState,
-                        style: context.bullType.body
-                            .copyWith(fontWeight: FontWeight.w500)
-                            .copyWith(color: context.appColors.textMuted),
-                      ),
-                    );
-                  }
-
-                  if (!_hasLoadedInitialMessages &&
-                      !state.loadingMessages &&
-                      state.messages.isNotEmpty) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _hasLoadedInitialMessages = true;
-                    });
-                  }
-
-                  return ListView.builder(
-                    controller: _scrollController,
-                    reverse: true,
-                    padding: const EdgeInsets.all(16),
-                    itemCount:
-                        state.messages.length +
-                        (state.loadingOlderMessages ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == state.messages.length) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-
-                      final message = state.messages[index];
-                      return _MessageBubble(message: message);
-                    },
-                  );
-                },
+          child: BlocConsumer<SupportChatBloc, SupportChatState>(
+            listenWhen: (previous, current) =>
+                previous.notice != current.notice && current.notice != null,
+            listener: (context, state) {
+              if (state.notice case final notice?) {
+                BullSnackBar.show(
+                  context,
+                  message: notice.failure.toTranslated(context),
+                );
+              }
+            },
+            builder: (context, state) => switch (state.thread) {
+              ChatThreadLoading() => const Center(
+                child: CircularProgressIndicator(),
               ),
+              ChatThreadLoadFailed(:final failure) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      BullText(
+                        failure.toTranslated(context),
+                        style: context.bullType.body.copyWith(
+                          color: context.appColors.error,
+                        ),
+                      ),
+                      const Gap(16),
+                      BullButton.secondary(
+                        label: context.loc.retry,
+                        onPressed: () => context.read<SupportChatBloc>().add(
+                          const ChatRetryPressed(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              final ChatThreadLoaded thread => _thread(context, state, thread),
+            },
+          ),
         ),
         const _MessageInput(),
       ],
     );
   }
+
+  Widget _thread(
+    BuildContext context,
+    SupportChatState state,
+    ChatThreadLoaded thread,
+  ) {
+    final outgoing = state.outgoing.reversed.toList();
+    if (thread.messages.isEmpty && outgoing.isEmpty) {
+      return Center(
+        child: BullText(
+          context.loc.exchangeSupportChatEmptyState,
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.textMuted),
+        ),
+      );
+    }
+    final count = outgoing.length + thread.messages.length;
+    return ListView.builder(
+      controller: _scrollController,
+      reverse: true,
+      padding: const EdgeInsets.all(16),
+      itemCount: count + (thread.startReached ? 0 : 1),
+      itemBuilder: (context, index) {
+        if (index < outgoing.length) {
+          final message = outgoing[index];
+          return _MessageBubble(
+            message: SupportChatMessage(
+              text: message.text,
+              isAdmin: false,
+              attachments: message.attachments,
+            ),
+            sending: message is ChatOutgoingSending,
+          );
+        }
+        if (index < count) {
+          return _MessageBubble(
+            message: thread.messages[index - outgoing.length],
+          );
+        }
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: switch (thread.older) {
+              ChatOlderLoading() => const CircularProgressIndicator(),
+              ChatOlderIdle() => BullButton.secondary(
+                label: context.loc.exchangeSupportChatLoadOlder,
+                onPressed: () => context.read<SupportChatBloc>().add(
+                  const ChatOlderRequested(),
+                ),
+              ),
+            },
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message});
+  const _MessageBubble({required this.message, this.sending});
 
   final SupportChatMessage message;
 
+  /// Set for a message sent from this screen that the thread doesn't show
+  /// yet: true while it is sent, false once the exchange accepted it.
+  final bool? sending;
+
   @override
   Widget build(BuildContext context) {
-    final userId = context.select(
-      (ExchangeSupportChatCubit cubit) => cubit.state.userId,
-    );
-    final fromUserId = message.fromUserId;
-    final isTempMessage = message.messageId?.startsWith('temp') ?? false;
-    final isUserMessage = isTempMessage
-        ? true
-        : fromUserId != null && userId != null && fromUserId == userId;
+    // The side comes from the server's sender, never from a second lookup
+    // (CHAT-11).
+    final isUserMessage = message.isAdmin == false;
+    final sending = this.sending;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -258,30 +295,38 @@ class _MessageBubble extends StatelessWidget {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                if (message.text != null && message.text!.isNotEmpty)
+                if (message.text case final text? when text.isNotEmpty)
                   BullText(
-                    message.text!,
+                    text,
                     style: context.bullType.body.copyWith(
                       color: isUserMessage
                           ? context.appColors.onSecondary
                           : context.appColors.onPrimary,
                     ),
                   ),
-                if (message.attachments != null &&
-                    message.attachments!.isNotEmpty) ...[
-                  if (message.text != null && message.text!.isNotEmpty)
+                if (message.attachments case final attachments?
+                    when attachments.isNotEmpty) ...[
+                  if (message.text case final text? when text.isNotEmpty)
                     const Gap(8),
-                  ...message.attachments!.map(
+                  ...attachments.map(
                     (attachment) => _AttachmentWidget(
                       attachment: attachment,
                       isUserMessage: isUserMessage,
+                      openable: sending == null,
                     ),
                   ),
                 ],
-                if (message.createdAt != null) ...[
+                if (sending != null) ...[
+                  const Gap(4),
+                  Icon(
+                    sending ? Icons.schedule : Icons.done,
+                    size: 14,
+                    color: context.appColors.textMuted,
+                  ),
+                ] else if (message.createdAt case final createdAt?) ...[
                   const Gap(4),
                   BullText(
-                    _formatTime(message.createdAt!, context),
+                    _formatTime(createdAt, context),
                     style: context.bullType.caption.copyWith(
                       color: isUserMessage
                           ? context.appColors.textMuted
@@ -314,25 +359,15 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
-class _MessageInput extends StatefulWidget {
+class _MessageInput extends StatelessWidget {
   const _MessageInput();
 
   @override
-  State<_MessageInput> createState() => _MessageInputState();
-}
-
-class _MessageInputState extends State<_MessageInput> {
-  final _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final state = context.watch<ExchangeSupportChatCubit>().state;
+    final composer = context.select(
+      (SupportChatBloc bloc) => bloc.state.composer,
+    );
+    final bloc = context.read<SupportChatBloc>();
 
     return SafeArea(
       top: false,
@@ -354,34 +389,29 @@ class _MessageInputState extends State<_MessageInput> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (state.sendMessageFailure case final sendFailure?) ...[
+            if (composer.problem case final problem?) ...[
               BullText(
-                sendFailure.toTranslated(context),
+                problem.toTranslated(context),
                 style: context.bullType.caption.copyWith(
                   color: context.appColors.error,
                 ),
               ),
               const Gap(8),
             ],
-            if (state.newMessageAttachments.isNotEmpty) ...[
+            if (composer.attachments.isNotEmpty) ...[
               SizedBox(
                 height: 60,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.newMessageAttachments.length,
+                  itemCount: composer.attachments.length,
                   itemBuilder: (context, index) {
-                    final attachment = state.newMessageAttachments[index];
+                    final attachment = composer.attachments[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: _AttachmentPreviewWidget(
                         attachment: attachment,
-                        onRemove: () {
-                          if (attachment.attachmentId != null) {
-                            context
-                                .read<ExchangeSupportChatCubit>()
-                                .removeAttachment(attachment.attachmentId!);
-                          }
-                        },
+                        onRemove: () =>
+                            bloc.add(ChatAttachmentRemoved(attachment)),
                       ),
                     );
                   },
@@ -397,10 +427,9 @@ class _MessageInputState extends State<_MessageInput> {
                   child: BullInlineIconButton(
                     icon: Icon(Icons.attach_file),
                     tooltip: context.loc.exchangeSupportChatAttachFileTooltip,
-
-                    onPressed: () {
-                      context.read<ExchangeSupportChatCubit>().addAttachment();
-                    },
+                    onPressed: composer.attaching is ChatAttachIdle
+                        ? () => bloc.add(const ChatAttachPressed())
+                        : null,
                   ),
                 ),
                 const Gap(8),
@@ -410,29 +439,26 @@ class _MessageInputState extends State<_MessageInput> {
                   child: BullInlineIconButton(
                     icon: Icon(Icons.description),
                     tooltip: context.loc.exchangeSupportChatAttachLogsTooltip,
-
-                    onPressed: () {
-                      context.read<ExchangeSupportChatCubit>().attachLogs(
-                        context.loc.exchangeSupportChatLogDraft,
-                      );
-                    },
+                    onPressed: composer.attaching is ChatAttachIdle
+                        ? () => bloc.add(
+                            ChatLogsPressed(
+                              context.loc.exchangeSupportChatLogDraft,
+                            ),
+                          )
+                        : null,
                   ),
                 ),
                 const Gap(8),
                 Expanded(
                   child: BullInputText(
-                    value: state.newMessageText,
+                    value: composer.text,
                     hint:
-                        state.newMessageAttachments.isNotEmpty &&
-                            state.newMessageText.trim().isEmpty
+                        composer.attachments.isNotEmpty &&
+                            composer.text.trim().isEmpty
                         ? context.loc.exchangeSupportChatMessageRequired
                         : context.loc.exchangeSupportChatInputHint,
                     maxLines: 4,
-                    onChanged: (text) {
-                      context
-                          .read<ExchangeSupportChatCubit>()
-                          .updateMessageText(text);
-                    },
+                    onChanged: (text) => bloc.add(ChatDraftChanged(text)),
                   ),
                 ),
                 const Gap(8),
@@ -442,16 +468,9 @@ class _MessageInputState extends State<_MessageInput> {
                   child: BullInlineIconButton(
                     icon: Icon(Icons.send),
                     tooltip: context.loc.exchangeSupportChatSendTooltip,
-
-                    onPressed:
-                        (state.sendingMessage ||
-                            state.newMessageText.trim().isEmpty)
+                    onPressed: composer.text.trim().isEmpty
                         ? null
-                        : () {
-                            context
-                                .read<ExchangeSupportChatCubit>()
-                                .sendMessage();
-                          },
+                        : () => bloc.add(const ChatSendPressed()),
                   ),
                 ),
               ],
@@ -467,10 +486,12 @@ class _AttachmentWidget extends StatelessWidget {
   const _AttachmentWidget({
     required this.attachment,
     required this.isUserMessage,
+    required this.openable,
   });
 
   final SupportChatMessageAttachment attachment;
   final bool isUserMessage;
+  final bool openable;
 
   String _shortenFileName(String fileName) {
     if (fileName.length <= 20) return fileName;
@@ -488,24 +509,21 @@ class _AttachmentWidget extends StatelessWidget {
     final isImage = attachment.fileType?.startsWith('image/') ?? false;
     final isPdf = attachment.fileType == 'application/pdf';
     final isLog = attachment.fileName?.contains('.BullLog.') ?? false;
+    final attachmentId = openable ? attachment.attachmentId : null;
     final isLoading = context.select(
-      (ExchangeSupportChatCubit cubit) =>
-          cubit.state.loadingAttachmentId == attachment.attachmentId,
+      (SupportChatBloc bloc) =>
+          attachmentId != null && bloc.state.opening.contains(attachmentId),
     );
 
     if (isImage) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: InkWell(
-          onTap:
-              attachment.attachmentId == null ||
-                  attachment.attachmentId!.startsWith('temp')
+          onTap: attachmentId == null
               ? null
-              : () {
-                  context.read<ExchangeSupportChatCubit>().downloadAttachment(
-                    attachment.attachmentId!,
-                  );
-                },
+              : () => context.read<SupportChatBloc>().add(
+                  ChatOpenPressed(attachmentId),
+                ),
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -547,9 +565,7 @@ class _AttachmentWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (!isUserMessage &&
-                    attachment.attachmentId != null &&
-                    !attachment.attachmentId!.startsWith('temp')) ...[
+                if (!isUserMessage && attachmentId != null) ...[
                   const Gap(8),
                   if (isLoading)
                     const SizedBox(
@@ -574,15 +590,11 @@ class _AttachmentWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
-        onTap:
-            attachment.attachmentId == null ||
-                attachment.attachmentId!.startsWith('temp')
+        onTap: attachmentId == null
             ? null
-            : () {
-                context.read<ExchangeSupportChatCubit>().downloadAttachment(
-                  attachment.attachmentId!,
-                );
-              },
+            : () => context.read<SupportChatBloc>().add(
+                ChatOpenPressed(attachmentId),
+              ),
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -641,9 +653,7 @@ class _AttachmentWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (!isUserMessage &&
-                  attachment.attachmentId != null &&
-                  !attachment.attachmentId!.startsWith('temp')) ...[
+              if (!isUserMessage && attachmentId != null) ...[
                 const Gap(8),
                 if (isLoading)
                   const SizedBox(
