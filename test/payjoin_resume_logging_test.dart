@@ -58,12 +58,19 @@ void main() {
       when(() => transactions.watchWallet(any()))
           .thenAnswer((_) => const Stream.empty());
       when(
-        () => transactions.isTransactionVisible(
+        () => transactions.transactionsPresence(
           walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
+          transactions: any(named: 'transactions'),
           refresh: any(named: 'refresh'),
         ),
-      ).thenAnswer((_) async => false);
+      ).thenAnswer(
+        (invocation) async => {
+          for (final transaction
+              in invocation.namedArguments[#transactions]
+                  as List<PayjoinTransaction>)
+            transaction.txid: false,
+        },
+      );
       when(() => transactions.refreshWallet(any())).thenAnswer((_) async {});
       Future<PayjoinLifecycle> open() async {
         final result = await openPayjoinForTesting(

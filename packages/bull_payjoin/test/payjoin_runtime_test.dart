@@ -63,11 +63,14 @@ final class _TransactionPort implements PayjoinTransactionPort {
   }) async => true;
 
   @override
-  Future<bool> isTransactionVisible({
+  Future<Map<String, bool?>> transactionsPresence({
     required String walletId,
-    required String transactionId,
+    required List<PayjoinTransaction> transactions,
     bool refresh = false,
-  }) async => offline ? throw StateError('offline') : false;
+  }) async => {
+    for (final transaction in transactions)
+      transaction.txid: offline ? throw StateError('offline') : false,
+  };
 
   @override
   Future<void> refreshWallet(String walletId) async {}

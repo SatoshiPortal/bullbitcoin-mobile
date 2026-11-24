@@ -111,6 +111,12 @@ class _GatedLocalPayjoinDatasource extends LocalPayjoinDatasource {
   }
 }
 
+/// Serialized one-input, one-output transaction: the stored original body of a
+/// receiver, decodable so a targeted pass can judge it.
+const _originalBodyHex =
+    '0100000001111111111111111111111111111111111111111111111111111111'
+    '11111111110000000000ffffffff0101000000000000000000000000';
+
 void main() {
   late PayjoinDatabase database;
   late LocalPayjoinDatasource local;
@@ -129,6 +135,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(Uint8List(0));
+    registerFallbackValue(<PayjoinTransaction>[]);
     registerFallbackValue((PayjoinReceiverModel _) async {});
   });
 
@@ -157,13 +164,16 @@ void main() {
     isTrade: isTrade,
   ) as PayjoinReceiverModel;
 
-  PayjoinSenderModel sender() => PayjoinModel.sender(
+  PayjoinSenderModel sender({
+    String originalPsbt = 'cHNidP8=',
+    String originalTxId = 'original-tx',
+  }) => PayjoinModel.sender(
     uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
     isTestnet: true,
     sender: '[]',
     walletId: 'wallet-1',
-    originalPsbt: 'cHNidP8=',
-    originalTxId: 'original-tx',
+    originalPsbt: originalPsbt,
+    originalTxId: originalTxId,
     amountSat: 50000,
     createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
     expireAfterSec: 3600,
@@ -175,6 +185,27 @@ void main() {
       'cHNidP8BAFICAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
       'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
       'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+
+  /// A stored receiver body the codec decodes, so a targeted pass can judge the
+  /// outpoint it spends and the output it pays.
+  final originalBody = Uint8List.fromList([
+    for (var index = 0; index < _originalBodyHex.length; index += 2)
+      int.parse(_originalBodyHex.substring(index, index + 2), radix: 16),
+  ]);
+
+  /// A second decodable PSBT, distinct from [oneInputPsbt], so a test can tell
+  /// the payjoin candidate from the original one.
+  const secondInputPsbt =
+      'cHNidP8BAFICAAAAASIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiAAAA'
+      'AAD9////AYgTAAAAAAAAFgAUqqqqqqqqqqqqqqqqqqqqqqqqqqqqAAAAAAAAAA==';
+
+  /// The txid a targeted pass reports for a stored body: the one the wallet
+  /// stores and scans, never the id the session happens to record for it.
+  String psbtTxId(String psbt) =>
+      const TestPayjoinCodec().decodePsbt(psbt).txid;
+
+  String bodyTxId(Uint8List bytes) =>
+      const TestPayjoinCodec().decodeTransaction(bytes).txid;
 
   /// A sender whose expiry elapsed two hours ago, so a resume routes it
   /// straight through the expiry handler (`_resumeOne`).
@@ -188,13 +219,31 @@ void main() {
     sender: '[]',
     walletId: 'wallet-1',
     originalPsbt: oneInputPsbt,
-    originalTxId: 'original-tx',
+    originalTxId: psbtTxId(oneInputPsbt),
     amountSat: 50000,
     createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
     expireAfterSec: 3600,
     proposalPsbt: proposalPsbt,
     txId: transactionId,
   ) as PayjoinSenderModel;
+
+  /// Stubs one grouped presence read: [answer] settles each candidate the
+  /// engine sends, keyed by its txid, as a single pass would.
+  void stubPresence(bool? Function(String txid) answer) =>
+      when(
+        () => transactions.transactionsPresence(
+          walletId: any(named: 'walletId'),
+          transactions: any(named: 'transactions'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (invocation) async => {
+          for (final transaction
+              in invocation.namedArguments[#transactions]
+                  as List<PayjoinTransaction>)
+            transaction.txid: answer(transaction.txid),
+        },
+      );
 
   setUp(() async {
     database = PayjoinDatabase.forTesting(NativeDatabase.memory());
@@ -236,13 +285,7 @@ void main() {
     when(() => pdk.stopPolling(any())).thenReturn(null);
     when(() => transactions.watchWallet(any()))
         .thenAnswer((_) => const Stream.empty());
-    when(
-      () => transactions.isTransactionVisible(
-        walletId: any(named: 'walletId'),
-        transactionId: any(named: 'transactionId'),
-        refresh: any(named: 'refresh'),
-      ),
-    ).thenAnswer((_) async => false);
+    stubPresence((_) => false);
     when(() => transactions.refreshWallet(any())).thenAnswer((_) async {});
     logs = _CaptureLogPort();
     engine = PayjoinRepositoryImpl(
@@ -483,8 +526,8 @@ void main() {
 
     test('a fallback broadcast is told apart from a payjoin', () async {
       final model = receiver(
-        originalTransaction: Uint8List.fromList([1, 2, 3]),
-        originalTransactionId: 'original-tx',
+        originalTransaction: originalBody,
+        originalTransactionId: bodyTxId(originalBody),
       );
       await local.storeReceiver(model);
       when(
@@ -1157,15 +1200,12 @@ void main() {
 
   test('visibleCompetingTransaction reports the session spend the network '
       'knows and null for an unknown session', () async {
-    final model = sender();
+    final model = sender(
+      originalPsbt: oneInputPsbt,
+      originalTxId: psbtTxId(oneInputPsbt),
+    );
     await local.storeSender(model);
-    when(
-      () => transactions.isTransactionVisible(
-        walletId: model.walletId,
-        transactionId: model.originalTxId,
-        refresh: true,
-      ),
-    ).thenAnswer((_) async => true);
+    stubPresence((txid) => txid == psbtTxId(oneInputPsbt));
 
     expect(
       (await engine.visibleCompetingTransaction(model.id)).fold(
@@ -1183,18 +1223,113 @@ void main() {
     );
   });
 
+  test('both competing spends travel in one presence read', () async {
+    final model = sender(
+      originalPsbt: oneInputPsbt,
+      originalTxId: psbtTxId(oneInputPsbt),
+    ).copyWith(proposalPsbt: secondInputPsbt, txId: psbtTxId(secondInputPsbt));
+    await local.storeSender(model);
+
+    expect(
+      (await engine.visibleCompetingTransaction(model.id)).fold(
+        (value) => value,
+        (failure) => fail('Unexpected failure ${failure.runtimeType}'),
+      ),
+      isNull,
+    );
+    final asked = verify(
+      () => transactions.transactionsPresence(
+        walletId: model.walletId,
+        transactions: captureAny(named: 'transactions'),
+        refresh: true,
+      ),
+    );
+    asked.called(1);
+    expect(
+      (asked.captured.single as List<PayjoinTransaction>).map(
+        (candidate) => candidate.txid,
+      ),
+      unorderedEquals([psbtTxId(oneInputPsbt), psbtTxId(secondInputPsbt)]),
+    );
+  });
+
+  test('a stored body the codec cannot read is never asked about', () async {
+    final model = receiver(
+      originalTransaction: Uint8List.fromList([1, 2, 3]),
+      originalTransactionId: 'original-tx',
+    );
+    await local.storeReceiver(model);
+
+    final result = await engine.tryBroadcastOriginalTransaction(
+      model.toEntity(),
+    );
+
+    expect(
+      (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+      isA<PayjoinUnavailableFailure>(),
+      reason: 'its id alone names no script, so the pass proves nothing',
+    );
+    verifyNever(
+      () => transactions.transactionsPresence(
+        walletId: any(named: 'walletId'),
+        transactions: any(named: 'transactions'),
+        refresh: any(named: 'refresh'),
+      ),
+    );
+    verifyNever(
+      () => blockchain.broadcastTransaction(
+        network: any(named: 'network'),
+        transaction: any(named: 'transaction'),
+      ),
+    );
+  });
+
+  test('a body stored under another txid is never mapped nor broadcast', () async {
+    // A sender's original PSBT is the ordinary case: its final signed txid can
+    // differ from the stored one. Corrupt storage looks the same. Either way
+    // the decoded answer must never be mapped onto the stored id.
+    final model = receiver(
+      originalTransaction: originalBody,
+      originalTransactionId: 'original-tx',
+    );
+    await local.storeReceiver(model);
+    stubPresence((txid) => txid == bodyTxId(originalBody));
+
+    final result = await engine.tryBroadcastOriginalTransaction(
+      model.toEntity(),
+    );
+
+    expect(
+      (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+      isA<PayjoinUnavailableFailure>(),
+      reason: 'a mismatched body leaves its stored id unproven, not absent',
+    );
+    // The mismatch is dropped before the pass, so nothing asks about the body
+    // under either id.
+    verifyNever(
+      () => transactions.transactionsPresence(
+        walletId: any(named: 'walletId'),
+        transactions: any(named: 'transactions'),
+        refresh: any(named: 'refresh'),
+      ),
+    );
+    verifyNever(
+      () => blockchain.broadcastTransaction(
+        network: any(named: 'network'),
+        transaction: any(named: 'transaction'),
+      ),
+    );
+  });
+
   test(
     'visibleCompetingTransaction is null while neither spend is visible',
     () async {
-      final model = sender();
+      final model = sender(
+        originalPsbt: oneInputPsbt,
+        originalTxId: psbtTxId(oneInputPsbt),
+      );
       await local.storeSender(model);
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer((_) async => false);
+      stubPresence((_) => false);
 
       expect(
         (await engine.visibleCompetingTransaction(model.id)).fold(
@@ -1529,12 +1664,12 @@ void main() {
           : 'publishing a proposal gates manual fallback across fresh reads',
       () async {
         final model = receiver(
-          originalTransaction: Uint8List.fromList([1, 2, 3]),
-          originalTransactionId: 'original-tx',
+          originalTransaction: originalBody,
+          originalTransactionId: bodyTxId(originalBody),
         );
         final proposal = model.copyWith(
           proposalPsbt: oneInputPsbt,
-          txId: 'payjoin-tx',
+          txId: psbtTxId(oneInputPsbt),
         );
         await local.storeReceiver(model);
         registerFallbackValue(model);
@@ -1650,10 +1785,10 @@ void main() {
 
   test('manual fallback can replace a proposal that is not visible', () async {
     final model = receiver(
-      originalTransaction: Uint8List.fromList([1, 2, 3]),
-      originalTransactionId: 'original-tx',
-      proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      transactionId: 'payjoin-tx',
+      originalTransaction: originalBody,
+      originalTransactionId: bodyTxId(originalBody),
+      proposalPsbt: oneInputPsbt,
+      transactionId: psbtTxId(oneInputPsbt),
     );
     await local.storeReceiver(model);
     when(
@@ -1681,8 +1816,8 @@ void main() {
 
   test('manual fallback records the plain transaction as aborted', () async {
     final model = receiver(
-      originalTransaction: Uint8List.fromList([1, 2, 3]),
-      originalTransactionId: 'original-tx',
+      originalTransaction: originalBody,
+      originalTransactionId: bodyTxId(originalBody),
     );
     await local.storeReceiver(model);
     when(
@@ -1714,8 +1849,8 @@ void main() {
 
   test('manual fallback distinguishes a genuine broadcast failure', () async {
     final model = receiver(
-      originalTransaction: Uint8List.fromList([1, 2, 3]),
-      originalTransactionId: 'original-tx',
+      originalTransaction: originalBody,
+      originalTransactionId: bodyTxId(originalBody),
     );
     await local.storeReceiver(model);
     when(
@@ -1742,21 +1877,23 @@ void main() {
     test(
       'an unavailable visibility check never attempts a fallback (typed=$typed)',
       () async {
-        const originalTxId = 'original-tx';
+        // A decodable body, so the candidate really reaches the pass: an
+        // unknown answer to it must stay unknown, never absence.
+        final originalTxId = bodyTxId(originalBody);
         final model = receiver(
-          originalTransaction: Uint8List.fromList([1, 2, 3]),
+          originalTransaction: originalBody,
           originalTransactionId: originalTxId,
         );
         await local.storeReceiver(model);
         final lookup = when(
-          () => transactions.isTransactionVisible(
+          () => transactions.transactionsPresence(
             walletId: model.walletId,
-            transactionId: originalTxId,
+            transactions: any(named: 'transactions'),
             refresh: true,
           ),
         );
         if (typed) {
-          lookup.thenAnswer((_) async => null);
+          lookup.thenAnswer((_) async => <String, bool?>{originalTxId: null});
         } else {
           lookup.thenThrow(Exception('server unreachable'));
         }
@@ -1780,17 +1917,11 @@ void main() {
 
   test('manual fallback settles when the original is visible', () async {
     final model = receiver(
-      originalTransaction: Uint8List.fromList([1, 2, 3]),
-      originalTransactionId: 'original-tx',
+      originalTransaction: originalBody,
+      originalTransactionId: bodyTxId(originalBody),
     );
     await local.storeReceiver(model);
-    when(
-      () => transactions.isTransactionVisible(
-        walletId: model.walletId,
-        transactionId: model.originalTxId!,
-        refresh: true,
-      ),
-    ).thenAnswer((_) async => true);
+    stubPresence((txid) => txid == bodyTxId(originalBody));
 
     expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
     final result = await engine.tryBroadcastOriginalTransaction(
@@ -1820,36 +1951,24 @@ void main() {
 
   test('manual fallback is unavailable when the payjoin is visible', () async {
     final model = expiredSender(
-      proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      transactionId: 'payjoin-tx',
+      proposalPsbt: secondInputPsbt,
+      transactionId: psbtTxId(secondInputPsbt),
     );
     await local.storeSender(model.copyWith(isExpired: true));
-    when(
-      () => transactions.isTransactionVisible(
-        walletId: model.walletId,
-        transactionId: model.txId!,
-        refresh: true,
-      ),
-    ).thenAnswer((_) async => true);
+    stubPresence((txid) => txid == psbtTxId(secondInputPsbt));
 
     expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
   });
 
   test('a manual fallback completes a payjoin already visible', () async {
     final model = receiver(
-      originalTransaction: Uint8List.fromList([1, 2, 3]),
-      originalTransactionId: 'original-tx',
-      proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
-      transactionId: 'payjoin-tx',
+      originalTransaction: originalBody,
+      originalTransactionId: bodyTxId(originalBody),
+      proposalPsbt: oneInputPsbt,
+      transactionId: psbtTxId(oneInputPsbt),
     );
     await local.storeReceiver(model);
-    when(
-      () => transactions.isTransactionVisible(
-        walletId: model.walletId,
-        transactionId: 'payjoin-tx',
-        refresh: true,
-      ),
-    ).thenAnswer((_) async => true);
+    stubPresence((txid) => txid == psbtTxId(oneInputPsbt));
     when(
       () => labels.labelTransaction(
         walletId: any(named: 'walletId'),
@@ -1879,25 +1998,21 @@ void main() {
   test(
     'receiver retains its reservation until durable spend handoff succeeds',
     () async {
+      final original = base64Decode(oneInputPsbt).sublist(8, 90)
+        ..fillRange(5, 37, 0x22);
+      final payjoinTxId = psbtTxId(oneInputPsbt);
       final model = receiver(
-        originalTransaction: base64Decode(oneInputPsbt).sublist(8, 90)
-          ..fillRange(5, 37, 0x22),
-        originalTransactionId: 'original-tx',
+        originalTransaction: original,
+        originalTransactionId: bodyTxId(original),
         proposalPsbt: oneInputPsbt,
-        transactionId: 'payjoin-tx',
+        transactionId: payjoinTxId,
       );
       await local.storeReceiver(model);
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: model.walletId,
-          transactionId: 'payjoin-tx',
-          refresh: true,
-        ),
-      ).thenAnswer((_) async => true);
+      stubPresence((txid) => txid == payjoinTxId);
       when(
         () => transactions.protectObservedSpend(
           walletId: model.walletId,
-          transactionId: 'payjoin-tx',
+          transactionId: payjoinTxId,
         ),
       ).thenAnswer((_) async => false);
       await engine.tryBroadcastOriginalTransaction(model.toEntity());
@@ -1912,7 +2027,7 @@ void main() {
       when(
         () => transactions.protectObservedSpend(
           walletId: model.walletId,
-          transactionId: 'payjoin-tx',
+          transactionId: payjoinTxId,
         ),
       ).thenAnswer((_) async => true);
       when(
@@ -2113,15 +2228,7 @@ void main() {
       originalFailsWith(StateError('response lost'));
       await engine.resumePayjoinsOnStartup();
 
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer(
-        (inv) async => inv.namedArguments[#transactionId] == model.originalTxId,
-      );
+      stubPresence((txid) => txid == psbtTxId(oneInputPsbt));
       await engine.resumePayjoinsOnStartup();
 
       final row = await local.fetchSender(model.id);
@@ -2230,16 +2337,7 @@ void main() {
 
       test('settles without sending when its original is already '
           'visible', () async {
-        when(
-          () => transactions.isTransactionVisible(
-            walletId: any(named: 'walletId'),
-            transactionId: any(named: 'transactionId'),
-            refresh: any(named: 'refresh'),
-          ),
-        ).thenAnswer(
-          (inv) async =>
-              inv.namedArguments[#transactionId] == model.originalTxId,
-        );
+        stubPresence((txid) => txid == psbtTxId(oneInputPsbt));
 
         await engine.resumePayjoinsOnStartup();
 
@@ -2259,13 +2357,7 @@ void main() {
         ('its seen original could not be settled yet', true),
       ]) {
         test('is not replayed while $name', () async {
-          when(
-            () => transactions.isTransactionVisible(
-              walletId: any(named: 'walletId'),
-              transactionId: any(named: 'transactionId'),
-              refresh: any(named: 'refresh'),
-            ),
-          ).thenAnswer((_) async => visible ?? (throw Exception('offline')));
+          stubPresence((_) => visible ?? (throw Exception('offline')));
           when(
             () => transactions.protectObservedSpend(
               walletId: any(named: 'walletId'),
@@ -2376,15 +2468,7 @@ void main() {
       addTearDown(walletEvents.close);
       when(() => transactions.watchWallet(any()))
           .thenAnswer((_) => walletEvents.stream);
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer(
-        (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
-      );
+      stubPresence((txid) => txid == payjoinTxId);
 
       await engine.resumePayjoinsOnStartup();
       walletEvents.add(null);
@@ -2447,15 +2531,7 @@ void main() {
       addTearDown(walletEvents.close);
       when(() => transactions.watchWallet(any()))
           .thenAnswer((_) => walletEvents.stream);
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer(
-        (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
-      );
+      stubPresence((txid) => txid == payjoinTxId);
 
       await engine.resumePayjoinsOnStartup();
       walletEvents.add(null);
@@ -2482,13 +2558,7 @@ void main() {
         addTearDown(walletEvents.close);
         when(() => transactions.watchWallet(any()))
             .thenAnswer((_) => walletEvents.stream);
-        when(
-          () => transactions.isTransactionVisible(
-            walletId: any(named: 'walletId'),
-            transactionId: any(named: 'transactionId'),
-            refresh: any(named: 'refresh'),
-          ),
-        ).thenAnswer((_) async => true);
+        stubPresence((_) => true);
 
         await engine.resumePayjoinsOnStartup();
         walletEvents.add(null);
@@ -2548,15 +2618,7 @@ void main() {
         networkFeesSatPerVb: 1,
       );
 
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer(
-        (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
-      );
+      stubPresence((txid) => txid == payjoinTxId);
       walletEvents.add(null);
 
       final deadline = DateTime.now().add(const Duration(seconds: 5));
@@ -2575,11 +2637,10 @@ void main() {
     'transient spend refusal resumes the same proposal on wallet refresh',
     () async {
       final txid = const TestPayjoinCodec().decodePsbt(oneInputPsbt).txid;
-      final live = sender().copyWith(
+      final live = sender(
         originalPsbt: oneInputPsbt,
-        proposalPsbt: oneInputPsbt,
-        txId: txid,
-      );
+        originalTxId: txid,
+      ).copyWith(proposalPsbt: oneInputPsbt, txId: txid);
       await local.storeSender(live);
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
@@ -2649,11 +2710,10 @@ void main() {
       failBroadcast = false;
       walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      model = sender().copyWith(
+      model = sender(
         originalPsbt: oneInputPsbt,
-        proposalPsbt: oneInputPsbt,
-        txId: const TestPayjoinCodec().decodePsbt(oneInputPsbt).txid,
-      );
+        originalTxId: psbtTxId(oneInputPsbt),
+      ).copyWith(proposalPsbt: oneInputPsbt, txId: psbtTxId(oneInputPsbt));
       when(() => transactions.watchWallet(any()))
           .thenAnswer((_) => walletEvents.stream);
       when(
@@ -2774,9 +2834,9 @@ void main() {
       await engine.resumePayjoinsOnStartup();
       blocked = false;
       when(
-        () => transactions.isTransactionVisible(
+        () => transactions.transactionsPresence(
           walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
+          transactions: any(named: 'transactions'),
           refresh: any(named: 'refresh'),
         ),
       ).thenThrow(Exception('offline'));
@@ -2789,18 +2849,15 @@ void main() {
     test(
       'observed original settles without signing the proposal again',
       () async {
+        // Distinct bodies: the pass judges each candidate separately. The
+        // proposal stays as stored so signing still sees the same PSBT.
+        model = model.copyWith(
+          originalPsbt: secondInputPsbt,
+          originalTxId: psbtTxId(secondInputPsbt),
+        );
         await local.storeSender(model);
         await engine.resumePayjoinsOnStartup();
-        when(
-          () => transactions.isTransactionVisible(
-            walletId: any(named: 'walletId'),
-            transactionId: any(named: 'transactionId'),
-            refresh: any(named: 'refresh'),
-          ),
-        ).thenAnswer(
-          (inv) async =>
-              inv.namedArguments[#transactionId] == model.originalTxId,
-        );
+        stubPresence((txid) => txid == psbtTxId(secondInputPsbt));
         blocked = false;
         await refresh();
         expect(attempts, 1);
@@ -2839,14 +2896,14 @@ void main() {
       await engine.resumePayjoinsOnStartup();
       expect(logs.withCode(PayjoinLogCode.sessionResumed), hasLength(1));
       expect(await local.fetchAll(onlyUnfinished: true), isEmpty);
-      // Two lookups in total, both from the single expiry decision.
+      // One grouped pass in total, from the single expiry decision.
       verify(
-        () => transactions.isTransactionVisible(
+        () => transactions.transactionsPresence(
           walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
+          transactions: any(named: 'transactions'),
           refresh: true,
         ),
-      ).called(2);
+      ).called(1);
       expect(attempts, 0);
       expect(broadcasts, 0);
     });
@@ -2879,15 +2936,7 @@ void main() {
         transactionId: model.txId,
       );
       await local.storeSender(model);
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer(
-        (inv) async => inv.namedArguments[#transactionId] == model.txId,
-      );
+      stubPresence((txid) => txid == model.txId);
       await engine.resumePayjoinsOnStartup();
       final row = await local.fetchSender(model.id);
       expect(row?.isCompleted, isTrue);
@@ -2899,19 +2948,11 @@ void main() {
     test('an expired session whose original is on the network aborts '
         'instead of expiring', () async {
       model = expiredSender(
-        proposalPsbt: oneInputPsbt,
-        transactionId: model.txId,
+        proposalPsbt: secondInputPsbt,
+        transactionId: psbtTxId(secondInputPsbt),
       );
       await local.storeSender(model);
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer(
-        (inv) async => inv.namedArguments[#transactionId] == model.originalTxId,
-      );
+      stubPresence((txid) => txid == psbtTxId(oneInputPsbt));
       await engine.resumePayjoinsOnStartup();
       final row = await local.fetchSender(model.id);
       expect(row?.isAborted, isTrue);
@@ -3097,12 +3138,21 @@ void main() {
         });
       }
 
-      for (final (name, observed) in [
-        ('payjoin', (PayjoinSenderModel m) => m.txId),
-        ('original', (PayjoinSenderModel m) => m.originalTxId),
+      for (final (name, observed, seen) in [
+        ('payjoin', (PayjoinSenderModel m) => m.txId, psbtTxId(oneInputPsbt)),
+        (
+          'original',
+          (PayjoinSenderModel m) => m.originalTxId,
+          psbtTxId(secondInputPsbt),
+        ),
       ]) {
         test('an observed $name whose settlement was refused is never '
             'expired, then settles', () async {
+          // Distinct bodies: the pass judges each candidate separately.
+          model = model.copyWith(
+            originalPsbt: secondInputPsbt,
+            originalTxId: psbtTxId(secondInputPsbt),
+          );
           final observedId = observed(model);
           if (observedId == null) fail('Missing fixture txid');
           await local.storeSender(model);
@@ -3113,15 +3163,7 @@ void main() {
               transactionId: any(named: 'transactionId'),
             ),
           ).thenAnswer((_) async => false);
-          when(
-            () => transactions.isTransactionVisible(
-              walletId: any(named: 'walletId'),
-              transactionId: any(named: 'transactionId'),
-              refresh: any(named: 'refresh'),
-            ),
-          ).thenAnswer(
-            (inv) async => inv.namedArguments[#transactionId] == observedId,
-          );
+          stubPresence((txid) => txid == seen);
           await refresh();
           verify(
             () => transactions.protectObservedSpend(
@@ -3129,13 +3171,7 @@ void main() {
               transactionId: observedId,
             ),
           ).called(greaterThan(0));
-          when(
-            () => transactions.isTransactionVisible(
-              walletId: any(named: 'walletId'),
-              transactionId: any(named: 'transactionId'),
-              refresh: any(named: 'refresh'),
-            ),
-          ).thenAnswer((_) async => false);
+          stubPresence((_) => false);
           await Future<void>.delayed(pastExpiry);
           await engine.resumePayjoinsOnStartup();
           expect(attempts, 1);
@@ -3149,15 +3185,7 @@ void main() {
               transactionId: any(named: 'transactionId'),
             ),
           ).thenAnswer((_) async => true);
-          when(
-            () => transactions.isTransactionVisible(
-              walletId: any(named: 'walletId'),
-              transactionId: any(named: 'transactionId'),
-              refresh: any(named: 'refresh'),
-            ),
-          ).thenAnswer(
-            (inv) async => inv.namedArguments[#transactionId] == observedId,
-          );
+          stubPresence((txid) => txid == seen);
           await engine.resumePayjoinsOnStartup();
           final row = await local.fetchSender(model.id);
           expect(row?.isExpired, isFalse);
@@ -3175,21 +3203,15 @@ void main() {
       );
       await local.storeSender(model);
       when(
-        () => transactions.isTransactionVisible(
+        () => transactions.transactionsPresence(
           walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
+          transactions: any(named: 'transactions'),
           refresh: any(named: 'refresh'),
         ),
       ).thenThrow(Exception('offline'));
       await engine.resumePayjoinsOnStartup();
       await expectReserved();
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer((_) async => false);
+      stubPresence((_) => false);
       await engine.resumePayjoinsOnStartup();
       expect(attempts, 0);
       expect(broadcasts, 0);
@@ -3252,13 +3274,7 @@ void main() {
       return retried;
     }
 
-    void onlyVisible(String txId) => when(
-      () => transactions.isTransactionVisible(
-        walletId: any(named: 'walletId'),
-        transactionId: any(named: 'transactionId'),
-        refresh: any(named: 'refresh'),
-      ),
-    ).thenAnswer((inv) async => inv.namedArguments[#transactionId] == txId);
+    void onlyVisible(String txId) => stubPresence((txid) => txid == txId);
 
     Future<PayjoinSenderModel?> completedRow(String id) async {
       final deadline = DateTime.now().add(const Duration(seconds: 5));
@@ -3361,15 +3377,7 @@ void main() {
         transactionId: any(named: 'transactionId'),
       ),
     ).thenAnswer((_) async {});
-    when(
-      () => transactions.isTransactionVisible(
-        walletId: any(named: 'walletId'),
-        transactionId: any(named: 'transactionId'),
-        refresh: any(named: 'refresh'),
-      ),
-    ).thenAnswer(
-      (inv) async => inv.namedArguments[#transactionId] == payjoinTxId,
-    );
+    stubPresence((txid) => txid == payjoinTxId);
 
     await engine.resumePayjoinsOnStartup();
 
@@ -3436,7 +3444,10 @@ void main() {
       () async {
         // The persisted row is the fresh session — e.g. after an
         // expired-sender retry swapped in a new original PSBT.
-        final fresh = sender();
+        final fresh = sender(
+          originalPsbt: oneInputPsbt,
+          originalTxId: psbtTxId(oneInputPsbt),
+        );
         await local.storeSender(fresh);
         when(
           () => blockchain.broadcastPsbt(
@@ -3561,15 +3572,7 @@ void main() {
       // The new original lands on-chain (the receiver broadcasts it, as
       // BIP78's fallback allows). The retried session must converge to
       // aborted — it can only do so if its OWN txid is being watched.
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
-          refresh: any(named: 'refresh'),
-        ),
-      ).thenAnswer(
-        (inv) async => inv.namedArguments[#transactionId] == 'retried-tx',
-      );
+      stubPresence((txid) => txid == 'retried-tx');
       walletEvents.add(null);
 
       final deadline = DateTime.now().add(const Duration(seconds: 5));
@@ -3673,9 +3676,9 @@ void main() {
         ..fillRange(5, 37, 0x22);
       final model = receiver(
         originalTransaction: original,
-        originalTransactionId: 'original-tx',
+        originalTransactionId: bodyTxId(original),
         proposalPsbt: oneInputPsbt,
-        transactionId: 'payjoin-tx',
+        transactionId: psbtTxId(oneInputPsbt),
       ).copyWith(createdAt: 0);
       await local.storeReceiver(model);
 
@@ -3692,7 +3695,7 @@ void main() {
         originalTransaction: original,
         originalTransactionId: 'original-tx',
         proposalPsbt: oneInputPsbt,
-        transactionId: 'payjoin-tx',
+        transactionId: psbtTxId(oneInputPsbt),
       ).copyWith(createdAt: 0);
       await local.storeReceiver(model);
       when(() => pdk.receiverProposalNeedsFallback(model)).thenReturn(true);
