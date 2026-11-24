@@ -46,6 +46,7 @@ export 'src/domain/exchange_write_gate.dart';
 export 'src/session/reconcile_unknown_writes_usecase.dart'
     show UnknownWriteReconciliation;
 
+export 'src/payout/payout_rail.dart';
 export 'src/recipients/domain/entities/recipient.dart';
 export 'src/recipients/domain/entities/recipient_type.dart';
 export 'src/recipients/domain/entities/recipient_details.dart';

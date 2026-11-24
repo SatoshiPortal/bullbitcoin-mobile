@@ -1,5 +1,6 @@
 import '../../../domain/catalog/jurisdiction.dart';
 import '../../../domain/entities/order.dart';
+import '../../../payout/payout_rail.dart';
 
 /// VALUE OBJECT: recipient type
 /// Value objects are immutable and defined by their attributes
@@ -36,47 +37,20 @@ enum RecipientType {
     );
   }
 
-  Jurisdiction get jurisdiction => switch (this) {
-    RecipientType.interacEmailCad ||
-    RecipientType.billPaymentCad ||
-    RecipientType.bankTransferCad => Jurisdiction.canada,
-    RecipientType.sepaEur ||
-    RecipientType.confidentialSepaEur => Jurisdiction.europe,
-    RecipientType.speiClabeMxn ||
-    RecipientType.speiSmsMxn ||
-    RecipientType.speiCardMxn => Jurisdiction.mexico,
-    RecipientType.sinpeIbanUsd ||
-    RecipientType.sinpeIbanCrc ||
-    RecipientType.sinpeMovilCrc => Jurisdiction.costaRica,
-    RecipientType.bankAccountArgentina => Jurisdiction.argentina,
-    RecipientType.pseColombia ||
-    RecipientType.nequiColombia => Jurisdiction.colombia,
-  };
+  /// The rail this type is the wire identity of.
+  PayoutRail get rail => PayoutRails.of(this);
 
-  FiatCurrency get currency => switch (this) {
-    RecipientType.interacEmailCad ||
-    RecipientType.billPaymentCad ||
-    RecipientType.bankTransferCad => FiatCurrency.cad,
-    RecipientType.sepaEur ||
-    RecipientType.confidentialSepaEur => FiatCurrency.eur,
-    RecipientType.speiClabeMxn ||
-    RecipientType.speiSmsMxn ||
-    RecipientType.speiCardMxn => FiatCurrency.mxn,
-    RecipientType.sinpeIbanUsd => FiatCurrency.usd,
-    RecipientType.sinpeIbanCrc ||
-    RecipientType.sinpeMovilCrc => FiatCurrency.crc,
-    RecipientType.bankAccountArgentina => FiatCurrency.ars,
-    RecipientType.pseColombia ||
-    RecipientType.nequiColombia => FiatCurrency.cop,
-  };
+  Jurisdiction get jurisdiction => rail.market.jurisdiction;
+
+  FiatCurrency get currency => rail.market.currency;
 
   String get currencyCode => currency.code;
 
   /// Confidential SEPA depends on the user's eligibility, so a flow must
   /// request it explicitly.
-  static List<RecipientType> get standardTypes => RecipientType.values
-      .where((type) => type != RecipientType.confidentialSepaEur)
-      .toList();
+  static List<RecipientType> get standardTypes => [
+    for (final rail in PayoutRails.standard) rail.type,
+  ];
 
   static Set<RecipientType> typesForCurrency(String currencyCode) {
     return standardTypes
