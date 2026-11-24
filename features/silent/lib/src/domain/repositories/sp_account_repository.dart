@@ -94,11 +94,11 @@ abstract interface class SpAccountRepository {
   /// Latest header-store tip seen from header progress, or null if unknown.
   int? chainTip();
 
-  /// Live chain tip read from the electrum backend. Needs a live session.
-  /// Unlike [chainTip] this does not depend on header progress, which has not
-  /// reported anything yet right after creation.
+  /// Latest block available from the live session's Blindbit server. Async: the
+  /// tip is read over HTTP, not from the account's electrum cursor, which lags
+  /// the Blindbit server the scan follows.
   @useResult
-  Result<int, SilentFailure> currentBlockHeight();
+  Future<Result<int, SilentFailure>> currentBlockHeight();
 
   /// Earliest height a scan may start from (taproot activation on mainnet, a
   /// low value on test networks). The scan start chooser uses it as its floor.

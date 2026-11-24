@@ -34,6 +34,7 @@ import 'package:silent/src/domain/usecases/get_sp_backend_defaults_usecase.dart'
 import 'package:silent/src/domain/usecases/get_sp_balance_usecase.dart';
 import 'package:silent/src/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:silent/src/domain/usecases/get_sp_network_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_scan_server_tip_usecase.dart';
 import 'package:silent/src/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/is_sp_scanning_usecase.dart';
 import 'package:silent/src/domain/usecases/is_sp_set_up_now_usecase.dart';
@@ -290,6 +291,13 @@ abstract final class SilentGraph {
     );
     locator.registerFactory<GetSpNetworkUsecase>(
       () => GetSpNetworkUsecase(repository: locator<SpAccountRepository>()),
+    );
+    // The Blindbit tip the scan follows: one bounded HTTP read, kept out of the
+    // wallet data load so no screen waits on it.
+    locator.registerFactory<GetSpScanServerTipUsecase>(
+      () => GetSpScanServerTipUsecase(
+        repository: locator<SpAccountRepository>(),
+      ),
     );
     locator.registerFactory<GetSpBalanceUsecase>(
       () => GetSpBalanceUsecase(repository: locator<SpAccountRepository>()),

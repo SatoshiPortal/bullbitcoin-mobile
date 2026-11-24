@@ -147,6 +147,10 @@ class FakeSpAccountRepository
   /// Model a live tip read that fails (no session, dead FFI).
   bool currentBlockHeightShouldFail = false;
 
+  /// When set, [currentBlockHeight] returns this future instead, so a test can
+  /// hold the read open (timeout and cancellation cases).
+  Future<Result<int, SilentFailure>>? currentBlockHeightOverride;
+
   /// How many times a live session was created (setup / reconstruct).
   int createCount = 0;
 
@@ -346,7 +350,9 @@ class FakeSpAccountRepository
   int? chainTip() => chainTipValue;
 
   @override
-  Result<int, SilentFailure> currentBlockHeight() {
+  Future<Result<int, SilentFailure>> currentBlockHeight() async {
+    final override = currentBlockHeightOverride;
+    if (override != null) return override;
     if (currentBlockHeightShouldFail) {
       return const Err(SilentUnexpected('no live session'));
     }

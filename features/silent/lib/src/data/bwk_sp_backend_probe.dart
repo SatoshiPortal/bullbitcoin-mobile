@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:primitives/primitives.dart';
 import 'package:silent/src/domain/entities/sp_backend_defaults.dart';
 import 'package:silent/src/domain/entities/sp_backend_kind.dart';
@@ -19,8 +17,15 @@ class BwkSpBackendProbe implements SpBackendProbePort {
   BwkSpBackendProbe({
     Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
-  }) : _testBlindbit = testBlindbit ?? testBlindbitUrl,
+  }) : _testBlindbit = testBlindbit ?? _probeBlindbit,
        _testElectrum = testElectrum ?? testElectrumUrl;
+
+  // A Blindbit server that answers the tip probe may still lack the scan data
+  // the wallet needs, so the scan endpoint is the one worth testing. The tip it
+  // returns is not read here.
+  static Future<void> _probeBlindbit({required String url}) async {
+    await testBlindbitScanData(url: url);
+  }
 
   @override
   Future<Result<void, SilentFailure>> testBackend(
@@ -35,10 +40,11 @@ class BwkSpBackendProbe implements SpBackendProbePort {
           await _testElectrum(url: url);
       }
       return const Ok(null);
-    } catch (e) {
-      developer.log('SP backend test failed ($kind, $url): $e', name: 'SP');
-      log.warning('SP backend test failed ($kind, $url)', error: e);
-      return Err(SilentBackendUnreachable('SP backend test failed ($url): $e'));
+    } catch (_) {
+      // Fixed text: the URL and the foreign error can carry user input and
+      // backend detail, and neither belongs in a log or a failure message.
+      log.warning('SP backend probe failed ($kind)');
+      return Err(SilentBackendUnreachable('SP backend probe failed ($kind)'));
     }
   }
 

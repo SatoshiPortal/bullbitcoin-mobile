@@ -496,7 +496,8 @@ class BwkSpAccountRepository
   }
 
   @override
-  Result<int, SilentFailure> currentBlockHeight() => _guard(_ffi.blockHeight);
+  Future<Result<int, SilentFailure>> currentBlockHeight() =>
+      _guardAsync(_ffi.blockHeight);
 
   @override
   Stream<dom.SpNotification> get notifications =>
