@@ -49,8 +49,20 @@ class _ScannerState extends State<QrScannerWidget> {
             }
           },
           resolution: widget.resolution,
+          showScannerOverlay: false,
           showGallery: true,
           tryInverted: true,
+        ),
+
+        Positioned.fill(
+          child: IgnorePointer(
+            child: Image.asset(
+              'assets/qr_viewfinder.png',
+              package: 'scanning',
+              fit: BoxFit.contain,
+              excludeFromSemantics: true,
+            ),
+          ),
         ),
 
         // UR Progress Display

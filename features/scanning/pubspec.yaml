@@ -30,6 +30,7 @@ flutter:
   generate: true
   assets:
     - assets/nfc_poll.gif
+    - assets/qr_viewfinder.png
 
 dev_dependencies:
   flutter_test:
