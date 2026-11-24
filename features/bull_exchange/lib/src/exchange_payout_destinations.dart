@@ -2,15 +2,10 @@ import 'package:address_view/payment_destination.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 
+import 'btc_network_destination.dart';
 import 'default_wallets/default_wallets_payout_fields.dart';
 
 /// Exchange forms use the same parser, scanner and viewer as Wallet and Send.
-PaymentDestinationType _destinationType(BtcNetwork type) => switch (type) {
-  BtcNetwork.bitcoin => PaymentDestinationType.bitcoin,
-  BtcNetwork.liquid => PaymentDestinationType.liquid,
-  BtcNetwork.lightning => PaymentDestinationType.lightningAddress,
-};
-
 TextInputType _keyboard(BtcNetwork type) => type == BtcNetwork.lightning
     ? TextInputType.emailAddress
     : TextInputType.text;
@@ -19,7 +14,7 @@ TextInputType _keyboard(BtcNetwork type) => type == BtcNetwork.lightning
 final DefaultWalletsPayoutFields exchangePayoutFields = (
   validate: (type, raw) async => (await const PaymentDestinations().validate(
     raw,
-    acceptedTypes: {_destinationType(type)},
+    acceptedTypes: {type.destinationType},
   ))?.address,
   buildField:
       ({
@@ -32,7 +27,7 @@ final DefaultWalletsPayoutFields exchangePayoutFields = (
       }) => PaymentDestinationField(
         value: value,
         hint: hint,
-        acceptedTypes: {_destinationType(type)},
+        acceptedTypes: {type.destinationType},
         keyboardType: _keyboard(type),
         enabled: enabled,
         onChanged: onChanged,
@@ -55,7 +50,7 @@ Widget exchangePurchasePayoutField({
   label: label,
   hint: hint,
   enabled: enabled,
-  acceptedTypes: {_destinationType(type)},
+  acceptedTypes: {type.destinationType},
   keyboardType: _keyboard(type),
   onChanged: onChanged,
   onValidated: (destination) => onValidated(destination?.address),
