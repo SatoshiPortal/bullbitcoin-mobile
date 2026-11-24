@@ -431,7 +431,7 @@ void main() {
       final refused = transitionPayin(
         _policy,
         _broadcasting,
-        const PayinSendAnswered(
+        const PayinSendAnswered<String>(
           1,
           GateAdmitted(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
         ),
