@@ -132,57 +132,36 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           ),
         ],
         const Gap(16.0),
-        switch (selectedType) {
-          // CANADA types
-          RecipientType.interacEmailCad => InteracEmailCadForm(
+        switch (selectedType.rail) {
+          InteracEmailRail() => InteracEmailCadForm(
             hookError: widget.hookError,
           ),
-          RecipientType.billPaymentCad => BillPaymentCadForm(
+          BillPaymentRail() => BillPaymentCadForm(hookError: widget.hookError),
+          BankTransferCadRail() => BankTransferCadForm(
             hookError: widget.hookError,
           ),
-          RecipientType.bankTransferCad => BankTransferCadForm(
-            hookError: widget.hookError,
-          ),
-          // EUROPE types
-          RecipientType.sepaEur => SepaEurForm(hookError: widget.hookError),
-          // MEXICO types
-          RecipientType.speiClabeMxn => SpeiClabeMxnForm(
-            hookError: widget.hookError,
-          ),
-          RecipientType.speiSmsMxn => SpeiSmsMxnForm(
-            hookError: widget.hookError,
-          ),
-          RecipientType.speiCardMxn => SpeiCardMxnForm(
-            hookError: widget.hookError,
-          ),
-          // COSTA RICA types
-          RecipientType.sinpeIbanUsd => SinpeIbanForm(
-            recipientType: RecipientType.sinpeIbanUsd,
-            hookError: widget.hookError,
-          ),
-          RecipientType.sinpeIbanCrc => SinpeIbanForm(
-            recipientType: RecipientType.sinpeIbanCrc,
-            hookError: widget.hookError,
-          ),
-          RecipientType.sinpeMovilCrc => SinpeMovilCrcForm(
-            hookError: widget.hookError,
-          ),
-          // ARGENTINA types
-          RecipientType.bankAccountArgentina => BankAccountArgentinaForm(
-            hookError: widget.hookError,
-          ),
-          // TODO: Colombia types
-          RecipientType.pseColombia => BankAccountCopForm(
-            hookError: widget.hookError,
-          ),
-          RecipientType.nequiColombia => NequiCopForm(
-            hookError: widget.hookError,
-          ),
-          RecipientType.confidentialSepaEur => SepaEurForm(
+          SepaRail() => SepaEurForm(hookError: widget.hookError),
+          ConfidentialSepaRail() => SepaEurForm(
             hookError: widget.hookError,
             isConfidential: true,
           ),
-          null => const SizedBox.shrink(),
+          SpeiClabeRail() => SpeiClabeMxnForm(hookError: widget.hookError),
+          SpeiSmsRail() => SpeiSmsMxnForm(hookError: widget.hookError),
+          SpeiCardRail() => SpeiCardMxnForm(hookError: widget.hookError),
+          SinpeIbanUsdRail() => SinpeIbanForm(
+            recipientType: RecipientType.sinpeIbanUsd,
+            hookError: widget.hookError,
+          ),
+          SinpeIbanCrcRail() => SinpeIbanForm(
+            recipientType: RecipientType.sinpeIbanCrc,
+            hookError: widget.hookError,
+          ),
+          SinpeMovilRail() => SinpeMovilCrcForm(hookError: widget.hookError),
+          ArsBankTransferRail() => BankAccountArgentinaForm(
+            hookError: widget.hookError,
+          ),
+          PseRail() => BankAccountCopForm(hookError: widget.hookError),
+          NequiRail() => NequiCopForm(hookError: widget.hookError),
         },
       ],
     );

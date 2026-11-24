@@ -55,8 +55,11 @@ class _RecipientSelectionScreenState extends State<RecipientSelectionScreen> {
     if (_hasPopped || !mounted) return;
     final selection = _toSelection(recipient);
     if (widget.returnsSelection) {
-      if (!widget.types.contains(recipient.type) ||
-          (widget.isOwner != null && recipient.isOwner != widget.isOwner)) {
+      final filter = RecipientFilterCriteria(
+        isOwner: widget.isOwner,
+        types: widget.types,
+      ).filter;
+      if (filter.choose(recipient.recipient) == null) {
         setState(() {
           if (isNew) {
             _newSelectionFailure = const RecipientsSavedButNotSelectedFailure();
