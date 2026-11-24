@@ -34,18 +34,16 @@ class SpScanScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: BlocConsumer<SpCubit, SpState>(
-          listenWhen: (previous, current) =>
-              previous.isScanning &&
-              !current.isScanning &&
-              current.scanLastDurationSecs != null &&
-              current.error == null,
-          listener: (context, state) =>
-              unawaited(Navigator.of(context).maybePop()),
+        child: BlocBuilder<SpCubit, SpState>(
           builder: (context, state) {
-            if (state.isScanning) return const _ScanningView();
-            if (state.error != null) {
-              return _ErrorView(message: state.error!.toTranslated(context));
+            if (state.isScanning) return _ScanningView(state: state);
+            if (state.error case final error?) {
+              return _ErrorView(
+                message: error.toTranslated(context),
+                retry: state.minBirthdayHeight == null
+                    ? context.read<SpCubit>().load
+                    : context.read<SpCubit>().retryScan,
+              );
             }
             // Caught up states both facts in its own message, so it needs no
             // strip above it. The other views say nothing about whether
@@ -60,15 +58,13 @@ class SpScanScreen extends StatelessWidget {
             return Column(
               children: [
                 _AutoScanStatus(isEnabled: state.isAutoScanEnabled),
-                if (state.isBlindbitBehind)
+                if (state.blindbitLag case final lag? when lag.isBehind)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: SpBlindbitBehindCard(
-                      blocksBehind: state.blindbitLag!.blocksBehind,
-                    ),
+                    child: SpBlindbitBehindCard(blocksBehind: lag.blocksBehind),
                   ),
                 Expanded(
-                  child: state.hasScannedBefore
+                  child: state.hasScannedBefore || state.hasPendingScan
                       ? _ResumeView(state: state)
                       : _FirstScanView(state: state),
                 ),
@@ -82,19 +78,25 @@ class SpScanScreen extends StatelessWidget {
 }
 
 class _ScanningView extends StatelessWidget {
-  const _ScanningView();
+  const _ScanningView({required this.state});
+  final SpState state;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          child: Center(
-            child: BlocBuilder<SpCubit, SpState>(
-              builder: (context, state) => _ScanProgressCard(state: state),
+          child: Center(child: _ScanProgressCard(state: state)),
+        ),
+        if (state.error case final error?)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              error.toTranslated(context),
+              style: context.bullType.body.copyWith(color: context.bull.error),
+              textAlign: TextAlign.center,
             ),
           ),
-        ),
         _BottomAction(
           label: context.silentLoc.silentScanStopButton,
           onPressed: () => unawaited(context.read<SpCubit>().stopScan()),
@@ -105,8 +107,9 @@ class _ScanningView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message});
+  const _ErrorView({required this.message, required this.retry});
   final String message;
+  final VoidCallback retry;
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +136,7 @@ class _ErrorView extends StatelessWidget {
             ),
           ),
         ),
-        _BottomAction(
-          label: context.silentLoc.retry,
-          onPressed: () => context.read<SpCubit>().scan(),
-        ),
+        _BottomAction(label: context.silentLoc.retry, onPressed: retry),
       ],
     );
   }
@@ -226,26 +226,31 @@ class _ResumeView extends StatelessWidget {
                 Icon(Icons.search, color: context.bull.primary, size: 72),
                 const Gap(24),
                 Text(
-                  context.silentLoc.silentScanBlocksBehind(gap),
+                  state.hasPendingScan
+                      ? context.silentLoc.silentScanResumeInterrupted
+                      : state.isChainTipReliable
+                      ? context.silentLoc.silentScanBlocksBehind(gap)
+                      : context.silentLoc.silentWalletScanUnknown,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const Gap(4),
-                Text(
-                  context.silentLoc.silentScanApproxDuration(
-                    blocksToApproxDuration(
-                      context.silentLoc,
-                      gap,
-                      blocksPerDay: SpConfig.blocksPerDay,
+                if (!state.hasPendingScan && state.isChainTipReliable)
+                  Text(
+                    context.silentLoc.silentScanApproxDuration(
+                      blocksToApproxDuration(
+                        context.silentLoc,
+                        gap,
+                        blocksPerDay: SpConfig.blocksPerDay,
+                      ),
                     ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.bull.textMuted),
+                    textAlign: TextAlign.center,
                   ),
-                  style: context.bullType.label
-                      .copyWith(fontWeight: FontWeight.w400)
-                      .copyWith(color: context.bull.textMuted),
-                  textAlign: TextAlign.center,
-                ),
                 if (state.scanLastDurationSecs != null) ...[
                   const Gap(8),
                   Text(
@@ -265,7 +270,9 @@ class _ResumeView extends StatelessWidget {
           ),
         ),
         _BottomAction(
-          label: context.silentLoc.silentScanStartButton,
+          label: state.hasPendingScan
+              ? context.silentLoc.silentScanResumeButton
+              : context.silentLoc.silentScanStartButton,
           onPressed: () => context.read<SpCubit>().scan(),
         ),
       ],
@@ -273,42 +280,50 @@ class _ResumeView extends StatelessWidget {
   }
 }
 
-/// First-ever scan. When the chain bounds are known, offer the start-height
-/// chooser; otherwise fall back to a plain start from the birthday height.
-class _FirstScanView extends StatelessWidget {
+class _FirstScanView extends StatefulWidget {
   const _FirstScanView({required this.state});
   final SpState state;
 
   @override
+  State<_FirstScanView> createState() => _FirstScanViewState();
+}
+
+class _FirstScanViewState extends State<_FirstScanView> {
+  late Future<int?> _tip = context.read<SpCubit>().scanServerTip();
+
+  @override
   Widget build(BuildContext context) {
-    final min = state.minBirthdayHeight;
-    final tip = state.chainTip;
-    if (min != null && tip != null && tip > min) {
+    final min = widget.state.minBirthdayHeight;
+    if (min == null) return const Center(child: CircularProgressIndicator());
+    final tip = widget.state.chainTip;
+    if (widget.state.isChainTipReliable && tip != null && tip >= min) {
       return _ScanStartChooser(
         minBirthday: min,
         tip: tip,
         onStart: (h) => context.read<SpCubit>().scan(startHeight: h),
       );
     }
-    return Column(
-      children: [
-        Expanded(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                context.silentLoc.silentScanReadyMessage,
-                style: context.bullType.body,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        ),
-        _BottomAction(
-          label: context.silentLoc.silentScanStartButton,
-          onPressed: () => context.read<SpCubit>().scan(),
-        ),
-      ],
+    return FutureBuilder<int?>(
+      future: _tip,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final tip = snapshot.data;
+        if (tip != null && tip >= min) {
+          return _ScanStartChooser(
+            minBirthday: min,
+            tip: tip,
+            onStart: (h) => context.read<SpCubit>().scan(startHeight: h),
+          );
+        }
+        return _ErrorView(
+          message: context.silentLoc.silentScanTipUnavailable,
+          retry: () => setState(() {
+            _tip = context.read<SpCubit>().scanServerTip();
+          }),
+        );
+      },
     );
   }
 }
@@ -381,7 +396,9 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                   max: widget.tip.toDouble(),
                   activeColor: context.bull.secondary,
                   inactiveColor: context.bull.surfaceContainer,
-                  onChanged: (v) => _setHeight(v.round()),
+                  onChanged: widget.minBirthday == widget.tip
+                      ? null
+                      : (v) => _setHeight(v.round()),
                 ),
                 Wrap(
                   spacing: 8,

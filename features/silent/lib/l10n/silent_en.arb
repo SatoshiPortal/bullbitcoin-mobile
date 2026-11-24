@@ -233,7 +233,7 @@
   "@silentReceiveManualScanRequired": {
     "description": "Silent Payments: reusable address manual scan notice title"
   },
-  "silentReceiveReusableInfo": "This address is reusable. Funds arrive after you tap Scan.",
+  "silentReceiveReusableInfo": "This address is reusable. Incoming payments appear after they confirm and are scanned.",
   "@silentReceiveReusableInfo": {
     "description": "Silent Payments: reusable address info"
   },
@@ -573,7 +573,23 @@
   "@silentSaveBackendConfigTitle": {
     "description": "Silent Payments: save backend config dialog title"
   },
-  "silentSaveBackendConfigContent": "The Silent Payments wallet will be recreated with the selected server settings.",
+  "silentSaveBackendConfigContent": "The wallet will reconnect using the selected servers. Scan progress and receive addresses are kept.",
+  "silentMinScanAmount": "Minimum scan amount",
+  "silentMinScanAmountValue": "{amount} sats",
+  "@silentMinScanAmountValue": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "silentMinScanAmountTradeoff": "Lower amounts include smaller payments but can slow scanning. A higher minimum may miss payments below it.",
+  "silentMinScanAmountRescan": "To look for earlier payments at a lower minimum, clear scan state and scan from before those payments.",
+  "silentScanTipUnavailable": "Couldn’t get the latest block from the scan server.",
+  "silentScanResumeInterrupted": "Scan unfinished",
+  "silentScanResumeButton": "Resume scan",
+  "silentWalletScanUpToDate": "Scan up to date",
+  "silentWalletScanBehind": "Scan behind",
+  "silentWalletScanRequired": "Scan needed",
+  "silentWalletScanUnknown": "Scan status unknown",
   "@silentSaveBackendConfigContent": {
     "description": "Silent Payments: save backend config dialog content"
   },

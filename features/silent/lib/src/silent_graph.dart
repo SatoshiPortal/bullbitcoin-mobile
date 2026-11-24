@@ -440,6 +440,7 @@ abstract final class SilentGraph {
   static void _registerPresentation(GetIt locator) {
     locator.registerFactory<SpCubit>(
       () => SpCubit(
+        getScanServerTip: locator<GetSpScanServerTipUsecase>(),
         loadSpWalletDataUsecase: locator<LoadSpWalletDataUsecase>(),
         restampSpPaymentTimesUsecase: locator<RestampSpPaymentTimesUsecase>(),
         spNotificationsWatcher: locator<SpNotificationsWatcher>(),
