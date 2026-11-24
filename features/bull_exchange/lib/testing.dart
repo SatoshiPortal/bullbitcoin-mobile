@@ -39,12 +39,6 @@ export 'src/settings/ui/screens/security_navigation.dart'
 export 'src/settings/ui/widgets/not_logged_in_bottom_sheet.dart'
     show NotLoggedInBottomSheet;
 
-export 'src/dca/domain/dca_failure.dart';
-export 'src/dca/domain/usecases/get_dca_default_wallets_usecase.dart';
-export 'src/dca/domain/usecases/set_dca_usecase.dart';
-export 'src/dca/domain/usecases/start_dca_usecase.dart';
-export 'src/dca/presentation/dca_bloc.dart';
-export 'src/dca/ui/screens/dca_success_screen.dart';
 export 'src/exchange_payout_wallets.dart' show ExchangePayoutWallets;
 
 export 'src/limit_orders/domain/entities/limit_order_amount_limits.dart';
