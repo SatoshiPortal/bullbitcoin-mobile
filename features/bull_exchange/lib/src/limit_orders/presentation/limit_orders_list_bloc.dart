@@ -46,11 +46,10 @@ LimitOrdersListCalls limitOrdersListCallsOf(
 class LimitOrdersListBloc
     extends Bloc<LimitOrdersListEvent, LimitOrdersListState> {
   LimitOrdersListBloc({
-    required LimitOrdersListCalls calls,
+    required this._calls,
     required Stream<Result<NotificationMessage, ExchangeFailure>> notifications,
     Stream<void>? refreshRequests,
-  }) : _calls = calls,
-       super(limitOrdersListStart.state) {
+  }) : super(limitOrdersListStart.state) {
     on<LimitOrdersListEvent>(_onEvent, transformer: sequential());
     _notifications = notifications
         .where(

@@ -27,6 +27,7 @@ import 'domain/entities/announcement.dart';
 import 'domain/entities/btc_network.dart';
 import 'domain/entities/confidential_sepa_availability.dart';
 import 'domain/entities/default_wallet.dart';
+import 'domain/entities/limit_order.dart';
 import 'domain/entities/notification_message.dart';
 import 'domain/entities/order_stats.dart';
 import 'domain/entities/support_chat_message.dart';

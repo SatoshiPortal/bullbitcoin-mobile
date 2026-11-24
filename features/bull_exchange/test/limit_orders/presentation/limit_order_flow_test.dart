@@ -2,7 +2,6 @@ import 'package:bull_exchange/src/limit_orders/presentation/limit_order_flow.dar
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart';
 
 import '../limit_order_fixtures.dart';
 

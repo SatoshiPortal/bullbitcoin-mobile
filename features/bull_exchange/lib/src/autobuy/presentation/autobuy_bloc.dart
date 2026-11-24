@@ -147,13 +147,11 @@ class AutoBuyFlowBloc extends Bloc<AutoBuyFlowEvent, AutoBuyFlowState> {
 /// shows the summary.
 class AutoBuySwitchBloc extends Bloc<AutoBuySwitchEvent, AutoBuySwitchState> {
   AutoBuySwitchBloc({
-    required AutoBuyCalls? calls,
+    required this._calls,
     required bool active,
     required bool restricted,
-    required Future<void> Function() onAccountChanged,
-  }) : _calls = calls,
-       _onAccountChanged = onAccountChanged,
-       super(autoBuySwitchStart(active: active, restricted: restricted).state) {
+    required this._onAccountChanged,
+  }) : super(autoBuySwitchStart(active: active, restricted: restricted).state) {
     on<AutoBuySwitchEvent>(_onEvent, transformer: sequential());
   }
 

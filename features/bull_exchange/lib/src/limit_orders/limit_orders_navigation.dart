@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meta/meta.dart';
 
 abstract final class LimitOrdersNavigation {
   static const root = '/limit-orders';

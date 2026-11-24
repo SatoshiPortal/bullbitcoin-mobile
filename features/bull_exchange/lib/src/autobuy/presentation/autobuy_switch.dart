@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart' show WriteGateRefusal;
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 
@@ -234,16 +235,16 @@ AutoBuySwitchNext transitionAutoBuySwitch(
     SwitchDeactivatePressed() || SwitchRetryPressed() || SwitchConfirmChanged(),
   ) =>
     StepNext.stay(state),
-  (SwitchDeactivating(:final confirm), SwitchConfirmChanged(:final event)) =>
+  (final SwitchDeactivating deactivating, SwitchConfirmChanged(:final event)) =>
     _stepped(
-      state,
-      transitionServerConfirm(autoBuyWritePolicy, confirm, event),
+      deactivating,
+      transitionServerConfirm(autoBuyWritePolicy, deactivating.confirm, event),
     ),
-  (SwitchDeactivating(:final confirm), SwitchRetryPressed()) => _stepped(
-    state,
+  (final SwitchDeactivating deactivating, SwitchRetryPressed()) => _stepped(
+    deactivating,
     transitionServerConfirm(
       autoBuyWritePolicy,
-      confirm,
+      deactivating.confirm,
       const ConfirmRetryPressed(),
     ),
   ),
