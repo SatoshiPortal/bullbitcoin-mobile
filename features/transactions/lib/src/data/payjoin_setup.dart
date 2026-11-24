@@ -51,6 +51,19 @@ void mountPayjoin(GetIt locator, {bool startRecovery = true}) {
 
   final runtime = RecoverablePayjoin(() async {
     final profile = await captureProfile();
+    // One engine serves the ordinary and the targeted pass of every session.
+    // It is built on the first pass, so a Payjoin open that never syncs does
+    // not resolve the native writer; every call resolves its descriptor from
+    // the catalog.
+    ForegroundWalletSynchronization? openedWalletSync;
+    ForegroundWalletSynchronization walletSync() =>
+        openedWalletSync ??= ForegroundWalletSynchronization(
+          locator<ElectrumSync>(),
+          native: locator<WalletNativeRuntime>(),
+        );
+    Future<Result<PublicWalletDescriptor, SyncFailure>> descriptorOf(
+      WalletKey key,
+    ) async => locator<WalletCatalogPort>().find(key);
     return openPayjoin(
       regtestHostProfile: profile,
       isCurrent: isCurrent,
@@ -95,13 +108,16 @@ void mountPayjoin(GetIt locator, {bool startRecovery = true}) {
       transactions: AppPayjoinTransactionAdapter(
         locator<SecretsInventory>(),
         locator<Transactions>(),
-        locator<WalletConnectionPort>(),
-        synchronize: (key) async =>
-            switch (await locator<WalletCatalogPort>().find(key)) {
-              Ok(:final value) => ForegroundWalletSynchronization(
-                locator<ElectrumSync>(),
-                native: locator<WalletNativeRuntime>(),
-              ).execute(value),
+        synchronize: (key) async => switch (await descriptorOf(key)) {
+          Ok(:final value) => walletSync().execute(value),
+          Err(:final failure) => Err(failure),
+        },
+        synchronizeTargeted: (key, targets) async =>
+            switch (await descriptorOf(key)) {
+              Ok(:final value) => walletSync().executeTargeted(
+                value,
+                targets: targets,
+              ),
               Err(:final failure) => Err(failure),
             },
         finished: locator<ElectrumSync>().finished.map((event) => event.key),
