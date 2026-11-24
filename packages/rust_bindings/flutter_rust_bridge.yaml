@@ -1,4 +1,4 @@
-rust_input: crate::api, bbqr::continuous_join, bbqr::encode, bbqr::file_type, bbqr::join, bbqr::qr, bbqr::split, bitbox::api, dart_bbqr::api, boltz::api, lwk::api, dart_bwk::api
+rust_input: crate::api, bbqr::continuous_join, bbqr::encode, bbqr::file_type, bbqr::join, bbqr::qr, bbqr::split, bitbox::api, dart_bbqr::api, boltz::api, lwk::api, dart_bwk::api, dart_bip138::api
 rust_root: rust/
 dart_output: lib/src/rust
 dart_entrypoint_class_name: BullSdk

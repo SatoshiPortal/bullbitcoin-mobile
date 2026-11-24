@@ -2,14 +2,14 @@ import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
     as core;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:meta/meta.dart';
 
 /// Adds the Exchange-order check the core use case cannot make: the swap
 /// feature owns pending orders, and a wallet with one in flight must not go.
 class DeleteWalletUsecase {
   final core.DeleteWalletUsecase _deleteWallet;
-  final SwapFacade _swapFacade;
+  final OrderSwaps _swapFacade;
 
   const DeleteWalletUsecase(this._deleteWallet, this._swapFacade);
 

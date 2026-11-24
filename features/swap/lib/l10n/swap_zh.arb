@@ -1,0 +1,163 @@
+{
+  "@@locale": "zh",
+  "save": "Save",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "swapServerBusyError": "请先完成进行中的兑换，再更换兑换服务器。",
+  "addressLabel": "地址: ",
+  "amountRequestedLabel": "要求的数额:{amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "禁用后，对于因费用过高而被阻止的 Auto Swap，您可以选择允许执行",
+  "autoswapAlwaysBlockInfoEnabled": "启用后，费用超过设定上限的 Auto Swap 将始终被阻止",
+  "autoswapAlwaysBlockLabel": "Always Block High Fees",
+  "autoswapBaseBalanceInfoText": "在自动换币后，您的即时支付钱包余额将恢复到该目标余额。",
+  "autoswapEnableToggleLabel": "启用 Auto Swap",
+  "autoswapLoadSettingsError": "未能装上汽车交换场",
+  "autoswapMaxBalanceLabel": "最大即时钱包余额",
+  "autoswapMaxFeeInfoText": "如果 Swap 总费用高于设定的百分比，Auto Swap 将被阻止",
+  "autoswapMaxFeeLabel": "最高 Swap 费用",
+  "autoswapMaximumBalanceLabel": "最大即时钱包余额",
+  "autoswapMaximumFeeError": "最高限额为{threshold}%",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "最低平衡门槛值为{amount}BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "最低平衡门槛值为{amount}克拉",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "选择接收转账资金的比特币钱包（必选）",
+  "autoswapRecipientWalletLabel": "Recipient Wallet",
+  "autoswapRecipientWalletPlaceholder": "选择一个比特币钱包",
+  "autoswapRecipientWalletPlaceholderRequired": "选择一个比特币钱包 *",
+  "autoswapRecipientWalletRequired": "* E/CN.6/2009/1",
+  "autoswapSaveButton": "Save",
+  "autoswapSelectWalletError": "请选择一个接驳墙",
+  "autoswapSettingsTitle": "Auto Swap 设置",
+  "autoswapTargetBalanceLabel": "目标即时钱包余额",
+  "autoswapTriggerAtBalanceInfoText": "当您的余额超过此最大余额时，自动换币将触发。",
+  "autoswapTriggerBalanceError": "最大余额必须至少为目标余额的两倍。",
+  "autoswapUpdateSettingsError": "未能更新汽车互换环境",
+  "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
+  "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
+  "closeDialogButton": "近距离",
+  "coinsKeychainChange": "找零",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "接收",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "整合钱包",
+  "coreScreensAmountLabel": "数额",
+  "coreScreensConfirmButton": "执 行",
+  "coreScreensExternalTransfer": "外部 Swap",
+  "coreScreensFeeDeductionExplanation": "这是从发出的款项中扣除的总费用",
+  "coreScreensFeePriorityLabel": "妇女优先",
+  "coreScreensFromLabel": "摘自",
+  "coreScreensInternalTransfer": "内部 Swap",
+  "coreScreensNetworkFeesLabel": "网络费",
+  "coreScreensReceiveAmountLabel": "收款情况",
+  "coreScreensReceiveNetworkFeeLabel": "接待网",
+  "coreScreensSendAmountLabel": "数额",
+  "coreScreensSendNetworkFeeLabel": "Send Network Fee",
+  "coreScreensServerNetworkFeesLabel": "服务器网",
+  "coreScreensToLabel": "致",
+  "coreScreensTransferFeeLabel": "Swap 费用",
+  "coreScreensTransferIdLabel": "Swap ID",
+  "doneButton": "Done",
+  "globalDefaultBitcoinWalletLabel": "安保",
+  "globalDefaultLiquidWalletLabel": "经常付款",
+  "payNetworkError": "网络错误。 请再次审判",
+  "receiveNote": "说明",
+  "selectAmountTitle": "选择性数额",
+  "sendAdvancedOptions": "A. 先进选择",
+  "sendDone": "Done",
+  "sendErrorBuildFailed": "无法准备此支付。请重试。",
+  "sendErrorSwapCreationFailed": "未能制造 s.",
+  "sendFastFee": "快速",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "替换",
+  "sendSelectCoinsManually": "手工选编",
+  "sendSelectedUtxosInsufficient": "部分税项不包括所需数额",
+  "sendSelfTransfer": "自转账",
+  "swapAmountLabel": "数额",
+  "swapAmountPlaceholder": "页: 1",
+  "swapAvailableBalance": "可用余额",
+  "swapConfirmTransferTitle": "确认 Swap",
+  "swapContinueButton": "继续",
+  "swapDoNotUninstallWarning": "在 Swap 完成之前，请勿卸载应用！",
+  "swapErrorAmountAboveMaximum": "数额超过最高点数:{max}克拉",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "数额低于最低兑换额:{min}克拉",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "输入外部钱包地址",
+  "swapExternalTransferLabel": "外部 Swap",
+  "swapFromLabel": "摘自",
+  "swapGoHomeButton": "Go home",
+  "swapInfoDescription": "在您的钱包之间无缝 Swap Bitcoin。仅将资金保留在即时支付钱包中用于日常支出。",
+  "swapInsufficientFunds": "资金不足",
+  "swapInternalTransferTitle": "内部 Swap",
+  "swapMaxButton": "最大",
+  "swapReceiveExactAmountLabel": "收到确切数额",
+  "swapSubtractFeesLabel": "数额减去费用",
+  "swapToLabel": "致",
+  "swapTotalFees": "总费用 ",
+  "swapTransferCompletedMessage": "哇，您等到了！Swap 已成功完成。",
+  "swapTransferCompletedTitle": "Swap 已完成",
+  "swapTransferPendingMessage": "Swap 正在进行中。Bitcoin 交易可能需要一些时间才能确认。您可以返回主页等待。",
+  "swapTransferPendingTitle": "Swap 待处理",
+  "swapTransferRefundInProgressMessage": "Swap 出现错误。您的退款正在处理中。",
+  "swapTransferRefundInProgressTitle": "Swap 退款处理中",
+  "swapTransferRefundedMessage": "Swap 已成功退款。",
+  "swapTransferRefundedTitle": "Swap 已退款",
+  "swapTransferTitle": "Swap",
+  "swapUnderReviewDescription": "此 Swap 需要人工审核。请联系客服获取帮助。如果您没有客服账户，只需创建一个即可，无需 KYC。",
+  "swapUnderReviewSupportMessage": "Swap 审核中\n订单 ID：{orderId}\n请求 ID：{requestId}\n订单号：{orderNumber}",
+  "swapUnderReviewTitle": "Swap 审核中",
+  "swapValidationSelectFromWallet": "请选择 Swap 的来源钱包",
+  "swapValidationSelectToWallet": "请选择 Swap 的目标钱包",
+  "transactionNetworkBitcoin": "页: 1",
+  "transactionNetworkLightning": "照明",
+  "transactionNetworkLiquid": "流动资金",
+  "transactionStatusSwapExpired": "页: 1",
+  "transactionStatusSwapFailed": "Swap Failed",
+  "transactionSwapDescChainExpired": "此 Swap 已过期。您的资金将自动退回到您的钱包。",
+  "transactionSwapDescChainFailed": "您的 Swap 出现问题。如果资金在 24 小时内未退回，请联系客服。",
+  "transactionSwapOpenWithin24h": "请在 24 小时内打开应用以完成您的 Swap。",
+  "typeLabel": "类型: ",
+  "walletLoadFailed": "无法加载您的钱包。请检查网络连接后重试。"
+}

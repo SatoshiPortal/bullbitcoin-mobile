@@ -34,12 +34,14 @@ class LabeledInputFrame extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BullText(
-          label,
-          style: context.bullType.label.copyWith(
-            fontWeight: FontWeight.w700,
-            color: colors.text,
-            letterSpacing: 0,
+        ExcludeSemantics(
+          child: BullText(
+            label,
+            style: context.bullType.label.copyWith(
+              fontWeight: FontWeight.w700,
+              color: colors.text,
+              letterSpacing: 0,
+            ),
           ),
         ),
         const Gap(8),

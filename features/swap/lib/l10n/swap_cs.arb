@@ -1,0 +1,438 @@
+{
+  "@@locale": "cs",
+  "save": "Čeština",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressLabel": "Adresa: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Požadovaná částka: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Když je vypnuto, budete mít možnost povolit automatický swap, který je zablokován kvůli vysokým poplatkům",
+  "@autoswapAlwaysBlockInfoDisabled": {
+    "description": "Help text when always block is disabled"
+  },
+  "autoswapAlwaysBlockInfoEnabled": "Když je zapnuto, automatické swapy s poplatky nad nastaveným limitem budou vždy zablokovány",
+  "@autoswapAlwaysBlockInfoEnabled": {
+    "description": "Help text when always block is enabled"
+  },
+  "autoswapAlwaysBlockLabel": "Vždy blokovat vysoké poplatky",
+  "@autoswapAlwaysBlockLabel": {
+    "description": "Label for toggle to always block high fee transfers"
+  },
+  "autoswapBaseBalanceInfoText": "Po autoswapu se vrátí vaše okamžitý zůstatek platební peněženky.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapEnableToggleLabel": "Povolit automatický swap",
+  "@autoswapEnableToggleLabel": {
+    "description": "Label for the main toggle switch to enable/disable auto transfer feature"
+  },
+  "autoswapLoadSettingsError": "Přetížené nastavení automatického swapu",
+  "@autoswapLoadSettingsError": {
+    "description": "Error message when loading settings fails"
+  },
+  "autoswapMaxBalanceLabel": "Max Instant Peněženka Balance",
+  "@autoswapMaxBalanceLabel": {
+    "description": "Label for amount threshold input field"
+  },
+  "autoswapMaxFeeInfoText": "Pokud celkový poplatek za swap překročí nastavené procento, automatický swap bude zablokován",
+  "@autoswapMaxFeeInfoText": {
+    "description": "Help text explaining how the max fee threshold works"
+  },
+  "autoswapMaxFeeLabel": "Max. poplatek za swap",
+  "@autoswapMaxFeeLabel": {
+    "description": "Label for fee threshold percentage input field"
+  },
+  "autoswapMaximumBalanceLabel": "Maximální zůstatek okamžité peněženky",
+  "autoswapMaximumFeeError": "Maximální prahová hodnota je {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "description": "Validation error shown when fee threshold exceeds maximum",
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Minimální prahová hodnota je {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Minimální prahová hodnota je {amount} sedí",
+  "@autoswapMinimumThresholdErrorSats": {
+    "description": "Validation error shown when amount threshold is below minimum (sats display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Vyberte, která Bitcoin peněženka obdrží převedené prostředky (vyžadováno)",
+  "@autoswapRecipientWalletInfoText": {
+    "description": "Help text explaining wallet selection"
+  },
+  "autoswapRecipientWalletLabel": "Pomocné Bitcoin Peněženka",
+  "@autoswapRecipientWalletLabel": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "autoswapRecipientWalletPlaceholder": "Vyberte peněženku Bitcoin",
+  "@autoswapRecipientWalletPlaceholder": {
+    "description": "Dropdown placeholder text when no wallet is selected"
+  },
+  "autoswapRecipientWalletPlaceholderRequired": "Vyberte peněženku Bitcoin *",
+  "@autoswapRecipientWalletPlaceholderRequired": {
+    "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+  },
+  "autoswapRecipientWalletRequired": "*",
+  "@autoswapRecipientWalletRequired": {
+    "description": "Required field indicator asterisk"
+  },
+  "autoswapSaveButton": "Čeština",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "autoswapSelectWalletError": "Vyberte příjemce Bitcoin peněženku",
+  "@autoswapSelectWalletError": {
+    "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+  },
+  "autoswapSettingsTitle": "Nastavení automatického swapu",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "autoswapTargetBalanceLabel": "Cílový zůstatek okamžité peněženky",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap spustí, když vaše zůstatek přesahuje tuto maximální rovnováhu.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
+  "autoswapTriggerBalanceError": "Maximální zůstatek musí být nejméně 2x cílová rovnováha",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
+  },
+  "autoswapUpdateSettingsError": "Vypnuto aktualizovat nastavení automatického swapu",
+  "@autoswapUpdateSettingsError": {
+    "description": "Error message when updating settings fails"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
+  "closeDialogButton": "Zavřít",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "coinsKeychainChange": "Výdaj",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Příjem",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Konsolidovat peněženku",
+  "coreScreensAmountLabel": "Množství",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensConfirmButton": "Potvrdit",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "coreScreensExternalTransfer": "Externí swap",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensFeeDeductionExplanation": "To je celkový poplatek odečtený z výše uvedené částky",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensFeePriorityLabel": "Prioritní priority",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensFromLabel": "Odhlásit se",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensInternalTransfer": "Interní swap",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensNetworkFeesLabel": "Síťové poplatky",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensReceiveAmountLabel": "Přijmout částku",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Obdržet Síťový poplatek",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensSendAmountLabel": "Odeslat částku",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Odeslat Síťový poplatek",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Server Síťové poplatky",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensToLabel": "V",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensTransferFeeLabel": "Poplatek za swap",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensTransferIdLabel": "ID swapu",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "doneButton": "Čeština",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bezpečné Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Okamžité platby",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "payNetworkError": "Chyba sítě. Prosím, zkuste to znovu",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveNote": "Poznámka",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "Vyberte částku",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "sendAdvancedOptions": "Pokročilé možnosti",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendDone": "Čeština",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorBuildFailed": "Tuto platbu nebylo možné připravit. Zkuste to prosím znovu.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendFastFee": "Rychlý",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Nahradit aktivovaný",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "Vyberte mince ručně",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "Vybrané utxos nepokrývá požadovaná částka",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendSelfTransfer": "Vlastní převod",
+  "swapAmountLabel": "Množství",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapAmountPlaceholder": "V",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapAvailableBalance": "Dostupné vyvážení",
+  "@swapAvailableBalance": {
+    "description": "Available balance label"
+  },
+  "swapConfirmTransferTitle": "Potvrdit swap",
+  "@swapConfirmTransferTitle": {
+    "description": "AppBar title on the confirmation page"
+  },
+  "swapContinueButton": "Pokračovat",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapDoNotUninstallWarning": "Neodinstalovávejte aplikaci, dokud se swap nedokončí!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
+  "swapErrorAmountAboveMaximum": "Množství překračuje maximální vyměnitelnou částku: {max} sedí",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Množství je pod minimálním množstvím swapu: {min} seděly",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Zadejte externí peněženku adresu",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapExternalTransferLabel": "Externí swap",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "Odhlásit se",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapGoHomeButton": "Přejděte domů",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapInfoDescription": "Swapujte Bitcoin snadno mezi svými peněženkami. Pro každodenní výdaje držte prostředky pouze v peněžence pro okamžité platby.",
+  "@swapInfoDescription": {
+    "description": "Information banner text on amount page"
+  },
+  "swapInsufficientFunds": "Nedostatek prostředků",
+  "swapInternalTransferTitle": "Interní swap",
+  "@swapInternalTransferTitle": {
+    "description": "AppBar title on the amount entry page"
+  },
+  "swapMaxButton": "ČEŠTINA",
+  "@swapMaxButton": {
+    "description": "Button to use maximum available balance"
+  },
+  "swapReceiveExactAmountLabel": "Získejte přesné množství",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Poplatky za odečtení z částky",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapToLabel": "V",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapTotalFees": "Celkové poplatky ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapTransferCompletedMessage": "Skvělé, počkali jste! Swap byl úspěšně dokončen.",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferCompletedTitle": "Swap dokončen",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferPendingMessage": "Swap probíhá. Potvrzení bitcoinových transakcí může chvíli trvat. Můžete se vrátit na domovskou obrazovku a počkat.",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferPendingTitle": "Swap čeká na zpracování",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferRefundInProgressMessage": "Při swapu došlo k chybě. Probíhá vrácení vašich prostředků.",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundInProgressTitle": "Probíhá vrácení swapu",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundedMessage": "Swap byl úspěšně vrácen.",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapTransferRefundedTitle": "Swap vrácen",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferTitle": "Swap",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapUnderReviewDescription": "Tento swap vyžaduje ruční kontrolu. Obraťte se na podporu. Pokud nemáte účet podpory, stačí si jej vytvořit; KYC není vyžadováno.",
+  "swapUnderReviewSupportMessage": "Swap je v kontrole\nID objednávky: {orderId}\nID požadavku: {requestId}\nČíslo objednávky: {orderNumber}",
+  "swapUnderReviewTitle": "Swap je v kontrole",
+  "swapValidationSelectFromWallet": "Vyberte prosím peněženku, ze které se má swap provést",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Vyberte prosím peněženku, do které se má swap provést",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "transactionNetworkBitcoin": "Čeština",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLightning": "Blesk",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkLiquid": "Čeština",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionStatusSwapExpired": "Swap vypršel",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusSwapFailed": "Swap selhal.",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescChainExpired": "Platnost tohoto swapu vypršela. Vaše prostředky budou automaticky vráceny do vaší peněženky.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainFailed": "U vašeho swapu došlo k problému. Pokud vám prostředky nebudou vráceny do 24 hodin, kontaktujte podporu.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
+  "typeLabel": "Typ: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "walletLoadFailed": "Vaše peněženky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+}

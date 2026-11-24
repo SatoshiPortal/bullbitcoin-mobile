@@ -1,8 +1,9 @@
-import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
+import 'package:primitives/primitives.dart' show Ok;
+import 'package:transactions/testing.dart';
 import 'package:primitives/primitives.dart' show LiquidNetwork;
 import 'package:sync/sync.dart' show WalletKey, LiquidCoin;
 import 'package:sync/testing.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:primitives/primitives.dart' show AssetConstants;
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -42,7 +43,7 @@ void main() {
   setUp(() {
     lwkWallet = _MockLwkWallet();
     values = WalletHistoryDatasource(
-      load: (key) => testWalletFromNative(lwkWallet, key: key),
+      load: (key) async => Ok(await testWalletFromNative(lwkWallet, key: key)),
     );
     // The frame reads every value; tests override what they exercise.
     when(() => lwkWallet.balances()).thenAnswer(
@@ -136,7 +137,8 @@ void main() {
 
     Future<int> amountOf(lwk.Tx tx) async {
       when(() => lwkWallet.txs()).thenAnswer((_) async => [tx]);
-      final txs = await values.getTransactions(key: key);
+      final txs = (await values.getTransactions(key: key))
+          .fold((value) => value, (failure) => fail(failure.logCode));
       return txs.single.amountSat;
     }
 

@@ -1,10 +1,7 @@
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:secrets/testing.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
-import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -14,10 +11,11 @@ class MockLoadAutoswapSettingsUsecase extends Mock
 class MockSaveAutoswapSettingsUsecase extends Mock
     implements SaveAutoswapSettingsUsecase {}
 
-class FakeWallet extends Fake implements Wallet {
-  @override
-  String get id => 'btc';
-}
+final _wallet = SwapWallet(
+  walletRegistrationForTesting(id: 'btc', network: BitcoinNetwork.mainnet),
+  null,
+  false,
+);
 
 void main() {
   late MockLoadAutoswapSettingsUsecase load;
@@ -46,7 +44,7 @@ void main() {
           recipientWalletId: 'btc',
         ),
         bitcoinUnit: unit,
-        bitcoinWallets: <Wallet>[FakeWallet()],
+        bitcoinWallets: <SwapWallet>[_wallet],
         recipientWalletId: 'btc',
       )),
     );

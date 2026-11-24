@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 

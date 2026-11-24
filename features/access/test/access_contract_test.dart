@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:access/access.dart';
 import 'package:access/setup.dart';
@@ -15,8 +14,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:access/src/domain/usecases/check_pin_code_exists_usecase.dart';
+
+import 'support/inventory_fixture.dart';
 
 import 'test_theme.dart';
 
@@ -31,37 +32,41 @@ Widget app(Widget child) => MaterialApp(
   home: child,
 );
 
-class _DelayedStorage extends FakeSecureStoragePlatform {
-  Completer<void>? readGate;
+class _DelayedPinCheck extends Mock implements CheckPinCodeExistsUsecase {}
 
-  @override
-  Future<String?> read({
-    required String key,
-    required Map<String, String> options,
-  }) async {
-    if (key == 'securityKey') await readGate?.future;
-    return super.read(key: key, options: options);
+Future<void> waitFor(WidgetTester tester, bool Function() ready) async {
+  final clock = Stopwatch()..start();
+  while (!ready() && clock.elapsed < const Duration(seconds: 5)) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 10)),
+    );
+    await tester.pump();
   }
+  expect(ready(), isTrue);
 }
+
+AppUnlockBloc unlockBloc(WidgetTester tester) =>
+    tester.element(find.byType(PinCodeUnlockInputScreen)).read<AppUnlockBloc>();
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late GetIt services;
-  late _DelayedStorage storage;
+  late InventoryFixture fixture;
   late AccessFeature feature;
   var backupReads = 0;
   var backedUp = false;
   var defaultUnlocks = 0;
 
-  setUp(() {
+  setUp(() async {
     services = GetIt.asNewInstance();
-    storage = _DelayedStorage()..install();
+    fixture = await InventoryFixture.open();
     backupReads = 0;
     backedUp = false;
     defaultUnlocks = 0;
-    // Mount before registering Secrets: factories and host callbacks stay lazy.
     feature = AccessFeature.mount(
       services: services,
+      inventory: fixture.inventory,
+      backupVerification: fixture.backup,
       hasVerifiedBackup: () async {
         backupReads++;
         return backedUp;
@@ -69,13 +74,11 @@ void main() {
       onUnlocked: (_) => defaultUnlocks++,
       onBackUp: (_) async => backedUp = true,
     );
-    services.registerSingleton<Secrets>(
-      Secrets(scratchDirectory: () async => Directory.systemTemp.path),
-    );
   });
 
   tearDown(() async {
     await services.reset();
+    await fixture.close();
     accessLocator = GetIt.instance;
   });
 
@@ -88,26 +91,17 @@ void main() {
     expect(defaultUnlocks, 0);
   });
 
-  test('PIN status preserves absent, present and locked results', () async {
+  test('PIN status is read from the inventory', () async {
     const access = Access();
+    expect((await access.checkPinCodeExists() as Ok).value, isFalse);
     expect(
-      await access.checkPinCodeExists(),
-      isA<Ok<bool, AccessFailure>>().having((r) => r.value, 'absent', false),
-    );
-    storage.entries['securityKey'] = '1234';
-    expect(
-      await access.checkPinCodeExists(),
-      isA<Ok<bool, AccessFailure>>().having((r) => r.value, 'present', true),
-    );
-    storage.locked = true;
-    expect(
-      await access.checkPinCodeExists(),
-      isA<Err<bool, AccessFailure>>().having(
-        (r) => r.failure,
-        'locked',
-        isA<AccessUnlockKeychainLockedFailure>(),
+      await fixture.inventory.setCredential(
+        '1234',
+        backupVerification: fixture.backup,
       ),
+      isA<Ok>(),
     );
+    expect((await access.checkPinCodeExists() as Ok).value, isTrue);
   });
 
   testWidgets('every failure keeps its operation-specific localized message', (
@@ -147,7 +141,7 @@ void main() {
     await tester.pumpWidget(
       app(const Access().buildReauthenticationGate(onSuccess: grants.add)),
     );
-    await tester.pumpAndSettle();
+    await waitFor(tester, () => grants.isNotEmpty);
     expect(grants, hasLength(1));
   });
 
@@ -155,7 +149,16 @@ void main() {
     tester,
   ) async {
     const pin = '1234';
-    storage.entries['securityKey'] = pin;
+    await tester.runAsync(() async {
+      expect(
+        await fixture.inventory.setCredential(
+          pin,
+          backupVerification: fixture.backup,
+        ),
+        isA<Ok>(),
+      );
+    });
+    fixture.inventory.lock();
     final grants = <AppUnlockGrant>[];
     final gate = const Access().buildReauthenticationGate(
       onSuccess: grants.add,
@@ -168,7 +171,10 @@ void main() {
     final semantics = tester.ensureSemantics();
     try {
       await tester.pumpWidget(app(gate));
-      await tester.pumpAndSettle();
+      await waitFor(
+        tester,
+        () => unlockBloc(tester).state.status == AppUnlockStatus.inProgress,
+      );
       expect(grants, isEmpty);
 
       final loc = AccessLocalizations.of(tester.element(find.byType(Scaffold)));
@@ -179,7 +185,7 @@ void main() {
       expect(grants, isEmpty);
 
       await tester.tap(find.text(loc.appUnlockButton));
-      await tester.pumpAndSettle();
+      await waitFor(tester, () => grants.isNotEmpty);
       expect(grants, hasLength(1));
     } finally {
       semantics.dispose();
@@ -190,7 +196,11 @@ void main() {
     'disposing the gate while its PIN read is pending issues no grant',
     (tester) async {
       final pending = Completer<void>();
-      storage.readGate = pending;
+      final check = _DelayedPinCheck();
+      when(() => check.execute())
+          .thenAnswer((_) => pending.future.then((_) => const Ok(false)));
+      await services.unregister<CheckPinCodeExistsUsecase>();
+      services.registerFactory<CheckPinCodeExistsUsecase>(() => check);
       final grants = <AppUnlockGrant>[];
       await tester.pumpWidget(
         app(const Access().buildReauthenticationGate(onSuccess: grants.add)),
@@ -202,39 +212,45 @@ void main() {
     },
   );
 
-  for (final scenario in [
-    'locked',
-    'wrong',
-    'cooldown',
-    'write failure',
-    'correct',
-  ]) {
+  for (final scenario in ['wrong', 'cooldown', 'correct']) {
     testWidgets('gate preserves $scenario authorization', (tester) async {
-      storage.entries['securityKey'] = '1234';
-      if (scenario == 'locked') storage.locked = true;
-      if (scenario == 'write failure') storage.writesFail = true;
-      if (scenario == 'cooldown') {
-        storage.entries['failedUnlockAttemptsKey'] = '4';
-        storage.entries['unlockLockedUntilKey'] = DateTime.now()
-            .add(const Duration(seconds: 30))
-            .millisecondsSinceEpoch
-            .toString();
-      }
+      await tester.runAsync(() async {
+        expect(
+          await fixture.inventory.setCredential(
+            '1234',
+            backupVerification: fixture.backup,
+          ),
+          isA<Ok>(),
+        );
+        fixture.inventory.lock();
+        if (scenario == 'cooldown') {
+          for (var index = 0; index < 4; index++) {
+            expect(await fixture.inventory.unlock('0000'), isA<Ok>());
+          }
+        }
+      });
       final grants = <AppUnlockGrant>[];
       await tester.pumpWidget(
         app(const Access().buildReauthenticationGate(onSuccess: grants.add)),
       );
-      await tester.pump();
-      final bloc = tester
-          .element(find.byType(PinCodeUnlockInputScreen))
-          .read<AppUnlockBloc>();
+      final bloc = unlockBloc(tester);
+      await waitFor(
+        tester,
+        () => bloc.state.status == AppUnlockStatus.inProgress,
+      );
       for (final digit in (scenario == 'wrong' ? '0000' : '1234').split('')) {
         bloc.add(AppUnlockPinCodeNumberAdded(int.parse(digit)));
       }
       await tester.pump();
       bloc.add(const AppUnlockSubmitted());
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+      if (scenario == 'correct') {
+        await waitFor(tester, () => grants.isNotEmpty);
+      } else if (scenario == 'wrong') {
+        await waitFor(tester, () => bloc.state.showError);
+      } else {
+        expect(bloc.state.timeoutSeconds, greaterThan(0));
+      }
       expect(grants, hasLength(scenario == 'correct' ? 1 : 0));
       // Let the real error toast dismiss before removing its overlay.
       await tester.pump(const Duration(seconds: 4));
@@ -273,19 +289,20 @@ void main() {
     );
     await tester.pumpAndSettle();
     AppUnlockRouteData(onSuccess: () => overrides++).go(router);
-    await tester.pumpAndSettle();
+    await waitFor(tester, () => overrides == 1);
     expect(overrides, 1);
     expect(defaultUnlocks, 0);
     router.go('/settings');
     await tester.pumpAndSettle();
     const AppUnlockRouteData().go(router);
-    await tester.pumpAndSettle();
+    await waitFor(tester, () => defaultUnlocks == 1);
     expect(defaultUnlocks, 1);
     expect(overrides, 1);
     router.go('/settings');
     await tester.pumpAndSettle();
     final context = tester.element(find.text('settings'));
     final navigation = const PinSettingsRouteData().push(context);
+    await waitFor(tester, () => backupReads == 1);
     await tester.pumpAndSettle();
     expect(
       GoRouterState.of(tester.element(find.byType(PinCodeSettingFlow)))

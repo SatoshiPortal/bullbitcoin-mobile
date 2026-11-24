@@ -11,9 +11,9 @@ import 'package:mocktail/mocktail.dart';
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:preferences/settings_table.drift.dart';
-import 'package:bb_mobile/features/wallet/data/ark_background_setup.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
+import 'package:legacy_storage/app_database_testing.dart';
+import 'package:bull_ark/ark_background_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
     show recoverBullDefaultServerUrl;

@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:send/send.dart';
 
 class ValidateCoinControlPaymentRequestUsecase {
   Result<void, SendFailure> execute({
@@ -13,7 +14,7 @@ class ValidateCoinControlPaymentRequestUsecase {
       // A BIP21 request carries its concrete network: compare it directly.
       // Its isTestnet getter refuses regtest, which detection produces.
       Bip21PaymentRequest(:final network, :final amountSat) =>
-        network == wallet.network && (!isSweep || amountSat == null),
+        network == wallet.network.shared && (!isSweep || amountSat == null),
       // Legacy address requests only know testnet or not.
       BitcoinPaymentRequest(:final isTestnet) =>
         wallet.isBitcoin && !wallet.network.isMainnet == isTestnet,

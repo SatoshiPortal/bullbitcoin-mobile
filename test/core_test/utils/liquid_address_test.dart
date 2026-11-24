@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/liquid_address.dart';
+import 'package:satoshifier/liquid_address.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

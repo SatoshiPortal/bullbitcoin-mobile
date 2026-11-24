@@ -57,6 +57,7 @@ class BullLabeledTextInput extends StatelessWidget {
     return LabeledInputFrame(
       label: label,
       child: BullInputText(
+        semanticLabel: label,
         controller: controller,
         value: value,
         onChanged: onChanged ?? (_) {},

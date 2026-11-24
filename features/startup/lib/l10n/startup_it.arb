@@ -1,0 +1,63 @@
+{
+  "appStartupErrorMessage": "L'app non è riuscita ad avviarsi. Prova a chiuderla completamente e a riavviarla. Se l'errore persiste, contatta il supporto e condividi i tuoi log.",
+  "errorSharingLogsMessage": "Errore durante la condivisione dei log: {error}",
+  "@errorSharingLogsMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingRecover": "Recupera",
+  "appStartupErrorTitle": "Errore di avvio",
+  "appStartupContactSupportButton": "Supporto di contatto",
+  "coreScreensPageNotFound": "Pagina non trovata",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "deleteLogsTitle": "Elimina i log",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Log eliminati",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "appInitErrorTitle": "Impossibile avviare l'app",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Condividi i log",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Usa il tuo backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Grazie al tuo backup, i tuoi fondi sono al sicuro.\nProva prima a riavviare l'app; se continua a non avviarsi, reinstallala e recupera con il tuo backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Nessun backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Non eliminare l'app.\nContatta il nostro team di supporto per tentare un recupero.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contatta il supporto",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostra dettagli errore",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Contatta il supporto su app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Esporta",
+  "logsExportedMessage": "Log esportati",
+  "logsExportFailedMessage": "Impossibile esportare i log"
+}

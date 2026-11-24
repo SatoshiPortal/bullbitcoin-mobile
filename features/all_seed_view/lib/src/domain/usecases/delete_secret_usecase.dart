@@ -1,0 +1,53 @@
+import 'package:secrets/custody.dart';
+import 'package:all_seed_view/src/domain/all_seed_view_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+
+/// Deletes a stored secret — unless a wallet still uses it.
+///
+/// The guard is this usecase's, on purpose: `Secrets.trash` is unconditional because the package does not know what a wallet is, and must not learn. This is where the two meet.
+class DeleteSecretUsecase {
+  final Secrets _secrets;
+  final SeedReferences _seedReferences;
+
+  const DeleteSecretUsecase({
+    required this._secrets,
+    required this._seedReferences,
+  });
+
+  @useResult
+  Future<Result<void, AllSeedViewFailure>> execute(Fingerprint id) async {
+    final result = await _seedReferences.deleteUnreferenced(
+      _secrets,
+      id,
+      reconcileBeforeDelete: true,
+    );
+    switch (result) {
+      // Only a wallet that signs locally holds this seed; a watch-only wallet
+      // with the same origin fingerprint does not, whatever its spelling.
+      // Same rule as DeleteWalletUsecase and ImportWalletUsecase.
+      case Err(failure: ParentCustodyReferencedFailure()):
+        log.warning('Seed delete refused reason=referenced');
+        return const Err(
+          AllSeedViewDeleteFailure('a wallet still uses this secret'),
+        );
+      case Err(failure: ParentCustodyMetadataFailure()):
+        log.warning('Seed delete refused reason=custody_metadata');
+        return const Err(AllSeedViewCustodyMetadataFailure());
+      case Err(failure: ParentCustodyDeletionFailure()):
+        log.warning('Seed delete incomplete reason=custody_state');
+        return const Err(AllSeedViewDeleteFailure('could not finish deletion'));
+      case Err():
+        // An unreadable wallet list refuses the deletion rather than
+        // assuming no wallet uses the secret — deleting key material on a
+        // failed read is unrecoverable.
+        log.warning('Seed delete refused reason=references_unavailable');
+        return const Err(AllSeedViewDeleteFailure('could not verify wallets'));
+      case Ok():
+        log.fine('Seed deleted source=manual');
+        return const Ok(null);
+    }
+  }
+}

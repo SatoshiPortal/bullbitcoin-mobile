@@ -1,32 +1,34 @@
+import 'mappers/encrypted_vault_mapper.dart';
+
 import 'dart:convert';
 
-import 'package:bull_logger/bull_logger.dart';
-import 'package:google_drive/google_drive.dart';
-import 'package:primitives/primitives.dart';
-
+import 'datasources/google_drive_datasource.dart';
 import '../domain/entities/drive_file_metadata.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/recoverbull_failure.dart';
 import '../domain/repositories/google_drive_repository.dart';
-import 'mappers/encrypted_vault_mapper.dart';
+
+import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart';
 
 /// Data boundary for Google Drive vault storage. Catches Drive/auth/IO
 /// exceptions, logs safe classifications, and returns a [RecoverBullFailure].
 final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
-  final GoogleDrive _drive;
+  final GoogleDriveAppDatasource _dataSource;
   Future<void> _queue = Future<void>.value();
   int _accountGeneration = 0;
   bool _disposed = false;
   final _selections = Expando<({String account, int generation})>();
 
-  GoogleDriveRepositoryImpl({required this._drive});
+  GoogleDriveRepositoryImpl({required GoogleDriveAppDatasource datasource})
+    : _dataSource = datasource;
 
   @override
   Future<Result<Null, RecoverBullFailure>> connect() async {
     return _serialized(() async {
       _accountGeneration++;
       try {
-        _requireDrive(await _drive.connect());
+        await _dataSource.connect();
         return const Ok(null);
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
@@ -36,12 +38,12 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   }
 
   @override
-  Future<String?> connectSilently() => _serialized(_connectSilently);
+  Future<String?> connectSilently() => _serialized(_dataSource.connectSilently);
 
   @override
   Future<void> disconnect() => _serialized(() async {
     _accountGeneration++;
-    _requireDrive(await _drive.revokeAccess());
+    await _dataSource.disconnect();
   });
 
   @override
@@ -49,7 +51,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     Future<T> Function(GoogleDriveDiscoverySession? session) action,
   ) async {
     final session = await _serialized(() async {
-      final account = await _connectSilently();
+      final account = await _dataSource.connectSilently();
       return account == null
           ? null
           : _Session(this, account, _accountGeneration);
@@ -134,19 +136,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     final content = EncryptedVaultMapper.fromEntity(vault).toFile();
     return _serialized(() async {
       try {
-        // The file format normalizes the creation time to local time before
-        // deriving the Drive filename.
-        final storedVault = EncryptedVaultMapper.parse(content);
-        final bytes = utf8.encode(
-          EncryptedVaultMapper.fromEntity(storedVault).toFile(),
-        );
-        _requireDrive(
-          await _drive.writeFile(
-            filename: storedVault.filename,
-            bytes: bytes,
-            mimeType: _vaultMimeType,
-          ),
-        );
+        await _dataSource.store(content);
         return const Ok(null);
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
@@ -160,7 +150,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     return _serialized(() async {
       try {
         await _checkSelection(file);
-        _requireDrive(await _drive.deleteFile(file.id));
+        await _dataSource.trash(file.id);
         return const Ok(null);
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
@@ -169,34 +159,13 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     });
   }
 
-  static const _vaultMimeType = 'application/json';
-
-  Future<String?> _connectSilently() async =>
-      (await _drive.connectSilently()).fold((account) => account, (_) => null);
-
-  // Internal session callbacks still use exceptions to abort queued work.
-  T _requireDrive<T>(Result<T, GoogleDriveFailure> result) => switch (result) {
-    Ok(:final value) => value,
-    Err(:final failure) => throw Exception(failure),
-  };
-
-  static DriveFileMetadata _toVaultMetadata(GoogleDriveFileMetadata file) =>
-      DriveFileMetadata(
-        id: file.id,
-        name: file.name,
-        createdTime: file.createdTime,
-        modifiedTime: file.modifiedTime,
-      );
-
   Future<List<DriveFileMetadata>> _fetchAllMetadata() async {
-    final account = await _connectSilently();
+    final account = await _dataSource.connectSilently();
     if (account == null) throw const _DiscoverySessionExpiredException();
     final generation = _accountGeneration;
-    final files = _requireDrive(
-      await _drive.listFiles(mimeType: _vaultMimeType),
-    );
+    final files = await _dataSource.fetchAllMetadata();
     return files.map((file) {
-      final entity = _toVaultMetadata(file);
+      final entity = file.toEntity();
       _selections[entity] = (account: account, generation: generation);
       return entity;
     }).toList();
@@ -206,24 +175,22 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     final selection = _selections[file];
     if (selection == null ||
         selection.generation != _accountGeneration ||
-        await _connectSilently() != selection.account) {
+        await _dataSource.connectSilently() != selection.account) {
       throw const _DiscoverySessionExpiredException();
     }
   }
 
   Future<String> _fetchContent(String fileId) async {
-    final bytes = _requireDrive(
-      await _drive.readFile(fileId: fileId, maxBytes: 2 * 1024 * 1024),
-    );
+    final bytes = await _dataSource.fetchFileContent(fileId);
     return utf8.decode(bytes);
   }
 
-  /// Cancels queued discovery capabilities and closes the owned HTTP client.
+  /// Cancels queued discovery capabilities and releases the storage session.
   void dispose() {
     if (_disposed) return;
     _disposed = true;
     _accountGeneration++;
-    _drive.dispose();
+    _dataSource.dispose();
   }
 
   Future<T> _serialized<T>(Future<T> Function() action) {
@@ -243,37 +210,29 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     _Session session,
     Future<T> Function() action,
   ) => _serialized(() async {
-    if (!session._active || session._generation != _accountGeneration) {
-      throw const _DiscoverySessionExpiredException();
-    }
-    final account = await _connectSilently();
-    if (account != session.account ||
-        session._generation != _accountGeneration) {
+    _checkDiscoverySession(session);
+    final account = await _dataSource.connectSilently();
+    _checkDiscoverySession(session);
+    if (account != session.account) {
       throw const _DiscoverySessionExpiredException();
     }
     return action();
   });
 
-  Future<List<DriveFileMetadata>> _sessionMetadata(_Session session) async {
-    final files = <DriveFileMetadata>[];
-    final seenTokens = <String>{};
-    String? token;
-    while (true) {
-      final page = await _withCurrentAccount(
-        session,
-        () async => _requireDrive(
-          await _drive.listPage(pageToken: token, mimeType: _vaultMimeType),
-        ),
-      );
-      files.addAll(page.files.map(_toVaultMetadata));
-      final next = page.nextPageToken;
-      if (next == null || next.isEmpty) return files;
-      if (!seenTokens.add(next)) {
-        throw const FormatException('Drive pagination repeated a page token');
-      }
-      token = next;
+  void _checkDiscoverySession(_Session session) {
+    if (_disposed ||
+        !session._active ||
+        session._generation != _accountGeneration) {
+      throw const _DiscoverySessionExpiredException();
     }
   }
+
+  Future<List<DriveFileMetadata>> _sessionMetadata(_Session session) =>
+      _withCurrentAccount(session, () async {
+        final files = await _dataSource.fetchAllMetadata();
+        _checkDiscoverySession(session);
+        return files.map((file) => file.toEntity()).toList();
+      });
 }
 
 final class _Session implements GoogleDriveDiscoverySession {

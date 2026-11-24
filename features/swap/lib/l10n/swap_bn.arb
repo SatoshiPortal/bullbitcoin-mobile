@@ -1,0 +1,441 @@
+{
+  "@@locale": "bn",
+  "save": "সংরক্ষণ করুন",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressLabel": "ঠিকানা: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "অনুরোধকৃত পরিমাণ: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "বন্ধ থাকলে, উচ্চ ফির কারণে ব্লক হওয়া একটি অটো-সোয়াপ অনুমোদন করার সুযোগ আপনাকে দেওয়া হবে",
+  "@autoswapAlwaysBlockInfoDisabled": {
+    "description": "Help text when always block is disabled"
+  },
+  "autoswapAlwaysBlockInfoEnabled": "চালু থাকলে, নির্ধারিত সীমার বেশি ফি-যুক্ত অটো-সোয়াপ সবসময় ব্লক থাকবে",
+  "@autoswapAlwaysBlockInfoEnabled": {
+    "description": "Help text when always block is enabled"
+  },
+  "autoswapAlwaysBlockLabel": "উচ্চ ফি সবসময় ব্লক করুন",
+  "@autoswapAlwaysBlockLabel": {
+    "description": "Label for toggle to always block high fee transfers"
+  },
+  "autoswapBaseBalanceInfoText": "আপনার ইনস্ট্যান্ট পেমেন্ট ওয়ালেটের ব্যালান্স অটো সোয়াপের পরে এই লক্ষ্য ব্যালান্সে ফিরে যাবে।",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapEnableToggleLabel": "স্বয়ংক্রিয় সোয়াপ সক্ষম করুন",
+  "@autoswapEnableToggleLabel": {
+    "description": "Label for the main toggle switch to enable/disable auto transfer feature"
+  },
+  "autoswapLoadSettingsError": "অটো সোয়াপ সেটিং লোড করতে ব্যর্থ হয়েছে",
+  "@autoswapLoadSettingsError": {
+    "description": "Error message when loading settings fails"
+  },
+  "autoswapMaxBalanceLabel": "সর্বোচ্চ তাৎক্ষণিক ওয়ালেট ব্যালান্স",
+  "@autoswapMaxBalanceLabel": {
+    "description": "Label for amount threshold input field"
+  },
+  "autoswapMaxFeeInfoText": "মোট সোয়াপ ফি নির্ধারিত শতাংশের বেশি হলে, অটো-সোয়াপ ব্লক হবে",
+  "@autoswapMaxFeeInfoText": {
+    "description": "Help text explaining how the max fee threshold works"
+  },
+  "autoswapMaxFeeLabel": "সর্বোচ্চ সোয়াপ ফি",
+  "@autoswapMaxFeeLabel": {
+    "description": "Label for fee threshold percentage input field"
+  },
+  "autoswapMaximumBalanceLabel": "সর্বোচ্চ Instant Wallet ব্যালেন্স",
+  "autoswapMaximumFeeError": "সর্বোচ্চ ফি থ্রেশহোল্ড হলো {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "description": "Validation error shown when fee threshold exceeds maximum",
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "ন্যূনতম ব্যালেন্স থ্রেশহোল্ড হলো {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "ন্যূনতম ব্যালেন্স থ্রেশহোল্ড হলো {amount} সাটস",
+  "@autoswapMinimumThresholdErrorSats": {
+    "description": "Validation error shown when amount threshold is below minimum (sats display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "কোন বিটকয়েন ওয়ালেট স্থানান্তরিত তহবিল গ্রহণ করবে তা নির্বাচন করুন (আবশ্যক)",
+  "@autoswapRecipientWalletInfoText": {
+    "description": "Help text explaining wallet selection"
+  },
+  "autoswapRecipientWalletLabel": "প্রাপক বিটকয়েন ওয়ালেট",
+  "@autoswapRecipientWalletLabel": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "autoswapRecipientWalletPlaceholder": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন",
+  "@autoswapRecipientWalletPlaceholder": {
+    "description": "Dropdown placeholder text when no wallet is selected"
+  },
+  "autoswapRecipientWalletPlaceholderRequired": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন *",
+  "@autoswapRecipientWalletPlaceholderRequired": {
+    "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+  },
+  "autoswapRecipientWalletRequired": "*",
+  "@autoswapRecipientWalletRequired": {
+    "description": "Required field indicator asterisk"
+  },
+  "autoswapSaveButton": "সংরক্ষণ করুন",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "autoswapSelectWalletError": "দয়া করে একটি প্রাপক বিটকয়েন ওয়ালেট নির্বাচন করুন",
+  "@autoswapSelectWalletError": {
+    "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+  },
+  "autoswapSettingsTitle": "স্বয়ংক্রিয় সোয়াপ সেটিংস",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "autoswapTargetBalanceLabel": "লক্ষ্য Instant Wallet ব্যালেন্স",
+  "autoswapTriggerAtBalanceInfoText": "আপনার ব্যালান্স এই সর্বোচ্চ ব্যালান্স ছাড়ালে অটো সোয়াপ ট্রিগার হবে।",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
+  "autoswapTriggerBalanceError": "সর্বোচ্চ ব্যালেন্স অবশ্যই লক্ষ্য ব্যালেন্সের কমপক্ষে 2x হতে হবে",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
+  },
+  "autoswapUpdateSettingsError": "অটো সোয়াপ সেটিং আপডেট করতে ব্যর্থ হয়েছে",
+  "@autoswapUpdateSettingsError": {
+    "description": "Error message when updating settings fails"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "বিনিময় হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
+  "broadcastSignedTxErrorOutcomeUnknown": "আপনার লেনদেন সম্প্রচারিত হয়েছে কি না আমরা নিশ্চিত করতে পারিনি। আবার চেষ্টা করার আগে একটি ব্লক এক্সপ্লোরারে দেখে নিন।",
+  "closeDialogButton": "বন্ধ",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "coinsKeychainChange": "চেঞ্জ",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "গ্রহণ",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "ওয়ালেট একত্রিত করুন",
+  "coreScreensAmountLabel": "পরিমাণ",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensConfirmButton": "নিশ্চিত করুন",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "coreScreensExternalTransfer": "বহিরাগত সোয়াপ",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensFeeDeductionExplanation": "পাঠানো পরিমাণ থেকে মোট ফি কাটা হয়েছে।",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensFeePriorityLabel": "শুল্কার অগ্রাধিকার",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensFromLabel": "থেকে",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensInternalTransfer": "অভ্যন্তরীণ সোয়াপ",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensNetworkFeesLabel": "নেটওয়ার্ক ফি",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensReceiveAmountLabel": "প্রাপ্ত পরিমাণ",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "প্রাপ্ত নেটওয়ার্ক ফি",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensSendAmountLabel": "পাঠানোর পরিমাণ",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "পাঠানোর নেটওয়ার্ক ফি",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "সার্ভার নেটওয়ার্ক ফি",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensToLabel": "প্রাপক",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensTransferFeeLabel": "সোয়াপ ফি",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensTransferIdLabel": "সোয়াপ ID",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "doneButton": "সম্পন্ন",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "globalDefaultBitcoinWalletLabel": "সুরক্ষিত বিটকয়েন",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "তাত্ক্ষণিক লেনদেন",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "payNetworkError": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveNote": "নোট",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "পরিমাণ নির্বাচন করুন",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "sendAdvancedOptions": "উন্নত বিকল্পসমূহ",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendDone": "সম্পন্ন",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorBuildFailed": "এই পেমেন্ট প্রস্তুত করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorSwapCreationFailed": "বদল তৈরি করতে ব্যর্থ হয়েছে।",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendFastFee": "দ্রুত",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Replace-by-fee সক্রিয় হয়েছে",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "কয়েন ম্যানুয়ালি নির্বাচন করুন",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "নির্বাচিত UTXO প্রয়োজনীয় পরিমাণ কভার করে না",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendSelfTransfer": "নিজের কাছে ট্রান্সফার",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
+  "swapAmountLabel": "পরিমাণ",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapAmountPlaceholder": "0",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapAvailableBalance": "উপলব্ধ ব্যালান্স",
+  "@swapAvailableBalance": {
+    "description": "Available balance label"
+  },
+  "swapConfirmTransferTitle": "সোয়াপ নিশ্চিত করুন",
+  "@swapConfirmTransferTitle": {
+    "description": "AppBar title on the confirmation page"
+  },
+  "swapContinueButton": "চালিয়ে যান",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapDoNotUninstallWarning": "সোয়াপ সম্পূর্ণ না হওয়া পর্যন্ত অ্যাপটি আনইনস্টল করবেন না!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
+  "swapErrorAmountAboveMaximum": "পরিমাণ সর্বোচ্চ সোয়াপ পরিমাণ অতিক্রম করেছে: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "পরিমাণ ন্যূনতম সোয়াপ পরিমাণের নিচে: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "বহিরাগত ওয়ালেট ঠিকানা লিখুন",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapExternalTransferLabel": "বহিরাগত সোয়াপ",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "থেকে",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapGoHomeButton": "হোমে যান",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapInfoDescription": "আপনার ওয়ালেটগুলোর মধ্যে নির্বিঘ্নে Bitcoin সোয়াপ করুন। দৈনন্দিন খরচের জন্য কেবল Instant Payment Wallet-এ অর্থ রাখুন।",
+  "@swapInfoDescription": {
+    "description": "Information banner text on amount page"
+  },
+  "swapInsufficientFunds": "অপর্যাপ্ত তহবিল",
+  "swapInternalTransferTitle": "অভ্যন্তরীণ সোয়াপ",
+  "@swapInternalTransferTitle": {
+    "description": "AppBar title on the amount entry page"
+  },
+  "swapMaxButton": "সর্বোচ্চ",
+  "@swapMaxButton": {
+    "description": "Button to use maximum available balance"
+  },
+  "swapReceiveExactAmountLabel": "নির্দিষ্ট পরিমাণ গ্রহণ করুন",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "পরিমাণ থেকে ফি বাদ দিন",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapToLabel": "প্রাপক",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapTotalFees": "মোট ফি ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapTransferCompletedMessage": "ওয়াও, আপনি অপেক্ষা করেছেন! সোয়াপ সফলভাবে সম্পন্ন হয়েছে।",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferCompletedTitle": "সোয়াপ সম্পন্ন",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferPendingMessage": "সোয়াপ প্রক্রিয়াধীন। Bitcoin ট্রানজেকশন নিশ্চিত হতে কিছু সময় লাগতে পারে। আপনি হোমে ফিরে অপেক্ষা করতে পারেন।",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferPendingTitle": "সোয়াপ প্রক্রিয়াধীন",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferRefundInProgressMessage": "সোয়াপে একটি ত্রুটি ঘটেছে। আপনার রিফান্ড প্রক্রিয়াধীন।",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundInProgressTitle": "সোয়াপ রিফান্ড প্রক্রিয়াধীন",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundedMessage": "সোয়াপ সফলভাবে ফেরত দেওয়া হয়েছে।",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapTransferRefundedTitle": "সোয়াপ ফেরত দেওয়া হয়েছে",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferTitle": "সোয়াপ",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapUnderReviewDescription": "এই সোয়াপের জন্য ম্যানুয়াল পর্যালোচনা প্রয়োজন। সহায়তার জন্য সাপোর্টে যোগাযোগ করুন। আপনার সাপোর্ট অ্যাকাউন্ট না থাকলে শুধু একটি তৈরি করুন; KYC প্রয়োজন নেই।",
+  "swapUnderReviewSupportMessage": "সোয়াপ পর্যালোচনাধীন\nঅর্ডার ID: {orderId}\nঅনুরোধ ID: {requestId}\nঅর্ডার নম্বর: {orderNumber}",
+  "swapUnderReviewTitle": "সোয়াপ পর্যালোচনাধীন",
+  "swapValidationSelectFromWallet": "অনুগ্রহ করে যে ওয়ালেট থেকে সোয়াপ করবেন তা নির্বাচন করুন",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "অনুগ্রহ করে যে ওয়ালেটে সোয়াপ করবেন তা নির্বাচন করুন",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "transactionNetworkBitcoin": "বিটকয়েন",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLightning": "লাইটনিং নেটওয়ার্ক",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkLiquid": "লিকুইড নেটওয়ার্ক",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionStatusSwapExpired": "সোয়াপ মেয়াদ শেষ হয়েছে।",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusSwapFailed": "আদল-বদল ব্যর্থ",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescChainExpired": "এই সোয়াপের মেয়াদ শেষ হয়েছে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে যাবে।",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainFailed": "আপনার সোয়াপে সমস্যা হয়েছে। ২৪ ঘণ্টার মধ্যে তহবিল আপনার ওয়ালেটে ফিরে না এলে সাপোর্টে যোগাযোগ করুন।",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapOpenWithin24h": "আপনার সোয়াপ সম্পন্ন করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",
+  "typeLabel": "ধরন: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+}

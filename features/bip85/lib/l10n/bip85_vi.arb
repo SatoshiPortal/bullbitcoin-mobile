@@ -1,0 +1,11 @@
+{
+  "@@locale": "vi",
+  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
+  "bip85NoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại.",
+  "retry": "Thử lại",
+  "bip85Title": "Entropy tất định BIP85",
+  "bip85ExperimentalWarning": "Thử nghiệm \nHãy tự sao lưu các đường dẫn phái sinh của bạn thủ công",
+  "bip85NextMnemonic": "Mnemonic tiếp theo",
+  "bip85NextHex": "HEX tiếp theo",
+  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm"
+}

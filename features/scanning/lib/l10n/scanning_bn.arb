@@ -1,0 +1,46 @@
+{
+  "@@locale": "bn",
+  "scanningProgressLabel": "স্ক্যানিং: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR অগ্রগতি: {parts} অংশ",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "স্ক্যান সম্পন্ন হয়েছে",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR ডিকোডিং ব্যর্থ হয়েছে",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR প্রক্রিয়াজনিত ব্যর্থ হয়েছে",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "NFC স্ক্যান করুন",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "NFC সংযোগ বিচ্ছিন্ন হয়ে গেছে। আপনার ডিভাইসটি NFC ট্যাগের কাছে ধরে রাখুন এবং আবার চেষ্টা করুন।",
+  "nfcWriteFailed": "NFC স্থানান্তর ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "nfcDisabled": "NFC নিষ্ক্রিয় করা আছে। সেটিংসে গিয়ে এটি চালু করুন।",
+  "nfcNotAvailable": "এই ডিভাইসে NFC সমর্থিত নয়",
+  "nfcFailed": "ওহ! কিছু ভুল হয়েছে",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "কোনো সমর্থিত NFC ডেটা পাওয়া যায়নি"
+}

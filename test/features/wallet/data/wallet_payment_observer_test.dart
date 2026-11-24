@@ -1,11 +1,11 @@
+import 'package:notifications/payment_store.dart';
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/wallet_payment_observer.dart';
+import 'package:background_tasks/wallet_jobs.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
@@ -25,7 +25,7 @@ void main() {
       final store = PaymentNotificationStore(() async {
         if (attempts++ == 0) throw const FileSystemException('injected');
         return directory.path;
-      }, () async => null);
+      }, () async => Gateway());
       addTearDown(() async {
         await store.close();
         directory.deleteSync(recursive: true);

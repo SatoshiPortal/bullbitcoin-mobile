@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
-import 'package:bb_mobile/features/swap/ui/swap_router.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -28,7 +26,7 @@ void main() {
     // popping lands on an orphan transfer page whose next back closes the app.
     // The transfer page itself is stubbed here; only the stack shape matters.
     final router = GoRouter(
-      initialLocation: SwapRoute.swap.path,
+      initialLocation: TransferRoute.swap.path,
       routes: [
         GoRoute(
           name: WalletRoute.walletHome.name,
@@ -36,13 +34,13 @@ void main() {
           builder: (context, state) => const Scaffold(body: Text('home')),
         ),
         GoRoute(
-          name: SwapRoute.swap.name,
-          path: SwapRoute.swap.path,
+          name: TransferRoute.swap.name,
+          path: TransferRoute.swap.path,
           builder: (context, state) => const Scaffold(body: Text('transfer')),
           routes: [
             GoRoute(
-              name: SwapRoute.inProgressSwap.name,
-              path: SwapRoute.inProgressSwap.path,
+              name: TransferRoute.inProgressSwap.name,
+              path: TransferRoute.inProgressSwap.path,
               builder: (context, state) => BlocProvider<TransferBloc>.value(
                 value: bloc,
                 child: const SwapInProgressPage(),
@@ -64,7 +62,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Exactly what the router does once the transfer is broadcast.
-    router.goNamed(SwapRoute.inProgressSwap.name);
+    router.goNamed(TransferRoute.inProgressSwap.name);
     await tester.pumpAndSettle();
     expect(find.byType(SwapInProgressPage), findsOneWidget);
 

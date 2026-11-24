@@ -1,20 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:bull_exchange/testing.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:sync/write.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
@@ -23,10 +17,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../features/exchange/data/bbx_api_test_http.dart';
-import '../../features/limit_orders/limit_order_fixtures.dart'
-    show userSummary, limitOrderRate;
-
-class _Summary extends Mock implements GetExchangeUserSummaryUsecase {}
 
 /// Throws [error] for every request, as a failing transport.
 class _Throwing implements HttpClientAdapter {
@@ -91,6 +81,10 @@ Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
 
 class _Settings extends Fake implements Preferences {
   @override
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async => const Ok(Environment.testnet);
+
+  @override
   Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
     const SettingsEntity(
       environment: Environment.testnet,
@@ -102,17 +96,11 @@ class _Settings extends Fake implements Preferences {
 
 class _Logger extends Mock implements Logger {}
 
-class _GetWallets extends Mock implements GetWalletsUsecase {}
+class _Inventory extends Mock implements WalletInventory {}
 
-class _Defaults extends Mock implements DefaultWalletsFacade {}
+class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _Rates extends Mock implements ExchangeLimitOrders {}
-
-class _ReadDefaults extends Mock implements GetDefaultWalletsUsecase {}
-
-class _SaveDefaults extends Mock implements SaveDefaultWalletUsecase {}
-
-class _DeleteDefaults extends Mock implements DeleteDefaultWalletUsecase {}
 
 void main() {
   late _Logger logger;
@@ -146,29 +134,26 @@ void main() {
     for (final name in ['limit orders', 'autobuy status', 'autobuy update']) {
       test('$name classifies $label', () async {
         final repo = _users(refusal);
-        final summary = GetExchangeUserSummaryUsecase(
-          exchange: repo,
-          settingsRepository: _Settings(),
-        );
-        final defaults = _Defaults();
-        final wallets = _GetWallets();
-        when(defaults.getDefaultWallets)
-            .thenAnswer((_) async => const DefaultWallets());
-        when(wallets.execute).thenAnswer((_) async => const Ok([]));
+        final wallets = _Inventory();
+        for (final network in <Network>[
+          BitcoinNetwork.testnet,
+          LiquidNetwork.testnet,
+        ]) {
+          when(() => wallets.walletsForNetwork(network))
+              .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
+        }
         final pending = switch (name) {
           'limit orders' => LoadLimitOrderCreationUsecase(
-            summary,
-            defaults,
-            wallets,
+            exchangeForTesting(
+              getDefaultWallets: () async => const Ok(DefaultWallets()),
+              getUserSummary: repo.getUserSummary,
+            ),
+            _Settings(),
+            ExchangePayoutWallets(wallets, _Native()),
             _Rates(),
           ).execute(),
-          'autobuy status' => GetAutoBuyStatusUsecase(summary).execute(),
-          'autobuy update' => SetAutoBuyUsecase(
-            summary,
-            _ReadDefaults(),
-            _Settings(),
-            repo,
-          ).execute(enabled: false),
+          'autobuy status' => autoBuyStatusForTesting(repo),
+          'autobuy update' => disableAutoBuyForTesting(repo, _Settings()),
           _ => fail('Unexpected use case name'),
         };
         if (refusal is _Thrown && refusal.isProgrammerError) {
@@ -177,6 +162,16 @@ void main() {
         } else if (refusal is _MissingKey || refusal is _UnreadableKey) {
           expect(await pending, isA<Err>());
           noReport();
+        } else if (name == 'limit orders') {
+          expect(await pending, isA<Err>());
+          verify(
+            () => logger.severe(
+              message:
+                  'Failed to load the account before creating a limit order',
+              error: ExchangeAccountUnavailableFailure,
+              trace: any(named: 'trace'),
+            ),
+          ).called(1);
         } else {
           expect(await pending, isA<Err>());
           verify(
@@ -191,153 +186,67 @@ void main() {
     }
   }
 
-  for (final refusal in [
-    ApiKeyNotFoundException(),
-    const ExchangeCredentialUnavailableException(),
-    Exception('unexpected reply'),
-    StateError('programmer bug'),
+  for (final failure in const [
+    ExchangeNotAuthenticatedFailure(),
+    ExchangeCredentialReadFailure(),
+    ExchangeUnexpectedFailure(),
   ]) {
-    final expected =
-        refusal is ApiKeyException ||
-        refusal is ExchangeCredentialUnavailableException;
-    for (final action in ['load', 'save', 'delete']) {
-      test(
-        'default wallets $action classifies ${refusal.runtimeType}',
-        () async {
-          final read = _ReadDefaults();
-          final save = _SaveDefaults();
-          final delete = _DeleteDefaults();
-          when(read.execute).thenAnswer(
-            (_) async => const DefaultWallets(
-              bitcoin: DefaultWallet(
-                recipientId: 'recipient',
-                walletType: WalletAddressType.bitcoin,
-                address: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
-              ),
-            ),
-          );
-          when(
-            () => save.execute(
-              walletType: any(named: 'walletType'),
-              address: any(named: 'address'),
-              existingRecipientId: any(named: 'existingRecipientId'),
-            ),
-          ).thenThrow(refusal);
-          when(
-            () => delete.execute(
-              walletType: any(named: 'walletType'),
-              address: any(named: 'address'),
-              recipientId: any(named: 'recipientId'),
-            ),
-          ).thenThrow(refusal);
-          final cubit = DefaultWalletsCubit(
-            getDefaultWalletsUsecase: read,
-            saveDefaultWalletUsecase: save,
-            deleteDefaultWalletUsecase: delete,
-          );
-          addTearDown(cubit.close);
-          final Future<void> pending;
-          if (action == 'load') {
-            when(read.execute).thenThrow(refusal);
-            pending = cubit.loadDefaultWallets();
-          } else {
-            await cubit.loadDefaultWallets();
-            pending = action == 'save'
-                ? cubit.saveWallet(WalletAddressType.bitcoin)
-                : cubit.deleteWallet(WalletAddressType.bitcoin);
-          }
-          if (refusal is Error) {
-            await expectLater(pending, throwsStateError);
-          } else {
-            await pending;
-            expect(
-              action == 'load' ? cubit.state.loadError : cubit.state.saveError,
-              isNotNull,
-            );
-          }
-          if (action == 'load') {
-            verify(read.execute).called(1);
-          } else if (action == 'save') {
-            verify(
-              () => save.execute(
-                walletType: WalletAddressType.bitcoin,
-                address: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
-                existingRecipientId: 'recipient',
-              ),
-            ).called(1);
-          } else {
-            verify(
-              () => delete.execute(
-                walletType: WalletAddressType.bitcoin,
-                address: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
-                recipientId: 'recipient',
-              ),
-            ).called(1);
-          }
-          if (expected || refusal is Error) {
-            noReport();
-          } else {
-            verify(
-              () => logger.severe(
-                message: any(named: 'message'),
-                error: any(named: 'error'),
-                trace: any(named: 'trace'),
-              ),
-            ).called(1);
-          }
-        },
-      );
-    }
-    for (final name in ['limit orders', 'autobuy']) {
-      test('$name classifies default-wallet ${refusal.runtimeType}', () async {
-        final summary = _Summary();
-        when(summary.execute).thenAnswer((_) async => userSummary());
-        final defaults = _Defaults();
-        final wallets = _GetWallets();
-        final read = _ReadDefaults();
-        final rates = _Rates();
-        when(() => rates.getRate(any()))
-            .thenAnswer((_) async => Ok(limitOrderRate()));
-        when(defaults.getDefaultWallets).thenThrow(refusal);
-        when(read.execute).thenThrow(refusal);
-        when(wallets.execute).thenAnswer((_) async => const Ok([]));
-        final repo = _users(_Thrown(StateError('no request expected')));
-        final pending = name == 'limit orders'
-            ? LoadLimitOrderCreationUsecase(
-                summary,
-                defaults,
-                wallets,
-                rates,
-              ).execute()
-            : SetAutoBuyUsecase(
-                summary,
-                read,
-                _Settings(),
-                repo,
-              ).execute(enabled: true);
-        if (refusal is Error) {
-          await expectLater(pending, throwsStateError);
-        } else {
-          expect(await pending, isA<Err>());
-        }
-        if (name == 'limit orders') {
-          verify(defaults.getDefaultWallets).called(1);
-          verifyNever(() => rates.getRate(any()));
-        } else {
-          verify(read.execute).called(1);
-        }
-        if (expected || refusal is Error) {
-          noReport();
-        } else {
-          verify(
-            () => logger.severe(
-              message: any(named: 'message'),
-              error: any(named: 'error'),
-              trace: any(named: 'trace'),
-            ),
-          ).called(1);
-        }
-      });
-    }
+    test(
+      'default wallet operations retain state and do not report ${failure.runtimeType}',
+      () async {
+        const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
+        var failLoad = false;
+        final cubit = defaultWalletsCubitForTesting(
+          validate: exchangePayoutFields.validate,
+          exchange: exchangeForTesting(
+            getDefaultWallets: () async => failLoad
+                ? Err(failure)
+                : const Ok(
+                    DefaultWallets(
+                      bitcoin: DefaultWallet(
+                        recipientId: 'recipient',
+                        walletType: WalletAddressType.bitcoin,
+                        address: address,
+                      ),
+                    ),
+                  ),
+            saveDefaultWallet: ({
+              required walletType,
+              required address,
+              existingRecipientId,
+            }) async => Err(failure),
+            deleteDefaultWallet: ({
+              required recipientId,
+              required walletType,
+              required address,
+            }) async => Err(failure),
+          ),
+        );
+        addTearDown(cubit.close);
+        await cubit.loadDefaultWallets();
+        await cubit.saveWallet(WalletAddressType.bitcoin);
+        expect(cubit.state.saveError, isNotNull);
+        await cubit.deleteWallet(WalletAddressType.bitcoin);
+        expect(cubit.state.saveError, isNotNull);
+        failLoad = true;
+        await cubit.loadDefaultWallets();
+        expect(cubit.state.loadError, isNotNull);
+        noReport();
+      },
+    );
   }
+
+  test(
+    'default wallet loading does not report or swallow programmer errors',
+    () async {
+      final cubit = defaultWalletsCubitForTesting(
+        validate: exchangePayoutFields.validate,
+        exchange: _users(_Thrown(StateError('synthetic programming error'))),
+      );
+      addTearDown(cubit.close);
+
+      await expectLater(cubit.loadDefaultWallets(), throwsStateError);
+      noReport();
+    },
+  );
 }

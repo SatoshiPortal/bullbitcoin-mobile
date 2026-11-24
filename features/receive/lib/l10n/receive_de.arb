@@ -1,0 +1,88 @@
+{
+  "receiveInvoice": "Lightning-Invoice",
+  "receiveServerNetworkFees": "Server-Netzwerkgebühren",
+  "transactionNetworkLightning": "Lightning",
+  "globalDefaultBitcoinWalletLabel": "Sichere Bitcoin-Wallet",
+  "receiveAddress": "Empfängeradresse",
+  "appStartupErrorMessage": "Die App konnte nicht gestartet werden. Versuchen Sie, sie vollständig zu schließen und neu zu starten. Wenn der Fehler weiterhin besteht, kontaktieren Sie den Support und teilen Sie Ihre Protokolle.",
+  "receiveSendNetworkFee": "Netzwerkgebühr (Senden)",
+  "receiveWaitForPayjoin": "Warten Sie, bis der Absender die Payjoin-Transaktion abgeschlossen hat.",
+  "swapTransferTitle": "Swap",
+  "receivePaymentReceived": "Zahlung erhalten!",
+  "swapErrorAmountBelowMinimum": "Betrag liegt unter dem Mindest-Swap-Betrag: {min} Sats.",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveNewAddress": "Neue Adresse",
+  "receiveNetworkFee": "Netzwerkgebühren",
+  "receiveLiquidConfirmationMessage": "Bestätigung in wenigen Sekunden.",
+  "receiveLightningInvoice": "Lightning-Invoice",
+  "receiveVerifyAddressError": "Adresse konnte nicht überprüft werden: Fehlende Wallet- oder Adressinformationen",
+  "copyDialogButton": "Kopieren",
+  "receivePaymentNormally": "Zahlung normal empfangen",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "receiveBitcoinConfirmationMessage": "Die Bestätigung der Bitcoin-Transaktion kann eine Weile dauern.",
+  "receiveTotalFee": "Gesamtgebühren",
+  "closeDialogButton": "Schließen",
+  "receivePaymentInProgress": "Zahlung wird verarbeitet",
+  "receiveLiquid": "Liquid",
+  "receiveTransferFee": "Swap-Gebühr",
+  "globalDefaultLiquidWalletLabel": "Sofortzahlungen",
+  "payNetworkError": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
+  "receiveTitle": "Empfangen",
+  "receivePayjoinInProgress": "Payjoin läuft",
+  "receiveLightning": "Lightning",
+  "receivePayjoinFailQuestion": "Keine Zeit zum Warten oder Payjoin ist auf der Absenderseite fehlgeschlagen?",
+  "receiveBitcoin": "Bitcoin",
+  "receiveVerifyAddressLedger": "Bitte überprüfen Sie die Adresse auf dem Ledger.",
+  "amountLabel": "Betrag",
+  "receiveDetails": "Details",
+  "receiveFeeExplanation": "Diese Gebühr wird vom gesendeten Betrag abgezogen",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "transactionNetworkLiquid": "Liquid",
+  "swapErrorAmountAboveMaximum": "Höchstbetrag: {max} sats.",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveContinue": "Fortfahren",
+  "okButton": "OK",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "Zum Kopieren tippen",
+  "invoiceViewerTitle": "Rechnung",
+  "bitcoinPriceExchangeRateUnavailable": "Wechselkurs nicht verfügbar. Bitte später erneut versuchen.",
+  "receiveLiquidRiskDisclosureLabel": "Zahlungen werden in Liquid L-BTC umgewandelt (nicht BTC). Mehr erfahren.",
+  "liquidRiskDisclosureSemanticLabel": "Liquid-Bitcoin-Risikohinweis öffnen",
+  "liquidRiskDisclosureTitle": "Risikohinweis zu Liquid Bitcoin in der Wallet für Sofortzahlungen",
+  "liquidRiskDisclosureBody": "Das Guthaben in der Wallet für Sofortzahlungen besteht nicht aus „echten“ Bitcoin. Es handelt sich um Liquid Network Bitcoin (L-BTC), einen durch Bitcoin gedeckten Token, der in einem separaten Register, einer sogenannten „Sidechain“, geführt wird.\n\nJeder Liquid Bitcoin ist im Verhältnis 1:1 durch echte Bitcoin gedeckt. Dafür wird ein transparenter Peg-Mechanismus verwendet, der von einem Zusammenschluss aus 15 Unternehmen verwaltet wird. Die von der Liquid Federation gehaltenen Bitcoin-Reserven sind vollständig überprüfbar. Jeder kann nachvollziehen, dass jeder Liquid Bitcoin durch einen echten Bitcoin gedeckt ist.\n\nGuthaben im Liquid Network aufzubewahren ist wesentlich sicherer als die Nutzung einer herkömmlichen verwahrenden Wallet oder einer Börse. Ihr Guthaben als Liquid Bitcoin in der Wallet für Sofortzahlungen zu halten ist jedoch deutlich weniger sicher, als echte Bitcoin in der sicheren Bitcoin-Wallet aufzubewahren.\n\nZahlungen über das Liquid Network sind schneller, günstiger und privater als reguläre Bitcoin-Zahlungen. Sie besitzen die vollständige Selbstverwahrung über die Liquid-Bitcoin-Werte in der Wallet für Sofortzahlungen und benötigen von niemandem eine Erlaubnis, um Zahlungen zu senden oder zu empfangen.\n\nSie allein sind dafür verantwortlich, den Zugriff auf Ihr Wallet-Backup zu sichern. Ohne dieses Backup kann niemand den Zugriff auf Ihre Liquid Bitcoin wiederherstellen.\n\nDer tatsächliche Wert von L-BTC hängt davon ab, ob Sie diese in echte Bitcoin einlösen können. Dies wiederum hängt von Swap-Anbietern ab, die Mitglieder des Liquid Network sind, sowie davon, dass die Liquid Federation weder kompromittiert noch abgeschaltet wird.\n\nSollten Mitglieder der Liquid Federation nicht mehr in der Lage oder nicht mehr bereit sein, Ihre Liquid Bitcoin gegen echte Bitcoin einzulösen, würden die L-BTC-Token wertlos werden.\n\n> Empfehlung\n> Bewahren Sie nur kleine Beträge in der Wallet für Sofortzahlungen auf. Verwahren Sie Ihre Ersparnisse in der sicheren Bitcoin-Wallet oder in einer importierten Hardware-Wallet.\n\n## Was ist die Wallet für Sofortzahlungen?\n\nWenn Sie mit der Wallet für Sofortzahlungen eine Lightning-Zahlung empfangen, wird das Guthaben des Senders tatsächlich von einem externen Swap-Anbieter empfangen, in Liquid Bitcoin umgewandelt und an Ihre Wallet gesendet.\n\nWenn Sie mit dieser Wallet eine Lightning-Zahlung senden, senden Sie tatsächlich eine Liquid-Bitcoin-Zahlung an einen externen Swap-Anbieter. Dieser wandelt sie in echte Bitcoin im Lightning Network um und sendet anschließend eine Lightning-Zahlung an den Empfänger.\n\nDiese Swaps erfolgen vollständig selbstverwahrt und ohne notwendiges Vertrauen. Der Swap-Anbieter kann Ihr Guthaben daher nicht stehlen. Bull Bitcoin ist an der Durchführung dieser Swap-Transaktionen nicht beteiligt und benötigt oder speichert keine personenbezogenen Daten.\n\n## Wofür sollte ich diese Wallet verwenden?\n\nDie Wallet für Sofortzahlungen ermöglicht Ihnen, im Alltag Bitcoin-Zahlungen zu empfangen oder Bitcoin zu kaufen sowie Bitcoin-Zahlungen zu senden oder Bitcoin zu verkaufen, ohne Bitcoin-Netzwerkgebühren zahlen zu müssen.\n\nWenn Sie Händler sind oder Bitcoin ansparen, verwenden Sie diese Wallet für Zahlungen unter 0,01 BTC. Sobald Sie mehr als 0,01 BTC angesammelt haben, übertragen Sie die Bitcoin in die sichere Bitcoin-Wallet oder eine andere selbstverwahrte Bitcoin-Wallet.\n\nWenn Sie Ihre Bitcoin ausgeben möchten, übertragen Sie einen kleinen Betrag in die Wallet für Sofortzahlungen und verwenden Sie ihn für Ihre Ausgaben. Wenn das Guthaben in der Wallet für Sofortzahlungen aufgebraucht ist, laden Sie sie einfach wieder auf.\n\n## Was ist Auto-Swap und wie funktioniert es?\n\nAuto-Swap, auch Auto-Transfer genannt, ist eine von Bull Bitcoin entwickelte Funktion. Sie wandelt Liquid Network Bitcoin (L-BTC) automatisch in Bitcoin (BTC) um, sobald der L-BTC-Betrag in Ihrer Wallet einen festgelegten Grenzwert erreicht.\n\nAuto-Swap ist standardmäßig aktiviert:\n\n- **Maximales Guthaben der Wallet für Sofortzahlungen:** 0,01 BTC\n- **Zielguthaben nach dem Auto-Swap:** 0,005 BTC\n- **Mindestbetrag für die Übertragung:** 0,005 BTC\n\nWenn Ihr Guthaben 0,01 BTC erreicht, wird beim nächsten Öffnen der App eine Übertragung eingeleitet. Der 0,005 BTC übersteigende Betrag wird dabei von L-BTC in BTC umgewandelt.\n\n### Beispiel\n\nWenn Sie über 0,012 L-BTC verfügen und Auto-Swap aktiviert ist, wird eine Übertragung von 0,007 L-BTC eingeleitet. Es verbleiben 0,005 L-BTC und Ihr BTC-Guthaben erhöht sich um 0,007 BTC.\n\n## Wie kann ich L-BTC in die Wallet für Sofortzahlungen einzahlen oder daraus abheben?\n\nUm die Wallet mit „echten“ Bitcoin aufzuladen, tippen Sie auf „Empfangen“ und wählen Sie „Lightning Network“. Um L-BTC abzuheben, tippen Sie auf „Senden“ und fügen Sie eine Lightning-Rechnung ein.\n\n## Wie funktioniert das Backup?\n\nDie Wallet für Sofortzahlungen verwendet dieselben Backup-Seed-Wörter wie die sichere Bitcoin-Wallet. Sie benötigen für beide Wallets nur ein Backup.\n\n## Sollte ich die Wallet für Sofortzahlungen statt einer selbstverwahrten Lightning-Wallet verwenden?\n\nEine selbstverwahrte Lightning-Wallet wie Phoenix Wallet bietet Ihnen ein höheres Maß an Sicherheit. Da Sie sich jedoch um die Verwaltung von Lightning-Kanälen kümmern müssen, kann sie weniger komfortabel und schwieriger zu bedienen sein.\n\nDa zum Öffnen und Schließen von Lightning-Kanälen On-Chain-Transaktionen erforderlich sind und möglicherweise Gebühren an Lightning-Dienstleister anfallen, kann eine vollständig selbstverwahrte Lightning-Wallet in einigen Fällen teurer sein.\n\nWenn Sie eine vollständig selbstverwahrte reine Lightning-Wallet verwenden können und möchten, empfehlen wir Ihnen Phoenix Wallet.\n\n## Wie hoch sind die Transaktionsgebühren?\n\nJede ein- oder ausgehende Zahlung der Wallet für Sofortzahlungen umfasst zwei Transaktionen im Liquid Network. Deren Gebühren sind üblicherweise sehr niedrig und sollten bei etwa 0,00000050 BTC (50 sats) liegen.\n\nWenn Sie mit der sicheren Bitcoin-Wallet Lightning-Zahlungen empfangen oder senden, müssen Sie für jede Zahlung zwei On-Chain-Bitcoin-Transaktionen bezahlen. Dies kann recht teuer sein.\n\nZusätzlich kann der Swap-Anbieter Swap-Gebühren erheben. Derzeit berechnet der Swap-Anbieter Boltz folgende Gebühren:\n\n- **Empfang von Lightning-Zahlungen in der Wallet für Sofortzahlungen:** 0,25 %\n- **Senden von Lightning-Zahlungen aus der Wallet für Sofortzahlungen:** 0,1 %\n- **Empfang von Lightning-Zahlungen in der sicheren Bitcoin-Wallet:** 0,5 %\n- **Senden von Lightning-Zahlungen aus der sicheren Bitcoin-Wallet:** 0,1 %.",
+  "settingsPayjoinDisclaimerTitle": "Payjoin-Hinweis",
+  "receivePayjoinBelowMinimum": "Betrag unter dem Payjoin-Mindestbetrag",
+  "receivePayjoinBelowMinimumSubtext": "Diese Zahlung lag unter Ihrem Payjoin-Mindestbetrag und wurde daher als reguläre Transaktion empfangen. Sie können diesen Grenzwert in den Bitcoin-Einstellungen ändern.",
+  "receivePayjoinExpired": "Payjoin-Zeitfenster abgelaufen",
+  "receivePayjoinExpiredSubtext": "Das Payjoin-Zeitfenster wurde geschlossen. Die Zahlung wird stattdessen als reguläre Transaktion empfangen.",
+  "receivePayjoinFallbackCompleted": "Ohne Payjoin empfangen",
+  "receivePayjoinFallbackCompletedSubtext": "Payjoin konnte dieses Mal nicht abgeschlossen werden. Daher wurde die Zahlung als reguläre Transaktion empfangen.",
+  "receivePayjoinFallbackCountdown": "Wechsel zu einer regulären Zahlung in",
+  "receivePayjoinQrBadge": "Payjoin",
+  "receiveViewDetails": "Details anzeigen",
+  "settingsPayjoinPrivacyGainExplanation": "Payjoin bietet einen erheblichen Schutz vor Blockchain-Analysen: Es widerlegt die Annahme, dass alle Eingänge einer Transaktion derselben Person gehören. Der Nachteil ist ein Datenschutzrisiko: Wenn Sie einen Payjoin annehmen, wird einer Ihrer UTXOs gegenüber der Gegenpartei offengelegt.",
+  "settingsPayjoinV1DirectoryLeakExplanation": "Wenn Ihre Gegenpartei eine ältere Payjoin-Version (v1) statt der aktuellen Version (v2) verwendet, kann derselbe UTXO auch gegenüber dem Payjoin-Verzeichnis offengelegt werden – einem Drittanbieter-Relay zur Koordination des Payjoins.",
+  "swapErrorRateLimited": "Zu viele Anfragen. Warten Sie {seconds} Sekunden und versuchen Sie es erneut.",
+  "swapErrorRouteUnavailable": "{fromNetwork} → {toNetwork} ist nicht verfügbar.",
+  "swapErrorRouteUnavailableGeneric": "Dieser Swap ist nicht verfügbar.",
+  "receiveErrorAmountAboveProtocolLimit": "Der Betrag liegt über dem maximal möglichen Bitcoin-Betrag von {max}",
+  "receiveErrorNoteNotSaved": "Ihre Notiz konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+  "receiveErrorAddressUnavailable": "Es konnte keine Empfangsadresse erstellt werden. Bitte versuchen Sie es erneut.",
+  "receiveErrorBroadcastOriginal": "Wir konnten die Transaktion nicht senden. Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+  "copiedToClipboard": "In die Zwischenablage kopiert"
+}

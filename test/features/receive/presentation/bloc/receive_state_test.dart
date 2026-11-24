@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:receive/receive.dart' show ReceiveWallet;
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
+import 'package:address_view/address_view.dart';
+import 'package:receive/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
@@ -19,24 +20,19 @@ void main() {
   //  payjoinGloballyEnabled semantics, not the balance one — a zero default
   //  would make isPayjoinLoading false for a reason unrelated to what each
   //  test names. Tests about isPayjoinAwaitingFunds override it explicitly.
-  Wallet localWallet({
+  ReceiveWallet localWallet({
     BigInt? balanceSat,
-    Network network = Network.bitcoinMainnet,
-  }) => Wallet(
-    origin: 'test-origin',
+    Network network = BitcoinNetwork.mainnet,
+  }) => ReceiveWallet(
+    id: 'test-origin',
     network: network,
-    xpubFingerprint: '00000000',
     scriptType: ScriptType.bip84,
-    xpub: '',
-    externalPublicDescriptor: '',
-    internalPublicDescriptor: '',
-    signer: SignerEntity.local,
+    signsLocally: true,
     signerDevice: null,
     balanceSat: balanceSat ?? BigInt.from(50000),
     // hasUtxos gates on confirmedBalanceSat, not balanceSat — mirror it here
     // so these tests keep exercising the isPayjoinLoading/isPayjoinAwaitingFunds
     // semantics they name, not the confirmed-vs-total distinction.
-    confirmedBalanceSat: balanceSat ?? BigInt.from(50000),
   );
 
   WalletAddress address() => WalletAddress(
@@ -209,7 +205,7 @@ void main() {
 
     test('liquid: amount is in BTC (L-BTC) units and the note becomes '
         'message=', () {
-      final wallet = localWallet(network: Network.liquidMainnet);
+      final wallet = localWallet(network: LiquidNetwork.mainnet);
       final state = ReceiveState(
         type: ReceiveType.liquid,
         wallet: wallet,

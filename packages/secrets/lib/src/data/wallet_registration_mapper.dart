@@ -74,11 +74,15 @@ WalletRegistration? decodeWalletRegistration(Map<String, Object?> row) {
       return null;
     }
     final path = _descriptorKeyOrigin.firstMatch(external)?.group(1);
+    final masterFingerprint = Fingerprint.tryParse(master);
     return WalletRegistration(
       id: id,
       network: network,
       scriptType: script,
       signer: signer,
+      masterFingerprint: masterFingerprint?.hex == master
+          ? masterFingerprint
+          : null,
       secretFingerprint: fingerprint,
       derivationPath: path == null ? null : 'm$path',
       label: label,
@@ -94,3 +98,9 @@ bool _looksPublic(String descriptor) =>
     descriptor.contains('(') &&
     descriptor.contains(')') &&
     !_privateKeyPattern.hasMatch(descriptor);
+
+/// Backup must not export a confidential descriptor, even for a bad row
+/// whose persisted network claims to be Bitcoin.
+bool isPublicBitcoinBackupDescriptor(String descriptor) =>
+    _looksPublic(descriptor) &&
+    !RegExp(r'\bct\s*\(', caseSensitive: false).hasMatch(descriptor);

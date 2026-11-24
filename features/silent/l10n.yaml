@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: silent_en.arb
+output-localization-file: silent_localizations.dart
+output-class: SilentLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false

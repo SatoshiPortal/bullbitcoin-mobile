@@ -1,0 +1,214 @@
+{
+  "translationWarningContributeButton": "Melhorar as traduções",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se você notar erros ou quiser ajudar a melhorar as traduções, você pode enviar uma correção no nosso repositório do GitHub.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "IA-Gerado Traduções",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Modo de Testnet",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "Logs",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Moeda de fiat padrão",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "Carteira de importação",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "Estado dos serviços",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "backupSettingsRecoverBullSettings": "Recuperação",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsSecurityPinTitle": "Pin de segurança",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "Etiquetas",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "settingsDevModeUnderstandButton": "Eu compreendo",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "Moeda",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "Língua",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsExchangeSettingsTitle": "Configurações de troca",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "electrumTestnet": "Testneta",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsAppSettingsTitle": "Configurações do aplicativo",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Modo de desenvolvimento",
+  "exchangeTestnetBasicAuthTitle": "Credenciais da exchange testnet",
+  "exchangeTestnetBasicAuthDescription": "Autenticação básica HTTP para as páginas web da exchange testnet (login e KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Nome de usuário",
+  "exchangeTestnetBasicAuthPasswordLabel": "Senha",
+  "exchangeTestnetBasicAuthClearButton": "Limpar",
+  "exchangeTestnetBasicAuthSaveButton": "Salvar",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "Principal",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "settingsSuperuserModeDisabledMessage": "Modo Superuser desativado.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "Termos de Serviço",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "allSeedViewTitle": "Visualizador de sementes",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "Transação de transmissão",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "Tema",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "settingsDevModeWarningTitle": "Modo de desenvolvimento",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Este modo é arriscado. Ao habilitar, você reconhece que pode perder dinheiro",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Entropias Deterministas",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "settingsAppVersionLabel": "Versão do aplicativo: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "torSettingsTitle": "Configurações do Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "doneButton": "Feito",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Modo Superuser desbloqueado!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "Configurações",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "autoswapSettingsTitle": "Configurações do Auto Swap",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "backupSettingsStartBackup": "Iniciar backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "transactionHistoryTitle": "Histórico de transações",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "Restaurar swap",
+  "settingsErrorReportingTitle": "Relatório de erros",
+  "errorReportingProgramTitle": "Programa de Relatório de Erros",
+  "errorReportingProgramDescriptionP1": "Ajude-nos a melhorar o Bull contribuindo com nosso programa de relatório de erros.",
+  "errorReportingProgramDescriptionP2": "A Bull Bitcoin envia relatórios de erros anonimizados quando algo dá errado.",
+  "errorReportingProgramDescriptionP3": "Isso nos permite ver quantos usuários cada bug afeta e priorizar as correções de acordo. Sem isso, não temos como medir o impacto.",
+  "errorReportingProgramDescriptionP4": "Os relatórios vão apenas para o servidor da Bull, nunca para terceiros.",
+  "errorReportingProgramDescriptionP5": "A Bull Bitcoin é open source, então você pode verificar o que é enviado.",
+  "errorReportingAcceptButton": "Aceitar",
+  "errorReportingCancelButton": "Cancelar",
+  "errorReportingRestartSnackbar": "Reinicie o aplicativo para aplicar esta alteração",
+  "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
+  "settingsPayjoinAdvancedTitle": "Configurações avançadas do Payjoin",
+  "settingsScreenPrivacyTitle": "Privacidade da tela",
+  "settingsScreenPrivacyDisabledMessage": "Agora as capturas de tela são permitidas em telas sensíveis",
+  "settingsSearchHint": "Pesquisar nas configurações",
+  "settingsSearchNoResults": "Nenhuma configuração encontrada.",
+  "settingsSearchMempoolKeywords": "explorador de blocos|estimativa de taxas|taxas de transação|API mempool",
+  "settingsSearchExchangeKeywords": "conta|conta da corretora|negociação|comprar e vender",
+  "settingsSearchStartBackupKeywords": "criar backup|salvar backup|fazer backup da carteira",
+  "settingsSearchRecoverbullKeywords": "backup criptografado|backup na nuvem|cofre criptografado|recuperação do cofre|Recoverbull",
+  "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
+  "settingsSearchTransactionHistoryKeywords": "exportar transações|exportação de transações|CSV|histórico da carteira",
+  "settingsSearchAppSettingsKeywords": "preferências do aplicativo|configurações do aplicativo|configurações gerais",
+  "settingsSearchTermsOfServiceKeywords": "termos e condições|informações legais|acordo do usuário|TOS",
+  "settingsSearchServicesStatusKeywords": "status dos serviços|status do sistema|online|indisponibilidade",
+  "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemônico|carteira somente leitura|carteira de hardware",
+  "settingsSearchBroadcastTransactionKeywords": "transmitir transação assinada|publicar transação|transação bruta|hexadecimal da transação|PSBT",
+  "settingsSearchPayjoinKeywords": "privacidade Payjoin|transação colaborativa|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "troca automática|swap automático|transferência automática|saldo da carteira instantânea|Autoswap",
+  "settingsSearchElectrumKeywords": "nó Bitcoin|nó Electrum|servidor personalizado|nó próprio|Electrum",
+  "settingsSearchTestnetModeKeywords": "rede de testes|testnet Bitcoin|testnet Liquid|modo de testes|Testnet",
+  "settingsSearchSeedViewerKeywords": "frase seed|frase de recuperação|mnemônico|palavras de backup|mostrar seeds",
+  "settingsSearchBip85Keywords": "entropia determinística|seeds derivadas|entropia derivada|BIP85",
+  "settingsSearchLanguageKeywords": "localidade|tradução|idioma de exibição|idioma preferido",
+  "settingsSearchThemeKeywords": "aparência|modo escuro|modo claro|tema do sistema",
+  "settingsSearchCurrencyKeywords": "moeda fiduciária|moeda local|moeda padrão|moeda de câmbio",
+  "settingsSearchSecurityPinKeywords": "código PIN|senha de acesso|bloqueio do aplicativo|autenticação|alterar PIN",
+  "settingsSearchLogsKeywords": "logs de debug|logs de diagnóstico|logs do aplicativo|exportar logs",
+  "settingsSearchDevModeKeywords": "modo desenvolvedor|configurações de desenvolvimento|modo debug|testes avançados",
+  "settingsSearchTestnetCredentialsKeywords": "credenciais da testnet|login da testnet|usuário da testnet|senha da testnet|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "relatórios de falhas|relatórios de bugs|diagnóstico|telemetria|logs de erros",
+  "settingsSearchScreenPrivacyKeywords": "capturas de tela|gravação de tela|proteção contra captura|privacidade",
+  "settingsSearchStartTyping": "Comece a digitar para ver os resultados.",
+  "settingsErrorSavingSetting": "Não foi possível salvar essa configuração. Por favor, tente novamente.",
+  "settingsErrorConsentNotGiven": "Esta configuração precisa da sua confirmação antes de ser alterada.",
+  "settingsErrorLoadingLogs": "Não foi possível preparar os logs de diagnóstico. Por favor, tente novamente.",
+  "settingsSearchTorKeywords": "proxy Tor|Orbot|roteamento onion|Tor integrado|rede de privacidade",
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
+  "settingsDarkModeTitle": "Modo escuro",
+  "settingsSourceCodeTitle": "Código-fonte",
+  "backgroundTasksTitle": "Tarefas em segundo plano",
+  "notificationsBlockedMessage": "As notificações estão bloqueadas nas configurações do sistema.",
+  "notificationsTitle": "Notificações",
+  "openSystemSettings": "Abrir configurações do sistema",
+  "permissionsTitle": "Permissões",
+  "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas"
+}

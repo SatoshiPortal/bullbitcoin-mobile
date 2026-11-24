@@ -3,13 +3,16 @@ import 'dart:io';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:legacy_storage/coordination.dart';
+import 'package:legacy_storage/legacy_storage.dart' show LegacyImportDeferred;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart'
     show
         inventorySessionChangedFailure,
         inventoryCredentialRequiredFailure,
-        inventoryLockedFailure;
+        inventoryLockedFailure,
+        invalidBip85HexLengthFailure,
+        unreadableBip85RecordFailure;
 
 import '../data/access_repository.dart';
 import '../data/derivation_repository.dart';
@@ -20,10 +23,16 @@ import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
+import '../domain/metadata_backup_wallet.dart';
 import '../domain/recorded_derivation.dart';
 import '../domain/registered_wallet.dart';
 import '../domain/wallet_registration.dart';
+import 'extensions.dart';
+import 'secret.dart';
+import 'secrets.dart';
 import 'wallet_inventory.dart';
+
+part 'bip85_derivations.dart';
 
 /// The foreground wallet inventory. Access starts with the persisted policy.
 /// Lock invalidates any pending read and the next operation checks the session.
@@ -51,6 +60,16 @@ final class SecretsInventory implements WalletInventory {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
+        if (await reconcileInventoryAccess(value.database) case Err(
+          :final failure,
+        )) {
+          await value.close();
+          return Err(
+            failure is LegacyImportDeferred
+                ? const DatabaseKeyUnavailable(DatabaseKeyProblem.locked)
+                : const DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
+          );
+        }
         final access = AccessRepository(value.database);
         switch (await access.isProtected()) {
           case Err():
@@ -101,6 +120,11 @@ final class SecretsInventory implements WalletInventory {
         }
       });
 
+  @useResult
+  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
+    InventoryBackupVerification verification,
+  ) => _inSession((_) => _access.hasVerifiedBackups(verification));
+
   /// Protect the active view from an authenticated foreground session.
   @useResult
   Future<Result<void, SecretFailure>> setCredential(
@@ -127,6 +151,22 @@ final class SecretsInventory implements WalletInventory {
   Future<Result<List<RegisteredWallet>, SecretFailure>> listWallets() =>
       _inSession((_) => _wallets.list(defaultViewId));
 
+  @override
+  @useResult
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints() =>
+      _inSession((_) => _wallets.referencedFingerprints(defaultViewId));
+
+  /// Whether the authorized view has any wallet, including on other networks.
+  @useResult
+  Future<Result<bool, SecretFailure>> hasWallets() async =>
+      (await listWallets()).map((wallets) => wallets.isNotEmpty);
+
+  /// Locally signing Bitcoin wallets and their public recovery evidence.
+  @useResult
+  Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>>
+  recoveryWallets() =>
+      _inSession((_) => _wallets.recoveryWallets(defaultViewId));
+
   @useResult
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
   listDescriptors() =>
@@ -147,9 +187,20 @@ final class SecretsInventory implements WalletInventory {
     Network network,
   ) => _inSession((_) => _wallets.listForNetwork(defaultViewId, network));
 
+  /// Reserve the ID before preparing properties owned by other stores. The
+  /// callback must not call back into this inventory. If it fails, the wallet
+  /// and its membership are not published; a retry prepares its properties.
   @useResult
-  Future<Result<void, SecretFailure>> registerWallet(RegisteredWallet wallet) =>
-      _inSession((_) => _wallets.register(wallet, view: defaultViewId));
+  Future<Result<void, SecretFailure>> registerWallet(
+    RegisteredWallet wallet, {
+    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+  }) => _inSession(
+    (_) => _wallets.register(
+      wallet,
+      view: defaultViewId,
+      prepareProperties: prepareProperties,
+    ),
+  );
 
   @useResult
   Future<Result<void, SecretFailure>> setWalletProperties({
@@ -170,6 +221,9 @@ final class SecretsInventory implements WalletInventory {
   @useResult
   Future<Result<void, SecretFailure>> removeWallet(String id) =>
       _inSession((_) => _wallets.remove(view: defaultViewId, id: id));
+
+  /// Operates on historical BIP85 children in the current foreground view.
+  Bip85Derivations bip85(Secrets secrets) => Bip85Derivations._(this, secrets);
 
   @useResult
   Future<Result<List<RecordedDerivation>, SecretFailure>> listDerivations() =>
@@ -250,6 +304,41 @@ final class SecretsInventory implements WalletInventory {
     lock();
     return _store.close();
   }
+}
+
+/// The metadata backup client cannot fetch raw descriptors from this view.
+extension MetadataBackupInventory on SecretsInventory {
+  @useResult
+  Future<Result<List<MetadataBackupWallet>, SecretFailure>>
+  metadataBackupWallets(Secrets secrets) => _inSession((_) async {
+    final projection = await _wallets.metadataBackupWallets(defaultViewId);
+    if (projection case Err(:final failure)) return Err(failure);
+    final wallets =
+        (projection as Ok<List<MetadataBackupWallet>, SecretFailure>).value;
+    final available = <Fingerprint, bool>{};
+    final verified = <MetadataBackupWallet>[];
+    for (final wallet in wallets) {
+      final reference = wallet.secret;
+      if (reference == null) {
+        verified.add(wallet);
+        continue;
+      }
+      var present = available[reference];
+      if (present == null) {
+        switch (await secrets.fetch(reference)) {
+          case Ok():
+            present = true;
+          case Err(failure: SecretNotFoundFailure()):
+            present = false;
+          case Err(:final failure):
+            return Err(failure);
+        }
+        available[reference] = present;
+      }
+      verified.add(present ? wallet : MetadataBackupWallet(id: wallet.id));
+    }
+    return Ok(List.unmodifiable(verified));
+  });
 }
 
 /// Scope for background sync. Only descriptors in views with an active

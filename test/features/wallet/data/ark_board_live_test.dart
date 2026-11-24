@@ -16,6 +16,7 @@
 /// - observe: synchronize Ark and print the VTXOs and balance.
 library;
 
+import 'package:address_view/address_view.dart';
 import 'package:labels/testing.dart';
 
 import 'package:electrum/testing.dart';
@@ -27,18 +28,28 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/sync.dart' show WalletCatalogPort, SyncReason;
+import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:bb_mobile/wallet_inventory_setup.dart';
+import 'package:bull_recoverbull/migration.dart';
+import 'package:legacy_storage/coordination.dart';
+import 'package:secrets/migration.dart';
+import 'package:signers/storage.dart';
+import 'package:sync/storage.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
 import 'package:bull_ark/bull_ark.dart';
 import 'package:bull_tor/tor_adapter.dart';
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:primitives/primitives.dart';
@@ -63,6 +74,55 @@ void _requireMode(FileSystemEntity entity, String mode) {
   final actual = (stat.mode & 0x1ff).toRadixString(8);
   if (actual != mode) {
     throw StateError('${entity.path} must have mode $mode, has $actual');
+  }
+}
+
+/// Persists only database key envelopes in the private live-test directory.
+final class _DatabaseKeyStorage extends FakeSecureStoragePlatform {
+  final File keyFile;
+
+  _DatabaseKeyStorage(this.keyFile, Map<String, String> entries)
+    : super(entries: entries);
+
+  static _DatabaseKeyStorage open(File file) {
+    if (!file.existsSync()) return _DatabaseKeyStorage(file, {});
+    _requireMode(file, '600');
+    final decoded = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    if (decoded.entries.any(
+      (entry) =>
+          !entry.key.startsWith('com.bullbitcoin.secrets/dek/') ||
+          entry.value is! String,
+    )) {
+      throw StateError('Invalid database key fixture');
+    }
+    return _DatabaseKeyStorage(file, Map<String, String>.from(decoded));
+  }
+
+  @override
+  Future<void> write({
+    required String key,
+    required String value,
+    required Map<String, String> options,
+  }) async {
+    await super.write(key: key, value: value, options: options);
+    if (!key.startsWith('com.bullbitcoin.secrets/dek/')) return;
+    final temporary = File('${keyFile.path}.new');
+    if (temporary.existsSync()) {
+      throw StateError('Incomplete database key write');
+    }
+    temporary.createSync();
+    Process.runSync('chmod', ['600', temporary.path]);
+    _requireMode(temporary, '600');
+    temporary.writeAsStringSync(
+      jsonEncode({
+        for (final entry in entries.entries)
+          if (entry.key.startsWith('com.bullbitcoin.secrets/dek/'))
+            entry.key: entry.value,
+      }),
+      flush: true,
+    );
+    temporary.renameSync(keyFile.path);
+    _requireMode(keyFile, '600');
   }
 }
 
@@ -140,18 +200,83 @@ void main() {
       Process.runSync('chmod', ['700', appDirectory.path]);
       _requireMode(appDirectory, '700');
       PathProviderPlatform.instance = _Paths(appDirectory.path);
-      FakeSecureStoragePlatform().install();
+      _DatabaseKeyStorage.open(File('${appDirectory.path}/database-keys.json'))
+          .install();
       SharedPreferences.setMockInitialValues({});
 
       await initFlutterRustBridgeDependencies();
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
       registerTestOwnerDatabases(locator);
-      final database = SqliteDatabase(
-        NativeDatabase(File('${appDirectory.path}/bull.sqlite')),
+      File ownerFile(String owner) =>
+          File('${appDirectory.path}/$owner.sqlite');
+      final legacy = LegacySourceStore(
+        source: LegacySource(
+          File('${appDirectory.path}/bull.sqlite'),
+          SqliteDatabase.currentSchemaVersion,
+        ),
+        create: SqliteDatabase.new,
       );
+      final inventoryFile = ownerFile('secrets');
+      final signersFile = ownerFile('signers');
+      final syncFile = ownerFile('sync');
+      final secrets = Secrets(scratchDirectory: () async => appDirectory.path);
+      final signerKeys = secrets.databaseKeys(module: 'signers');
+      final syncKeys = secrets.databaseKeys(module: 'sync');
+      final recoverBull = RecoverBullCutover(
+        file: ownerFile('recoverbull'),
+        standalone: File('${appDirectory.path}/recoverbull-legacy.sqlite'),
+        regtest: false,
+      );
+      final regtestRecoverBull = RecoverBullCutover(
+        file: ownerFile('recoverbull_regtest'),
+        standalone: File(
+          '${appDirectory.path}/recoverbull-regtest-legacy.sqlite',
+        ),
+        regtest: true,
+      );
+      final prepared = await StorageCutover(
+        directory: Directory('${appDirectory.path}/coordination'),
+        legacy: legacy,
+        expectedOwners: const {
+          'secrets',
+          'signers',
+          'sync',
+          'recoverbull',
+          'recoverbull_regtest',
+        },
+        participants: [
+          recoverBull.participant,
+          regtestRecoverBull.participant,
+          SecretsImport(file: inventoryFile),
+          signersWalletMetadataImport(file: signersFile, keys: signerKeys),
+          syncWalletMetadataImport(file: syncFile, keys: syncKeys),
+        ],
+      ).prepare();
+      final admission = _ok(prepared, 'storage admission');
+      locator.registerSingleton<RuntimeAdmission>(
+        admission,
+        dispose: (value) => value.close(),
+      );
+      _ok(
+        await openWalletInventory(
+          locator,
+          admission: admission,
+          legacy: legacy.source,
+          inventoryFile: inventoryFile,
+          signersFile: signersFile,
+          syncFile: syncFile,
+          signerKeys: signerKeys,
+          syncKeys: syncKeys,
+          recoverBull: recoverBull,
+          regtestRecoverBull: regtestRecoverBull,
+        ),
+        'open wallet inventory',
+      );
+      final database = await legacy.open(admission);
       await AppLocator.setup(
         locator,
         database,
+        secrets: secrets,
         openLabels: (sync, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
@@ -188,9 +313,9 @@ void main() {
       _ok(await settings.setIsSuperuser(true), 'superuser');
       _ok(await settings.setIsDevMode(true), 'developer mode');
       _ok(await settings.setEnvironment(Environment.regtest), 'environment');
-      final secrets = locator<Secrets>();
+      final runtimeSecrets = locator<Secrets>();
 
-      final wallets = await locator<WalletMetadataDatasource>().fetchAll();
+      final wallets = await locator<WalletRegistrations>().fetchAll();
       final bitcoin = wallets.where(
         (w) => w.networkCode == 'bitcoinRegtest' && w.isDefault,
       );
@@ -201,7 +326,7 @@ void main() {
             keyFile.existsSync()) {
           throw StateError('setup already ran in this directory');
         }
-        final parent = _ok(await secrets.generate(), 'generate parent');
+        final parent = _ok(await runtimeSecrets.generate(), 'generate parent');
         final sealed = _ok(await parent.backup.recoverbull(), 'seal parent');
         _writePrivate(vaultFile, sealed.vault.json);
         _writePrivate(keyFile, sealed.key.hex);
@@ -216,20 +341,26 @@ void main() {
         );
         expect(recovered, parent.id);
         _ok(
-          await locator<CreateDefaultWalletsUsecase>().execute(
+          await locator<DefaultWalletProvisioning>().execute(
             secret: parent,
             expectedNetwork: NetworkEnv.regtest,
           ),
           'create wallets',
         );
-        final source = (await locator<WalletMetadataDatasource>().fetchAll())
+        final source = (await locator<WalletRegistrations>().fetchAll())
             .singleWhere(
               (w) => w.networkCode == 'bitcoinRegtest' && w.isDefault,
             );
-        final address = await locator<GetReceiveAddressUsecase>().execute(
+        final result = await locator<AddressView>().receiveAddress(
           walletId: source.id,
-          generateNew: true,
+          advance: true,
         );
+        final address = switch (result) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw StateError(
+            failure.runtimeType.toString(),
+          ),
+        };
         _report(
           'source wallet=${source.id} fingerprint=${source.masterFingerprint} '
           'network=${source.networkCode} address=${address.address}',
@@ -240,7 +371,7 @@ void main() {
 
       final source = bitcoin.single;
       final restored = _ok(
-        await secrets.recoverbull.restore(
+        await runtimeSecrets.recoverbull.restore(
           vault: EncryptedVault(json: vaultFile.readAsStringSync()),
           key: VaultKey(keyFile.readAsStringSync()),
         ),
@@ -249,6 +380,20 @@ void main() {
       expect(restored.secret.id.hex, source.masterFingerprint);
       await ArkForegroundHost.setup(
         locator,
+        inventory: locator<SecretsInventory>(),
+        boardFunding: () => arkBoardFundingBinding(
+          authority: locator<SqliteArkFundingReservations>(),
+          runtime: locator<WalletNativeRuntime>(),
+          inventory: locator<SecretsInventory>(),
+          synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+            key,
+            locator<WalletCatalogPort>(),
+            reason: SyncReason.manual,
+          ),
+          secrets: locator<Secrets>(),
+          fees: locator<Fees>(),
+          custody: locator<ParentCustodyAdmissionPort>(),
+        ),
         arkUrl: Uri.parse(arkUrl!),
         primaryEsploraUrl: Uri.parse(esploraUrl!),
         initializeNew: true,

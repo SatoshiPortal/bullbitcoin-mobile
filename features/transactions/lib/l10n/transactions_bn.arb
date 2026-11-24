@@ -1,0 +1,755 @@
+{
+  "@@locale": "bn",
+  "transactionDetailLabelTransactionFee": "লেনদেন ফি",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionSwapDescLnSendPending": "আপনার সোয়াপ শুরু হয়েছে। আপনার তহবিল লক করতে আমরা ব্লকচেইন ট্রান্স্যাকশন প্রচার করছি।",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionLabelPreimage": "পূর্বচিত্র",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "coreSwapsChainCanCoop": "সোয়াপ এখনই সম্পন্ন হবে।",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "transactionDetailLabelConfirmationTime": "নিশ্চিতকরণ সময়",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionSwapDescChainPending": "আপনার সোয়াপ তৈরি হয়েছে কিন্তু এখনও শুরু করা হয়নি।",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionStatusTransferFailed": "সোয়াপ ব্যর্থ",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionFilterTransfer": "সোয়াপ",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionNetworkLightning": "লাইটনিং নেটওয়ার্ক",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelSwapFees": "বদল ফি",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "globalDefaultBitcoinWalletLabel": "সুরক্ষিত বিটকয়েন",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionStatusSwapExpired": "সোয়াপ মেয়াদ শেষ হয়েছে।",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionFilterBuy": "ক্রয়",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "coreWalletTransactionStatusPending": "মুলতুবি",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionDetailLabelTransferStatus": "সোয়াপের অবস্থা",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "coreSwapsLnSendExpired": "Swap মেয়াদোত্তীর্ণ",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsChainFailedRefunding": "সোয়াপ শীঘ্রই ফেরত দেওয়া হবে।",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionStatusPaymentRefunded": "পেমেন্ট ফেরত",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "পেমেন্ট প্রক্রিয়াধীন",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "transactionSwapDescChainFailed": "আপনার সোয়াপে সমস্যা হয়েছে। ২৪ ঘণ্টার মধ্যে তহবিল আপনার ওয়ালেটে ফিরে না এলে সাপোর্টে যোগাযোগ করুন।",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescLnSendDefault": "আপনার সোয়াপ প্রক্রিয়াধীন। এই প্রক্রিয়াটি স্বয়ংক্রিয় এবং সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "buyTitle": "Bitcoin কিনুন",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "transactionSwapDescLnSendFailed": "আপনার সোয়াপে সমস্যা হয়েছে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে আসবে।",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "এই সোয়াপটির মেয়াদ শেষ হয়েছে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে যাবে।",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "এই সোয়াপটির মেয়াদ শেষ হয়েছে। প্রেরকের কাছে স্বয়ংক্রিয়ভাবে তহবিল ফিরে যাবে।",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionDetailLabelTransferId": "সোয়াপ ID",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionFilterAll": "সব",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionDetailLabelAmountReceived": "প্রাপ্ত পরিমাণ",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionLabelReceiveAmount": "প্রাপ্ত পরিমাণ",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "coreSwapsLnSendPaid": "আপনার পেমেন্ট নিশ্চিত হওয়ার পরে ইনভয়েস পরিশোধ হবে।",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "transactionDetailAccelerate": "গতি বাড়ান",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLabelPayjoinExpired": "মেয়াদ শেষ",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionSwapDescLnSendCompleted": "লাইটনিং পেমেন্ট সফলভাবে পাঠানো হয়েছে! আপনার সোয়াপ এখন সম্পূর্ণ হয়েছে।",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionListNoTransactions": "এখনও কোনো লেনদেন হয়নি।",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionStatusTransferInProgress": "সোয়াপ প্রক্রিয়াধীন",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailTransferProgress": "সোয়াপের অগ্রগতি",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailLabelPayinAmount": "পে-ইন পরিমাণ",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "coreSwapsLnSendPending": "Swap এখনো শুরু হয়নি।",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnReceivePaid": "প্রেরক ইনভয়েস পরিশোধ করেছেন।",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "transactionSwapInfoClaimableTransfer": "সোয়াপটি কয়েক সেকেন্ডের মধ্যে স্বয়ংক্রিয়ভাবে সম্পন্ন হবে। যদি না হয়, 'সোয়াপ দাবি পুনরায় চেষ্টা করুন' বোতামে ক্লিক করে ম্যানুয়ালি দাবি করার চেষ্টা করতে পারেন।",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionDetailLabelRefunded": "ফেরত দেওয়া হয়েছে",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionNoteAddTitle": "নোট যোগ করুন",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionDetailLabelPayjoinCompleted": "সমাপ্ত",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelCreatedAt": "তৈরির সময়",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionLabelSendAmount": "পাঠানোর পরিমাণ",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "প্রাপ্ত নেটওয়ার্ক ফি",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionSwapDescChainExpired": "এই সোয়াপের মেয়াদ শেষ হয়েছে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে যাবে।",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "coreSwapsChainCompletedRefunded": "সোয়াপ ফেরত দেওয়া হয়েছে।",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "transactionDetailLabelPayjoinStatus": "Payjoin অবস্থা",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionFilterReceive": "গ্রহণ করুন",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Swap সফলভাবে সম্পন্ন হয়েছে।",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "আপনার সোয়াপ প্রক্রিয়াধীন। এই প্রক্রিয়াটি স্বয়ংক্রিয় এবং সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionSwapDoNotUninstall": "বদল সম্পূর্ণ না হওয়া পর্যন্ত অ্যাপটি আনইনস্টল করবেন না।",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionDetailLabelExchangeRate": "বিনিময় হার",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "coreSwapsStatusPending": "মুলতুবি",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "transactionDetailLabelToWallet": "গন্তব্য ওয়ালেট",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "coreSwapsChainCompletedSuccess": "সোয়াপ সফলভাবে সম্পন্ন হয়েছে।",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsLnReceiveFailed": "Swap ব্যর্থ হয়েছে।",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "transactionDetailLabelPayinStatus": "Payin অবস্থা",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionListOngoingTransfersTitle": "চলমান সোয়াপ",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionSwapDescChainClaimable": "লকআপ ট্রানজেকশন নিশ্চিত হয়েছে। আপনার সোয়াপ সম্পূর্ণ করতে আপনি এখন তহবিল দাবি করছেন।",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "সোয়াপটি ফেরত দেওয়া হবে। আপনার তহবিল স্বয়ংক্রিয়ভাবে আপনার ওয়ালেটে ফিরে যাবে।",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "receivePaymentNormally": "স্বাভাবিকভাবে পেমেন্ট গ্রহণ করুন",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "coreSwapsStatusInProgress": "চলমান",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "transactionTitle": "লেনদেন",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionDetailLabelFromWallet": "ওয়ালেট থেকে",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionSwapDescChainCompleted": "আপনার সোয়াপ সফলভাবে সম্পন্ন হয়েছে! তহবিল এখন আপনার ওয়ালেটে পাওয়া যাওয়ার কথা।",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "coreSwapsLnSendRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "transactionFilterPayjoin": "Payjoin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "coreSwapsLnSendCanCoop": "Swap এখনই সম্পন্ন হবে।",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "retry": "পুনরায় চেষ্টা করুন",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionDetailLabelTransactionId": "লেনদেনের আইডি",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "coreSwapsLnReceiveClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "Swap এখনই সম্পন্ন হবে।",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsChainPending": "সোয়াপ এখনো শুরু হয়নি।",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "transactionNetworkBitcoin": "বিটকয়েন",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "coreSwapsLnSendFailed": "Swap ব্যর্থ হয়েছে।",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainRefundable": "সোয়াপ ফেরত দেওয়ার জন্য প্রস্তুত।",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "transactionFeesTotalDeducted": "পাঠানো পরিমাণ থেকে মোট ফি কাটা হয়েছে।",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionStatusPayjoinRequested": "Payjoin অনুরোধ করা হয়েছে",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionSwapInfoRefundableTransfer": "এই সোয়াপটি কয়েক সেকেন্ডের মধ্যে স্বয়ংক্রিয়ভাবে ফেরত দেওয়া হবে। যদি না হয়, 'সোয়াপ ফেরত পুনরায় চেষ্টা করুন' বোতামে ক্লিক করে ম্যানুয়ালি ফেরতের চেষ্টা করতে পারেন।",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionDetailLabelPayoutStatus": "Payout অবস্থা",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "coreSwapsLnSendCompletedRefunded": "Swap ফেরত দেওয়া হয়েছে।",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "transactionSwapInfoClaimableSwap": "বদলটি কয়েক সেকেন্ডের মধ্যে স্বয়ংক্রিয়ভাবে সম্পন্ন হবে। যদি না হয়, তবে 'বদল দাবি পুনরায় চেষ্টা করুন' বোতামে ক্লিক করে ম্যানুয়ালা দাবি করার চেষ্টা করতে পারেন।",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionListLoadingTransactions": "লেনদেনগুলো লোড হচ্ছে।",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionDetailLabelBitcoinTxId": "বিটকয়েন লেনদেন নম্বর",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "coreSwapsChainFailed": "সোয়াপ ব্যর্থ হয়েছে।",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "নোট যোগ করুন",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionDetailLabelPayinMethod": "Payin পদ্ধতি",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionStatusTransferCompleted": "সোয়াপ সম্পন্ন",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "Liquid লেনদেন নম্বর",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionLabelServerNetworkFees": "সার্ভার নেটওয়ার্ক ফি",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "coreSwapsChainPaid": "সোয়াপ প্রদানকারীর পেমেন্ট নিশ্চিতের জন্য অপেক্ষা করা হচ্ছে। এটি সম্পন্ন হতে কিছু সময় লাগতে পারে।",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "transactionSwapDescLnSendPaid": "আপনার অন-চেইন ট্রান্স্যাকশন প্রচারিত হয়েছে। একটি নিশ্চিতকরণের পরে লাইটনিং পেমেন্ট পাঠানো হবে।",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescChainDefault": "আপনার সোয়াপ প্রক্রিয়াধীন। এটি স্বয়ংক্রিয় এবং সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "coreSwapsChainClaimable": "সোয়াপ দাবি করার জন্য প্রস্তুত।",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "পাঠানোর নেটওয়ার্ক ফি",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionStatusInProgress": "চলমান",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionOrderLabelOriginName": "উৎপত্তির নাম",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "globalDefaultLiquidWalletLabel": "তাত্ক্ষণিক লেনদেন",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionSwapInfoRefundableSwap": "এই বদলটি কয়েক সেকেন্ডের মধ্যে স্বয়ংক্রিয়ভাবে ফেরত দেওয়া হবে। যদি না হয়, তবে 'বদল ফেরত দাবি পুনরায় চেষ্টা করুন' বোতামে ক্লিক করে ম্যানুয়াল ফেরতের চেষ্টা করতে পারেন।",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionDetailLabelAddressNotes": "ঠিকানার নোট",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionOrderLabelReferenceNumber": "রেফারেন্স নম্বর",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "অবস্থা",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionFeesDeductedFrom": "পাঠানো পরিমাণ থেকে এই ফি কাটা হবে।",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionStatusPending": "প্রক্রিয়াধীন",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionLabelSendNetworkFees": "পাঠানোর জন্য নেটওয়ার্ক ফি",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "coreSwapsChainExpired": "সোয়াপ মেয়াদোত্তীর্ণ",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionListYesterday": "গতকাল",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionDetailLabelPayoutMethod": "পাওআউট পদ্ধতি",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "coreSwapsStatusFailed": "ব্যর্থ",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "transactionFilterSell": "বিক্রি",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionSwapInfoChainDelay": "ব্লকচেইন নিশ্চিতকরণের সময়ের কারণে অন-চেইন সোয়াপ সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "sellTitle": "Bitcoin বিক্রি করুন",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionListToday": "আজ",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionDetailLabelSwapStatus": "বিনিময় অবস্থা",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelAmountSent": "পাঠানো পরিমাণ",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "coreSwapsLnReceiveRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFees": "সোয়াপ ফি",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionDetailLabelOrderType": "আদেশের ধরন",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelPayoutAmount": "পাওআউট পরিমাণ",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "coreSwapsLnSendFailedRefunding": "Swap শীঘ্রই ফেরত দেওয়া হবে।",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "transactionDetailLabelAddress": "ঠিকানা",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "coreSwapsLnReceivePending": "Swap এখনো শুরু হয়নি।",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin তৈরির সময়",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "transactionSwapInfoFailedExpired": "আপনার যদি কোনো প্রশ্ন বা উদ্বেগ থাকে, সহায়তার জন্য দয়া করে সাপোর্টে যোগাযোগ করুন।",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "coreSwapsStatusExpired": "মেয়াদোত্তীর্ণ",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsLnReceiveExpired": "Swap মেয়াদোত্তীর্ণ।",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "transactionDetailLabelOrderNumber": "আদেশ নম্বর",
+  "transactionDetailLabelPaymentDescription": "পেমেন্টের বিবরণ",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionListOngoingTransfersDescription": "এই সোয়াপগুলো বর্তমানে প্রক্রিয়াধীন। আপনার তহবিল নিরাপদ এবং সোয়াপ সম্পূর্ণ হলে তা উপলব্ধ থাকবে।",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionOrderLabelOriginCedula": "উৎপত্তি পরিচয়পত্র",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionStatusTransferExpired": "সোয়াপের মেয়াদ শেষ",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsLnReceiveCompleted": "Swap সম্পন্ন হয়েছে।",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFee": "সোয়াপ ফি",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionNetworkLiquid": "লিকুইড নেটওয়ার্ক",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionSwapDescChainPaid": "আপনার লেনদেন প্রচারিত হয়েছে। আমরা এখন লক-আপ ট্রান্স্যাকশনটি নিশ্চিত হওয়ার অপেক্ষায় রয়েছি।",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "coreSwapsStatusCompleted": "সম্পন্ন",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreWalletTransactionStatusConfirmed": "নিশ্চিত",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionStatusSwapFailed": "আদল-বদল ব্যর্থ",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescLnReceiveFailed": "আপনার সোয়াপ নিয়ে সমস্যা হয়েছে। ২৪ ঘণ্টার মধ্যে তহবিল যদি ফিরেফেরা না আসে, তবে দয়া করে সাপোর্টে যোগাযোগ করুন।",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionDetailSwapProgress": "বদলের অগ্রগতি",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailLabelOrderStatus": "আদেশ অবস্থা",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionFilterSend": "পাঠান",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "coreSwapsLnSendClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "transactionDetailTitle": "লেনদেনের বিবরণ",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailLabelCompletedAt": "সমাপ্তির সময়",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionDetailLabelSwapId": "বদল আইডি",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionNotesLabel": "লেনদেনের নোট",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionDetailLabelRecipientAddress": "প্রাপকের ঠিকানা",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionFilterWithdraw": "উত্তোলন",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "পরিশোধ",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "ফান্ডিং",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "পুরস্কার",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "ফেরত",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionNoteHint": "নোট",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionPayjoinSendWithout": "পেজয়েন ছাড়া পাঠান",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionSwapProgressInitiated": "শুরু হয়েছে",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionSwapProgressPaymentMade": "পেমেন্ট\nসম্পন্ন",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "transactionSwapProgressFundsClaimed": "তহবিল\nদাবি করা হয়েছে",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "transactionSwapProgressBroadcasted": "প্রচারিত",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionSwapProgressInvoicePaid": "চালান\nপরিশোধিত",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionSwapProgressConfirmed": "নিশ্চিত হয়েছে",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionSwapProgressClaim": "দাবি",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "সম্পন্ন",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInProgress": "চলমান",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapStatusTransferStatus": "সোয়াপের অবস্থা",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionSwapStatusSwapStatus": "সোয়াপ স্ট্যাটাস",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionSwapDescLnReceivePending": "আপনার সোয়াপ শুরু হয়েছে। আমরা লাইটনিং নেটওয়ার্কে পেমেন্ট পাওয়ার অপেক্ষায় আছি।",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionSwapDescLnReceivePaid": "পেমেন্ট পাওয়া গেছে! আমরা এখন আপনার ওয়ালেটে অন-চেইন ট্রানজেকশন প্রচার করছি।",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "অন-চেইন ট্রানজেকশন নিশ্চিত হয়েছে। আমরা এখন আপনার সোয়াপ সম্পন্ন করতে তহবিল দাবি করছি।",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveCompleted": "আপনার সোয়াপ সফলভাবে সম্পন্ন হয়েছে! তহবিল এখন আপনার ওয়ালেটে পাওয়া উচিত।",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionHistoryTitle": "লেনদেনের ইতিহাস",
+  "exportTransactionsDescription": "আপনার সমস্ত ওয়ালেট লেনদেন (Bitcoin, Liquid, Lightning এবং সোয়াপ) CSV ফাইল হিসাবে এক্সপোর্ট করুন। ঐচ্ছিকভাবে তারিখের পরিসর দ্বারা ফিল্টার করুন।",
+  "exportTransactionsStartDate": "শুরুর তারিখ",
+  "exportTransactionsEndDate": "শেষ তারিখ",
+  "exportTransactionsAnyDate": "যেকোনো",
+  "exportTransactionsButton": "CSV এক্সপোর্ট করুন",
+  "exportTransactionsSuccess": "লেনদেন সফলভাবে এক্সপোর্ট হয়েছে",
+  "exportTransactionsEmpty": "নির্বাচিত সময়ের জন্য কোনো লেনদেন নেই",
+  "exportTransactionsError": "লেনদেন এক্সপোর্ট করতে ব্যর্থ হয়েছে",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "শুরুর তারিখ অবশ্যই শেষ তারিখের আগে হতে হবে",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionListLoadingFailed": "লেনদেন লোড করা যায়নি।",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
+  "payViewReceipt": "View receipt",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হয়েছে",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "যখন একটি Payjoin লেনদেন সফলভাবে সম্পন্ন হয় তখন এটি দেখানো হয়।"
+  },
+  "viewerTapToCopy": "কপি করতে ট্যাপ করুন",
+  "viewerViewInExplorer": "এক্সপ্লোরারে দেখুন",
+  "transactionViewerTitle": "লেনদেন আইডি",
+  "viewerCopyLink": "লিঙ্ক কপি করুন",
+  "coreSwapsStatusRefunded": "ফেরত",
+  "transactionLabelNetworkFees": "নেটওয়ার্ক ফি",
+  "transactionSwapOpenWithin24h": "আপনার সোয়াপ সম্পন্ন করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",
+  "recipientsTypeInteracEmail": "ইমেইল মানি ট্রান্সফার",
+  "transactionStatusPayjoinAborted": "Payjoin বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
+  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।",
+  "coreSwapsStatusNotStarted": "শুরু হয়নি",
+  "coreSwapsStatusAwaitingPayment": "পেমেন্টের অপেক্ষায়",
+  "coreSwapsStatusAwaitingConfirmation": "নিশ্চিতকরণের অপেক্ষায়",
+  "coreSwapsStatusUnderReview": "পর্যালোচনাধীন",
+  "coreSwapsStatusRejected": "প্রত্যাখ্যাত",
+  "coreSwapsStatusCanceled": "বাতিল",
+  "coreSwapsStatusPaymentDeadlineExpired": "পেমেন্টের সময়সীমা শেষ",
+  "coreSwapsStatusScheduled": "নির্ধারিত",
+  "coreSwapsStatusAwaitingClaim": "দাবির অপেক্ষায়",
+  "coreSwapsStatusUnknown": "অজানা",
+  "transactionDetailLoadError": "লেনদেনের বিবরণ লোড করা যায়নি।",
+  "transactionPayjoinBroadcastFailed": "মূল লেনদেনটি সম্প্রচার করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটি আর সম্প্রচারের জন্য উপলব্ধ নয়।",
+  "transactionLabelLimitReached": "আপনি সর্বাধিক ১০টি লেবেল রাখতে পারেন।",
+  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে"
+}

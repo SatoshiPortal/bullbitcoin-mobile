@@ -1,0 +1,99 @@
+{
+  "addressViewAddressesTitle": "Addresses",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "addressCardUsedLabel": "Istemal Ho Chuka",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "addressCardUnusedLabel": "Istemal Nahi Hua",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "addressCardIndexLabel": "Index: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "addressCardBalanceLabel": "Balance: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "okButton": "OK",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewReceiveType": "Receive",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewChangeType": "Change",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "addressViewTitle": "Address Details",
+  "@addressViewTitle": {
+    "description": "AppBar title for address details screen"
+  },
+  "addressViewAddress": "Address",
+  "@addressViewAddress": {
+    "description": "Label for address field"
+  },
+  "addressViewBalance": "Balance",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "addressViewTransactions": "Transactions",
+  "@addressViewTransactions": {
+    "description": "Label for number of transactions"
+  },
+  "addressViewCopyAddress": "Address Copy Karo",
+  "@addressViewCopyAddress": {
+    "description": "Button to copy address to clipboard"
+  },
+  "addressViewShowQR": "QR Code Dikhaao",
+  "@addressViewShowQR": {
+    "description": "Button to display address as QR code"
+  },
+  "addressViewNoAddressesFound": "Koi address nahi mila",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "addressViewChangeAddressesComingSoon": "Change addresses jaldi aa raha hai",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressViewChangeAddressesDescription": "Wallet change addresses dikhao",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "addressViewerTitle": "Address",
+  "viewerTapToCopy": "Copy karne ke liye tap karo",
+  "viewerViewInExplorer": "Explorer mein dekho",
+  "viewerCopyLink": "Link copy karo",
+  "viewerAddressTab": "Address",
+  "viewerPaymentUriTab": "Payment URI",
+  "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
+  "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "sendErrorInvalidAddressOrInvoice": "Bitcoin Payment Address ya Invoice galat hai",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin address",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid address",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
+}

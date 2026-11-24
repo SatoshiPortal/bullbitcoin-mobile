@@ -1,0 +1,54 @@
+{
+  "appStartupErrorMessage": "Die App konnte nicht gestartet werden. Versuchen Sie, sie vollständig zu schließen und neu zu starten. Wenn der Fehler weiterhin besteht, kontaktieren Sie den Support und teilen Sie Ihre Protokolle.",
+  "errorSharingLogsMessage": "Fehler beim Teilen der Protokolle: {error}.",
+  "@errorSharingLogsMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingRecover": "Wiederherstellen",
+  "appStartupErrorTitle": "Startup-Fehler",
+  "appStartupContactSupportButton": "Kundenbetreuung kontaktieren",
+  "coreScreensPageNotFound": "Seite nicht gefunden",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "appInitErrorHasBackupTitle": "Nutzen Sie Ihr Backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Dank Ihrer Sicherung ist Ihr Guthaben sicher.\nVersuchen Sie zuerst, die App neu zu starten. Wenn sie weiterhin nicht startet, installieren Sie sie neu und stellen Sie sie mit Ihrer Sicherung wieder her.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Keine Sicherung?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Löschen Sie die App nicht.\nKontaktieren Sie unser Kundenbetreuungsteam, um einen Rettungsversuch zu starten.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Kundenbetreuung kontaktieren",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Fehlerdetails anzeigen",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Kontaktieren Sie die Kundenbetreuung unter app.bullbitcoin.com/support.",
+  "deleteLogsTitle": "Logs löschen",
+  "logsDeletedMessage": "Logs gelöscht",
+  "appInitErrorTitle": "App konnte nicht gestartet werden",
+  "appInitErrorShareLogsButton": "Logs übermitteln",
+  "logsShareOptionExport": "Exportieren",
+  "logsExportedMessage": "Protokolle (Logs)erfolgreich exportiert",
+  "logsExportFailedMessage": "Export der Protokolle (Logs) fehlgeschlagen",
+  "appStartupMissingSecretMessage": "Dieses Gerät enthält die Wiederherstellungsphrase Ihrer Wallet nicht mehr. Geben Sie sie erneut ein, um Ihre Wallet zurückzuerhalten.",
+  "appStartupRestoreSecretButton": "Meine Wiederherstellungsphrase eingeben",
+  "appStartupRestoreMismatch": "Diese Wiederherstellungsphrase gehört zu einer anderen Wallet. Geben Sie die Phrase der Wallet auf diesem Gerät ein."
+}

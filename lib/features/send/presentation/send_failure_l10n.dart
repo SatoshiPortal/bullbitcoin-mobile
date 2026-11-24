@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/localization/payment_network_l10n.dart';
+import 'package:send/send.dart';
 import 'package:flutter/widgets.dart';
 
 extension SendFailureL10n on SendFailure {
@@ -19,6 +19,8 @@ extension SendFailureL10n on SendFailure {
           ? context.loc.sendErrorUnsupportedQrCodeFormat
           : context.loc.sendErrorInvalidAddressOrInvoice,
     SendInvoiceExpiredFailure() => context.loc.sendErrorInvoiceExpired,
+    SendInvoiceExpiryTooShortFailure() =>
+      context.loc.sendErrorInvoiceExpiryTooShort,
     SendInvoiceAmountRequiredFailure() =>
       context.loc.sendErrorInvoiceMustContainAmount,
     SendHardwareWalletFailure() =>

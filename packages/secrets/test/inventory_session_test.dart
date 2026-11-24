@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/metadata_backup.dart';
 import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/src/data/inventory_store.dart';
@@ -54,6 +55,98 @@ void main() {
     await directory.delete(recursive: true);
   });
 
+  test(
+    'metadata backup excludes confidential descriptors and missing seeds',
+    () async {
+      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final reference = _value(await secrets.generate()).id.hex;
+      final bitcoin = 'wpkh([$reference/84h/0h/0h])';
+      final liquid = 'elwpkh([$reference/84h/1776h/0h])';
+      final malformed = 'sh(wpkh([$reference/49h/0h/0h]))';
+      const missing = 'wpkh([01234567/84h/1h/0h])';
+      const external = 'wpkh(public-marker/0/*)';
+      const internal = 'wpkh(public-marker/1/*)';
+      const confidential = 'ct(blinding-marker,elwpkh(public-marker/0/*))';
+      for (final (id, network, descriptor) in [
+        (bitcoin, 'bitcoinMainnet', external),
+        (liquid, 'liquidMainnet', confidential),
+        (malformed, 'bitcoinMainnet', confidential),
+      ]) {
+        final wallet = RegisteredWallet(
+          id: id,
+          secretFingerprint: reference,
+          masterFingerprint: reference,
+          signer: 'local',
+          network: network,
+          xpub: 'public-marker',
+          externalDescriptor: descriptor,
+          internalDescriptor: internal,
+          label: null,
+          birthday: null,
+          isDefault: false,
+        );
+        _value(await inventory.registerWallet(wallet));
+      }
+      _value(
+        await inventory.registerWallet(
+          _registration(missing, network: 'bitcoinTestnet', signer: 'local'),
+        ),
+      );
+
+      final rows = {
+        for (final wallet in _value(
+          await inventory.metadataBackupWallets(secrets),
+        ))
+          wallet.id: wallet,
+      };
+      expect(rows[bitcoin]?.bitcoinPublicDescriptors, [external, internal]);
+      expect(rows[liquid]?.network, LiquidNetwork.mainnet);
+      expect(rows[liquid]?.bitcoinPublicDescriptors, isEmpty);
+      expect(rows[malformed]?.bitcoinPublicDescriptors, isEmpty);
+      expect(rows[missing]?.secret, isNull);
+      inventory.lock();
+      expect(await inventory.metadataBackupWallets(secrets), isA<Err>());
+    },
+  );
+
+  test(
+    'publishes catalog and membership only after properties are ready',
+    () async {
+      const id = 'wpkh([01234567/84h/1h/0h]):regtest';
+      final wallet = _registration(
+        id,
+        network: 'bitcoinRegtest',
+        signer: 'local',
+      );
+      final attempt = await inventory.registerWallet(
+        wallet,
+        prepareProperties: () async => const Err(StoreSecretFailure()),
+      );
+      expect(attempt, isA<Err<void, SecretFailure>>());
+      expect(_value(await inventory.findWallet(id)), isNull);
+      expect(_value(await background.list()), isEmpty);
+
+      var preparations = 0;
+      final results = await Future.wait([
+        for (var attempt = 0; attempt < 2; attempt++)
+          inventory.registerWallet(
+            wallet,
+            prepareProperties: () async {
+              preparations++;
+              return const Ok(null);
+            },
+          ),
+      ]);
+      expect(preparations, 1);
+      expect(results.whereType<Ok<void, SecretFailure>>(), hasLength(1));
+      expect(
+        results.whereType<Err<void, SecretFailure>>().single.failure,
+        isA<WalletAlreadyRegisteredFailure>(),
+      );
+      expect(_value(await background.list()).single.id, id);
+    },
+  );
+
   test('targeted lookup keeps testnet and regtest distinct', () async {
     const testId = 'wpkh([01234567/84h/1h/0h])';
     const regtestId = '$testId:regtest';
@@ -72,6 +165,7 @@ void main() {
     final testnet = _value(await readOnly.readWallet(testId));
     expect(testnet.network, BitcoinNetwork.testnet);
     expect(testnet.signer, WalletSigner.remote);
+    expect(testnet.masterFingerprint, Fingerprint('01234567'));
     expect(testnet.secretFingerprint, isNull);
     expect(testnet.derivationPath, "m/84'/1'/7'");
     expect(testnet.scriptType, ScriptType.bip84);
@@ -81,6 +175,49 @@ void main() {
     expect(regtest.network, BitcoinNetwork.regtest);
     expect(regtest.secretFingerprint, Fingerprint('01234567'));
   });
+
+  test(
+    'recovery evidence comes only from authorized local Bitcoin wallets',
+    () async {
+      const localId = 'wpkh([01234567/84h/1h/0h]):regtest';
+      final local = _registration(
+        localId,
+        network: 'bitcoinRegtest',
+        signer: 'local',
+        isDefault: true,
+      );
+      _value(await inventory.registerWallet(local));
+      _value(
+        await inventory.registerWallet(
+          _registration(
+            'wpkh([01234567/84h/1h/0h])',
+            network: 'bitcoinTestnet',
+            signer: 'remote',
+          ),
+        ),
+      );
+      final evidence = _value(await inventory.recoveryWallets()).single;
+      expect(evidence.id, localId);
+      expect(evidence.network, BitcoinNetwork.regtest);
+      expect(evidence.fingerprint, Fingerprint('01234567'));
+      expect(evidence.isDefault, isTrue);
+      expect(evidence.descriptors, (
+        external: local.externalDescriptor,
+        internal: local.internalDescriptor,
+      ));
+
+      final pending = inventory.recoveryWallets();
+      inventory.lock();
+      expect(
+        await pending,
+        isA<Err<List<BitcoinRecoveryWallet>, SecretFailure>>(),
+      );
+      expect(
+        await inventory.recoveryWallets(),
+        isA<Err<List<BitcoinRecoveryWallet>, SecretFailure>>(),
+      );
+    },
+  );
 
   test('distinguishes absent, unreadable and failed storage reads', () async {
     const id = 'wpkh([01234567/84h/1h/0h])';
@@ -161,6 +298,7 @@ void main() {
         await inventory.walletsForNetwork(BitcoinNetwork.testnet),
       );
       expect(testnet.wallets.map((wallet) => wallet.id), [first, second]);
+      expect(testnet.isComplete, isFalse);
       expect(testnet.wallets.first.secretFingerprint, isNull);
       expect(testnet.wallets.first.label, '');
       expect(testnet.wallets.first.birthday, DateTime.utc(2026, 11, 21));
@@ -173,10 +311,12 @@ void main() {
         await inventory.walletsForNetwork(BitcoinNetwork.regtest),
       );
       expect(regtest.defaultWallet?.id, other);
+      expect(regtest.isComplete, isTrue);
       final liquid = _value(
         await inventory.walletsForNetwork(LiquidNetwork.testnet),
       );
       expect(liquid.wallets, isEmpty);
+      expect(liquid.isComplete, isTrue);
       expect(liquid.defaultWallet, isNull);
       expect(
         await inventory.walletsForNetwork(BitcoinNetwork.signet),
@@ -240,6 +380,41 @@ void main() {
     },
   );
 
+  test('reads distinct public origins across the authorized view', () async {
+    for (final (id, network, fingerprint) in [
+      ('a', 'bitcoinMainnet', '73C5DA0A'),
+      ('b', 'bitcoinRegtest', '73c5da0a'),
+      ('c', 'legacy-unresolved', 'deadbeef'),
+      ('d', 'bitcoinMainnet', ''),
+    ]) {
+      _value(
+        await inventory.registerWallet(
+          RegisteredWallet(
+            id: id,
+            secretFingerprint: null,
+            masterFingerprint: fingerprint,
+            signer: 'none',
+            network: network,
+            xpub: 'public-key-marker',
+            externalDescriptor: 'external-marker',
+            internalDescriptor: 'internal-marker',
+            label: null,
+            birthday: null,
+            isDefault: false,
+          ),
+        ),
+      );
+    }
+    expect(_value(await inventory.referencedFingerprints()), [
+      Fingerprint('73c5da0a'),
+      Fingerprint('deadbeef'),
+    ]);
+    final pending = inventory.referencedFingerprints();
+    inventory.lock();
+    expect(await pending, isA<Err>());
+    expect(await inventory.referencedFingerprints(), isA<Err>());
+  });
+
   test('background opt-out stops descriptor access at the owner', () async {
     expect(
       await inventory.registerWallet(_wallet('test-wallet', '01234567')),
@@ -251,6 +426,71 @@ void main() {
     expect(_value(await background.list()), isEmpty);
     expect(await inventory.setBackgroundEnabled(true), isA<Err>());
   });
+
+  test(
+    'reopening with an expired wall deadline still delays PIN comparison',
+    () async {
+      final pin = DateTime.now().microsecondsSinceEpoch.toString();
+      _value(
+        await inventory.setCredential(
+          pin,
+          backupVerification: _VerifiedBackup(allowEmpty: true),
+        ),
+      );
+      await inventory.close();
+      final store = _value(
+        await InventoryStore.open(file, admission, existing: true),
+      );
+      await store.database.customStatement(
+        'UPDATE access_state SET failed_attempts = ?, locked_until = ?',
+        [
+          5,
+          DateTime.now()
+              .subtract(const Duration(hours: 1))
+              .millisecondsSinceEpoch,
+        ],
+      );
+      await store.close();
+
+      final reopened = _value(
+        await SecretsInventory.open(file: file, admission: admission),
+      );
+      final status = _value(await reopened.accessStatus());
+      expect(status.remaining.inSeconds, inInclusiveRange(59, 60));
+      final attempt = _value(await reopened.unlock(pin));
+      expect(attempt.accepted, isFalse);
+      expect(attempt.failedAttempts, 5);
+    },
+  );
+
+  test(
+    'the verified default wallet is sufficient to set and change a PIN',
+    () async {
+      final backup = _VerifiedBackup();
+      expect(_value(await inventory.hasVerifiedBackups(backup)), isFalse);
+      _value(
+        await inventory.registerWallet(
+          _registration(
+            'wpkh([01234567/84h/1h/0h])',
+            network: 'bitcoinTestnet',
+            signer: 'local',
+            isDefault: true,
+          ),
+        ),
+      );
+      _value(await inventory.registerWallet(_wallet('unverified', '89abcdef')));
+      final pin = DateTime.now().microsecondsSinceEpoch.toString();
+
+      expect(_value(await inventory.hasVerifiedBackups(backup)), isTrue);
+      _value(await inventory.setCredential(pin, backupVerification: backup));
+      final replacement = '${pin}0';
+      _value(
+        await inventory.setCredential(replacement, backupVerification: backup),
+      );
+      inventory.lock();
+      expect(_value(await inventory.unlock(replacement)).accepted, isTrue);
+    },
+  );
 
   test(
     'reservations are serial per parent and include revoked records',
@@ -284,6 +524,21 @@ void main() {
     final keys = Secrets(scratchDirectory: () async => directory.path);
     expect(() => keys.databaseKeys(module: 'secrets'), throwsArgumentError);
   });
+}
+
+final class _VerifiedBackup implements InventoryBackupVerification {
+  final bool allowEmpty;
+
+  _VerifiedBackup({this.allowEmpty = false});
+
+  @override
+  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
+    List<WalletRegistration> defaults,
+  ) async => Ok(
+    defaults.isEmpty
+        ? allowEmpty
+        : defaults.single.secretFingerprint?.hex == '01234567',
+  );
 }
 
 RegisteredWallet _wallet(String id, String parent) => RegisteredWallet(

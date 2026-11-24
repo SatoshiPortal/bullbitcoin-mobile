@@ -20,8 +20,9 @@ dependencies:
   flutter:
     sdk: flutter
   primitives:
+  preferences:
   file_system:
-  google_drive:
+  backup_storage:
   secrets:
   legacy_storage:
   bull_logger:
@@ -38,6 +39,7 @@ dependencies:
   intl: any
   url_launcher: ^6.3.2
   drift: ^2.35.4
+  sqlite3: ^3.5.2
   convert: ^3.1.2
   crypto: ^3.0.7
   meta: ^1.17.0
@@ -50,7 +52,6 @@ dev_dependencies:
   file_picker: ^13.3.3
   build_runner: ^2.10.4
   drift_dev: ^2.35.3
-  sqlite3: ^3.5.2
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0

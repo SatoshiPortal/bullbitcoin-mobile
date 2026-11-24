@@ -8,6 +8,8 @@ import 'package:primitives/primitives.dart';
 import '../../../sync.dart' hide Wallet;
 import '../../../sync.dart' as sync show Wallet;
 import '../../../write.dart';
+import '../freeze_authority.dart';
+import '../input_reservations.dart';
 
 /// Coordinates provisioning and recovery of native stores. Catalog entries are
 /// supplied through [WalletCatalogPort]; their deletion remains with the owner.
@@ -40,6 +42,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final void Function(ForegroundStores)? _onStoresOpened;
   final FreezeStorePort _freezes;
   final WalletConnectionPort _connections;
+  final BroadcastObservationFollowUp? _broadcastObservation;
 
   WalletNativeRuntime.open({
     required this._catalog,
@@ -51,6 +54,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     required this._documentsDirectory,
     required this._freezes,
     required this._connections,
+    this._broadcastObservation,
     @visibleForTesting this._onStoresOpened,
   });
 
@@ -112,6 +116,121 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<Result<void, SyncFailure>> close() => _result(_close);
 
   Stream<WalletRevisionState> get changes => _changes.stream;
+
+  /// Checks the current protocol reservations for selected ordinary inputs.
+  /// An empty selection checks that the reservation authorities are readable.
+  /// This is a preview check only; the writer rechecks at the point of use.
+  @useResult
+  Future<Result<void, SyncFailure>> checkUnreservedInputs(
+    Set<Outpoint> selected,
+  ) async {
+    final inputs = Set.of(selected);
+    final reservations = CombinedInputReservations(
+      _inputReservations,
+      _fundingReservations,
+    );
+    switch (await reservations.reservations()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final blocked = {
+          for (final reservation in value)
+            if (inputs.contains(reservation.outpoint)) reservation.outpoint,
+        };
+        return blocked.isEmpty
+            ? const Ok(null)
+            : Err(SyncProtectedInputsFailure(reserved: blocked));
+    }
+  }
+
+  /// An imported transaction has no wallet generation. It still goes
+  /// through the same global freeze queue and authorized connection policy.
+  @useResult
+  Future<Result<String, SyncFailure>> broadcastImportedBitcoin(
+    List<int> bytes, {
+    required BitcoinNetwork network,
+  }) async {
+    final DecodedBitcoinTransaction transaction;
+    try {
+      transaction = decodeBitcoinTransaction(bytes);
+    } on FormatException {
+      return const Err(SyncInvalidTransactionFailure());
+    }
+    final opened = await _result(() async => (await _services).stores.freezes);
+    final FreezeAuthority freezes;
+    switch (opened) {
+      case Ok(:final value):
+        freezes = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    return switch (await freezes.guard((frozen) async {
+      final blocked = transaction.inputs.where(frozen.contains).toSet();
+      if (blocked.isNotEmpty) {
+        return Err<String, SyncFailure>(
+          SyncProtectedInputsFailure(frozen: blocked),
+        );
+      }
+      return broadcastBitcoinTransaction(
+        transaction.bytes,
+        network: network,
+        connections: _connections,
+      );
+    })) {
+      Ok(:final value) => value,
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  /// Broadcasts a spend that already carries its original wallet generation.
+  /// Refreshes accepted broadcasts even if recording is not yet durable;
+  /// only guarded Bitcoin broadcasts need follow-up observation.
+  @useResult
+  Future<Result<SpendReceipt, SyncFailure>> broadcastSigned(
+    SignedSpend signed,
+  ) async {
+    switch (await wallet(signed.key)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final result = await value.tx.broadcast(signed);
+        if (result case Ok(value: SpendReceipt(:final guarded))) {
+          _broadcastObservation?.start(
+            signed.key.id,
+            guarded: guarded,
+            pollImmediately: true,
+          );
+        }
+        return result;
+    }
+  }
+
+  /// Serializes local Payjoin reservation writes with ordinary Bitcoin
+  /// broadcasts and user freezes. [persist] must not call Sync or the relay.
+  @useResult
+  Future<Result<void, SyncFailure>> reservePayjoinInputs(
+    WalletKey key, {
+    required Set<Outpoint> inputs,
+    required String sessionId,
+    required Future<void> Function() persist,
+    int? expectedGeneration,
+  }) async {
+    final current = await wallet(key);
+    return switch (current) {
+      Err(:final failure) => Err(failure),
+      Ok(:final value)
+          when expectedGeneration == null ||
+              value.generation == expectedGeneration =>
+        (await _services).stores.spend.reservePayjoinInputs(
+          key,
+          value.generation,
+          inputs,
+          sessionId,
+          persist,
+        ),
+      Ok() => const Err(SyncNotFoundFailure()),
+    };
+  }
 
   /// Privileged wallet composition must bind the exact same durable authority.
   bool usesFundingReservations(FundingReservationPort authority) =>

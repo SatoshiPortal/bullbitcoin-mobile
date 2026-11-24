@@ -97,5 +97,1487 @@
   "notLoggedInTitle": "आप लॉग इन नहीं हैं",
   "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
   "retry": "पुनः प्रयास करें",
-  "settingsAppSettingsTitle": "ऐप सेटिंग्स"
+  "settingsAppSettingsTitle": "ऐप सेटिंग्स",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "वह सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।",
+  "fundExchangeSepaDescriptionExactly": "बिल्कुल।।",
+  "fundExchangeInstantSepaInfo": "केवल €20,000 से नीचे लेनदेन के लिए उपयोग करें। बड़े लेनदेन के लिए नियमित SEPA विकल्प का उपयोग करें।।",
+  "fundExchangeETransferLabelSecretAnswer": "गुप्त उत्तर",
+  "fundExchangeLabelBicCode": "BIC कोड",
+  "fundExchangeCanadaPostStep6": "6. कैशियर आपको एक रसीद सौंप देगा, इसे भुगतान के अपने प्रमाण के रूप में रखें",
+  "fundExchangeMethodRegularSepa": "नियमित SEPA",
+  "fundExchangeSinpeLabelPhone": "इस फोन नंबर पर भेजें",
+  "fundExchangeCrIbanCrcTransferCodeWarning": "भुगतान करते समय आपको ट्रांसफर कोड को \"मेसेज\" या \"रेसन\" या \"डिस्क्रिप्शन\" के रूप में जोड़ना होगा। यदि आप इस कोड को शामिल करना चाहते हैं तो आपके भुगतान को अस्वीकार कर दिया जा सकता है।।",
+  "fundExchangeSinpeTitle": "SINPE स्थानांतरण",
+  "fundExchangeCanadaPostStep5": "5. नकद या डेबिट कार्ड के साथ भुगतान करें",
+  "fundExchangeInfoPaymentDescription": "भुगतान विवरण में, अपना ट्रांसफर कोड जोड़ें।।",
+  "fundExchangeCrIbanCrcDescriptionBold": "बिल्कुल",
+  "fundExchangeLabelRecipientAddress": "Recipient address",
+  "fundExchangeCrIbanCrcTitle": "बैंक ट्रांसफर (CRC)",
+  "fundExchangeMethodInstantSepaSubtitle": "सबसे तेज़ - केवल €30,000 से नीचे लेनदेन के लिए",
+  "fundExchangeSepaDescription": "नीचे दिए गए विवरण का उपयोग करके अपने बैंक खाते से SEPA ट्रांसफर को भेजें ",
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "आपका स्थानांतरण कोड।।",
+  "fundExchangeLabelBankAccountCountry": "बैंक खाता देश",
+  "fundExchangeLabelTransitNumber": "ट्रांजिट संख्या",
+  "fundExchangeLabelMemo": "मेमो",
+  "fundExchangeBankTransferWireTitle": "बैंक हस्तांतरण (तार)",
+  "fundExchangeWarningTactic5": "वे किसी अन्य प्लेटफॉर्म पर Bitcoin भेजने के लिए कह रहे हैं",
+  "fundExchangeETransferLabelEmail": "इस ईमेल को ई-ट्रांसफर भेजें",
+  "fundExchangeOnlineBillPaymentHelpBillerName": "इस कंपनी को भुगतानकर्ता के रूप में जोड़ें - यह बुल बिटकॉइन का भुगतान प्रोसेसर है",
+  "fundExchangeAccountTitle": "अपना खाता फंड करें",
+  "fundExchangeWarningTactic1": "वे निवेश पर रिटर्न का वादा कर रहे हैं",
+  "fundExchangeETransferTitle": "E-Transfer विवरण",
+  "fundExchangeMethodBankTransferWire": "बैंक ट्रांसफर (Wire या EFT)",
+  "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "fundExchangeContinueButton": "जारी रखें",
+  "fundExchangeCrIbanUsdRecipientNameHelp": "हमारे आधिकारिक कॉर्पोरेट नाम का उपयोग करें। \"Bull बिटकॉइन\" का उपयोग न करें।।",
+  "fundExchangeArsBankTransferTitle": "बैंक ट्रान्सफर",
+  "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
+  "fundExchangeCrIbanUsdLabelIban": "IBAN खाता संख्या (केवल US डॉलर)",
+  "fundExchangeInfoTransferCode": "भुगतान करते समय आपको ट्रांसफर कोड को \"मेसेज\" या \"रेसन\" के रूप में जोड़ना होगा।।",
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "भुगतान विवरण",
+  "fundExchangeTitle": "फंडिंग",
+  "fundExchangeCrIbanCrcDescriptionEnd": "। आपके खाते की शेष राशि में फंड जोड़े जाएंगे।।",
+  "fundExchangeETransferLabelSecretQuestion": "गुप्त प्रश्न",
+  "fundExchangeHelpBeneficiaryName": "हमारे आधिकारिक कॉर्पोरेट नाम का उपयोग करें। \"Bull बिटकॉइन\" का उपयोग न करें।।",
+  "fundExchangeWarningTactic7": "वे आपको इस चेतावनी की चिंता न करने के लिए कह रहे हैं",
+  "fundExchangeMethodCanadaPost": "Canada Post पर व्यक्तिगत रूप से नकद या डेबिट",
+  "fundExchangeSepaTitle": "SEPA स्थानांतरण",
+  "fundExchangeCanadaPostStep1": "1. किसी भी कनाडा पोस्ट स्थान पर जाएं",
+  "fundExchangeLabelBeneficiaryAddress": "लाभार्थी पता",
+  "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
+  "fundExchangeWarningTactic6": "वे चाहते हैं कि आप अपनी स्क्रीन साझा करें",
+  "fundExchangeCrIbanUsdDescriptionBold": "बिल्कुल",
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE का उपयोग कर Colones स्थानांतरण",
+  "fundExchangeArsBankTransferDescription": "नीचे सटीक अर्जेंटीना बैंक विवरण का उपयोग करके अपने बैंक खाते से एक बैंक हस्तांतरण भेजें।।",
+  "fundExchangeCrIbanUsdDescription": "नीचे दिए गए विवरण का उपयोग करके अपने बैंक खाते से बैंक ट्रांसफर करें ",
+  "fundExchangeLabelBankAddress": "हमारे बैंक का पता",
+  "fundExchangeLabelBankCountry": "बैंक देश",
+  "fundExchangeBankTransferSubtitle": "अपने बैंक खाते से एक बैंक ट्रांसफर भेजें",
+  "fundExchangeMethodOnlineBillPayment": "ऑनलाइन बिल भुगतान",
+  "fundExchangeWarningConfirmation": "मैं पुष्टि करता/करती हूं कि मुझे किसी और द्वारा Bitcoin खरीदने के लिए नहीं कहा जा रहा है।",
+  "fundExchangeLabelCvu": "CVU",
+  "fundExchangeLabelRecipientName": "Recipient name",
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "अमेरिकी डॉलर (USD) में फंड ट्रांसफर करें",
+  "fundExchangeMethodRegularSepaSubtitle": "केवल €30,000 से अधिक बड़े लेनदेन के लिए उपयोग करें",
+  "fundExchangeLabelTransferCode": "ट्रांसफर कोड (इसे भुगतान विवरण के रूप में जोड़ें)",
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeSpeiTitle": "SPEI स्थानांतरण",
+  "fundExchangeRegularSepaInfo": "केवल €20,000 से अधिक लेनदेन के लिए उपयोग करें। छोटे लेनदेन के लिए, तत्काल SEPA विकल्प का उपयोग करें।।",
+  "fundExchangeDoneButton": "हो गया",
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "सबसे धीमा विकल्प, लेकिन ऑनलाइन बैंकिंग के माध्यम से किया जा सकता है (3-4 कार्य दिवस)",
+  "fundExchangeLabelBankAccountDetails": "बैंक खाता विवरण",
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "आपका स्थानांतरण कोड।।",
+  "fundExchangeLabelRecipientNameArs": "Recipient Name",
+  "fundExchangeCanadaPostStep2": "2. \"Loadhub\" QR कोड को स्कैन करने के लिए कैशियर से पूछें",
+  "fundExchangeCrIbanUsdTitle": "बैंक ट्रांसफर (USD)",
+  "fundExchangeETransferLabelBeneficiaryName": "इसे ई-ट्रांसफर लाभार्थी नाम के रूप में उपयोग करें",
+  "fundExchangeWarningDescription": "यदि कोई आपसे Bitcoin खरीदने के लिए कह रहा है या \"आपकी मदद कर रहा है\", तो सावधान रहें, वे आपको ठग सकते हैं!",
+  "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "fundExchangeBankTransferWireDescription": "नीचे बुल बिटकॉइन के बैंक विवरण का उपयोग करके अपने बैंक खाते से एक तार अंतरण भेजें। आपके बैंक को इन विवरणों के कुछ हिस्सों की आवश्यकता हो सकती है।।",
+  "fundExchangeWarningTactic4": "वे उनके पते पर Bitcoin भेजने के लिए कह रहे हैं",
+  "fundExchangeSinpeDescription": "SINPE का उपयोग कर Colones स्थानांतरण",
+  "fundExchangeMethodCanadaPostSubtitle": "व्यक्तिगत रूप से भुगतान करना पसंद करने वालों के लिए सर्वोत्तम",
+  "fundExchangeSinpeDescriptionBold": "इसे खारिज कर दिया जाएगा।।",
+  "fundExchangeMethodBankTransferWireSubtitle": "बड़ी राशियों के लिए सर्वोत्तम और सबसे विश्वसनीय विकल्प (उसी दिन या अगले दिन)",
+  "fundExchangeCanadaPostStep4": "4. कैशियर सरकारी जारी आईडी का एक टुकड़ा देखने के लिए पूछेंगे और सत्यापित करेंगे कि आपकी आईडी पर नाम आपके बुल बिटकॉइन खाते से मेल खाता है।",
+  "fundExchangeCrIbanCrcLabelIban": "IBAN खाता संख्या (केवल उपनाम)",
+  "fundExchangeOnlineBillPaymentDescription": "नीचे दी गई जानकारी का उपयोग करके आप अपने बैंक की ऑनलाइन बिल भुगतान सुविधा के माध्यम से भेजे गए किसी भी राशि को आपके बुल बिटकॉइन खाते में 3-4 व्यावसायिक दिनों के भीतर जमा किया जाएगा।।",
+  "fundExchangeETransferDescription": "नीचे दी गई जानकारी का उपयोग करके आप अपने बैंक से ईमेल ई-ट्रांसफर के माध्यम से भेजे गए किसी भी राशि को कुछ ही मिनटों में आपके बुल बिटकॉइन खाते की शेष राशि में जमा किया जाएगा।।",
+  "fundExchangeLabelClabe": "CLABE",
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN कोस्टा रिका (USD)",
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR कोड",
+  "fundExchangeSinpeLabelRecipientName": "Recipient Name",
+  "fundExchangeMethodInstantSepa": "तत्काल और सामान्य SEPA ट्रांसफर",
+  "fundExchangeCrIbanUsdTransferCodeWarning": "भुगतान करते समय आपको ट्रांसफर कोड को \"मेसेज\" या \"रेसन\" या \"डिस्क्रिप्शन\" के रूप में जोड़ना होगा। यदि आप इस कोड को शामिल करना चाहते हैं तो आपके भुगतान को अस्वीकार कर दिया जा सकता है।।",
+  "fundExchangeSpeiInfo": "SPEI ट्रांसफर (इंस्टेंट) का उपयोग करके जमा करें।।",
+  "fundExchangeMethodEmailETransferSubtitle": "सबसे आसान और तेज़ विधि (तत्काल)",
+  "fundExchangeErrorLoadingDetails": "इस समय भुगतान विवरण लोड नहीं किया जा सकता है। कृपया वापस जाएं और फिर से कोशिश करें, एक अन्य भुगतान विधि चुनें या बाद में वापस आ जाएं।।",
+  "fundExchangeErrorTitleOrdPo404": "भुगतान विकल्प अनुपलब्ध",
+  "fundExchangeErrorTitleRcpPo404": "भुगतान विकल्प उपलब्ध नहीं",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE उपलब्ध नहीं",
+  "fundExchangeErrorTitleOrdKyc400": "KYC आवश्यकताएँ अनुपस्थित",
+  "fundExchangeErrorOrdKyc400": "इस क्रिया के लिए आपके पास आवश्यक KYC आवश्यकताएँ नहीं हैं",
+  "fundExchangeErrorOrdCsrcp400": "कृपया इस SEPA प्राप्तकर्ता के लिए वर्चुअल भुगतान विकल्प सक्रिय करें",
+  "fundExchangeErrorOpeningPaymentLink": "भुगतान लिंक नहीं खोला जा सका। कृपया पुनः प्रयास करें।",
+  "fundExchangeErrorTitleOrdCop400": "अमान्य COP फंडिंग डेटा",
+  "fundExchangeErrorOrdCop400": "COP फंडिंग के लिए अमान्य अनुरोध डेटा",
+  "fundExchangeErrorTitleOrdCsrcp400": "वर्चुअल भुगतान सक्रिय नहीं",
+  "fundExchangeErrorTitleRcp400": "अमान्य अनुरोध",
+  "fundExchangeErrorRcp400": "अमान्य अनुरोध",
+  "fundExchangeErrorOrdPo404": "कोई भुगतान विकल्प उपलब्ध नहीं है",
+  "fundExchangeErrorRcpPo404": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",
+  "fundExchangeErrorRcpPosinpe404": "इस फंडिंग विकल्प तक पहुँचने के लिए, आपका फ़ोन नंबर कोस्टा रिका में SINPE नेटवर्क पर पंजीकृत होना चाहिए।",
+  "fundExchangeErrorFetchingBankCodes": "बैंक कोड लाने में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
+  "fundExchangeSpeiTransfer": "SPEI स्थानांतरण",
+  "fundExchangeCrIbanCrcRecipientNameHelp": "हमारे आधिकारिक कॉर्पोरेट नाम का उपयोग करें। \"Bull बिटकॉइन\" का उपयोग न करें।।",
+  "fundExchangeSinpeAddedToBalance": "जब भुगतान भेजा जाता है, तो इसे आपके खाते में शेष राशि में जोड़ा जाएगा।।",
+  "fundExchangeSpeiSubtitle": "अपने CLABE का उपयोग करके फंड ट्रांसफर करें",
+  "fundExchangeAccountSubtitle": "अपना देश और भुगतान विधि चुनें",
+  "fundExchangeJurisdictionMexico": "🇲🇽 Mexico",
+  "fundExchangeLabelSwiftCode": "SWIFT कोड",
+  "fundExchangeCrIbanCrcDescription": "नीचे दिए गए विवरण का उपयोग करके अपने बैंक खाते से बैंक ट्रांसफर करें ",
+  "fundExchangeLabelRoutingNumber": "रूटिंग नंबर",
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "भुगतान विवरण",
+  "fundExchangeInfoBeneficiaryNameLeonod": "लाभार्थी का नाम वैध होना चाहिए। यदि आप कुछ और करते हैं तो आपका भुगतान अस्वीकार कर दिया जाएगा।।",
+  "doneButton": "दान",
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "कोस्टा रिकन कोलोन (CRC) में फंड ट्रांसफर करें",
+  "fundExchangeCanadaPostStep3": "3. उस राशि को बताएं जिसे आप लोड करना चाहते हैं",
+  "fundExchangeLabelIban": "IBAN खाता संख्या",
+  "fundExchangeOnlineBillPaymentLabelBillerName": "इस नाम के लिए अपने बैंक की बिलर्स की सूची खोजें",
+  "fundExchangeMethodEmailETransfer": "Email E-Transfer",
+  "fundExchangeLabelBankName": "बैंक का नाम",
+  "fundExchangeInfoBankCountryUk": "हमारा बैंक देश यूनाइटेड किंगडम है।।",
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN कोस्टा रिका (CRC)",
+  "fundExchangeLabelBeneficiaryName": "लाभार्थी का नाम",
+  "fundExchangeWarningTactic2": "वे आपको कर्ज दे रहे हैं",
+  "fundExchangeCanadaPostTitle": "कनाडा पोस्ट में व्यक्तिगत नकद या डेबिट",
+  "fundExchangeOnlineBillPaymentTitle": "ऑनलाइन बिल भुगतान",
+  "fundExchangeHelpTransferCode": "इसे हस्तांतरण के कारण के रूप में जोड़ें",
+  "fundExchangeCrIbanUsdDescriptionEnd": "। आपके खाते की शेष राशि में फंड जोड़े जाएंगे।।",
+  "fundExchangeRestrictedTitle": "फंडिंग उपलब्ध नहीं है",
+  "fundExchangeRestrictedMessage": "आपके खाते पर फंडिंग उपलब्ध नहीं है। अधिक जानकारी के लिए कृपया सहायता से संपर्क करें।",
+  "fundExchangeWarningTitle": "धोखेबाजों से सावधान रहें",
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeCrIbanCrcLabelRecipientName": "Recipient Name",
+  "fundExchangeCanadaPostStep7": "7. 30 मिनट के भीतर अपने बुल बिटकॉइन खाते की शेष राशि में धन जोड़ा जाएगा",
+  "fundExchangeWarningTactic8": "वे आपको जल्दी कार्य करने के लिए दबाव डाल रहे हैं",
+  "fundExchangeBankTransfer": "बैंक ट्रान्सफर",
+  "fundExchangeWarningTactic3": "वे कहते हैं कि वे कर्ज या कर वसूली के लिए काम करते हैं",
+  "fundExchangeWarningTacticsTitle": "धोखेबाजों के सामान्य तरीके",
+  "fundExchangeHelpBeneficiaryAddress": "हमारा आधिकारिक पता, अगर यह आपके बैंक द्वारा आवश्यक है",
+  "fundExchangeBankTransferWireTimeframe": "आपके द्वारा भेजे गए किसी भी फंड को 1-2 व्यावसायिक दिनों के भीतर आपके बुल बिटकॉइन में जोड़ा जाएगा।।",
+  "fundExchangeLabelInstitutionNumber": "संस्था संख्या",
+  "fundExchangeSpeiDescription": "अपने CLABE का उपयोग करके फंड ट्रांसफर करें",
+  "fundExchangeCrIbanUsdLabelRecipientName": "Recipient Name",
+  "fundExchangeScamConsentError": "आपकी सहमति दर्ज करने में विफल। कृपया पुनः प्रयास करें।",
+  "fundExchangeCopSelectBankError": "कृपया एक जारीकर्ता बैंक चुनें",
+  "fundExchangeCopOpenPaymentLink": "Open Payment Link",
+  "fundExchangeCopDailyLimitWarning": "यदि आप अपनी दैनिक लेनदेन सीमा से अधिक हो जाते हैं, तो लेनदेन विफल हो जाएगा। आपको ग्राहक सहायता से संपर्क करना होगा।",
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "fundExchangeCopGeneratePaymentLink": "Generate Payment Link",
+  "fundExchangeCopRedirectMessage": "भुगतान करने के लिए आपको एक बाहरी पृष्ठ पर पुनर्निर्देशित किया जाएगा।",
+  "fundExchangeCopAmount": "Amount",
+  "fundExchangeCopValidAmountError": "कृपया मान्य राशि दर्ज करें",
+  "fundExchangeCopSenderName": "Sender Name",
+  "fundExchangeCopEnterAmountError": "Please enter an amount",
+  "fundExchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
+  "fundExchangeMethodConfidentialSepa": "गोपनीय SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "निजी रूप से पैसा जमा करने के लिए एक व्यक्तिगत वर्चुअल IBAN",
+  "fundExchangeSinpeWarningNoBitcoin": "नहीं",
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "यह अद्वितीय खाता संख्या आपके लिए बनाई गई है",
+  "fundExchangeSinpeWarningNoBitcoinDescription": " भुगतान विवरण में \"बिटकॉइन\" या \"क्रिप्टो\" शब्द। यह आपके भुगतान को अवरुद्ध करेगा।।",
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "इसे खाता संख्या के रूप में जोड़ें",
+  "exchangeCurrencyDropdownTitle": "मुद्रा",
+  "exchangeAmountInputValidationInvalid": "अमान्य राशि",
+  "exchangeAmountInputValidationInsufficient": "अपर्याप्त संतुलन",
+  "exchangeAmountInputValidationEmpty": "कृपया राशि दर्ज करें",
+  "exchangeCurrencyDropdownValidation": "कृपया एक मुद्रा चुनें",
+  "exchangeAmountInputTitle": "राशि दर्ज करें",
+  "exchangeAmountInputValidationZero": "राशि शून्य से अधिक होना चाहिए",
+  "save": "सहेजें",
+  "exchangeBitcoinWalletsDescription": "स्वचालित Bitcoin निकासी के लिए डिफ़ॉल्ट वॉलेट पते सेट करें।",
+  "exchangeBitcoinWalletsEnterAddressHint": "पता दर्ज करें",
+  "exchangeDcaAddressLabelLiquid": "तरल पता",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin पता",
+  "delete": "डिलीट",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin पता",
+  "cancel": "रद्द करना",
+  "exchangeBitcoinWalletsSaveSuccess": "वॉलेट पता सफलतापूर्वक सहेजा गया",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid पता",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN पता)",
+  "exchangeDcaAddressLabelLightning": "बिजली का पता",
+  "settingsTermsOfServiceTitle": "सेवा की शर्तें",
+  "continueButton": "जारी",
+  "autoBuyTitle": "स्वचालित खरीद",
+  "autoBuyDescription": "हर बार जब आप अपने खाते में धनराशि जमा करें, स्वचालित रूप से Bitcoin खरीदें",
+  "autoBuyActivate": "स्वचालित खरीद सक्रिय करें",
+  "autoBuyDeactivate": "स्वचालित खरीद निष्क्रिय करें",
+  "autoBuyCancelTitle": "स्वचालित खरीद रद्द करें?",
+  "autoBuyCancelMessage": "अगली बार जब आप अपने खाते में धनराशि जोड़ेंगे, तो Bitcoin स्वचालित रूप से नहीं खरीदा जाएगा।",
+  "autoBuyDeactivateConfirm": "हाँ, निष्क्रिय करें",
+  "autoBuyHowItWorks": "यह कैसे काम करता है",
+  "autoBuyConnectWallet": "अपना Bitcoin, Lightning या Liquid वॉलेट कनेक्ट करें",
+  "autoBuyPurchaseCreated": "हर बार जब आप अपने Bull Bitcoin खाते में धनराशि जोड़ते हैं, एक Bitcoin खरीद स्वचालित रूप से बन जाती है।",
+  "autoBuyBitcoinSent": "Bitcoin सीधे आपके अपने वॉलेट में भेजा जाता है।",
+  "autoBuyRiskDisclaimer": "ऑर्डर के निष्पादन की गारंटी नहीं दी जा सकती। जमा और खरीद के बीच देरी या कीमत में बदलाव प्रभावी दर को बदल सकता है।",
+  "autoBuyGetStarted": "स्वचालित खरीद शुरू करें",
+  "autoBuyConfirmTitle": "स्वचालित खरीद की पुष्टि करें",
+  "autoBuyInfoMessage": "आपके खाते में जोड़ी गई कोई भी राशि मौजूदा विनिमय दर पर Bitcoin में बदल दी जाएगी और आपके वॉलेट में भेज दी जाएगी।",
+  "autoBuyAccountUnavailableError": "आपका Bull Bitcoin खाता उपलब्ध नहीं है। बाद में फिर कोशिश करें।",
+  "autoBuyWalletRequiredError": "कम से कम एक डिफ़ॉल्ट Bitcoin, Lightning या Liquid पता जोड़ें।",
+  "autoBuyUpdateError": "स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।",
+  "exchangeAuthLoginFailedMessage": "एक त्रुटि हुई, कृपया फिर से लॉग इन करने की कोशिश करें।।",
+  "exchangeAuthLoginFailedOkButton": "ठीक",
+  "exchangeAuthLoginFailedTitle": "लॉग इन करें",
+  "exchangeDcaUnableToGetConfig": "डीसीए विन्यास प्राप्त करने में असमर्थ",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "exchangeDcaNetworkLiquid": "तरल नेटवर्क",
+  "exchangeDcaNetworkBitcoin": "बिटकॉइन नेटवर्क",
+  "exchangeDcaCancelDialogCancelButton": "रद्द करना",
+  "exchangeDcaActivateTitle": "Recurring Buy",
+  "exchangeDcaCancelDialogConfirmButton": "हाँ, निष्क्रिय",
+  "exchangeDcaCancelDialogMessage": "आपकी आवर्ती बिटकॉइन खरीद योजना रुक जाएगी और निर्धारित खरीद समाप्त हो जाएगी। फिर से शुरू करने के लिए, आपको एक नई योजना स्थापित करने की आवश्यकता होगी।।",
+  "exchangeDcaFrequencyDay": "दिन",
+  "exchangeHomeDepositButton": "जमा",
+  "exchangeKycCardSubtitle": "लेनदेन की सीमा को दूर करने के लिए",
+  "exchangeDcaFrequencyWeek": "सप्ताह",
+  "exchangeDcaNetworkLightning": "लाइटनिंग नेटवर्क",
+  "exchangeHomeWithdrawButton": "निकासी",
+  "exchangeKycLevelLimited": "लिमिटेड",
+  "exchangeKycLevelLight": "प्रकाश",
+  "exchangeDcaFrequencyHour": "घंटे",
+  "exchangeKycCardTitle": "पूरा करें केवाईसी",
+  "exchangeDcaCancelDialogTitle": "बिटकॉइन रीकरिंग खरीद रद्द करें?",
+  "transactionHistoryTitle": "लेनदेन इतिहास",
+  "exchangeDcaDeactivateTitle": "Recurring Buy",
+  "exchangeDcaSummaryMessage": "आप {amount} हर {frequency} को {network} के माध्यम से खरीद रहे हैं, जब तक आपके खाते में धन हो।।",
+  "exchangeDcaFrequencyMonth": "महीना",
+  "settingsScreenTitle": "सेटिंग्स",
+  "exchangeDcaHideSettings": "सेटिंग छुपाएं",
+  "exchangeDcaViewSettings": "सेटिंग्स देखें",
+  "homeActionBuy": "खरीदें",
+  "homeActionSell": "बेचें",
+  "homeActionPay": "भुगतान करें",
+  "homeActionTransfer": "स्वैप करें",
+  "recipientsSearchHint": "नाम या लेबल द्वारा प्राप्तकर्ता खोजें",
+  "recipientsFieldSinpePhoneNumberHint": "देश कोड के बिना 8 अंक",
+  "recipientsCopDocCcRecipientNumber": "प्राप्तकर्ता का cédula नंबर",
+  "recipientsCopDocCeRecipientNumber": "प्राप्तकर्ता का cédula de extranjería नंबर",
+  "recipientsCopDocNitRecipientNumber": "प्राप्तकर्ता का कर आईडी नंबर",
+  "recipientsCopDocPassportRecipientNumber": "प्राप्तकर्ता का पासपोर्ट नंबर",
+  "recipientsCopDocTiRecipientNumber": "प्राप्तकर्ता का पहचान पत्र नंबर",
+  "recipientsCopDocRegistroCivilRecipientNumber": "प्राप्तकर्ता का नागरिक पंजीकरण नंबर",
+  "recipientsValidationSinpePhoneCountryCode": "देश कोड (+506) हटाएँ। केवल 8-अंकों का नंबर दर्ज करें",
+  "recipientsValidationSinpePhoneInvalidChars": "केवल अंकों का उपयोग करें (कोई अक्षर या प्रतीक नहीं)",
+  "recipientsValidationSinpePhoneTooShort": "फ़ोन नंबर के सभी 8 अंक दर्ज करें",
+  "recipientsFieldDocumentType": "प्राप्तकर्ता का आईडी प्रकार",
+  "recipientsFieldDocumentNumberHint": "प्राप्तकर्ता का आईडी नंबर दर्ज करें",
+  "recipientsScreenTitle": "प्राप्तकर्ता चुनें",
+  "recipientsScreenSubtitle": "आप किसे भुगतान कर रहे हैं?",
+  "recipientsTabNew": "नया प्राप्तकर्ता",
+  "recipientsTabList": "मेरे फ़िएट प्राप्तकर्ता",
+  "recipientsPayoutMethod": "भुगतान विधि",
+  "recipientsFilterByJurisdiction": "क्षेत्राधिकार के अनुसार फ़िल्टर करें:",
+  "recipientsListEmpty": "कोई प्राप्तकर्ता नहीं मिला।",
+  "recipientsContinue": "जारी रखें",
+  "recipientsJurisdictionAll": "सभी क्षेत्राधिकार",
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "recipientsTypeInteracEmail": "ईमेल मनी ट्रांसफर",
+  "recipientsTypeBillPayment": "बिल भुगतान",
+  "recipientsTypeBankTransfer": "बैंक ट्रांसफर",
+  "recipientsTypeSepa": "SEPA ट्रांसफर",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI कार्ड",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU अर्जेंटीना",
+  "recipientsTypeBankAccountCo": "बैंक खाता COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "ईमेल",
+  "recipientsInfoPayee": "भुगतानकर्ता",
+  "recipientsInfoAccount": "खाता",
+  "recipientsInfoPhone": "फ़ोन",
+  "recipientsInfoCard": "कार्ड",
+  "recipientsInfoLabel": "लेबल",
+  "recipientsValidationFieldRequired": "यह क्षेत्र खाली नहीं हो सकता है",
+  "recipientsLabelOptional": "लेबल (वैकल्पिक)",
+  "recipientsLabelHint": "इस प्राप्तकर्ता के लिए एक लेबल दर्ज करें",
+  "recipientsFieldName": "नाम",
+  "recipientsFieldNameHint": "प्राप्तकर्ता का नाम दर्ज करें",
+  "recipientsFieldRecipientNameLabel": "प्राप्तकर्ता का नाम",
+  "recipientsFieldPhoneNumber": "फ़ोन नंबर",
+  "recipientsFieldPhoneNumberHint": "फ़ोन नंबर दर्ज करें",
+  "recipientsFieldOwnerName": "स्वामी का नाम",
+  "recipientsFieldOwnerNameHint": "स्वामी का नाम दर्ज करें",
+  "recipientsAccountOwnerQuestion": "यह खाता किसका है?",
+  "recipientsAccountOwnerMine": "यह मेरा खाता है",
+  "recipientsAccountOwnerSomeoneElse": "यह किसी और का खाता है",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "IBAN दर्ज करें",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "CLABE नंबर दर्ज करें",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "CVU/CBU नंबर दर्ज करें",
+  "recipientsFieldBankInstitution": "बैंक संस्था",
+  "recipientsFieldBankInstitutionPlaceholder": "बैंक संस्था चुनें",
+  "recipientsValidationBankInstitution": "कृपया एक बैंक संस्था चुनें",
+  "recipientsFieldAccountType": "खाता प्रकार",
+  "recipientsAccountTypeSavings": "बचत",
+  "recipientsAccountTypeChecking": "चालू",
+  "recipientsFieldBankAccountNumber": "बैंक खाता संख्या",
+  "recipientsFieldBankAccountNumberHint": "बैंक खाता संख्या दर्ज करें",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "पासपोर्ट",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "डेबिट कार्ड नंबर",
+  "recipientsFieldDebitCardHint": "डेबिट कार्ड नंबर दर्ज करें",
+  "recipientsFieldOwnerNameSinpeHint": "स्वामी का नाम यहाँ दिखाई देगा",
+  "recipientsValidationSinpeOwner": "कृपया फ़ोन नंबर सत्यापित करें",
+  "recipientsFieldEmailAddress": "ईमेल पता",
+  "recipientsFieldEmailAddressHint": "ईमेल पता दर्ज करें",
+  "recipientsFieldSecurityQuestion": "सुरक्षा प्रश्न",
+  "recipientsFieldSecurityQuestionHint": "सुरक्षा प्रश्न दर्ज करें (10-40 वर्ण)",
+  "recipientsFieldSecurityAnswer": "सुरक्षा उत्तर",
+  "recipientsFieldSecurityAnswerHint": "सुरक्षा उत्तर दर्ज करें",
+  "recipientsValidationSecurityQuestionMin": "सुरक्षा प्रश्न कम से कम 10 वर्णों का होना चाहिए",
+  "recipientsCharCounter": "{count}/40 वर्ण",
+  "recipientsFieldInstitutionCode": "संस्था कोड",
+  "recipientsFieldInstitutionCodeHint": "संस्था कोड दर्ज करें",
+  "recipientsFieldInstitutionNumber": "संस्था संख्या",
+  "recipientsFieldInstitutionNumberHint": "संस्था संख्या दर्ज करें",
+  "recipientsFieldTransitNumber": "ट्रांज़िट संख्या",
+  "recipientsFieldTransitNumberHint": "ट्रांज़िट संख्या दर्ज करें",
+  "recipientsFieldAccountNumber": "खाता संख्या",
+  "recipientsFieldAccountNumberHint": "खाता संख्या दर्ज करें",
+  "recipientsFieldDefaultComment": "डिफ़ॉल्ट टिप्पणी (वैकल्पिक)",
+  "recipientsFieldDefaultCommentHint": "डिफ़ॉल्ट टिप्पणी दर्ज करें",
+  "recipientsFieldCorporateAccount": "कॉर्पोरेट खाता",
+  "recipientsFieldFirstName": "पहला नाम",
+  "recipientsFieldFirstNameHint": "पहला नाम दर्ज करें",
+  "recipientsFieldLastName": "अंतिम नाम",
+  "recipientsFieldLastNameHint": "अंतिम नाम दर्ज करें",
+  "recipientsFieldCorporateName": "कॉर्पोरेट नाम",
+  "recipientsFieldCorporateNameHint": "कॉर्पोरेट नाम दर्ज करें",
+  "recipientsFieldBillerName": "बिलर का नाम",
+  "recipientsFieldBillerNameHint": "बिलर खोजें और चुनें",
+  "recipientsValidationBillerSearchMin": "खोजने के लिए 3 या अधिक वर्ण दर्ज करें",
+  "recipientsValidationBillerSelect": "कृपया सूची में से एक बिलर चुनें",
+  "recipientsFieldPayeeAccountNumber": "भुगतानकर्ता खाता संख्या",
+  "recipientsErrorLoadFailed": "आपके प्राप्तकर्ता लोड नहीं किए जा सके। कृपया फिर से प्रयास करें।",
+  "recipientsErrorSaveFailed": "यह प्राप्तकर्ता सहेजा नहीं जा सका। कृपया जानकारी जाँचें और फिर से प्रयास करें।",
+  "recipientsErrorSinpeLookupFailed": "हम इस फ़ोन नंबर की पुष्टि नहीं कर सके। कृपया इसे जाँचें और फिर से प्रयास करें।",
+  "recipientsErrorBillerSearchFailed": "बिलर खोजे नहीं जा सके। कृपया फिर से प्रयास करें।",
+  "recipientsErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
+  "recipientsListPullToRetry": "पुनः प्रयास के लिए नीचे खींचें।",
+  "recipientsErrorSavedButNotSelected": "यह प्राप्तकर्ता सहेजा गया, लेकिन हम आगे नहीं बढ़ सके। जारी रखने के लिए इसे अपनी सूची में खोजें।",
+  "recipientsTypeConfidentialSepa": "गोपनीय SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",
+  "recipientsErrorEuResidencyRequired": "गोपनीय SEPA सक्रिय करने के लिए आपको यूरोपीय संघ का निवासी होना आवश्यक है।",
+  "recipientsConfidentialSepaActivatingTitle": "प्राप्तकर्ता सक्रिय किया जा रहा है",
+  "recipientsConfidentialSepaActivatingDescription": "आपके प्राप्तकर्ता को गोपनीय SEPA के लिए सक्रिय किया जा रहा है। इसमें कुछ मिनट लग सकते हैं।",
+  "recipientsConfidentialSepaNotActivatedTitle": "प्राप्तकर्ता गोपनीय SEPA के लिए सक्रिय नहीं है",
+  "recipientsConfidentialSepaNotActivatedDescription": "यह प्राप्तकर्ता अभी तक गोपनीय SEPA के लिए सक्रिय नहीं है। हम इसे अभी सक्रिय कर रहे हैं। इसमें कुछ मिनट लग सकते हैं। इसके बजाय आप इंस्टेंट और रेगुलर SEPA का उपयोग कर सकते हैं।",
+  "recipientsConfidentialSepaActivatedTitle": "प्राप्तकर्ता सक्रिय हो गया",
+  "recipientsConfidentialSepaActivatedDescription": "आपका प्राप्तकर्ता अब गोपनीय SEPA के लिए सक्रिय है।",
+  "recipientsConfidentialSepaUseRegularSepa": "इसके बजाय इंस्टेंट और रेगुलर SEPA का उपयोग करें",
+  "recipientsVirtualIbanIntroTitle": "गोपनीय SEPA सक्रिय करें?",
+  "recipientsVirtualIbanNewBadge": "नया",
+  "recipientsVirtualIbanIntroDescription": "अपने नाम पर एक निजी वर्चुअल IBAN से अपने खाते में गोपनीय रूप से पैसे जमा करें। यह मुफ़्त है।",
+  "recipientsVirtualIbanIntroSelfTransfer": "अपने बैंक से Bull Bitcoin को पैसे भेजने पर यह खुद को किया गया ट्रांसफ़र दिखता है।",
+  "recipientsVirtualIbanIntroNoTransferCode": "किसी ट्रांसफ़र कोड की ज़रूरत नहीं।",
+  "recipientsVirtualIbanNameWarningTitle": "महत्वपूर्ण: नाम का मेल ज़रूरी है",
+  "recipientsVirtualIbanNameWarningDescription": "बैंक खाते का नाम आपके Bull Bitcoin वर्चुअल IBAN के नाम से बिल्कुल मेल खाना चाहिए, वरना ट्रांसफ़र अपने-आप लौटा दिया जाएगा। नाम मेल नहीं खाते? सहायता से संपर्क करें।",
+  "recipientsVirtualIbanAccountOwnerName": "खाताधारक का नाम",
+  "recipientsVirtualIbanNameConfirmation": "मैं पुष्टि करता/करती हूँ कि नाम मेरे बैंक खाते/खातों से मेल खाता है",
+  "recipientsVirtualIbanActivate": "गोपनीय SEPA सक्रिय करें",
+  "recipientsVirtualIbanActivatingTitle": "गोपनीय SEPA सक्रिय हो रहा है...",
+  "recipientsVirtualIbanActivatingDescription": "आपका वर्चुअल IBAN बनाया जा रहा है। इसमें कुछ मिनट लग सकते हैं।",
+  "recipientsVirtualIbanActivatedTitle": "गोपनीय SEPA सक्रिय हो गया",
+  "recipientsVirtualIbanActivatedDescription": "अब आप गोपनीय रूप से पैसे निकालने के लिए अपने निजी वर्चुअल IBAN का उपयोग कर सकते हैं।",
+  "recipientsVirtualIbanCopied": "कोपिड टू क्लिपबोर्ड",
+  "recipientsVirtualIbanDone": "हो गया",
+  "recipientsVirtualIbanRecipientName": "Recipient name",
+  "recipientsVirtualIbanIbanLabel": "वर्चुअल IBAN खाता संख्या",
+  "recipientsVirtualIbanCountry": "बैंक खाता देश",
+  "recipientsVirtualIbanBic": "BIC कोड",
+  "recipientsVirtualIbanActivatedFundingDescription": "अब आप गोपनीय रूप से पैसे जमा करने के लिए अपने निजी वर्चुअल IBAN का उपयोग कर सकते हैं।",
+  "recipientsVirtualIbanShowDetails": "मेरे वर्चुअल IBAN का विवरण दिखाएँ",
+  "recipientsVirtualIbanDetailsDescription": "अपने नाम पर एक निजी वर्चुअल IBAN से अपने खाते में गोपनीय रूप से पैसे जमा करें। जमा राशि खुद को किए गए भुगतान के रूप में दिखेगी, किसी ट्रांसफ़र कोड की ज़रूरत नहीं।",
+  "recipientsVirtualIbanBankAddress": "बैंक का पता",
+  "recipientsVirtualIbanBankAddressHelp": "बैंक का आधिकारिक पता, अगर आपका बैंक माँगे।",
+  "recipientsConfidentialSepaNameMustMatchHint": "आपके बैंक और वर्चुअल IBAN खातों के नाम मेल खाने चाहिए, वरना ट्रांसफ़र अपने-आप लौटा दिए जाएँगे।",
+  "recipientsFieldBankAccountIban": "बैंक खाता संख्या (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "निकासी आपके खाते के नाम से खुद को किए गए ट्रांसफ़र के रूप में दिखाई देती है",
+  "withdrawOwnershipQuestion": "यह कौन है?",
+  "withdrawOwnershipOtherAccount": "यह किसी और का खाता है",
+  "withdrawAboveMaxAmountError": "अधिकतम राशि है {amount} {currency}",
+  "withdrawConfirmCard": "कार्ड",
+  "withdrawBelowMinAmountError": "न्यूनतम राशि है {amount} {currency}",
+  "withdrawConfirmPhone": "फ़ोन",
+  "withdrawAmountContinue": "जारी",
+  "withdrawUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।।",
+  "withdrawConfirmTitle": "वापसी की पुष्टि करें",
+  "withdrawConfirmAmount": "राशि",
+  "withdrawConfirmEmail": "ईमेल",
+  "withdrawConfirmButton": "वापसी की पुष्टि करें",
+  "withdrawOwnershipMyAccount": "यह मेरा खाता है",
+  "withdrawAmountTitle": "वापसी",
+  "withdrawConfirmClabe": "CLABE",
+  "withdrawConfirmPayee": "वेतन",
+  "withdrawConfirmRecipientName": "Recipient name",
+  "withdrawConfirmAccount": "लेखा",
+  "withdrawSuccessOrderDetails": "ऑर्डर विवरण",
+  "withdrawSuccessTitle": "निकासी शुरू",
+  "withdrawConfirmIban": "इब्न",
+  "withdrawConfirmBankAccount": "बैंक खाता",
+  "withdrawInteracSecurityDetailsTitle": "ट्रांसफर सुरक्षा विवरण",
+  "withdrawInteracSaveAsDefault": "इन विवरणों को डिफ़ॉल्ट के रूप में सहेजें",
+  "withdrawInteracSecurityQuestionLengthError": "सुरक्षा प्रश्न 3–40 अक्षरों का होना चाहिए",
+  "withdrawInteracSecurityAnswerLengthError": "सुरक्षा उत्तर 3–40 अक्षरों का होना चाहिए",
+  "withdrawInteracSecurityAnswerFormatError": "बिना स्पेस के अक्षर, अंक या हाइफ़न का उपयोग करें",
+  "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
+  "withdrawConfidentialSepaNotActivatedError": "कृपया इस SEPA प्राप्तकर्ता के लिए गोपनीय भुगतान विकल्प सक्रिय करें।",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "लॉग-इन",
+  "logoutConfirmationTitle": "लॉगआउट की पुष्टि करें",
+  "logoutConfirmationCancel": "रद्द करना",
+  "logoutConfirmationDescription": "क्या आपको यकीन है कि आप अपने बुल बिटकॉइन खाते से लॉग आउट करना चाहते हैं? आपको फिर से एक्सचेंज सुविधाओं तक पहुंचने के लिए लॉग इन करना होगा।।",
+  "exchangeSettingsLogOutTitle": "लॉग आउट",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "यह हमारी सहायता टीम को खाता हटाने का अनुरोध भेजेगा। आपका खाता 5 कार्य दिवसों के भीतर हटा दिया जाएगा।",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "खाता हटाने का अनुरोध किया गया",
+  "deleteAccountSuccessDescription": "आपका खाता हटाने का अनुरोध कर दिया गया है। इसे 5 कार्य दिवसों के भीतर संसाधित किया जाएगा।",
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "आपका भुगतान भेजा जाएगा ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "बिटकॉइन वॉलेट चुनें",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExternalWallet": "बाहरी बिटकॉइन वॉलेट",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "एक्सप्रेस निकासी की पुष्टि करें",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "सुरक्षित Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "संगत वॉलेट की आवश्यकता है",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "प्राप्त करना",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyAboveMaxAmountError": "आप अधिकतम राशि से अधिक खरीदने की कोशिश कर रहे हैं।।",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyBelowMinAmountError": "आप न्यूनतम राशि के नीचे खरीदने की कोशिश कर रहे हैं।।",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyConfirmPayoutWallet": "भुगतान वॉलेट",
+  "buyPayoutMethodLiquid": "Liquid पर L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin चेन पर BTC",
+  "buyConfirmPayoutMethod": "भुगतान विधि",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "तरल",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "न्यूनतम 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "जारी",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSetupInsufficientBalance": "अपर्याप्त शेष",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "आप हर घंटे {amount} खरीद सकते हैं",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "आपका ऑर्डर अभी नहीं बनाया जा सका। कृपया दोबारा कोशिश करें या सहायता से संपर्क करें।",
+  "dcaConfirmPaymentMethod": "भुगतान विधि",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "बिटकॉइन मूल्य",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "अनुमानित शुल्क मूल्य",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "राशि दर्ज करें",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "कृपया एक नेटवर्क चुनें",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "buyInputContinue": "जारी",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaWalletTypeBitcoin": "बिटकॉइन (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "पुष्टि समय",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "आपने {fiatAmount} में {amount} खरीदा",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "लेनदेन तेज़ करें",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "अधिकतम",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "बिटकॉइन खरीदें",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "वॉलेट चुनें",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "KYC ID सत्यापन लंबित",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "आपको पहले आईडी सत्यापन पूरा करना होगा",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "नेटवर्क शुल्क",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "आप हर महीने {amount} खरीद सकते हैं",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "बिजली",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "आवृत्ति चुनें",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "लाइटनिंग एड्रेस",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} संतुलन",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "इस कार्यक्रम के अनुसार बिटकॉइन की खरीद स्वचालित रूप से रखी जाएगी।।",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "पूरा KYC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "आवृत्ति",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "आदेश प्रकार",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaSuccessMessageDaily": "आप हर दिन {amount} खरीद सकते हैं",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "मुफ़्त निकासी की प्रतीक्षा करें",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "संगत वॉलेट, अधिकतम 0.25 BTC की आवश्यकता है",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "अपने खाते को फंड करें",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "~10 मिनट",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "पुष्टिकरण ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSuccessTitle": "Recurring Buy सक्रिय है!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSetupFrequencyError": "एक आवृत्ति का चयन करें",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "बिटकॉइन खरीदें",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "यह तेज़ था, है ना?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "हर दिन",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyConfirmPurchase": "खरीद की पुष्टि करें",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyInputMaxAmountError": "आप अधिक से अधिक नहीं खरीद सकते",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyNetworkFeeRate": "नेटवर्क शुल्क दर",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "घर वापस",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "तत्काल भुगतान",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "नेटवर्क",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "आवर्ती की पुष्टि करें खरीदें",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaSetupContinue": "जारी",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "buyConfirmYouPay": "भुगतान",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "बिटकॉइन वॉलेट प्रकार चुनें",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "अपर्याप्त संतुलन",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "dcaSuccessMessageWeekly": "आप हर सप्ताह {amount} खरीद सकते हैं",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "राशि",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "हर सप्ताह",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "अपने खाते को फंड करें",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "Bitcoin पता दर्ज करें",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSetupInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "इन सेटिंग्स के अनुसार ऑर्डर स्वचालित रूप से रखा जाएगा। आप उन्हें कभी भी अक्षम कर सकते हैं।।",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "बिजली नेटवर्क (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Bitcoin नेटवर्क शुल्क आपको प्राप्त होने वाली राशि से काटा जाएगा और Bitcoin miners द्वारा एकत्र किया जाएगा",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "इस कार्यक्रम के अनुसार बिटकॉइन की खरीद स्वचालित रूप से रखी जाएगी।।",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmContinue": "जारी",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaConfirmNetworkBitcoin": "बिटकॉइन",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "विवरण देखें",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "हर घंटे",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "बिजली का पता",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "भुगतान विधि",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "हर माह",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "Bitcoin भेज दिया गया!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।।",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyInputMinAmountError": "आपको कम से कम खरीदना चाहिए",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "dcaUseDefaultLightningAddress": "मेरे डिफ़ॉल्ट लाइटनिंग पते का उपयोग करें।।",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "इसे जल्दी पुष्टि कराएं",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "एक्सप्रेस पुष्टि करें",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "खरीददारी",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "तरल (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "खरीदें",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaAccountUnavailableError": "आपका खाता लोड नहीं हो सका। अपना कनेक्शन जाँचें, सुनिश्चित करें कि आप लॉग इन हैं और फिर से प्रयास करें।",
+  "dcaLightningAddressRequiredError": "अपनी खरीदारी प्राप्त करने के लिए एक Lightning पता दर्ज करें।",
+  "dcaReceiveAddressError": "आपके वॉलेट में प्राप्ति पता तैयार नहीं किया जा सका। कृपया फिर से प्रयास करें।",
+  "dcaOrderCreationError": "आवर्ती खरीद नहीं बनाई जा सकी। कृपया बाद में फिर से प्रयास करें।",
+  "payPleasePayInvoice": "कृपया इस चालान का भुगतान करें",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payPayinAmount": "भुगतान राशि",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellAdvancedOptions": "उन्नत विकल्प",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySinpeBeneficiario": "लाभार्थी",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "payInstantPayments": "तत्काल भुगतान",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellReplaceByFeeActivated": "Replace-by-fee सक्रिय",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payPayoutAmount": "प्राप्ति राशि",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payNetworkFees": "नेटवर्क शुल्क",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payAboveMaxAmountError": "इस वॉलेट से आप अधिकतम {amount} का भुगतान कर सकते हैं।",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellLoadingGeneric": "लोड ..।",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "payPaymentInProgress": "भुगतान प्रगति में है!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "sellCompleteKYC": "पूरा KYC",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payPayFromWallet": "वॉलेट से भुगतान करें",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellExternalWallet": "बाहरी वॉलेट",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payInvalidState": "अमान्य स्थिति",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "sellBelowMinAmountError": "आप इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि से कम बेचने की कोशिश कर रहे हैं।",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellEurBalance": "EUR शेष",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellSelectNetwork": "नेटवर्क चुनें",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payNoInvoiceData": "कोई चालान डेटा उपलब्ध नहीं",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "paySinpeMonto": "राशि",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "sellOrderAlreadyConfirmedError": "यह बिक्री ऑर्डर पहले ही पुष्टि हो चुका है।",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payNoDetailsAvailable": "कोई विवरण उपलब्ध नहीं",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "sellShowQrCode": "QR code दिखाएं",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellSecureBitcoinWallet": "सुरक्षित Bitcoin वॉलेट",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payShowQrCode": "QR code दिखाएं",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellViewDetailsButton": "विवरण देखें",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "paySinpeOrigen": "उद्गम",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payRecipientType": "प्राप्तकर्ता का प्रकार",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellOrderCompleted": "ऑर्डर पूर्ण!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellPleasePayInvoice": "कृपया यह invoice चुकाएं",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "paySelectNetwork": "नेटवर्क चुनें",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "sellCadBalance": "CAD शेष",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "payInsufficientBalanceError": "इस भुगतान आदेश को पूरा करने के लिए चयनित वॉलेट में पर्याप्त शेष राशि नहीं है।",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellPriceWillRefreshIn": "मूल्य रिफ्रेश होगा ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "ARS शेष",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellPayFromWallet": "वॉलेट से भुगतान करें",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellBitcoinAmount": "Bitcoin राशि",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellBalanceWillBeCredited": "आपके लेनदेन को ऑनचेन पर 1 पुष्टि मिलने के बाद आपके खाते का शेष जमा हो जाएगा।",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "payExchangeRate": "विनिमय दर",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "copyDialogButton": "कॉपी",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payQrCode": "QR Code",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellLightningNetwork": "Lightning Network",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "तत्काल भुगतान",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellDone": "हो गया",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellSendPaymentContinue": "जारी",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "sellBitcoinOnChain": "Bitcoin ऑन-चेन",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellFromAnotherWallet": "किसी अन्य Bitcoin वॉलेट से बेचें",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payFeePriority": "शुल्क प्राथमिकता",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellNoInvoiceData": "कोई invoice डेटा उपलब्ध नहीं",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "sellHowToPayInvoice": "आप इस invoice का भुगतान कैसे करना चाहते हैं?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payTitle": "भुगतान करें",
+  "payDescriptionLabel": "भुगतान विवरण (वैकल्पिक)",
+  "payDescriptionHint": "इस भुगतान के लिए एक नोट जोड़ें",
+  "payPaymentDescription": "भुगतान विवरण",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellQrCode": "QR Code",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellGoHome": "होम पर जाएं",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellInsufficientBalanceError": "इस बिक्री ऑर्डर को पूरा करने के लिए चुने गए वॉलेट में अपर्याप्त शेष है।",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellSelectWallet": "वॉलेट चुनें",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "payContinue": "जारी रखें",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "Replace-by-fee सक्रिय",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellCopyInvoice": "invoice कॉपी करें",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "payExternalWalletDescription": "किसी अन्य Bitcoin वॉलेट से भुगतान करें",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "sellFeePriority": "शुल्क प्राथमिकता",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "भुगतान राशि",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellBitcoinPriceLabel": "बिटकॉइन मूल्य",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "closeDialogButton": "बंद",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "payBitcoinPrice": "Bitcoin मूल्य",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "sellMxnBalance": "MXN शेष",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellCopBalance": "COP शेष",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellKycPendingDescription": "आपको पहले ID सत्यापन पूरा करना होगा",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellPayoutAmount": "प्राप्ति राशि",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellWhichWalletQuestion": "आप किस वॉलेट से बेचना चाहते हैं?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "payHowToPayInvoice": "आप इस चालान का भुगतान कैसे करना चाहते हैं?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "payWhichWallet": "आप किस वॉलेट से भुगतान करना चाहते हैं?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "sellFastest": "सबसे तेज़",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payCopyInvoice": "चालान कॉपी करें",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellCrcBalance": "CRC शेष",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "paySelectCoinsManually": "सिक्के मैन्युअल रूप से चुनें",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payPriceRefreshIn": "कीमत इस समय में ताज़ा होगी ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payBitcoinAmount": "Bitcoin राशि",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellExchangeRate": "विनिमय दर",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "Bitcoin बेचें",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "sellUsdBalance": "USD शेष",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellKycPendingTitle": "KYC ID सत्यापन लंबित",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "payOrderNumber": "आदेश संख्या",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "आदेश संख्या",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "payBelowMinAmountError": "इस वॉलेट से आप न्यूनतम {amount} का भुगतान कर सकते हैं।",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellPayoutRecipient": "भुगतान प्राप्तकर्ता",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "paySelectWallet": "वॉलेट चुनें",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "paySinpeNumeroComprobante": "संदर्भ संख्या",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "सुरक्षित Bitcoin वॉलेट",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payRecipientName": "प्राप्तकर्ता का नाम",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payConfirmPayment": "भुगतान की पुष्टि करें",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "sellConfirmPayment": "भुगतान की पुष्टि करें",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellSelectCoinsManually": "मुद्राएं मैन्युअल रूप से चुनें",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "सबसे तेज़",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payExternalWallet": "बाहरी वॉलेट",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payOrderDetails": "आदेश विवरण",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "sellAboveMaxAmountError": "आप इस वॉलेट से बेची जा सकने वाली अधिकतम राशि से ऊपर बेचने की कोशिश कर रहे हैं।",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellLiquidNetwork": "Liquid Network",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "sellOrderNotFoundError": "बिक्री ऑर्डर नहीं मिला। कृपया पुनः प्रयास करें।",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "payAdvancedOptions": "उन्नत विकल्प",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "payRecipientDetails": "प्राप्तकर्ता का विवरण",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "sellOrderNumber": "ऑर्डर नंबर",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "payDone": "हो गया",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellInProgress": "बिक्री प्रगति में है...",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "payAdvancedSettings": "उन्नत सेटिंग",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellSendPaymentNetworkFees": "नेटवर्क शुल्क",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "payCompleted": "भुगतान पूर्ण हुआ!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "payBitcoinOnchain": "Bitcoin ऑन-चेन",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellAdvancedSettings": "उन्नत सेटिंग्स",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payViewDetails": "विवरण देखें",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
+  "invoiceViewerTitle": "चालान",
+  "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
+  "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+  "sellPayoutBalance": "मेरे खाते की शेष राशि में जोड़ें",
+  "sellPayoutSepaDescription": "निकासी Leonod द्वारा भेजी गई दिखाई देती है",
+  "sellPayoutTitle": "प्राप्तकर्ता चुनें",
+  "sellPayoutNewBadge": "नया",
+  "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
+  "sendSelectedUtxosInsufficient": "चुने गए UTXO आवश्यक राशि को कवर नहीं करते",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "राशि चुनें",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "प्रकार: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "पता: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "राशि का अनुरोध: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "प्राप्त करें",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "चेंज",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "अपर्याप्त संतुलन",
+  "limitOrdersInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
+  "limitOrdersFundAccount": "अपने खाते को फंड करें",
+  "exchangeLandingRecommendedExchange": "बिटकॉइन एक्सचेंज",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureCustomerSupport": "• ग्राहक सहायता के साथ चैट करें",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "बिटकॉइन मोबाइल एप्लिकेशन में क्रिप्टोक्यूरेंसी एक्सचेंज सेवाएं उपलब्ध नहीं हैं।।",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLandingDisclaimerLegal": "विनिमय सेवाओं तक पहुंच उन देशों तक सीमित होगी जहां बुल बिटकॉइन कानूनी रूप से संचालित हो सकता है और केवाईसी की आवश्यकता हो सकती है।।",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeFeatureSelfCustody": "• बिटकॉइन को सीधे स्वयं-कटोडी में खरीदें",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeLandingConnectAccount": "अपने बुल बिटकॉइन एक्सचेंज अकाउंट को कनेक्ट करें",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeFeatureSellBitcoin": "• बिटकॉइन बेचें, बिटकॉइन के साथ भुगतान करें",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLoginButton": "लॉग इन करें",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeFeatureBankTransfers": "• बैंक ट्रांसफर और पे बिल भेजें",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeGoToWebsiteButton": "Go to Bull Bitcoin विनिमय वेबसाइट",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeFeatureDcaOrders": "• डीसीए, लिमिट ऑर्डर और ऑटो-बॉय",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureUnifiedHistory": "• एकीकृत लेनदेन इतिहास",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:rust_bindings/boltz.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 

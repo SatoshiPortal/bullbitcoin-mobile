@@ -1,11 +1,13 @@
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:startup/setup.dart' show StartupLocalizations;
+import 'package:startup/startup.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:legacy_storage/legacy_storage.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
@@ -25,6 +27,31 @@ void main() {
     }
   });
 
+  testWidgets('startup error exposes a retry for unavailable storage', (
+    tester,
+  ) async {
+    _setDisplay(tester);
+    var attempts = 0;
+    Widget screen(VoidCallback retry) => BullSupportScope(
+      onContactSupport: (_, {message}) {},
+      child: AppInitErrorScreen(
+        error: const LegacyImportUnavailable(),
+        onRetry: retry,
+      ),
+    );
+    await tester.pumpWidget(screen(() => attempts++));
+    final loc = StartupLocalizations.of(tester.element(find.byType(Scaffold)));
+    final button = find.text(loc.retry);
+    await tester.tap(button);
+    await tester.pump();
+    await tester.tap(button);
+    expect(attempts, 1);
+
+    await tester.pumpWidget(screen(() => attempts++));
+    await tester.tap(button);
+    expect(attempts, 2);
+  });
+
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     testWidgets('unknown route uses the localized error in ${theme.name}', (
       tester,
@@ -42,7 +69,10 @@ void main() {
         MaterialApp.router(
           debugShowCheckedModeBanner: false,
           theme: AppTheme.themeData(theme),
-          localizationsDelegates: appLocalizationsDelegates,
+          localizationsDelegates: const [
+            StartupLocalizations.delegate,
+            ...appLocalizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: router,
         ),
@@ -50,7 +80,7 @@ void main() {
       await tester.pumpAndSettle();
       final route = find.byType(RouteErrorScreen);
       expect(find.byType(BullScaffold), findsOneWidget);
-      final loc = AppLocalizations.of(tester.element(route));
+      final loc = StartupLocalizations.of(tester.element(route));
       expect(find.text(loc.coreScreensPageNotFound), findsOneWidget);
       expect(find.byType(BullButton), findsNothing);
     });
@@ -72,7 +102,9 @@ void main() {
       await tester.pumpAndSettle();
       final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
       expect(app.theme!.brightness, Brightness.dark);
-      final loc = AppLocalizations.of(tester.element(find.byType(Scaffold)));
+      final loc = StartupLocalizations.of(
+        tester.element(find.byType(Scaffold)),
+      );
       expect(find.text(loc.appInitErrorTitle), findsOneWidget);
       const details = 'Bad state: $example';
       expect(find.text(details), findsNothing);

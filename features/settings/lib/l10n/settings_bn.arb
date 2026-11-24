@@ -1,0 +1,245 @@
+{
+  "@@locale": "bn",
+  "translationWarningContributeButton": "অনুবাদ উন্নত করতে সাহায্য করুন",
+  "@translationWarningContributeButton": {
+    "description": "Button to open Weblate translation platform"
+  },
+  "translationWarningDescription": "এই অ্যাপের বেশিরভাগ অনুবাদ AI দ্বারা তৈরি এবং এতে ভুল থাকতে পারে। আপনি যদি কোনো ভুল লক্ষ্য করেন বা অনুবাদ উন্নত করতে চান, তাহলে আমাদের কমিউনিটি অনুবাদ প্ল্যাটফর্মে অবদান রাখতে পারেন।",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-জেনারেটেড অনুবাদ",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "লগসমূহ",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "ডিফল্ট ফিয়াট মুদ্রা",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "ওয়ালেট আমদানি করুন",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "সেবার স্ট্যাটাস",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "নিরাপত্তা PIN",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "লেবেল",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "আমি বুঝলাম",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "মুদ্রা",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "ভাষা",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "electrumTestnet": "টেস্টনেট",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "এক্সচেঞ্জ সেটিংস",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "অ্যাপ সেটিংস",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "ডেভ মোড",
+  "exchangeTestnetBasicAuthTitle": "Testnet এক্সচেঞ্জ শংসাপত্র",
+  "exchangeTestnetBasicAuthDescription": "Testnet এক্সচেঞ্জ ওয়েব পৃষ্ঠার জন্য HTTP বেসিক অথ (লগইন এবং KYC)।",
+  "exchangeTestnetBasicAuthUsernameLabel": "ব্যবহারকারীর নাম",
+  "exchangeTestnetBasicAuthPasswordLabel": "পাসওয়ার্ড",
+  "exchangeTestnetBasicAuthClearButton": "সাফ করুন",
+  "exchangeTestnetBasicAuthSaveButton": "সংরক্ষণ করুন",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "মেইননেট",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "allSeedViewTitle": "বীজ দর্শক",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "settingsSuperuserModeDisabledMessage": "Superuser মোড নিষ্ক্রিয় করা হয়েছে।",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "সেবার শর্তাবলী",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "এই মোডটি ঝুঁকিপূর্ণ। এটি সক্রিয় করে আপনি স্বীকার করছেন যে আপনি অর্থ হারাতে পারেন",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন ব্রডকাস্ট করুন",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "থিম",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsDevModeWarningTitle": "ডেভ মোড",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "অ্যাপ সংস্করণ: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "সম্পন্ন",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Superuser মোড আনলক করা হয়েছে!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "সেটিংস",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 ডিটারমিনিস্টিক এন্ট্রপি",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "স্বয়ংক্রিয় সোয়াপ সেটিংস",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "torSettingsTitle": "টর সেটিংস",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "backupSettingsStartBackup": "ব্যাকআপ শুরু",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "transactionHistoryTitle": "লেনদেনের ইতিহাস",
+  "settingsErrorReportingTitle": "ত্রুটি রিপোর্টিং",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "ত্রুটি রিপোর্টিং প্রোগ্রাম",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingAcceptButton": "গ্রহণ করুন",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "বাতিল",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "এই পরিবর্তন প্রয়োগ করতে অ্যাপটি পুনরায় চালু করুন",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "errorReportingProgramDescriptionP2": "কোনো কিছু ভেঙে গেলে Bull Bitcoin বেনামী ত্রুটি রিপোর্ট পাঠায়।",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin ওপেন-সোর্স, তাই আপনি যাচাই করতে পারেন কী পাঠানো হচ্ছে।",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
+  },
+  "errorReportingProgramDescriptionP1": "আমাদের ত্রুটি রিপোর্টিং প্রোগ্রামে অবদান রেখে Bull-কে উন্নত করতে সাহায্য করুন।",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP3": "এটি আমাদের দেখতে সাহায্য করে যে প্রতিটি বাগ কতজন ব্যবহারকারীকে প্রভাবিত করে এবং সেই অনুযায়ী সমাধানের অগ্রাধিকার ঠিক করতে সাহায্য করে; এটি ছাড়া প্রভাব পরিমাপ করার আমাদের কোনো উপায় নেই।",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "রিপোর্টগুলো কেবল Bull-এর সার্ভারে যায়, কখনো তৃতীয় পক্ষের কাছে নয়।",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "swapRestoreTitle": "সোয়াপ পুনরুদ্ধার",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবিত্যাগ",
+  "settingsPayjoinAdvancedTitle": "উন্নত Payjoin সেটিংস",
+  "settingsScreenPrivacyTitle": "স্ক্রিন গোপনীয়তা",
+  "settingsScreenPrivacyDisabledMessage": "এখন সংবেদনশীল স্ক্রিনে স্ক্রিনশট নেওয়ার অনুমতি রয়েছে",
+  "settingsSearchHint": "সেটিংস খুঁজুন",
+  "settingsSearchNoResults": "কোনো সেটিংস পাওয়া যায়নি।",
+  "settingsSearchMempoolKeywords": "ব্লক এক্সপ্লোরার|ফি অনুমান|লেনদেন ফি|mempool API",
+  "settingsSearchExchangeKeywords": "অ্যাকাউন্ট|এক্সচেঞ্জ অ্যাকাউন্ট|ট্রেডিং|কেনা ও বেচা",
+  "settingsSearchStartBackupKeywords": "ব্যাকআপ তৈরি করুন|ব্যাকআপ সংরক্ষণ করুন|ওয়ালেট ব্যাকআপ করুন",
+  "settingsSearchRecoverbullKeywords": "এনক্রিপ্টেড ব্যাকআপ|ক্লাউড ব্যাকআপ|এনক্রিপ্টেড ভল্ট|ভল্ট পুনরুদ্ধার",
+  "settingsSearchLabelsKeywords": "ওয়ালেট লেবেল|লেনদেনের লেবেল|BIP329|লেবেল আমদানি|লেবেল রপ্তানি",
+  "settingsSearchTransactionHistoryKeywords": "লেনদেন রপ্তানি|লেনদেনের ইতিহাস রপ্তানি|CSV|ওয়ালেটের ইতিহাস",
+  "settingsSearchAppSettingsKeywords": "অ্যাপ পছন্দসমূহ|অ্যাপ্লিকেশন সেটিংস|সাধারণ সেটিংস",
+  "settingsSearchTermsOfServiceKeywords": "শর্তাবলী|আইনি|ব্যবহারকারী চুক্তি|TOS",
+  "settingsSearchServicesStatusKeywords": "সেবার স্বাস্থ্য|সিস্টেমের অবস্থা|অনলাইন|সেবা বন্ধ",
+  "settingsSearchImportWalletKeywords": "ওয়ালেট যোগ করুন|ওয়ালেট পুনরুদ্ধার|Mnemonic আমদানি|Watch-only ওয়ালেট|হার্ডওয়্যার ওয়ালেট",
+  "settingsSearchBroadcastTransactionKeywords": "স্বাক্ষরিত লেনদেন ব্রডকাস্ট|লেনদেন পাঠান|কাঁচা লেনদেন|লেনদেন hex|PSBT",
+  "settingsSearchPayjoinKeywords": "Payjoin গোপনীয়তা|সহযোগী লেনদেন|P2EP",
+  "settingsSearchAutoswapKeywords": "Autoswap|স্বয়ংক্রিয় swap|স্বয়ংক্রিয় transfer|তাৎক্ষণিক ওয়ালেট ব্যালেন্স",
+  "settingsSearchElectrumKeywords": "বিটকয়েন নোড|Electrum নোড|কাস্টম সার্ভার|নিজস্ব নোড",
+  "settingsSearchTestnetModeKeywords": "পরীক্ষামূলক নেটওয়ার্ক|Bitcoin Testnet|Liquid Testnet|পরীক্ষা মোড",
+  "settingsSearchSeedViewerKeywords": "সিড বাক্যাংশ|পুনরুদ্ধার বাক্যাংশ|Mnemonic|ব্যাকআপ শব্দ|সিড দেখুন",
+  "settingsSearchBip85Keywords": "নির্ধারিত এনট্রপি|চাইল্ড সিড|উৎপন্ন এনট্রপি|BIP85",
+  "settingsSearchLanguageKeywords": "অ্যাপের ভাষা|অনুবাদ|প্রদর্শনের ভাষা|পছন্দের ভাষা",
+  "settingsSearchThemeKeywords": "অ্যাপের চেহারা|অন্ধকার মোড|হালকা মোড|সিস্টেম থিম|ডার্ক মোড|লাইট মোড",
+  "settingsSearchCurrencyKeywords": "ফিয়াট মুদ্রা|স্থানীয় মুদ্রা|ডিফল্ট মুদ্রা|এক্সচেঞ্জ মুদ্রা",
+  "settingsSearchSecurityPinKeywords": "PIN কোড|পাসকোড|অ্যাপ লক|প্রমাণীকরণ|PIN পরিবর্তন করুন",
+  "settingsSearchLogsKeywords": "Debug লগ|Diagnostic লগ|অ্যাপ লগ|লগ রপ্তানি",
+  "settingsSearchDevModeKeywords": "Developer মোড|Development সেটিংস|Debug মোড|উন্নত পরীক্ষা",
+  "settingsSearchTestnetCredentialsKeywords": "Testnet ব্যবহারকারীর তথ্য|Testnet লগইন|Testnet ব্যবহারকারীর নাম|Testnet পাসওয়ার্ড|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "Crash report|ত্রুটি প্রতিবেদন|Diagnostic|Telemetry|ত্রুটি লগ",
+  "settingsSearchScreenPrivacyKeywords": "স্ক্রিনশট|স্ক্রিন রেকর্ডিং|স্ক্রিন ক্যাপচার সুরক্ষা|গোপনীয়তা",
+  "settingsSearchStartTyping": "ফলাফল দেখতে টাইপ করা শুরু করুন।",
+  "settingsErrorSavingSetting": "সেই সেটিংটি সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "settingsErrorConsentNotGiven": "এই সেটিংটি পরিবর্তনের আগে আপনার নিশ্চিতকরণ প্রয়োজন।",
+  "settingsErrorLoadingLogs": "ডায়াগনস্টিক লগ প্রস্তুত করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "settingsSearchTorKeywords": "Tor প্রক্সি|Orbot|Onion routing|অন্তর্নির্মিত Tor|গোপনীয়তা নেটওয়ার্ক",
+  "bitcoinSettingsAutoTransferTitle": "অটো সোয়াপ",
+  "settingsDarkModeTitle": "ডার্ক মোড",
+  "settingsSourceCodeTitle": "সোর্স কোড",
+  "backgroundTasksTitle": "ব্যাকগ্রাউন্ড কাজ",
+  "notificationsBlockedMessage": "সিস্টেম সেটিংসে বিজ্ঞপ্তি ব্লক করা আছে।",
+  "notificationsTitle": "বিজ্ঞপ্তি",
+  "openSystemSettings": "সিস্টেম সেটিংস খুলুন",
+  "permissionsTitle": "অনুমতি",
+  "settingsSearchPermissionsKeywords": "বিজ্ঞপ্তি|ব্যাকগ্রাউন্ড কাজ|ব্যাটারি|সতর্কতা"
+}

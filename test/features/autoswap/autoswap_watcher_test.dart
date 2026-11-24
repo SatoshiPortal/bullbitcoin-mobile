@@ -1,46 +1,30 @@
+import 'package:sync/sync.dart' show WalletKey;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
+
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:primitives/primitives.dart' show Ok, Result, ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
+import 'package:primitives/primitives.dart' show Ok, Result;
+import 'package:swap_feature/testing.dart';
+import 'package:swaps/swaps.dart' show Autoswap, AutoswapFailure;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockWatchFinished extends Mock
-    implements WatchFinishedWalletSyncsUsecase {}
+class _MockExecuteAutoswap extends Mock implements Autoswap {}
 
-class _MockExecuteAutoswap extends Mock implements ExecuteAutoswapUsecase {}
-
-Wallet _wallet({required bool liquid}) => Wallet(
-  origin: liquid ? 'liquid' : 'bitcoin',
-  network: liquid ? Network.liquidTestnet : Network.bitcoinTestnet,
-  isDefault: true,
-  xpubFingerprint: 'fingerprint',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'external',
-  internalPublicDescriptor: 'internal',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.from(500000),
+WalletKey _wallet({required bool liquid}) => WalletKey(
+  id: liquid ? 'liquid' : 'bitcoin',
+  network: liquid ? LiquidNetwork.testnet : BitcoinNetwork.testnet,
 );
 
 void main() {
-  late StreamController<Wallet> syncs;
-  late _MockWatchFinished watchFinished;
+  late StreamController<WalletKey> syncs;
   late _MockExecuteAutoswap executeAutoswap;
   late AutoswapWatcher watcher;
 
   setUp(() {
-    syncs = StreamController<Wallet>.broadcast();
-    watchFinished = _MockWatchFinished();
+    syncs = StreamController<WalletKey>.broadcast();
     executeAutoswap = _MockExecuteAutoswap();
-    when(() => watchFinished.execute()).thenAnswer((_) => syncs.stream);
-    watcher = AutoswapWatcher(watchFinished, executeAutoswap)..start();
+    watcher = AutoswapWatcher(syncs.stream, executeAutoswap)..start();
   });
 
   tearDown(() async {

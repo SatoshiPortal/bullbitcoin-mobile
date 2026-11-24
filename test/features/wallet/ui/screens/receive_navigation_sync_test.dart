@@ -1,6 +1,5 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart';
 
 import 'dart:async';
@@ -23,9 +22,9 @@ class _WalletBloc extends Mock implements WalletBloc {}
 
 class _Settings extends Mock implements Preferences {}
 
-class _References extends Mock implements WalletSecretReferencesRepository {}
+class _References extends Mock implements WalletInventory {}
 
-class _Defaults extends Mock implements CreateDefaultWalletsUsecase {}
+class _Defaults extends Mock implements DefaultWalletProvisioning {}
 
 class _MemoryQuickActionsStorage implements QuickActionsStorage {
   String? value;
@@ -88,6 +87,12 @@ void main() {
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
+                exchangePrompt: createExchangePromptCubit(
+                  storage: _MemoryQuickActionsStorage(),
+                  warning: (_) {},
+                  offered: const Stream.empty(),
+                ),
+                onActivateExchange: (_) {},
               ),
             ),
           ],

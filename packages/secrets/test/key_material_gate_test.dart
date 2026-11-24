@@ -164,7 +164,7 @@ final factory = Root.fromBase58;
   test(
     'Base58 exemption requires the public adapter file and method',
     () async {
-      const path = 'lib/core/utils/bip32_derivation.dart';
+      const path = 'packages/satoshifier/lib/bip32_derivation.dart';
       const source = '''
 import 'package:bip32_keys/bip32_keys.dart';
 class Bip32Derivation {

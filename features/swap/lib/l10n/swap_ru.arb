@@ -1,0 +1,165 @@
+{
+  "@@locale": "ru",
+  "save": "Сохранить",
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "addressLabel": "Адрес: ",
+  "amountRequestedLabel": "Запрошенная сумма: {amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Если выключено, у вас будет возможность разрешить автосвоп, заблокированный из-за высоких комиссий",
+  "autoswapAlwaysBlockInfoEnabled": "Если включено, автосвопы с комиссией выше заданного лимита всегда будут блокироваться",
+  "autoswapAlwaysBlockLabel": "Всегда блокируйте высокие тарифы",
+  "autoswapBaseBalanceInfoText": "Баланс вашего мгновенного платежного кошелька вернется к этому целевому балансу после автоматического обмена.",
+  "autoswapEnableToggleLabel": "Включить автосвоп",
+  "autoswapLoadSettingsError": "Не удалось загрузить настройки автоматического обмена",
+  "autoswapMaxBalanceLabel": "Макс Мгновенный баланс",
+  "autoswapMaxFeeInfoText": "Если общая комиссия за своп превышает заданный процент, автосвоп будет заблокирован",
+  "autoswapMaxFeeLabel": "Максимальная комиссия за своп",
+  "autoswapMaximumBalanceLabel": "Максимальный баланс мгновенного кошелька",
+  "autoswapMaximumFeeError": "Максимальный порог платы {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Минимальный порог баланса {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Минимальный порог баланса - {amount}",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Выберите, какой биткойн-кошелек получит переведенные средства (требуется)",
+  "autoswapRecipientWalletLabel": "Реципиент Bitcoin Wallet",
+  "autoswapRecipientWalletPlaceholder": "Выберите биткойн-кошелек",
+  "autoswapRecipientWalletPlaceholderRequired": "Выберите биткойн-кошелек*",
+  "autoswapRecipientWalletRequired": "*",
+  "autoswapSaveButton": "Сохранить",
+  "autoswapSelectWalletError": "Пожалуйста, выберите получателя Bitcoin кошелёк",
+  "autoswapSettingsTitle": "Настройки автосвопа",
+  "autoswapTargetBalanceLabel": "Целевой баланс мгновенного кошелька",
+  "autoswapTriggerAtBalanceInfoText": "Автообмен сработает, когда ваш баланс превысит этот максимальный баланс.",
+  "autoswapTriggerBalanceError": "Максимальный баланс должен быть не менее чем в два раза больше целевого баланса.",
+  "autoswapUpdateSettingsError": "Не удалось обновить настройки автоматического обмена",
+  "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не удалось подтвердить, что транзакция была транслирована. Проверьте её в обозревателе блоков, прежде чем повторить попытку.",
+  "closeDialogButton": "Закрыть",
+  "coinsKeychainChange": "Сдача",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Получение",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Консолидировать кошелёк",
+  "coreScreensAmountLabel": "Сумма",
+  "coreScreensConfirmButton": "Подтверждение",
+  "coreScreensExternalTransfer": "Внешний своп",
+  "coreScreensFeeDeductionExplanation": "Это общая плата, вычтенная из суммы, отправленной",
+  "coreScreensFeePriorityLabel": "Очередность",
+  "coreScreensFromLabel": "Из",
+  "coreScreensInternalTransfer": "Внутренний своп",
+  "coreScreensNetworkFeesLabel": "Сетевые сборы",
+  "coreScreensReceiveAmountLabel": "Получить сумму",
+  "coreScreensReceiveNetworkFeeLabel": "Получение сетевой платы",
+  "coreScreensSendAmountLabel": "Отправить",
+  "coreScreensSendNetworkFeeLabel": "Отправить Сеть",
+  "coreScreensServerNetworkFeesLabel": "Фейсы сети сервера",
+  "coreScreensToLabel": "В",
+  "coreScreensTransferFeeLabel": "Комиссия за своп",
+  "coreScreensTransferIdLabel": "ID свопа",
+  "doneButton": "Дон",
+  "globalDefaultBitcoinWalletLabel": "Безопасный биткойн",
+  "globalDefaultLiquidWalletLabel": "Мгновенные платежи",
+  "payNetworkError": "Сетевая ошибка. Пожалуйста, попробуйте еще раз",
+  "receiveNote": "Заметка",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "Выберите сумму",
+  "sendAdvancedOptions": "Дополнительные параметры",
+  "sendDone": "Дон",
+  "sendErrorBuildFailed": "Не удалось подготовить этот платёж. Пожалуйста, попробуйте снова.",
+  "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
+  "sendFastFee": "Быстро",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Замена по фе активирована",
+  "sendSelectCoinsManually": "Выбрать монеты вручную",
+  "sendSelectedUtxosInsufficient": "Выбранные utxos не покрывают требуемую сумму",
+  "sendSelfTransfer": "Перевод себе",
+  "swapAmountLabel": "Сумма",
+  "swapAmountPlaceholder": "0",
+  "swapAvailableBalance": "Имеющийся остаток",
+  "swapConfirmTransferTitle": "Подтвердить своп",
+  "swapContinueButton": "Продолжить",
+  "swapDoNotUninstallWarning": "Не удаляйте приложение до завершения свопа!",
+  "swapErrorAmountAboveMaximum": "Сумма превышает максимальную сумму свопа: {max}",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Сумма ниже минимальной суммы свопа: {min}",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Введите адрес внешнего кошелька",
+  "swapExternalTransferLabel": "Внешний своп",
+  "swapFromLabel": "Из",
+  "swapGoHomeButton": "Иди домой",
+  "swapInfoDescription": "Выполняйте своп Bitcoin между вашими кошельками без лишних усилий. Храните средства в кошельке мгновенных платежей только для повседневных расходов.",
+  "swapInsufficientFunds": "Недостаточно средств",
+  "swapInternalTransferTitle": "Внутренний своп",
+  "swapMaxButton": "MAX",
+  "swapReceiveExactAmountLabel": "Получить точную сумму",
+  "swapSubtractFeesLabel": "Вычитать сборы из суммы",
+  "swapToLabel": "В",
+  "swapTotalFees": "Итого ",
+  "swapTransferCompletedMessage": "Ого, вы дождались! Своп успешно завершён.",
+  "swapTransferCompletedTitle": "Своп завершён",
+  "swapTransferPendingMessage": "Своп выполняется. Подтверждение транзакций Bitcoin может занять некоторое время. Вы можете вернуться на главный экран и подождать.",
+  "swapTransferPendingTitle": "Своп в ожидании",
+  "swapTransferRefundInProgressMessage": "При выполнении свопа произошла ошибка. Ваш возврат выполняется.",
+  "swapTransferRefundInProgressTitle": "Возврат по свопу выполняется",
+  "swapTransferRefundedMessage": "Своп успешно возвращён.",
+  "swapTransferRefundedTitle": "Своп возвращён",
+  "swapTransferTitle": "Своп",
+  "swapUnderReviewDescription": "Этот своп требует ручной проверки. Обратитесь в поддержку за помощью. Если у вас нет аккаунта поддержки, достаточно просто создать его; KYC не требуется.",
+  "swapUnderReviewSupportMessage": "Своп на проверке\nID заказа: {orderId}\nID запроса: {requestId}\nНомер заказа: {orderNumber}",
+  "swapUnderReviewTitle": "Своп на проверке",
+  "swapValidationSelectFromWallet": "Выберите кошелёк, из которого выполнить своп",
+  "swapValidationSelectToWallet": "Выберите кошелёк, в который выполнить своп",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLightning": "Освещение",
+  "transactionNetworkLiquid": "Жидкость",
+  "transactionStatusSwapExpired": "Замыкается",
+  "transactionStatusSwapFailed": "Плавка",
+  "transactionSwapDescChainExpired": "Срок этого свопа истёк. Ваши средства будут автоматически возвращены в ваш кошелёк.",
+  "transactionSwapDescChainFailed": "С вашим свопом возникла проблема. Свяжитесь с поддержкой, если средства не будут возвращены в течение 24 часов.",
+  "transactionSwapOpenWithin24h": "Откройте приложение в течение 24 часов, чтобы завершить своп.",
+  "typeLabel": "Тип: ",
+  "walletLoadFailed": "Не удалось загрузить ваши кошельки. Проверьте подключение и попробуйте ещё раз."
+}

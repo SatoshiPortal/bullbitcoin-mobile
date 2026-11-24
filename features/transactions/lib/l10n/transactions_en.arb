@@ -1,0 +1,911 @@
+{
+  "@@locale": "en",
+  "coreSwapsStatusPending": "Pending",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "coreSwapsStatusInProgress": "In Progress",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "Completed",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusRefunded": "Refunded",
+  "@coreSwapsStatusRefunded": {
+    "description": "Display name for refunded swap status (payment failed, funds returned)"
+  },
+  "coreSwapsStatusExpired": "Expired",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsStatusFailed": "Failed",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "coreSwapsLnReceivePending": "Swap is not yet initialized.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "coreSwapsLnReceivePaid": "Sender has paid the invoice.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "coreSwapsLnReceiveClaimable": "Swap is ready to be claimed.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveRefundable": "Swap is ready to be refunded.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "Swap will complete momentarily.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsLnReceiveCompleted": "Swap is completed.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "coreSwapsLnReceiveExpired": "Swap Expired.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "coreSwapsLnReceiveFailed": "Swap Failed.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "coreSwapsLnSendPending": "Swap is not yet initialized.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnSendPaid": "Invoice will be paid after your payment receives confirmation.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "coreSwapsLnSendClaimable": "Swap is ready to be claimed.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "coreSwapsLnSendRefundable": "Swap is ready to be refunded.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "coreSwapsLnSendCanCoop": "Swap will complete momentarily.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "coreSwapsLnSendCompletedRefunded": "Swap has been refunded.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Swap is completed successfully.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "coreSwapsLnSendExpired": "Swap Expired",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsLnSendFailedRefunding": "Swap will be refunded shortly.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "coreSwapsLnSendFailed": "Swap Failed.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainPending": "Swap is not yet initialized.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "coreSwapsChainPaid": "Waiting for swap provider's payment to receive confirmation. This may take a while to complete.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "Swap is ready to be claimed.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "coreSwapsChainRefundable": "Swap is ready to be refunded.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "coreSwapsChainCanCoop": "Swap will complete momentarily.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "coreSwapsChainCompletedRefunded": "Swap has been refunded.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "coreSwapsChainCompletedSuccess": "Swap is completed successfully.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsChainExpired": "Swap Expired",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "coreSwapsChainFailedRefunding": "Swap will be refunded shortly.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "coreSwapsChainFailed": "Swap Failed.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "coreWalletTransactionStatusPending": "Pending",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "coreWalletTransactionStatusConfirmed": "Confirmed",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "receivePaymentNormally": "Receive payment normally",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "buyTitle": "Buy Bitcoin",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "sellTitle": "Sell Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "payViewReceipt": "View receipt",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "transactionTitle": "Transactions",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionDetailTitle": "Transaction details",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailTransferProgress": "Swap Progress",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailSwapProgress": "Swap Progress",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailAddNote": "Add note",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionFilterAll": "All",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionFilterSend": "Send",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "transactionFilterReceive": "Receive",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionFilterTransfer": "Swap",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionFilterPayjoin": "Payjoin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "transactionFilterSell": "Sell",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionFilterBuy": "Buy",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "transactionFilterWithdraw": "Withdraw",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "Pay",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "Funding",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "Reward",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "Refund",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLiquid": "Liquid",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "transactionStatusInProgress": "In Progress",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionStatusPending": "Pending",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionStatusTransferCompleted": "Swap Completed",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionStatusTransferInProgress": "Swap In Progress",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionStatusPaymentInProgress": "Payment In Progress",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "transactionStatusPaymentRefunded": "Payment Refunded",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusTransferFailed": "Swap Failed",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionStatusSwapFailed": "Swap Failed",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionStatusTransferExpired": "Swap Expired",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "transactionStatusSwapExpired": "Swap Expired",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusPayjoinRequested": "Payjoin requested",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionNotesLabel": "Transaction notes",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionNoteAddTitle": "Add note",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionNoteHint": "Note",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionPayjoinSendWithout": "Send without payjoin",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionSwapProgressInitiated": "Initiated",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionSwapProgressPaymentMade": "Payment\nMade",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "transactionSwapProgressFundsClaimed": "Funds\nClaimed",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "transactionSwapProgressBroadcasted": "Broadcasted",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionSwapProgressInvoicePaid": "Invoice\nPaid",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionSwapProgressConfirmed": "Confirmed",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionSwapProgressClaim": "Claim",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "Completed",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInProgress": "In Progress",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapStatusTransferStatus": "Swap Status",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionSwapStatusSwapStatus": "Swap Status",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionSwapDescLnReceivePending": "Your swap has been initiated. We are waiting for a payment to be received on the Lightning Network.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionSwapDescLnReceivePaid": "Payment has been received! We are now broadcasting the on-chain transaction to your wallet.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "The on-chain transaction has been confirmed. We are now claiming the funds to complete your swap.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveCompleted": "Your swap has been completed successfully! The funds should now be available in your wallet.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveFailed": "There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "This swap has expired. Any funds sent will be automatically returned to the sender.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "Your swap is in progress. This process is automated and may take some time to complete.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionSwapDescLnSendPending": "Your swap has been initiated. We are broadcasting the on-chain transaction to lock your funds.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionSwapDescLnSendPaid": "Your on-chain transaction has been broadcasted. After 1 confirmation, the Lightning payment will be sent.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescLnSendCompleted": "The Lightning payment has been sent successfully! Your swap is now complete.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionSwapDescLnSendFailed": "There was an issue with your swap. Your funds will be returned to your wallet automatically.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "This swap has expired. Your funds will be automatically returned to your wallet.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnSendDefault": "Your swap is in progress. This process is automated and may take some time to complete.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "transactionSwapDescChainPending": "Your swap has been created but not initiated yet.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionSwapDescChainPaid": "Your transaction has been broadcasted. We are now waiting for the lockup transaction to be confirmed.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "transactionSwapDescChainClaimable": "The lockup transaction has been confirmed. You are now claiming the funds to complete your swap.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "The swap will be refunded. Your funds will be returned to your wallet automatically.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "transactionSwapDescChainCompleted": "Your swap has been completed successfully! The funds should now be available in your wallet.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "transactionSwapDescChainFailed": "There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescChainExpired": "This swap has expired. Your funds will be automatically returned to your wallet.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainDefault": "Your swap is in progress. This process is automated and may take some time to complete.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "transactionSwapInfoFailedExpired": "If you have any questions or concerns, please contact support for assistance.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "transactionSwapInfoChainDelay": "On-chain swaps may take some time to complete due to blockchain confirmation times.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "transactionSwapInfoClaimableTransfer": "The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Swap Claim\" button.",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionSwapInfoClaimableSwap": "The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Swap Claim\" button.",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionSwapInfoRefundableTransfer": "This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Swap Refund\" button.",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapInfoRefundableSwap": "This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Swap Refund\" button.",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionListOngoingTransfersTitle": "Ongoing Swaps",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionListOngoingTransfersDescription": "These swaps are currently in progress. Your funds are secure and will be available when the swap completes.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionListLoadingTransactions": "Loading transactions…",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionListNoTransactions": "No transactions yet.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionListLoadingFailed": "Could not load transactions.",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
+  "transactionListToday": "Today",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionListYesterday": "Yesterday",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionSwapDoNotUninstall": "Do not uninstall the app until the swap completes.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionFeesDeductedFrom": "This fees will be deducted from the amount sent",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionFeesTotalDeducted": "This is the total fee deducted from the amount sent",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionLabelSendAmount": "Send Amount",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveAmount": "Receive Amount",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionLabelSendNetworkFees": "Send Network fees",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "Receive Network Fee",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionLabelServerNetworkFees": "Server Network Fees",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "transactionLabelNetworkFees": "Network fees",
+  "@transactionLabelNetworkFees": {
+    "description": "Combined on-chain network fees shown for a recovered swap, derived from the actual sent and received amounts"
+  },
+  "transactionLabelPreimage": "Preimage",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "transactionOrderLabelReferenceNumber": "Reference Number",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionOrderLabelOriginName": "Origin Name",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "transactionOrderLabelOriginCedula": "Origin Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionDetailAccelerate": "Accelerate",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLoadError": "Could not load the transaction details.",
+  "@transactionDetailLoadError": {
+    "description": "Error message shown when the transaction details could not be loaded"
+  },
+  "transactionDetailRetryClaimRefund": "Retry claim / refund",
+  "@transactionDetailRetryClaimRefund": {
+    "description": "Button to manually retry a stranded swap's claim or refund"
+  },
+  "transactionDetailSwapRetryStarted": "Retrying claim / refund…",
+  "@transactionDetailSwapRetryStarted": {
+    "description": "Snackbar shown when a manual swap claim/refund retry starts"
+  },
+  "transactionDetailSwapRetryFailed": "Could not complete the claim / refund. Please try again.",
+  "@transactionDetailSwapRetryFailed": {
+    "description": "Error shown when a manual swap claim/refund retry fails"
+  },
+  "transactionDetailLabelRecipient": "Recipient",
+  "@transactionDetailLabelRecipient": {
+    "description": "Label for the recipient of a fiat payment order"
+  },
+  "transactionDetailLabelTransactionId": "Transaction ID",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "transactionDetailLabelToWallet": "To wallet",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "transactionDetailLabelFromWallet": "From wallet",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionDetailLabelRecipientAddress": "Recipient Address",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionDetailLabelAddress": "Address",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "transactionDetailLabelAddressNotes": "Address notes",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionDetailLabelAmountReceived": "Amount received",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionDetailLabelAmountSent": "Amount sent",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "transactionDetailLabelTransactionFee": "Transaction Fee",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionDetailLabelStatus": "Status",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionDetailLabelConfirmationTime": "Confirmation time",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionDetailLabelOrderType": "Order Type",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelOrderNumber": "Order Number",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionDetailLabelPaymentDescription": "Payment description",
+  "@transactionDetailLabelPaymentDescription": {
+    "description": "Label for the payment description on the order details screen"
+  },
+  "transactionDetailLabelPayinAmount": "Payin amount",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "transactionDetailLabelPayoutAmount": "Payout amount",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "transactionDetailLabelExchangeRate": "Exchange rate",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionDetailLabelPayinMethod": "Payin method",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionDetailLabelPayoutMethod": "Payout method",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "transactionDetailLabelPayinStatus": "Payin Status",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionDetailLabelOrderStatus": "Order Status",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionDetailLabelPayoutStatus": "Payout Status",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "transactionDetailLabelCreatedAt": "Created at",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionDetailLabelCompletedAt": "Completed at",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionDetailLabelTransferId": "Swap ID",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionDetailLabelSwapId": "Swap ID",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionDetailLabelTransferStatus": "Swap status",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "transactionDetailLabelSwapStatus": "Swap status",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelRefunded": "Refunded",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionDetailLabelLiquidTxId": "Liquid transaction ID",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionDetailLabelBitcoinTxId": "Bitcoin transaction ID",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "transactionDetailLabelTransferFees": "Swap fees",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionDetailLabelSwapFees": "Swap fees",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "transactionDetailLabelSendNetworkFee": "Send Network Fee",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionDetailLabelTransferFee": "Swap Fee",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionDetailLabelPayjoinStatus": "Payjoin status",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Completed",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelPayjoinExpired": "Expired",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin creation time",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "transactionHistoryTitle": "Transaction History",
+  "@transactionHistoryTitle": {
+    "description": "Title for the transaction history page and settings entry"
+  },
+  "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and swaps) as a CSV file. Optionally filter by date range.",
+  "@exportTransactionsDescription": {
+    "description": "Description of the CSV export functionality"
+  },
+  "exportTransactionsStartDate": "Start date",
+  "@exportTransactionsStartDate": {
+    "description": "Label for the export start date field"
+  },
+  "exportTransactionsEndDate": "End date",
+  "@exportTransactionsEndDate": {
+    "description": "Label for the export end date field"
+  },
+  "exportTransactionsAnyDate": "Any",
+  "@exportTransactionsAnyDate": {
+    "description": "Placeholder shown when no date filter is selected"
+  },
+  "exportTransactionsButton": "Export CSV",
+  "@exportTransactionsButton": {
+    "description": "Button text to export transactions as CSV"
+  },
+  "exportTransactionsSuccess": "Transactions exported successfully",
+  "@exportTransactionsSuccess": {
+    "description": "Success message after exporting transactions"
+  },
+  "exportTransactionsEmpty": "No transactions to export for the selected period",
+  "@exportTransactionsEmpty": {
+    "description": "Message shown when there are no transactions to export"
+  },
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Start date must be before end date",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
+  },
+  "viewerViewInExplorer": "View in explorer",
+  "@viewerViewInExplorer": {
+    "description": "Button to open address or transaction in block explorer"
+  },
+  "viewerCopyLink": "Copy link",
+  "@viewerCopyLink": {
+    "description": "Button to copy the block explorer URL to clipboard"
+  },
+  "transactionViewerTitle": "Transaction ID",
+  "@transactionViewerTitle": {
+    "description": "Title shown in the transaction viewer detail dialog"
+  },
+  "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
+  "@transactionSwapOpenWithin24h": {
+    "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
+  },
+  "recipientsTypeInteracEmail": "Email Money Transfer",
+  "@recipientsTypeInteracEmail": {
+    "description": "Display name for the Canadian email money transfer recipient type. Do not use the Interac trademark."
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin completed",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Shown when a Payjoin transaction has been successfully completed"
+  },
+  "transactionStatusPayjoinAborted": "Payjoin aborted",
+  "@transactionStatusPayjoinAborted": {
+    "description": "Shown when a payjoin was aborted and the payment landed as a plain transaction instead"
+  },
+  "transactionDetailLabelPayjoinAborted": "Aborted",
+  "@transactionDetailLabelPayjoinAborted": {
+    "description": "Payjoin aborted status (fell back to a plain transaction)"
+  },
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin fee contribution",
+  "@transactionDetailLabelPayjoinFeeContribution": {
+    "description": "Row label on transaction details (receive side of a completed payjoin) for the mining fee deducted from the received amount to pay for the input the receiver contributed."
+  },
+  "transactionPayjoinFeeContributionExplanation": "A payjoin adds one of your coins as an extra input to the payment to improve privacy. The mining fee for that added input is deducted from the amount you receive (BIP78).",
+  "@transactionPayjoinFeeContributionExplanation": {
+    "description": "Expandable explanation under the payjoin fee contribution row on transaction details."
+  },
+  "transactionDetailLabelPayjoinInProgress": "In progress",
+  "@transactionDetailLabelPayjoinInProgress": {
+    "description": "Payjoin in progress status"
+  },
+  "coreSwapsStatusNotStarted": "Not started",
+  "@coreSwapsStatusNotStarted": {
+    "description": "Order status label: the payin or payout has not begun."
+  },
+  "coreSwapsStatusAwaitingPayment": "Awaiting payment",
+  "@coreSwapsStatusAwaitingPayment": {
+    "description": "Order status label: waiting for the user to pay."
+  },
+  "coreSwapsStatusAwaitingConfirmation": "Awaiting confirmation",
+  "@coreSwapsStatusAwaitingConfirmation": {
+    "description": "Order status label: waiting for confirmation."
+  },
+  "coreSwapsStatusUnderReview": "Under review",
+  "@coreSwapsStatusUnderReview": {
+    "description": "Order status label: the payment is being reviewed."
+  },
+  "coreSwapsStatusRejected": "Rejected",
+  "@coreSwapsStatusRejected": {
+    "description": "Order status label: the order was rejected."
+  },
+  "coreSwapsStatusCanceled": "Canceled",
+  "@coreSwapsStatusCanceled": {
+    "description": "Order status label: the order was canceled."
+  },
+  "coreSwapsStatusPaymentDeadlineExpired": "Payment deadline expired",
+  "@coreSwapsStatusPaymentDeadlineExpired": {
+    "description": "Order status label: the pay-in deadline lapsed."
+  },
+  "coreSwapsStatusScheduled": "Scheduled",
+  "@coreSwapsStatusScheduled": {
+    "description": "Order status label: the payout is scheduled."
+  },
+  "coreSwapsStatusAwaitingClaim": "Awaiting claim",
+  "@coreSwapsStatusAwaitingClaim": {
+    "description": "Order status label: the payout is waiting to be claimed."
+  },
+  "coreSwapsStatusUnknown": "Unknown",
+  "@coreSwapsStatusUnknown": {
+    "description": "Order status label: status not recognized."
+  },
+  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
+  "@transactionPayjoinFallbackProcessing": {
+    "description": "Status shown while broadcasting a payjoin fallback transaction"
+  },
+  "transactionPayjoinBroadcastFailed": "The original transaction could not be broadcast. Please try again.",
+  "@transactionPayjoinBroadcastFailed": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "transactionPayjoinOriginalUnavailable": "The original transaction is no longer available to broadcast.",
+  "@transactionPayjoinOriginalUnavailable": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "transactionLabelLimitReached": "You can only have up to 10 labels.",
+  "@transactionLabelLimitReached": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "transactionListPending": "Pending",
+  "@transactionListPending": {
+    "description": "Date label for the pending transactions group"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "viewerCopyLinkDisclosePayjoin": "Copy link (disclose Payjoin)",
+  "@viewerCopyLinkDisclosePayjoin": {
+    "description": "Button to copy a block explorer link for a Payjoin transaction that discloses which inputs and outputs belong to the sender and the recipient"
+  },
+  "viewerViewInExplorerDisclosePayjoin": "View in explorer (disclose Payjoin)",
+  "@viewerViewInExplorerDisclosePayjoin": {
+    "description": "Button to open a Payjoin transaction in the block explorer with a link that discloses which inputs and outputs belong to the sender and the recipient"
+  },
+  "transactionOrderTypeSellUsdt": "Sell USDT",
+  "@transactionOrderTypeSellUsdt": {
+    "description": "Order type of an exchange order selling USDT, shown in the transaction list and details"
+  },
+  "transactionOrderTypeFiatPayment": "Fiat Payment",
+  "@transactionOrderTypeFiatPayment": {
+    "description": "Order type of an exchange order paying a fiat recipient"
+  },
+  "transactionOrderTypeBalanceAdjustment": "Balance Adjustment",
+  "@transactionOrderTypeBalanceAdjustment": {
+    "description": "Order type of an exchange balance adjustment"
+  }
+}

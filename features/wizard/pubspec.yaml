@@ -1,0 +1,41 @@
+name: wizard
+description: First-run setup and application of pending startup choices.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  background_tasks:
+  bull_exchange:
+  bull_logger:
+  bull_pricer:
+  bull_ui:
+  exchange:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  freezed_annotation: ^3.1.0
+  intl: any
+  material_ui: ^1.11.0
+  notifications:
+  novlang:
+  preferences:
+  primitives:
+  settings:
+  shared_preferences: ^2.3.0
+
+dev_dependencies:
+  build_runner: ^2.10.4
+  flutter_test:
+    sdk: flutter
+  freezed: ^4.0.1
+  mocktail: ^1.0.4
+
+flutter:
+  generate: true
+  uses-material-design: true

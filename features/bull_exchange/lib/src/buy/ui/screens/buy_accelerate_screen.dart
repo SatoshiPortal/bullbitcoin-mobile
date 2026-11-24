@@ -1,0 +1,157 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, ConvertAmount, FormatAmount;
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/buy/domain/buy_failure.dart';
+import 'package:bull_exchange/src/buy/presentation/buy_bloc.dart';
+import 'package:bull_exchange/src/buy/presentation/buy_failure_l10n.dart';
+import 'package:bull_exchange/src/buy/ui/widgets/buy_confirm_detail_row.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullLoader, Gap, BullTypographyX;
+
+class BuyAccelerateScreen extends StatelessWidget {
+  const BuyAccelerateScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final BuyFailure? accelerateFailure = context.select(
+      (BuyBloc bloc) => bloc.state.accelerateFailure,
+    );
+    final isAcceleratingOrder = context.select(
+      (BuyBloc bloc) => bloc.state.isAcceleratingOrder,
+    );
+    // Deliberately not `accelerateFailure == null`: a failed confirm attempt
+    // leaves the order loaded and retrying is legitimate. Only the absence of
+    // an order makes the confirm below dispatch into a no-op.
+    final hasOrder = context.select(
+      (BuyBloc bloc) => bloc.state.buyOrder != null,
+    );
+    final fees = context.select(
+      (BuyBloc bloc) => bloc.state.accelerationNetworkFees,
+    );
+    final relativeFee = fees?.fastest.value as double?;
+    final formattedRelativeFee = relativeFee != null
+        ? '${relativeFee.toStringAsFixed(2)} sat/vB'
+        : null;
+    final absoluteFee = fees?.toAbsolute(140).fastest.value as int?;
+    final bitcoinUnit = context.select(
+      (BuyBloc bloc) => bloc.state.displayBitcoinUnit,
+    );
+    final formattedAbsoluteFee = absoluteFee != null && bitcoinUnit != null
+        ? bitcoinUnit == BitcoinUnit.sats
+              ? FormatAmount.sats(absoluteFee)
+              : FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFee))
+        : null;
+
+    final currencyCode = context.select(
+      (BuyBloc bloc) => bloc.state.buyOrder?.payinCurrency,
+    );
+    final exchangeRate = context.select(
+      (BuyBloc bloc) => bloc.state.exchangeRate,
+    );
+    final absoluteFeeFiatEstimate = absoluteFee != null && exchangeRate > 0
+        ? ConvertAmount.satsToFiat(absoluteFee, exchangeRate)
+        : null;
+    final formattedFeeFiatEstimate =
+        absoluteFeeFiatEstimate != null && currencyCode != null
+        ? FormatAmount.fiat(absoluteFeeFiatEstimate, currencyCode)
+        : null;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return; // Don't allow back navigation
+
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(context.loc.buyConfirmExpressWithdrawal)),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  const SizedBox(height: 16),
+                  Text(
+                    context.loc.buyNetworkFeeExplanation,
+                    textAlign: .center,
+                    style: context.bullType.body.copyWith(
+                      color: context.appColors.text,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // The fee, its fiat estimate and the rate all come from the
+                  // reads this screen performs on entry, so a failure is what
+                  // leaves them empty. The confirmation time is a constant.
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyNetworkFees,
+                    value: formattedAbsoluteFee,
+                    isUnavailable: accelerateFailure != null,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyEstimatedFeeValue,
+                    value: formattedFeeFiatEstimate,
+                    isUnavailable: accelerateFailure != null,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyNetworkFeeRate,
+                    value: formattedRelativeFee,
+                    isUnavailable: accelerateFailure != null,
+                  ),
+                  BuyConfirmDetailRow(
+                    label: context.loc.buyConfirmationTime,
+                    value: context.loc.buyConfirmationTimeValue,
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: .min,
+              children: [
+                if (accelerateFailure != null) ...[
+                  Text(
+                    accelerateFailure.toTranslated(context),
+                    style: context.bullType.body.copyWith(
+                      color: context.appColors.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const Gap(16),
+                ],
+                if (isAcceleratingOrder)
+                  const Center(child: BullLoader.small())
+                else
+                  BullButton.secondary(
+                    label: context.loc.buyWaitForFreeWithdrawal,
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                  ),
+                const Gap(16),
+                BullButton.primary(
+                  label: context.loc.buyConfirmExpress,
+                  onPressed: (isAcceleratingOrder || !hasOrder)
+                      ? null
+                      : () {
+                          context.read<BuyBloc>().add(
+                            const BuyEvent.accelerateTransactionConfirmed(),
+                          );
+                        },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

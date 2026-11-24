@@ -97,5 +97,1484 @@
   "notLoggedInTitle": "Jsi ne logged v",
   "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
   "retry": "Hledat",
-  "settingsAppSettingsTitle": "Nastavení aplikace"
+  "settingsAppSettingsTitle": "Nastavení aplikace",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Toto nastavení se nepodařilo uložit. Zkuste to prosím znovu.",
+  "fundExchangeSepaDescriptionExactly": "přesně.",
+  "fundExchangeInstantSepaInfo": "Používejte pouze pro transakce pod €20,000. Pro větší transakce použijte možnost pravidelného SEPA.",
+  "fundExchangeETransferLabelSecretAnswer": "Tajná odpověď",
+  "fundExchangeLabelBicCode": "BIC kód",
+  "fundExchangeCanadaPostStep6": "V Peněženka vás provede účtenkou, ponechte ji jako doklad o platbě",
+  "fundExchangeMethodRegularSepa": "Pravidelná platba",
+  "fundExchangeSinpeLabelPhone": "Odeslat na tento telefonní číslo",
+  "fundExchangeCrIbanCrcTransferCodeWarning": "Při platbě je nutné přidat kód převodu jako \"oddělování\" nebo \"rozpis\" nebo \"description\". Pokud zapomenete zahrnout tento kód, vaše platba může být odmítnuta.",
+  "fundExchangeSinpeTitle": "SINPE přenos",
+  "fundExchangeCanadaPostStep5": "V Platit s hotovostí nebo debetní kartou",
+  "fundExchangeInfoPaymentDescription": "V popisu platby přidejte kód převodu.",
+  "fundExchangeCrIbanCrcDescriptionBold": "přesně",
+  "fundExchangeLabelRecipientAddress": "Adresa příjemce",
+  "fundExchangeCrIbanCrcTitle": "Bankovní převod (CRC)",
+  "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €30,000",
+  "fundExchangeSepaDescription": "Odeslání SEPA převodu z vašeho bankovního účtu pomocí níže uvedených údajů ",
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Váš převodový kód.",
+  "fundExchangeLabelBankAccountCountry": "Bankovní účet",
+  "fundExchangeLabelTransitNumber": "Číslo přechodu",
+  "fundExchangeLabelMemo": "Čeština",
+  "fundExchangeBankTransferWireTitle": "Bankovní převod (vodič)",
+  "fundExchangeWarningTactic5": "Zeptají se, aby poslal Bitcoin na jinou platformu",
+  "fundExchangeETransferLabelEmail": "Odeslat E-převod k tomuto e-mailu",
+  "fundExchangeOnlineBillPaymentHelpBillerName": "Přidejte tuto společnost jako payee - je to Bull Bitcoin platební procesor",
+  "fundExchangeAccountTitle": "Fond vašeho účtu",
+  "fundExchangeWarningTactic1": "Jsou slibné výnosy z investic",
+  "fundExchangeETransferTitle": "E-Transfer detaily",
+  "fundExchangeMethodBankTransferWire": "Bankovní převod (Wire nebo EFT)",
+  "fundExchangeJurisdictionCostaRica": "🇨🇷 Čeština Čeština",
+  "fundExchangeContinueButton": "Pokračovat",
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Použijte naše oficiální firemní jméno. Nepoužívejte \"Bull Bitcoin\".",
+  "fundExchangeArsBankTransferTitle": "Bankovní převod",
+  "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
+  "fundExchangeCrIbanUsdLabelIban": "Číslo účtu IBAN (pouze USA dolarů)",
+  "fundExchangeInfoTransferCode": "Při platbě je nutné přidat kód převodu jako „oddělování“ nebo „zrada“.",
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Popis platby",
+  "fundExchangeTitle": "Financování",
+  "fundExchangeCrIbanCrcDescriptionEnd": "Čeština Fondy budou přidány do zůstatku na účtu.",
+  "fundExchangeETransferLabelSecretQuestion": "Tajná otázka",
+  "fundExchangeHelpBeneficiaryName": "Použijte naše oficiální firemní jméno. Nepoužívejte \"Bull Bitcoin\".",
+  "fundExchangeWarningTactic7": "Řekně, že se nemusíte obávat této varování",
+  "fundExchangeMethodCanadaPost": "V hotovosti nebo debetní v Kanadě Post",
+  "fundExchangeSepaTitle": "SEPA převod",
+  "fundExchangeCanadaPostStep1": "V Přejděte na libovolnou pobočku Kanada",
+  "fundExchangeLabelBeneficiaryAddress": "Beneficiární adresa",
+  "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
+  "fundExchangeWarningTactic6": "Chcete sdílet obrazovku",
+  "fundExchangeCrIbanUsdDescriptionBold": "přesně",
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Přeneste kolo pomocí SINPE",
+  "fundExchangeArsBankTransferDescription": "Odeslání bankovního převodu z vašeho bankovního účtu pomocí přesných bankovních údajů Argentina níže.",
+  "fundExchangeCrIbanUsdDescription": "Odeslání bankovního převodu z vašeho bankovního účtu pomocí níže uvedených informací ",
+  "fundExchangeLabelBankAddress": "Adresa naší banky",
+  "fundExchangeLabelBankCountry": "Česká republika",
+  "fundExchangeBankTransferSubtitle": "Odeslání bankovního převodu z vašeho bankovního účtu",
+  "fundExchangeMethodOnlineBillPayment": "Online platba za účet",
+  "fundExchangeWarningConfirmation": "Potvrzuji, že jsem se zeptal koupit Bitcoin někoho jiného.",
+  "fundExchangeLabelCvu": "ČEŠTINA",
+  "fundExchangeLabelRecipientName": "Název příjemce",
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Převod prostředků na americký dolar (USD)",
+  "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €30,000",
+  "fundExchangeLabelTransferCode": "Převodový kód (přiložit tento popis platby)",
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeSpeiTitle": "SPEI přenos",
+  "fundExchangeRegularSepaInfo": "Používejte pouze pro transakce nad €20,000. Pro menší transakce použijte možnost Instant SEPA.",
+  "fundExchangeDoneButton": "Čeština",
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "Pomalu možnost, ale lze provést prostřednictvím internetového bankovnictví (3-4 pracovních dnů)",
+  "fundExchangeLabelBankAccountDetails": "Detaily bankovního účtu",
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Váš převodový kód.",
+  "fundExchangeLabelRecipientNameArs": "Název příjemce",
+  "fundExchangeCanadaPostStep2": "V Zeptejte se pokladny pro skenování \"Loadhub\" QR kód",
+  "fundExchangeCrIbanUsdTitle": "Bankovní převod (USD)",
+  "fundExchangeETransferLabelBeneficiaryName": "Použijte jej jako jméno příjemce E-transferu",
+  "fundExchangeWarningDescription": "Pokud vás někdo požádá o nákup Bitcoin nebo \"povědí\", buďte opatrní, mohou se snažit podvod!",
+  "fundExchangeJurisdictionEurope": "🇪🇺 Evropa (SEPA)",
+  "fundExchangeBankTransferWireDescription": "Odesílejte převod drátu z vašeho bankovního účtu pomocí bance Bull Bitcoin níže. Vaše banka může vyžadovat pouze některé části těchto údajů.",
+  "fundExchangeWarningTactic4": "Zeptají se, aby poslal Bitcoin na jejich adresu",
+  "fundExchangeSinpeDescription": "Přeneste kolo pomocí SINPE",
+  "fundExchangeMethodCanadaPostSubtitle": "Nejlepší pro ty, kteří raději platit osobně",
+  "fundExchangeSinpeDescriptionBold": "bude odmítnuto.",
+  "fundExchangeMethodBankTransferWireSubtitle": "Nejlepší a spolehlivá volba pro větší množství (sém nebo následující den)",
+  "fundExchangeCanadaPostStep4": "4. 4. Peněženka bude požádána, aby viděl kus vládního průkazu a ověřili, že jméno na ID odpovídá vašemu účtu Bull Bitcoin",
+  "fundExchangeCrIbanCrcLabelIban": "Číslo účtu IBAN (pouze jen)",
+  "fundExchangeOnlineBillPaymentDescription": "Jakákoli částka, kterou odešlete prostřednictvím platebního příkazu vaší banky pomocí níže uvedených informací, bude připsána na zůstatek na účtu Bull Bitcoin během 3-4 pracovních dnů.",
+  "fundExchangeETransferDescription": "Jakákoli částka, kterou odesíláte z vaší banky prostřednictvím e-mailu E-Transfer pomocí níže uvedených informací, bude připsána na zůstatek na účtu Bull Bitcoin během několika minut.",
+  "fundExchangeLabelClabe": "ČEŠTINA",
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Kostarika (USD)",
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR kód",
+  "fundExchangeSinpeLabelRecipientName": "Název příjemce",
+  "fundExchangeMethodInstantSepa": "Okamžitý a standardní SEPA převod",
+  "fundExchangeCrIbanUsdTransferCodeWarning": "Při platbě je nutné přidat kód převodu jako \"oddělování\" nebo \"rozpis\" nebo \"description\". Pokud zapomenete zahrnout tento kód, vaše platba může být odmítnuta.",
+  "fundExchangeSpeiInfo": "Proveďte vklad pomocí přenosu SPEI (instant).",
+  "fundExchangeMethodEmailETransferSubtitle": "Nejjednodušší a nejrychlejší metoda (instant)",
+  "fundExchangeErrorLoadingDetails": "Údaje o platbě nelze načíst v tomto okamžiku. Prosím, přejděte zpět a zkuste to znovu, vyzvednout další způsob platby nebo vrátit později.",
+  "fundExchangeErrorTitleOrdPo404": "Platební možnost není k dispozici",
+  "fundExchangeErrorTitleRcpPo404": "Platební možnost není dostupná",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE není k dispozici",
+  "fundExchangeErrorTitleOrdKyc400": "Chybějící požadavky KYC",
+  "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci",
+  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro tohoto příjemce SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "Platební odkaz se nepodařilo otevřít. Zkuste to prosím znovu.",
+  "fundExchangeErrorTitleOrdCop400": "Neplatná data financování COP",
+  "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP",
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtuální platba není aktivována",
+  "fundExchangeErrorTitleRcp400": "Neplatný požadavek",
+  "fundExchangeErrorRcp400": "Neplatný požadavek",
+  "fundExchangeErrorOrdPo404": "Není k dispozici žádná platební možnost",
+  "fundExchangeErrorRcpPo404": "Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná",
+  "fundExchangeErrorRcpPosinpe404": "Pro přístup k této možnosti financování musí být vaše telefonní číslo registrováno v síti SINPE v Kostarice.",
+  "fundExchangeErrorFetchingBankCodes": "Chyba při načítání bankovních kódů. Zkuste to prosím později znovu.",
+  "fundExchangeSpeiTransfer": "SPEI přenos",
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Použijte naše oficiální firemní jméno. Nepoužívejte \"Bull Bitcoin\".",
+  "fundExchangeSinpeAddedToBalance": "Jakmile je platba odeslána, bude přidána do zůstatku na účtu.",
+  "fundExchangeSpeiSubtitle": "Převod prostředků pomocí CLABE",
+  "fundExchangeAccountSubtitle": "Vyberte zemi a způsob platby",
+  "fundExchangeJurisdictionMexico": "🇲🇽 Mexiko",
+  "fundExchangeLabelSwiftCode": "SWIFT kód",
+  "fundExchangeCrIbanCrcDescription": "Odeslání bankovního převodu z vašeho bankovního účtu pomocí níže uvedených informací ",
+  "fundExchangeLabelRoutingNumber": "Číslo směrování",
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Popis platby",
+  "fundExchangeInfoBeneficiaryNameLeonod": "Název příjemce by měl být LEONOD. Máte-li něco jiného, vaše platba bude odmítnuta.",
+  "doneButton": "Čeština",
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Převod prostředků v Kostarické Colón (CRC)",
+  "fundExchangeCanadaPostStep3": "V Řekněte pokladně částku, kterou chcete načíst",
+  "fundExchangeLabelIban": "Číslo účtu IBAN",
+  "fundExchangeOnlineBillPaymentLabelBillerName": "Vyhledejte seznam účetních bank pro tento název",
+  "fundExchangeMethodEmailETransfer": "E-Transfer",
+  "fundExchangeLabelBankName": "Název banky",
+  "fundExchangeInfoBankCountryUk": "Naše banka je Česká republika.",
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Kostarika (CRC)",
+  "fundExchangeLabelBeneficiaryName": "Křestní jméno",
+  "fundExchangeWarningTactic2": "Nabízejí vám půjčku",
+  "fundExchangeCanadaPostTitle": "V hotovosti nebo debetní v Kanadě Post",
+  "fundExchangeOnlineBillPaymentTitle": "Online platba za účet",
+  "fundExchangeHelpTransferCode": "Přidejte to jako důvod pro přenos",
+  "fundExchangeCrIbanUsdDescriptionEnd": "Čeština Fondy budou přidány do zůstatku na účtu.",
+  "fundExchangeRestrictedTitle": "Financování není k dispozici",
+  "fundExchangeRestrictedMessage": "Financování není pro váš účet k dispozici. Pro více informací kontaktujte podporu.",
+  "fundExchangeWarningTitle": "Podívejte se na podvodníky",
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeCrIbanCrcLabelRecipientName": "Název příjemce",
+  "fundExchangeCanadaPostStep7": "V Finanční prostředky budou přidány do zůstatku na účtu Bull Bitcoin během 30 minut",
+  "fundExchangeWarningTactic8": "Jsou stlačeny, abyste mohli rychle působit",
+  "fundExchangeBankTransfer": "Bankovní převod",
+  "fundExchangeWarningTactic3": "Říká se, že pracují pro vymáhání pohledávek nebo daně",
+  "fundExchangeWarningTacticsTitle": "Běžná podvodná taktika",
+  "fundExchangeHelpBeneficiaryAddress": "Naše oficiální adresa, v případě, že je to vyžadováno vaší bankou",
+  "fundExchangeBankTransferWireTimeframe": "Jakékoliv prostředky, které odesíláte, budou přidány do vašeho Bull Bitcoin do 1-2 pracovních dnů.",
+  "fundExchangeLabelInstitutionNumber": "Číslo instituce",
+  "fundExchangeSpeiDescription": "Převod prostředků pomocí CLABE",
+  "fundExchangeCrIbanUsdLabelRecipientName": "Název příjemce",
+  "fundExchangeScamConsentError": "Nepodařilo se zaregistrovat váš souhlas. Zkuste to prosím znovu.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Kolumbie",
+  "fundExchangeCopDailyLimitWarning": "Pokud překročíte svůj denní transakční limit, transakce selže. Budete muset kontaktovat zákaznickou podporu.",
+  "fundExchangeCopSenderName": "Jméno odesílatele",
+  "fundExchangeCopIssuingBank": "Vydávající banka",
+  "fundExchangeCopSelectBankError": "Vyberte prosím vydávající banku",
+  "fundExchangeCopAmount": "Částka",
+  "fundExchangeCopEnterAmountError": "Zadejte částku",
+  "fundExchangeCopValidAmountError": "Zadejte platnou částku",
+  "fundExchangeCopGeneratePaymentLink": "Vygenerovat platební odkaz",
+  "fundExchangeCopRedirectMessage": "Budete přesměrováni na externí stránku, kde provedete platbu.",
+  "fundExchangeCopOpenPaymentLink": "Otevřít platební odkaz",
+  "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "fundExchangeMethodConfidentialSepa": "Důvěrný SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Osobní virtuální IBAN pro soukromý vklad peněz",
+  "fundExchangeSinpeWarningNoBitcoin": "Nedávejte",
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "Tento unikátní číslo účtu je vytvořen pro vás",
+  "fundExchangeSinpeWarningNoBitcoinDescription": " slovo \"Bitcoin\" nebo \"Crypto\" v popisu platby. Vaše platba zablokuje.",
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Přidejte to jako číslo účtu",
+  "exchangeCurrencyDropdownTitle": "Vyberte měnu",
+  "exchangeAmountInputValidationInvalid": "Neplatné množství",
+  "exchangeAmountInputValidationInsufficient": "Nedostatečná rovnováha",
+  "exchangeAmountInputValidationEmpty": "Zadejte částku",
+  "exchangeCurrencyDropdownValidation": "Vyberte měnu",
+  "exchangeAmountInputTitle": "Zadejte částku",
+  "exchangeAmountInputValidationZero": "Částka musí být větší než nulová",
+  "save": "Čeština",
+  "exchangeBitcoinWalletsDescription": "Nastavte výchozí peněženky adresy pro automatické výběry Bitcoin.",
+  "exchangeBitcoinWalletsEnterAddressHint": "Zadejte adresu",
+  "exchangeDcaAddressLabelLiquid": "Liquid adresa",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin adresa",
+  "delete": "Čeština",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin adresa",
+  "cancel": "Hledat",
+  "exchangeBitcoinWalletsSaveSuccess": "Peněženka adresa úspěšně zachránila",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid adresa",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Blesk (LN adresa)",
+  "exchangeDcaAddressLabelLightning": "Blesková adresa",
+  "settingsTermsOfServiceTitle": "Obchodní podmínky",
+  "continueButton": "Pokračovat",
+  "autoBuyTitle": "Automatický nákup",
+  "autoBuyDescription": "Kupujte Bitcoin automaticky pokaždé, když vložíte prostředky na svůj účet",
+  "autoBuyActivate": "Aktivovat automatický nákup",
+  "autoBuyDeactivate": "Deaktivovat automatický nákup",
+  "autoBuyCancelTitle": "Zrušit automatický nákup?",
+  "autoBuyCancelMessage": "Při příštím vložení prostředků na účet se Bitcoin automaticky nenakoupí.",
+  "autoBuyDeactivateConfirm": "Ano, deaktivovat",
+  "autoBuyHowItWorks": "Jak to funguje",
+  "autoBuyConnectWallet": "Připojte svou Bitcoin, Lightning nebo Liquid peněženku",
+  "autoBuyPurchaseCreated": "Pokaždé, když vložíte prostředky na svůj účet Bull Bitcoin, se automaticky vytvoří nákup Bitcoinu.",
+  "autoBuyBitcoinSent": "Bitcoin je odeslán přímo do vaší vlastní peněženky.",
+  "autoBuyRiskDisclaimer": "Provedení příkazu nelze zaručit. Prodlevy nebo změny ceny mezi vkladem a nákupem mohou změnit skutečný kurz.",
+  "autoBuyGetStarted": "Začněte s automatickým nákupem",
+  "autoBuyConfirmTitle": "Potvrdit automatický nákup",
+  "autoBuyInfoMessage": "Jakákoli částka přidaná na váš účet bude převedena na Bitcoin aktuálním směnným kurzem a odeslána do vaší peněženky.",
+  "autoBuyAccountUnavailableError": "Váš účet Bull Bitcoin není dostupný. Zkuste to prosím později.",
+  "autoBuyWalletRequiredError": "Přidejte alespoň jednu výchozí adresu Bitcoin, Lightning nebo Liquid.",
+  "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
+  "exchangeAuthLoginFailedMessage": "Chyba nastala, zkuste se znovu přihlásit.",
+  "exchangeAuthLoginFailedOkButton": "ČEŠTINA",
+  "exchangeAuthLoginFailedTitle": "Přihlášení",
+  "settingsScreenTitle": "Nastavení",
+  "exchangeDcaUnableToGetConfig": "Nelze získat konfiguraci DCA",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "exchangeDcaNetworkLiquid": "Tekutý síť",
+  "exchangeDcaNetworkBitcoin": "Bitcoin sítě",
+  "exchangeDcaCancelDialogCancelButton": "Hledat",
+  "exchangeDcaActivateTitle": "Aktivace opakovaného nákupu",
+  "exchangeDcaCancelDialogConfirmButton": "Ano, deaktivovat",
+  "exchangeDcaCancelDialogMessage": "Váš opakovaný plán nákupu Bitcoin se zastaví a naplánované nákupy skončí. Chcete-li restartovat, budete muset nastavit nový plán.",
+  "exchangeDcaFrequencyDay": "den",
+  "exchangeHomeDepositButton": "Vklad",
+  "exchangeKycCardSubtitle": "Chcete-li odstranit limity transakce",
+  "exchangeDcaFrequencyWeek": "týden",
+  "exchangeDcaNetworkLightning": "Bleskové sítě",
+  "exchangeHomeWithdrawButton": "Čeština",
+  "exchangeKycLevelLimited": "Čeština",
+  "exchangeKycLevelLight": "Čeština",
+  "exchangeDcaFrequencyHour": "hodina",
+  "exchangeKycCardTitle": "Kompletní KYC",
+  "exchangeDcaCancelDialogTitle": "Zrušit nákup Bitcoinu?",
+  "transactionHistoryTitle": "Historie transakcí",
+  "exchangeDcaDeactivateTitle": "Deactivate Recurring Koupit",
+  "exchangeDcaSummaryMessage": "Kupujete {amount} každý {frequency} prostřednictvím {network}, pokud máte prostředky ve vašem účtu.",
+  "exchangeDcaFrequencyMonth": "měsíc",
+  "exchangeDcaHideSettings": "Skrýt nastavení",
+  "exchangeDcaViewSettings": "Zobrazit nastavení",
+  "homeActionBuy": "Koupit",
+  "homeActionSell": "Prodat",
+  "homeActionPay": "Zaplatit",
+  "homeActionTransfer": "Swap",
+  "recipientsSearchHint": "Hledání příjemců podle jména nebo štítku",
+  "recipientsScreenTitle": "Vybrat příjemce",
+  "recipientsScreenSubtitle": "Komu platíš?",
+  "recipientsTabNew": "Nový příjemce",
+  "recipientsTabList": "Moji fiat příjemci",
+  "recipientsPayoutMethod": "Způsob platby",
+  "recipientsFilterByJurisdiction": "Filtrovat podle jurisdikce:",
+  "recipientsListEmpty": "Nenalezeni žádní příjemci.",
+  "recipientsContinue": "Pokračovat",
+  "recipientsJurisdictionAll": "Všechny jurisdikce",
+  "recipientsJurisdictionCanada": "🇨🇦 Kanada",
+  "recipientsJurisdictionEurope": "🇪🇺 Evropa (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Mexiko",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Kostarika",
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "recipientsJurisdictionColombia": "🇨🇴 Kolumbie",
+  "recipientsTypeInteracEmail": "Převod peněz e-mailem",
+  "recipientsTypeBillPayment": "Platba účtu",
+  "recipientsTypeBankTransfer": "Bankovní převod",
+  "recipientsTypeSepa": "SEPA převod",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Karta",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "recipientsTypeBankAccountCo": "Bankovní účet COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "E-mail",
+  "recipientsInfoPayee": "Příjemce",
+  "recipientsInfoAccount": "Účet",
+  "recipientsInfoPhone": "Telefon",
+  "recipientsInfoCard": "Karta",
+  "recipientsInfoLabel": "Štítek",
+  "recipientsValidationFieldRequired": "Toto pole nemůže být prázdné",
+  "recipientsLabelOptional": "Štítek (volitelné)",
+  "recipientsLabelHint": "Zadejte štítek pro tohoto příjemce",
+  "recipientsFieldName": "Jméno",
+  "recipientsFieldNameHint": "Zadejte jméno příjemce",
+  "recipientsFieldRecipientNameLabel": "Jméno příjemce",
+  "recipientsFieldPhoneNumber": "Telefonní číslo",
+  "recipientsFieldPhoneNumberHint": "Zadejte telefonní číslo",
+  "recipientsFieldDocumentType": "Typ dokladu příjemce",
+  "recipientsFieldDocumentNumberHint": "Zadejte číslo dokladu příjemce",
+  "recipientsFieldOwnerName": "Jméno majitele",
+  "recipientsFieldOwnerNameHint": "Zadejte jméno majitele",
+  "recipientsAccountOwnerQuestion": "Komu patří tento účet?",
+  "recipientsAccountOwnerMine": "Je to můj účet",
+  "recipientsAccountOwnerSomeoneElse": "Je to účet někoho jiného",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "Zadejte IBAN",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "Zadejte číslo CLABE",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "Zadejte číslo CVU/CBU",
+  "recipientsFieldBankInstitution": "Bankovní instituce",
+  "recipientsFieldBankInstitutionPlaceholder": "Vyberte bankovní instituci",
+  "recipientsValidationBankInstitution": "Vyberte prosím bankovní instituci",
+  "recipientsFieldAccountType": "Typ účtu",
+  "recipientsAccountTypeSavings": "Spořicí",
+  "recipientsAccountTypeChecking": "Běžný",
+  "recipientsFieldBankAccountNumber": "Číslo bankovního účtu",
+  "recipientsFieldBankAccountNumberHint": "Zadejte číslo bankovního účtu",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Daňové identifikační číslo (NIT)",
+  "recipientsCopDocPassport": "Pas",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "Číslo debetní karty",
+  "recipientsFieldDebitCardHint": "Zadejte číslo debetní karty",
+  "recipientsFieldOwnerNameSinpeHint": "Jméno majitele se zobrazí zde",
+  "recipientsValidationSinpeOwner": "Ověřte telefonní číslo",
+  "recipientsFieldEmailAddress": "E-mailová adresa",
+  "recipientsFieldEmailAddressHint": "Zadejte e-mailovou adresu",
+  "recipientsFieldSecurityQuestion": "Bezpečnostní otázka",
+  "recipientsFieldSecurityQuestionHint": "Zadejte bezpečnostní otázku (10-40 znaků)",
+  "recipientsFieldSecurityAnswer": "Bezpečnostní odpověď",
+  "recipientsFieldSecurityAnswerHint": "Zadejte bezpečnostní odpověď",
+  "recipientsValidationSecurityQuestionMin": "Bezpečnostní otázka musí mít alespoň 10 znaků",
+  "recipientsCharCounter": "{count}/40 znaků",
+  "recipientsFieldInstitutionCode": "Kód instituce",
+  "recipientsFieldInstitutionCodeHint": "Zadejte kód instituce",
+  "recipientsFieldInstitutionNumber": "Číslo instituce",
+  "recipientsFieldInstitutionNumberHint": "Zadejte číslo instituce",
+  "recipientsFieldTransitNumber": "Tranzitní číslo",
+  "recipientsFieldTransitNumberHint": "Zadejte tranzitní číslo",
+  "recipientsFieldAccountNumber": "Číslo účtu",
+  "recipientsFieldAccountNumberHint": "Zadejte číslo účtu",
+  "recipientsFieldDefaultComment": "Výchozí komentář (volitelné)",
+  "recipientsFieldDefaultCommentHint": "Zadejte výchozí komentář",
+  "recipientsFieldCorporateAccount": "Firemní účet",
+  "recipientsFieldFirstName": "Jméno",
+  "recipientsFieldFirstNameHint": "Zadejte jméno",
+  "recipientsFieldLastName": "Příjmení",
+  "recipientsFieldLastNameHint": "Zadejte příjmení",
+  "recipientsFieldCorporateName": "Název firmy",
+  "recipientsFieldCorporateNameHint": "Zadejte název firmy",
+  "recipientsFieldBillerName": "Název poskytovatele",
+  "recipientsFieldBillerNameHint": "Vyhledejte a vyberte poskytovatele",
+  "recipientsValidationBillerSearchMin": "Pro vyhledávání zadejte 3 nebo více znaků",
+  "recipientsValidationBillerSelect": "Vyberte poskytovatele ze seznamu",
+  "recipientsFieldPayeeAccountNumber": "Číslo účtu příjemce",
+  "recipientsFieldSinpePhoneNumberHint": "8 číslic bez kódu země",
+  "recipientsCopDocCcRecipientNumber": "Číslo cédula příjemce",
+  "recipientsCopDocCeRecipientNumber": "Číslo cédula de extranjería příjemce",
+  "recipientsCopDocNitRecipientNumber": "Daňové ID číslo příjemce",
+  "recipientsCopDocPassportRecipientNumber": "Číslo pasu příjemce",
+  "recipientsCopDocTiRecipientNumber": "Číslo občanského průkazu příjemce",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Číslo z matriky příjemce",
+  "recipientsValidationSinpePhoneCountryCode": "Odstraňte kód země (+506). Zadejte pouze 8místné číslo",
+  "recipientsValidationSinpePhoneInvalidChars": "Použijte pouze číslice (žádná písmena ani symboly)",
+  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla",
+  "recipientsErrorLoadFailed": "Vaše příjemce se nepodařilo načíst. Zkuste to prosím znovu.",
+  "recipientsErrorSaveFailed": "Tohoto příjemce se nepodařilo uložit. Zkontrolujte údaje a zkuste to znovu.",
+  "recipientsErrorSinpeLookupFailed": "Toto telefonní číslo se nepodařilo ověřit. Zkontrolujte je a zkuste to znovu.",
+  "recipientsErrorBillerSearchFailed": "Vyhledávání inkasních subjektů se nezdařilo. Zkuste to prosím znovu.",
+  "recipientsErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "recipientsListPullToRetry": "Zkuste to znovu přetažením dolů.",
+  "recipientsErrorSavedButNotSelected": "Tento příjemce byl uložen, ale nepodařilo se pokračovat. Najděte jej ve svém seznamu.",
+  "recipientsTypeConfidentialSepa": "Důvěrný SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná",
+  "recipientsErrorEuResidencyRequired": "Pro aktivaci důvěrného SEPA musíte být rezidentem Evropské unie.",
+  "recipientsConfidentialSepaActivatingTitle": "Aktivace příjemce",
+  "recipientsConfidentialSepaActivatingDescription": "Váš příjemce se aktivuje pro Důvěrný SEPA. Může to trvat několik minut.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Příjemce není aktivován pro Důvěrný SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Tento příjemce zatím není aktivován pro Důvěrný SEPA. Právě jej aktivujeme. Může to trvat několik minut. Mezitím můžete použít Okamžitý a běžný SEPA.",
+  "recipientsConfidentialSepaActivatedTitle": "Příjemce aktivován",
+  "recipientsConfidentialSepaActivatedDescription": "Váš příjemce je nyní aktivní pro Důvěrný SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Použít místo toho Okamžitý a běžný SEPA",
+  "recipientsVirtualIbanIntroTitle": "Aktivovat Důvěrný SEPA?",
+  "recipientsVirtualIbanNewBadge": "Nové",
+  "recipientsVirtualIbanIntroDescription": "Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Je to zdarma.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Když posíláte prostředky ze své banky do Bull Bitcoin, zobrazí se to jako převod sobě samému.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Není potřeba kód převodu.",
+  "recipientsVirtualIbanNameWarningTitle": "Důležité: Jména se musí shodovat",
+  "recipientsVirtualIbanNameWarningDescription": "Jméno bankovního účtu se musí přesně shodovat se jménem vašeho virtuálního IBAN u Bull Bitcoin, jinak bude převod automaticky vrácen. Jména se neshodují? Kontaktujte podporu.",
+  "recipientsVirtualIbanAccountOwnerName": "Jméno majitele účtu",
+  "recipientsVirtualIbanNameConfirmation": "Potvrzuji, že jméno odpovídá mému bankovnímu účtu/účtům",
+  "recipientsVirtualIbanActivate": "Aktivovat Důvěrný SEPA",
+  "recipientsVirtualIbanActivatingTitle": "Aktivace Důvěrného SEPA...",
+  "recipientsVirtualIbanActivatingDescription": "Vytváříme váš virtuální IBAN. Může to trvat několik minut.",
+  "recipientsVirtualIbanActivatedTitle": "Důvěrný SEPA aktivován",
+  "recipientsVirtualIbanActivatedDescription": "Nyní můžete svůj osobní virtuální IBAN používat k soukromým výběrům peněz.",
+  "recipientsVirtualIbanCopied": "Připojil se do schránky",
+  "recipientsVirtualIbanDone": "Čeština",
+  "recipientsVirtualIbanRecipientName": "Název příjemce",
+  "recipientsVirtualIbanIbanLabel": "Číslo virtuálního účtu IBAN",
+  "recipientsVirtualIbanCountry": "Bankovní účet",
+  "recipientsVirtualIbanBic": "BIC kód",
+  "recipientsVirtualIbanActivatedFundingDescription": "Nyní můžete svůj osobní virtuální IBAN používat k soukromým vkladům peněz.",
+  "recipientsVirtualIbanShowDetails": "Zobrazit údaje mého virtuálního IBAN",
+  "recipientsVirtualIbanDetailsDescription": "Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Vklad se zobrazí jako platba sobě samému, bez kódu převodu.",
+  "recipientsVirtualIbanBankAddress": "Adresa banky",
+  "recipientsVirtualIbanBankAddressHelp": "Oficiální adresa banky pro případ, že ji vaše banka vyžaduje.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.",
+  "recipientsFieldBankAccountIban": "Číslo bankovního účtu (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu",
+  "withdrawOwnershipQuestion": "Kdo má tento účet?",
+  "withdrawOwnershipOtherAccount": "To je někdo jiný účet",
+  "withdrawAboveMaxAmountError": "Maximální částka je {amount} {currency}",
+  "withdrawConfirmCard": "Čeština",
+  "withdrawBelowMinAmountError": "Minimální částka je {amount} {currency}",
+  "withdrawConfirmPhone": "Čeština",
+  "withdrawUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
+  "withdrawConfirmTitle": "Potvrzení výběru",
+  "withdrawConfirmAmount": "Množství",
+  "withdrawConfirmEmail": "E-mail",
+  "withdrawConfirmButton": "Potvrzení výběru",
+  "withdrawOwnershipMyAccount": "Můj účet",
+  "withdrawAmountTitle": "Sdraw fiat",
+  "withdrawConfirmClabe": "ČEŠTINA",
+  "withdrawConfirmPayee": "Čeština",
+  "withdrawConfirmRecipientName": "Název příjemce",
+  "withdrawConfirmAccount": "Heslo",
+  "withdrawSuccessOrderDetails": "Detaily objednávky",
+  "withdrawSuccessTitle": "Odstoupení Initiated",
+  "withdrawConfirmIban": "ČEŠTINA",
+  "withdrawConfirmBankAccount": "Bankovní účet",
+  "withdrawAmountContinue": "Pokračovat",
+  "withdrawInteracSecurityDetailsTitle": "Bezpečnostní údaje převodu",
+  "withdrawInteracSaveAsDefault": "Uložit tyto údaje jako výchozí",
+  "withdrawInteracSecurityQuestionLengthError": "Bezpečnostní otázka musí mít 3–40 znaků",
+  "withdrawInteracSecurityAnswerLengthError": "Bezpečnostní odpověď musí mít 3–40 znaků",
+  "withdrawInteracSecurityAnswerFormatError": "Použijte písmena, číslice nebo spojovníky bez mezer",
+  "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "withdrawConfidentialSepaNotActivatedError": "Aktivujte prosím možnost důvěrné platby pro tohoto příjemce SEPA.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Čeština",
+  "logoutConfirmationTitle": "Potvrzení přihlášení",
+  "logoutConfirmationCancel": "Hledat",
+  "logoutConfirmationDescription": "Jste si jisti, že se chcete přihlásit z účtu Bull Bitcoin? Budete muset znovu přihlásit k funkcím výměny.",
+  "exchangeSettingsLogOutTitle": "Přihlásit se",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Tímto odešlete žádost o smazání účtu našemu týmu podpory. Váš účet bude smazán do 5 pracovních dnů.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Žádost o smazání účtu odeslána",
+  "deleteAccountSuccessDescription": "Vaše žádost o smazání účtu byla odeslána. Bude zpracována do 5 pracovních dnů.",
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "Vaše platba bude zaslána v ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "Vyberte Bitcoin Peněženka",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExternalWallet": "Externí Bitcoin peněženku",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "Potvrzení o odstoupení od smlouvy",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bezpečné Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "Vyžaduje kompatibilní peněženku",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "Dostanete se",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyAboveMaxAmountError": "Snažte se koupit nad maximálním množstvím.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyBelowMinAmountError": "Pokuste se koupit pod minimálním množstvím.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyConfirmPayoutWallet": "Peněženka pro výplatu",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na blockchainu Bitcoin",
+  "buyConfirmPayoutMethod": "Metoda výplaty",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "Čeština",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "Minimální 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaSetupInsufficientBalance": "Nedostatečná rovnováha",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "Můžeš koupit {amount} každou hodinu",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "dcaConfirmPaymentMethod": "Způsob platby",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin Cena",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "Odhadovaná hodnota poplatku",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Zadejte částku",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "Vyberte síť",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "Doba potvrzení",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "Koupili jste {amount} za {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Zrychlení Transakce",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Čeština",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "Koupit Bitcoin",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "Vyberte peněženku",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "KYC ID Ověřování",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H ...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "Musíte dokončit ověření totožnosti nejprve",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "Síťové poplatky",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "Můžeš koupit {amount} každý měsíc",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "Blesk",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "Vyberte četnost",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "Zadejte adresu blesku",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} rovnováhu",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Nákupy Bitcoin budou umístěny automaticky na tento plán.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "Kompletní KYC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "Čeština",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "Typ objednávky",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaSuccessMessageDaily": "Můžeš koupit {amount} každý den",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Počkejte zdarma výběr",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Vyžaduje kompatibilní peněženku, maximální 0,25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "Fond vašeho účtu",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "~10 minut",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "Potvrzení o registraci ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSuccessTitle": "Opakovaný nákup je aktivní!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSetupFrequencyError": "Vyberte frekvenci",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "Koupit Bitcoin",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "To bylo rychlé, nebylo to?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "Každý den",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyConfirmPurchase": "Potvrzení nákupu",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyInputMaxAmountError": "Není možné koupit více než",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyNetworkFeeRate": "Síťový poplatek",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "Zpět na domov",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Okamžité platby",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "Čeština",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "Potvrzení opakování Koupit",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "buyConfirmYouPay": "Platit",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "Vyberte typ Bitcoin Peněženky",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "Nedostatečná rovnováha",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "dcaSuccessMessageWeekly": "Můžeš koupit {amount} každý týden",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "Množství",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "Každý týden",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "Fond vašeho účtu",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "Zadejte adresu Bitcoin",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSetupInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "Koupit objednávky budou automaticky umístěny na tyto nastavení. Můžete je kdykoli vypnout.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "Bleskové sítě (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Poplatek za síť Bitcoin bude odečtena z částky, kterou obdržíte a shromáždil Bitcoin horníci",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "Nákupy Bitcoin budou umístěny automaticky na tento plán.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmNetworkBitcoin": "Čeština",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "Zobrazit podrobnosti",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "Každou hodinu",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "Blesková adresa",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "Způsob platby",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "Každý měsíc",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "Bitcoin poslal!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyInputMinAmountError": "Měli byste si koupit alespoň",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "dcaUseDefaultLightningAddress": "Používejte výchozí adresu blesku.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "Potvrdit rychleji",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "Potvrzení",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "Nákup",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "Kapalina (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Sada opakování nákupu",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaWalletSelectionContinueButton": "Pokračovat",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "buyInputContinue": "Pokračovat",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaSetupContinue": "Pokračovat",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "dcaConfirmContinue": "Pokračovat",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaAccountUnavailableError": "Váš účet se nepodařilo načíst. Zkontrolujte připojení, ujistěte se, že jste přihlášeni, a zkuste to znovu.",
+  "dcaLightningAddressRequiredError": "Zadejte Lightning adresu pro příjem vašich nákupů.",
+  "dcaReceiveAddressError": "V peněžence se nepodařilo připravit přijímací adresu. Zkuste to prosím znovu.",
+  "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později.",
+  "payPleasePayInvoice": "Tuto fakturu prosím vyplňte",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payPayinAmount": "Payin částka",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellAdvancedOptions": "Pokročilé možnosti",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySinpeBeneficiario": "Čeština",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "payInstantPayments": "Okamžité platby",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellReplaceByFeeActivated": "Nahradit aktivovaný",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payPayoutAmount": "Výplatní částka",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payNetworkFees": "Síťové poplatky",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payAboveMaxAmountError": "Maximální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellLoadingGeneric": "Nahrávání ...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "payPaymentInProgress": "Platba v postupu!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "sellCompleteKYC": "Kompletní KYC",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payPayFromWallet": "Platit z peněženky",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payLightningNetwork": "Bleskové sítě",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellExternalWallet": "Externí peněženka",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payInvalidState": "Neplatný stav",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "sellBelowMinAmountError": "S touto peněženkou se snažíte prodat minimální částku, která může být prodána.",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellEurBalance": "Kč Čeština",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellSelectNetwork": "Vyberte síť",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payNoInvoiceData": "Nejsou k dispozici žádné fakturační údaje",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "paySinpeMonto": "Množství",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "sellOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payNoDetailsAvailable": "Žádné podrobnosti",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "sellShowQrCode": "Zobrazit QR kód",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellSecureBitcoinWallet": "Secure Bitcoin peněženku",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payShowQrCode": "Zobrazit QR kód",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellViewDetailsButton": "Zobrazit podrobnosti",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "paySinpeOrigen": "Čeština",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payRecipientType": "Typ příjemce",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellOrderCompleted": "Objednávky dokončeno!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellPleasePayInvoice": "Tuto fakturu prosím vyplňte",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "paySelectNetwork": "Vyberte síť",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "sellCadBalance": "Čeština Čeština",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "payInsufficientBalanceError": "Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellPriceWillRefreshIn": "Cena bude obnovena v ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "ARS Bilance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellPayFromWallet": "Platit z peněženky",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellBitcoinAmount": "Bitcoin částka",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellBalanceWillBeCredited": "Vaše zůstatek na účtu bude připsána po přijetí transakce na klíč.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "payExchangeRate": "Směnný kurz",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "copyDialogButton": "Čeština",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payQrCode": "QR kód",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellLightningNetwork": "Bleskové sítě",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "Okamžité platby",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellDone": "Čeština",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellBitcoinOnChain": "Bitcoin on-chain",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellFromAnotherWallet": "Prodej z jiné Bitcoin peněženky",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payFeePriority": "Prioritní priority",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellNoInvoiceData": "Nejsou k dispozici žádné fakturační údaje",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "sellHowToPayInvoice": "Jak chcete zaplatit tuto fakturu?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payTitle": "Čeština",
+  "payDescriptionLabel": "Popis platby (volitelné)",
+  "payDescriptionHint": "Přidejte poznámku k této platbě",
+  "payPaymentDescription": "Popis platby",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellQrCode": "QR kód",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellGoHome": "Přejděte domů",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellInsufficientBalanceError": "Nedostatečná vyváženost v zvolené peněžence dokončit tuto prodejní objednávku.",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellSelectWallet": "Vybrat Peněženka",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "payContinue": "Pokračovat",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "Nahradit aktivovaný",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellCopyInvoice": "Kopírovat fakturu",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "payExternalWalletDescription": "Platit z jiné Bitcoin peněženky",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "sellFeePriority": "Prioritní priority",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "Payin částka",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellBitcoinPriceLabel": "Bitcoin Cena",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "payBitcoinPrice": "Bitcoin Cena",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "sellMxnBalance": "Čeština Čeština",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellCopBalance": "Čeština Čeština",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellKycPendingDescription": "Musíte dokončit ověření totožnosti nejprve",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellPayoutAmount": "Výplatní částka",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellWhichWalletQuestion": "Která peněženka chcete prodat?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "payHowToPayInvoice": "Jak chcete zaplatit tuto fakturu?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "payWhichWallet": "Která peněženka chcete platit?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "sellFastest": "Čeština",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payCopyInvoice": "Kopírovat fakturu",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellCrcBalance": "Čeština Čeština",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "paySelectCoinsManually": "Vyberte mince ručně",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payPriceRefreshIn": "Cena bude obnovena v ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payBitcoinAmount": "Bitcoin částka",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellExchangeRate": "Směnný kurz",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "Prodej Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "sellUsdBalance": "Kč Čeština",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellKycPendingTitle": "KYC ID Ověřování",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "payOrderNumber": "Číslo objednávky",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "Číslo objednávky",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "payBelowMinAmountError": "Minimální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellPayoutRecipient": "Výplatní příjemce",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "payLiquidNetwork": "Tekutý síť",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "paySelectWallet": "Vybrat Peněženka",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "paySinpeNumeroComprobante": "Referenční číslo",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "Secure Bitcoin peněženku",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payRecipientName": "Název příjemce",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payConfirmPayment": "Potvrzení platby",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "sellConfirmPayment": "Potvrzení platby",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellSelectCoinsManually": "Vyberte mince ručně",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "Čeština",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payExternalWallet": "Externí peněženka",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payOrderDetails": "Detaily objednávky",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "sellAboveMaxAmountError": "S touto peněženkou se snažíte prodat nad maximální částku, která může být prodána.",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellLiquidNetwork": "Tekutý síť",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "sellOrderNotFoundError": "Prodejní objednávka nebyla nalezena. Prosím, zkuste to znovu.",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "payAdvancedOptions": "Pokročilé možnosti",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "payRecipientDetails": "Podrobnosti o pomoc",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "sellOrderNumber": "Číslo objednávky",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "payDone": "Čeština",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellInProgress": "Prodej v průběhu...",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "payAdvancedSettings": "Pokročilé nastavení",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellSendPaymentNetworkFees": "Síťové poplatky",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "payCompleted": "Platba dokončena!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellAdvancedSettings": "Pokročilé nastavení",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payViewDetails": "Zobrazit podrobnosti",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "sellSendPaymentContinue": "Pokračovat",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "closeDialogButton": "Zavřít",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "invoiceViewerTitle": "Faktura",
+  "paySinpeReceipt": "Účtenka SINPE",
+  "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "sellPayoutBalance": "Přidat k zůstatku mého účtu",
+  "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
+  "sellPayoutTitle": "Vybrat příjemce",
+  "sellPayoutNewBadge": "NOVÉ",
+  "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
+  "sendSelectedUtxosInsufficient": "Vybrané utxos nepokrývá požadovaná částka",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Vyberte částku",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "Typ: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "Adresa: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Požadovaná částka: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "Příjem",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Výdaj",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "Nedostatečná rovnováha",
+  "limitOrdersInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
+  "limitOrdersFundAccount": "Fond vašeho účtu",
+  "exchangeLandingRecommendedExchange": "Doporučené Bitcoin burza",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureCustomerSupport": "• Chat s zákaznickou podporou",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Služby výměny kryptoměn nejsou k dispozici v mobilní aplikaci Bull Bitcoin.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLandingDisclaimerLegal": "Přístup k výměně služeb bude omezen na země, kde Bull Bitcoin může legálně pracovat a může vyžadovat KYC.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeFeatureSelfCustody": "• Koupit Bitcoin přímo na self-custody",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeLandingConnectAccount": "Připojte svůj účet na výměnu Bull Bitcoin",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeFeatureSellBitcoin": "• Prodej Bitcoin, získat zaplaceno s Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLoginButton": "Přihlášení nebo přihlášení",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeFeatureBankTransfers": "• Odeslání bankovních převodů a poplatků",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeGoToWebsiteButton": "Přejděte na webové stránky Bull Bitcoin",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limitní objednávky a Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureUnifiedHistory": "• Neověřené historie transakce",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  }
 }

@@ -1,28 +1,26 @@
-import 'package:bb_mobile/core/primitives/payment_network.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:primitives/primitives.dart' show PaymentNetwork;
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
+import 'package:address_view/address_view.dart';
+import 'package:receive/receive.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
-class _MockGetReceiveAddressUsecase extends Mock
-    implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
 void main() {
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late _MockGetReceiveAddressUsecase getReceiveAddress;
   late CreateReceiveOrderSwapUsecase usecase;
 
   setUp(() {
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     getReceiveAddress = _MockGetReceiveAddressUsecase();
     usecase = CreateReceiveOrderSwapUsecase(
       swapFacade,
@@ -32,7 +30,10 @@ void main() {
     );
   });
 
-  for (final network in [Network.bitcoinRegtest, Network.liquidRegtest]) {
+  for (final network in <Network>[
+    BitcoinNetwork.regtest,
+    LiquidNetwork.regtest,
+  ]) {
     test('$network refuses before address or provider side effects', () async {
       final result = await usecase.execute(
         wallet: _wallet(network),
@@ -55,7 +56,7 @@ void main() {
     final environment = isTestnet
         ? OrderSwapEnvironment.testnet
         : OrderSwapEnvironment.mainnet;
-    final network = isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+    final network = isTestnet ? LiquidNetwork.testnet : LiquidNetwork.mainnet;
     final destination = isTestnet ? 'tlq1-destination' : 'lq1-destination';
     test(
       '$environment creates an input-fixed Lightning to Liquid order without fallback',
@@ -76,11 +77,11 @@ void main() {
           ),
         ).thenAnswer((_) async => Ok(_quote()));
         when(
-          () => getReceiveAddress.execute(
+          () => getReceiveAddress.receiveAddress(
             walletId: 'wallet-1',
-            generateNew: true,
+            advance: true,
           ),
-        ).thenAnswer((_) async => _address(address: destination));
+        ).thenAnswer((_) async => Ok(_address(address: destination)));
         when(
           () => swapFacade.createOrder(
             amountSat: BigInt.from(100000),
@@ -144,7 +145,7 @@ void main() {
     );
 
     final result = await usecase.execute(
-      wallet: _wallet(Network.liquidTestnet),
+      wallet: _wallet(LiquidNetwork.testnet),
       amountSat: 50000,
     );
 
@@ -155,9 +156,9 @@ void main() {
       BigInt.from(100000),
     );
     verifyNever(
-      () => getReceiveAddress.execute(
+      () => getReceiveAddress.receiveAddress(
         walletId: any(named: 'walletId'),
-        generateNew: any(named: 'generateNew'),
+        advance: any(named: 'advance'),
       ),
     );
   });
@@ -177,7 +178,7 @@ void main() {
     );
 
     final result = await usecase.execute(
-      wallet: _wallet(Network.liquidTestnet),
+      wallet: _wallet(LiquidNetwork.testnet),
       amountSat: 50000,
     );
 
@@ -201,7 +202,7 @@ void main() {
       _stubSuccessfulCreation(swapFacade, getReceiveAddress);
 
       final result = await usecase.execute(
-        wallet: _wallet(Network.liquidTestnet),
+        wallet: _wallet(LiquidNetwork.testnet),
         amountSat: 100000,
       );
 
@@ -225,7 +226,7 @@ void main() {
     _stubSuccessfulCreation(swapFacade, getReceiveAddress);
 
     final result = await usecase.execute(
-      wallet: _wallet(Network.liquidTestnet),
+      wallet: _wallet(LiquidNetwork.testnet),
       amountSat: 100000,
     );
 
@@ -255,7 +256,7 @@ void main() {
       );
 
       final result = await usecase.execute(
-        wallet: _wallet(Network.liquidTestnet),
+        wallet: _wallet(LiquidNetwork.testnet),
         amountSat: 100000,
       );
 
@@ -283,7 +284,7 @@ void main() {
     );
 
     final result = await usecase.execute(
-      wallet: _wallet(Network.liquidTestnet),
+      wallet: _wallet(LiquidNetwork.testnet),
       amountSat: 50000,
     );
 
@@ -310,7 +311,7 @@ void main() {
     );
 
     final result = await usecase.execute(
-      wallet: _wallet(Network.liquidMainnet),
+      wallet: _wallet(LiquidNetwork.mainnet),
       amountSat: 100000,
     );
 
@@ -332,7 +333,7 @@ void main() {
 }
 
 void _stubSuccessfulCreation(
-  _MockSwapFacade swapFacade,
+  _MockOrderSwaps swapFacade,
   _MockGetReceiveAddressUsecase getReceiveAddress, {
   OrderSwapRecord? record,
 }) {
@@ -345,8 +346,9 @@ void _stubSuccessfulCreation(
       outNetwork: OrderSwapNetwork.liquid,
     ),
   ).thenAnswer((_) async => Ok(_quote()));
-  when(() => getReceiveAddress.execute(walletId: 'wallet-1', generateNew: true))
-      .thenAnswer((_) async => _address());
+  when(
+    () => getReceiveAddress.receiveAddress(walletId: 'wallet-1', advance: true),
+  ).thenAnswer((_) async => Ok(_address()));
   when(
     () => swapFacade.createOrder(
       amountSat: BigInt.from(100000),
@@ -430,15 +432,11 @@ Bolt11PaymentRequest _invoice({
   isTestnet: isTestnet,
 ) as Bolt11PaymentRequest;
 
-Wallet _wallet(Network network) => Wallet(
-  origin: 'wallet-1',
+ReceiveWallet _wallet(Network network) => ReceiveWallet(
+  id: 'wallet-1',
   network: network,
-  xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
+  signsLocally: true,
   signerDevice: null,
   balanceSat: BigInt.zero,
 );

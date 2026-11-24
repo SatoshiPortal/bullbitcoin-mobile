@@ -1,0 +1,438 @@
+{
+  "@@locale": "el",
+  "save": "Εξοικονομήστε",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressLabel": "Διεύθυνση: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Ποσό που απαιτείται: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Όταν είναι απενεργοποιημένο, θα σας δοθεί η επιλογή να επιτρέψετε μια αυτόματη ανταλλαγή που αποκλείστηκε λόγω υψηλών τελών",
+  "@autoswapAlwaysBlockInfoDisabled": {
+    "description": "Help text when always block is disabled"
+  },
+  "autoswapAlwaysBlockInfoEnabled": "Όταν είναι ενεργοποιημένο, οι αυτόματες ανταλλαγές με τέλη πάνω από το καθορισμένο όριο θα αποκλείονται πάντα",
+  "@autoswapAlwaysBlockInfoEnabled": {
+    "description": "Help text when always block is enabled"
+  },
+  "autoswapAlwaysBlockLabel": "Πάντα Block High Fees",
+  "@autoswapAlwaysBlockLabel": {
+    "description": "Label for toggle to always block high fee transfers"
+  },
+  "autoswapBaseBalanceInfoText": "Η άμεση ισορροπία του πορτοφόλι σας θα επιστρέψει σε αυτή την ισορροπία-στόχο μετά από ένα autoswap.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapEnableToggleLabel": "Ενεργοποίηση αυτόματης ανταλλαγής",
+  "@autoswapEnableToggleLabel": {
+    "description": "Label for the main toggle switch to enable/disable auto transfer feature"
+  },
+  "autoswapLoadSettingsError": "Αποζημιωμένος να φορτώσει ρυθμίσεις αυτόματης ανταλλαγής",
+  "@autoswapLoadSettingsError": {
+    "description": "Error message when loading settings fails"
+  },
+  "autoswapMaxBalanceLabel": "Μέγιστο Υπόλοιπο Instant Wallet",
+  "@autoswapMaxBalanceLabel": {
+    "description": "Label for amount threshold input field"
+  },
+  "autoswapMaxFeeInfoText": "Εάν το συνολικό τέλος ανταλλαγής είναι πάνω από το καθορισμένο ποσοστό, η αυτόματη ανταλλαγή θα αποκλειστεί",
+  "@autoswapMaxFeeInfoText": {
+    "description": "Help text explaining how the max fee threshold works"
+  },
+  "autoswapMaxFeeLabel": "Μέγιστο τέλος ανταλλαγής",
+  "@autoswapMaxFeeLabel": {
+    "description": "Label for fee threshold percentage input field"
+  },
+  "autoswapMaximumBalanceLabel": "Μέγιστο υπόλοιπο άμεσου πορτοφολιού",
+  "autoswapMaximumFeeError": "Μέγιστη αμοιβή είναι {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "description": "Validation error shown when fee threshold exceeds maximum",
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Το κατώτατο όριο ισορροπίας είναι {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Το κατώτατο όριο ισορροπίας είναι {amount} sats",
+  "@autoswapMinimumThresholdErrorSats": {
+    "description": "Validation error shown when amount threshold is below minimum (sats display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Επιλέξτε ποια πορτοφόλι Bitcoin θα λάβει τα μεταβιβασθέντα κεφάλαια (απαιτείται)",
+  "@autoswapRecipientWalletInfoText": {
+    "description": "Help text explaining wallet selection"
+  },
+  "autoswapRecipientWalletLabel": "Recipient Bitcoin Wallet",
+  "@autoswapRecipientWalletLabel": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "autoswapRecipientWalletPlaceholder": "Επιλέξτε ένα πορτοφόλι Bitcoin",
+  "@autoswapRecipientWalletPlaceholder": {
+    "description": "Dropdown placeholder text when no wallet is selected"
+  },
+  "autoswapRecipientWalletPlaceholderRequired": "Επιλέξτε ένα πορτοφόλι Bitcoin *",
+  "@autoswapRecipientWalletPlaceholderRequired": {
+    "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+  },
+  "autoswapRecipientWalletRequired": "*",
+  "@autoswapRecipientWalletRequired": {
+    "description": "Required field indicator asterisk"
+  },
+  "autoswapSaveButton": "Εξοικονομήστε",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "autoswapSelectWalletError": "Επιλέξτε ένα πορτοφόλι Bitcoin παραλήπτη",
+  "@autoswapSelectWalletError": {
+    "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+  },
+  "autoswapSettingsTitle": "Ρυθμίσεις αυτόματης ανταλλαγής",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "autoswapTargetBalanceLabel": "Στόχος υπολοίπου άμεσου πορτοφολιού",
+  "autoswapTriggerAtBalanceInfoText": "Το Autoswap θα προκαλέσει όταν η ισορροπία σας υπερβαίνει αυτή τη μέγιστη ισορροπία.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
+  "autoswapTriggerBalanceError": "Η μέγιστη ισορροπία πρέπει να είναι τουλάχιστον 2x η ισορροπία στόχων",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
+  },
+  "autoswapUpdateSettingsError": "Επιθυμήθηκε να ενημερώσει τις ρυθμίσεις αυτόματης ανταλλαγής",
+  "@autoswapUpdateSettingsError": {
+    "description": "Error message when updating settings fails"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
+  "closeDialogButton": "Κλείστε κοντά",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "coinsKeychainChange": "Ρέστα",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Λήψη",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Ενοποίηση πορτοφολιού",
+  "coreScreensAmountLabel": "Ποσο Ποσό Ποσο",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensConfirmButton": "Επιβεβαίωση",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "coreScreensExternalTransfer": "Εξωτερική ανταλλαγή",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensFeeDeductionExplanation": "Αυτό είναι το συνολικό ποσό που αφαιρείται από το ποσό που αποστέλλεται",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensFeePriorityLabel": "Προτεραιότητα",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensFromLabel": "Από",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensInternalTransfer": "Εσωτερική ανταλλαγή",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensNetworkFeesLabel": "Network χρεώσεις",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensReceiveAmountLabel": "Αποδεχόμενο ποσό",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Λήψη δικτύου Fee",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensSendAmountLabel": "Στείλε ποσό",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Στείλε δίκτυο Fee",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Δίκτυο server Fees",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensToLabel": "Για να",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensTransferFeeLabel": "Τέλος ανταλλαγής",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensTransferIdLabel": "ID ανταλλαγής",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "doneButton": "Έγινε",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "payNetworkError": "Σφάλμα δικτύου. Παρακαλώ δοκιμάστε ξανά",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveNote": "Σημείωση",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "Επιλέξτε ποσό",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "sendAdvancedOptions": "Προχωρημένες επιλογές",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendDone": "Έγινε",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorBuildFailed": "Αυτή η πληρωμή δεν μπόρεσε να προετοιμαστεί. Δοκιμάστε ξανά.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorSwapCreationFailed": "Απέτυχε να δημιουργήσει ανταλλαγή.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendFastFee": "Fast",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Replace-by-fee ενεργοποιημένη",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "Επιλέξτε νομίσματα",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "Το επιλεγμένο utxos δεν καλύπτει απαιτούμενο ποσό",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendSelfTransfer": "Αυτομεταφορά",
+  "swapAmountLabel": "Ποσο Ποσό Ποσο",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapAmountPlaceholder": "0",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapAvailableBalance": "Διαθέσιμο ισοζύγιο",
+  "@swapAvailableBalance": {
+    "description": "Available balance label"
+  },
+  "swapConfirmTransferTitle": "Επιβεβαίωση ανταλλαγής",
+  "@swapConfirmTransferTitle": {
+    "description": "AppBar title on the confirmation page"
+  },
+  "swapContinueButton": "Συνεχίστε να συνεχίζετε",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapDoNotUninstallWarning": "Μην απεγκαταστήσετε την εφαρμογή μέχρι να ολοκληρωθεί η ανταλλαγή!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
+  "swapErrorAmountAboveMaximum": "Ποσό υπερβαίνει το μέγιστο ποσό ανταλλαγής: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Το ποσό είναι κάτω από το ελάχιστο ποσό ανταλλαγής: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Εισάγετε εξωτερική διεύθυνση πορτοφόλι",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapExternalTransferLabel": "Εξωτερική ανταλλαγή",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "Από",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapGoHomeButton": "Πήγαινε σπίτι",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapInfoDescription": "Ανταλλάξτε Bitcoin απρόσκοπτα μεταξύ των πορτοφολιών σας. Διατηρήστε χρήματα μόνο στο Instant Payment Wallet για καθημερινές δαπάνες.",
+  "@swapInfoDescription": {
+    "description": "Information banner text on amount page"
+  },
+  "swapInsufficientFunds": "Ανεπαρκή κεφάλαια",
+  "swapInternalTransferTitle": "Εσωτερική ανταλλαγή",
+  "@swapInternalTransferTitle": {
+    "description": "AppBar title on the amount entry page"
+  },
+  "swapMaxButton": "MAX",
+  "@swapMaxButton": {
+    "description": "Button to use maximum available balance"
+  },
+  "swapReceiveExactAmountLabel": "Λήψη ακριβούς ποσότητας",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Υποχρεωτικά τέλη από το ποσό",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapToLabel": "Για να",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapTotalFees": "Ολοκληρωμένες χρεώσεις ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapTransferCompletedMessage": "Ουάου, περιμένατε! Η ανταλλαγή ολοκληρώθηκε με επιτυχία.",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferCompletedTitle": "Η ανταλλαγή ολοκληρώθηκε",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferPendingMessage": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορεί να χρειαστούν λίγο χρόνο για να επιβεβαιωθούν. Μπορείτε να επιστρέψετε στην αρχική οθόνη και να περιμένετε.",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferPendingTitle": "Ανταλλαγή σε εκκρεμότητα",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferRefundInProgressMessage": "Παρουσιάστηκε σφάλμα με τη ανταλλαγή. Η επιστροφή χρημάτων σας βρίσκεται σε εξέλιξη.",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundInProgressTitle": "Επιστροφή ανταλλαγής σε εξέλιξη",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundedMessage": "Η ανταλλαγή επιστράφηκε με επιτυχία.",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapTransferRefundedTitle": "Η ανταλλαγή επιστράφηκε",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferTitle": "Ανταλλαγή",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapUnderReviewDescription": "Αυτή η ανταλλαγή απαιτεί χειροκίνητο έλεγχο. Επικοινωνήστε με την υποστήριξη για βοήθεια. Εάν δεν έχετε λογαριασμό υποστήριξης, χρειάζεται μόνο να δημιουργήσετε έναν· δεν απαιτείται KYC.",
+  "swapUnderReviewSupportMessage": "Ανταλλαγή υπό έλεγχο\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "swapUnderReviewTitle": "Ανταλλαγή υπό έλεγχο",
+  "swapValidationSelectFromWallet": "Επιλέξτε ένα πορτοφόλι για ανταλλαγή από",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Επιλέξτε ένα πορτοφόλι για ανταλλαγή προς",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkLiquid": "Υγρό",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionStatusSwapExpired": "Swap Expired",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusSwapFailed": "Σουβάλι",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescChainExpired": "Αυτή η ανταλλαγή έληξε. Τα κεφάλαιά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainFailed": "Παρουσιάστηκε πρόβλημα με τη ανταλλαγή σας. Επικοινωνήστε με την υποστήριξη εάν τα κεφάλαια δεν έχουν επιστραφεί εντός 24 ωρών.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
+  "typeLabel": "Τύπος: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "walletLoadFailed": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+}

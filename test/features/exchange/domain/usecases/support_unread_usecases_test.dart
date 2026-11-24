@@ -1,14 +1,11 @@
-import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_unread_support_message_count_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/mark_support_messages_read_usecase.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
 import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Access extends Mock implements ExchangeAccessRepository {}
+class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 const _signedIn = ExchangeAccessEnabled(ExchangeAccessSession.signedIn);
 const _signedOut = ExchangeAccessEnabled(ExchangeAccessSession.signedOut);

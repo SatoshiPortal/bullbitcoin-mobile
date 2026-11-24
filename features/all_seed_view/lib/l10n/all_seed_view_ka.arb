@@ -1,0 +1,26 @@
+{
+  "allSeedViewSecurityWarningMessage": "სახარის ჩვენება უსაფრთხოების რისკს წარმოადგენს. ვინც დაინახავს თქვენს სახარს, შეძლებს თქვენს სახსრებზე წვდომას. დარწმუნდით, რომ ხართ პირად ადგილას და ვერავინ ხედავს თქვენს ეკრანს.",
+  "cancel": "გაუქმება",
+  "allSeedViewLoadingMessage": "ჩატვირთვას შესაძლოა გარკვეული დრო დასჭირდეს, თუ ამ მოწყობილობაზე ბევრი სახარი გაქვთ.",
+  "retry": "ხელახლა ცდა",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "allSeedViewNoSeedsFound": "სახარები ვერ მოიძებნა.",
+  "allSeedViewSecurityWarningTitle": "უსაფრთხოების გაფრთხილება",
+  "allSeedViewPassphraseLabel": "საიდუმლო ფრაზა:",
+  "allSeedViewOldWallets": "ძველი საფულეები ({count})",
+  "allSeedViewIUnderstandButton": "მესმის",
+  "allSeedViewDeleteWarningTitle": "გაფრთხილება!",
+  "allSeedViewDeleteWarningMessage": "სახარის წაშლა შეუქცევადი მოქმედებაა. გააკეთეთ ეს მხოლოდ იმ შემთხვევაში, თუ გაქვთ ამ სახარის უსაფრთხო სარეზერვო ასლი ან დაკავშირებული საფულეები სრულად დაცარიელებულია.",
+  "delete": "წაშლა",
+  "allSeedViewErrorDelete": "სიდის წაშლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "სიდების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "სახარების ჩვენება",
+  "allSeedViewTitle": "სახარების მნახველი",
+  "allSeedViewExistingWallets": "არსებული საფულეები ({count})"
+}

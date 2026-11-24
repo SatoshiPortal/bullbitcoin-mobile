@@ -2,15 +2,11 @@ import 'package:primitives/primitives.dart' show ScriptType;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_enlarged_qr.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:address_view/address_view.dart';
+import 'package:receive/testing.dart';
+import 'package:receive/receive.dart' show ReceiveWallet;
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -22,16 +18,12 @@ import 'package:mocktail/mocktail.dart';
 class _Receive extends Mock implements ReceiveBloc {}
 
 ReceiveState _state() {
-  final wallet = Wallet(
-    origin: 'savings',
+  final wallet = ReceiveWallet(
+    id: 'savings',
     label: 'Savings',
-    network: Network.bitcoinMainnet,
-    xpubFingerprint: '00000000',
+    network: BitcoinNetwork.mainnet,
     scriptType: ScriptType.bip84,
-    xpub: '',
-    externalPublicDescriptor: '',
-    internalPublicDescriptor: '',
-    signer: SignerEntity.local,
+    signsLocally: true,
     signerDevice: null,
     balanceSat: BigInt.zero,
   );

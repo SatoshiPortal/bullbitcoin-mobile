@@ -96,6 +96,27 @@ adb pull /data/app/com.bullbitcoin.mobile-.../split_config.arm64_v8a.apk ~/bullb
 
 Then pass `--apk ~/bullbitcoin-splits/` to the script.
 
+## Verifying the release signature
+
+| | Fingerprint |
+|---|---|
+| Primary key (Vishal Menon, [i5hi](https://github.com/i5hi)) | `BC5A D8A2 6AAC D383 EF63  0D45 5AE8 AC51 D171 F109` |
+| Signing subkey | `7247 8AF1 8BD0 F955 3A16  B9F1 9F4E 17C3 203E 0D49` |
+
+The same key is on [keyserver.ubuntu.com](https://keyserver.ubuntu.com/pks/lookup?search=0x72478AF18BD0F9553A16B9F19F4E17C3203E0D49&fingerprint=on&op=index) and at <https://github.com/i5hi.gpg>. Compare the fingerprints there with the ones above before trusting the copy in this repository: whoever can change this file can change this page too.
+
+Download the APK, `HASHSUMS256` and `HASHSUMS256.asc` of a release into the root of a checkout of this repository, then run from that directory:
+
+```bash
+gpg --no-default-keyring --keyring ./bull-release.kbx --import keys/i5hi.asc
+gpg --no-default-keyring --keyring ./bull-release.kbx --status-fd 1 \
+  --verify HASHSUMS256.asc HASHSUMS256 \
+  | grep '^\[GNUPG:\] VALIDSIG 72478AF18BD0F9553A16B9F19F4E17C3203E0D49 '
+sha256sum --ignore-missing --check HASHSUMS256
+```
+
+The dedicated keyring holds only this key, so the `grep` prints a `VALIDSIG` line, and exits with success, only when the signing subkey above made the signature. `gpg` also warns that the key is not certified with a trusted signature: that is expected for a key you have not signed yourself, and is why the fingerprint is checked explicitly. `sha256sum` must then report `OK` for the APK (on macOS, `shasum -a 256 --ignore-missing --check HASHSUMS256`).
+
 ## Known gaps that need infra/org access to close
 
 These came out of a full reproducibility audit (2026-07) but require access

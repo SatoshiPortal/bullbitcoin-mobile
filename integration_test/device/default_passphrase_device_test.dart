@@ -1,25 +1,24 @@
+import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
+import 'package:secrets/storage.dart';
+import 'package:bull_recoverbull/storage.dart';
+import 'package:backups/testing.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+
 import '../initialization_result.dart';
 
 import 'dart:math';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:access/access.dart';
 import 'package:access/testing.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
+import 'package:bb_mobile/features/onboarding/wallet_bindings.dart';
+import 'package:onboarding/onboarding.dart';
+import 'package:onboarding/setup.dart';
+import 'package:preferences/preferences.dart' as preferences;
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_backup_passphrase_usecase.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -185,12 +184,8 @@ void main({bool isInitialized = false}) {
       expect(bitcoin.external, contains(secret.id.hex));
       expect(liquid, contains(secret.id.hex));
 
-      final verification = const VerifyBackupPassphraseUsecase();
-      expect(
-        (await verification.execute(secret, 'wrong') as Ok).value,
-        isFalse,
-      );
-      expect((await verification.execute(secret, phrase) as Ok).value, isTrue);
+      expect(custodyValue(await secret.verify.passphrase('wrong')), isFalse);
+      expect(custodyValue(await secret.verify.passphrase(phrase)), isTrue);
 
       final backup = custodyValue(await secret.backup.recoverbull());
       expect(
@@ -439,14 +434,22 @@ void registerPhysicalRecoveryTests() {
   testWidgets('physical default recovery and backup passphrase on device', (
     tester,
   ) async {
-    final wallets = locator<WalletRepository>();
-    final existing = await wallets.getWallets(onlyDefaults: true);
-    final prior = switch (existing) {
-      Ok(:final value) => value,
-      Err(:final failure) => fail(
-        'default wallet read failed: ${failure.runtimeType}',
-      ),
-    };
+    final inventory = locator<SecretsInventory>();
+    Future<List<WalletRegistration>> readDefaults() async {
+      final wallets = requireValue(
+        await inventory.listWallets(),
+        'read the wallet inventory',
+      );
+      return [
+        for (final wallet in wallets.where((wallet) => wallet.isDefault))
+          requireValue(
+            await inventory.readWallet(wallet.id),
+            'read the default wallet',
+          ),
+      ];
+    }
+
+    final prior = await readDefaults();
     // This test creates persistent defaults; never touch a populated app.
     expect(prior.isEmpty, isTrue, reason: 'requires a dedicated empty app');
 
@@ -456,17 +459,23 @@ void registerPhysicalRecoveryTests() {
       bip39.Language.english,
     ).words;
     const phrase = 'synthetic passphrase é';
-    final onboarding = locator<OnboardingBloc>();
+    final wallets = bindOnboardingWallets(locator);
+    final onboarding = OnboardingFeature.mount(
+      createWallet: wallets.create,
+      recoverWallet: wallets.recover,
+      walletImport: locator<ImportFeature>(),
+      onWalletReady: (context) => context.goNamed(WalletRoute.walletHome.name),
+      languageOf: (_) => preferences.Language.unitedStatesEnglish,
+      changeLanguage: (_, _) {},
+      logo: const SizedBox.shrink(),
+      background: AssetImage(Assets.backgrounds.bgLong.path),
+      encryptedBackupIcon: AssetImage(Assets.misc.encryptedVault.path),
+      physicalBackupIcon: AssetImage(Assets.misc.physicalBackup.path),
+    );
     final router = GoRouter(
-      initialLocation: '/',
+      initialLocation: OnboardingNavigation.physicalRecoveryPath,
       routes: [
-        GoRoute(
-          path: '/',
-          builder: (_, _) => BlocProvider.value(
-            value: onboarding,
-            child: const OnboardingPhysicalRecovery(),
-          ),
-        ),
+        onboarding.route,
         GoRoute(
           name: WalletRoute.walletHome.name,
           path: WalletRoute.walletHome.path,
@@ -524,35 +533,28 @@ void registerPhysicalRecoveryTests() {
         tester,
         () => find.text('DEVICE_WALLET_READY').evaluate().isNotEmpty,
       );
-      final read = await wallets.getWallets(onlyDefaults: true);
-      final created = switch (read) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail(
-          'wallet read failed: ${failure.runtimeType}',
-        ),
-      };
-      expect(created.length, 2);
-      expect(created.where((wallet) => wallet.network.isBitcoin).length, 1);
-      expect(created.where((wallet) => wallet.network.isLiquid).length, 1);
+      final created = await readDefaults();
+      expect(created, hasLength(2));
       expect(
-        created.map((wallet) => wallet.masterFingerprint).toSet().length,
-        1,
+        created.where((wallet) => wallet.network is BitcoinNetwork),
+        hasLength(1),
       );
+      expect(
+        created.where((wallet) => wallet.network is LiquidNetwork),
+        hasLength(1),
+      );
+      final fingerprints = created
+          .map((wallet) => wallet.masterFingerprint)
+          .toSet();
+      expect(fingerprints, hasLength(1));
+      final fingerprint =
+          fingerprints.single ?? fail('missing wallet fingerprint');
       final secrets = locator<Secrets>();
-      final secret = custodyValue(
-        await secrets.fetch(Fingerprint(created.first.masterFingerprint)),
-      );
+      final secret = custodyValue(await secrets.fetch(fingerprint));
       expect(secret.info.hasPassphrase, isTrue);
       expect(custodyValue(await secret.verify.passphrase(phrase)), isTrue);
 
-      backupBloc = TestWalletBackupBloc(
-        completeBackupVerificationUsecase:
-            locator<CompleteBackupVerificationUsecase>(),
-        loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
-        getSecretFromFingerprintUsecase:
-            locator<GetSecretFromFingerprintUsecase>(),
-        verifyBackupPassphraseUsecase: locator<VerifyBackupPassphraseUsecase>(),
-      )..add(const LoadWallets());
+      backupBloc = _deviceBackupBloc()..add(const LoadWallets());
       final selectedBloc = backupBloc;
       await tester.pumpWidget(
         MaterialApp(
@@ -562,7 +564,10 @@ void registerPhysicalRecoveryTests() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider.value(
             value: selectedBloc,
-            child: VerifyMnemonicScreen(onTestSucceeded: (_) {}),
+            child: VerifyMnemonicScreen(
+              onTestSucceeded: (_) {},
+              successImage: AssetImage(Assets.animations.successTick.path),
+            ),
           ),
         ),
       );
@@ -602,7 +607,6 @@ void registerPhysicalRecoveryTests() {
     } finally {
       await tester.pumpWidget(const SizedBox.shrink());
       router.dispose();
-      await onboarding.close();
       await backupBloc?.close();
     }
   }, timeout: const Timeout(Duration(minutes: 4)));
@@ -612,13 +616,7 @@ void registerReturnNavigationTest() {
   testWidgets('reauthentication Back only closes the Navigator gate', (
     tester,
   ) async {
-    final bloc = TestWalletBackupBloc(
-      completeBackupVerificationUsecase:
-          locator<CompleteBackupVerificationUsecase>(),
-      loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
-      getSecretFromFingerprintUsecase:
-          locator<GetSecretFromFingerprintUsecase>(),
-    )..add(const LoadWallets());
+    final bloc = _deviceBackupBloc()..add(const LoadWallets());
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -626,6 +624,7 @@ void registerReturnNavigationTest() {
           builder: (_, _) => BlocProvider.value(
             value: bloc,
             child: ShowMnemonicScreen(
+              successImage: AssetImage(Assets.animations.successTick.path),
               onTestSucceeded: (_) {},
               access: const _DeviceCancelUnlock(),
             ),
@@ -667,3 +666,12 @@ void registerReturnNavigationTest() {
     }
   });
 }
+
+TestWalletBackupBloc _deviceBackupBloc() => createBackupBloc(
+  locator<Secrets>(),
+  locator<SecretsInventory>(),
+  locator<ActiveEnvironmentReader>(),
+  (network) => locator<RecoverBullWalletBackups>(
+    instanceName: network.env == NetworkEnv.regtest ? 'regtest' : null,
+  ),
+);

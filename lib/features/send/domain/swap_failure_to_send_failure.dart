@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:send/send.dart';
 
 SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
     switch (failure) {

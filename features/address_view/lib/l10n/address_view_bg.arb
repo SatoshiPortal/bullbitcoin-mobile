@@ -1,0 +1,60 @@
+{
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "okButton": "ОК",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewAddressesTitle": "Адреси",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "addressCardUsedLabel": "Използван",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "addressCardBalanceLabel": "Баланс: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "addressCardUnusedLabel": "Неизползван",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "addressCardIndexLabel": "Индекс: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "addressViewChangeType": "Промяна",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "addressViewReceiveType": "Получаване",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewerTitle": "Адрес",
+  "viewerTapToCopy": "Натиснете за копиране",
+  "viewerViewInExplorer": "Виж в експлорър",
+  "viewerCopyLink": "Копиране на връзка",
+  "addressViewTitle": "Детайли за адреса",
+  "addressViewAddress": "Адрес",
+  "addressViewBalance": "Баланс",
+  "addressViewTransactions": "Транзакции",
+  "addressViewCopyAddress": "Копирай адреса",
+  "addressViewShowQR": "Покажи QR код",
+  "addressViewNoAddressesFound": "Не са намерени адреси",
+  "addressViewChangeAddressesComingSoon": "Ресто адресите очаквайте скоро",
+  "addressViewChangeAddressesDescription": "Показва ресто адресите на портфейла",
+  "viewerAddressTab": "Адрес",
+  "viewerPaymentUriTab": "URI за плащане",
+  "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
+  "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
+  "copiedToClipboard": "Копирано в клипборда",
+  "sendErrorInvalidAddressOrInvoice": "Невалиден адрес за плащане на Биткойн или фактура",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "exchangeDcaAddressLabelLiquid": "Liquid адрес",
+  "exchangeDcaAddressLabelLightning": "Lightning адрес"
+}

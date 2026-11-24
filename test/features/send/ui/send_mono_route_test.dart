@@ -5,12 +5,11 @@ import 'dart:async';
 // The legacy screen already has a public shell import target.
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
+import 'package:satoshifier/payment_request.dart';
+import 'package:send/send.dart';
 import 'package:primitives/primitives.dart' show Sats, ScriptType;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';

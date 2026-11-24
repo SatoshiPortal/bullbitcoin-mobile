@@ -1,15 +1,14 @@
+import 'package:bull_exchange/testing.dart';
+import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockOrderRepository extends Mock implements ExchangeOrderRepository {}
+class _MockOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -22,9 +21,46 @@ class _MockBuyOrder extends Mock implements BuyOrder {}
 class _MockLogger extends Mock implements Logger {}
 
 void main() {
+  test(
+    'an environment change refuses payout before Payjoin or Exchange',
+    () async {
+      final orders = _MockOrders();
+      final settings = _MockSettingsRepository();
+      final receiver = _MockPayjoinReceiver();
+      final policy = _MockPayjoinPolicyAccess();
+      when(settings.fetch).thenAnswer(
+        (_) async => const Ok(
+          SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
+        ),
+      );
+      final usecase = CreateBuyOrderUsecase(
+        exchange: exchangeForTesting(orders: (_) => orders),
+        settingsRepository: settings,
+        payjoinReceiver: receiver,
+        payjoinPolicy: policy,
+      );
+      final result = await usecase.execute(
+        toAddress: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        isLiquid: false,
+        isOwner: true,
+        expectedEnvironment: Environment.mainnet,
+      );
+      expect(result, isA<Err<BuyOrder, BuyFailure>>());
+      verifyZeroInteractions(policy);
+      verifyZeroInteractions(receiver);
+      verifyZeroInteractions(orders);
+    },
+  );
+
   test('regtest refuses creation before backend or payjoin access', () async {
-    final mainnet = _MockOrderRepository();
-    final testnet = _MockOrderRepository();
+    final mainnet = _MockOrders();
+    final testnet = _MockOrders();
     final settings = _MockSettingsRepository();
     final receiver = _MockPayjoinReceiver();
     final policy = _MockPayjoinPolicyAccess();
@@ -39,8 +75,10 @@ void main() {
     );
     final result =
         await CreateBuyOrderUsecase(
-          mainnetExchangeOrderRepository: mainnet,
-          testnetExchangeOrderRepository: testnet,
+          exchange: exchangeForTesting(
+            orders: (environment) =>
+                environment == ExchangeEnvironment.testnet ? testnet : mainnet,
+          ),
           settingsRepository: settings,
           payjoinReceiver: receiver,
           payjoinPolicy: policy,
@@ -77,12 +115,104 @@ void main() {
     );
   });
 
+  for (final stale in [false, true]) {
+    test('a refused buy cleans up only a known orphan: stale=$stale', () async {
+      const address = 'tb1qexampleaddress';
+      const endpoint = 'bitcoin:$address?pj=https://payjoin.example.invalid';
+      const sessionId = 'synthetic-session';
+      final orders = _MockOrders();
+      final settings = _MockSettingsRepository();
+      final receiver = _MockPayjoinReceiver();
+      final policy = _MockPayjoinPolicyAccess();
+      final session = PayjoinReceiverSession(
+        status: PayjoinStatus.started,
+        id: sessionId,
+        network: BitcoinNetwork.testnet,
+        walletId: 'wallet-1',
+        createdAt: DateTime.utc(2026, 11, 23),
+        expiresAt: DateTime.utc(2026, 11, 23, 0, 6),
+        payjoinUri: endpoint,
+      );
+      when(settings.fetch).thenAnswer(
+        (_) async => const Ok(
+          SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
+        ),
+      );
+      when(policy.load).thenAnswer(
+        (_) async => Ok(
+          PayjoinPolicy(
+            sendEnabled: false,
+            receiveEnabled: false,
+            buyEnabled: true,
+            sellEnabled: false,
+            minimumAmount: PayjoinPolicy.minimumAllowedAmount,
+            sessionLifetime: PayjoinPolicy.minimumSessionLifetime,
+          ),
+        ),
+      );
+      when(() => receiver.start(any())).thenAnswer((_) async => Ok(session));
+      when(() => receiver.cancel(sessionId))
+          .thenAnswer((_) async => const Ok(null));
+      when(
+        () => orders.placeBuyOrder(
+          toAddress: address,
+          orderAmount: const FiatAmount(100),
+          currency: FiatCurrency.cad,
+          network: OrderBitcoinNetwork.bitcoin,
+          isOwner: true,
+          payjoinBip21: endpoint,
+        ),
+      ).thenAnswer(
+        (_) async => stale
+            ? const Err(ExchangeOperationStaleFailure())
+            : const Err(ExchangeNotAuthenticatedFailure()),
+      );
+
+      final result =
+          await CreateBuyOrderUsecase(
+            exchange: exchangeForTesting(orders: (_) => orders),
+            settingsRepository: settings,
+            payjoinReceiver: receiver,
+            payjoinPolicy: policy,
+          ).execute(
+            toAddress: address,
+            orderAmount: const FiatAmount(100),
+            currency: FiatCurrency.cad,
+            isLiquid: false,
+            isOwner: true,
+            payjoinWalletId: 'wallet-1',
+            payjoinAmountSat: 10000,
+          );
+
+      expect(result, isA<Err<BuyOrder, BuyFailure>>());
+      verify(
+        () => orders.placeBuyOrder(
+          toAddress: address,
+          orderAmount: const FiatAmount(100),
+          currency: FiatCurrency.cad,
+          network: OrderBitcoinNetwork.bitcoin,
+          isOwner: true,
+          payjoinBip21: endpoint,
+        ),
+      ).called(1);
+      if (stale) {
+        verifyNever(() => receiver.cancel(sessionId));
+      } else {
+        verify(() => receiver.cancel(sessionId)).called(1);
+      }
+    });
+  }
+
   // The receiver starts before the exchange's five-minute payout window. It
   // needs a short margin without surviving for the protocol's 24-hour default.
   test(
     'the payjoin payout session expires with the exchange, not in 24h',
     () async {
-      final orders = _MockOrderRepository();
+      final orders = _MockOrders();
       final settings = _MockSettingsRepository();
       final receiver = _MockPayjoinReceiver();
       final policy = _MockPayjoinPolicyAccess();
@@ -117,7 +247,7 @@ void main() {
           isOwner: true,
           payjoinBip21: null,
         ),
-      ).thenAnswer((_) async => _MockBuyOrder());
+      ).thenAnswer((_) async => Ok(_MockBuyOrder()));
 
       StartPayjoinReceiver? captured;
       when(() => receiver.start(any())).thenAnswer((invocation) async {
@@ -126,8 +256,7 @@ void main() {
       });
 
       final usecase = CreateBuyOrderUsecase(
-        mainnetExchangeOrderRepository: orders,
-        testnetExchangeOrderRepository: orders,
+        exchange: exchangeForTesting(orders: (_) => orders),
         settingsRepository: settings,
         payjoinReceiver: receiver,
         payjoinPolicy: policy,
@@ -169,7 +298,7 @@ void main() {
     final logger = _MockLogger();
     log = logger;
     addTearDown(() => log = previousLogger);
-    final orders = _MockOrderRepository();
+    final orders = _MockOrders();
     final settings = _MockSettingsRepository();
     final receiver = _MockPayjoinReceiver();
     final policy = _MockPayjoinPolicyAccess();
@@ -204,7 +333,7 @@ void main() {
         isOwner: true,
         payjoinBip21: null,
       ),
-    ).thenAnswer((_) async => _MockBuyOrder());
+    ).thenAnswer((_) async => Ok(_MockBuyOrder()));
     // Foreign exception text can quote the payment request it failed on.
     when(() => receiver.start(any())).thenThrow(
       StateError('bitcoin:tb1qexampleaddress?pj=https://private-directory'),
@@ -212,8 +341,7 @@ void main() {
 
     final result =
         await CreateBuyOrderUsecase(
-          mainnetExchangeOrderRepository: orders,
-          testnetExchangeOrderRepository: orders,
+          exchange: exchangeForTesting(orders: (_) => orders),
           settingsRepository: settings,
           payjoinReceiver: receiver,
           payjoinPolicy: policy,

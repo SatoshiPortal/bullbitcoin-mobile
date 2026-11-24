@@ -1,4 +1,4 @@
-import 'package:secrets/secrets.dart';
+import 'package:access/src/domain/access_inventory.dart';
 import 'package:access/src/domain/usecases/delete_pin_code_usecase.dart';
 import 'package:access/src/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:access/src/domain/usecases/set_pin_code_usecase.dart';
@@ -13,19 +13,14 @@ class PinCodeLocator {
   }) {
     // Use cases
     locator.registerFactory<SetPinCodeUsecase>(
-      () =>
-          SetPinCodeUsecase(accessKeychain: locator<Secrets>().accessKeychain),
+      () => SetPinCodeUsecase(inventory: locator<AccessInventory>()),
     );
 
     locator.registerFactory<DeletePinCodeUsecase>(
-      () => DeletePinCodeUsecase(
-        accessKeychain: locator<Secrets>().accessKeychain,
-      ),
+      () => DeletePinCodeUsecase(inventory: locator<AccessInventory>()),
     );
     locator.registerFactory<IsPinCodeSetUsecase>(
-      () => IsPinCodeSetUsecase(
-        accessKeychain: locator<Secrets>().accessKeychain,
-      ),
+      () => IsPinCodeSetUsecase(inventory: locator<AccessInventory>()),
     );
 
     // Blocs

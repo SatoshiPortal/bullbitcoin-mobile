@@ -97,5 +97,1484 @@
   "notLoggedInTitle": "You Are Not Logged in In",
   "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
   "retry": "Retry",
-  "settingsAppSettingsTitle": "App Ayarları"
+  "settingsAppSettingsTitle": "App Ayarları",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Bu ayar kaydedilemedi. Lütfen tekrar deneyin.",
+  "fundExchangeSepaDescriptionExactly": "tam olarak.",
+  "fundExchangeInstantSepaInfo": "Sadece 20.000 € altındaki işlemler için kullanın. Daha büyük işlemler için, Düzenli SEPA seçeneği kullanın.",
+  "fundExchangeETransferLabelSecretAnswer": "Gizli Cevap",
+  "fundExchangeLabelBicCode": "BIC kodu",
+  "fundExchangeCanadaPostStep6": "6. Nakit size bir makbuz verecek, ödeme kanıtı olarak tutacaktır",
+  "fundExchangeMethodRegularSepa": "Düzenli SEPAPA",
+  "fundExchangeSinpeLabelPhone": "Bu telefon numarasına gönderin",
+  "fundExchangeCrIbanCrcTransferCodeWarning": "Ödeme yaparken transfer kodunu \"message\" veya \"reason\" veya \"description\" olarak eklemeniz gerekir. Bu kodu eklemeyi unutursanız, ödemeniz reddedilebilir.",
+  "fundExchangeSinpeTitle": "SINPE Transfer Transfer",
+  "fundExchangeCanadaPostStep5": "5. Nakit veya debit kartıyla ödeme yapın",
+  "fundExchangeInfoPaymentDescription": "Ödeme tanımında, transfer kodunuzu ekleyin.",
+  "fundExchangeCrIbanCrcDescriptionBold": "tam",
+  "fundExchangeLabelRecipientAddress": "Resepsiyon",
+  "fundExchangeCrIbanCrcTitle": "Banka Transfer (CRC)",
+  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 30.000 € Aşağıdaki işlemler için",
+  "fundExchangeSepaDescription": "Aşağıdaki ayrıntıları kullanarak banka hesabınızdan bir SEPA transfer gönderin ",
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Transfer kodunuz.",
+  "fundExchangeLabelBankAccountCountry": "Banka hesabı ülke",
+  "fundExchangeLabelTransitNumber": "Transit sayısı",
+  "fundExchangeLabelMemo": "Memo",
+  "fundExchangeBankTransferWireTitle": "Banka transferi (tel)",
+  "fundExchangeWarningTactic5": "Bitcoin’i başka bir platformda göndermek istiyorlar",
+  "fundExchangeETransferLabelEmail": "E-transferi bu e-postaya gönderin",
+  "fundExchangeOnlineBillPaymentHelpBillerName": "Bu şirketi bir maaş olarak ekleyin - Bull Bitcoin'in ödeme işlemcisi",
+  "fundExchangeAccountTitle": "Hesabınızı finanse edin",
+  "fundExchangeWarningTactic1": "Yatırım konusunda umut verici getiriler",
+  "fundExchangeETransferTitle": "E-Transfer ayrıntıları",
+  "fundExchangeMethodBankTransferWire": "Banka Transfer (Wire veya EFT)",
+  "fundExchangeJurisdictionCostaRica": "Costa Rika",
+  "fundExchangeContinueButton": "Devam etmeye devam et",
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Resmi şirket adını kullanın. \"Bull Bitcoin\" kullanmayın.",
+  "fundExchangeArsBankTransferTitle": "Banka Transfer",
+  "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
+  "fundExchangeCrIbanUsdLabelIban": "IBAN Hesap Numarası (yalnızca ABD doları)",
+  "fundExchangeInfoTransferCode": "Ödeme yaparken transfer kodunu \"message\" veya \"reason\" olarak eklemeniz gerekir.",
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Ödeme Açıklama",
+  "fundExchangeTitle": "Fonlama Fonu",
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Fonlar hesap bakiyenize eklenecektir.",
+  "fundExchangeETransferLabelSecretQuestion": "Gizli soru",
+  "fundExchangeHelpBeneficiaryName": "Resmi şirket adını kullanın. \"Bull Bitcoin\" kullanmayın.",
+  "fundExchangeWarningTactic7": "Bu uyarı hakkında endişelenmediğinizi söylüyorlar",
+  "fundExchangeMethodCanadaPost": "Kanada Post'ta Kişi Nakit veya Debit",
+  "fundExchangeSepaTitle": "SEPA transfer",
+  "fundExchangeCanadaPostStep1": "1. Herhangi bir Kanada Post konumuna git",
+  "fundExchangeLabelBeneficiaryAddress": "Beneficiary address",
+  "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
+  "fundExchangeWarningTactic6": "Ekranınızı paylaşmanızı istiyorlar",
+  "fundExchangeCrIbanUsdDescriptionBold": "tam",
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE kullanarak Transfer Kolonleri",
+  "fundExchangeArsBankTransferDescription": "Aşağıdaki tam Arjantin banka bilgilerini kullanarak banka hesabınızdan bir banka transfer gönderin.",
+  "fundExchangeCrIbanUsdDescription": "Banka hesabınızdan aşağıdaki ayrıntıları kullanarak bir banka transfer gönderin ",
+  "fundExchangeLabelBankAddress": "Bankamızın Adresi",
+  "fundExchangeLabelBankCountry": "Banka Ülke Bankası",
+  "fundExchangeBankTransferSubtitle": "Banka hesabınızdan bir banka transfer gönderin",
+  "fundExchangeMethodOnlineBillPayment": "Online Bill Payment",
+  "fundExchangeWarningConfirmation": "Bitcoin'i başka biri tarafından satın almamı istemediğimi doğrulıyorum.",
+  "fundExchangeLabelCvu": "CVU",
+  "fundExchangeLabelRecipientName": "Recipient name",
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "ABD Doları transfer fonları (USD)",
+  "fundExchangeMethodRegularSepaSubtitle": "Sadece 30.000 € üzerinde daha büyük işlemler için kullanın",
+  "fundExchangeLabelTransferCode": "Transfer kodu (buyu ödeme açıklaması olarak ekleyin)",
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeSpeiTitle": "SPEI transfer",
+  "fundExchangeRegularSepaInfo": "Sadece 20.000 € üzerindeki işlemler için kullanın. Daha küçük işlemler için, Instant SEPA seçeneği kullanın.",
+  "fundExchangeDoneButton": "Done",
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "Slowest seçenek, ancak online bankacılık (3-4 iş günleri) ile yapılabilir",
+  "fundExchangeLabelBankAccountDetails": "Banka hesabı detayları",
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Transfer kodunuz.",
+  "fundExchangeLabelRecipientNameArs": "Recipient Name",
+  "fundExchangeCanadaPostStep2": "2. \"Loadhub\" QR kodunu taramak için nakit isteyin",
+  "fundExchangeCrIbanUsdTitle": "Banka Transfer (USD)",
+  "fundExchangeETransferLabelBeneficiaryName": "Bunu E-transfer beneficiary adı olarak kullanın",
+  "fundExchangeWarningDescription": "Birisi size Bitcoin veya \"yardım\" satın almanızı istiyorsa, dikkatli olun, sizi aldatmaya çalışabilirler!",
+  "fundExchangeJurisdictionEurope": "Avrupa (SEPA)",
+  "fundExchangeBankTransferWireDescription": "Aşağıdaki Bull Bitcoin'in banka bilgilerini kullanarak banka hesabınızdan bir tel transfer gönderin. Bankanız bu ayrıntıların sadece bazı kısımları gerektirebilir.",
+  "fundExchangeWarningTactic4": "Bitcoin'i onların adresine göndermelerini istiyorlar",
+  "fundExchangeSinpeDescription": "SINPE kullanarak Transfer Kolonleri",
+  "fundExchangeMethodCanadaPostSubtitle": "Kişide ödeme yapmayı tercih edenler için en iyisi",
+  "fundExchangeSinpeDescriptionBold": "reddedilecektir.",
+  "fundExchangeMethodBankTransferWireSubtitle": "Daha büyük miktarlar için en iyi ve en güvenilir seçenek (same veya ertesi gün)",
+  "fundExchangeCanadaPostStep4": "4. Paraier, bir hükümet tarafından yazılmış bir kimlik parçasını görmek ve ID'nizin isminin Bull Bitcoin hesabınızı oynadığını doğrulamasını isteyecektir",
+  "fundExchangeCrIbanCrcLabelIban": "IBAN Hesap Numarası (Colones only)",
+  "fundExchangeOnlineBillPaymentDescription": "Aşağıdaki bilgileri kullanarak bankanızın online fatura ödeme özelliği aracılığıyla gönderdiğiniz herhangi bir miktar, 3-4 iş günü içinde Bull Bitcoin hesap bakiyenize kredi verilecek.",
+  "fundExchangeETransferDescription": "Aşağıdaki bilgileri kullanarak bankanızdan gönderdiğiniz herhangi bir miktar, birkaç dakika içinde Bull Bitcoin hesap bakiyenize aktarılacaktır.",
+  "fundExchangeLabelClabe": "CLABE",
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Kosta Rika (USD)",
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR kodu",
+  "fundExchangeSinpeLabelRecipientName": "Recipient Name",
+  "fundExchangeMethodInstantSepa": "Anında ve standart SEPA transferi",
+  "fundExchangeCrIbanUsdTransferCodeWarning": "Ödeme yaparken transfer kodunu \"message\" veya \"reason\" veya \"description\" olarak eklemeniz gerekir. Bu kodu eklemeyi unutursanız, ödemeniz reddedilebilir.",
+  "fundExchangeSpeiInfo": "SPEI transferini kullanarak bir depozito yapın (instant).",
+  "fundExchangeMethodEmailETransferSubtitle": "En yakın ve en hızlı yöntem (instant)",
+  "fundExchangeErrorLoadingDetails": "Ödeme detayları bu anda yüklenemez. Lütfen geri dön ve tekrar deneyin, başka bir ödeme yöntemi seçin veya daha sonra geri dönün.",
+  "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
+  "fundExchangeErrorTitleRcpPo404": "Ödeme Seçeneği Mevcut Değil",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Kullanılamıyor",
+  "fundExchangeErrorTitleOrdKyc400": "KYC Gereksinimleri Eksik",
+  "fundExchangeErrorOrdKyc400": "Bu işlem için gerekli KYC gereksinimlerine sahip değilsiniz",
+  "fundExchangeErrorOrdCsrcp400": "Lütfen bu SEPA alıcısı için sanal ödeme seçeneğini etkinleştirin",
+  "fundExchangeErrorOpeningPaymentLink": "Ödeme bağlantısı açılamadı. Lütfen tekrar deneyin.",
+  "fundExchangeErrorTitleOrdCop400": "Geçersiz COP Fonlama Verisi",
+  "fundExchangeErrorOrdCop400": "COP fonlaması için geçersiz istek verisi",
+  "fundExchangeErrorTitleOrdCsrcp400": "Sanal Ödeme Etkinleştirilmedi",
+  "fundExchangeErrorTitleRcp400": "Geçersiz İstek",
+  "fundExchangeErrorRcp400": "Geçersiz istek",
+  "fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
+  "fundExchangeErrorRcpPo404": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
+  "fundExchangeErrorRcpPosinpe404": "Bu fonlama seçeneğine erişmek için telefon numaranız Kostarika'daki SINPE ağına kayıtlı olmalıdır.",
+  "fundExchangeErrorFetchingBankCodes": "Banka kodları alınırken hata oluştu. Lütfen daha sonra tekrar deneyin.",
+  "fundExchangeSpeiTransfer": "SPEI transfer",
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Resmi şirket adını kullanın. \"Bull Bitcoin\" kullanmayın.",
+  "fundExchangeSinpeAddedToBalance": "Ödeme gönderildikten sonra, hesap bakiyenize eklenecektir.",
+  "fundExchangeSpeiSubtitle": "CLABE kullanarak transfer fonları",
+  "fundExchangeAccountSubtitle": "Ülkenizi ve ödeme yöntemini seçin",
+  "fundExchangeJurisdictionMexico": "Meksika",
+  "fundExchangeLabelSwiftCode": "SWIFT kodu",
+  "fundExchangeCrIbanCrcDescription": "Banka hesabınızdan aşağıdaki ayrıntıları kullanarak bir banka transfer gönderin ",
+  "fundExchangeLabelRoutingNumber": "Routing number",
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Ödeme Açıklama",
+  "fundExchangeInfoBeneficiaryNameLeonod": "Yararlayıcının adı LEONOD olmalıdır. Başka bir şey koyarsanız, ödemeniz reddedilecektir.",
+  "doneButton": "Done",
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Kosta Rikan Colón'daki transfer fonları (CRC)",
+  "fundExchangeCanadaPostStep3": "3. Paraier'e yüklemek istediğiniz miktarı söyleyin",
+  "fundExchangeLabelIban": "IBAN account number",
+  "fundExchangeOnlineBillPaymentLabelBillerName": "Bankanızın bu isim için fatura listesini arayın",
+  "fundExchangeMethodEmailETransfer": "E-Transfer",
+  "fundExchangeLabelBankName": "Banka adı",
+  "fundExchangeInfoBankCountryUk": "Banka ülkemiz Birleşik Krallık'tır.",
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Kosta Rika (CRC)",
+  "fundExchangeLabelBeneficiaryName": "Beneficiary name",
+  "fundExchangeWarningTactic2": "Size bir kredi sunuyorlar",
+  "fundExchangeCanadaPostTitle": "Kanada Post'ta Kişi Nakit veya Debit",
+  "fundExchangeOnlineBillPaymentTitle": "Online Bill Payment",
+  "fundExchangeHelpTransferCode": "Bunu transfer sebebi olarak ekleyin",
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Fonlar hesap bakiyenize eklenecektir.",
+  "fundExchangeRestrictedTitle": "Para yatırma kullanılamıyor",
+  "fundExchangeRestrictedMessage": "Hesabınızda para yatırma kullanılamıyor. Daha fazla bilgi için lütfen destek ile iletişime geçin.",
+  "fundExchangeWarningTitle": "Dolandırıcılar için dikkat edin",
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeCrIbanCrcLabelRecipientName": "Recipient Name",
+  "fundExchangeCanadaPostStep7": "7. Fonlar, 30 dakika içinde Bull Bitcoin hesap bakiyenize eklenecektir",
+  "fundExchangeWarningTactic8": "Hızlı hareket etmen için size baskı yapıyorlar",
+  "fundExchangeBankTransfer": "Banka Transfer",
+  "fundExchangeWarningTactic3": "Borç veya vergi koleksiyonu için çalıştıklarını söylüyorlar",
+  "fundExchangeWarningTacticsTitle": "Common dolandırıcı taktikleri",
+  "fundExchangeHelpBeneficiaryAddress": "Resmi adresimiz, bu durumda bankanız tarafından gereklidir",
+  "fundExchangeBankTransferWireTimeframe": "Gönderdiğiniz herhangi bir fon, Bull Bitcoin'inize 1-2 iş gün içinde eklenecektir.",
+  "fundExchangeLabelInstitutionNumber": "Kurumsal sayı sayısı",
+  "fundExchangeSpeiDescription": "CLABE kullanarak transfer fonları",
+  "fundExchangeCrIbanUsdLabelRecipientName": "Recipient Name",
+  "fundExchangeScamConsentError": "Onayınız kaydedilemedi. Lütfen tekrar deneyin.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Kolombiya",
+  "fundExchangeCopDailyLimitWarning": "Günlük işlem limitinizi aşarsanız işlem başarısız olur. Müşteri desteğiyle iletişime geçmeniz gerekecektir.",
+  "fundExchangeCopSenderName": "Gönderen Adı",
+  "fundExchangeCopIssuingBank": "Banka",
+  "fundExchangeCopSelectBankError": "Lütfen bir banka seçin",
+  "fundExchangeCopAmount": "Miktar",
+  "fundExchangeCopEnterAmountError": "Lütfen bir miktar girin",
+  "fundExchangeCopValidAmountError": "Lütfen geçerli bir miktar girin",
+  "fundExchangeCopGeneratePaymentLink": "Ödeme Bağlantısı Oluştur",
+  "fundExchangeCopRedirectMessage": "Ödemeyi yapmak için harici bir sayfaya yönlendirileceksiniz.",
+  "fundExchangeCopOpenPaymentLink": "Ödeme Bağlantısını Aç",
+  "fundExchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
+  "fundExchangeMethodConfidentialSepa": "Gizli SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Parayı gizlice yatırmak için kişisel bir sanal IBAN",
+  "fundExchangeSinpeWarningNoBitcoin": "Koymayın",
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "Bu eşsiz hesap numarası sadece sizin için yaratıldı",
+  "fundExchangeSinpeWarningNoBitcoinDescription": " ödeme açıklamasında \"Bitcoin\" veya \"Crypto\" kelimesi. Bu, ödemenizi engelleyecektir.",
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Bunu hesap numarası olarak ekleyin",
+  "exchangeCurrencyDropdownTitle": "Para Seç",
+  "exchangeAmountInputValidationInvalid": "Invalid miktarı",
+  "exchangeAmountInputValidationInsufficient": "Yeterli bakiye",
+  "exchangeAmountInputValidationEmpty": "Lütfen bir miktar girin",
+  "exchangeCurrencyDropdownValidation": "Lütfen bir para birimi seçin",
+  "exchangeAmountInputTitle": "Girin",
+  "exchangeAmountInputValidationZero": "Miktarı sıfırdan daha büyük olmalıdır",
+  "save": "Kaydet",
+  "exchangeBitcoinWalletsDescription": "Otomatik Bitcoin geri çekilmeleri için varsayılan cüzdan adreslerini ayarlayın.",
+  "exchangeBitcoinWalletsEnterAddressHint": "Enter address address address",
+  "exchangeDcaAddressLabelLiquid": "Sıvı Adres",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Adres",
+  "delete": "Delete",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin adresi",
+  "cancel": "Cancel",
+  "exchangeBitcoinWalletsSaveSuccess": "Cüzdan adresi başarıyla kurtardı",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Sıvı Adres",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Yıldırım (LN adresi)",
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "settingsTermsOfServiceTitle": "Hizmet Şartları",
+  "continueButton": "Devam etmeye devam et",
+  "autoBuyTitle": "Otomatik Alım",
+  "autoBuyDescription": "Hesabınıza her para yatırdığınızda otomatik olarak Bitcoin satın alın",
+  "autoBuyActivate": "Otomatik alımı etkinleştir",
+  "autoBuyDeactivate": "Otomatik alımı devre dışı bırak",
+  "autoBuyCancelTitle": "Otomatik alım iptal edilsin mi?",
+  "autoBuyCancelMessage": "Hesabınıza bir sonraki para yüklemenizde otomatik olarak Bitcoin satın alınmayacak.",
+  "autoBuyDeactivateConfirm": "Evet, devre dışı bırak",
+  "autoBuyHowItWorks": "Nasıl çalışır",
+  "autoBuyConnectWallet": "Bitcoin, Lightning veya Liquid cüzdanınızı bağlayın",
+  "autoBuyPurchaseCreated": "Bull Bitcoin hesabınıza her para yüklediğinizde otomatik olarak bir Bitcoin alımı oluşturulur.",
+  "autoBuyBitcoinSent": "Bitcoin doğrudan kendi cüzdanınıza gönderilir.",
+  "autoBuyRiskDisclaimer": "Emrin gerçekleşeceği garanti edilemez. Para yatırma ile alım arasındaki gecikmeler veya fiyat değişimleri geçerli kuru değiştirebilir.",
+  "autoBuyGetStarted": "Otomatik alıma başlayın",
+  "autoBuyConfirmTitle": "Otomatik Alımı Onayla",
+  "autoBuyInfoMessage": "Hesabınıza eklenen her tutar güncel döviz kuruyla Bitcoin'e dönüştürülür ve cüzdanınıza gönderilir.",
+  "autoBuyAccountUnavailableError": "Bull Bitcoin hesabınız kullanılamıyor. Daha sonra tekrar deneyin.",
+  "autoBuyWalletRequiredError": "En az bir varsayılan Bitcoin, Lightning veya Liquid adresi ekleyin.",
+  "autoBuyUpdateError": "Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.",
+  "exchangeAuthLoginFailedMessage": "Bir hata oluştu, lütfen tekrar giriş yapmaya çalışın.",
+  "exchangeAuthLoginFailedOkButton": "TAMAM TAMAM",
+  "exchangeAuthLoginFailedTitle": "Giriş Başarısız Oldu",
+  "exchangeDcaUnableToGetConfig": "DCA yapılandırması için kullanılamaz",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "exchangeDcaNetworkLiquid": "Sıvı Ağ Ağı",
+  "exchangeDcaNetworkBitcoin": "Bitcoin Network",
+  "exchangeDcaCancelDialogCancelButton": "Cancel",
+  "exchangeDcaActivateTitle": "Activate Recurring Buy",
+  "exchangeDcaCancelDialogConfirmButton": "Evet, deactivate",
+  "exchangeDcaCancelDialogMessage": "Tekrarlanan Bitcoin satın alma planı durdurulacak ve planlanan satınlar sona erecek. Yeniden başlamak için, yeni bir plan kurmak gerekir.",
+  "exchangeDcaFrequencyDay": "gün",
+  "exchangeHomeDepositButton": "Deposit",
+  "exchangeKycCardSubtitle": "İşlem sınırlarını kaldırmak",
+  "exchangeDcaFrequencyWeek": "hafta",
+  "exchangeDcaNetworkLightning": "Lightning Network",
+  "exchangeHomeWithdrawButton": "Withdraw",
+  "exchangeKycLevelLimited": "Sınırlı",
+  "exchangeKycLevelLight": "Işık Işığı",
+  "exchangeDcaFrequencyHour": "saat",
+  "exchangeKycCardTitle": "Tamam your Complete your K",
+  "exchangeDcaCancelDialogTitle": "Bitcoin Recurring Buy?",
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "exchangeDcaDeactivateTitle": "Deactivate Recurring Buy",
+  "exchangeDcaSummaryMessage": "Hesabınızda fon bulunduğu sürece, {network} üzerinden her {frequency} {amount} satın alıyorsunuz.",
+  "exchangeDcaFrequencyMonth": "ay",
+  "settingsScreenTitle": "Ayarlar",
+  "exchangeDcaHideSettings": "Gizle ayarları",
+  "exchangeDcaViewSettings": "View settings",
+  "homeActionBuy": "Satın Al",
+  "homeActionSell": "Sat",
+  "homeActionPay": "Öde",
+  "homeActionTransfer": "Takas",
+  "recipientsSearchHint": "Arama alıcılar isim veya etiket",
+  "recipientsFieldSinpePhoneNumberHint": "Ülke kodu olmadan 8 hane",
+  "recipientsCopDocCcRecipientNumber": "Alıcının cédula numarası",
+  "recipientsCopDocCeRecipientNumber": "Alıcının cédula de extranjería numarası",
+  "recipientsCopDocNitRecipientNumber": "Alıcının vergi kimlik numarası",
+  "recipientsCopDocPassportRecipientNumber": "Alıcının pasaport numarası",
+  "recipientsCopDocTiRecipientNumber": "Alıcının kimlik kartı numarası",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Alıcının nüfus kayıt numarası",
+  "recipientsValidationSinpePhoneCountryCode": "Ülke kodunu (+506) kaldırın. Yalnızca 8 haneli numarayı girin",
+  "recipientsValidationSinpePhoneInvalidChars": "Yalnızca rakam kullanın (harf veya sembol yok)",
+  "recipientsValidationSinpePhoneTooShort": "Telefon numarasının 8 hanesini de girin",
+  "recipientsFieldDocumentType": "Alıcı kimlik türü",
+  "recipientsFieldDocumentNumberHint": "Alıcının kimlik numarasını girin",
+  "recipientsScreenTitle": "Alıcı Seç",
+  "recipientsScreenSubtitle": "Kime ödeme yapıyorsunuz?",
+  "recipientsTabNew": "Yeni Alıcı",
+  "recipientsTabList": "Fiat Alıcılarım",
+  "recipientsPayoutMethod": "Ödeme yöntemi",
+  "recipientsFilterByJurisdiction": "Ülkeye Göre Filtrele:",
+  "recipientsListEmpty": "Alıcı bulunamadı.",
+  "recipientsContinue": "Devam Et",
+  "recipientsJurisdictionAll": "Tüm Ülkeler",
+  "recipientsJurisdictionCanada": "🇨🇦 Kanada",
+  "recipientsJurisdictionEurope": "🇪🇺 Avrupa (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Meksika",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Kosta Rika",
+  "recipientsJurisdictionArgentina": "🇦🇷 Arjantin",
+  "recipientsJurisdictionColombia": "🇨🇴 Kolombiya",
+  "recipientsTypeInteracEmail": "E-posta ile para transferi",
+  "recipientsTypeBillPayment": "Fatura Ödemesi",
+  "recipientsTypeBankTransfer": "Banka Transferi",
+  "recipientsTypeSepa": "SEPA Transferi",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Kart",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Arjantin",
+  "recipientsTypeBankAccountCo": "Banka Hesabı (COP)",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "E-posta",
+  "recipientsInfoPayee": "Alıcı",
+  "recipientsInfoAccount": "Hesap",
+  "recipientsInfoPhone": "Telefon",
+  "recipientsInfoCard": "Kart",
+  "recipientsInfoLabel": "Etiket",
+  "recipientsValidationFieldRequired": "Bu alan boş bırakılamaz",
+  "recipientsLabelOptional": "Etiket (isteğe bağlı)",
+  "recipientsLabelHint": "Bu alıcı için bir etiket girin",
+  "recipientsFieldName": "Ad",
+  "recipientsFieldNameHint": "Alıcı adını girin",
+  "recipientsFieldRecipientNameLabel": "Alıcının adı",
+  "recipientsFieldPhoneNumber": "Telefon Numarası",
+  "recipientsFieldPhoneNumberHint": "Telefon numarasını girin",
+  "recipientsFieldOwnerName": "Hesap Sahibinin Adı",
+  "recipientsFieldOwnerNameHint": "Hesap sahibinin adını girin",
+  "recipientsAccountOwnerQuestion": "Bu hesap kime ait?",
+  "recipientsAccountOwnerMine": "Bu benim hesabım",
+  "recipientsAccountOwnerSomeoneElse": "Bu başka birinin hesabı",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "IBAN girin",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "CLABE numarasını girin",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "CVU/CBU numarasını girin",
+  "recipientsFieldBankInstitution": "Banka Kurumu",
+  "recipientsFieldBankInstitutionPlaceholder": "Banka Kurumu Seçin",
+  "recipientsValidationBankInstitution": "Lütfen bir banka kurumu seçin",
+  "recipientsFieldAccountType": "Hesap Türü",
+  "recipientsAccountTypeSavings": "Tasarruf",
+  "recipientsAccountTypeChecking": "Vadesiz",
+  "recipientsFieldBankAccountNumber": "Banka Hesap Numarası",
+  "recipientsFieldBankAccountNumberHint": "Banka hesap numarasını girin",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "Pasaport",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "Banka Kartı Numarası",
+  "recipientsFieldDebitCardHint": "Banka kartı numarasını girin",
+  "recipientsFieldOwnerNameSinpeHint": "Hesap sahibinin adı burada görünecek",
+  "recipientsValidationSinpeOwner": "Lütfen telefon numarasını doğrulayın",
+  "recipientsFieldEmailAddress": "E-posta Adresi",
+  "recipientsFieldEmailAddressHint": "E-posta adresini girin",
+  "recipientsFieldSecurityQuestion": "Güvenlik Sorusu",
+  "recipientsFieldSecurityQuestionHint": "Güvenlik sorusunu girin (10-40 karakter)",
+  "recipientsFieldSecurityAnswer": "Güvenlik Cevabı",
+  "recipientsFieldSecurityAnswerHint": "Güvenlik cevabını girin",
+  "recipientsValidationSecurityQuestionMin": "Güvenlik sorusu en az 10 karakter olmalıdır",
+  "recipientsCharCounter": "{count}/40 karakter",
+  "recipientsFieldInstitutionCode": "Kurum Kodu",
+  "recipientsFieldInstitutionCodeHint": "Kurum kodunu girin",
+  "recipientsFieldInstitutionNumber": "Kurum Numarası",
+  "recipientsFieldInstitutionNumberHint": "Kurum numarasını girin",
+  "recipientsFieldTransitNumber": "Şube Numarası",
+  "recipientsFieldTransitNumberHint": "Şube numarasını girin",
+  "recipientsFieldAccountNumber": "Hesap Numarası",
+  "recipientsFieldAccountNumberHint": "Hesap numarasını girin",
+  "recipientsFieldDefaultComment": "Varsayılan Açıklama (isteğe bağlı)",
+  "recipientsFieldDefaultCommentHint": "Varsayılan açıklamayı girin",
+  "recipientsFieldCorporateAccount": "Kurumsal hesap",
+  "recipientsFieldFirstName": "Ad",
+  "recipientsFieldFirstNameHint": "Adı girin",
+  "recipientsFieldLastName": "Soyad",
+  "recipientsFieldLastNameHint": "Soyadı girin",
+  "recipientsFieldCorporateName": "Şirket Adı",
+  "recipientsFieldCorporateNameHint": "Şirket adını girin",
+  "recipientsFieldBillerName": "Fatura Kuruluşu Adı",
+  "recipientsFieldBillerNameHint": "Bir fatura kuruluşu arayın ve seçin",
+  "recipientsValidationBillerSearchMin": "Arama yapmak için 3 veya daha fazla karakter girin",
+  "recipientsValidationBillerSelect": "Lütfen listeden bir fatura kuruluşu seçin",
+  "recipientsFieldPayeeAccountNumber": "Alıcı Hesap Numarası",
+  "recipientsErrorLoadFailed": "Alıcılarınız yüklenemedi. Lütfen tekrar deneyin.",
+  "recipientsErrorSaveFailed": "Bu alıcı kaydedilemedi. Bilgileri kontrol edip tekrar deneyin.",
+  "recipientsErrorSinpeLookupFailed": "Bu telefon numarasını doğrulayamadık. Numarayı kontrol edip tekrar deneyin.",
+  "recipientsErrorBillerSearchFailed": "Fatura kurumları aranamadı. Lütfen tekrar deneyin.",
+  "recipientsErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
+  "recipientsListPullToRetry": "Yeniden denemek için aşağı çekin.",
+  "recipientsErrorSavedButNotSelected": "Bu alıcı kaydedildi, ancak devam edemedik. Devam etmek için listenizde bulun.",
+  "recipientsTypeConfidentialSepa": "Gizli SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
+  "recipientsErrorEuResidencyRequired": "Gizli SEPA'yı etkinleştirmek için Avrupa Birliği'nde ikamet ediyor olmanız gerekir.",
+  "recipientsConfidentialSepaActivatingTitle": "Alıcı etkinleştiriliyor",
+  "recipientsConfidentialSepaActivatingDescription": "Alıcınız Gizli SEPA için etkinleştiriliyor. Bu işlem birkaç dakika sürebilir.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Alıcı Gizli SEPA için etkinleştirilmedi",
+  "recipientsConfidentialSepaNotActivatedDescription": "Bu alıcı henüz Gizli SEPA için etkinleştirilmedi. Şimdi etkinleştiriyoruz. Bu işlem birkaç dakika sürebilir. Bunun yerine Anında ve Normal SEPA'yı kullanabilirsiniz.",
+  "recipientsConfidentialSepaActivatedTitle": "Alıcı etkinleştirildi",
+  "recipientsConfidentialSepaActivatedDescription": "Alıcınız artık Gizli SEPA için etkin.",
+  "recipientsConfidentialSepaUseRegularSepa": "Bunun yerine Anında ve Normal SEPA kullan",
+  "recipientsVirtualIbanIntroTitle": "Gizli SEPA etkinleştirilsin mi?",
+  "recipientsVirtualIbanNewBadge": "Yeni",
+  "recipientsVirtualIbanIntroDescription": "Kendi adınıza açılmış kişisel bir sanal IBAN ile hesabınıza gizlice para yatırın. Ücretsizdir.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Bankanızdan Bull Bitcoin’e para gönderdiğinizde, kendinize yapılmış bir transfer olarak görünür.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Transfer kodu gerekmez.",
+  "recipientsVirtualIbanNameWarningTitle": "Önemli: İsim eşleşmesi gerekli",
+  "recipientsVirtualIbanNameWarningDescription": "Banka hesabı adı, Bull Bitcoin sanal IBAN adınızla tam olarak eşleşmelidir; aksi takdirde transfer otomatik olarak iade edilir. İsimler eşleşmiyor mu? Destekle iletişime geçin.",
+  "recipientsVirtualIbanAccountOwnerName": "Hesap sahibinin adı",
+  "recipientsVirtualIbanNameConfirmation": "İsmin banka hesap(lar)ımla eşleştiğini onaylıyorum",
+  "recipientsVirtualIbanActivate": "Gizli SEPA’yı etkinleştir",
+  "recipientsVirtualIbanActivatingTitle": "Gizli SEPA etkinleştiriliyor...",
+  "recipientsVirtualIbanActivatingDescription": "Sanal IBAN’ınız oluşturuluyor. Bu birkaç dakika sürebilir.",
+  "recipientsVirtualIbanActivatedTitle": "Gizli SEPA etkinleştirildi",
+  "recipientsVirtualIbanActivatedDescription": "Artık kişisel sanal IBAN’ınızı gizlice para çekmek için kullanabilirsiniz.",
+  "recipientsVirtualIbanCopied": "Copied to klibi",
+  "recipientsVirtualIbanDone": "Done",
+  "recipientsVirtualIbanRecipientName": "Recipient name",
+  "recipientsVirtualIbanIbanLabel": "Sanal IBAN hesap numarası",
+  "recipientsVirtualIbanCountry": "Banka hesabı ülke",
+  "recipientsVirtualIbanBic": "BIC kodu",
+  "recipientsVirtualIbanActivatedFundingDescription": "Artık kişisel sanal IBAN’ınızı gizlice para yatırmak için kullanabilirsiniz.",
+  "recipientsVirtualIbanShowDetails": "Sanal IBAN bilgilerimi göster",
+  "recipientsVirtualIbanDetailsDescription": "Kendi adınıza açılmış kişisel bir sanal IBAN ile hesabınıza gizlice para yatırın. Yatırım, transfer kodu gerekmeden kendinize yapılmış bir ödeme olarak görünür.",
+  "recipientsVirtualIbanBankAddress": "Banka adresi",
+  "recipientsVirtualIbanBankAddressHelp": "Bankanız isterse diye resmi banka adresi.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Bankanızdaki ve sanal IBAN hesabınızdaki adlar eşleşmelidir; aksi takdirde transferler otomatik olarak iade edilir.",
+  "recipientsFieldBankAccountIban": "Banka hesap numarası (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür",
+  "withdrawOwnershipQuestion": "Bu hesap kime ait?",
+  "withdrawOwnershipOtherAccount": "Bu başka birinin hesabı",
+  "withdrawAboveMaxAmountError": "En fazla miktarı {amount} {currency}",
+  "withdrawConfirmCard": "Kart Kartı",
+  "withdrawBelowMinAmountError": "Minimum miktar {amount} {currency}",
+  "withdrawConfirmPhone": "Telefon",
+  "withdrawAmountContinue": "Devam etmeye devam et",
+  "withdrawUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
+  "withdrawConfirmTitle": "Onay",
+  "withdrawConfirmAmount": "$",
+  "withdrawConfirmEmail": "E-posta e-posta e-posta",
+  "withdrawConfirmButton": "Onay",
+  "withdrawOwnershipMyAccount": "Bu benim hesabım",
+  "withdrawAmountTitle": "Withdraw fiat",
+  "withdrawConfirmClabe": "CLABE",
+  "withdrawConfirmPayee": "Paye",
+  "withdrawConfirmRecipientName": "Recipient name",
+  "withdrawConfirmAccount": "Hesap Hesabı",
+  "withdrawSuccessOrderDetails": "Sipariş detayları",
+  "withdrawSuccessTitle": "Withdrawal Initiated",
+  "withdrawConfirmIban": "IBAN",
+  "withdrawConfirmBankAccount": "Banka hesabı",
+  "withdrawInteracSecurityDetailsTitle": "Transfer güvenlik bilgileri",
+  "withdrawInteracSaveAsDefault": "Bu bilgileri varsayılan olarak kaydet",
+  "withdrawInteracSecurityQuestionLengthError": "Güvenlik sorusu 3–40 karakter olmalıdır",
+  "withdrawInteracSecurityAnswerLengthError": "Güvenlik cevabı 3–40 karakter olmalıdır",
+  "withdrawInteracSecurityAnswerFormatError": "Boşluk kullanmadan harf, rakam veya kısa çizgi kullanın",
+  "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
+  "withdrawConfidentialSepaNotActivatedError": "Lütfen bu SEPA alıcısı için gizli ödeme seçeneğini etkinleştirin.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Logout",
+  "logoutConfirmationTitle": "Onay Logout",
+  "logoutConfirmationCancel": "Cancel",
+  "logoutConfirmationDescription": "Bull Bitcoin hesabınızdan çıkmak istediğinizden emin misiniz? Değişim özelliklerine erişmek için tekrar giriş yapmanız gerekir.",
+  "exchangeSettingsLogOutTitle": "Log Out",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Bu, destek ekibimize bir hesap silme talebi gönderecektir. Hesabınız 5 iş günü içinde silinecektir.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Hesap Silme Talep Edildi",
+  "deleteAccountSuccessDescription": "Hesap silme talebiniz alındı. 5 iş günü içinde işleme konulacaktır.",
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "Ödemeniz gönderilir ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "Bitcoin Cüzdanı seçin",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExternalWallet": "Dış Bitcoin cüzdanı",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "Açıklamayı teyit et",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "Uyumlu cüzdanlar",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "You receive you receive you receive you receive you receive you receive",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyAboveMaxAmountError": "Maksimum miktarın üzerinde satın almaya çalışıyorsunuz.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyBelowMinAmountError": "Minimum miktarın altında satın almaya çalışıyorsunuz.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyConfirmPayoutWallet": "Ödeme cüzdanı",
+  "buyPayoutMethodLiquid": "Liquid üzerinde L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin zincirinde BTC",
+  "buyConfirmPayoutMethod": "Payout yöntemi",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "Sıvı",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "Minimum 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "Devam etmeye devam et",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSetupInsufficientBalance": "Yetersiz Denge",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "Her saat {amount} satın alacaksınız",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "Siparişiniz şu anda oluşturulamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.",
+  "dcaConfirmPaymentMethod": "Ödeme yöntemi",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin Fiyatı",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "Tahmin edilen ücret değeri",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Sayı girin",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "Lütfen bir ağ seçin",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "buyInputContinue": "Devam etmeye devam et",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "Onay zamanı",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "{fiatAmount} karşılığında {amount} satın aldınız",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Hız İşlemleri",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Max",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "Bitcoin satın alın",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "Cüzdan seçin Cüzdan",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "KİTAP ID Verification Pending",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "İlk önce kimlik Doğrulamasını tamamlamanız gerekir",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "Network ücretleri",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "Her ay {amount} satın alacaksınız",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "Lightning",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "Frekans seçin",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "Lightning Address",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} dengesi",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Bitcoin alışverişleri bu program için otomatik olarak yerleştirilir.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "Tamamlanan KC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "Frekans",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "Sipariş türü",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaSuccessMessageDaily": "Her gün {amount} satın alacaksınız",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Ücretsiz çekilmek için bekleyin",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Uyumlu cüzdan gerektirir, maksimum 0.25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "Hesabınızı finanse edin",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "~ 10 dakika",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "Bekleyen bir onay ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSuccessTitle": "Satın almak Aktif!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSetupFrequencyError": "Lütfen bir frekansı seçin",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "Bitcoin satın alın",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "Bu hızlıydı, değil miydi?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "Her gün her gün",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyConfirmPurchase": "Satın almayı onaylayın",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyInputMaxAmountError": "Daha fazla satın alamazsınız",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyNetworkFeeRate": "Ağ ücreti oranı oranı",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "Eve dön",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Anında ödeme",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "Ağ Ağı Ağı",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "Onay Satın Al Satın Al",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaSetupContinue": "Devam etmeye devam et",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "buyConfirmYouPay": "Ödersiniz",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "Bitcoin Wallet Type seçin",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "Yeterli bakiye",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "dcaSuccessMessageWeekly": "Her hafta {amount} satın alacaksınız",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "$",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "Her hafta her hafta",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "Hesabınızı finanse edin",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "Bitcoin adresi girin",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSetupInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "Satın alma emirleri bu ayarlarda otomatik olarak yerleştirilir. Onları her zaman devre dışı bırakabilirsin.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "Lightning Network (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Bitcoin ağ ücreti, Bitcoin madencileri tarafından aldığınız ve topladığınız miktarın üzerinden silinecektir",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "Bitcoin alışverişleri bu program için otomatik olarak yerleştirilir.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmContinue": "Devam etmeye devam et",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "View details",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "Her saat",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "Lightning address",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "Ödeme yöntemi",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "Her ay",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "Bitcoin gönderdi!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyInputMinAmountError": "En azından satın almalısınız",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "dcaUseDefaultLightningAddress": "Varsayılan Lightning adresimi kullanın.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "Daha hızlı teyit et",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "Doğru ifade",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "Yeniden satın almak",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "Sıvı (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Set Recurring Buy",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaAccountUnavailableError": "Hesabınız yüklenemedi. Bağlantınızı kontrol edin, giriş yaptığınızdan emin olun ve tekrar deneyin.",
+  "dcaLightningAddressRequiredError": "Satın alımlarınızı almak için bir Lightning adresi girin.",
+  "dcaReceiveAddressError": "Cüzdanınızda alım adresi hazırlanamadı. Lütfen tekrar deneyin.",
+  "dcaOrderCreationError": "Yinelenen alım oluşturulamadı. Lütfen daha sonra tekrar deneyin.",
+  "payPleasePayInvoice": "Lütfen bu faturayı ödeme",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payPayinAmount": "Payin miktarı",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellAdvancedOptions": "Gelişmiş seçenekler",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySinpeBeneficiario": "Beneficiary",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "payInstantPayments": "Anında ödeme",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellReplaceByFeeActivated": "Değiştir-by-fee etkinleştirildi",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payPayoutAmount": "Payout amount",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payNetworkFees": "Network ücretleri",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payAboveMaxAmountError": "Bu cüzdanla ödeyebileceğiniz en yüksek tutar {amount}.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellLoadingGeneric": "Yükleniyor...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "payPaymentInProgress": "İlerlemede Ödeme!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "sellCompleteKYC": "Tamamlanan KC",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payPayFromWallet": "Cüzdandan ödeme",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellExternalWallet": "Dış cüzdan cüzdan",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payInvalidState": "Invalid state",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "sellBelowMinAmountError": "Bu cüzdanla satılabilecek minimum miktarın altında satmaya çalışıyorsunuz.",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellEurBalance": "EUR EUR EUR EUR EUR EUR Denge dengesi",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellSelectNetwork": "Network Select Network",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payNoInvoiceData": "Hiçbir fatura verileri mevcut",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "paySinpeMonto": "$",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "sellOrderAlreadyConfirmedError": "Bu satış siparişi zaten doğrulandı.",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payNoDetailsAvailable": "Mevcut hiçbir detay mevcut değildir",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "sellShowQrCode": "Göster QR kodu",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellSecureBitcoinWallet": "Güvenli Bitcoin cüzdanı",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payShowQrCode": "Göster QR kodu",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellViewDetailsButton": "View details",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "paySinpeOrigen": "Kökeni",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payRecipientType": "Recipient type",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellOrderCompleted": "Sipariş tamamlandı!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellPleasePayInvoice": "Lütfen bu faturayı ödeme",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "paySelectNetwork": "Network Select Network",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "sellCadBalance": "CAD CAD CAD Denge dengesi",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "payInsufficientBalanceError": "Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellPriceWillRefreshIn": "Fiyat yenilenecek ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "ARS Balance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellPayFromWallet": "Cüzdandan ödeme",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellBitcoinAmount": "Bitcoin miktarı",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellBalanceWillBeCredited": "Hesap bakiyeniz işleminiz 1 onaydan sonra kredilenecek.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "payExchangeRate": "Değişim oranı",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "copyDialogButton": "Kopya kopya",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payQrCode": "QR Kodu",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellLightningNetwork": "Lightning Network",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "Anında ödeme",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellDone": "Done",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellSendPaymentContinue": "Devam etmeye devam et",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "sellBitcoinOnChain": "Bitcoin on-chain",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellFromAnotherWallet": "Başka bir Bitcoin cüzdanından satış",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payFeePriority": "Ücret Önceliği",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellNoInvoiceData": "Hiçbir fatura verileri mevcut",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "sellHowToPayInvoice": "Bu faturayı nasıl ödemek istiyorsunuz?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payTitle": "Pay",
+  "payDescriptionLabel": "Ödeme açıklaması (isteğe bağlı)",
+  "payDescriptionHint": "Bu ödeme için bir not ekleyin",
+  "payPaymentDescription": "Ödeme açıklaması",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellQrCode": "QR Kodu",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellGoHome": "Eve git",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellInsufficientBalanceError": "Seçilen cüzdanda bu satış siparişini tamamlamak için yeterli bir denge.",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellSelectWallet": "Cüzdan seçin",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "payContinue": "Devam etmeye devam et",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "Değiştir-by-fee etkinleştirildi",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellCopyInvoice": "Kopyalama",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "payExternalWalletDescription": "Başka bir Bitcoin cüzdanından ödeme",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "sellFeePriority": "Ücret Önceliği",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "Payin miktarı",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellBitcoinPriceLabel": "Bitcoin Fiyatı",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "payBitcoinPrice": "Bitcoin Fiyatı",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "sellMxnBalance": "MXN Denge dengesi",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellCopBalance": "COP COP COP Denge dengesi",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellKycPendingDescription": "İlk önce kimlik doğrulamasını tamamlamanız gerekir",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellPayoutAmount": "Payout amount",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellWhichWalletQuestion": "Hangi cüzdandan satmak istiyorsunuz?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "payHowToPayInvoice": "Bu faturayı nasıl ödemek istiyorsunuz?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "payWhichWallet": "Hangi cüzdan ödeme yapmak istiyorsunuz?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "sellFastest": "En hızlı",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payCopyInvoice": "Kopyalama",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellCrcBalance": "CRC Denge dengesi",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "paySelectCoinsManually": "Paraları manuel olarak seçin",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payPriceRefreshIn": "Fiyat yenilenecek ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payBitcoinAmount": "Bitcoin miktarı",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellExchangeRate": "Değişim oranı",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "Bitcoin satmak",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "sellUsdBalance": "USD USD USD USD USD USD Denge dengesi",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellKycPendingTitle": "KİTAP ID Verification Pending",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "payOrderNumber": "Sipariş numarası",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "Sipariş numarası",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "payBelowMinAmountError": "Bu cüzdanla ödeyebileceğiniz en düşük tutar {amount}.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellPayoutRecipient": "Payout alıcı",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "payLiquidNetwork": "Sıvı Ağ Ağı",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "paySelectWallet": "Cüzdan seçin",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "paySinpeNumeroComprobante": "Referans numarası",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "Güvenli Bitcoin cüzdanı",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payRecipientName": "Recipient name",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payConfirmPayment": "Ödemeyi Onaylayın",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "sellConfirmPayment": "Doğru ödeme",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellSelectCoinsManually": "Paraları manuel olarak seçin",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "En hızlı",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payExternalWallet": "Dış cüzdan cüzdan",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payOrderDetails": "Sipariş Detayları",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "sellAboveMaxAmountError": "Bu cüzdanla satılabilecek maksimum miktarın üzerinde satmaya çalışıyorsunuz.",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellLiquidNetwork": "Sıvı Ağ Ağı",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "sellOrderNotFoundError": "Satış siparişi bulunamadı. Lütfen tekrar deneyin.",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "payAdvancedOptions": "Gelişmiş seçenekler",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "payRecipientDetails": "Güvenilir ayrıntılar",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "sellOrderNumber": "Sipariş numarası",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "payDone": "Done",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellInProgress": "İlerlemede Sat...",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "payAdvancedSettings": "Gelişmiş Ayarlar",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellSendPaymentNetworkFees": "Network ücretleri",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "payCompleted": "Ödeme Tamamlandı!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellAdvancedSettings": "Gelişmiş Ayarlar",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payViewDetails": "View details",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "viewerTapToCopy": "Kopyalamak için dokunun",
+  "invoiceViewerTitle": "Fatura",
+  "paySinpeReceipt": "SINPE Makbuzu",
+  "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
+  "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "copiedToClipboard": "Panoya kopyalandı",
+  "sellPayoutBalance": "Hesap bakiyeme ekle",
+  "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
+  "sellPayoutTitle": "Alıcı Seç",
+  "sellPayoutNewBadge": "YENİ",
+  "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
+  "sendSelectedUtxosInsufficient": "Seçilmiş utxos gerekli miktarda kapsamaz",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Sayı miktarı seçin",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "Tipi: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "Adres: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Para talep etti: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "Alma",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Para üstü",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "Yeterli bakiye",
+  "limitOrdersInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
+  "limitOrdersFundAccount": "Hesabınızı finanse edin",
+  "exchangeLandingRecommendedExchange": "Önerilen Bitcoin Exchange",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureCustomerSupport": "• • Müşteri desteği ile Sohbet",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency değişim hizmetleri, Bull Bitcoin mobil uygulamasında mevcut değildir.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLandingDisclaimerLegal": "Değişim servislerine erişim, Bull Bitcoin'in yasal olarak çalışabileceği ülkelerle sınırlandırılacak ve KC'yi gerektirebilir.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeFeatureSelfCustody": "• Bitcoin'i doğrudan kendi kendine özgü olarak satın alın",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeLandingConnectAccount": "Your Bull Bitcoin exchange account",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeFeatureSellBitcoin": "• Bitcoin satmak, Bitcoin ile ödeme yapmak",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLoginButton": "Giriş veya Kayıt",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeFeatureBankTransfers": "• • Banka transferlerini gönderin ve faturaları öder",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeGoToWebsiteButton": "Bull Bitcoin exchange web sitesine gidin",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limit emirleri ve Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureUnifiedHistory": "• Birleşik İşlem Tarihi",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  }
 }

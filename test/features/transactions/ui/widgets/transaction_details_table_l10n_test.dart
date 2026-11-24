@@ -1,12 +1,12 @@
+import '../../support/transaction_ui_actions.dart';
+
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:settings/testing.dart';
+import 'package:settings/settings.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,10 +91,12 @@ Future<void> _pump(
           BlocProvider<TransactionDetailsCubit>.value(value: detailsCubit),
           BlocProvider<SettingsCubit>.value(value: settingsCubit),
         ],
-        child: SettingsFacade.amountScope(
+        child: Settings.amountScope(
           navigatorKey: navigatorKey,
-          child: const Scaffold(
-            body: SingleChildScrollView(child: TransactionDetailsTable()),
+          child: Scaffold(
+            body: SingleChildScrollView(
+              child: TransactionDetailsTable(actions: transactionUiActions),
+            ),
           ),
         ),
       ),

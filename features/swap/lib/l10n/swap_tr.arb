@@ -1,0 +1,438 @@
+{
+  "@@locale": "tr",
+  "save": "Kaydet",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressLabel": "Adres: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Para talep etti: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Devre dışı bırakıldığında, yüksek ücretler nedeniyle engellenen bir otomatik takasa izin verme seçeneği sunulacaktır",
+  "@autoswapAlwaysBlockInfoDisabled": {
+    "description": "Help text when always block is disabled"
+  },
+  "autoswapAlwaysBlockInfoEnabled": "Etkinleştirildiğinde, ücreti belirlenen sınırın üzerinde olan otomatik takaslar her zaman engellenecektir",
+  "@autoswapAlwaysBlockInfoEnabled": {
+    "description": "Help text when always block is enabled"
+  },
+  "autoswapAlwaysBlockLabel": "Her zaman Block High Fees",
+  "@autoswapAlwaysBlockLabel": {
+    "description": "Label for toggle to always block high fee transfers"
+  },
+  "autoswapBaseBalanceInfoText": "Anında ödeme cüzdan bakiyeniz bu hedef dengesine bir otoswap sonra geri dönecektir.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapEnableToggleLabel": "Otomatik Takası Etkinleştir",
+  "@autoswapEnableToggleLabel": {
+    "description": "Label for the main toggle switch to enable/disable auto transfer feature"
+  },
+  "autoswapLoadSettingsError": "Otomatik takas ayarları yüklemek için başarısız oldu",
+  "@autoswapLoadSettingsError": {
+    "description": "Error message when loading settings fails"
+  },
+  "autoswapMaxBalanceLabel": "Max Instant Wallet Balance Balance",
+  "@autoswapMaxBalanceLabel": {
+    "description": "Label for amount threshold input field"
+  },
+  "autoswapMaxFeeInfoText": "Toplam takas ücreti belirlenen yüzdenin üzerindeyse otomatik takas engellenecektir",
+  "@autoswapMaxFeeInfoText": {
+    "description": "Help text explaining how the max fee threshold works"
+  },
+  "autoswapMaxFeeLabel": "Maks. Takas Ücreti",
+  "@autoswapMaxFeeLabel": {
+    "description": "Label for fee threshold percentage input field"
+  },
+  "autoswapMaximumBalanceLabel": "Maksimum Anlık Cüzdan Bakiyesi",
+  "autoswapMaximumFeeError": "En yüksek ücret eşi {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "description": "Validation error shown when fee threshold exceeds maximum",
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Asgari denge eşi {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Asgari denge eşi {amount} sats",
+  "@autoswapMinimumThresholdErrorSats": {
+    "description": "Validation error shown when amount threshold is below minimum (sats display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Bitcoin cüzdanının transfer edilen fonları alacağını seçin (required)",
+  "@autoswapRecipientWalletInfoText": {
+    "description": "Help text explaining wallet selection"
+  },
+  "autoswapRecipientWalletLabel": "Güvenilir Bitcoin Cüzdanı",
+  "@autoswapRecipientWalletLabel": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "autoswapRecipientWalletPlaceholder": "Bir Bitcoin cüzdanı seçin",
+  "@autoswapRecipientWalletPlaceholder": {
+    "description": "Dropdown placeholder text when no wallet is selected"
+  },
+  "autoswapRecipientWalletPlaceholderRequired": "Bir Bitcoin cüzdanı seçin *",
+  "@autoswapRecipientWalletPlaceholderRequired": {
+    "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+  },
+  "autoswapRecipientWalletRequired": "*",
+  "@autoswapRecipientWalletRequired": {
+    "description": "Required field indicator asterisk"
+  },
+  "autoswapSaveButton": "Kaydet",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "autoswapSelectWalletError": "Lütfen bir alıcı Bitcoin cüzdanı seçin",
+  "@autoswapSelectWalletError": {
+    "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+  },
+  "autoswapSettingsTitle": "Otomatik Takas Ayarları",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "autoswapTargetBalanceLabel": "Hedef Anlık Cüzdan Bakiyesi",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap, bakiyenizin bu maksimum dengenin üzerinde gittiğinde tetiklenecektir.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
+  "autoswapTriggerBalanceError": "Maksimum denge en az 2x hedef dengesi olmalıdır",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
+  },
+  "autoswapUpdateSettingsError": "Otomatik takas ayarlarını güncellemek için başarısız oldu",
+  "@autoswapUpdateSettingsError": {
+    "description": "Error message when updating settings fails"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
+  "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "coinsKeychainChange": "Para üstü",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Alma",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Cüzdanı birleştir",
+  "coreScreensAmountLabel": "$",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensConfirmButton": "Onay Onay Onay Onaylandı",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "coreScreensExternalTransfer": "Harici Takas",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensFeeDeductionExplanation": "Bu, gönderilen miktarın toplam ücretidir",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensFeePriorityLabel": "Ücret Önceliği",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensFromLabel": "From",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensInternalTransfer": "İç Takas",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensNetworkFeesLabel": "Network ücretleri",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensReceiveAmountLabel": "Kabul Miktarı",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Ağ Ücreti Al",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensSendAmountLabel": "Gönder",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Ağ Fee gönder",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Server Network Fees",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensToLabel": "To",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensTransferFeeLabel": "Takas Ücreti",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensTransferIdLabel": "Takas ID",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Anında ödeme",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "payNetworkError": "Ağ hatası. Lütfen tekrar deneyin",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveNote": "Not",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "Sayı miktarı seçin",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "sendAdvancedOptions": "Gelişmiş Seçenekler",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendDone": "Done",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorBuildFailed": "Bu ödeme hazırlanamadı. Lütfen tekrar deneyin.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorSwapCreationFailed": "Takas oluşturmak için başarısız oldu.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendFastFee": "Hızlı",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Değiştir-by-fee etkinleştirildi",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "Paraları manuel olarak seçin",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "Seçilmiş utxos gerekli miktarda kapsamaz",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendSelfTransfer": "Kendine transfer",
+  "swapAmountLabel": "$",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapAmountPlaceholder": "0",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapAvailableBalance": "Mevcut denge dengesi",
+  "@swapAvailableBalance": {
+    "description": "Available balance label"
+  },
+  "swapConfirmTransferTitle": "Takası Onayla",
+  "@swapConfirmTransferTitle": {
+    "description": "AppBar title on the confirmation page"
+  },
+  "swapContinueButton": "Devam etmeye devam et",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapDoNotUninstallWarning": "Takas tamamlanana kadar uygulamayı kaldırmayın!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
+  "swapErrorAmountAboveMaximum": "Para maksimum takas miktarı aşıyor: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Para miktarı minimum takas miktarı altındadır: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Dış cüzdan adresi girin",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapExternalTransferLabel": "Harici Takas",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "From",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapGoHomeButton": "Eve git",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapInfoDescription": "Bitcoin'i cüzdanlarınız arasında sorunsuz bir şekilde takas edin. Günlük harcamalar için yalnızca Anında Ödeme Cüzdanında para tutun.",
+  "@swapInfoDescription": {
+    "description": "Information banner text on amount page"
+  },
+  "swapInsufficientFunds": "Yetersiz bakiye",
+  "swapInternalTransferTitle": "İç Takas",
+  "@swapInternalTransferTitle": {
+    "description": "AppBar title on the amount entry page"
+  },
+  "swapMaxButton": "MAX",
+  "@swapMaxButton": {
+    "description": "Button to use maximum available balance"
+  },
+  "swapReceiveExactAmountLabel": "Tam miktar alın",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Düşük ücretlerden",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapToLabel": "To",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapTotalFees": "Toplam Ücretler ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapTransferCompletedMessage": "Vay, bekledin! Takas başarıyla tamamlandı.",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferCompletedTitle": "Takas tamamlandı",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferPendingMessage": "Takas devam ediyor. Bitcoin işlemlerinin onaylanması biraz zaman alabilir. Ana sayfaya dönüp bekleyebilirsiniz.",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferPendingTitle": "Takas Beklemede",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferRefundInProgressMessage": "Takasta bir hata oluştu. İadeniz işleniyor.",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundInProgressTitle": "Takas İadesi Devam Ediyor",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundedMessage": "Takas başarıyla iade edildi.",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapTransferRefundedTitle": "Takas İade Edildi",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferTitle": "Takas",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapUnderReviewDescription": "Bu takas manuel inceleme gerektiriyor. Yardım için destekle iletişime geçin. Destek hesabınız yoksa yalnızca bir hesap oluşturmanız yeterlidir; KYC gerekmez.",
+  "swapUnderReviewSupportMessage": "Takas inceleniyor\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "swapUnderReviewTitle": "Takas inceleniyor",
+  "swapValidationSelectFromWallet": "Lütfen takas yapılacak bir cüzdan seçin",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Lütfen takas edilecek bir cüzdan seçin",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkLiquid": "Sıvı",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionStatusSwapExpired": "Swap Expired",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusSwapFailed": "Swap Başarısız",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescChainExpired": "Bu takasın süresi doldu. Fonlarınız otomatik olarak cüzdanınıza iade edilecektir.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainFailed": "Takasınızla ilgili bir sorun oluştu. Fonlar 24 saat içinde iade edilmezse lütfen destekle iletişime geçin.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapOpenWithin24h": "Takasınızı tamamlamak için uygulamayı 24 saat içinde açın.",
+  "typeLabel": "Tipi: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "walletLoadFailed": "Cüzdanlarınız yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+}

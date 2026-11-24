@@ -1,6 +1,6 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

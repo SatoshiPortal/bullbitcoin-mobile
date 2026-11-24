@@ -1,0 +1,29 @@
+{
+  "@@locale": "hi_Latn",
+  "retry": "Dobara Try Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "bip85NoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip85Title": "BIP85 Deterministic Entropies",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85ExperimentalWarning": "Experimental \nApne derivation paths manually backup karo",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "bip85NextMnemonic": "Agla Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85NextHex": "Agla HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "copiedToClipboard": "Clipboard par copy kiya gaya"
+}

@@ -1,0 +1,170 @@
+{
+  "@@locale": "de",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "save": "Speichern",
+  "addressLabel": "Adresse: ",
+  "amountRequestedLabel": "Betrag beantragt: {amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Bei Deaktivierung erhalten Sie die Möglichkeit, einen Auto-Swap zuzulassen, der aufgrund hoher Gebühren blockiert wird.",
+  "autoswapAlwaysBlockInfoEnabled": "Wenn aktiviert, werden Auto-Swaps mit Gebühren über der festgelegten Grenze immer gesperrt.",
+  "autoswapAlwaysBlockLabel": "Hohe Gebühren immer blockieren",
+  "autoswapBaseBalanceInfoText": "Das Guthaben Ihrer Sofortzahlungs-Wallet wird nach einem automatischen Swap auf diesen Zielguthaben zurückgesetzt.",
+  "autoswapEnableToggleLabel": "Auto-Swap aktivieren",
+  "autoswapLoadSettingsError": "Fehler beim Laden der Auto-Swap-Einstellungen.",
+  "autoswapMaxBalanceLabel": "Maximales Sofortzahlungs-Guthaben",
+  "autoswapMaxFeeInfoText": "Wenn die gesamte Swap-Gebühr über dem festgelegten Prozentsatz liegt, wird der Auto-Swap blockiert.",
+  "autoswapMaxFeeLabel": "Maximale Swap-Gebühr",
+  "autoswapMaximumBalanceLabel": "Maximales Guthaben Instant Wallet",
+  "autoswapMaximumFeeError": "Maximale Gebührenschwelle {threshold}%.",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Mindestschwelle: {amount} BTC.",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Mindestschwelle: {amount}",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Wählen Sie aus, welche Bitcoin-Wallet das überwiesene Guthaben erhalten soll (erforderlich).",
+  "autoswapRecipientWalletLabel": "Empfänger-Bitcoin-Wallet",
+  "autoswapRecipientWalletPlaceholder": "Wählen Sie eine Bitcoin-Wallet",
+  "autoswapRecipientWalletPlaceholderRequired": "Wählen Sie eine Bitcoin-Wallet aus *",
+  "autoswapRecipientWalletRequired": "*",
+  "autoswapSaveButton": "Speichern",
+  "autoswapSelectWalletError": "Bitte wählen Sie eine Bitcoin-Empfänger-Wallet aus.",
+  "autoswapSettingsTitle": "Auto-Swap-Einstellungen",
+  "autoswapTargetBalanceLabel": "Ziel-Guthaben Instant Wallet",
+  "autoswapTriggerAtBalanceInfoText": "Auto-Swap wird ausgelöst, wenn Ihr Guthaben diesen Höchstbetrag überschreitet.",
+  "autoswapTriggerBalanceError": "Das maximale Guthaben muss mindestens das Doppelte des Zielguthabens betragen.",
+  "autoswapUpdateSettingsError": "Fehler beim Aktualisieren der Auto-Swap-Einstellungen.",
+  "bitcoinPriceExchangeRateUnavailable": "Wechselkurs nicht verfügbar. Bitte später erneut versuchen.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Wir konnten nicht bestätigen, dass Ihre Transaktion gesendet wurde. Prüfen Sie sie in einem Block-Explorer, bevor Sie es erneut versuchen.",
+  "closeDialogButton": "Schließen",
+  "coinsKeychainChange": "Wechselgeld",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Empfangen",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Wallet konsolidieren",
+  "coreScreensAmountLabel": "Betrag",
+  "coreScreensConfirmButton": "Bestätigen",
+  "coreScreensExternalTransfer": "Externer Swap",
+  "coreScreensFeeDeductionExplanation": "Dies ist die Gesamtgebühr, die vom gesendeten Betrag abgezogen wird",
+  "coreScreensFeePriorityLabel": "Priorität",
+  "coreScreensFromLabel": "Von",
+  "coreScreensInternalTransfer": "Interner Swap",
+  "coreScreensNetworkFeesLabel": "Netzwerkgebühren",
+  "coreScreensReceiveAmountLabel": "Empfangsbetrag",
+  "coreScreensReceiveNetworkFeeLabel": "Netzwerkgebühren (Empfangen)",
+  "coreScreensSendAmountLabel": "Sendebetrag",
+  "coreScreensSendNetworkFeeLabel": "Netzwerkgebühr (Senden)",
+  "coreScreensServerNetworkFeesLabel": "Server-Netzwerkgebühren",
+  "coreScreensToLabel": "An",
+  "coreScreensTransferFeeLabel": "Swap-Gebühr",
+  "coreScreensTransferIdLabel": "Swap-ID",
+  "doneButton": "Fertig",
+  "globalDefaultBitcoinWalletLabel": "Sichere Bitcoin-Wallet",
+  "globalDefaultLiquidWalletLabel": "Sofortzahlungen",
+  "payNetworkError": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
+  "receiveNote": "Notiz",
+  "selectAmountTitle": "Betrag auswählen",
+  "sendAdvancedOptions": "Erweiterte Optionen",
+  "sendDone": "Fertig",
+  "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
+  "sendErrorSelectedCoinsInsufficient": "Die ausgewählten Coins reichen nicht aus, um den Betrag und die Gebühren zu decken. Wählen Sie weitere Coins aus oder verringern Sie den Betrag.",
+  "sendErrorSelectedCoinsUnavailable": "Ein oder mehrere ausgewählte Coins sind nicht mehr verfügbar. Überprüfen Sie Ihre Coin-Auswahl und versuchen Sie es erneut.",
+  "sendErrorSwapCreationFailed": "Swap konnte nicht erstellt werden.",
+  "sendErrorTransactionChanged": "Die Transaktionsdetails haben sich geändert. Überprüfen Sie Betrag, Zieladresse und Gebühren und bestätigen Sie die Transaktion erneut.",
+  "sendFastFee": "Schnell",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Gebührenerhöhung aktiviert",
+  "sendSelectCoinsManually": "Coins manuell auswählen",
+  "sendSelectedUtxosInsufficient": "Die ausgewählten UTXOs erreichen den erforderlichen Betrag nicht.",
+  "sendSelfTransfer": "Eigentransfer",
+  "settingsPayjoinSatsUnit": "sats",
+  "swapAmountLabel": "Betrag",
+  "swapAmountPlaceholder": "0",
+  "swapAvailableBalance": "Verfügbares Guthaben",
+  "swapConfirmTransferTitle": "Swap bestätigen",
+  "swapContinueButton": "Fortfahren",
+  "swapDoNotUninstallWarning": "Deinstallieren Sie die App erst, wenn der Swap abgeschlossen ist!",
+  "swapErrorAmountAboveMaximum": "Höchstbetrag: {max} sats.",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Betrag liegt unter dem Mindest-Swap-Betrag: {min} Sats.",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorRateLimited": "Zu viele Anfragen. Warten Sie {seconds} Sekunden und versuchen Sie es erneut.",
+  "swapErrorRouteUnavailable": "{fromNetwork} → {toNetwork} ist nicht verfügbar.",
+  "swapErrorRouteUnavailableGeneric": "Dieser Swap ist nicht verfügbar.",
+  "swapExternalAddressHint": "Externe Wallet-Adresse eingeben.",
+  "swapExternalTransferLabel": "Externer Swap",
+  "swapFromLabel": "Von",
+  "swapGoHomeButton": "Zum Startbildschirm",
+  "swapInfoDescription": "Swappen Sie Bitcoin nahtlos zwischen Ihren Wallets. Bewahren Sie nur Guthaben für alltägliche Ausgaben in der Wallet für Sofortzahlungen auf.",
+  "swapInsufficientFunds": "Unzureichendes Guthaben",
+  "swapInternalTransferTitle": "Interner Swap",
+  "swapMaxButton": "MAX",
+  "swapReceiveExactAmountLabel": "Genauen Betrag erhalten",
+  "swapSubtractFeesLabel": "Gebühren vom Betrag abziehen",
+  "swapToLabel": "An",
+  "swapTotalFees": "Gesamtgebühr",
+  "swapTransferCompletedMessage": "Danke, dass Sie gewartet haben! Der Swap wurde erfolgreich abgeschlossen.",
+  "swapTransferCompletedTitle": "Swap abgeschlossen",
+  "swapTransferPendingMessage": "Der Swap läuft. Bitcoin-Transaktionen können einige Zeit zur Bestätigung benötigen. Sie können zum Startbildschirm zurückkehren und warten.",
+  "swapTransferPendingTitle": "Swap ausstehend",
+  "swapTransferRefundInProgressMessage": "Beim Swap ist ein Fehler aufgetreten. Ihre Rückerstattung läuft.",
+  "swapTransferRefundInProgressTitle": "Swap-Rückerstattung läuft",
+  "swapTransferRefundedMessage": "Der Swap wurde erfolgreich zurückerstattet.",
+  "swapTransferRefundedTitle": "Swap zurückerstattet",
+  "swapTransferTitle": "Swap",
+  "swapUnderReviewContactSupport": "Kundenbetreuung kontaktieren",
+  "swapUnderReviewDescription": "Dieser Swap muss manuell geprüft werden. Wenden Sie sich an den Support. Falls Sie noch kein Supportkonto haben, müssen Sie lediglich eines erstellen; eine Identitätsprüfung (KYC) ist nicht erforderlich.",
+  "swapUnderReviewSupportMessage": "Swap wird geprüft\nAuftrags-ID: {orderId}\nAnfrage-ID: {requestId}\nAuftragsnummer: {orderNumber}",
+  "swapUnderReviewTitle": "Swap wird geprüft",
+  "swapValidationSelectFromWallet": "Bitte wählen Sie die Quell-Wallet für den Swap aus.",
+  "swapValidationSelectToWallet": "Bitte wählen Sie die Ziel-Wallet für den Swap aus.",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLightning": "Lightning",
+  "transactionNetworkLiquid": "Liquid",
+  "transactionStatusSwapExpired": "Swap abgelaufen",
+  "transactionStatusSwapFailed": "Swap fehlgeschlagen",
+  "transactionSwapDescChainExpired": "Dieser Swap ist abgelaufen. Ihr Guthaben wird automatisch an Ihre Wallet zurücküberwiesen.",
+  "transactionSwapDescChainFailed": "Es gab ein Problem mit Ihrem Swap. Bitte wenden Sie sich an den Support, falls das Guthaben nicht innerhalb von 24 Stunden zurückerstattet wurde.",
+  "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen.",
+  "typeLabel": "Typ:",
+  "walletLoadFailed": "Ihre Wallets konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+}

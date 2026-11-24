@@ -1,10 +1,8 @@
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletFacade;
 import 'package:primitives/primitives.dart' show Ok, ScriptType;
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -52,12 +50,7 @@ Future<void> _pumpScreen(WidgetTester tester, {required bool isDefault}) async {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider(
           create: (_) => WalletDiscoveryCubit(
-            DiscoverWalletUsecase(
-              WalletFacade(
-                const Stream.empty(),
-                discoverWallet: (_) async => const Ok(null),
-              ),
-            ),
+            DiscoverWalletUsecase((_) async => const Ok(null)),
           ),
           child: const WalletDetailsScreen(walletId: 'wallet-id'),
         ),

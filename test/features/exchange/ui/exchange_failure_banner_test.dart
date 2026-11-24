@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bb_mobile/localizations.dart';

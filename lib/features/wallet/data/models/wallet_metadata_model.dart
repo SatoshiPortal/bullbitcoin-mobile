@@ -1,12 +1,12 @@
+import 'package:signers/signers.dart' as signers;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.drift.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer, SignerDevice;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart' show Fingerprint, ScriptType;
+import 'package:primitives/primitives.dart'
+    show Fingerprint, ScriptType, SignerEntity;
 
 part 'wallet_metadata_model.freezed.dart';
 
@@ -58,45 +58,54 @@ extension WalletMetadataModelExtension on WalletMetadataModel {
   bool get isMainnet => network.isMainnet;
 }
 
-extension WalletMetadataModelMapper on WalletMetadataModel {
-  WalletMetadatasCompanion toSqlite() => WalletMetadatasCompanion(
-    id: Value(id),
-    network: Value(networkCode),
-    masterFingerprint: Value(masterFingerprint),
-    xpubFingerprint: Value(xpubFingerprint),
-    isEncryptedVaultTested: Value(isEncryptedVaultTested),
-    isPhysicalBackupTested: Value(isPhysicalBackupTested),
-    latestEncryptedBackup: Value(latestEncryptedBackup),
-    latestPhysicalBackup: Value(latestPhysicalBackup),
-    xpub: Value(xpub),
-    externalPublicDescriptor: Value(externalPublicDescriptor),
-    internalPublicDescriptor: Value(internalPublicDescriptor),
-    signer: Value(signer.name),
-    isDefault: Value(isDefault),
-    label: Value(label),
-    syncedAt: Value(syncedAt),
-    signerDevice: Value(signerDevice),
-    birthday: Value(birthday),
-  );
+extension WalletMetadataSignerMapping on Signer {
+  SignerEntity toEntity() => switch (this) {
+    Signer.local => SignerEntity.local,
+    Signer.remote => SignerEntity.remote,
+    Signer.none => SignerEntity.none,
+  };
+}
 
-  static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
-      WalletMetadataModel(
-        id: row.id,
-        networkCode: row.network,
-        masterFingerprint: row.masterFingerprint,
-        xpubFingerprint: row.xpubFingerprint,
-        isEncryptedVaultTested: row.isEncryptedVaultTested,
-        isPhysicalBackupTested: row.isPhysicalBackupTested,
-        latestEncryptedBackup: row.latestEncryptedBackup,
-        latestPhysicalBackup: row.latestPhysicalBackup,
-        xpub: row.xpub,
-        externalPublicDescriptor: row.externalPublicDescriptor,
-        internalPublicDescriptor: row.internalPublicDescriptor,
-        signer: Signer.fromName(row.signer),
-        isDefault: row.isDefault,
-        label: row.label,
-        syncedAt: row.syncedAt,
-        signerDevice: row.signerDevice,
-        birthday: row.birthday,
-      );
+extension WalletMetadataSignerEntityMapping on SignerEntity {
+  Signer toSqlite() => switch (this) {
+    SignerEntity.local => Signer.local,
+    SignerEntity.remote => Signer.remote,
+    SignerEntity.none => Signer.none,
+  };
+}
+
+extension WalletMetadataDeviceMapping on SignerDevice {
+  signers.SignerDevice toEntity() => switch (this) {
+    SignerDevice.bitbox02 => signers.SignerDevice.bitbox02,
+    SignerDevice.coldcardQ => signers.SignerDevice.coldcardQ,
+    SignerDevice.coldcardMk4 => signers.SignerDevice.coldcardMk4,
+    SignerDevice.jade => signers.SignerDevice.jade,
+    SignerDevice.keystone => signers.SignerDevice.keystone,
+    SignerDevice.krux => signers.SignerDevice.krux,
+    SignerDevice.ledgerNanoSPlus => signers.SignerDevice.ledgerNanoSPlus,
+    SignerDevice.ledgerNanoX => signers.SignerDevice.ledgerNanoX,
+    SignerDevice.ledgerFlex => signers.SignerDevice.ledgerFlex,
+    SignerDevice.ledgerStax => signers.SignerDevice.ledgerStax,
+    SignerDevice.passport => signers.SignerDevice.passport,
+    SignerDevice.seedsigner => signers.SignerDevice.seedsigner,
+    SignerDevice.specter => signers.SignerDevice.specter,
+  };
+}
+
+extension WalletMetadataSignerDeviceMapping on signers.SignerDevice {
+  SignerDevice toSqlite() => switch (this) {
+    signers.SignerDevice.bitbox02 => SignerDevice.bitbox02,
+    signers.SignerDevice.coldcardQ => SignerDevice.coldcardQ,
+    signers.SignerDevice.coldcardMk4 => SignerDevice.coldcardMk4,
+    signers.SignerDevice.jade => SignerDevice.jade,
+    signers.SignerDevice.keystone => SignerDevice.keystone,
+    signers.SignerDevice.krux => SignerDevice.krux,
+    signers.SignerDevice.ledgerNanoSPlus => SignerDevice.ledgerNanoSPlus,
+    signers.SignerDevice.ledgerNanoX => SignerDevice.ledgerNanoX,
+    signers.SignerDevice.ledgerFlex => SignerDevice.ledgerFlex,
+    signers.SignerDevice.ledgerStax => SignerDevice.ledgerStax,
+    signers.SignerDevice.passport => SignerDevice.passport,
+    signers.SignerDevice.seedsigner => SignerDevice.seedsigner,
+    signers.SignerDevice.specter => SignerDevice.specter,
+  };
 }

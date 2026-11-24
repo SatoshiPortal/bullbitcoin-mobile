@@ -1,0 +1,79 @@
+{
+  "@@locale": "fa",
+  "torSettingsTitle": "تنظیمات Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "onboardingRecoverYourWallet": "بازیابی کیف پول",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "onboardingEncryptedVaultDescription": "پشتیبان گیری خود را از طریق ابر با استفاده از PIN خود بازیابی کنید.",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingSplashDescription": "بانک مرکزی خود، کیف پول Bitcoin و سرویس تبادل بیت کوین را در اختیار دارد.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingEncryptedVault": "بایگانی برچسب ها",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingCreateNewWallet": "ایجاد کیف پول جدید",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "onboardingPhysicalBackupDescription": "کیف پول خود را از طریق 12 کلمه بازیابی کنید.",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "settingsLanguageTitle": "زبان",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "بازیابی",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "onboardingBullBitcoin": "Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "پول خود را داشته باشید",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingRecoverWallet": "بازیابی کیف پول",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "onboardingPhysicalBackup": "پشتیبانی فیزیکی",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "onboardingRecoverWalletButton": "بازیابی کیف پول",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "continueButton": "ادامه",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "walletSetupErrorTryAgain": "در راه‌اندازی کیف پول شما مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
+  "onboardingAdvancedOptionsTitle": "گزینه‌های پیشرفته",
+  "onboardingAdvancedOptionsDescription": "پیش از ساخت یا بازیابی کیف پول خود، تنظیمات پیشرفته را پیکربندی کنید",
+  "onboardingAdvancedOptionsCustomElectrum": "سرور Electrum سفارشی",
+  "onboardingAdvancedOptionsCustomMempool": "سرور Mempool سفارشی",
+  "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
+  "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
+  "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید."
+}

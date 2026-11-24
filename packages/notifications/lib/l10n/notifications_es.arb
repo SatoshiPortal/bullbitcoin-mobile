@@ -1,0 +1,5 @@
+{
+  "@@locale": "es",
+  "receivePaymentReceived": "¡Pago recibido!",
+  "backgroundPaymentCount": "{count, plural, =1{Has recibido un pago} other{Has recibido {count} pagos}}"
+}

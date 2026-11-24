@@ -1,23 +1,20 @@
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/sp_failure_mapping.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 
 class RefreshSpWalletForSendUsecase {
-  final SpFacade _spFacade;
+  final Silent _silent;
   final GetSpNetworkForSendUsecase _getSpNetworkForSendUsecase;
 
-  RefreshSpWalletForSendUsecase(
-    this._spFacade,
-    this._getSpNetworkForSendUsecase,
-  );
+  RefreshSpWalletForSendUsecase(this._silent, this._getSpNetworkForSendUsecase);
 
   /// The SP balance and network the send flow spends from, or null when SP is
   /// not set up.
   Future<Result<SpSendWallet?, SendFailure>> execute() async {
-    final refreshed = (await _spFacade.refresh()).mapErr(
+    final refreshed = (await _silent.refresh()).mapErr(
       (failure) =>
           failure.toSendFailure() ?? SendUnexpectedFailure(failure.logMessage),
     );
@@ -31,7 +28,7 @@ class RefreshSpWalletForSendUsecase {
         // A session is live by here (the refresh above established it), so this
         // is a genuine read failure rather than a cold-start unknown.
         final Network network;
-        switch (_getSpNetworkForSendUsecase.execute()) {
+        switch (await _getSpNetworkForSendUsecase.execute()) {
           case Ok(:final value):
             network = value;
           case Err(:final failure):

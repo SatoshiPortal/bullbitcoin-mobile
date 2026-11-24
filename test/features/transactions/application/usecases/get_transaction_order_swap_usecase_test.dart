@@ -1,7 +1,6 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -17,14 +16,14 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 void main() {
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late GetTransactionOrderSwapUsecase usecase;
 
   setUp(() {
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     usecase = GetTransactionOrderSwapUsecase(swapFacade);
   });
 

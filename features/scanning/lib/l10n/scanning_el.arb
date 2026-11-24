@@ -1,0 +1,46 @@
+{
+  "@@locale": "el",
+  "scanningProgressLabel": "Scanning: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} τμήματα",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Η σάρωση ολοκληρώθηκε",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "Η αποκωδικοποίηση απέτυχε",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "Η επεξεργασία απέτυχε",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "Η σύνδεση NFC χάθηκε. Κρατήστε τη συσκευή σας κοντά στην ετικέτα NFC και δοκιμάστε ξανά.",
+  "nfcWriteFailed": "Η μεταφορά NFC απέτυχε. Δοκιμάστε ξανά.",
+  "nfcDisabled": "Το NFC είναι απενεργοποιημένο. Ενεργοποιήστε το από τις ρυθμίσεις.",
+  "nfcNotAvailable": "Το NFC δεν υποστηρίζεται σε αυτή τη συσκευή",
+  "nfcFailed": "Oops! Κάτι πήγε στραβά",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "Δεν βρέθηκαν υποστηριζόμενα δεδομένα NFC"
+}

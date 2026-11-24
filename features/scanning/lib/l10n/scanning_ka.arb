@@ -1,0 +1,15 @@
+{
+  "@@locale": "ka",
+  "scanningProgressLabel": "სკანირება: {percent}%",
+  "urProgressLabel": "UR პროგრესი: {parts} ნაწილი",
+  "scanningCompletedMessage": "სკანირება დასრულებულია",
+  "urDecodingFailedMessage": "UR-ის დეკოდირება ვერ მოხერხდა",
+  "urProcessingFailedMessage": "UR-ის დამუშავება ვერ მოხერხდა",
+  "scanNfcButton": "NFC-ის სკანირება",
+  "nfcConnectionLost": "NFC კავშირი დაიკარგა. მიიტანეთ თქვენი მოწყობილობა NFC ტეგთან და სცადეთ ხელახლა.",
+  "nfcWriteFailed": "NFC გადაცემა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "nfcDisabled": "NFC გამორთულია. ჩართეთ ის პარამეტრებში.",
+  "nfcNotAvailable": "NFC ამ მოწყობილობაზე მხარდაჭერილი არ არის",
+  "nfcFailed": "უპს! რაღაც ვერ მოხერხდა",
+  "nfcInvalidData": "მხარდაჭერილი NFC მონაცემები ვერ მოიძებნა"
+}

@@ -1,13 +1,13 @@
-import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:overview/overview.dart';
+import 'package:primitives/primitives.dart' show Ok, Err, Result;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullFadingLinearProgress;
 import 'package:material_ui/material_ui.dart';
@@ -20,12 +20,7 @@ void main() {
     const WalletDiscoverySyncFailure(),
   ]) {
     test('settings maps ${failure.runtimeType} to its own failure', () async {
-      final usecase = DiscoverWalletUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          discoverWallet: (_) async => Err(failure),
-        ),
-      );
+      final usecase = DiscoverWalletUsecase((_) async => Err(failure));
       expect(
         await usecase.execute('wallet'),
         isA<Err<void, SettingsFailure>>().having(
@@ -44,15 +39,10 @@ void main() {
         final gate = Completer<Result<void, WalletDiscoveryFailure>>();
         final ids = <String>[];
         final cubit = WalletDiscoveryCubit(
-          DiscoverWalletUsecase(
-            WalletFacade(
-              const Stream.empty(),
-              discoverWallet: (id) {
-                ids.add(id);
-                return gate.future;
-              },
-            ),
-          ),
+          DiscoverWalletUsecase((id) {
+            ids.add(id);
+            return gate.future;
+          }),
         );
         addTearDown(cubit.close);
         await tester.pumpWidget(
@@ -107,9 +97,7 @@ void main() {
   test('leaving settings does not cancel the queued discovery', () async {
     final gate = Completer<Result<void, WalletDiscoveryFailure>>();
     final cubit = WalletDiscoveryCubit(
-      DiscoverWalletUsecase(
-        WalletFacade(const Stream.empty(), discoverWallet: (_) => gate.future),
-      ),
+      DiscoverWalletUsecase((_) => gate.future),
     );
     final pending = cubit.discover('wallet');
     await cubit.close();

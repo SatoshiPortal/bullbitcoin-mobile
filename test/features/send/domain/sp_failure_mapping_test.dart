@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/sp_failure_mapping.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -6,12 +6,12 @@ import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_se
 import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockSpFacade extends Mock implements SpFacade {}
+class _MockSpFacade extends Mock implements Silent {}
 
 class _MockGetSpNetworkForSendUsecase extends Mock
     implements GetSpNetworkForSendUsecase {}
@@ -25,10 +25,10 @@ void main() {
 
   SendFailure failureOf(Result<Object?, SendFailure> result) =>
       (result as Err<Object?, SendFailure>).failure;
-  group('SpFailure.toSendFailure', () {
+  group('SilentFailure.toSendFailure', () {
     test('an amount below the minimum reports out-of-bounds from one sat', () {
       final failure =
-          const SpAmountBelowMinimum('below').toSendFailure()
+          const SilentAmountBelowMinimum('below').toSendFailure()
               as SendAmountOutOfBoundsFailure;
 
       expect(failure.minimumSat, BigInt.one);
@@ -36,14 +36,15 @@ void main() {
     });
 
     test('an amount over the balance reports insufficient balance', () {
-      final failure = const SpAmountExceedsBalance('exceeds').toSendFailure();
+      final failure = const SilentAmountExceedsBalance('exceeds')
+          .toSendFailure();
 
       expect(failure, isA<SendInsufficientBalanceFailure>());
       expect(failure!.logMessage, 'exceeds');
     });
 
     test('a wrong-network address reports the mismatch', () {
-      final failure = const SpAddressNetworkMismatch('wrong network')
+      final failure = const SilentAddressNetworkMismatch('wrong network')
           .toSendFailure();
 
       expect(failure, isA<SendAddressNetworkMismatchFailure>());
@@ -51,30 +52,31 @@ void main() {
     });
 
     test('an unrecognized address reports an invalid payment request', () {
-      final failure = const SpInvalidAddress('unsupported').toSendFailure();
+      final failure = const SilentInvalidAddress('unsupported').toSendFailure();
 
       expect(failure, isA<SendInvalidPaymentRequestFailure>());
       expect(failure!.logMessage, 'unsupported');
     });
 
     test('the failures the user cannot act on map to nothing', () {
-      expect(const SpUnexpected('boom').toSendFailure(), isNull);
-      expect(const SpNotSetUp().toSendFailure(), isNull);
-      expect(const SpSessionBusy().toSendFailure(), isNull);
-      expect(const SpBackendUnreachable('down').toSendFailure(), isNull);
-      expect(const SpSimulationDrifted('drift').toSendFailure(), isNull);
+      expect(const SilentUnexpected('boom').toSendFailure(), isNull);
+      expect(const SilentNotSetUp().toSendFailure(), isNull);
+      expect(const SilentSessionBusy().toSendFailure(), isNull);
+      expect(const SilentBackendUnreachable('down').toSendFailure(), isNull);
+      expect(const SilentSimulationDrifted('drift').toSendFailure(), isNull);
     });
   });
 
   // Each wrapper picks its own generic for a failure the mapping leaves
   // unmapped, so the send flow never shows a raw SP message.
   group('wrapper fallbacks', () {
-    test('the network read reports an unexpected failure', () {
-      when(
-        facade.network,
-      ).thenReturn(const Err<BitcoinNetwork?, SpFailure>(SpUnexpected('read')));
+    test('the network read reports an unexpected failure', () async {
+      when(facade.network).thenAnswer(
+        (_) async =>
+            const Err<BitcoinNetwork?, SilentFailure>(SilentUnexpected('read')),
+      );
 
-      final result = GetSpNetworkForSendUsecase(facade).execute();
+      final result = await GetSpNetworkForSendUsecase(facade).execute();
 
       expect(failureOf(result), isA<SendUnexpectedFailure>());
       expect(failureOf(result).logMessage, 'read');
@@ -82,7 +84,9 @@ void main() {
 
     test('the wallet refresh reports an unexpected failure', () async {
       when(facade.refresh).thenAnswer(
-        (_) async => const Err<SpWallet?, SpFailure>(SpUnexpected('refresh')),
+        (_) async => const Err<SilentWallet?, SilentFailure>(
+          SilentUnexpected('refresh'),
+        ),
       );
 
       final result = await RefreshSpWalletForSendUsecase(
@@ -93,11 +97,13 @@ void main() {
       expect(failureOf(result), isA<SendUnexpectedFailure>());
     });
 
-    test('the amount check reports an unexpected failure', () {
-      when(() => facade.validateAmount(Sats.zero))
-          .thenReturn(const Err<Sats, SpFailure>(SpNotSetUp()));
+    test('the amount check reports an unexpected failure', () async {
+      when(() => facade.validateAmount(Sats.zero)).thenAnswer(
+        (_) async => const Err<Sats, SilentFailure>(SilentNotSetUp()),
+      );
 
-      final result = ValidateSpAmountForSendUsecase(facade).execute(Sats.zero);
+      final result = await ValidateSpAmountForSendUsecase(facade)
+          .execute(Sats.zero);
 
       expect(failureOf(result), isA<SendUnexpectedFailure>());
     });
@@ -110,7 +116,8 @@ void main() {
           isMax: false,
         ),
       ).thenAnswer(
-        (_) async => const Err<SpRecipient, SpFailure>(SpSessionBusy()),
+        (_) async =>
+            const Err<SilentRecipient, SilentFailure>(SilentSessionBusy()),
       );
 
       final result = await ValidateSpRecipientForSendUsecase(facade)
@@ -126,8 +133,9 @@ void main() {
           feerateSatVb: BigInt.one,
         ),
       ).thenAnswer(
-        (_) async =>
-            const Err<SpTxDraft, SpFailure>(SpBackendUnreachable('down')),
+        (_) async => const Err<SilentTxDraft, SilentFailure>(
+          SilentBackendUnreachable('down'),
+        ),
       );
 
       final result = await PrepareSpPaymentForSendUsecase(facade)
@@ -138,7 +146,7 @@ void main() {
     });
 
     test('every broadcast failure reports a broadcast failure', () async {
-      final draft = SpTxDraft(
+      final draft = SilentTxDraft(
         id: 'draft-1',
         inputs: const [],
         outputs: const [],
@@ -146,8 +154,9 @@ void main() {
         changeSat: Sats.zero,
       );
       when(() => facade.sendPayment(draft: draft)).thenAnswer(
-        (_) async =>
-            const Err<String, SpFailure>(SpAmountExceedsBalance('exceeds')),
+        (_) async => const Err<String, SilentFailure>(
+          SilentAmountExceedsBalance('exceeds'),
+        ),
       );
 
       final result = await SendSpPaymentForSendUsecase(facade)

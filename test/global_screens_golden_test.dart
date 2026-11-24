@@ -1,23 +1,20 @@
-import 'package:bb_mobile/features/coins/public/coins.dart';
+import 'package:coins/coins.dart';
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:settings/testing.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -114,13 +111,6 @@ void main() {
         when(() => transactions.stream).thenAnswer((_) => const Stream.empty());
         when(() => transactions.loadTxs()).thenAnswer((_) async {});
         when(() => transactions.close()).thenAnswer((_) async {});
-        if (scene == 'wallet') {
-          expect(locator.isRegistered<TransactionsCubit>(), isFalse);
-          locator.registerFactoryParam<TransactionsCubit, String, void>(
-            (_, _) => transactions,
-          );
-          addTearDown(() => locator.unregister<TransactionsCubit>());
-        }
         final actions = createQuickActionsCubit(
           storage: _MemoryActions(),
           warning: (_) {},
@@ -128,6 +118,12 @@ void main() {
         );
         addTearDown(actions.close);
         await actions.load();
+        final exchangePrompt = createExchangePromptCubit(
+          storage: _MemoryActions(),
+          warning: (_) {},
+          offered: const Stream.empty(),
+        );
+        addTearDown(exchangePrompt.close);
         final navigatorKey = GlobalKey<NavigatorState>();
         final router = GoRouter(
           navigatorKey: navigatorKey,
@@ -140,7 +136,7 @@ void main() {
                 return switch (scene) {
                   'home' => Scaffold(
                     extendBodyBehindAppBar: true,
-                    appBar: WalletHomeAppBar(onSettings: () {}),
+                    appBar: const WalletHomeAppBar(),
                     body: WalletHomeScreen(
                       announcements: const SizedBox.shrink(),
                       arkHost: null,
@@ -153,11 +149,18 @@ void main() {
                       quickActions: actions,
                       onQuickAction: (_, _) {},
                       onCustomizeQuickActions: (_) {},
+                      exchangePrompt: exchangePrompt,
+                      onActivateExchange: (_) {},
                     ),
                   ),
                   'settings' => const AppSettingsScreen(),
                   'wallet' => WalletDetailScreen(
                     walletId: wallet.id,
+                    scopeWalletHistory: (_, child) =>
+                        BlocProvider<TransactionsCubit>.value(
+                          value: transactions,
+                          child: child,
+                        ),
                     onOpenCoins: (_, _) async {},
                     loadCoinSummary: (_) async => const Err(CoinsLoadFailure()),
                   ),
@@ -205,7 +208,7 @@ void main() {
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.themeData(type),
                 routerConfig: router,
-                builder: (context, child) => SettingsFacade.amountScope(
+                builder: (context, child) => Settings.amountScope(
                   navigatorKey: navigatorKey,
                   child: child ?? const SizedBox.shrink(),
                 ),

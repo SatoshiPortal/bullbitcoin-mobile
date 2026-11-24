@@ -1,0 +1,29 @@
+{
+  "@@locale": "bn",
+  "retry": "পুনরায় চেষ্টা করুন",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "bip85NoDefaultWalletError": "কোনো ডিফল্ট Bitcoin ওয়ালেট পাওয়া যায়নি। অনুগ্রহ করে একটি ডিফল্ট ওয়ালেট সেট করুন এবং আবার চেষ্টা করুন।",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip85Title": "BIP85 নির্ধারণবাদী এনট্রপি",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85ExperimentalWarning": "পরীক্ষামূলক \nআপনার ডেরিভেশন পাথগুলি ম্যানুয়ালি ব্যাকআপ করুন",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "bip85NextMnemonic": "পরবর্তী মনেমনিক",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85NextHex": "পরবর্তী HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে"
+}

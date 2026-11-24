@@ -1,16 +1,14 @@
-import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
+import 'package:secrets/custody.dart';
+import 'package:transactions/testing.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
+import 'package:background_tasks/native_sync.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show SeedReferences;
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
+import 'package:all_seed_view/testing.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -18,17 +16,14 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -49,9 +44,11 @@ class _Labels extends Mock implements Labels {}
 
 class _Catalog extends Mock implements WalletCatalogPort {}
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
+
+class _Inventory extends Mock implements WalletInventory {}
 
 class _History extends Mock implements WalletHistoryDatasource {}
 
@@ -92,7 +89,8 @@ void main() {
     isDefault: false,
   );
   registerFallbackValue(row);
-  registerFallbackValue(WalletCatalogPortImpl.keyFromMetadata(row));
+  registerFallbackValue(DateTime.utc(2020));
+  registerFallbackValue(WalletSyncBinding.keyFromMetadata(row));
   late Directory directory;
   late _Policy policy;
   late _Metadata metadata;
@@ -106,7 +104,7 @@ void main() {
     metadata = _Metadata();
     values = _Values();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
-    when(() => metadata.store(any())).thenAnswer((_) async {});
+    when(() => metadata.recordSyncTime(any(), any())).thenAnswer((_) async {});
     when(() => metadata.insert(any())).thenAnswer((_) async {});
     when(() => values.getBalance(key: any(named: 'key'))).thenAnswer(
       (_) async => Balances(
@@ -126,14 +124,11 @@ void main() {
       ),
     );
     repository = WalletRepository(
-      walletMetadataDatasource: metadata,
-      wallet: (_) async => throw StateError('no native access expected'),
+      walletRegistrations: metadata,
       walletValuesDatasource: values,
       synchronize: bridge.synchronize,
-      isSyncing: bridge.isSyncing,
       syncStarted: bridge.started,
       syncFinished: bridge.finished,
-      electrumSyncResultStream: bridge.results,
     );
   });
 
@@ -199,14 +194,11 @@ void main() {
         when(() => metadata.delete(id)).thenAnswer((_) async {});
         final guardedRepository = WalletRepository(
           native: native,
-          walletMetadataDatasource: metadata,
-          wallet: (_) async => throw StateError('no native access expected'),
+          walletRegistrations: metadata,
           walletValuesDatasource: values,
           synchronize: bridge.synchronize,
-          isSyncing: bridge.isSyncing,
           syncStarted: bridge.started,
           syncFinished: bridge.finished,
-          electrumSyncResultStream: bridge.results,
         );
         if (deleteWallet) {
           final swaps = _Swaps();
@@ -330,8 +322,8 @@ void main() {
           (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
       final started = repository.walletSyncStartedStream.first;
       final finished = repository.walletSyncFinishedStream.first;
-      final result = repository.electrumSyncResultStream.first;
-      await SyncWalletUsecase(walletRepository: repository).execute(wallet);
+      final result = bridge.results.first;
+      await repository.sync(wallet);
       expect(policy.calls, 1);
       expect(await started, id);
       expect((await finished).id, id);
@@ -346,8 +338,7 @@ void main() {
     final gate = Completer<void>();
     policy.gate = gate.future;
     final started = repository.walletSyncStartedStream.first;
-    final syncing = SyncWalletUsecase(walletRepository: repository)
-        .execute(wallet);
+    final syncing = repository.sync(wallet);
     try {
       await started;
       verifyNever(() => values.getBalance(key: any(named: 'key')));
@@ -364,11 +355,10 @@ void main() {
         log = Logger.replace(directory: directory);
         final wallet =
             (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
-        final usecase = SyncWalletUsecase(walletRepository: repository);
-        await usecase.execute(wallet, reason: reason);
+        await repository.sync(wallet, reason: reason);
         policy.failure = const SyncConnectionFailure();
         await expectLater(
-          usecase.execute(wallet, reason: reason),
+          repository.sync(wallet, reason: reason),
           throwsA(
             isA<WalletSnapshotException>().having(
               (error) => error.failure,
@@ -461,8 +451,7 @@ void main() {
     () async {
       final requests = <(bool, bool)>[];
       final repository = WalletRepository(
-        walletMetadataDatasource: metadata,
-        wallet: (_) async => throw StateError('no native access expected'),
+        walletRegistrations: metadata,
         walletValuesDatasource: values,
         synchronize: (
           metadata, {
@@ -470,17 +459,14 @@ void main() {
           allowInitialScan = true,
           SyncReason reason = SyncReason.auto,
         }) async => requests.add((discover, allowInitialScan)),
-        isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
-        electrumSyncResultStream: const Stream.empty(),
       );
       final wallet =
           (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
-      final usecase = SyncWalletUsecase(walletRepository: repository);
-      await usecase.execute(wallet);
-      await usecase.execute(wallet, discover: true);
-      await usecase.execute(wallet, allowInitialScan: false);
+      await repository.sync(wallet);
+      await repository.sync(wallet, discover: true);
+      await repository.sync(wallet, allowInitialScan: false);
       expect(requests, [(false, true), (true, true), (false, false)]);
     },
   );
@@ -539,8 +525,7 @@ void main() {
     final wallet =
         (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
     await expectLater(
-      SyncWalletUsecase(walletRepository: repository)
-          .execute(wallet, discover: true, reason: SyncReason.manual),
+      repository.sync(wallet, discover: true, reason: SyncReason.manual),
       throwsA(
         isA<WalletSnapshotException>().having(
           (error) => error.failure,
@@ -554,16 +539,28 @@ void main() {
 
   test('transaction reads delegate sync to the same operation', () async {
     final history = _History();
+    final inventory = _Inventory();
+    when(() => inventory.readWallet(id)).thenAnswer(
+      (_) async => Ok(
+        walletRegistrationForTesting(id: id, network: BitcoinNetwork.testnet),
+      ),
+    );
     when(() => history.getTransactions(key: any(named: 'key'), toAddress: null))
-        .thenAnswer((_) async => []);
+        .thenAnswer((_) async => const Ok([]));
     final transactions = WalletTransactionRepositoryImpl(
-      walletMetadataDatasource: metadata,
+      inventory: inventory,
       labelsFacade: _Labels(),
       history: history,
-      synchronize: bridge.synchronize,
+      synchronize: (key) => bridge.synchronizeDescriptor(
+        WalletSyncBinding.descriptorFromMetadata(row)
+            .fold((value) => value, (failure) => fail(failure.logCode)),
+      ),
     );
     expect(
-      await transactions.getWalletTransactions(walletId: id, sync: true),
+      (await transactions.getWalletTransactions(walletId: id, sync: true)).fold(
+        (value) => value,
+        (failure) => fail(failure.runtimeType.toString()),
+      ),
       isEmpty,
     );
     expect(policy.calls, 1);
@@ -641,7 +638,7 @@ void main() {
       });
       var synchronized = false;
       final originalBalance = await values.getBalance(
-        key: WalletCatalogPortImpl.keyFromMetadata(row),
+        key: WalletSyncBinding.keyFromMetadata(row),
       );
       when(() => values.getBalance(key: any(named: 'key')))
           .thenAnswer((_) async {
@@ -651,8 +648,7 @@ void main() {
       clearInteractions(values);
       final importing = WalletRepository(
         native: native,
-        walletMetadataDatasource: metadata,
-        wallet: (_) async => throw StateError('no native access expected'),
+        walletRegistrations: metadata,
         walletValuesDatasource: values,
         synchronize:
             (
@@ -666,19 +662,19 @@ void main() {
               verify(() => native.create(any())).called(1);
               synchronized = true;
             },
-        isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
-        electrumSyncResultStream: const Stream.empty(),
       );
-      final wallet = await importing.importDescriptor(
-        watchOnlyDescriptor: WatchOnlyDescriptorEntity(
-          watchOnlyDescriptor: watchOnly,
-        ),
+      final input = WatchOnlyInput.fromDescriptor(watchOnly);
+      final result = await importing.importDescriptor(
+        descriptor:
+            (input as Ok<WatchOnlyDescriptorInput, ImportFailure>).value,
+        signer: SignerEntity.remote,
+        label: '',
         sync: true,
       );
       expect(synchronized, isTrue);
-      expect(wallet.id, id);
+      expect((result as Ok<Wallet, ImportWatchOnlyFailure>).value.id, id);
       verify(() => values.getBalance(key: any(named: 'key'))).called(1);
     },
   );

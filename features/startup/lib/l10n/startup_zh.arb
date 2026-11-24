@@ -1,0 +1,63 @@
+{
+  "appStartupErrorMessage": "应用启动失败。请尝试完全关闭应用并重新启动。如果错误仍然存在，请联系支持并提供日志。",
+  "errorSharingLogsMessage": "汇率:{error}",
+  "@errorSharingLogsMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingRecover": "恢复",
+  "appStartupErrorTitle": "1. 启动",
+  "appStartupContactSupportButton": "联络支助",
+  "coreScreensPageNotFound": "页 次",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "deleteLogsTitle": "删除日志",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "日志已删除",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "appInitErrorTitle": "应用启动失败",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "分享日志",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "使用您的备份",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "多亏了您的备份，您的资金是安全的。\n请先尝试重启应用，如果仍然无法启动，请重新安装并使用您的备份恢复。",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "没有备份?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "请勿删除应用程序。\n联系我们的支持团队尝试救援。",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "联系支持",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "显示错误详情",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "请通过 app.bullbitcoin.com/support 联系支持",
+  "logsShareOptionExport": "导出",
+  "logsExportedMessage": "日志导出成功",
+  "logsExportFailedMessage": "日志导出失败"
+}

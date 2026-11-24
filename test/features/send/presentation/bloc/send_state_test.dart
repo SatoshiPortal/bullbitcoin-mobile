@@ -1,16 +1,17 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
+import 'package:swaps/order_swaps.dart';
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, FormatAmount, Sats, ScriptType;
 
-import '../../../coins/wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
@@ -89,7 +90,7 @@ void main() {
     );
     final fixed = multi.copyWith(
       paymentRequest: const PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qa?amount=0.00001',
         address: 'bc1qa',
         amountSat: 1000,
@@ -535,7 +536,7 @@ void main() {
         sweepOutpoints: const {(txId: 'selected', vout: 0)},
         selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         paymentRequest: const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qtest?pj=https://payjo.in',
           address: 'bc1qtest',
           pj: 'https://payjo.in',
@@ -600,7 +601,7 @@ void main() {
   group('SendState.willAttemptPayjoin', () {
     Bip21PaymentRequest bip21WithPj({String pj = 'https://payjo.in'}) =>
         PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qtest?pj=$pj',
           address: 'bc1qtest',
           pj: pj,
@@ -743,7 +744,7 @@ void main() {
         final state = SendState(
           sendType: SendType.liquid,
           paymentRequest: const Bip21PaymentRequest(
-            network: Network.liquidMainnet,
+            network: LiquidNetwork.mainnet,
             uri: 'liquidnetwork:$unconfidentialAddress',
             address: unconfidentialAddress,
           ),
@@ -838,7 +839,7 @@ void main() {
 
   group('SendState multi-recipient compatibility', () {
     final payjoinRequest = const PaymentRequest.bip21(
-      network: Network.bitcoinMainnet,
+      network: BitcoinNetwork.mainnet,
       uri: 'bitcoin:bc1qrecipient?pj=https://payjo.in',
       address: 'bc1qrecipient',
       pj: 'https://payjo.in',

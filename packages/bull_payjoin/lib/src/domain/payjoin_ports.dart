@@ -2,6 +2,18 @@ import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart';
 
+import 'payjoin_failure.dart';
+
+/// Holds native spend admission while the protocol commits its local row.
+/// The callback must not perform network operations or re-enter the wallet.
+typedef PayjoinInputAdmission = Future<Result<void, PayjoinFailure>> Function({
+  required String walletId,
+  required BitcoinNetwork network,
+  required Set<Outpoint> inputs,
+  required String sessionId,
+  required Future<void> Function() persist,
+});
+
 abstract interface class PayjoinWalletPort {
   /// Signs this wallet's inputs of [psbt]. Serves the sender's original PSBT and the receiver's contribution to a proposal alike: the engine computes the PSBT the PDK will ask for, signs it here, and hands the result back — no signing capability outlives the call.
   Future<String> signPsbt({
@@ -116,7 +128,8 @@ abstract interface class PayjoinTransactionPort {
 
   Stream<void> watchWallet(String walletId);
 
-  Future<bool> isTransactionVisible({
+  /// True when observed, false after a clean negative read, null if unavailable.
+  Future<bool?> isTransactionVisible({
     required String walletId,
     required String transactionId,
     bool refresh = false,

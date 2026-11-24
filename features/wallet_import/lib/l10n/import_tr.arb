@@ -1,0 +1,559 @@
+{
+  "importQrDeviceSpecterStep2": "PIN'inizi girin",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "XPUB - QR Code",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "Krux",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep7": "Gerekirse, adresi türü değiştirmek için \"ops\" seçeneğini seçin",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterName": "Specter",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterStep7": "\"Use SLIP-132\"",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceJadeStep5": "Seçenek listesinden \"Wallet\" seçin",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceSeedsignerName": "SeedSigner",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "emptyMnemonicWordsError": "Mnemonik tüm kelimeler girin",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importQrDeviceKruxStep4": "\"open kamera\" düğmesine tıklayın",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceKeystoneStep3": "Tap the - (üç dots) in the top-right köşesinde",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceJadeStep6": "Cüzdan menüsünden \"Export Xpub\" seçin",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeName": "Blockstream Jade",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceSeedsignerStep5": "\"Single Sig\" seçeneğini seçin, sonra tercih edilen senaryo türünü seçin (daha emin değilseniz Yerli Segwit).",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceJadeFirmwareWarning": "Cihazınızın en son donanıma güncel olduğundan emin olun",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "Jade'nin kilidini açmak için cihazı talimatları izleyin",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep10": "Specter cüzdanınız için bir etiket girin ve Import",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSpecterStep1": "Specter cihazınızda güç",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceKeystoneStep10": "Keystone artık BULL Wallet ile kullanıma hazır.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceSeedsignerStep9": "SeedSigner cüzdanınız için bir etiket girin ve Import",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceKeystoneStep5": "Cüzdanların listesinden \"BULL\" seçin",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceJadeStep9": "Cihazınızda gördüğünüz QR kodunu tara.",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceKeystoneStep6": "Mobilinizde, \"açık kamera\" tıklayın",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceSpecterStep3": "Tohum / anahtarınızı girin (her zaman size uygun olan)",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDevicePassportStep2": "PIN'inizi girin",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDeviceSpecterStep8": "Mobil cihazınızda, Open Camera",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceJadeStep2": "Ana menüden \"QR Mode\" seçin",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceScanPrompt": "QR kodunu {deviceName}",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceSpecterStep9": "Scan the QR code shown on your Specter",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importWatchOnlySelectDerivation": "Türleme seçin",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importQrDevicePassportStep4": "\"Connect App\" seçin",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "requiredHint": "Gerekli",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "importQrDevicePassportStep7": "BULL cüzdan uygulamasında türetme seçeneği olarak \"Segwit (BIP84)\" seçin",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "BULL cüzdanında, tercih edilen türleme türünü seçin. Emin değilseniz, \"Segwit (BIP84)\" seçin",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceSeedsignerStep6": "Dışa aktarma seçeneği olarak \"Animated\" seçeneğini belirleyin. Eski SeedSigner aygıt yazılımında \"Sparrow\" seçeneğini belirleyin.",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep3": "Bir TohumQR veya 12 veya 24 kelimelik tohum cümlenizi girin",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceKruxStep1": "Turn on your Krux device",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceSpecterStep4": "Seçilmiş yönteminize göre hızlıları takip edin",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDevicePassportStep1": "Passport cihazınızı açın",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceKeystoneStep7": "Anahtarstone üzerinde görüntülenen QR kodu",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceButtonOpenCamera": "Kamerayı açın",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "importQrDevicePassportName": "Vakıf Pasaportu",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "Specter Talimatlar",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDevicePassportStep9": "Kurulum tamamlandı.",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep10": "Kurulum Tamamlandı",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDeviceKeystoneStep9": "Keystone cüzdanınız için bir etiket girin ve \"İmport\"a tıklayın",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDevicePassportStep6": "Passport cihazınızda görüntülenen QR kodunu tarayın",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep4": "\"Export Xpub\" seçin",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSpecterStep5": "\"Master public keys\" seçin",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKruxInstructionsTitle": "Krux Talimatlar",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "Keystone Talimatları",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "importQrDevicePassportInstructionsTitle": "Vakıf Pasaport Kuralları",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "submitButton": "Gönder",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "importQrDeviceKeystoneName": "Keystone",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceSeedsignerStep1": "SeedSigner cihazınızda güç",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceJadeStep1": "Turn on your Jade device",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep2": "\"Seeds\" menüsü açın",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceJadeStep8": "\"open kamera\" düğmesine tıklayın",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "Kurulum tamamlandı",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDevicePassportStep5": "\"Bull\" seçin",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "\"Wallet\" seçin",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep8": "Link the QR code shown on your SeedSigner",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceSpecterStep6": "\"Single key\" seçin",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "İşte bu!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "importQrDevicePassportStep8": "Passport cüzdanınız için bir etiket girin ve \"İthalat\"a dokunun",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "importQrDeviceKeystoneStep4": "\"Connect Software Wallet\"'a tıklayın",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDeviceKeystoneStep2": "Unlock it by enter your PIN",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep7": "Mobil cihazınızda, Open Camera",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceKruxStep5": "Cihazınızda gördüğünüz QR kodunu tara.",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep2": "Genişletilmiş Halk Anahtar",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Talimatlar",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceKruxStep6": "İşte bu!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "optionalPassphraseHint": "Seçmeli Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "importQrDeviceTitle": "Connect {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceButtonInstructions": "Talimatlar",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeStep4": "Ana menüden \"ops\" seçin",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Talimatlar",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "Keystone üzerinde güç",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importColdcardQInstructionsTitle": "Coldcard Q Talimatları",
+  "importColdcardQStep1": "Coldcard Q cihazınıza giriş yapın",
+  "importColdcardQStep2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "importColdcardQStep3": "Gelişmiş/ayarlar menüsünü seçin",
+  "importColdcardQStep4": "\"export wallet\" seçeneğine tıklayın",
+  "importColdcardQStep5": "Dışa aktarma türü olarak \"descriptor\" seçin",
+  "importColdcardQStep6": "İlk ekranda \"Enter\" tuşuna basın",
+  "importColdcardQStep7": "İkinci ekranda \"Enter\" tuşuna basın",
+  "importColdcardQStep8": "Adres türünüzü seçin (emin değilseniz Segwit kullanın)",
+  "importColdcardQStep9": "QR için, cihazdaki QR kodu düğmesine tıklayın. Cihazda size bir QR kodu gösterecektir",
+  "importColdcardQStep10": "NFC için, cihazdaki NFC düğmesine tıklayın",
+  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" düğmesine tıklayın",
+  "importColdcardQStep12": "Cihazınızda gördüğünüz QR kodunu tarayın veya telefonun NFC'sini Coldcard'ın NFC'sinin üzerine koyun",
+  "importColdcardQStep13": "Bu kadar!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Talimatları",
+  "importColdcardMk4Step1": "Coldcard Mk4 cihazınıza giriş yapın",
+  "importColdcardMk4Step2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "importColdcardMk4Step3": "Gelişmiş/ayarlar menüsünü seçin",
+  "importColdcardMk4Step4": "\"export wallet\" seçeneğine tıklayın",
+  "importColdcardMk4Step5": "Dışa aktarma türü olarak \"descriptor\" seçin",
+  "importColdcardMk4Step6": "İlk ekranda \"Enter\" tuşuna basın",
+  "importColdcardMk4Step7": "İkinci ekranda \"Enter\" tuşuna basın",
+  "importColdcardMk4Step8": "Adres türünüzü seçin (emin değilseniz Segwit kullanın)",
+  "importColdcardMk4Step9": "Coldcard NFC'yi başlatmak için 3 numarasına tıklayın",
+  "importColdcardMk4Step10": "\"Scan NFC\" düğmesine tıklayın",
+  "importColdcardMk4Step11": "Telefonun NFC'sini Coldcard'ın NFC'sinin üzerine koyun",
+  "importColdcardMk4Step12": "Bu kadar!",
+  "recipientsInfoLabel": "Etiket",
+  "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "Talimatlar",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "Kamerayı açın",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "{deviceName} cihazınızdan cüzdan tanımlayıcısını içe aktarın",
+  "importColdcardConnectTitle": "{deviceName} Bağlayın",
+  "importColdcardInvalidWalletData": "Geçersiz Coldcard cüzdan verisi",
+  "importColdcardScanNfcSheetTitle": "Cüzdan tanımlayıcısını NFC ile içe aktarmak için {deviceName} cihazınıza dokunun",
+  "importMnemonicBalanceLabel": "Denge: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Devam etmeye devam et",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
+  "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Mirası",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "Import Mnemonik",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "Tüm üç cüzdan türü senkronize edilir ve onların dengesi ve işlemleri yakında görünecektir. Tamamlanana kadar bekleyebilir veya ithal etmek istediğiniz cüzdan türü olduğundan emin olun.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "Import Mnemonik",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "İşlemler: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "Import Mnemonik",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "Import watch-sadece",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "Vakıf Pasaportu",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "Genric cüzdanlar",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "Donanım cüzdanları",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "SeedSigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "Yeni bir cüzdan ekleyin",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "Copied to klibi",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "Descriptor",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "Verilen xpub'u ilk adresi kullanmadan önce cüzdandan elde edilen ilk adresi doğrulamayı seçtiğinizden emin olun. Yanlış yolu kullanarak fonların kaybına yol açabilir",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "Türleme Path Uyarı",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "Bu cüzdan zaten içe aktarıldı.",
+  "importWatchOnlyErrorImportFailed": "Bu yalnızca-izleme cüzdanını içe aktaramadık. Lütfen bilgileri kontrol edip tekrar deneyin.",
+  "importWatchOnlyErrorInvalidFormat": "Bu, geçerli bir genel anahtar veya tanımlayıcı gibi görünmüyor. Yapıştırdığınızı tekrar kontrol edin.",
+  "importWatchOnlyErrorLabelRequired": "İçe aktarmadan önce cüzdanınıza bir ad verin.",
+  "importWatchOnlyErrorNetworkMismatch": "Bu cüzdan şu anda farklı bir Bitcoin ağı kullanıyor. Mainnet ile Testnet arasında geçiş yapıp tekrar deneyin.",
+  "importWatchOnlyErrorNoWalletSelected": "Önce bir genel anahtar veya tanımlayıcı yapıştırın ya da tarayın.",
+  "importWatchOnlyExtendedPublicKey": "Genişletilmiş Halk Anahtar Anahtar Anahtar Anahtar",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "İthalat",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "Label",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Ağ: Bitcoin ana ağı",
+  "importWatchOnlyNetworkBitcoinTestnet": "Ağ: Bitcoin test ağı",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub veya tanımlayıcı",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "Gerekli",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "Scan QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "Signing Device",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "Import watch-sadece",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "Tipi",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "Bilinmeyen",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger Wallet",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
+}

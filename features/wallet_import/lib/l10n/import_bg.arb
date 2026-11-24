@@ -1,0 +1,318 @@
+{
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "emptyMnemonicWordsError": "Въведете всички думи от вашата мнемонична фраза",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importWatchOnlySelectDerivation": "Изберете деривация",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "requiredHint": "Задължително",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "passphraseLabel": "Паролна фраза",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "submitButton": "Изпрати",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "optionalPassphraseHint": "Опционална парола",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "Етикет",
+  "importQrDeviceTitle": "Свържи {deviceName}",
+  "importQrDeviceScanPrompt": "Сканирайте QR кода от вашия {deviceName}",
+  "importQrDeviceButtonOpenCamera": "Отвори камерата",
+  "importQrDeviceButtonInstructions": "Инструкции",
+  "importQrDeviceJadeName": "Blockstream Jade",
+  "importQrDeviceJadeInstructionsTitle": "Инструкции за Blockstream Jade",
+  "importQrDeviceJadeStep1": "Включете устройството си Jade",
+  "importQrDeviceJadeStep2": "Изберете „QR режим“ от главното меню",
+  "importQrDeviceJadeStep3": "Следвайте инструкциите на устройството, за да отключите Jade",
+  "importQrDeviceJadeStep4": "Изберете „Опции“ от главното меню",
+  "importQrDeviceJadeStep5": "Изберете „Портфейл“ от списъка с опции",
+  "importQrDeviceJadeStep6": "Изберете „Експортирай Xpub“ от менюто на портфейла",
+  "importQrDeviceJadeStep7": "Ако е необходимо, изберете „Опции“, за да промените типа на адреса",
+  "importQrDeviceJadeStep8": "Натиснете бутона „отвори камерата“",
+  "importQrDeviceJadeStep9": "Сканирайте QR кода, който виждате на устройството си.",
+  "importQrDeviceJadeStep10": "Готово!",
+  "importQrDeviceJadeFirmwareWarning": "Уверете се, че устройството ви е актуализирано до най-новия фърмуер",
+  "importQrDeviceKruxName": "Krux",
+  "importQrDeviceKruxInstructionsTitle": "Инструкции за Krux",
+  "importQrDeviceKruxStep1": "Включете устройството си Krux",
+  "importQrDeviceKruxStep2": "Натиснете „Разширен публичен ключ“",
+  "importQrDeviceKruxStep3": "Натиснете „XPUB - QR код“",
+  "importQrDeviceKruxStep4": "Натиснете бутона „отвори камерата“",
+  "importQrDeviceKruxStep5": "Сканирайте QR кода, който виждате на устройството си.",
+  "importQrDeviceKruxStep6": "Готово!",
+  "importQrDeviceKeystoneName": "Keystone",
+  "importQrDeviceKeystoneInstructionsTitle": "Инструкции за Keystone",
+  "importQrDeviceKeystoneStep1": "Включете вашия Keystone",
+  "importQrDeviceKeystoneStep2": "Отключете го, като въведете вашия PIN",
+  "importQrDeviceKeystoneStep3": "Докоснете *** (трите точки) в горния десен ъгъл",
+  "importQrDeviceKeystoneStep4": "Докоснете „Свържи софтуерен портфейл“",
+  "importQrDeviceKeystoneStep5": "Изберете „BULL“ от списъка с портфейли",
+  "importQrDeviceKeystoneStep6": "На мобилното си устройство натиснете „отвори камерата“",
+  "importQrDeviceKeystoneStep7": "Сканирайте QR кода, показан на вашия Keystone",
+  "importQrDeviceKeystoneStep8": "В портфейла BULL изберете предпочитания от вас тип извеждане (derivation). Ако не сте сигурни, изберете „Segwit (BIP84)“",
+  "importQrDeviceKeystoneStep9": "Въведете етикет за вашия Keystone портфейл и натиснете „Импортирай“",
+  "importQrDeviceKeystoneStep10": "Вашият Keystone вече е свързан и готов за използване с BULL Wallet.",
+  "importQrDevicePassportName": "Foundation Passport",
+  "importQrDevicePassportInstructionsTitle": "Инструкции за Foundation Passport",
+  "importQrDevicePassportStep1": "Включете устройството си Passport",
+  "importQrDevicePassportStep2": "Въведете своя PIN",
+  "importQrDevicePassportStep3": "Изберете „Wallet“",
+  "importQrDevicePassportStep4": "Изберете „Connect App“",
+  "importQrDevicePassportStep5": "Изберете „Bull“",
+  "importQrDevicePassportStep6": "Сканирайте QR кода, показан на вашия Passport",
+  "importQrDevicePassportStep7": "В приложението BULL wallet изберете „Segwit (BIP84)“ като опция за извеждане (derivation)",
+  "importQrDevicePassportStep8": "Въведете етикет за вашия Passport портфейл и натиснете „Импортирай“",
+  "importQrDevicePassportStep9": "Настройката е завършена.",
+  "importQrDeviceSeedsignerName": "SeedSigner",
+  "importQrDeviceSeedsignerInstructionsTitle": "Инструкции за SeedSigner",
+  "importQrDeviceSeedsignerStep1": "Включете устройството си SeedSigner",
+  "importQrDeviceSeedsignerStep2": "Отворете менюто „Seeds“",
+  "importQrDeviceSeedsignerStep3": "Сканирайте SeedQR или въведете вашата 12- или 24-словна seed фраза",
+  "importQrDeviceSeedsignerStep4": "Изберете „Експортирай Xpub“",
+  "importQrDeviceSeedsignerStep5": "Изберете „Единичен подпис“, след което изберете предпочитания от вас тип скрипт (изберете Native Segwit, ако не сте сигурни).",
+  "importQrDeviceSeedsignerStep6": "Изберете „Animated“ като опция за експортиране. При по-стар фърмуер на SeedSigner изберете „Sparrow“.",
+  "importQrDeviceSeedsignerStep7": "На мобилното си устройство натиснете „Отвори камерата“",
+  "importQrDeviceSeedsignerStep8": "Сканирайте QR кода, показан на вашия SeedSigner",
+  "importQrDeviceSeedsignerStep9": "Въведете етикет за вашия SeedSigner портфейл и натиснете „Импортирай“",
+  "importQrDeviceSeedsignerStep10": "Настройката е завършена",
+  "importQrDeviceSpecterName": "Specter",
+  "importQrDeviceSpecterInstructionsTitle": "Инструкции за Specter",
+  "importQrDeviceSpecterStep1": "Включете устройството си Specter",
+  "importQrDeviceSpecterStep2": "Въведете своя PIN",
+  "importQrDeviceSpecterStep3": "Въведете своя seed/ключ (изберете опцията, която ви подхожда)",
+  "importQrDeviceSpecterStep4": "Следвайте подканите съобразно избрания от вас метод",
+  "importQrDeviceSpecterStep5": "Изберете „Главни публични ключове“",
+  "importQrDeviceSpecterStep6": "Изберете „Единичен ключ“",
+  "importQrDeviceSpecterStep7": "Изключете „Използвай SLIP-132“",
+  "importQrDeviceSpecterStep8": "На мобилното си устройство натиснете „Отвори камерата“",
+  "importQrDeviceSpecterStep9": "Сканирайте QR кода, показан на вашия Specter",
+  "importQrDeviceSpecterStep10": "Въведете етикет за вашия Specter портфейл и натиснете „Импортирай“",
+  "importQrDeviceSpecterStep11": "Настройката е завършена",
+  "importColdcardQInstructionsTitle": "Инструкции за Coldcard Q",
+  "importColdcardQStep1": "Влезте в устройството си Coldcard Q",
+  "importColdcardQStep2": "Добавете защитна парола, ако имате такава (по избор)",
+  "importColdcardQStep3": "Изберете разширеното меню/менюто с настройки",
+  "importColdcardQStep4": "Натиснете „експортирай портфейл“",
+  "importColdcardQStep5": "Изберете „описател“ като тип за експортиране",
+  "importColdcardQStep6": "Натиснете „Enter“ на първия екран",
+  "importColdcardQStep7": "Натиснете „Enter“ на втория екран",
+  "importColdcardQStep8": "Изберете типа на адреса си (използвайте Segwit, ако не сте сигурни)",
+  "importColdcardQStep9": "За QR натиснете бутона за QR код на устройството. То ще ви покаже QR код на устройството",
+  "importColdcardQStep10": "За NFC натиснете бутона за NFC на устройството",
+  "importColdcardQStep11": "Натиснете бутона „Отвори камерата“ / „Сканирай NFC“",
+  "importColdcardQStep12": "Сканирайте QR кода, който виждате на устройството си, или поставете телефона с NFC върху NFC на Coldcard",
+  "importColdcardQStep13": "Готово!",
+  "importColdcardMk4InstructionsTitle": "Инструкции за Coldcard Mk4",
+  "importColdcardMk4Step1": "Влезте в устройството си Coldcard Mk4",
+  "importColdcardMk4Step2": "Добавете защитна парола, ако имате такава (по избор)",
+  "importColdcardMk4Step3": "Изберете разширеното меню/менюто с настройки",
+  "importColdcardMk4Step4": "Натиснете „експортирай портфейл“",
+  "importColdcardMk4Step5": "Изберете „описател“ като тип за експортиране",
+  "importColdcardMk4Step6": "Натиснете „Enter“ на първия екран",
+  "importColdcardMk4Step7": "Натиснете „Enter“ на втория екран",
+  "importColdcardMk4Step8": "Изберете типа на адреса си (използвайте Segwit, ако не сте сигурни)",
+  "importColdcardMk4Step9": "Натиснете номер 3, за да стартирате NFC на Coldcard",
+  "importColdcardMk4Step10": "Натиснете бутона „Сканирай NFC“",
+  "importColdcardMk4Step11": "Поставете телефона с NFC върху NFC на Coldcard",
+  "importColdcardMk4Step12": "Готово!",
+  "bitboxScreenDefaultWalletLabel": "BitBox портфейл",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "Инструкции",
+  "importColdcardButtonOpenCamera": "Отвори камерата",
+  "importColdcardConnectDescription": "Импортирайте описателя на портфейла от вашия {deviceName}",
+  "importColdcardConnectTitle": "Свържи {deviceName}",
+  "importColdcardInvalidWalletData": "Невалидни данни за Coldcard портфейл",
+  "importColdcardScanNfcSheetTitle": "Докоснете вашия {deviceName}, за да импортирате описателя на портфейла през NFC",
+  "importMnemonicBalanceLabel": "Баланс: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Продължи",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува",
+  "importMnemonicEmptyLabelError": "За импортирането на мнемоника е необходим етикет",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Класически",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "Вложен SegWit",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "- Импортирай мнемоника",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "Всички три типа портфейли се синхронизират и балансът им и транзакциите ще се появят скоро. Можете да изчакате синхронизирането да завърши или да продължите с импортирането, ако сте сигурни кой тип портфейл искате да импортирате.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "- Импортирай мнемоника",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "Транзакции: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "- Импортирай мнемоника",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "- Импортирай само за наблюдение",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "Foundation Passport",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "- Обикновени портфейли",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "- Хардуерни портфейли",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "SeedSigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "- Добави нов портфейл",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "Копирано в клипборда",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "Дескриптор",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "Уверете се, че избраният деривационен път съответства на този, който е довел до дадения xpub, като проверите първия адрес, изведен от портфейла, преди употреба. Неправилният път може да доведе до загуба на средства.",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "Предупреждение за деривационния път",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "Този портфейл вече е импортиран.",
+  "importWatchOnlyErrorImportFailed": "Не успяхме да импортираме този портфейл само за наблюдение. Моля, проверете данните и опитайте отново.",
+  "importWatchOnlyErrorInvalidFormat": "Това не изглежда като валиден публичен ключ или дескриптор. Проверете какво поставихте.",
+  "importWatchOnlyErrorLabelRequired": "Дайте име на портфейла си, преди да го импортирате.",
+  "importWatchOnlyErrorNetworkMismatch": "Този портфейл в момента използва друга Bitcoin мрежа. Превключете между Mainnet и Testnet и опитайте отново.",
+  "importWatchOnlyErrorNoWalletSelected": "Първо поставете или сканирайте публичен ключ или дескриптор.",
+  "importWatchOnlyExtendedPublicKey": "Разширен публичен ключ",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "Импортирай",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "Етикет",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Мрежа: основна мрежа на Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Мрежа: тестова мрежа на Bitcoin",
+  "importWatchOnlyPasteHint": "Поставете xpub, ypub, zpub или descriptor",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "Задължително",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "Сканирай QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "Устройство за подписване",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "- Импортирай само за наблюдение",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "Тип",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "Неизвестно",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger портфейл",
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "==WEBLATE_PART==\nСканирай NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
+}

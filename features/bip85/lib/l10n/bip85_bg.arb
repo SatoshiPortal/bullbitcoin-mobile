@@ -1,0 +1,26 @@
+{
+  "@@locale": "bg",
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "bip85NoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново.",
+  "bip85NextMnemonic": "Създайте ръчно резервно копие на вашите деривационни пътища.",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85ExperimentalWarning": "Експериментално",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bip85Title": "BIP85 Детерминирани ентропии",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85NextHex": "Следваща мнемонична фраза",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "copiedToClipboard": "Копирано в клипборда"
+}

@@ -1,0 +1,45 @@
+{
+  "allSeedViewSecurityWarningMessage": "显示种子短语是一种安全风险。 任何人如果看到你的种子,就可以获得你们的资金。 确保你位于一个私人地点,没有人能够看到你的屏幕.",
+  "cancel": "Cancel",
+  "allSeedViewLoadingMessage": "如果你在这种装置上有多种种子,则可能需要装上.",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "allSeedViewNoSeedsFound": "没有发现种子.",
+  "allSeedViewSecurityWarningTitle": "安保预警",
+  "allSeedViewPassphraseLabel": "通行证:",
+  "allSeedViewOldWallets": "旧墙({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Stand",
+  "allSeedViewDeleteWarningTitle": "WARNING!",
+  "allSeedViewDeleteWarningMessage": "删除这个种子是不可逆转的操作。确保已安全备份种子，或者相关钱包的资金已完全转移时，才可执行操作",
+  "delete": "删除",
+  "allSeedViewErrorDelete": "删除种子失败。请重试。",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "加载种子失败。请重试。",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "图片",
+  "allSeedViewTitle": "Seed Viewer",
+  "allSeedViewExistingWallets": "已有的钱包：({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

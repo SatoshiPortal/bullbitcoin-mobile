@@ -1,8 +1,10 @@
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:swaps/swaps.dart';
 
 extension BoltzSwapFailureToSendFailure on SwapsFailure {
   SendFailure toSendFailure({required int amountSat}) => switch (this) {
+    SwapsInvoiceExpiryTooShortFailure() =>
+      const SendInvoiceExpiryTooShortFailure(),
     final SwapsAmountOutOfLimitsFailure limits => SendAmountOutOfBoundsFailure(
       minimumSat: limits.isBelowMinimum(amountSat)
           ? BigInt.from(limits.minSat)
@@ -20,6 +22,12 @@ extension BoltzSwapFailureToSendFailure on SwapsFailure {
     SwapsMasterKeyUnavailableFailure() ||
     SwapsNotRestorableFailure() ||
     SwapsRefundNotFinalFailure() => SendSwapCreationFailure(logMessage),
-    SwapsUnexpectedFailure() => SendUnexpectedFailure(logMessage),
+    SwapsUnsupportedNetworkFailure() ||
+    SwapsInvalidServerFailure() ||
+    SwapsInvalidAutoSwapSettingsFailure() ||
+    SwapsInvalidLockupFailure() ||
+    SwapsStorageFailure() ||
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => SendUnexpectedFailure(logMessage),
   };
 }

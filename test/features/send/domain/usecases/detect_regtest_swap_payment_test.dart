@@ -1,7 +1,7 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:rust_bindings/boltz.dart' as boltz;
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:satoshifier/payment_request.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rust_bindings/rust_bindings.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv;
@@ -32,7 +32,7 @@ void main() {
       environment: NetworkEnv.regtest,
     );
     expect(request, isA<Bip21PaymentRequest>());
-    expect((request as Bip21PaymentRequest).network, Network.bitcoinRegtest);
+    expect((request as Bip21PaymentRequest).network, BitcoinNetwork.regtest);
   });
 
   test('ert destination retains its concrete regtest chain', () async {
@@ -41,7 +41,7 @@ void main() {
       environment: NetworkEnv.regtest,
     );
     expect(request, isA<Bip21PaymentRequest>());
-    expect((request as Bip21PaymentRequest).network, Network.liquidRegtest);
+    expect((request as Bip21PaymentRequest).network, LiquidNetwork.regtest);
   });
 
   test('confidential Liquid regtest destination reaches the swap route', () async {
@@ -52,7 +52,7 @@ void main() {
       environment: NetworkEnv.regtest,
     );
     expect(request, isA<Bip21PaymentRequest>());
-    expect((request as Bip21PaymentRequest).network, Network.liquidRegtest);
+    expect((request as Bip21PaymentRequest).network, LiquidNetwork.regtest);
   });
 
   test('mainnet Bitcoin destination keeps its historical route', () async {

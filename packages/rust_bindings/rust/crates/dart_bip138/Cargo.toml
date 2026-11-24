@@ -1,0 +1,23 @@
+[package]
+name = "dart_bip138"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib"]
+
+[dependencies]
+flutter_rust_bridge = "=2.13.0"
+bip138 = { version = "=0.2.0", default-features = false, features = ["miniscript_12", "rand"] }
+bip138-ll = { version = "=0.2.0", default-features = false }
+serde_json = "1"
+thiserror = "1"
+
+[dev-dependencies]
+hex = "0.4"
+
+[features]
+bull_sdk = []
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

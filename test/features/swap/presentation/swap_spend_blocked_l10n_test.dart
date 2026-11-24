@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart' show SwapFailureL10n;
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus;
 import 'package:bb_mobile/localizations.dart';

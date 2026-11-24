@@ -1,17 +1,19 @@
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-
-// Re-export the public SP update type so this feature's bloc consumes it
-// without reaching into the SP feature's `domain/`.
-export 'package:bb_mobile/features/sp/public/sp_facade.dart'
-    show SpUpdate, SpBalanceChanged, SpSetupChanged, SpChainTipChanged;
+import 'package:silent/silent.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 /// Wallet feature's own use case wrapping the Silent Payments facade update
 /// stream, so the `WalletBloc` observes SP changes without SP ever pushing
 /// into the wallet (AGENTS.md rule #3: watcher -> use case -> repo).
 class WatchSpWalletUsecase {
-  final SpFacade _spFacade;
+  final Silent _silent;
 
-  WatchSpWalletUsecase({required this._spFacade});
+  WatchSpWalletUsecase({required this._silent});
 
-  Stream<SpUpdate> execute() => _spFacade.watchUpdates();
+  Stream<Result<SilentUpdate, WalletFailure>> execute() =>
+      _silent.watchUpdates().map(
+        (result) => result.mapErr(
+          (_) => const WalletStorageFailure('Silent updates unavailable'),
+        ),
+      );
 }

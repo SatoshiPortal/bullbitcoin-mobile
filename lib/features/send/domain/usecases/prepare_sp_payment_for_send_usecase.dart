@@ -1,19 +1,16 @@
 import 'package:fees/fees.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/sp_failure_mapping.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-
-export 'package:bb_mobile/features/sp/public/sp_facade.dart'
-    show SpAddress, SpRecipient, SpRecipientSp, SpRecipientStandard, SpTxDraft;
+import 'package:silent/silent.dart';
 
 class PrepareSpPaymentForSendUsecase {
-  final SpFacade _spFacade;
+  final Silent _silent;
 
-  PrepareSpPaymentForSendUsecase(this._spFacade);
+  PrepareSpPaymentForSendUsecase(this._silent);
 
-  Future<Result<SpTxDraft, SendFailure>> execute({
-    required List<SpRecipient> recipients,
+  Future<Result<SilentTxDraft, SendFailure>> execute({
+    required List<SilentRecipient> recipients,
     required NetworkFee? fee,
   }) async {
     if (fee is AbsoluteFee) {
@@ -23,7 +20,7 @@ class PrepareSpPaymentForSendUsecase {
         ),
       );
     }
-    return (await _spFacade.preparePayment(
+    return (await _silent.preparePayment(
       recipients: recipients,
       feerateSatVb: _feerateSatVb(fee),
     )).mapErr(

@@ -1,22 +1,22 @@
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Ok, Sats;
 
 import 'dart:io';
 
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Err, Result;
+import 'package:spend/legacy_exceptions.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+import 'package:coins/coins.dart';
+import 'package:coins/setup.dart';
+import 'package:send/testing.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:sync/sync.dart' show FrozenOutpoint, Sync;
 
 import 'package:sync/testing.dart';
@@ -28,12 +28,27 @@ class _MockBlockchain extends Mock implements BitcoinBlockchainRepository {}
 
 class _MockSettings extends Mock implements Preferences {}
 
-class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
-
-class _MockWalletMetadataDatasource extends Mock
-    implements WalletMetadataDatasource {}
+class _MockCoins extends Mock implements Coins {}
 
 class _MockLabels extends Mock implements Labels {}
+
+class _MockDisplayPreferences extends Mock
+    implements AmountDisplayPreferencesReader {}
+
+class _VerifyingSpend extends FakeSpend {
+  @override
+  Result<void, SpendFailure> verifyExternalBitcoin({
+    required String unsignedPsbt,
+    required String signedTransaction,
+    required bool isPsbt,
+  }) => SpendFixtures.verifyBitcoin(
+    unsignedPsbt: unsignedPsbt,
+    signedTransaction: signedTransaction,
+    isPsbt: isPsbt,
+  );
+}
+
+class _MockImport extends Mock implements BroadcastImportedBitcoinUsecase {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -58,23 +73,32 @@ void main() {
   late _MockBlockchain blockchain;
   late _MockSettings settings;
 
-  BroadcastBitcoinTransactionUsecase usecase({
-    WalletUtxoRepository? walletUtxoRepository,
-  }) => BroadcastBitcoinTransactionUsecase(
-    bitcoinBlockchainRepository: blockchain,
-    settingsRepository: settings,
-    walletUtxoRepository:
-        walletUtxoRepository ??
-        WalletUtxoRepositoryImpl(
-          walletMetadataDatasource: _MockWalletMetadataDatasource(),
-          labelsFacade: _MockLabels(),
-          loadWallet: (_) async => throw StateError('Unexpected coin read'),
-          freezesDatasource: SyncFreezesDatasource(sync: () async => sync),
-        ),
-  );
+  BroadcastBitcoinTransactionUsecase usecase({Coins? coins}) =>
+      BroadcastBitcoinTransactionUsecase(
+        bitcoinBlockchainRepository: blockchain,
+        settingsRepository: settings,
+        coins:
+            coins ??
+            CoinsFeature.mount<String>(
+              resolveWalletKey: (_) async =>
+                  throw StateError('Unexpected wallet lookup'),
+              labels: _MockLabels(),
+              loadWallet: (_) async => throw StateError('Unexpected coin read'),
+              foreground: () async => Ok(sync),
+              preferences: _MockDisplayPreferences(),
+              poll: (_) async {},
+              watchRevisions: (_) => const Stream.empty(),
+              watchStartedSyncs: (_) => const Stream.empty(),
+              watchFinishedSyncs: (_) => const Stream.empty(),
+              walletId: (id) => id,
+              missingWalletRedirect: '/',
+              onSend: (_, _, _) async {},
+              onSweep: (_, _, _) async {},
+            ).coins,
+      );
 
   Future<void> freeze(String txId, int vout) =>
-      SyncFreezesDatasource(sync: () async => sync).freezeAttributed([
+      CoinFreezes(sync: () async => sync).freezeAttributed([
         FrozenOutpoint((txId: txId, vout: vout), origin: 'wallet'),
       ]);
 
@@ -195,12 +219,12 @@ void main() {
     });
 
     test('refuses when the frozen store cannot be read', () async {
-      final failing = _MockWalletUtxoRepository();
-      when(failing.getAllFrozenOutpoints)
-          .thenThrow(const FileSystemException('store unavailable'));
+      final failing = _MockCoins();
+      when(failing.frozenOutpoints)
+          .thenAnswer((_) async => const Err(CoinsLoadFailure()));
 
       await expectLater(
-        usecase(walletUtxoRepository: failing)
+        usecase(coins: failing)
             .execute(psbt, isPsbt: true, network: Network.bitcoinMainnet),
         throwsA(isA<BroadcastTransactionException>()),
       );
@@ -221,16 +245,16 @@ void main() {
 
     test('the airgap flow does not broadcast a signed frozen spend', () async {
       await freeze(spentTxId, 0);
+      final spend = _VerifyingSpend();
+      final broadcast = _MockImport();
       final cubit = BroadcastSignedTxCubit(
-        broadcastBitcoinTransactionUsecase: usecase(),
-        verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-          SendFacade(
-            bitcoin: usecase().execute,
-            liquid: (_) async => throw StateError('Liquid is not used here'),
-            verifySignedTxUsecase: VerifySignedTxUsecase(),
-          ),
+        network: BitcoinNetwork.mainnet,
+        broadcastImportedBitcoin: broadcast,
+        verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(spend),
+        prepared: SpendFixtures.preparedBitcoin(
+          unsignedPsbt: psbt,
+          fee: Sats.zero,
         ),
-        unsignedPsbt: psbt,
       );
       addTearDown(cubit.close);
 
@@ -238,6 +262,7 @@ void main() {
       expect(cubit.state.transaction, isNotNull);
       await cubit.broadcastTransaction();
 
+      verifyZeroInteractions(broadcast);
       verifyNothingBroadcast();
       expect(cubit.state.isBroadcasted, isFalse);
     });

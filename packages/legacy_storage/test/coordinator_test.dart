@@ -7,6 +7,7 @@ import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
+import 'support/dart_executable.dart';
 import 'support/coordinator_fixture.dart';
 
 void main() {
@@ -327,7 +328,7 @@ void main() {
     'marker-owner-pilot-renamed',
   ]) {
     test('SIGKILL after $step resumes twice without recopy', () async {
-      final child = await Process.start(Platform.resolvedExecutable, [
+      final child = await Process.start(dartExecutable, [
         'run',
         'test/support/coordinator_child.dart',
         directory.path,

@@ -1,0 +1,559 @@
+{
+  "importQrDeviceSpecterStep2": "ใส่ PIN ของคุณ",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "คลิก XPUB - รหัส QR",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "แม่",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep7": "ถ้าคุณต้องการ \"ตัวเลือก\" เพื่อเปลี่ยนที่อยู่",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterName": "ตัวอย่าง",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterStep7": "ทําซ้ํา \"ใช้ SLIP-132\"",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceJadeStep5": "เลือก \"กระเป๋าสตางค์\" จากรายการ",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceSeedsignerName": "เมล็ด",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "emptyMnemonicWordsError": "ใส่คําพูดของ mnemonic",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importQrDeviceKruxStep4": "คลิก \"เปิดกล้อง\"",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceKeystoneStep3": "แตะ *** (สามจุด) ในมุมด้านบน",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceJadeStep6": "เลือก \"ส่งออก Xasa\" จากเมนูกระเป๋าสตางค์",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeName": "บล็อก",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceSeedsignerStep5": "เลือก \"Sig\", เลือกสคริปต์ของคุณที่คุณต้องการ (choose Segative Segre).",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceJadeFirmwareWarning": "ให้แน่ใจว่าอุปกรณ์ของคุณอัปเดตเฟิร์มแวร์ล่าสุด",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "ติดตามอุปกรณ์เพื่อปลดล็อค ปักกิ่ง",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep10": "ใส่ฉลากสําหรับกระเป๋าสตางค์ของคุณและแตะนําเข้า",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSpecterStep1": "แหล่งจ่ายไฟของคุณ",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceKeystoneStep10": "แจ็คของคุณตอนนี้เชื่อมต่อและพร้อมที่จะใช้งานด้วยชิป.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceSeedsignerStep9": "ใส่ฉลากสําหรับกระเป๋าสตางค์ของคุณและแตะนําเข้า",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceKeystoneStep5": "เลือก \"BULL\" จากรายการของกระเป๋าเงิน",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceJadeStep9": "สแกนรหัส QR เพื่อดูอุปกรณ์ของคุณ.",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceKeystoneStep6": "บนโทรศัพท์มือถือของคุณคลิก \"เปิดกล้อง\"",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceSpecterStep3": "ใส่เมล็ดของคุณ / เครื่องมือ (chose) ที่เป็นตัวเลือกที่คุณต้องการ",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDevicePassportStep2": "ใส่ PIN ของคุณ",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDeviceSpecterStep8": "บนโทรศัพท์มือถือของคุณ, แตะกล้องเปิด",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceJadeStep2": "เลือก \"QR\" จากเมนูหลัก",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceScanPrompt": "สแกนคิวอาร์โค้ดจาก {deviceName} ของคุณ",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceSpecterStep9": "การสแกนรหัส QR จะแสดงในตัวอย่างของคุณ",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importWatchOnlySelectDerivation": "เลือก",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importQrDevicePassportStep4": "เลือก \"Connect App\"",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "requiredHint": "ข้อกําหนดที่จําเป็น",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "importQrDevicePassportStep7": "ในแอป BULL wallet ให้เลือก \"Segwit (BIP84)\" เป็นตัวเลือกการสร้างคีย์",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "ในกระเป๋าเงินสีทองเลือกของคุณ หากคุณไม่จําเป็นต้องเลือก \"Segwit)",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceSeedsignerStep6": "เลือก \"Animated\" เป็นตัวเลือกการส่งออก สำหรับเฟิร์มแวร์ SeedSigner รุ่นเก่า ให้เลือก \"Sparrow\"",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep3": "การสแกนเมล็ดQR หรือป้อน 12 - หรือ 24 วลี",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceKruxStep1": "เปิดบนอุปกรณ์",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceSpecterStep4": "ปฏิบัติตามวิธีการเลือกของคุณ",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDevicePassportStep1": "เปิดเครื่อง Passport ของคุณ",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceKeystoneStep7": "สแกนรหัส QR จะแสดงบนแม่เหล็กของคุณ",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceButtonOpenCamera": "เปิดกล้อง",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "importQrDevicePassportName": "หนังสือเดินทาง",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "passphraseLabel": "บัตร",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "คําแนะนํา",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDevicePassportStep9": "ตั้งค่าเสร็จสมบูรณ์",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep10": "การตั้งค่าที่สมบูรณ์",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDeviceKeystoneStep9": "ใส่ฉลากสําหรับกระเป๋าสตางค์และแตะ \"Import\"",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDevicePassportStep6": "สแกนคิวอาร์โค้ดที่แสดงบน Passport ของคุณ",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep4": "เลือก \"ส่งออก Xasa\"",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSpecterStep5": "เลือก \"โปรแกรมสาธารณะ\"",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKruxInstructionsTitle": "คําแนะนํา",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "คําแนะนํา",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "importQrDevicePassportInstructionsTitle": "หนังสือเดินทาง",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "submitButton": "ติดต่อ",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "importQrDeviceKeystoneName": "แจ็ค",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceSeedsignerStep1": "อุปกรณ์บนเมล็ดพันธุ์ของคุณ",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceJadeStep1": "เปิดบนอุปกรณ์บาร์บีคิวของคุณ",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep2": "เปิดเมนู \"ดู\"",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceJadeStep8": "คลิก \"เปิดกล้อง\"",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "การตั้งค่าเสร็จสมบูรณ์",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDevicePassportStep5": "เลือก \"Bull\"",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "เลือก \"Wallet\"",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep8": "สแกนรหัส QR ที่แสดงบนเมล็ดพันธุ์ของคุณ",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceSpecterStep6": "เลือก \"เดียว\"",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "นั่นคือ!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "importQrDevicePassportStep8": "ใส่ชื่อสำหรับกระเป๋า Passport ของคุณ แล้วแตะ \"การนำเข้า\"",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "importQrDeviceKeystoneStep4": "แตะ \"เชื่อมต่อซอฟต์แวร์กระเป๋าสตางค์\"",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDeviceKeystoneStep2": "ปลดล็อกรหัสของคุณ",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep7": "บนโทรศัพท์มือถือของคุณ, แตะกล้องเปิด",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceKruxStep5": "สแกนรหัส QR เพื่อดูอุปกรณ์ของคุณ.",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep2": "คลิกขยายสาธารณะ",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "คําแนะนําเมล็ดพันธุ์",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceKruxStep6": "นั่นคือ!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "optionalPassphraseHint": "เลือกข้อความ",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "importQrDeviceTitle": "เชื่อมต่อ {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceButtonInstructions": "คําแนะนํา",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeStep4": "เลือก \"ตัวเลือก\" จากเมนูหลัก",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeInstructionsTitle": "บล็อก",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "พลังงานบนแม่เหล็กของคุณ",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importColdcardQInstructionsTitle": "คำแนะนำสำหรับ Coldcard Q",
+  "importColdcardQStep1": "เข้าสู่ระบบอุปกรณ์ Coldcard Q ของคุณ",
+  "importColdcardQStep2": "ใส่ passphrase หากคุณมี (ไม่บังคับ)",
+  "importColdcardQStep3": "เลือกเมนูขั้นสูง/การตั้งค่า",
+  "importColdcardQStep4": "กด \"export wallet\"",
+  "importColdcardQStep5": "เลือก \"descriptor\" เป็นประเภทการส่งออก",
+  "importColdcardQStep6": "กด \"Enter\" บนหน้าจอแรก",
+  "importColdcardQStep7": "กด \"Enter\" บนหน้าจอที่สอง",
+  "importColdcardQStep8": "เลือกประเภทที่อยู่ของคุณ (ใช้ Segwit หากไม่แน่ใจ)",
+  "importColdcardQStep9": "สำหรับ QR ให้กดปุ่ม QR code บนอุปกรณ์ อุปกรณ์จะแสดง QR code ให้คุณ",
+  "importColdcardQStep10": "สำหรับ NFC ให้กดปุ่ม NFC บนอุปกรณ์",
+  "importColdcardQStep11": "กดปุ่ม \"Open the camera\" / \"Scan NFC\"",
+  "importColdcardQStep12": "สแกน QR code ที่แสดงบนอุปกรณ์ของคุณ หรือวางโทรศัพท์ไว้บน NFC ของ Coldcard",
+  "importColdcardQStep13": "เท่านี้ก็เสร็จแล้ว!",
+  "importColdcardMk4InstructionsTitle": "คำแนะนำสำหรับ Coldcard Mk4",
+  "importColdcardMk4Step1": "เข้าสู่ระบบอุปกรณ์ Coldcard Mk4 ของคุณ",
+  "importColdcardMk4Step2": "ใส่ passphrase หากคุณมี (ไม่บังคับ)",
+  "importColdcardMk4Step3": "เลือกเมนูขั้นสูง/การตั้งค่า",
+  "importColdcardMk4Step4": "กด \"export wallet\"",
+  "importColdcardMk4Step5": "เลือก \"descriptor\" เป็นประเภทการส่งออก",
+  "importColdcardMk4Step6": "กด \"Enter\" บนหน้าจอแรก",
+  "importColdcardMk4Step7": "กด \"Enter\" บนหน้าจอที่สอง",
+  "importColdcardMk4Step8": "เลือกประเภทที่อยู่ของคุณ (ใช้ Segwit หากไม่แน่ใจ)",
+  "importColdcardMk4Step9": "กดหมายเลข 3 เพื่อเริ่มการทำงาน NFC ของ Coldcard",
+  "importColdcardMk4Step10": "กดปุ่ม \"Scan NFC\"",
+  "importColdcardMk4Step11": "วางโทรศัพท์ไว้บน NFC ของ Coldcard",
+  "importColdcardMk4Step12": "เท่านี้ก็เสร็จแล้ว!",
+  "recipientsInfoLabel": "ป้ายกำกับ",
+  "bitboxScreenDefaultWalletLabel": "เหรียญ",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "คําแนะนํา",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "เปิดกล้อง",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "นำเข้า wallet descriptor จาก {deviceName} ของคุณ",
+  "importColdcardConnectTitle": "เชื่อมต่อ {deviceName}",
+  "importColdcardInvalidWalletData": "ข้อมูลกระเป๋า Coldcard ไม่ถูกต้อง",
+  "importColdcardScanNfcSheetTitle": "แตะ {deviceName} เพื่อนำเข้า wallet descriptor ผ่าน NFC",
+  "importMnemonicBalanceLabel": "สมดุล: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "อ่านต่อ",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
+  "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "การลงโทษ",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "พระราชวัง",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "นําเข้า Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "กระเป๋าเงินทั้งหมดสามรายการจะถูกซิงค์และยอดคงเหลือและการทําธุรกรรมของพวกเขาจะปรากฏขึ้น คุณสามารถรอจนกว่าการซิงค์สมบูรณ์หรือดําเนินการเพื่อนําเข้าหากคุณแน่ใจว่ากระดาษที่คุณต้องการ.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "นําเข้า Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "การทําธุรกรรม: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "รถบัส",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "นําเข้า Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "การนําเข้า",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "บล็อก",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "แจ็ค",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "แม่",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "ไฟ LED",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "หนังสือเดินทาง",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "กระเป๋าเงิน",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "ฮาร์ดแวร์",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "เมล็ด",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "ตัวอย่าง",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "เพิ่มกระเป๋าสตางค์ใหม่",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "ติดตามคลิปบอร์ด",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "ข้อความ",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "ตรวจสอบให้แน่ใจว่าเส้นทางที่คุณเลือกการแข่งขันที่ผลิตขึ้นโดยระบุตามชื่อที่ Xasa เพื่อตรวจสอบที่อยู่แรกจากกระเป๋าเงินก่อน การใช้เส้นทางที่ไม่ถูกต้องสามารถสูญเสียเงิน",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "การเตือนภัย",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "นำเข้ากระเป๋าเงินนี้แล้ว",
+  "importWatchOnlyErrorImportFailed": "เราไม่สามารถนำเข้ากระเป๋าเงินแบบดูอย่างเดียวนี้ได้ กรุณาตรวจสอบรายละเอียดแล้วลองอีกครั้ง",
+  "importWatchOnlyErrorInvalidFormat": "นี่ดูเหมือนจะไม่ใช่กุญแจสาธารณะหรือดิสคริปเตอร์ที่ถูกต้อง กรุณาตรวจสอบสิ่งที่คุณวางอีกครั้ง",
+  "importWatchOnlyErrorLabelRequired": "ตั้งชื่อกระเป๋าเงินของคุณก่อนนำเข้า",
+  "importWatchOnlyErrorNetworkMismatch": "กระเป๋าเงินนี้กำลังใช้เครือข่าย Bitcoin อื่น โปรดสลับระหว่าง Mainnet และ Testnet แล้วลองอีกครั้ง",
+  "importWatchOnlyErrorNoWalletSelected": "กรุณาวางหรือสแกนกุญแจสาธารณะหรือดิสคริปเตอร์ก่อน",
+  "importWatchOnlyExtendedPublicKey": "ขยายสาธารณะ คีย์",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "การนําเข้า",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "ป้ายฉลาก",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "เครือข่าย: เครือข่ายหลักของ Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "เครือข่าย: เครือข่ายทดสอบของ Bitcoin",
+  "importWatchOnlyPasteHint": "วางชื่อ xem, yem, zasa หรือ descript",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "ข้อกําหนดที่จําเป็น",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "การสแกน QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "ตรวจสอบอุปกรณ์",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "การนําเข้า",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "ประเภท",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "เป็นที่รู้จัก",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "จอแสดงผล LED",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "การสแกน NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
+}

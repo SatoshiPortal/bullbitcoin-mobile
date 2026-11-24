@@ -1,0 +1,438 @@
+{
+  "@@locale": "pt_BR",
+  "save": "Salvar",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressLabel": "Endereço: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Montante solicitado: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Quando desativado, você terá a opção de permitir um auto swap bloqueado devido a taxas altas",
+  "@autoswapAlwaysBlockInfoDisabled": {
+    "description": "Help text when always block is disabled"
+  },
+  "autoswapAlwaysBlockInfoEnabled": "Quando ativado, os auto swaps com taxas acima do limite definido serão sempre bloqueados",
+  "@autoswapAlwaysBlockInfoEnabled": {
+    "description": "Help text when always block is enabled"
+  },
+  "autoswapAlwaysBlockLabel": "Sempre bloquear altas taxas",
+  "@autoswapAlwaysBlockLabel": {
+    "description": "Label for toggle to always block high fee transfers"
+  },
+  "autoswapBaseBalanceInfoText": "Seu saldo imediato da carteira de pagamento retornará a este equilíbrio de destino após um auto-swap.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapEnableToggleLabel": "Ativar Auto Swap",
+  "@autoswapEnableToggleLabel": {
+    "description": "Label for the main toggle switch to enable/disable auto transfer feature"
+  },
+  "autoswapLoadSettingsError": "Falhado para carregar configurações de troca automática",
+  "@autoswapLoadSettingsError": {
+    "description": "Error message when loading settings fails"
+  },
+  "autoswapMaxBalanceLabel": "Max equilíbrio de carteira instantânea",
+  "@autoswapMaxBalanceLabel": {
+    "description": "Label for amount threshold input field"
+  },
+  "autoswapMaxFeeInfoText": "Se a taxa total do swap ficar acima da porcentagem definida, o auto swap será bloqueado",
+  "@autoswapMaxFeeInfoText": {
+    "description": "Help text explaining how the max fee threshold works"
+  },
+  "autoswapMaxFeeLabel": "Taxa máxima de swap",
+  "@autoswapMaxFeeLabel": {
+    "description": "Label for fee threshold percentage input field"
+  },
+  "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",
+  "autoswapMaximumFeeError": "Limite máximo de taxa é {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "description": "Validation error shown when fee threshold exceeds maximum",
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Limite mínimo de equilíbrio é {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "O limiar mínimo de equilíbrio é {amount} sats",
+  "@autoswapMinimumThresholdErrorSats": {
+    "description": "Validation error shown when amount threshold is below minimum (sats display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Escolha qual carteira Bitcoin receberá os fundos transferidos (necessário)",
+  "@autoswapRecipientWalletInfoText": {
+    "description": "Help text explaining wallet selection"
+  },
+  "autoswapRecipientWalletLabel": "Carteira de Bitcoin",
+  "@autoswapRecipientWalletLabel": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "autoswapRecipientWalletPlaceholder": "Selecione uma carteira Bitcoin",
+  "@autoswapRecipientWalletPlaceholder": {
+    "description": "Dropdown placeholder text when no wallet is selected"
+  },
+  "autoswapRecipientWalletPlaceholderRequired": "Selecione uma carteira Bitcoin *",
+  "@autoswapRecipientWalletPlaceholderRequired": {
+    "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+  },
+  "autoswapRecipientWalletRequired": "*",
+  "@autoswapRecipientWalletRequired": {
+    "description": "Required field indicator asterisk"
+  },
+  "autoswapSaveButton": "Salvar",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "autoswapSelectWalletError": "Por favor, selecione uma carteira Bitcoin destinatário",
+  "@autoswapSelectWalletError": {
+    "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+  },
+  "autoswapSettingsTitle": "Configurações do Auto Swap",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap irá desencadear quando o seu equilíbrio vai acima deste equilíbrio máximo.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
+  "autoswapTriggerBalanceError": "O saldo máximo deve ser de pelo menos 2x o saldo alvo",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
+  },
+  "autoswapUpdateSettingsError": "Falhado para atualizar as configurações de troca automática",
+  "@autoswapUpdateSettingsError": {
+    "description": "Error message when updating settings fails"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
+  "closeDialogButton": "Fechar",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "coinsKeychainChange": "Troco",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Receber",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Consolidar a carteira",
+  "coreScreensAmountLabel": "Montante",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensConfirmButton": "Confirmação",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "coreScreensExternalTransfer": "Swap externo",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensFeeDeductionExplanation": "Esta é a taxa total deduzida do montante enviado",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensFeePriorityLabel": "Prioridade de Taxas",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensFromLabel": "A partir de",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensInternalTransfer": "Swap interno",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensNetworkFeesLabel": "Taxas de rede",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensReceiveAmountLabel": "Receber valor",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Receber Taxas de Rede",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensSendAmountLabel": "Enviar valor",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Enviar Taxa de rede",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Taxas de rede do servidor",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensToLabel": "Para",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensTransferFeeLabel": "Taxa de swap",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensTransferIdLabel": "ID do swap",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "doneButton": "Feito",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Pagamentos imediatos",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "payNetworkError": "Erro de rede. Por favor, tente novamente",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveNote": "Nota",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "Selecione o valor",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "sendAdvancedOptions": "Opções avançadas",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendDone": "Feito",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendFastFee": "Rápido",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Substitui-a-taxa activada",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "Selecione moedas manualmente",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "Utxos selecionados não cobre a quantidade necessária",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendSelfTransfer": "Transferência própria",
+  "swapAmountLabel": "Montante",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapAmountPlaceholder": "0",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapAvailableBalance": "Balanço disponível",
+  "@swapAvailableBalance": {
+    "description": "Available balance label"
+  },
+  "swapConfirmTransferTitle": "Confirmar swap",
+  "@swapConfirmTransferTitle": {
+    "description": "AppBar title on the confirmation page"
+  },
+  "swapContinueButton": "Continue",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapDoNotUninstallWarning": "Não desinstale o aplicativo até que o swap seja concluído!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
+  "swapErrorAmountAboveMaximum": "Montante excede o valor máximo de swap: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "O valor está abaixo do valor mínimo de swap: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Digite o endereço da carteira externa",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapExternalTransferLabel": "Swap externo",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "A partir de",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapGoHomeButton": "Vai para casa",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapInfoDescription": "Faça swap de Bitcoin entre suas carteiras com facilidade. Mantenha fundos na Carteira de Pagamento Instantâneo apenas para gastos do dia a dia.",
+  "@swapInfoDescription": {
+    "description": "Information banner text on amount page"
+  },
+  "swapInsufficientFunds": "Fundos insuficientes",
+  "swapInternalTransferTitle": "Swap interno",
+  "@swapInternalTransferTitle": {
+    "description": "AppBar title on the amount entry page"
+  },
+  "swapMaxButton": "MAX",
+  "@swapMaxButton": {
+    "description": "Button to use maximum available balance"
+  },
+  "swapReceiveExactAmountLabel": "Receber quantidade exata",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Subtrair taxas de montante",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapToLabel": "Para",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapTotalFees": "Taxas totais ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapTransferCompletedMessage": "Uau, você esperou! O swap foi concluído com sucesso.",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferCompletedTitle": "Swap concluído",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferPendingMessage": "O swap está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Você pode voltar para a tela inicial e aguardar.",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferPendingTitle": "Swap pendente",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferRefundInProgressMessage": "Ocorreu um erro com o swap. Seu reembolso está em andamento.",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundInProgressTitle": "Reembolso do swap em andamento",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundedMessage": "O swap foi reembolsado com sucesso.",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapTransferRefundedTitle": "Swap reembolsado",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferTitle": "Swap",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapUnderReviewDescription": "Este swap requer uma análise manual. Entre em contato com o suporte para obter ajuda. Se você não tiver uma conta de suporte, basta criar uma; o KYC não é necessário.",
+  "swapUnderReviewSupportMessage": "Swap em análise\nID do pedido: {orderId}\nID da solicitação: {requestId}\nNúmero do pedido: {orderNumber}",
+  "swapUnderReviewTitle": "Swap em análise",
+  "swapValidationSelectFromWallet": "Selecione uma carteira de origem para o swap",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Selecione uma carteira de destino para o swap",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLightning": "Luz",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkLiquid": "Líquido",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionStatusSwapExpired": "Swap Expirou",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusSwapFailed": "Swap Failed",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescChainExpired": "Este swap expirou. Seus fundos serão devolvidos automaticamente à sua carteira.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainFailed": "Ocorreu um problema com seu swap. Entre em contato com o suporte se os fundos não forem devolvidos em até 24 horas.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapOpenWithin24h": "Abra o aplicativo em até 24 horas para concluir o seu swap.",
+  "typeLabel": "Tipo: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "walletLoadFailed": "Não foi possível carregar suas carteiras. Verifique sua conexão e tente novamente."
+}

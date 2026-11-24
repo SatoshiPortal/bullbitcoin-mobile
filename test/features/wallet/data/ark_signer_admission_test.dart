@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:ark/funding.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,9 +17,11 @@ import 'package:sync/sync.dart';
 
 import 'ark_funding_test_fixture.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
+
+class _Inventory extends Mock implements WalletInventory {}
 
 class _CheckingStorage extends FakeSecureStoragePlatform {
   final bool Function() markerCommitted;
@@ -43,12 +45,13 @@ class _CheckingStorage extends FakeSecureStoragePlatform {
 void main() {
   late FundingFixture fixture;
   late _Metadata metadata;
+  late _Inventory inventory;
   late FakeSecureStoragePlatform keystore;
   late ArkFundingSigningGuard guard;
   int nativeAccesses = 0;
 
   BitcoinWalletRepository generic() => BitcoinWalletRepository(
-    walletMetadataDatasource: metadata,
+    walletRegistrations: metadata,
     secrets: Secrets(scratchDirectory: () async => fixture.directory.path),
     wallet: (_) async => throw StateError('no native access expected'),
     walletValuesDatasource: _Values(),
@@ -61,16 +64,26 @@ void main() {
       throw StateError('annotation must not occur');
     },
     (_) async => BitcoinSpendStatus.ready,
-    _Values(),
-    metadata,
+    inventory,
     guard,
   );
   setUp(() {
     fixture = FundingFixture();
     metadata = _Metadata();
+    inventory = _Inventory();
+    when(() => inventory.readWallet(any())).thenAnswer(
+      (invocation) async => Ok(
+        walletRegistrationForTesting(
+          id: invocation.positionalArguments.single as String,
+          network: BitcoinNetwork.regtest,
+          signer: WalletSigner.local,
+          secretFingerprint: Fingerprint('00112233'),
+        ),
+      ),
+    );
     nativeAccesses = 0;
     keystore = FakeSecureStoragePlatform().install();
-    guard = ArkFundingSigningGuard(Ok(fixture.store));
+    guard = ArkFundingSigningGuard(authority: fixture.store);
     when(() => metadata.fetch(any())).thenAnswer(
       (i) async =>
           fundingMetadata.copyWith(id: i.positionalArguments.single as String),
@@ -108,7 +121,7 @@ void main() {
   test(
     'unavailable authority blocks both signers rather than bypassing the guard',
     () async {
-      guard = const ArkFundingSigningGuard(Err(SyncStorageFailure()));
+      guard = const ArkFundingSigningGuard(authority: null);
       await expectLater(
         generic().signPsbt(publicFundingPsbt, walletId: fundingWalletId),
         throwsA(isA<WalletSpendBlockedException>()),
@@ -146,6 +159,39 @@ void main() {
     expect(checking.sawCommittedMarker, isTrue);
     expect(checking.reads, greaterThan(0));
   });
+  test(
+    'Payjoin never authorizes a public fingerprint as a local key',
+    () async {
+      when(() => inventory.readWallet(fundingWalletId)).thenAnswer(
+        (_) async => Ok(
+          walletRegistrationForTesting(
+            id: fundingWalletId,
+            network: BitcoinNetwork.regtest,
+            signer: WalletSigner.none,
+            masterFingerprint: Fingerprint('00112233'),
+          ),
+        ),
+      );
+
+      await expectLater(
+        payjoin().signPsbt(
+          walletId: fundingWalletId,
+          network: BitcoinNetwork.regtest,
+          psbt: otherUnsignedTransaction(),
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (failure) => failure.toString(),
+            'reason',
+            contains('local mnemonic'),
+          ),
+        ),
+      );
+      expect(keystore.reads, 0);
+      expect(nativeAccesses, 0);
+    },
+  );
+
   test('unavailable native wallet raises a recoverable sync exception before signing', () async {
     final storage = FakeSecureStoragePlatform(
       entries: {
@@ -156,8 +202,15 @@ void main() {
         }),
       },
     )..install();
-    when(() => metadata.fetch(any())).thenAnswer(
-      (_) async => fundingMetadata.copyWith(masterFingerprint: '73c5da0a'),
+    when(() => inventory.readWallet(fundingWalletId)).thenAnswer(
+      (_) async => Ok(
+        walletRegistrationForTesting(
+          id: fundingWalletId,
+          network: BitcoinNetwork.regtest,
+          signer: WalletSigner.local,
+          secretFingerprint: Fingerprint('73c5da0a'),
+        ),
+      ),
     );
     var opens = 0;
     final adapter = PayjoinWalletAdapter(
@@ -167,8 +220,7 @@ void main() {
         return const Err(SyncStorageFailure());
       },
       (_) async => BitcoinSpendStatus.ready,
-      _Values(),
-      metadata,
+      inventory,
       guard,
     );
     await expectLater(

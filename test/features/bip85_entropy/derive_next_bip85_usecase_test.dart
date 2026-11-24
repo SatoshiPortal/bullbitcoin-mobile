@@ -1,456 +1,203 @@
-import 'package:bb_mobile/features/wallet/domain/read_default_bip85_parent_usecase.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/with_default_bip85_wallet_usecase.dart';
-import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, ScriptType;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'dart:io';
+
+import 'package:bip85/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/bip85.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
 
-class _MockBip85Repository extends Mock implements Bip85Repository {}
+import '../../support/inventory_fixture.dart';
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
-
-class _MockSettingsRepository extends Mock implements Preferences {}
-
-/// Failure paths of the three BIP85 usecases.
-///
-/// The derivation itself moved into `secrets` — the xprv no longer leaves the package — so what is left here is the orchestration: which wallet, which index, and what each failure is called. The values are pinned by the package's `derivation_vectors_test.dart`.
-void main() {
-  const words = [
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'abandon',
-    'about',
-  ];
-
-  late _MockBip85Repository bip85Repository;
-  late _MockWalletRepository walletRepository;
-  late _MockSettingsRepository settingsRepository;
-  late Secrets secrets;
-  late WithDefaultBip85WalletUsecase withDefault;
-  late Wallet defaultWallet;
-
-  Wallet walletFor(String fingerprint) => Wallet(
-    origin: 'test-id',
-    label: 'Test',
-    network: Network.bitcoinMainnet,
-    isDefault: true,
-    masterFingerprint: fingerprint,
-    xpubFingerprint: fingerprint,
-    scriptType: ScriptType.bip84,
-    xpub: 'xpub',
-    externalPublicDescriptor: 'desc',
-    internalPublicDescriptor: 'desc',
-    signer: SignerEntity.local,
-    signerDevice: null,
-    balanceSat: BigInt.zero,
+class _Environment implements ActiveEnvironmentReader {
+  Result<Environment, PreferencesFailure> environment = const Ok(
+    Environment.testnet,
   );
 
-  void stubWallets(List<Wallet> wallets) {
-    when(
-      () => walletRepository.getWallets(
-        onlyDefaults: any(named: 'onlyDefaults'),
-        onlyBitcoin: any(named: 'onlyBitcoin'),
-        environment: any(named: 'environment'),
-      ),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>(wallets));
-  }
+  @override
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async => environment;
+}
 
-  /// An onboarded install always has a default bitcoin and a default liquid
-  /// wallet, so an empty list means "not set up" while a failure means
-  /// "could not read". Collapsing the two would tell a user with a perfectly
-  /// good wallet that they have none.
-  void stubWalletReadFailure() {
-    when(
-      () => walletRepository.getWallets(
-        onlyDefaults: any(named: 'onlyDefaults'),
-        onlyBitcoin: any(named: 'onlyBitcoin'),
-        environment: any(named: 'environment'),
-      ),
-    ).thenAnswer(
-      (_) async => const Err<List<Wallet>, WalletFailure>(
-        WalletStorageFailure(
-          'SqliteException(11): database disk image is malformed',
-        ),
-      ),
-    );
-  }
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUpAll(() {
-    registerFallbackValue(Bip85Application.hex);
-    registerFallbackValue(bip39.MnemonicLength.words12);
-  });
+  late Secrets secrets;
+  late InventoryFixture fixture;
+  late Bip85Derivations derivations;
+  late _Environment preferences;
+  late ManageBip85Usecase usecase;
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
-    final stored = (await secrets.import(
-      words: words,
-      language: bip39.Language.english,
-    )) as Ok<Secret, SecretFailure>;
-    defaultWallet = walletFor(stored.value.id.hex);
+    final directory = await Directory.systemTemp.createTemp('bip85-view-');
+    addTearDown(() => directory.delete(recursive: true));
+    fixture = await InventoryFixture.open(directory);
+    addTearDown(fixture.close);
+    secrets = Secrets(scratchDirectory: () async => directory.path);
+    derivations = fixture.inventory.bip85(secrets);
+    preferences = _Environment();
+    usecase = ManageBip85Usecase(derivations, fixture.inventory, preferences);
+  });
 
-    bip85Repository = _MockBip85Repository();
-    walletRepository = _MockWalletRepository();
-    settingsRepository = _MockSettingsRepository();
-    withDefault = WithDefaultBip85WalletUsecase(
-      ReadDefaultBip85ParentUsecase(
-        walletRepository,
-        settingsRepository,
-      ).execute,
+  Future<Fingerprint> registerDefault({
+    required String network,
+    bool isDefault = true,
+    String signer = 'local',
+    String? master,
+  }) async {
+    final parent = _value(await secrets.generate()).id;
+    final fingerprint = master ?? parent.hex;
+    final id = "wpkh([${parent.hex}/84h/1h/0h])";
+    final wallet = RegisteredWallet(
+      id: id,
+      secretFingerprint: signer == 'local' ? fingerprint : null,
+      masterFingerprint: fingerprint,
+      signer: signer,
+      network: network,
+      xpub: 'test',
+      externalDescriptor: 'wpkh(external)',
+      internalDescriptor: 'wpkh(internal)',
+      label: null,
+      birthday: null,
+      isDefault: isDefault,
     );
-    when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => Ok(
-        const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+    expect(await fixture.inventory.registerWallet(wallet), isA<Ok>());
+    return parent;
+  }
+
+  test('uses the first Bitcoin default in the active environment', () async {
+    await registerDefault(network: 'bitcoinMainnet');
+    await registerDefault(network: 'bitcoinTestnet', isDefault: false);
+    final candidates = [
+      await registerDefault(network: 'bitcoinTestnet'),
+      await registerDefault(network: 'bitcoinTestnet'),
+    ]..sort((a, b) => a.hex.compareTo(b.hex));
+    final next = _value(await usecase.nextMnemonic());
+    expect(next.parentFingerprint, candidates.first.hex);
+    expect(next.path, "39'/0'/12'/0'");
+    expect(
+      _value(await usecase.nextHex()).parentFingerprint,
+      candidates.first.hex,
+    );
+
+    preferences.environment = const Ok(Environment.mainnet);
+    expect(_value(await usecase.list()), isEmpty);
+  });
+
+  test(
+    'separates a missing default from a preference or inventory failure',
+    () async {
+      expect(
+        await usecase.nextMnemonic(),
+        isA<Err<Bip85Derivation, Bip85Failure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<Bip85NoDefaultWalletFailure>(),
         ),
+      );
+      preferences.environment = const Err(PreferencesReadFailure());
+      expect(
+        await usecase.nextHex(),
+        isA<Err<Bip85Derivation, Bip85Failure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<Bip85OperationFailure>(),
+        ),
+      );
+
+      preferences.environment = const Ok(Environment.testnet);
+      fixture.inventory.lock();
+      expect(
+        await usecase.list(),
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<Bip85OperationFailure>(),
+        ),
+      );
+    },
+  );
+
+  test('a noncanonical origin cannot become a derivation root', () async {
+    await registerDefault(
+      network: 'bitcoinTestnet',
+      signer: 'remote',
+      master: 'invalid',
+    );
+    expect(
+      await usecase.nextMnemonic(),
+      isA<Err<Bip85Derivation, Bip85Failure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<Bip85OperationFailure>(),
       ),
     );
   });
 
-  group('DeriveNextBip85MnemonicFromDefaultWalletUsecase', () {
-    late DeriveNextBip85MnemonicFromDefaultWalletUsecase usecase;
-
-    setUp(() {
-      usecase = DeriveNextBip85MnemonicFromDefaultWalletUsecase(
-        bip85Repository: bip85Repository,
-        secrets: secrets,
-      );
-    });
-
-    test('no default wallet is its own failure, with no message', () async {
-      stubWallets([]);
-
-      final failure = ((await withDefault.execute(
-        (fingerprint) => usecase.execute(fingerprint: fingerprint),
-      )) as Err).failure;
-
-      expect(failure, isA<Bip85NoDefaultWalletFailure>());
-      expect(failure.logMessage, isNull);
-    });
-
-    test(
-      'a failed wallet read is NOT reported as "no default wallet"',
-      () async {
-        stubWalletReadFailure();
-
-        final failure =
-            ((await withDefault.execute(
-                  (fingerprint) => usecase.execute(fingerprint: fingerprint),
-                )) as Err).failure
-                as Bip85Failure;
-
-        expect(failure, isA<Bip85UnexpectedFailure>());
-        // The wallet layer's reason stays in the log.
-        expect(failure.logMessage, isNot(contains('disk image is malformed')));
-      },
+  test('rows of another root key are not re-derived from this one', () async {
+    final mainnet = await registerDefault(network: 'bitcoinMainnet');
+    final testnet = await registerDefault(network: 'bitcoinTestnet');
+    final other = _value(
+      await derivations.deriveNextHex(parent: mainnet, length: 30),
     );
-
-    test('a wallet repository that throws is unexpected', () async {
-      when(
-        () => walletRepository.getWallets(
-          onlyDefaults: any(named: 'onlyDefaults'),
-          onlyBitcoin: any(named: 'onlyBitcoin'),
-          environment: any(named: 'environment'),
-        ),
-      ).thenThrow(Exception('internal db error with secret path /data/user'));
-
-      final failure = ((await withDefault.execute(
-        (fingerprint) => usecase.execute(fingerprint: fingerprint),
-      )) as Err).failure;
-
-      expect(failure, isA<Bip85UnexpectedFailure>());
-    });
-
-    test('an invalid persisted fingerprint fails before derivation', () async {
-      stubWallets([walletFor('')]);
-
-      final result = await withDefault.execute(
-        (fingerprint) => usecase.execute(fingerprint: fingerprint),
-      );
-
-      expect((result as Err).failure, isA<Bip85UnexpectedFailure>());
-      verifyNever(() => bip85Repository.fetchNextIndexForApplication(any()));
-    });
-
-    test('derives and records at the allocated index', () async {
-      stubWallets([defaultWallet]);
-      when(() => bip85Repository.fetchNextIndexForApplication(any()))
-          .thenAnswer((_) async => const Ok(3));
-      when(
-        () => bip85Repository.recordMnemonic(
-          xprvFingerprint: any(named: 'xprvFingerprint'),
-          length: any(named: 'length'),
-          index: any(named: 'index'),
-          alias: any(named: 'alias'),
-          language: bip39.Language.english,
-        ),
-      ).thenAnswer((_) async => const Ok("83696968'/39'/0'/12'/3'"));
-
-      final result = await withDefault.execute(
-        (fingerprint) => usecase.execute(fingerprint: fingerprint),
-      );
-
-      expect(result, isA<Ok>());
-      // Recorded against the secret that derived it, at the index the repository allocated.
-      verify(
-        () => bip85Repository.recordMnemonic(
-          xprvFingerprint: defaultWallet.masterFingerprint,
-          length: any(named: 'length'),
-          index: 3,
-          alias: any(named: 'alias'),
-          language: bip39.Language.english,
-        ),
-      ).called(1);
-    });
+    final current = _value(await usecase.nextHex());
+    expect(other.path, current.path);
+    final children = _value(await usecase.list());
+    expect(children.single.derivation.parentFingerprint, testnet.hex);
+    final secret = _value(await secrets.fetch(testnet));
+    final expected = _value(
+      await secret.derive.bip85.hex(numBytes: 30, index: current.index),
+    );
+    expect(children.single.entropy == expected, isTrue);
   });
 
-  group('DeriveNextBip85HexFromDefaultWalletUsecase', () {
-    late DeriveNextBip85HexFromDefaultWalletUsecase usecase;
+  test(
+    'parallel reservations receive distinct indices and lock blocks reads',
+    () async {
+      final parent = await registerDefault(network: 'bitcoinTestnet');
+      final reservations = await Future.wait([
+        for (var i = 0; i < 3; i++)
+          derivations.deriveNextHex(parent: parent, length: 30),
+      ]);
+      expect(reservations.map(_value).map((entry) => entry.index).toSet(), {
+        0,
+        1,
+        2,
+      });
+      fixture.inventory.lock();
+      expect(await derivations.reveal(parent), isA<Err>());
+      expect(await derivations.deriveNextMnemonic(parent: parent), isA<Err>());
+    },
+  );
 
-    setUp(() {
-      usecase = DeriveNextBip85HexFromDefaultWalletUsecase(
-        bip85Repository: bip85Repository,
-        secrets: secrets,
-      );
-    });
-
-    test('no default wallet is its own failure', () async {
-      stubWallets([]);
-
-      expect(
-        ((await withDefault.execute(
-          (fingerprint) =>
-              usecase.execute(fingerprint: fingerprint, length: 30),
-        )) as Err).failure,
-        isA<Bip85NoDefaultWalletFailure>(),
-      );
-    });
-
-    test(
-      'a failed wallet read is NOT reported as "no default wallet"',
-      () async {
-        stubWalletReadFailure();
-
-        final failure =
-            ((await withDefault.execute(
-                  (fingerprint) =>
-                      usecase.execute(fingerprint: fingerprint, length: 30),
-                )) as Err).failure
-                as Bip85Failure;
-
-        expect(failure, isA<Bip85UnexpectedFailure>());
-        // The wallet layer's reason stays in the log.
-        expect(failure.logMessage, isNot(contains('disk image is malformed')));
-      },
+  test('alias and status changes retain the reserved index', () async {
+    final parent = await registerDefault(network: 'bitcoinTestnet');
+    final first = _value(await usecase.nextMnemonic());
+    expect(await usecase.rename(first, 'renamed'), isA<Ok>());
+    expect(await usecase.setActive(first, active: false), isA<Ok>());
+    final revoked = _value(await derivations.list()).single;
+    expect(revoked.alias, 'renamed');
+    expect(revoked.status, Bip85Status.revoked);
+    final second = _value(
+      await derivations.deriveNextMnemonic(
+        parent: parent,
+        length: MnemonicLength.words24,
+      ),
     );
-
-    test(
-      'a wallet with no stored secret is unexpected, not "no wallet"',
-      () async {
-        stubWallets([walletFor('00000000')]);
-
-        final failure = ((await withDefault.execute(
-          (fingerprint) =>
-              usecase.execute(fingerprint: fingerprint, length: 30),
-        )) as Err).failure;
-
-        expect(failure, isA<Bip85UnexpectedFailure>());
-        expect(failure, isNot(isA<Bip85NoDefaultWalletFailure>()));
-      },
+    expect(second.index, first.index + 1);
+    expect(await usecase.setActive(revoked, active: true), isA<Ok>());
+    final records = _value(await derivations.list());
+    expect(
+      records.every((record) => record.status == Bip85Status.active),
+      isTrue,
     );
-
-    test('an index allocation failure is forwarded as-is', () async {
-      stubWallets([defaultWallet]);
-      when(() => bip85Repository.fetchNextIndexForApplication(any()))
-          .thenAnswer((_) async => const Err(Bip85StorageFailure('no index')));
-
-      expect(
-        ((await withDefault.execute(
-          (fingerprint) =>
-              usecase.execute(fingerprint: fingerprint, length: 30),
-        )) as Err).failure,
-        isA<Bip85StorageFailure>(),
-      );
-    });
-  });
-
-  group('FetchAllBip85DerivationsWithEntropyUsecase', () {
-    late FetchAllBip85DerivationsWithEntropyUsecase usecase;
-
-    setUp(() {
-      usecase = FetchAllBip85DerivationsWithEntropyUsecase(
-        bip85Repository: bip85Repository,
-        secrets: secrets,
-      );
-    });
-
-    test('looks up the default wallet in the active environment', () async {
-      when(() => settingsRepository.fetch()).thenAnswer(
-        (_) async => Ok(
-          const SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-          ),
-        ),
-      );
-      stubWallets([defaultWallet.copyWith(network: Network.bitcoinTestnet)]);
-      when(() => bip85Repository.fetchAll())
-          .thenAnswer((_) async => const Ok([]));
-
-      expect(
-        await withDefault.execute(
-          (fingerprint) => usecase.execute(fingerprint: fingerprint),
-        ),
-        isA<Ok>(),
-      );
-      verify(
-        () => walletRepository.getWallets(
-          onlyDefaults: true,
-          onlyBitcoin: true,
-          environment: Environment.testnet,
-        ),
-      ).called(1);
-    });
-
-    test('no default wallet is its own failure', () async {
-      stubWallets([]);
-
-      expect(
-        ((await withDefault.execute(
-          (fingerprint) => usecase.execute(fingerprint: fingerprint),
-        )) as Err).failure,
-        isA<Bip85NoDefaultWalletFailure>(),
-      );
-    });
-
-    test(
-      'a failed wallet read is NOT reported as "no default wallet"',
-      () async {
-        stubWalletReadFailure();
-
-        final failure =
-            ((await withDefault.execute(
-                  (fingerprint) => usecase.execute(fingerprint: fingerprint),
-                )) as Err).failure
-                as Bip85Failure;
-
-        expect(failure, isA<Bip85UnexpectedFailure>());
-        // The wallet layer's reason stays in the log.
-        expect(failure.logMessage, isNot(contains('disk image is malformed')));
-      },
-    );
-
-    test('a wallet repository that throws is unexpected', () async {
-      when(
-        () => walletRepository.getWallets(
-          onlyDefaults: any(named: 'onlyDefaults'),
-          onlyBitcoin: any(named: 'onlyBitcoin'),
-          environment: any(named: 'environment'),
-        ),
-      ).thenThrow(Exception('internal db error with secret path /data/user'));
-
-      expect(
-        ((await withDefault.execute(
-          (fingerprint) => usecase.execute(fingerprint: fingerprint),
-        )) as Err).failure,
-        isA<Bip85UnexpectedFailure>(),
-      );
-    });
-
-    group('a persisted path is checked against its row, not trusted', () {
-      Bip85DerivationEntity row(String path, Bip85Application app, int index) =>
-          Bip85DerivationEntity(
-            path: path,
-            xprvFingerprint: defaultWallet.masterFingerprint,
-            alias: null,
-            status: Bip85Status.active,
-            application: app,
-            index: index,
-          );
-
-      Future<int> derived(Bip85DerivationEntity e) async {
-        stubWallets([defaultWallet]);
-        when(() => bip85Repository.fetchAll()).thenAnswer((_) async => Ok([e]));
-        return ((await withDefault.execute(
-          (fingerprint) => usecase.execute(fingerprint: fingerprint),
-        )) as Ok).value.length;
-      }
-
-      test('a well-formed HEX row is derived', () async {
-        expect(
-          await derived(row("128169'/32'/0'", Bip85Application.hex, 0)),
-          1,
-        );
-      });
-
-      test('an unhardened path is skipped, not derived as hardened', () async {
-        expect(await derived(row("128169/32/0", Bip85Application.hex, 0)), 0);
-      });
-
-      test('a BIP39 path tagged HEX is skipped, not served as HEX', () async {
-        expect(await derived(row("39'/32'/0'", Bip85Application.hex, 0)), 0);
-      });
-
-      test('an index that disagrees with the row is skipped', () async {
-        expect(
-          await derived(row("128169'/32'/5'", Bip85Application.hex, 0)),
-          0,
-        );
-      });
-
-      test('a BIP39 word count no mnemonic has is skipped', () async {
-        expect(
-          await derived(row("39'/0'/13'/0'", Bip85Application.bip39, 0)),
-          0,
-        );
-      });
-    });
-
-    test('rows of another root key are not re-derived from this one', () async {
-      stubWallets([defaultWallet]);
-      when(() => bip85Repository.fetchAll()).thenAnswer(
-        (_) async => Ok([
-          Bip85DerivationEntity(
-            path: "128169'/32'/0'",
-            xprvFingerprint: 'ffffffff',
-            alias: null,
-            status: Bip85Status.active,
-            application: Bip85Application.hex,
-            index: 0,
-          ),
-        ]),
-      );
-
-      final result = await withDefault.execute(
-        (fingerprint) => usecase.execute(fingerprint: fingerprint),
-      );
-
-      expect((result as Ok).value, isEmpty);
-    });
   });
 }
+
+T _value<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('Unexpected failure: ${failure.runtimeType}'),
+};

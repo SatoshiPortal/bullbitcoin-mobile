@@ -1,10 +1,14 @@
+import 'package:swaps/order_swaps.dart';
+import 'package:spend/spend.dart';
+
+import '../../testing/send_spend_test_double.dart';
+
+import 'package:spend/testing.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
     show WalletSpendBlockedException;
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
-import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 
 import 'send_qr_network_regression.dart';
 
@@ -14,7 +18,7 @@ import 'package:flutter/foundation.dart' show debugPrint;
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:spend/legacy_exceptions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -25,33 +29,29 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:send/send.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -76,7 +76,8 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart' as boltz;
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:swaps/swaps.dart' show SwapRoute;
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
@@ -86,16 +87,16 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_s
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:silent/silent.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 
-import '../../../coins/wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
@@ -112,13 +113,11 @@ class _MockDetectBitcoinStringUsecase extends Mock
 
 class _MockPreferences extends Mock implements Preferences {}
 
-class _MockGetSendExchangeRateUsecase extends Mock
-    implements GetSendExchangeRateUsecase {}
+class _MockSend extends Mock implements Send {}
 
 class _MockFees extends Mock implements Fees {}
 
-class _MockGetWalletUtxosUsecase extends Mock
-    implements GetWalletUtxosUsecase {}
+class _MockCoinReader extends Mock implements Coins {}
 
 class _MockPrepareBitcoinSendUsecase extends Mock
     implements PrepareSendBitcoinTransactionUsecase {}
@@ -204,7 +203,7 @@ class _MockCalculateLiquidPsetSizeUsecase extends Mock
     implements CalculateLiquidPsetSizeUsecase {}
 
 class _MockWatchWalletTransactionByTxIdUsecase extends Mock
-    implements WatchWalletTransactionByTxIdUsecase {}
+    implements Transactions {}
 
 class _MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
@@ -221,8 +220,7 @@ class _MockPreviewBitcoinFeeUsecase extends Mock
 class _MockPreviewBitcoinFeePresetsUsecase extends Mock
     implements PreviewBitcoinFeePresetsUsecase {}
 
-class _MockCheckLiquidConsolidationUsecase extends Mock
-    implements CheckLiquidConsolidationUsecase {}
+class _MockConsolidation extends Mock implements Consolidation {}
 
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
@@ -251,7 +249,7 @@ GetSpNetworkForSendUsecase _spNetworkStub([
   Network network = Network.bitcoinMainnet,
 ]) {
   final stub = _MockGetSpNetworkForSendUsecase();
-  when(stub.execute).thenReturn(Ok(network));
+  when(stub.execute).thenAnswer((_) async => Ok(network));
   return stub;
 }
 
@@ -281,16 +279,13 @@ class _MockDropPendingSwapLockupUsecase extends Mock
 
 class _MockWatchSwapUsecase extends Mock implements boltz.WatchSwapUsecase {}
 
-class _MockGetSendAmountQuotes extends Mock
-    implements GetSendAmountQuotesUsecase {}
-
 class _MockPrepareInternalRecipient extends Mock
     implements PrepareInternalRecipientUsecase {}
 
 class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
     super.prepareInternalRecipientUsecase,
-    super.getSendAmountQuotesUsecase,
+    super.readAmountQuotes,
     super.mode,
     super.watchWalletRevisionsUsecase,
     super.wallet,
@@ -301,11 +296,11 @@ class _TestableSendCubit extends SendCubit {
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.loadPreferencesUsecase,
-    required super.getSendExchangeRateUsecase,
+    required super.readExchangeRate,
     required super.loadNetworkFeesUsecase,
-    required super.getWalletUtxosUsecase,
-    required super.prepareBitcoinSendUsecase,
+    required super.coins,
     required super.validateBitcoinSelectionUsecase,
+    required super.spend,
     required super.prepareLiquidSendUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
@@ -323,21 +318,15 @@ class _TestableSendCubit extends SendCubit {
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
     required super.watchFinishedWalletSyncsUsecase,
-    required super.signBitcoinTxUsecase,
     required super.signLiquidTxUsecase,
-    required super.broadcastBitcoinTxUsecase,
     required super.broadcastLiquidTxUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateLiquidPsetSizeUsecase,
-    required super.watchWalletTransactionByTxIdUsecase,
-    required super.calculateBitcoinAbsoluteFeesUsecase,
+    required super.transactions,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
-    required super.previewBitcoinFeeUsecase,
-    required super.previewBitcoinFeePresetsUsecase,
-    required super.checkLiquidConsolidationUsecase,
+    required super.consolidation,
     required super.getSendPayjoinEnabledUsecase,
-    required super.verifySignedTxUsecase,
     required super.validateSpRecipientForSendUsecase,
     required super.validateSpAmountForSendUsecase,
     required super.getSpNetworkForSendUsecase,
@@ -358,7 +347,26 @@ class _TestableSendCubit extends SendCubit {
     super.parsePaymentRequest,
   });
 
-  void setStateForTest(SendState state) => emit(state);
+  void setStateForTest(SendState state) {
+    final psbt = state.unsignedPsbt;
+    final signed = state.signedBitcoinTx ?? state.signedBitcoinPsbt;
+    final preparation = psbt == null || state.selectedWallet?.isLiquid == true
+        ? null
+        : state.bitcoinPreparation ??
+              SpendFixtures.preparedBitcoin(
+                unsignedPsbt: psbt,
+                fee: Sats.fromInt(state.bitcoinAbsoluteFeesSat ?? 200),
+                txSize: state.bitcoinTxSize ?? 110,
+              );
+    emit(
+      state.copyWith(
+        bitcoinPreparation: preparation,
+        bitcoinSignature: signed == null
+            ? null
+            : SpendFixtures.signedBitcoin(signed),
+      ),
+    );
+  }
 }
 
 Wallet _bitcoinLocalWallet() => Wallet(
@@ -455,7 +463,7 @@ const _sweepFeeOptions = FeeOptions(
 );
 
 Bip21PaymentRequest _payjoinBip21() => const PaymentRequest.bip21(
-  network: Network.bitcoinMainnet,
+  network: BitcoinNetwork.mainnet,
   uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
   address: 'bc1qaddr',
   amountSat: 50000,
@@ -498,9 +506,9 @@ void main() {
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
   late _MockPreferences getSettingsUsecase;
-  late _MockGetSendExchangeRateUsecase getSendExchangeRateUsecase;
+  late _MockSend send;
   late _MockFees feeEstimates;
-  late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
+  late _MockCoinReader getWalletUtxosUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
   late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
   late _MockPrepareLiquidSendUsecase prepareLiquidSendUsecase;
@@ -539,7 +547,7 @@ void main() {
   late _MockVerifyExchangePayinUsecase verifyExchangePayinUsecase;
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
-  late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
+  late _MockConsolidation consolidation;
   late _MockGetSendPayjoinEnabledUsecase getSendPayjoinEnabledUsecase;
   late _MockVerifySignedTxUsecase verifySignedTxUsecase;
   late _MockGetSendSwapRouteUsecase getSendSwapRouteUsecase;
@@ -554,7 +562,7 @@ void main() {
   _TestableSendCubit buildCubit({
     DetectBitcoinStringUsecase? detector,
     PrepareInternalRecipientUsecase? prepareInternalRecipientUsecase,
-    GetSendAmountQuotesUsecase? getSendAmountQuotesUsecase,
+    Send? amountQuotes,
     Wallet? wallet,
     Set<Outpoint> initialSweepOutpoints = const {},
     Set<Outpoint> initialSelectedOutpoints = const {},
@@ -568,86 +576,98 @@ void main() {
     PrepareSpPaymentForSendUsecase? prepareSpPaymentForSendUsecase,
     SendSpPaymentForSendUsecase? sendSpPaymentForSendUsecase,
     ValidateSpRecipientForSendUsecase? validateSpRecipientForSendUsecase,
-  }) => _TestableSendCubit(
-    prepareInternalRecipientUsecase: prepareInternalRecipientUsecase,
-    getSendAmountQuotesUsecase: getSendAmountQuotesUsecase,
-    watchWalletRevisionsUsecase: watchWalletRevisionsUsecase,
-    mode: isSpMode
-        ? SendModeSp(walletLabel: spWalletLabel)
-        : const SendModeBitcoin(),
-    wallet: wallet,
-    initialSweepOutpoints: initialSweepOutpoints,
-    initialSelectedOutpoints: initialSelectedOutpoints,
-    loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(labelsFacade),
-    storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
-    bestWalletUsecase: bestWalletUsecase,
-    detectBitcoinStringUsecase: detector ?? detectBitcoinStringUsecase,
-    loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
-      getSettingsUsecase,
-    ),
-    getSendExchangeRateUsecase: getSendExchangeRateUsecase,
-    loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: feeEstimates),
-    getWalletUtxosUsecase: getWalletUtxosUsecase,
-    prepareBitcoinSendUsecase: prepareBitcoinSendUsecase,
-    validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
-    prepareLiquidSendUsecase: prepareLiquidSendUsecase,
-    sendWithPayjoinUsecase: sendWithPayjoinUsecase,
-    watchPayjoinUsecase: watchPayjoinUsecase,
-    getAdoptablePayjoinSenderUsecase: getAdoptablePayjoinSenderUsecase,
-    broadcastPayjoinOriginalUsecase: broadcastPayjoinOriginalUsecase,
-    getVisiblePayjoinTransactionUsecase: getVisiblePayjoinTransactionUsecase,
-    retryPayjoinProposalUsecase: retryPayjoinProposalUsecase,
-    getWalletsUsecase: getWalletsUsecase,
-    getWalletUsecase: getWalletUsecase,
-    createSendSwapUsecase: createSendSwapUsecase,
-    getSendSwapQuoteUsecase: getSendSwapQuoteUsecase,
-    createSendCrossChainSwapUsecase: createSendCrossChainSwapUsecase,
-    getSendCrossChainQuoteUsecase: getSendCrossChainQuoteUsecase,
-    resolveLightningAddressUsecase: resolveLightningAddressUsecase,
-    updateSendSwapPayinUsecase: updateSendSwapPayinUsecase,
-    watchSendSwapUsecase: watchSendSwapUsecase,
-    watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
-    signBitcoinTxUsecase: signBitcoinTxUsecase,
-    signLiquidTxUsecase: signLiquidTxUsecase,
-    broadcastBitcoinTxUsecase: broadcastBitcoinTxUsecase,
-    broadcastLiquidTxUsecase: broadcastLiquidTxUsecase,
-    calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
-    calculateLiquidPsetSizeUsecase: calculateLiquidPsetSizeUsecase,
-    watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxIdUsecase,
-    calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinAbsoluteFeesUsecase,
-    verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
-    verifyExchangePayinUsecase: verifyExchangePayinUsecase,
-    previewBitcoinFeeUsecase: previewBitcoinFeeUsecase,
-    previewBitcoinFeePresetsUsecase: previewBitcoinFeePresetsUsecase,
-    checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
-    getSendPayjoinEnabledUsecase: getSendPayjoinEnabledUsecase,
-    verifySignedTxUsecase: verifySignedTxUsecase,
-    validateSpRecipientForSendUsecase:
-        validateSpRecipientForSendUsecase ??
-        _MockValidateSpRecipientForSendUsecase(),
-    validateSpAmountForSendUsecase:
-        validateSpAmountForSendUsecase ?? _MockValidateSpAmountForSendUsecase(),
-    getSpNetworkForSendUsecase: getSpNetworkForSendUsecase ?? _spNetworkStub(),
-    prepareSpPaymentForSendUsecase:
-        prepareSpPaymentForSendUsecase ?? _MockPrepareSpPaymentForSendUsecase(),
-    sendSpPaymentForSendUsecase:
-        sendSpPaymentForSendUsecase ?? _MockSendSpPaymentForSendUsecase(),
-    refreshSpWalletForSendUsecase:
-        refreshSpWalletForSendUsecase ?? _MockRefreshSpWalletForSendUsecase(),
-    resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(payjoinSessions),
-    validateCoinControlPaymentRequestUsecase:
-        ValidateCoinControlPaymentRequestUsecase(),
-    getSendSwapRouteUsecase: getSendSwapRouteUsecase,
-    createBoltzSendSwapUsecase: createBoltzSendSwapUsecase,
-    recordSwapLockupUsecase: recordSwapLockupUsecase,
-    recordPendingSwapLockupUsecase: recordPendingLockup,
-    dropPendingSwapLockupUsecase: dropPendingLockup,
-    watchSwapUsecase: watchSwapUsecase,
-    getSwapLimitsAndFeesUsecase: getSwapLimitsAndFeesUsecase,
-    createBitcoinToLiquidSwapUsecase: createBitcoinToLiquidSwapUsecase,
-    createLiquidToBitcoinSwapUsecase: createLiquidToBitcoinSwapUsecase,
-    parsePaymentRequest: parsePaymentRequest,
-  );
+  }) {
+    late final _TestableSendCubit flow;
+    flow = _TestableSendCubit(
+      prepareInternalRecipientUsecase: prepareInternalRecipientUsecase,
+      readAmountQuotes: amountQuotes?.amountQuotes,
+      watchWalletRevisionsUsecase: watchWalletRevisionsUsecase,
+      mode: isSpMode
+          ? SendModeSp(walletLabel: spWalletLabel)
+          : const SendModeBitcoin(),
+      wallet: wallet,
+      initialSweepOutpoints: initialSweepOutpoints,
+      initialSelectedOutpoints: initialSelectedOutpoints,
+      loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(labelsFacade),
+      storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
+      bestWalletUsecase: bestWalletUsecase,
+      detectBitcoinStringUsecase: detector ?? detectBitcoinStringUsecase,
+      loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
+        getSettingsUsecase,
+      ),
+      readExchangeRate: send.exchangeRate,
+      loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: feeEstimates),
+      coins: getWalletUtxosUsecase,
+      spend: SendSpendTestDouble(
+        read: () => flow.state,
+        prepare: prepareBitcoinSendUsecase,
+        sign: signBitcoinTxUsecase,
+        broadcast: broadcastBitcoinTxUsecase,
+        fees: calculateBitcoinAbsoluteFeesUsecase,
+        preview: previewBitcoinFeeUsecase,
+        presets: previewBitcoinFeePresetsUsecase,
+        verify: verifySignedTxUsecase,
+      ),
+      validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
+      prepareLiquidSendUsecase: prepareLiquidSendUsecase,
+      sendWithPayjoinUsecase: sendWithPayjoinUsecase,
+      watchPayjoinUsecase: watchPayjoinUsecase,
+      getAdoptablePayjoinSenderUsecase: getAdoptablePayjoinSenderUsecase,
+      broadcastPayjoinOriginalUsecase: broadcastPayjoinOriginalUsecase,
+      getVisiblePayjoinTransactionUsecase: getVisiblePayjoinTransactionUsecase,
+      retryPayjoinProposalUsecase: retryPayjoinProposalUsecase,
+      getWalletsUsecase: getWalletsUsecase,
+      getWalletUsecase: getWalletUsecase,
+      createSendSwapUsecase: createSendSwapUsecase,
+      getSendSwapQuoteUsecase: getSendSwapQuoteUsecase,
+      createSendCrossChainSwapUsecase: createSendCrossChainSwapUsecase,
+      getSendCrossChainQuoteUsecase: getSendCrossChainQuoteUsecase,
+      resolveLightningAddressUsecase: resolveLightningAddressUsecase,
+      updateSendSwapPayinUsecase: updateSendSwapPayinUsecase,
+      watchSendSwapUsecase: watchSendSwapUsecase,
+      watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
+      signLiquidTxUsecase: signLiquidTxUsecase,
+      broadcastLiquidTxUsecase: broadcastLiquidTxUsecase,
+      calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
+      calculateLiquidPsetSizeUsecase: calculateLiquidPsetSizeUsecase,
+      transactions: watchWalletTransactionByTxIdUsecase,
+      verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
+      verifyExchangePayinUsecase: verifyExchangePayinUsecase,
+      consolidation: consolidation,
+      getSendPayjoinEnabledUsecase: getSendPayjoinEnabledUsecase,
+      validateSpRecipientForSendUsecase:
+          validateSpRecipientForSendUsecase ??
+          _MockValidateSpRecipientForSendUsecase(),
+      validateSpAmountForSendUsecase:
+          validateSpAmountForSendUsecase ??
+          _MockValidateSpAmountForSendUsecase(),
+      getSpNetworkForSendUsecase:
+          getSpNetworkForSendUsecase ?? _spNetworkStub(),
+      prepareSpPaymentForSendUsecase:
+          prepareSpPaymentForSendUsecase ??
+          _MockPrepareSpPaymentForSendUsecase(),
+      sendSpPaymentForSendUsecase:
+          sendSpPaymentForSendUsecase ?? _MockSendSpPaymentForSendUsecase(),
+      refreshSpWalletForSendUsecase:
+          refreshSpWalletForSendUsecase ?? _MockRefreshSpWalletForSendUsecase(),
+      resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(
+        payjoinSessions,
+      ),
+      validateCoinControlPaymentRequestUsecase:
+          ValidateCoinControlPaymentRequestUsecase(),
+      getSendSwapRouteUsecase: getSendSwapRouteUsecase,
+      createBoltzSendSwapUsecase: createBoltzSendSwapUsecase,
+      recordSwapLockupUsecase: recordSwapLockupUsecase,
+      recordPendingSwapLockupUsecase: recordPendingLockup,
+      dropPendingSwapLockupUsecase: dropPendingLockup,
+      watchSwapUsecase: watchSwapUsecase,
+      getSwapLimitsAndFeesUsecase: getSwapLimitsAndFeesUsecase,
+      createBitcoinToLiquidSwapUsecase: createBitcoinToLiquidSwapUsecase,
+      createLiquidToBitcoinSwapUsecase: createLiquidToBitcoinSwapUsecase,
+      parsePaymentRequest: parsePaymentRequest,
+    );
+    return flow;
+  }
 
   /// Precondition state that makes [SendState.willAttemptPayjoin] true and
   /// gives `signTransaction` everything its bitcoin payjoin branch reads:
@@ -669,6 +689,10 @@ void main() {
   );
 
   setUpAll(() {
+    registerFallbackValue(
+      SpendFixtures.preparedBitcoin(unsignedPsbt: '', fee: Sats.zero),
+    );
+
     registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(const boltz.ToWallet(''));
     registerFallbackValue(Network.bitcoinMainnet);
@@ -677,7 +701,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(Sats.zero);
     registerFallbackValue(
-      SpTxDraft(
+      SilentTxDraft(
         id: 'fallback',
         inputs: const [],
         outputs: const [],
@@ -685,7 +709,7 @@ void main() {
         changeSat: Sats.zero,
       ),
     );
-    registerFallbackValue(<SpRecipient>[]);
+    registerFallbackValue(<SilentRecipient>[]);
     registerFallbackValue(
       const PaymentRequest.bolt11(
         invoice: 'fallback',
@@ -723,9 +747,9 @@ void main() {
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
     getSettingsUsecase = _MockPreferences();
-    getSendExchangeRateUsecase = _MockGetSendExchangeRateUsecase();
+    send = _MockSend();
     feeEstimates = _MockFees();
-    getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
+    getWalletUtxosUsecase = _MockCoinReader();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
     validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
     when(
@@ -782,7 +806,7 @@ void main() {
     verifyExchangePayinUsecase = _MockVerifyExchangePayinUsecase();
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
-    checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
+    consolidation = _MockConsolidation();
     getSendPayjoinEnabledUsecase = _MockGetSendPayjoinEnabledUsecase();
     verifySignedTxUsecase = _MockVerifySignedTxUsecase();
     getSendSwapRouteUsecase = _MockGetSendSwapRouteUsecase();
@@ -863,7 +887,7 @@ void main() {
         walletId: any(named: 'walletId'),
         network: any(named: 'network'),
         bip21: any(named: 'bip21'),
-        unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+        prepared: any(named: 'prepared'),
         amountSat: any(named: 'amountSat'),
         networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
       ),
@@ -890,8 +914,8 @@ void main() {
           final wallet = _bitcoinLocalWallet();
           final fees = _feeOptions();
           const custom = RelativeFee(750);
-          when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-              .thenAnswer((_) async => const []);
+          when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+              .thenAnswer((_) async => Ok(<WalletUtxo>[]));
           when(
             () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
           ).thenAnswer((_) => const Stream<Wallet>.empty());
@@ -1082,7 +1106,7 @@ void main() {
       when(() => detectBitcoinStringUsecase.execute(data: 'bitcoin:fixture'))
           .thenAnswer(
             (_) async => const PaymentRequest.bip21(
-              network: Network.bitcoinMainnet,
+              network: BitcoinNetwork.mainnet,
               uri: 'bitcoin:fixture?amount=0.00001',
               address: 'bc1qfixture',
               amountSat: 1000,
@@ -1117,9 +1141,9 @@ void main() {
   );
 
   test('returning from confirmation refreshes the fiat quotes', () async {
-    final quotes = _MockGetSendAmountQuotes();
-    when(quotes.execute).thenAnswer((_) async => const Ok({}));
-    final cubit = buildCubit(getSendAmountQuotesUsecase: quotes);
+    final quotes = _MockSend();
+    when(quotes.amountQuotes).thenAnswer((_) async => const Ok({}));
+    final cubit = buildCubit(amountQuotes: quotes);
     addTearDown(cubit.close);
     cubit.setStateForTest(
       const SendState(step: SendStep.confirm, amountConfirmedClicked: true),
@@ -1127,7 +1151,7 @@ void main() {
     cubit.backClicked();
     await Future<void>.delayed(Duration.zero);
     expect(cubit.state.step, SendStep.amount);
-    verify(quotes.execute).called(1);
+    verify(quotes.amountQuotes).called(1);
   });
 
   test('Max discards the previous typed fiat conversion', () async {
@@ -1243,13 +1267,10 @@ void main() {
     );
     when(() => getSendPayjoinEnabledUsecase.execute())
         .thenAnswer((_) async => true);
-    when(
-      () => getSendExchangeRateUsecase.execute(
-        currencyCode: any(named: 'currencyCode'),
-      ),
-    ).thenAnswer((_) async => const Ok(50000.0));
-    when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-        .thenAnswer((_) async => utxos);
+    when(() => send.exchangeRate(currencyCode: any(named: 'currencyCode')))
+        .thenAnswer((_) async => const Ok(50000.0));
+    when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(utxos));
     when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) => const Stream.empty());
     when(() => feeEstimates.estimate(any()))
@@ -1336,6 +1357,102 @@ void main() {
     );
   }
 
+  test(
+    'resuming an unfunded Lightning order reviews its pinned payin',
+    () async {
+      final wallet = _liquidWallet(balanceSat: 1000000);
+      final quote = _MockOrderSwapQuote();
+      final record = _MockOrderSwapRecord();
+      final order = _MockOrderSwap();
+      const invoice = PaymentRequest.bolt11(
+        invoice: 'lnbc1-resumed',
+        amountSat: 50000,
+        paymentHash: 'hash',
+        expiresAt: 2000000000,
+        isTestnet: false,
+      );
+      when(() => quote.inAmountSat).thenReturn(BigInt.from(50500));
+      when(() => record.localId).thenReturn('resumed-lightning-order');
+      when(() => record.localPayinTransactionId).thenReturn(null);
+      when(() => record.localStatus)
+          .thenReturn(OrderSwapLocalStatus.awaitingUserConfirmation);
+      when(() => record.order).thenReturn(order);
+      when(() => order.payinAddress).thenReturn('lq1pinnedpayin');
+      when(() => order.payinAmountSat).thenReturn(BigInt.from(51000));
+      when(() => order.payoutAmountSat).thenReturn(BigInt.from(50000));
+      when(
+        () => getSendSwapQuoteUsecase.execute(
+          wallet: wallet,
+          amountSat: BigInt.from(50000),
+        ),
+      ).thenAnswer((_) async => Ok(quote));
+      when(
+        () => createSendSwapUsecase.execute(
+          walletId: wallet.id,
+          invoice: invoice as Bolt11PaymentRequest,
+          amountSat: 50000,
+          quote: quote,
+          note: '',
+        ),
+      ).thenAnswer((_) async => Ok(record));
+      when(() => watchSendSwapUsecase.execute('resumed-lightning-order'))
+          .thenAnswer((_) => const Stream.empty());
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok([]));
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
+      when(
+        () => prepareLiquidSendUsecase.execute(
+          walletId: wallet.id,
+          address: 'lq1pinnedpayin',
+          feeRate: any(named: 'feeRate'),
+          amountSat: 51000,
+          drain: false,
+          selectedInputs: null,
+          hasFrozenInputs: false,
+        ),
+      ).thenAnswer((_) async => const Ok('reviewed-payin'));
+      when(
+        () => verifyExchangePayinUsecase.execute(
+          psbtOrPset: 'reviewed-payin',
+          record: record,
+          walletId: wallet.id,
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () =>
+            calculateLiquidAbsoluteFeesUsecase.execute(pset: 'reviewed-payin'),
+      ).thenAnswer((_) async => 100);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          sendType: SendType.lightning,
+          selectedWallet: SendWalletBitcoin(wallet),
+          paymentRequest: invoice,
+          amount: '50000',
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          liquidFeesList: _sweepFeeOptions,
+          unsignedPsbt: 'obsolete-payin',
+          signedLiquidTx: 'obsolete-signature',
+        ),
+      );
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.lightningOrder, same(record));
+      expect(cubit.state.step, SendStep.confirm);
+      expect(cubit.state.confirmedAmountSat, 50000);
+      expect(cubit.state.unsignedPsbt, 'reviewed-payin');
+      expect(cubit.state.signedLiquidTx, isNull);
+      verify(() => watchSendSwapUsecase.execute('resumed-lightning-order'))
+          .called(1);
+      verifyZeroInteractions(broadcastLiquidTxUsecase);
+    },
+  );
+
   test('Liquid-funded Bitcoin confirmation preserves payout amount', () async {
     final wallet = _liquidWallet(balanceSat: 1000000);
     final quote = _MockOrderSwapQuote();
@@ -1366,10 +1483,10 @@ void main() {
     ).thenAnswer((_) async => Ok(record));
     when(() => watchSendSwapUsecase.execute('cross-chain-swap'))
         .thenAnswer((_) => const Stream.empty());
-    when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-        .thenAnswer((_) async => []);
-    when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-        .thenAnswer((_) async => false);
+    when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+        .thenAnswer((_) async => Ok([]));
+    when(() => consolidation.isRequired(wallet.id))
+        .thenAnswer((_) async => const Ok(false));
     when(
       () => prepareLiquidSendUsecase.execute(
         walletId: wallet.id,
@@ -1489,7 +1606,7 @@ void main() {
       return 'broadcast-txid';
     });
     when(
-      () => watchWalletTransactionByTxIdUsecase.execute(
+      () => watchWalletTransactionByTxIdUsecase.watchWalletTransactionByTxId(
         walletId: wallet.id,
         txId: any(named: 'txId'),
       ),
@@ -1530,14 +1647,14 @@ void main() {
     final refreshStarted = Completer<void>();
     final pendingRefresh = Completer<List<WalletUtxo>>();
     var holdNextLoad = true;
-    when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-        .thenAnswer((_) {
+    when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+        .thenAnswer((_) async {
           if (holdNextLoad) {
             holdNextLoad = false;
             refreshStarted.complete();
-            return pendingRefresh.future;
+            return Ok(await pendingRefresh.future);
           }
-          return Future.value([selected]);
+          return Ok([selected]);
         });
 
     final confirming = cubit.onConfirmTransactionClicked();
@@ -1581,8 +1698,8 @@ void main() {
         confidentialAddress: 'lq1own',
       );
       stubSweepLoad(wallet: wallet, utxos: [selected]);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(
         () => prepareLiquidSendUsecase.execute(
           walletId: wallet.id,
@@ -1835,8 +1952,8 @@ void main() {
 
     test('does not broadcast a signature after Liquid inputs change', () async {
       final second = selected.copyWith(txId: 'liquid-second', vout: 1);
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => [selected, second]);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok([selected, second]));
       when(
         () => prepareLiquidSendUsecase.execute(
           walletId: wallet.id,
@@ -1921,15 +2038,15 @@ void main() {
           final validation = Completer<List<WalletUtxo>>();
           final broadcast = Completer<String>();
           var available = [selected];
-          when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
+          when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
               .thenAnswer((_) async {
                 if (!broadcastStarted &&
                     cubit.state.step == SendStep.sending &&
                     !pendingStarted.isCompleted) {
                   pendingStarted.complete();
-                  return validation.future;
+                  return Ok(await validation.future);
                 }
-                return available;
+                return Ok(available);
               });
           when(
             () => broadcastLiquidTxUsecase.execute(
@@ -1994,8 +2111,8 @@ void main() {
     test('rejects a newly frozen Liquid coin before broadcasting', () async {
       final cubit = await start(sweep: true);
       await cubit.signTransaction();
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => [selected.copyWith(isFrozen: true)]);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok([selected.copyWith(isFrozen: true)]));
 
       await cubit.broadcastTransaction();
 
@@ -2044,9 +2161,7 @@ void main() {
           stubSweepLoad(wallet: wallet, utxos: [selected]);
           final currencies = Completer<Result<double, SendFailure>>();
           when(
-            () => getSendExchangeRateUsecase.execute(
-              currencyCode: any(named: 'currencyCode'),
-            ),
+            () => send.exchangeRate(currencyCode: any(named: 'currencyCode')),
           ).thenAnswer((_) => currencies.future);
           final cubit = buildCubit(
             wallet: wallet,
@@ -2133,7 +2248,7 @@ void main() {
         sats: 75000,
       );
       const request = PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
         address: 'bc1qfirst',
         lightning: 'lnbc1invoice',
@@ -2233,8 +2348,8 @@ void main() {
       );
       addTearDown(cubit.close);
       await cubit.loadWalletWithRatesAndFees();
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => [first]);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok([first]));
 
       await cubit.loadUtxos();
 
@@ -2309,7 +2424,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?amount=0.0005',
           address: 'bc1qrecipient',
           amountSat: 50000,
@@ -2428,7 +2543,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?amount=0.0005',
           address: 'bc1qrecipient',
           amountSat: 50000,
@@ -2501,7 +2616,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?label=rent',
           address: 'bc1qrecipient',
           label: 'rent',
@@ -2735,8 +2850,8 @@ void main() {
           signedBitcoinPsbt: 'signed',
         ),
       );
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
 
       await cubit.onConfirmTransactionClicked();
 
@@ -3154,8 +3269,8 @@ void main() {
     });
 
     void stubMultiRecipientBuild(Wallet wallet) {
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
@@ -3436,7 +3551,7 @@ void main() {
     });
 
     test('changing currency keeps the multi-recipient remainder', () async {
-      when(() => getSendExchangeRateUsecase.execute(currencyCode: 'USD'))
+      when(() => send.exchangeRate(currencyCode: 'USD'))
           .thenAnswer((_) async => const Ok(50000.0));
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -3474,7 +3589,7 @@ void main() {
         const uri = 'bitcoin:bc1qsecond?amount=0.0005';
         when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
           (_) async => const PaymentRequest.bip21(
-            network: Network.bitcoinMainnet,
+            network: BitcoinNetwork.mainnet,
             uri: uri,
             address: 'bc1qsecond',
             amountSat: 50000,
@@ -3536,7 +3651,7 @@ void main() {
         const uri = 'bitcoin:bc1qsecond?amount=0.0005';
         when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
           (_) async => const PaymentRequest.bip21(
-            network: Network.bitcoinMainnet,
+            network: BitcoinNetwork.mainnet,
             uri: uri,
             address: 'bc1qsecond',
             amountSat: 50000,
@@ -3585,7 +3700,7 @@ void main() {
       const uri = 'bitcoin:bc1qsecond?amount=0.0005';
       when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: uri,
           address: 'bc1qsecond',
           amountSat: 50000,
@@ -3759,14 +3874,12 @@ void main() {
       final liquidSyncs = StreamController<Wallet>.broadcast();
       final bitcoinUtxos = Completer<List<WalletUtxo>>();
       addTearDown(liquidSyncs.close);
-      when(() => getWalletUtxosUsecase.execute(walletId: liquidWallet.id))
-          .thenAnswer((_) async => const []);
-      when(() => getWalletUtxosUsecase.execute(walletId: bitcoinWallet.id))
-          .thenAnswer((_) => bitcoinUtxos.future);
-      when(
-        () =>
-            checkLiquidConsolidationUsecase.execute(walletId: liquidWallet.id),
-      ).thenAnswer((_) async => false);
+      when(() => getWalletUtxosUsecase.load(walletId: liquidWallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
+      when(() => getWalletUtxosUsecase.load(walletId: bitcoinWallet.id))
+          .thenAnswer((_) async => Ok(await (bitcoinUtxos.future)));
+      when(() => consolidation.isRequired(liquidWallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(
         () =>
             watchFinishedWalletSyncsUsecase.execute(walletId: liquidWallet.id),
@@ -3832,8 +3945,8 @@ void main() {
             amountSat: any(named: 'amountSat'),
           ),
         ).thenReturn(Ok(wallet));
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) => bitcoinUtxos.future);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(await (bitcoinUtxos.future)));
         when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
             .thenAnswer((_) => const Stream.empty());
         when(() => detectBitcoinStringUsecase.execute(data: 'bc1qnewfirst'))
@@ -3888,8 +4001,8 @@ void main() {
             amountSat: any(named: 'amountSat'),
           ),
         ).thenReturn(Ok(wallet));
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) => bitcoinUtxos.future);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(await (bitcoinUtxos.future)));
         when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
             .thenAnswer((_) => const Stream.empty());
         when(
@@ -4007,7 +4120,7 @@ void main() {
     test('keeps a multi-recipient BIP21 send on chain', () async {
       final wallet = _bitcoinLocalWallet();
       const request = PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
         address: 'bc1qfirst',
         lightning: 'lnbc1invoice',
@@ -4020,8 +4133,8 @@ void main() {
           amountSat: 30000,
         ),
       ).thenReturn(Ok(wallet));
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(() => feeEstimates.estimate(any()))
@@ -4086,8 +4199,8 @@ void main() {
       final firstWallet = _bitcoinLocalWallet();
       final secondWallet = _bitcoinWallet(balanceSat: 500000);
       final previewStarted = Completer<void>();
-      when(() => getWalletUtxosUsecase.execute(walletId: secondWallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: secondWallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(
         () =>
             watchFinishedWalletSyncsUsecase.execute(walletId: secondWallet.id),
@@ -4165,8 +4278,8 @@ void main() {
         () =>
             watchFinishedWalletSyncsUsecase.execute(walletId: secondWallet.id),
       ).thenAnswer((_) => const Stream.empty());
-      when(() => getWalletUtxosUsecase.execute(walletId: secondWallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: secondWallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(readyState(firstWallet));
@@ -4196,10 +4309,10 @@ void main() {
       final secondWallet = _bitcoinWallet(balanceSat: 500000);
       final prepareStarted = Completer<void>();
       final prepared = Completer<Result<PreparedBitcoinSend, SendFailure>>();
-      when(() => getWalletUtxosUsecase.execute(walletId: firstWallet.id))
-          .thenAnswer((_) async => const []);
-      when(() => getWalletUtxosUsecase.execute(walletId: secondWallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: firstWallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
+      when(() => getWalletUtxosUsecase.load(walletId: secondWallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(
         () =>
             watchFinishedWalletSyncsUsecase.execute(walletId: secondWallet.id),
@@ -4244,8 +4357,8 @@ void main() {
       'shows the built MAX amount while preserving its fixed fallback',
       () async {
         final wallet = _bitcoinLocalWallet();
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) async => const []);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(<WalletUtxo>[]));
         when(
           () => prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -4532,8 +4645,8 @@ void main() {
         final builds = <Completer<Result<PreparedBitcoinSend, SendFailure>>>[];
         final firstStarted = Completer<void>();
         final secondStarted = Completer<void>();
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) async => const []);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(<WalletUtxo>[]));
         when(
           () => prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -4604,8 +4717,8 @@ void main() {
       'does not broadcast an earlier transaction after a rebuild fails',
       () async {
         final wallet = _bitcoinLocalWallet();
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) async => const []);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(<WalletUtxo>[]));
         when(
           () => prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -4665,8 +4778,8 @@ void main() {
           txId: 'new',
           sats: 60000,
         );
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) async => [newUtxo]);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok([newUtxo]));
         when(
           () => prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -4723,8 +4836,8 @@ void main() {
           txId: 'new',
           sats: 60000,
         );
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) async => [newUtxo]);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok([newUtxo]));
         when(
           () => prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -4783,8 +4896,9 @@ void main() {
       final staleLoad = Completer<List<WalletUtxo>>();
       final latestLoad = Completer<List<WalletUtxo>>();
       var loadCount = 0;
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id)).thenAnswer(
-        (_) => loadCount++ == 0 ? staleLoad.future : latestLoad.future,
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id)).thenAnswer(
+        (_) async =>
+            Ok(await (loadCount++ == 0 ? staleLoad.future : latestLoad.future)),
       );
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -4813,8 +4927,8 @@ void main() {
       final wallet = _bitcoinWatchOnlyWallet();
       final buildStarted = Completer<void>();
       final build = Completer<Result<PreparedBitcoinSend, SendFailure>>();
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
@@ -4850,8 +4964,9 @@ void main() {
       expect(cubit.state.unsignedPsbt, isNull);
       expect(cubit.state.amountConfirmedClicked, isFalse);
       verifyNever(
-        () => calculateBitcoinAbsoluteFeesUsecase.execute(
+        () => signBitcoinTxUsecase.execute(
           psbt: any(named: 'psbt'),
+          walletId: any(named: 'walletId'),
         ),
       );
     });
@@ -5031,8 +5146,8 @@ void main() {
 
     test('reports an aggregate multi-recipient shortfall', () async {
       final wallet = _bitcoinLocalWallet();
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
@@ -5297,8 +5412,8 @@ void main() {
           amountSat: 0,
         ),
       ).thenReturn(Ok(wallet));
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(() => feeEstimates.estimate(any()))
@@ -5341,10 +5456,10 @@ void main() {
           amountSat: null,
         ),
       ).thenReturn(Ok(wallet));
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const []);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(() => feeEstimates.estimate(any()))
@@ -5498,7 +5613,7 @@ void main() {
             walletId: any(named: 'walletId'),
             network: any(named: 'network'),
             bip21: any(named: 'bip21'),
-            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            prepared: any(named: 'prepared'),
             amountSat: any(named: 'amountSat'),
             networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           ),
@@ -5522,7 +5637,14 @@ void main() {
             walletId: 'w1',
             network: BitcoinNetwork.mainnet,
             bip21: any(named: 'bip21'),
-            unsignedOriginalPsbt: 'cHNidP8=',
+            prepared: any(
+              named: 'prepared',
+              that: isA<PreparedBitcoinSpend>().having(
+                (value) => value.unsignedPsbt,
+                'reviewed PSBT',
+                'cHNidP8=',
+              ),
+            ),
             amountSat: 50000,
             networkFeesSatPerVb: 2,
           ),
@@ -5551,7 +5673,7 @@ void main() {
             walletId: any(named: 'walletId'),
             network: any(named: 'network'),
             bip21: any(named: 'bip21'),
-            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            prepared: any(named: 'prepared'),
             amountSat: any(named: 'amountSat'),
             networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           ),
@@ -5600,7 +5722,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
         ),
@@ -5652,7 +5774,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
         ),
@@ -5694,7 +5816,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
         ),
@@ -5748,7 +5870,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
         ),
@@ -5792,7 +5914,7 @@ void main() {
             walletId: any(named: 'walletId'),
             network: any(named: 'network'),
             bip21: any(named: 'bip21'),
-            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            prepared: any(named: 'prepared'),
             amountSat: any(named: 'amountSat'),
             networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           ),
@@ -5965,7 +6087,12 @@ void main() {
         ),
       );
 
-      await cubit.updateSignedBitcoinTx('deadbeef');
+      await cubit.updateSignedBitcoinTx(
+        'deadbeef',
+        prepared:
+            cubit.preparedBitcoin ??
+            SpendFixtures.preparedBitcoin(unsignedPsbt: '', fee: Sats.zero),
+      );
 
       expect(
         cubit.state.signedBitcoinTx,
@@ -5980,7 +6107,12 @@ void main() {
       addTearDown(cubit.close);
       cubit.setStateForTest(hardwareSignReadyState());
 
-      await cubit.updateSignedBitcoinTx('deadbeef');
+      await cubit.updateSignedBitcoinTx(
+        'deadbeef',
+        prepared:
+            cubit.preparedBitcoin ??
+            SpendFixtures.preparedBitcoin(unsignedPsbt: '', fee: Sats.zero),
+      );
 
       expect(cubit.state.signedBitcoinTx, 'deadbeef');
       expect(cubit.state.failure, isNull);
@@ -6014,10 +6146,26 @@ void main() {
         return const Ok<void, SendFailure>(null);
       });
 
-      expect(await cubit.updateSignedBitcoinTx('tampered'), isFalse);
+      expect(
+        await cubit.updateSignedBitcoinTx(
+          'tampered',
+          prepared:
+              cubit.preparedBitcoin ??
+              SpendFixtures.preparedBitcoin(unsignedPsbt: '', fee: Sats.zero),
+        ),
+        isFalse,
+      );
       expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
 
-      expect(await cubit.updateSignedBitcoinTx('valid'), isTrue);
+      expect(
+        await cubit.updateSignedBitcoinTx(
+          'valid',
+          prepared:
+              cubit.preparedBitcoin ??
+              SpendFixtures.preparedBitcoin(unsignedPsbt: '', fee: Sats.zero),
+        ),
+        isTrue,
+      );
       expect(cubit.state.signedBitcoinTx, 'valid');
       expect(cubit.state.failure, isNull);
     });
@@ -6031,10 +6179,18 @@ void main() {
           hardwareSignReadyState().copyWith(unsignedPsbt: null),
         );
 
-        await cubit.updateSignedBitcoinTx('deadbeef');
+        expect(
+          await cubit.updateSignedBitcoinTx(
+            'deadbeef',
+            prepared: SpendFixtures.preparedBitcoin(
+              unsignedPsbt: '',
+              fee: Sats.zero,
+            ),
+          ),
+          isFalse,
+        );
 
         expect(cubit.state.signedBitcoinTx, isNull);
-        expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
         verifyNever(
           () => verifySignedTxUsecase.execute(
             unsignedPsbt: any(named: 'unsignedPsbt'),
@@ -6137,59 +6293,58 @@ void main() {
     );
 
     for (final wrapped in [true, false]) {
-      test(
-        'broadcast failure persists no foreign text wrapped=$wrapped',
-        () async {
-          const foreign =
-              'tcp://private-electrum.invalid:50001 foreign-rejection';
-          final directory = await Directory.systemTemp.createTemp('send-log-');
-          final reporter = _BroadcastReporter();
-          final console = <String>[];
-          final previousPrint = debugPrint;
-          debugPrint = (message, {wrapWidth}) {
-            if (message != null) console.add(message);
-          };
-          log = Logger.replace(directory: directory, reporter: reporter);
-          addTearDown(() async {
-            debugPrint = previousPrint;
-            await log.flush();
-            log = Logger.replace(directory: Directory.current);
-            await directory.delete(recursive: true);
-          });
-          final cubit = buildCubit();
-          addTearDown(cubit.close);
-          final error = wrapped
-              ? BroadcastTransactionException(foreign)
-              : Exception(foreign);
-          when(
-            () => broadcastBitcoinTxUsecase.execute(
-              walletId: 'w1',
-              any(),
-              isPsbt: any(named: 'isPsbt'),
-              network: app.Network.bitcoinMainnet,
-            ),
-          ).thenAnswer(
-            (_) => Future.error(error, StackTrace.fromString(foreign)),
-          );
-          cubit.setStateForTest(plainSignedState());
-          await cubit.broadcastTransaction();
+      test('broadcast failure persists no foreign text wrapped=$wrapped', () async {
+        const foreign =
+            'tcp://private-electrum.invalid:50001 foreign-rejection';
+        final directory = await Directory.systemTemp.createTemp('send-log-');
+        final reporter = _BroadcastReporter();
+        final console = <String>[];
+        final previousPrint = debugPrint;
+        debugPrint = (message, {wrapWidth}) {
+          if (message != null) console.add(message);
+        };
+        log = Logger.replace(directory: directory, reporter: reporter);
+        addTearDown(() async {
+          debugPrint = previousPrint;
           await log.flush();
-          final disk = await log.logsFile.readAsString();
-          expect(disk, isNot(contains('private-electrum.invalid')));
-          expect(
-            console.join('\n'),
-            isNot(contains('private-electrum.invalid')),
-          );
-          verifyZeroInteractions(reporter);
-          expect(disk, contains('send_broadcast_failed category=unexpected'));
-          expect(cubit.state.txId, isNull);
-          expect(cubit.state.broadcastingTransaction, isFalse);
-          final failure =
-              cubit.state.failure as SendTransactionConfirmationFailure;
-          expect(failure.isBroadcastFailure, wrapped);
-          expect(failure.logMessage, isNot(contains(foreign)));
-        },
-      );
+          log = Logger.replace(directory: Directory.current);
+          await directory.delete(recursive: true);
+        });
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final error = wrapped
+            ? BroadcastTransactionException(foreign)
+            : Exception(foreign);
+        when(
+          () => broadcastBitcoinTxUsecase.execute(
+            walletId: 'w1',
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
+        ).thenAnswer(
+          (_) => Future.error(error, StackTrace.fromString(foreign)),
+        );
+        cubit.setStateForTest(plainSignedState());
+        await cubit.broadcastTransaction();
+        await log.flush();
+        final disk = await log.logsFile.readAsString();
+        expect(disk, isNot(contains('private-electrum.invalid')));
+        expect(console.join('\n'), isNot(contains('private-electrum.invalid')));
+        verifyZeroInteractions(reporter);
+        expect(
+          disk,
+          contains(
+            'send_broadcast_failed category=${wrapped ? 'outcomeUnknown' : 'unexpected'}',
+          ),
+        );
+        expect(cubit.state.txId, isNull);
+        expect(cubit.state.broadcastingTransaction, isFalse);
+        final failure =
+            cubit.state.failure as SendTransactionConfirmationFailure;
+        expect(failure.isBroadcastFailure, wrapped);
+        expect(failure.logMessage, isNot(contains(foreign)));
+      });
     }
 
     test('spend refusal exposes the localized failure without retry', () async {
@@ -6346,10 +6501,11 @@ void main() {
         );
         stubBroadcast();
         when(
-          () => watchWalletTransactionByTxIdUsecase.execute(
-            walletId: 'w1',
-            txId: 'broadcast-txid',
-          ),
+          () =>
+              watchWalletTransactionByTxIdUsecase.watchWalletTransactionByTxId(
+                walletId: 'w1',
+                txId: 'broadcast-txid',
+              ),
         ).thenAnswer((_) => const Stream.empty());
 
         await cubit.onConfirmTransactionClicked();
@@ -6397,8 +6553,8 @@ void main() {
 
   Wallet stubPaymentRequestContinuation() {
     final wallet = _bitcoinLocalWallet();
-    when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-        .thenAnswer((_) async => const []);
+    when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(<WalletUtxo>[]));
     when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) => const Stream.empty());
     when(() => feeEstimates.estimate(any()))
@@ -6454,7 +6610,7 @@ void main() {
           exchangeRate: 70000,
         ),
       );
-      when(() => getSendExchangeRateUsecase.execute(currencyCode: 'CAD'))
+      when(() => send.exchangeRate(currencyCode: 'CAD'))
           .thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
 
       await cubit.onCurrencyChanged('CAD');
@@ -6469,7 +6625,7 @@ void main() {
       cubit.setStateForTest(
         const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
       );
-      when(() => getSendExchangeRateUsecase.execute(currencyCode: 'USD'))
+      when(() => send.exchangeRate(currencyCode: 'USD'))
           .thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
 
       await cubit.getExchangeRate();
@@ -6485,7 +6641,7 @@ void main() {
         const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
       );
       when(
-        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+        () => send.exchangeRate(currencyCode: 'USD'),
       ).thenAnswer((_) async => const Err(SendUnexpectedFailure('settings')));
 
       await cubit.getExchangeRate();
@@ -6619,7 +6775,7 @@ void main() {
       () async {
         final wallet = _bitcoinLocalWallet();
         const request = PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
           address: 'bc1qfirst',
           lightning: 'lnbc1invoice',
@@ -6638,8 +6794,8 @@ void main() {
             amountSat: 0,
           ),
         ).thenReturn(Ok(wallet));
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) async => const []);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(<WalletUtxo>[]));
         when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
             .thenAnswer((_) => const Stream.empty());
         when(() => feeEstimates.estimate(any()))
@@ -6837,10 +6993,10 @@ void main() {
           amountSat: any(named: 'amountSat'),
         ),
       ).thenReturn(Ok<Wallet, SendFailure>(wallet));
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) => oldUtxosLoaded.future);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(await (oldUtxosLoaded.future)));
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(() => feeEstimates.estimate(any()))
           .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
@@ -6849,11 +7005,8 @@ void main() {
       when(() => detectBitcoinStringUsecase.execute(data: 'old-address'))
           .thenAnswer((_) async => oldRequest);
       final oldContinuation = cubit.onScannedPaymentRequest('old-address');
-      await untilCalled(
-        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
-      );
-      verify(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .called(1);
+      await untilCalled(() => getWalletUtxosUsecase.load(walletId: wallet.id));
+      verify(() => getWalletUtxosUsecase.load(walletId: wallet.id)).called(1);
 
       when(() => detectBitcoinStringUsecase.execute(data: 'new@example.com'))
           .thenAnswer((_) async => newRequest);
@@ -6891,10 +7044,10 @@ void main() {
           amountSat: any(named: 'amountSat'),
         ),
       ).thenReturn(Ok<Wallet, SendFailure>(wallet));
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => const <WalletUtxo>[]);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(const <WalletUtxo>[]));
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(() => feeEstimates.estimate(BitcoinNetwork.mainnet))
           .thenAnswer((_) => oldBitcoinFeesLoaded.future);
       when(() => feeEstimates.estimate(LiquidNetwork.mainnet))
@@ -6945,7 +7098,7 @@ void main() {
       final revisions = StreamController<WalletRevisionState>();
       final cubit = buildCubit(
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-          WalletFacade(revisions.stream),
+          revisions.stream,
         ),
       );
       addTearDown(cubit.close);
@@ -6955,8 +7108,8 @@ void main() {
       final other = _utxo(amountSat: 900000, vout: 1);
       when(() => getWalletUsecase.execute(wallet.id))
           .thenAnswer((_) async => wallet);
-      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => [if (!vanished) selected, other]);
+      when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+          .thenAnswer((_) async => Ok([if (!vanished) selected, other]));
       cubit.setStateForTest(
         SendState(
           selectedWallet: SendWalletBitcoin(wallet),
@@ -6999,8 +7152,8 @@ void main() {
         final cubit = buildCubit();
         addTearDown(cubit.close);
         final selected = _utxo(amountSat: 10000);
-        when(() => getWalletUtxosUsecase.execute(walletId: 'w-bitcoin'))
-            .thenAnswer((_) async => const <WalletUtxo>[]);
+        when(() => getWalletUtxosUsecase.load(walletId: 'w-bitcoin'))
+            .thenAnswer((_) async => Ok(const <WalletUtxo>[]));
         cubit.setStateForTest(
           SendState(
             selectedWallet: SendWalletBitcoin(
@@ -7039,7 +7192,7 @@ void main() {
         sendType: SendType.bitcoin,
         selectedWallet: SendWalletBitcoin(wallet),
         paymentRequest: const PaymentRequest.bip21(
-          network: Network.bitcoinRegtest,
+          network: BitcoinNetwork.regtest,
           uri: 'bitcoin:bcrt1qrecipient',
           address: 'bcrt1qrecipient',
         ),
@@ -7069,8 +7222,8 @@ void main() {
         final wallet = _bitcoinWallet(balanceSat: 20000)
             .copyWith(network: Network.bitcoinRegtest);
         final fee = manual ? const RelativeFee(500) : _feeOptions().fastest;
-        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
-            .thenAnswer((_) async => [_utxo(amountSat: 20000)]);
+        when(() => getWalletUtxosUsecase.load(walletId: wallet.id))
+            .thenAnswer((_) async => Ok([_utxo(amountSat: 20000)]));
         when(
           () => prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -7106,7 +7259,7 @@ void main() {
             sendType: SendType.bitcoin,
             selectedWallet: SendWalletBitcoin(wallet),
             paymentRequest: const PaymentRequest.bip21(
-              network: Network.bitcoinRegtest,
+              network: BitcoinNetwork.regtest,
               uri: 'bitcoin:bcrt1qrecipient',
               address: 'bcrt1qrecipient',
             ),
@@ -7161,9 +7314,8 @@ void main() {
             hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer((_) async => [selected]);
+        when(() => getWalletUtxosUsecase.load(walletId: any(named: 'walletId')))
+            .thenAnswer((_) async => Ok([selected]));
         cubit.setStateForTest(
           SendState(
             step: SendStep.amount,
@@ -7184,14 +7336,10 @@ void main() {
           ),
         );
 
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer((_) async => [selected]);
-        when(
-          () => checkLiquidConsolidationUsecase.execute(
-            walletId: any(named: 'walletId'),
-          ),
-        ).thenAnswer((_) async => false);
+        when(() => getWalletUtxosUsecase.load(walletId: any(named: 'walletId')))
+            .thenAnswer((_) async => Ok([selected]));
+        when(() => consolidation.isRequired(any()))
+            .thenAnswer((_) async => const Ok(false));
 
         await cubit.createTransaction();
 
@@ -7220,9 +7368,8 @@ void main() {
         ).thenAnswer(
           (_) async => const Err(SendInsufficientFundsForFeesFailure()),
         );
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer((_) async => <WalletUtxo>[]);
+        when(() => getWalletUtxosUsecase.load(walletId: any(named: 'walletId')))
+            .thenAnswer((_) async => Ok(<WalletUtxo>[]));
         cubit.setStateForTest(
           SendState(
             step: SendStep.amount,
@@ -7239,11 +7386,8 @@ void main() {
           ),
         );
 
-        when(
-          () => checkLiquidConsolidationUsecase.execute(
-            walletId: any(named: 'walletId'),
-          ),
-        ).thenAnswer((_) async => false);
+        when(() => consolidation.isRequired(any()))
+            .thenAnswer((_) async => const Ok(false));
 
         await cubit.createTransaction();
 
@@ -7275,9 +7419,8 @@ void main() {
         final selected = _utxo(amountSat: 1000);
         // loadUtxos() filters the selection against the wallet's current UTXOs,
         // so the picked coin has to be in the list or the selection is dropped.
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer((_) async => [selected]);
+        when(() => getWalletUtxosUsecase.load(walletId: any(named: 'walletId')))
+            .thenAnswer((_) async => Ok([selected]));
         cubit.setStateForTest(
           SendState(
             step: SendStep.amount,
@@ -7341,8 +7484,8 @@ void main() {
         ),
       ).thenThrow(InsufficientFundsException('needed 10000, available 5000'));
       when(
-        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => [_utxo(amountSat: 15000, isFrozen: true)]);
+        () => getWalletUtxosUsecase.load(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => Ok([_utxo(amountSat: 15000, isFrozen: true)]));
       cubit.setStateForTest(
         SendState(
           step: SendStep.amount,
@@ -7380,7 +7523,8 @@ void main() {
     );
 
     void stubAmount(Result<Sats, SendFailure> result) =>
-        when(() => validateSpAmount.execute(any())).thenReturn(result);
+        when(() => validateSpAmount.execute(any()))
+            .thenAnswer((_) async => result);
 
     // Mirrors what the SP flow has by the amount step: the synthetic SP wallet
     // from loadWalletWithRatesAndFees and the stand-in bitcoin payment request
@@ -7603,12 +7747,12 @@ void main() {
     late _MockPrepareSpPaymentForSendUsecase prepare;
     late _MockSendSpPaymentForSendUsecase send;
 
-    SpTxDraft draft({int fee = 200, int output = 800}) => SpTxDraft(
+    SilentTxDraft draft({int fee = 200, int output = 800}) => SilentTxDraft(
       id: 'draft-1',
       inputs: const [],
       outputs: [
-        SpRecipientStandard(
-          address: SpAddress('bc1-address'),
+        SilentRecipientStandard(
+          address: SilentAddress('bc1-address'),
           amountSat: Sats.fromInt(output),
           isMax: false,
         ),
@@ -7659,8 +7803,8 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Ok(
-          SpRecipientStandard(
-            address: SpAddress('bc1-address'),
+          SilentRecipientStandard(
+            address: SilentAddress('bc1-address'),
             amountSat: Sats.fromInt(1000),
             isMax: false,
           ),
@@ -7674,8 +7818,8 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Ok(
-          SpRecipientStandard(
-            address: SpAddress('bc1-address'),
+          SilentRecipientStandard(
+            address: SilentAddress('bc1-address'),
             amountSat: Sats.fromInt(1000),
             isMax: true,
           ),
@@ -7706,7 +7850,7 @@ void main() {
     test(
       'SP validation cannot restore an input cleared while awaiting',
       () async {
-        final pending = Completer<Result<SpRecipient, SendFailure>>();
+        final pending = Completer<Result<SilentRecipient, SendFailure>>();
         when(
           () => validateRecipient.execute(
             input: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
@@ -7726,8 +7870,8 @@ void main() {
         await cubit.onChangedText('');
         pending.complete(
           Ok(
-            SpRecipientStandard(
-              address: SpAddress('1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
+            SilentRecipientStandard(
+              address: SilentAddress('1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
               amountSat: Sats.fromInt(1000),
               isMax: false,
             ),
@@ -7786,7 +7930,7 @@ void main() {
             isMax: false,
           ),
         ).thenAnswer(
-          (_) async => const Err<SpRecipient, SendFailure>(
+          (_) async => const Err<SilentRecipient, SendFailure>(
             SendAddressNetworkMismatchFailure('wrong network'),
           ),
         );
@@ -7815,7 +7959,7 @@ void main() {
             isMax: false,
           ),
         ).thenAnswer(
-          (_) async => const Err<SpRecipient, SendFailure>(
+          (_) async => const Err<SilentRecipient, SendFailure>(
             SendInvalidPaymentRequestFailure(logMessage: 'unsupported'),
           ),
         );
@@ -7835,7 +7979,7 @@ void main() {
           fee: any(named: 'fee'),
         ),
       ).thenAnswer(
-        (_) async => const Err<SpTxDraft, SendFailure>(
+        (_) async => const Err<SilentTxDraft, SendFailure>(
           SendInsufficientBalanceFailure('exceeds'),
         ),
       );
@@ -7854,7 +7998,7 @@ void main() {
           fee: any(named: 'fee'),
         ),
       ).thenAnswer(
-        (_) async => const Err<SpTxDraft, SendFailure>(
+        (_) async => const Err<SilentTxDraft, SendFailure>(
           SendTransactionBuildFailure('blindbit down'),
         ),
       );
@@ -8055,9 +8199,8 @@ void main() {
     );
 
     void stubLockupBuild() {
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => <WalletUtxo>[]);
+      when(() => getWalletUtxosUsecase.load(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: 'w1',
@@ -8531,7 +8674,7 @@ void main() {
 
   group('Boltz-first cross-chain send', () {
     const liquidRequest = PaymentRequest.bip21(
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       uri: 'liquidnetwork:lq1recipient?amount=0.0005',
       address: 'lq1recipient',
       amountSat: 50000,
@@ -8654,9 +8797,8 @@ void main() {
     test('builds and signs the verified lockup for the chain swap', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => <WalletUtxo>[]);
+      when(() => getWalletUtxosUsecase.load(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok(<WalletUtxo>[]));
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: 'w1',
@@ -8787,7 +8929,7 @@ void main() {
         cubit.setStateForTest(
           crossChainState(
             paymentRequest: const PaymentRequest.bip21(
-              network: Network.liquidTestnet,
+              network: LiquidNetwork.testnet,
               uri: 'liquidtestnet:tlq1recipient?amount=0.0005',
               address: 'tlq1recipient',
               amountSat: 50000,
@@ -8915,7 +9057,7 @@ void main() {
             sendType: SendType.bitcoin,
             selectedWallet: SendWalletBitcoin(wallet),
             paymentRequest: PaymentRequest.bip21(
-              network: destination,
+              network: destination.shared,
               uri: 'bitcoin:public-fixture',
               address: 'public-fixture',
               amountSat: 50000,

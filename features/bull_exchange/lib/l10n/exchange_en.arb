@@ -430,5 +430,3455 @@
   "exchangeSupportChatLogDraft": "Here are my logs",
   "@exchangeSupportChatLogDraft": {
     "description": "Editable support chat draft after attaching diagnostic logs."
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "settingsErrorSavingSetting": "That setting could not be saved. Please try again.",
+  "@settingsErrorSavingSetting": {
+    "description": "settings user-facing failure message (#1895)."
+  },
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "@exchangeAccessSettingsTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsLabel": "Exchange features",
+  "@exchangeAccessSettingsLabel": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsOffHint": "Enable to sign in or create a Bull Bitcoin account.",
+  "@exchangeAccessSettingsOffHint": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsOnHint": "Exchange features are enabled.",
+  "@exchangeAccessSettingsOnHint": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSignIn": "Sign in or create an account",
+  "@exchangeAccessSignIn": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableTitle": "Disable exchange features?",
+  "@exchangeAccessDisableTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableBody": "This signs you out on this device. Existing orders, AutoBuy and recurring buys are not cancelled.",
+  "@exchangeAccessDisableBody": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableConfirm": "Sign out and disable",
+  "@exchangeAccessDisableConfirm": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeTradingRetry": "Retry",
+  "@exchangeTradingRetry": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessUnreadable": "Exchange access could not be read. Retry or reset it.",
+  "@exchangeAccessUnreadable": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessReset": "Reset exchange access",
+  "@exchangeAccessReset": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessLogoutIncomplete": "Sign out is incomplete. Finish signing out before enabling exchange.",
+  "@exchangeAccessLogoutIncomplete": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessRetryLogout": "Finish signing out",
+  "@exchangeAccessRetryLogout": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "fundExchangeTitle": "Funding",
+  "@fundExchangeTitle": {
+    "description": "AppBar title for funding screen"
+  },
+  "fundExchangeAccountTitle": "Fund your account",
+  "@fundExchangeAccountTitle": {
+    "description": "Main title on the fund exchange account screen"
+  },
+  "fundExchangeAccountSubtitle": "Select your country and payment method",
+  "@fundExchangeAccountSubtitle": {
+    "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
+  },
+  "fundExchangeRestrictedTitle": "Funding unavailable",
+  "@fundExchangeRestrictedTitle": {
+    "description": "Title shown when a restricted or prohibited user is blocked from funding"
+  },
+  "fundExchangeRestrictedMessage": "Funding is not available on your account. Please contact support for more information.",
+  "@fundExchangeRestrictedMessage": {
+    "description": "Message shown when a restricted or prohibited user is blocked from funding"
+  },
+  "fundExchangeWarningTitle": "Watch out for scammers",
+  "@fundExchangeWarningTitle": {
+    "description": "Title of the scammer warning screen"
+  },
+  "fundExchangeWarningDescription": "If someone is asking you to buy Bitcoin or \"helping you\", be careful, they may be trying to scam you!",
+  "@fundExchangeWarningDescription": {
+    "description": "Warning message about potential scammers when funding account"
+  },
+  "fundExchangeWarningTacticsTitle": "Common scammer tactics",
+  "@fundExchangeWarningTacticsTitle": {
+    "description": "Title for the list of common scammer tactics"
+  },
+  "fundExchangeWarningTactic1": "They are promising returns on investment",
+  "@fundExchangeWarningTactic1": {
+    "description": "First scammer tactic warning"
+  },
+  "fundExchangeWarningTactic2": "They are offering you a loan",
+  "@fundExchangeWarningTactic2": {
+    "description": "Second scammer tactic warning"
+  },
+  "fundExchangeWarningTactic3": "They say they work for debt or tax collection",
+  "@fundExchangeWarningTactic3": {
+    "description": "Third scammer tactic warning"
+  },
+  "fundExchangeWarningTactic4": "They ask to send Bitcoin to their address",
+  "@fundExchangeWarningTactic4": {
+    "description": "Fourth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic5": "They ask to send Bitcoin on another platform",
+  "@fundExchangeWarningTactic5": {
+    "description": "Fifth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic6": "They want you to share your screen",
+  "@fundExchangeWarningTactic6": {
+    "description": "Sixth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic7": "They tell you not to worry about this warning",
+  "@fundExchangeWarningTactic7": {
+    "description": "Seventh scammer tactic warning"
+  },
+  "fundExchangeWarningTactic8": "They are pressuring you to act quickly",
+  "@fundExchangeWarningTactic8": {
+    "description": "Eighth scammer tactic warning"
+  },
+  "fundExchangeWarningConfirmation": "I confirm that I am not being asked to buy Bitcoin by someone else.",
+  "@fundExchangeWarningConfirmation": {
+    "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
+  },
+  "fundExchangeContinueButton": "Continue",
+  "@fundExchangeContinueButton": {
+    "description": "Button label to continue from warning screen to payment method details"
+  },
+  "fundExchangeScamConsentError": "Failed to register your consent. Please try again.",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
+  "fundExchangeDoneButton": "Done",
+  "@fundExchangeDoneButton": {
+    "description": "Button label to finish and exit the funding flow"
+  },
+  "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
+  "@fundExchangeJurisdictionCanada": {
+    "description": "Dropdown option for Canada jurisdiction"
+  },
+  "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "@fundExchangeJurisdictionEurope": {
+    "description": "Dropdown option for Europe SEPA jurisdiction"
+  },
+  "fundExchangeJurisdictionMexico": "🇲🇽 Mexico",
+  "@fundExchangeJurisdictionMexico": {
+    "description": "Dropdown option for Mexico jurisdiction"
+  },
+  "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "@fundExchangeJurisdictionCostaRica": {
+    "description": "Dropdown option for Costa Rica jurisdiction"
+  },
+  "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
+  "@fundExchangeJurisdictionArgentina": {
+    "description": "Dropdown option for Argentina jurisdiction"
+  },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
+  },
+  "fundExchangeMethodEmailETransfer": "Email E-Transfer",
+  "@fundExchangeMethodEmailETransfer": {
+    "description": "Payment method: Email E-Transfer (Canada)"
+  },
+  "fundExchangeMethodEmailETransferSubtitle": "Easiest and fastest method (instant)",
+  "@fundExchangeMethodEmailETransferSubtitle": {
+    "description": "Subtitle for Email E-Transfer payment method"
+  },
+  "fundExchangeMethodBankTransferWire": "Bank Transfer (Wire or EFT)",
+  "@fundExchangeMethodBankTransferWire": {
+    "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
+  },
+  "fundExchangeMethodBankTransferWireSubtitle": "Best and most reliable option for larger amounts (same or next day)",
+  "@fundExchangeMethodBankTransferWireSubtitle": {
+    "description": "Subtitle for Bank Transfer Wire payment method"
+  },
+  "fundExchangeMethodOnlineBillPayment": "Online Bill Payment",
+  "@fundExchangeMethodOnlineBillPayment": {
+    "description": "Payment method: Online Bill Payment (Canada)"
+  },
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "Slowest option, but can be done via online banking (3-4 business days)",
+  "@fundExchangeMethodOnlineBillPaymentSubtitle": {
+    "description": "Subtitle for Online Bill Payment method"
+  },
+  "fundExchangeMethodCanadaPost": "In-person cash or debit at Canada Post",
+  "@fundExchangeMethodCanadaPost": {
+    "description": "Payment method: In-person at Canada Post"
+  },
+  "fundExchangeMethodCanadaPostSubtitle": "Best for those who prefer to pay in person",
+  "@fundExchangeMethodCanadaPostSubtitle": {
+    "description": "Subtitle for Canada Post payment method"
+  },
+  "fundExchangeMethodInstantSepa": "Instant & Regular SEPA",
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant & Regular SEPA (Europe)"
+  },
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €30,000",
+  "@fundExchangeMethodInstantSepaSubtitle": {
+    "description": "Subtitle for Instant SEPA payment method"
+  },
+  "fundExchangeMethodRegularSepa": "Regular SEPA",
+  "@fundExchangeMethodRegularSepa": {
+    "description": "Payment method: Regular SEPA (Europe)"
+  },
+  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €30,000",
+  "@fundExchangeMethodRegularSepaSubtitle": {
+    "description": "Subtitle for Regular SEPA payment method"
+  },
+  "fundExchangeBankTransferWireTitle": "Bank transfer (wire)",
+  "@fundExchangeBankTransferWireTitle": {
+    "description": "Screen title for bank transfer wire payment details"
+  },
+  "fundExchangeBankTransferWireDescription": "Send a wire transfer from your bank account using Bull Bitcoin's bank details below. Your bank may require only some parts of these details.",
+  "@fundExchangeBankTransferWireDescription": {
+    "description": "Description of how to use bank transfer wire method"
+  },
+  "fundExchangeBankTransferWireTimeframe": "Any funds you send will be added to your Bull Bitcoin within 1-2 business days.",
+  "@fundExchangeBankTransferWireTimeframe": {
+    "description": "Timeframe for bank transfer wire funds to be credited"
+  },
+  "fundExchangeLabelBeneficiaryName": "Beneficiary name",
+  "@fundExchangeLabelBeneficiaryName": {
+    "description": "Label for beneficiary name field"
+  },
+  "fundExchangeHelpBeneficiaryName": "Use our official corporate name. Do not use \"Bull Bitcoin\".",
+  "@fundExchangeHelpBeneficiaryName": {
+    "description": "Help text for beneficiary name field"
+  },
+  "fundExchangeLabelTransferCode": "Transfer code (add this as payment description)",
+  "@fundExchangeLabelTransferCode": {
+    "description": "Label for transfer code field"
+  },
+  "fundExchangeHelpTransferCode": "Add this as the reason for the transfer",
+  "@fundExchangeHelpTransferCode": {
+    "description": "Help text for transfer code field"
+  },
+  "fundExchangeInfoTransferCode": "You must add the transfer code as the \"message\" or \"reason\" when making the payment.",
+  "@fundExchangeInfoTransferCode": {
+    "description": "Info card message about transfer code importance"
+  },
+  "fundExchangeLabelBankAccountDetails": "Bank account details",
+  "@fundExchangeLabelBankAccountDetails": {
+    "description": "Label for bank account details field"
+  },
+  "fundExchangeLabelSwiftCode": "SWIFT code",
+  "@fundExchangeLabelSwiftCode": {
+    "description": "Label for SWIFT code field"
+  },
+  "fundExchangeLabelInstitutionNumber": "Institution number",
+  "@fundExchangeLabelInstitutionNumber": {
+    "description": "Label for institution number field"
+  },
+  "fundExchangeLabelTransitNumber": "Transit number",
+  "@fundExchangeLabelTransitNumber": {
+    "description": "Label for transit number field"
+  },
+  "fundExchangeLabelRoutingNumber": "Routing number",
+  "@fundExchangeLabelRoutingNumber": {
+    "description": "Label for routing number field"
+  },
+  "fundExchangeLabelBeneficiaryAddress": "Beneficiary address",
+  "@fundExchangeLabelBeneficiaryAddress": {
+    "description": "Label for beneficiary address field"
+  },
+  "fundExchangeLabelBankName": "Bank name",
+  "@fundExchangeLabelBankName": {
+    "description": "Label for bank name field"
+  },
+  "fundExchangeLabelBankAddress": "Address of our bank",
+  "@fundExchangeLabelBankAddress": {
+    "description": "Label for bank address field"
+  },
+  "fundExchangeETransferTitle": "E-Transfer details",
+  "@fundExchangeETransferTitle": {
+    "description": "Screen title for E-Transfer payment details"
+  },
+  "fundExchangeETransferDescription": "Any amount you send from your bank via Email E-Transfer using the information below will be credited to your Bull Bitcoin account balance within a few minutes.",
+  "@fundExchangeETransferDescription": {
+    "description": "Description of how E-Transfer works and timeframe"
+  },
+  "fundExchangeETransferLabelBeneficiaryName": "Use this as the E-transfer beneficiary name",
+  "@fundExchangeETransferLabelBeneficiaryName": {
+    "description": "Label for E-transfer beneficiary name"
+  },
+  "fundExchangeETransferLabelEmail": "Send the E-transfer to this email",
+  "@fundExchangeETransferLabelEmail": {
+    "description": "Label for E-transfer recipient email"
+  },
+  "fundExchangeETransferLabelSecretQuestion": "Secret question",
+  "@fundExchangeETransferLabelSecretQuestion": {
+    "description": "Label for E-transfer security question"
+  },
+  "fundExchangeETransferLabelSecretAnswer": "Secret answer",
+  "@fundExchangeETransferLabelSecretAnswer": {
+    "description": "Label for E-transfer security answer"
+  },
+  "fundExchangeOnlineBillPaymentTitle": "Online Bill Payment",
+  "@fundExchangeOnlineBillPaymentTitle": {
+    "description": "Screen title for Online Bill Payment details"
+  },
+  "fundExchangeOnlineBillPaymentDescription": "Any amount you send via your bank's online bill payment feature using the information below will be credited to your Bull Bitcoin account balance within 3-4 business days.",
+  "@fundExchangeOnlineBillPaymentDescription": {
+    "description": "Description of how online bill payment works and timeframe"
+  },
+  "fundExchangeOnlineBillPaymentLabelBillerName": "Search your bank's list of billers for this name",
+  "@fundExchangeOnlineBillPaymentLabelBillerName": {
+    "description": "Label for biller name in online bill payment"
+  },
+  "fundExchangeOnlineBillPaymentHelpBillerName": "Add this company as a payee - it's Bull Bitcoin's payment processor",
+  "@fundExchangeOnlineBillPaymentHelpBillerName": {
+    "description": "Help text for biller name field"
+  },
+  "fundExchangeCanadaPostTitle": "In-person cash or debit at Canada Post",
+  "@fundExchangeCanadaPostTitle": {
+    "description": "Screen title for Canada Post payment method"
+  },
+  "fundExchangeCanadaPostStep1": "1. Go to any Canada Post location",
+  "@fundExchangeCanadaPostStep1": {
+    "description": "Step 1 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep2": "2. Ask the cashier to scan the \"Loadhub\" QR code",
+  "@fundExchangeCanadaPostStep2": {
+    "description": "Step 2 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep3": "3. Tell the cashier the amount you want to load",
+  "@fundExchangeCanadaPostStep3": {
+    "description": "Step 3 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep4": "4. The cashier will ask to see a piece of government-issued ID and verify that the name on your ID matches your Bull Bitcoin account",
+  "@fundExchangeCanadaPostStep4": {
+    "description": "Step 4 for Canada Post payment process - ID verification"
+  },
+  "fundExchangeCanadaPostStep5": "5. Pay with cash or debit card",
+  "@fundExchangeCanadaPostStep5": {
+    "description": "Step 5 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep6": "6. The cashier will hand you a receipt, keep it as your proof of payment",
+  "@fundExchangeCanadaPostStep6": {
+    "description": "Step 6 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep7": "7. The funds will be added to your Bull Bitcoin account balance within 30 minutes",
+  "@fundExchangeCanadaPostStep7": {
+    "description": "Step 7 for Canada Post payment process - timeframe"
+  },
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR code",
+  "@fundExchangeCanadaPostQrCodeLabel": {
+    "description": "Label for the Loadhub QR code display"
+  },
+  "fundExchangeSepaTitle": "SEPA transfer",
+  "@fundExchangeSepaTitle": {
+    "description": "Screen title for SEPA transfer payment details"
+  },
+  "fundExchangeSepaDescription": "Send a SEPA transfer from your bank account using the details below ",
+  "@fundExchangeSepaDescription": {
+    "description": "Description for SEPA transfer (first part, before 'exactly')"
+  },
+  "fundExchangeSepaDescriptionExactly": "exactly.",
+  "@fundExchangeSepaDescriptionExactly": {
+    "description": "Emphasized word 'exactly' in SEPA description"
+  },
+  "fundExchangeInstantSepaInfo": "Only use for transactions below €20,000. For larger transactions, use the Regular SEPA option.",
+  "@fundExchangeInstantSepaInfo": {
+    "description": "Info message for Instant SEPA transaction limits"
+  },
+  "fundExchangeRegularSepaInfo": "Only use for transactions above €20,000. For smaller transactions, use the Instant SEPA option.",
+  "@fundExchangeRegularSepaInfo": {
+    "description": "Info message for Regular SEPA transaction limits"
+  },
+  "fundExchangeLabelIban": "IBAN account number",
+  "@fundExchangeLabelIban": {
+    "description": "Label for IBAN account number field"
+  },
+  "fundExchangeLabelBicCode": "BIC code",
+  "@fundExchangeLabelBicCode": {
+    "description": "Label for BIC code field"
+  },
+  "fundExchangeLabelBankAccountCountry": "Bank account country",
+  "@fundExchangeLabelBankAccountCountry": {
+    "description": "Label for bank account country field"
+  },
+  "fundExchangeInfoBankCountryUk": "Our bank country is the United Kingdom.",
+  "@fundExchangeInfoBankCountryUk": {
+    "description": "Info message that bank country is United Kingdom"
+  },
+  "fundExchangeInfoBeneficiaryNameLeonod": "The name of the beneficiary should be LEONOD. If you put anything else, your payment will be rejected.",
+  "@fundExchangeInfoBeneficiaryNameLeonod": {
+    "description": "Critical info about beneficiary name being LEONOD"
+  },
+  "fundExchangeInfoPaymentDescription": "In the payment description, add your transfer code.",
+  "@fundExchangeInfoPaymentDescription": {
+    "description": "Info about adding transfer code to payment description"
+  },
+  "fundExchangeHelpBeneficiaryAddress": "Our official address, in case this is required by your bank",
+  "@fundExchangeHelpBeneficiaryAddress": {
+    "description": "Help text for beneficiary address field"
+  },
+  "fundExchangeLabelRecipientName": "Recipient name",
+  "@fundExchangeLabelRecipientName": {
+    "description": "Label for recipient name field (alternative to beneficiary name)"
+  },
+  "fundExchangeLabelBankCountry": "Bank country",
+  "@fundExchangeLabelBankCountry": {
+    "description": "Label for bank country field"
+  },
+  "fundExchangeLabelRecipientAddress": "Recipient address",
+  "@fundExchangeLabelRecipientAddress": {
+    "description": "Label for recipient address field"
+  },
+  "fundExchangeSpeiTitle": "SPEI transfer",
+  "@fundExchangeSpeiTitle": {
+    "description": "Screen title for SPEI transfer (Mexico)"
+  },
+  "fundExchangeSpeiDescription": "Transfer funds using your CLABE",
+  "@fundExchangeSpeiDescription": {
+    "description": "Description for SPEI transfer method"
+  },
+  "fundExchangeSpeiInfo": "Make a deposit using SPEI transfer (instant).",
+  "@fundExchangeSpeiInfo": {
+    "description": "Info message about SPEI transfer being instant"
+  },
+  "fundExchangeLabelClabe": "CLABE",
+  "@fundExchangeLabelClabe": {
+    "description": "Label for CLABE number field (Mexico)"
+  },
+  "fundExchangeLabelMemo": "Memo",
+  "@fundExchangeLabelMemo": {
+    "description": "Label for memo/reference field"
+  },
+  "fundExchangeSinpeTitle": "SINPE Transfer",
+  "@fundExchangeSinpeTitle": {
+    "description": "Screen title for SINPE transfer (Costa Rica)"
+  },
+  "fundExchangeSinpeDescription": "Transfer Colones using SINPE",
+  "@fundExchangeSinpeDescription": {
+    "description": "Description for SINPE transfer method"
+  },
+  "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
+  "@fundExchangeCrIbanCrcTitle": {
+    "description": "Screen title for Costa Rica bank transfer in Colones"
+  },
+  "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
+  "@fundExchangeCrIbanUsdTitle": {
+    "description": "Screen title for Costa Rica bank transfer in US Dollars"
+  },
+  "fundExchangeArsBankTransferTitle": "Bank Transfer",
+  "@fundExchangeArsBankTransferTitle": {
+    "description": "Screen title for Argentina bank transfer"
+  },
+  "fundExchangeArsBankTransferDescription": "Send a bank transfer from your bank account using the exact Argentina bank details below.",
+  "@fundExchangeArsBankTransferDescription": {
+    "description": "Description for Argentina bank transfer method"
+  },
+  "fundExchangeLabelRecipientNameArs": "Recipient Name",
+  "@fundExchangeLabelRecipientNameArs": {
+    "description": "Label for recipient name in Argentina transfer"
+  },
+  "fundExchangeLabelCvu": "CVU",
+  "@fundExchangeLabelCvu": {
+    "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
+  },
+  "fundExchangeErrorLoadingDetails": "The payment details could not be loaded at this moment. Please go back and try again, pick another payment method or come back later.",
+  "@fundExchangeErrorLoadingDetails": {
+    "description": "Error message when funding details fail to load"
+  },
+  "fundExchangeErrorTitleOrdPo404": "Payment Option Unavailable",
+  "@fundExchangeErrorTitleOrdPo404": {
+    "description": "bb-exchange errorTitleOrdPo404"
+  },
+  "fundExchangeErrorOrdPo404": "No payment option available",
+  "@fundExchangeErrorOrdPo404": {
+    "description": "bb-exchange errorMsgOrdPo404"
+  },
+  "fundExchangeErrorTitleRcpPo404": "Payment Option Not Available",
+  "@fundExchangeErrorTitleRcpPo404": {
+    "description": "bb-exchange errorTitleRcpPo404"
+  },
+  "fundExchangeErrorRcpPo404": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@fundExchangeErrorRcpPo404": {
+    "description": "bb-exchange errorMsgRcpPo404"
+  },
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Not Available",
+  "@fundExchangeErrorTitleRcpPosinpe404": {
+    "description": "bb-exchange errorTitleRcpPosinpe404"
+  },
+  "fundExchangeErrorRcpPosinpe404": "To access this funding option, your phone number must be registered with the SINPE network in Costa Rica.",
+  "@fundExchangeErrorRcpPosinpe404": {
+    "description": "bb-exchange errorMsgRcpPosinpe404"
+  },
+  "fundExchangeErrorTitleOrdKyc400": "KYC Requirements Missing",
+  "@fundExchangeErrorTitleOrdKyc400": {
+    "description": "bb-exchange errorTitleOrdKyc400"
+  },
+  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action",
+  "@fundExchangeErrorOrdKyc400": {
+    "description": "bb-exchange errorMsgOrdKyc400. The API names the missing fields in messageData.missingFields; that is backend-controlled text, kept to logs only (#1895)."
+  },
+  "fundExchangeErrorTitleOrdCop400": "Invalid COP Funding Data",
+  "@fundExchangeErrorTitleOrdCop400": {
+    "description": "bb-exchange errorTitleOrdCop400"
+  },
+  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding",
+  "@fundExchangeErrorOrdCop400": {
+    "description": "bb-exchange errorMsgOrdCop400. The API's raw error sentence is kept to logs only (#1895)."
+  },
+  "fundExchangeErrorOpeningPaymentLink": "The payment link could not be opened. Please try again.",
+  "@fundExchangeErrorOpeningPaymentLink": {
+    "description": "bb-exchange: shown when the COP payment link cannot be handed to a browser (#1895)."
+  },
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Not Activated",
+  "@fundExchangeErrorTitleOrdCsrcp400": {
+    "description": "bb-exchange errorTitleOrdCsrcp400"
+  },
+  "fundExchangeErrorOrdCsrcp400": "Please activate the virtual payment option for this SEPA recipient",
+  "@fundExchangeErrorOrdCsrcp400": {
+    "description": "bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Copy deliberately omits the IBAN, so it carries no placeholder."
+  },
+  "fundExchangeErrorTitleRcp400": "Invalid Request",
+  "@fundExchangeErrorTitleRcp400": {
+    "description": "bb-exchange errorTitleRcp400"
+  },
+  "fundExchangeErrorRcp400": "Invalid request",
+  "@fundExchangeErrorRcp400": {
+    "description": "bb-exchange errorMsgRcp400"
+  },
+  "fundExchangeErrorFetchingBankCodes": "Error fetching bank codes. Please try again later.",
+  "@fundExchangeErrorFetchingBankCodes": {
+    "description": "bb-exchange FundingCubit._loadBankCodesCopBitso empty-list error"
+  },
+  "fundExchangeSinpeDescriptionBold": "it will be rejected.",
+  "@fundExchangeSinpeDescriptionBold": {
+    "description": "Bold text warning that payment from wrong number will be rejected"
+  },
+  "fundExchangeSinpeAddedToBalance": "Once the payment is sent, it will be added to your account balance.",
+  "@fundExchangeSinpeAddedToBalance": {
+    "description": "Message explaining that payment will be added to account balance"
+  },
+  "fundExchangeSinpeLabelPhone": "Send to this phone number",
+  "@fundExchangeSinpeLabelPhone": {
+    "description": "Label for SINPE Móvil phone number field"
+  },
+  "fundExchangeSinpeLabelRecipientName": "Recipient Name",
+  "@fundExchangeSinpeLabelRecipientName": {
+    "description": "Label for recipient name in SINPE transfer"
+  },
+  "fundExchangeCrIbanCrcDescription": "Send a bank transfer from your bank account using the details below ",
+  "@fundExchangeCrIbanCrcDescription": {
+    "description": "First part of description for CR IBAN CRC transfer"
+  },
+  "fundExchangeCrIbanCrcDescriptionBold": "exactly",
+  "@fundExchangeCrIbanCrcDescriptionBold": {
+    "description": "Bold emphasis word for CR IBAN transfer instructions"
+  },
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Funds will be added to your account balance.",
+  "@fundExchangeCrIbanCrcDescriptionEnd": {
+    "description": "End of description for CR IBAN CRC transfer"
+  },
+  "fundExchangeCrIbanCrcLabelIban": "IBAN Account Number (Colones only)",
+  "@fundExchangeCrIbanCrcLabelIban": {
+    "description": "Label for IBAN number field for CRC (Colones) only"
+  },
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Payment Description",
+  "@fundExchangeCrIbanCrcLabelPaymentDescription": {
+    "description": "Label for payment description field in CR IBAN transfer"
+  },
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Your transfer code.",
+  "@fundExchangeCrIbanCrcPaymentDescriptionHelp": {
+    "description": "Help text explaining payment description is the transfer code"
+  },
+  "fundExchangeCrIbanCrcTransferCodeWarning": "You must add the transfer code as \"message\" or \"reason\" or \"description\" when making the payment. If you forget to include this code, your payment may be rejected.",
+  "@fundExchangeCrIbanCrcTransferCodeWarning": {
+    "description": "Warning about including transfer code in payment"
+  },
+  "fundExchangeCrIbanCrcLabelRecipientName": "Recipient Name",
+  "@fundExchangeCrIbanCrcLabelRecipientName": {
+    "description": "Label for recipient name in CR IBAN CRC transfer"
+  },
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Use our official corporate name. Do not use \"Bull Bitcoin\".",
+  "@fundExchangeCrIbanCrcRecipientNameHelp": {
+    "description": "Help text for recipient name field explaining to use corporate name"
+  },
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
+    "description": "Label for Cédula Jurídica (legal ID number in Costa Rica)"
+  },
+  "fundExchangeCrIbanUsdDescription": "Send a bank transfer from your bank account using the details below ",
+  "@fundExchangeCrIbanUsdDescription": {
+    "description": "First part of description for CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdDescriptionBold": "exactly",
+  "@fundExchangeCrIbanUsdDescriptionBold": {
+    "description": "Bold emphasis word for CR IBAN USD transfer instructions"
+  },
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Funds will be added to your account balance.",
+  "@fundExchangeCrIbanUsdDescriptionEnd": {
+    "description": "End of description for CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdLabelIban": "IBAN Account Number (US dollars only)",
+  "@fundExchangeCrIbanUsdLabelIban": {
+    "description": "Label for IBAN number field for USD only"
+  },
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Payment Description",
+  "@fundExchangeCrIbanUsdLabelPaymentDescription": {
+    "description": "Label for payment description field in CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Your transfer code.",
+  "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
+    "description": "Help text explaining payment description is the transfer code"
+  },
+  "fundExchangeCrIbanUsdTransferCodeWarning": "You must add the transfer code as \"message\" or \"reason\" or \"description\" when making the payment. If you forget to include this code, your payment may be rejected.",
+  "@fundExchangeCrIbanUsdTransferCodeWarning": {
+    "description": "Warning about including transfer code in payment for USD transfers"
+  },
+  "fundExchangeCrIbanUsdLabelRecipientName": "Recipient Name",
+  "@fundExchangeCrIbanUsdLabelRecipientName": {
+    "description": "Label for recipient name in CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Use our official corporate name. Do not use \"Bull Bitcoin\".",
+  "@fundExchangeCrIbanUsdRecipientNameHelp": {
+    "description": "Help text for recipient name field explaining to use corporate name"
+  },
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
+    "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
+  },
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "@fundExchangeCostaRicaMethodSinpeTitle": {
+    "description": "Payment method title for SINPE Móvil in method list"
+  },
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Transfer Colones using SINPE",
+  "@fundExchangeCostaRicaMethodSinpeSubtitle": {
+    "description": "Subtitle description for SINPE Móvil payment method"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcTitle": {
+    "description": "Payment method title for IBAN CRC in method list"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Transfer funds in Costa Rican Colón (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcSubtitle": {
+    "description": "Subtitle description for IBAN CRC payment method"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdTitle": {
+    "description": "Payment method title for IBAN USD in method list"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transfer funds in US Dollars (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
+    "description": "Subtitle description for IBAN USD payment method"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "fundExchangeSpeiTransfer": "SPEI transfer",
+  "@fundExchangeSpeiTransfer": {
+    "description": "SPEI transfer method title (Mexico)"
+  },
+  "fundExchangeSpeiSubtitle": "Transfer funds using your CLABE",
+  "@fundExchangeSpeiSubtitle": {
+    "description": "SPEI transfer subtitle"
+  },
+  "fundExchangeBankTransfer": "Bank Transfer",
+  "@fundExchangeBankTransfer": {
+    "description": "Bank transfer method title"
+  },
+  "fundExchangeBankTransferSubtitle": "Send a bank transfer from your bank account",
+  "@fundExchangeBankTransferSubtitle": {
+    "description": "Bank transfer subtitle"
+  },
+  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "@fundExchangeCopDailyLimitWarning": {
+    "description": "Warning about daily transaction limit for COP bank transfer"
+  },
+  "fundExchangeCopSenderName": "Sender Name",
+  "@fundExchangeCopSenderName": {
+    "description": "Label for sender name field in COP bank transfer"
+  },
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "@fundExchangeCopIssuingBank": {
+    "description": "Label for issuing bank dropdown in COP bank transfer"
+  },
+  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "@fundExchangeCopSelectBankError": {
+    "description": "Validation error when no bank is selected"
+  },
+  "fundExchangeCopAmount": "Amount",
+  "@fundExchangeCopAmount": {
+    "description": "Label for amount field in COP bank transfer"
+  },
+  "fundExchangeCopEnterAmountError": "Please enter an amount",
+  "@fundExchangeCopEnterAmountError": {
+    "description": "Validation error when amount is empty"
+  },
+  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "@fundExchangeCopValidAmountError": {
+    "description": "Validation error when amount is invalid"
+  },
+  "fundExchangeCopGeneratePaymentLink": "Generate Payment Link",
+  "@fundExchangeCopGeneratePaymentLink": {
+    "description": "Button label to generate COP payment link"
+  },
+  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "@fundExchangeCopRedirectMessage": {
+    "description": "Message about redirect to external payment page"
+  },
+  "fundExchangeCopOpenPaymentLink": "Open Payment Link",
+  "@fundExchangeCopOpenPaymentLink": {
+    "description": "Button label to open COP payment link"
+  },
+  "fundExchangeErrorNetwork": "Check your internet connection and try again.",
+  "@fundExchangeErrorNetwork": {
+    "description": "Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork."
+  },
+  "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
+  "@fundExchangeMethodConfidentialSepa": {
+    "description": "Title of the Confidential SEPA funding method"
+  },
+  "fundExchangeMethodConfidentialSepaSubtitle": "A personal virtual IBAN to deposit money privately",
+  "@fundExchangeMethodConfidentialSepaSubtitle": {
+    "description": "Subtitle of the Confidential SEPA funding method"
+  },
+  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
+  "@networkFeatureUnavailable": {
+    "description": "Refusal when a service does not support the active network"
+  },
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Add this as the account number",
+  "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
+    "description": "Label for account number in online bill payment"
+  },
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "This unique account number is created just for you",
+  "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
+    "description": "Help text for account number field"
+  },
+  "fundExchangeSinpeWarningNoBitcoin": "Do not put",
+  "@fundExchangeSinpeWarningNoBitcoin": {
+    "description": "Bold warning text at start of bitcoin warning message"
+  },
+  "fundExchangeSinpeWarningNoBitcoinDescription": " the word \"Bitcoin\" or \"Crypto\" in the payment description. This will block your payment.",
+  "@fundExchangeSinpeWarningNoBitcoinDescription": {
+    "description": "Warning that including Bitcoin or Crypto in description will block payment"
+  },
+  "exchangeCurrencyDropdownTitle": "Select Currency",
+  "@exchangeCurrencyDropdownTitle": {
+    "description": "Title for the currency selection dropdown"
+  },
+  "exchangeCurrencyDropdownValidation": "Please select a currency",
+  "@exchangeCurrencyDropdownValidation": {
+    "description": "Validation message when no currency is selected"
+  },
+  "exchangeAmountInputTitle": "Enter Amount",
+  "@exchangeAmountInputTitle": {
+    "description": "Title for the amount input field"
+  },
+  "exchangeAmountInputValidationEmpty": "Please enter an amount",
+  "@exchangeAmountInputValidationEmpty": {
+    "description": "Validation message when amount field is empty"
+  },
+  "exchangeAmountInputValidationInvalid": "Invalid amount",
+  "@exchangeAmountInputValidationInvalid": {
+    "description": "Validation message when amount is invalid"
+  },
+  "exchangeAmountInputValidationZero": "Amount must be greater than zero",
+  "@exchangeAmountInputValidationZero": {
+    "description": "Validation message when amount is zero or negative"
+  },
+  "exchangeAmountInputValidationInsufficient": "Insufficient balance",
+  "@exchangeAmountInputValidationInsufficient": {
+    "description": "Validation message when amount exceeds available balance"
+  },
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
+  "@exchangeBitcoinWalletsBitcoinAddressLabel": {
+    "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN address)",
+  "@exchangeBitcoinWalletsLightningAddressLabel": {
+    "description": "Label for Lightning address field in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid address",
+  "@exchangeBitcoinWalletsLiquidAddressLabel": {
+    "description": "Label for Liquid address field in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsEnterAddressHint": "Enter address",
+  "@exchangeBitcoinWalletsEnterAddressHint": {
+    "description": "Hint text for entering an address in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet address saved successfully",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Set default wallet addresses for automatic Bitcoin withdrawals.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin address",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid address",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "exchangeBitcoinWalletsLoadFailed": "Failed to load default wallets",
+  "@exchangeBitcoinWalletsLoadFailed": {
+    "description": "Error shown when the default Bitcoin wallets of the exchange account cannot be loaded"
+  },
+  "exchangeBitcoinWalletsAddressEmpty": "Address cannot be empty",
+  "@exchangeBitcoinWalletsAddressEmpty": {
+    "description": "Error shown when saving an empty default wallet address"
+  },
+  "exchangeBitcoinWalletsSaveFailed": "Failed to save wallet address",
+  "@exchangeBitcoinWalletsSaveFailed": {
+    "description": "Error shown when a default wallet address cannot be saved"
+  },
+  "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
+  "@exchangeBitcoinWalletsDeleteFailed": {
+    "description": "Error shown when a default wallet address cannot be deleted"
+  },
+  "destinationExpectedType": "Enter or scan a valid {type}.",
+  "@destinationExpectedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "wizardExchangeTitle": "BULL Exchange",
+  "@wizardExchangeTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet.",
+  "@wizardExchangeDescription": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "settingsTermsOfServiceTitle": "Terms of Service",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "autoBuyTitle": "Auto-Buy",
+  "@autoBuyTitle": {
+    "description": "Title for the AutoBuy dashboard card and screen"
+  },
+  "autoBuyDescription": "Automatically buy bitcoin each time you deposit funds into your account",
+  "@autoBuyDescription": {
+    "description": "Short description of AutoBuy"
+  },
+  "autoBuyActivate": "Activate Auto-Buy",
+  "@autoBuyActivate": {
+    "description": "Button label to open the AutoBuy activation flow"
+  },
+  "autoBuyDeactivate": "Deactivate Auto-Buy",
+  "@autoBuyDeactivate": {
+    "description": "Button label to deactivate AutoBuy"
+  },
+  "autoBuyCancelTitle": "Cancel Auto-Buy?",
+  "@autoBuyCancelTitle": {
+    "description": "Title of the AutoBuy deactivation confirmation dialog"
+  },
+  "autoBuyCancelMessage": "You will not automatically buy bitcoin next time you fund your account.",
+  "@autoBuyCancelMessage": {
+    "description": "Message in the AutoBuy deactivation confirmation dialog"
+  },
+  "autoBuyDeactivateConfirm": "Yes, deactivate",
+  "@autoBuyDeactivateConfirm": {
+    "description": "Confirmation button for deactivating AutoBuy"
+  },
+  "autoBuyHowItWorks": "How it works",
+  "@autoBuyHowItWorks": {
+    "description": "Heading above the AutoBuy explanation"
+  },
+  "autoBuyConnectWallet": "Connect your Bitcoin, Lightning, or Liquid wallet",
+  "@autoBuyConnectWallet": {
+    "description": "First AutoBuy explanation step"
+  },
+  "autoBuyPurchaseCreated": "A Bitcoin purchase is automatically created each time you fund your Bull Bitcoin account.",
+  "@autoBuyPurchaseCreated": {
+    "description": "Second AutoBuy explanation step"
+  },
+  "autoBuyBitcoinSent": "Bitcoin is sent directly to your own wallet.",
+  "@autoBuyBitcoinSent": {
+    "description": "Third AutoBuy explanation step"
+  },
+  "autoBuyRiskDisclaimer": "Order execution cannot be guaranteed. Delays or price changes between the deposit and purchase can change the effective rate.",
+  "@autoBuyRiskDisclaimer": {
+    "description": "Risk notice shown before an AutoBuy is enabled"
+  },
+  "autoBuyGetStarted": "Get started with Auto-Buy",
+  "@autoBuyGetStarted": {
+    "description": "Button label to start AutoBuy setup"
+  },
+  "autoBuyConfirmTitle": "Confirm Auto-Buy",
+  "@autoBuyConfirmTitle": {
+    "description": "Title of the AutoBuy confirmation screen"
+  },
+  "autoBuyInfoMessage": "Any amount added to your account will be converted to Bitcoin at the current exchange rate and sent to your wallet.",
+  "@autoBuyInfoMessage": {
+    "description": "Explanation on the AutoBuy confirmation screen"
+  },
+  "autoBuyAccountUnavailableError": "Your Bull Bitcoin account is not available. Try again later.",
+  "@autoBuyAccountUnavailableError": {
+    "description": "Error shown when AutoBuy cannot load the exchange account"
+  },
+  "autoBuyWalletRequiredError": "Add at least one default Bitcoin, Lightning, or Liquid address.",
+  "@autoBuyWalletRequiredError": {
+    "description": "Error shown when AutoBuy is enabled without a default wallet"
+  },
+  "autoBuyUpdateError": "Auto-buy could not be updated. Try again later.",
+  "@autoBuyUpdateError": {
+    "description": "Error shown when enabling or disabling AutoBuy fails"
+  },
+  "exchangeAuthLoginFailedTitle": "Login Failed",
+  "@exchangeAuthLoginFailedTitle": {
+    "description": "Title of the dialog shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedMessage": "An error occurred, please try logging in again.",
+  "@exchangeAuthLoginFailedMessage": {
+    "description": "Message shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedOkButton": "OK",
+  "@exchangeAuthLoginFailedOkButton": {
+    "description": "OK button label in the login failed dialog"
+  },
+  "exchangeTradingUnavailable": "Trading is unavailable.",
+  "@exchangeTradingUnavailable": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "settingsScreenTitle": "Settings",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "transactionHistoryTitle": "Transaction History",
+  "@transactionHistoryTitle": {
+    "description": "Title for the transaction history page and settings entry"
+  },
+  "exchangeHomeDepositButton": "Deposit",
+  "@exchangeHomeDepositButton": {
+    "description": "Button label for depositing funds to the exchange"
+  },
+  "exchangeHomeWithdrawButton": "Withdraw",
+  "@exchangeHomeWithdrawButton": {
+    "description": "Button label for withdrawing funds from the exchange"
+  },
+  "exchangeDcaUnableToGetConfig": "Unable to get DCA configuration",
+  "@exchangeDcaUnableToGetConfig": {
+    "description": "Error message when DCA configuration cannot be retrieved"
+  },
+  "exchangeDcaDeactivateTitle": "Deactivate Recurring Buy",
+  "@exchangeDcaDeactivateTitle": {
+    "description": "Title shown when DCA is active and can be deactivated"
+  },
+  "exchangeDcaActivateTitle": "Activate Recurring Buy",
+  "@exchangeDcaActivateTitle": {
+    "description": "Title shown when DCA is inactive and can be activated"
+  },
+  "exchangeDcaHideSettings": "Hide settings",
+  "@exchangeDcaHideSettings": {
+    "description": "Link text to hide DCA settings details"
+  },
+  "exchangeDcaViewSettings": "View settings",
+  "@exchangeDcaViewSettings": {
+    "description": "Link text to view DCA settings details"
+  },
+  "exchangeDcaCancelDialogTitle": "Cancel Bitcoin Recurring Buy?",
+  "@exchangeDcaCancelDialogTitle": {
+    "description": "Title of the dialog confirming DCA cancellation"
+  },
+  "exchangeDcaCancelDialogMessage": "Your recurring Bitcoin purchase plan will stop, and scheduled buys will end. To restart, you'll need to set up a new plan.",
+  "@exchangeDcaCancelDialogMessage": {
+    "description": "Message explaining the consequences of canceling DCA"
+  },
+  "exchangeDcaCancelDialogCancelButton": "Cancel",
+  "@exchangeDcaCancelDialogCancelButton": {
+    "description": "Button label to cancel the DCA cancellation dialog"
+  },
+  "exchangeDcaCancelDialogConfirmButton": "Yes, deactivate",
+  "@exchangeDcaCancelDialogConfirmButton": {
+    "description": "Button label to confirm DCA deactivation"
+  },
+  "exchangeDcaFrequencyHour": "hour",
+  "@exchangeDcaFrequencyHour": {
+    "description": "DCA frequency unit: hour"
+  },
+  "exchangeDcaFrequencyDay": "day",
+  "@exchangeDcaFrequencyDay": {
+    "description": "DCA frequency unit: day"
+  },
+  "exchangeDcaFrequencyWeek": "week",
+  "@exchangeDcaFrequencyWeek": {
+    "description": "DCA frequency unit: week"
+  },
+  "exchangeDcaFrequencyMonth": "month",
+  "@exchangeDcaFrequencyMonth": {
+    "description": "DCA frequency unit: month"
+  },
+  "exchangeDcaNetworkBitcoin": "Bitcoin Network",
+  "@exchangeDcaNetworkBitcoin": {
+    "description": "DCA network option: Bitcoin"
+  },
+  "exchangeDcaNetworkLightning": "Lightning Network",
+  "@exchangeDcaNetworkLightning": {
+    "description": "DCA network option: Lightning"
+  },
+  "exchangeDcaNetworkLiquid": "Liquid Network",
+  "@exchangeDcaNetworkLiquid": {
+    "description": "DCA network option: Liquid"
+  },
+  "exchangeDcaSummaryMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
+  "@exchangeDcaSummaryMessage": {
+    "description": "Summary message describing the DCA configuration",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "description": "The amount being purchased (e.g., '$100 CAD')"
+      },
+      "frequency": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "@exchangeDcaAddressDisplay": {
+    "description": "Format for displaying address label and address",
+    "placeholders": {
+      "addressLabel": {
+        "type": "String",
+        "description": "The address label (e.g., 'Bitcoin address')"
+      },
+      "address": {
+        "type": "String",
+        "description": "The actual address"
+      }
+    }
+  },
+  "exchangeKycLevelLight": "Light",
+  "@exchangeKycLevelLight": {
+    "description": "KYC verification level: Light"
+  },
+  "exchangeKycLevelLimited": "Limited",
+  "@exchangeKycLevelLimited": {
+    "description": "KYC verification level: Limited"
+  },
+  "exchangeKycCardTitle": "Complete your KYC",
+  "@exchangeKycCardTitle": {
+    "description": "Title of the KYC completion card"
+  },
+  "exchangeKycCardSubtitle": "To remove transaction limits",
+  "@exchangeKycCardSubtitle": {
+    "description": "Subtitle explaining why to complete KYC"
+  },
+  "homeActionBuy": "Buy",
+  "@homeActionBuy": {
+    "description": "Label for the Buy action button on the wallet home screen"
+  },
+  "homeActionSell": "Sell",
+  "@homeActionSell": {
+    "description": "Label for the Sell action button on the wallet home screen"
+  },
+  "homeActionPay": "Pay",
+  "@homeActionPay": {
+    "description": "Label for the Pay action button on the wallet home screen"
+  },
+  "homeActionTransfer": "Swap",
+  "@homeActionTransfer": {
+    "description": "Label for the Transfer action button on the wallet home screen"
+  },
+  "priceChartShowTooltip": "Show price chart",
+  "@priceChartShowTooltip": {
+    "description": "Accessible name of the Exchange home button that opens the price chart"
+  },
+  "recipientsSearchHint": "Search recipients by name or label",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
+  "recipientsScreenTitle": "Select Recipient",
+  "@recipientsScreenTitle": {
+    "description": "App bar title for the recipients selection screen."
+  },
+  "recipientsScreenSubtitle": "Who are you paying?",
+  "@recipientsScreenSubtitle": {
+    "description": "Subtitle shown on the recipients screen prompting the user to choose a recipient."
+  },
+  "recipientsTabNew": "New Recipient",
+  "@recipientsTabNew": {
+    "description": "Label for the tab to add a new recipient."
+  },
+  "recipientsTabList": "My Fiat Recipients",
+  "@recipientsTabList": {
+    "description": "Label for the tab listing the user's saved fiat recipients."
+  },
+  "recipientsPayoutMethod": "Payout method",
+  "@recipientsPayoutMethod": {
+    "description": "Label for the payout method selector in the new recipient form."
+  },
+  "recipientsFilterByJurisdiction": "Filter by Jurisdiction:",
+  "@recipientsFilterByJurisdiction": {
+    "description": "Label above the jurisdiction filter on the recipients list."
+  },
+  "recipientsListEmpty": "No recipients found.",
+  "@recipientsListEmpty": {
+    "description": "Empty state message when no recipients match the current filters."
+  },
+  "recipientsContinue": "Continue",
+  "@recipientsContinue": {
+    "description": "Continue button label used on recipient forms and the recipients list."
+  },
+  "recipientsJurisdictionAll": "All Jurisdictions",
+  "@recipientsJurisdictionAll": {
+    "description": "Dropdown option to show recipients from all jurisdictions."
+  },
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "@recipientsJurisdictionCanada": {
+    "description": "Canada jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "@recipientsJurisdictionEurope": {
+    "description": "Europe (SEPA) jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "@recipientsJurisdictionMexico": {
+    "description": "Mexico jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "@recipientsJurisdictionCostaRica": {
+    "description": "Costa Rica jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "@recipientsJurisdictionArgentina": {
+    "description": "Argentina jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "@recipientsJurisdictionColombia": {
+    "description": "Colombia jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsTypeInteracEmail": "Email Money Transfer",
+  "@recipientsTypeInteracEmail": {
+    "description": "Display name for the Canadian email money transfer recipient type. Do not use the Interac trademark."
+  },
+  "recipientsTypeBillPayment": "Bill Payment",
+  "@recipientsTypeBillPayment": {
+    "description": "Display name for the Canadian Bill Payment recipient type."
+  },
+  "recipientsTypeBankTransfer": "Bank Transfer",
+  "@recipientsTypeBankTransfer": {
+    "description": "Display name for the Canadian Bank Transfer recipient type."
+  },
+  "recipientsTypeSepa": "SEPA Transfer",
+  "@recipientsTypeSepa": {
+    "description": "Display name for the European SEPA Transfer recipient type."
+  },
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "@recipientsTypeSpeiClabe": {
+    "description": "Display name for the Mexican SPEI CLABE recipient type."
+  },
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "@recipientsTypeSpeiSms": {
+    "description": "Display name for the Mexican SPEI SMS recipient type."
+  },
+  "recipientsTypeSpeiCard": "SPEI Card",
+  "@recipientsTypeSpeiCard": {
+    "description": "Display name for the Mexican SPEI debit card recipient type."
+  },
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "@recipientsTypeSinpeIbanUsd": {
+    "description": "Display name for the Costa Rican SINPE IBAN USD recipient type."
+  },
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "@recipientsTypeSinpeIbanCrc": {
+    "description": "Display name for the Costa Rican SINPE IBAN CRC recipient type."
+  },
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "@recipientsTypeSinpeMovil": {
+    "description": "Display name for the Costa Rican SINPE Móvil recipient type."
+  },
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "@recipientsTypeBankAccountAr": {
+    "description": "Display name for the Argentinian CBU/CVU bank account recipient type."
+  },
+  "recipientsTypeBankAccountCo": "Bank Account COP",
+  "@recipientsTypeBankAccountCo": {
+    "description": "Display name for the Colombian bank account (COP) recipient type."
+  },
+  "recipientsTypeNequi": "Nequi",
+  "@recipientsTypeNequi": {
+    "description": "Display name for the Colombian Nequi recipient type."
+  },
+  "recipientsInfoEmail": "Email",
+  "@recipientsInfoEmail": {
+    "description": "Info-row label for an email value on a recipient list tile."
+  },
+  "recipientsInfoPayee": "Payee",
+  "@recipientsInfoPayee": {
+    "description": "Info-row label for a payee value on a recipient list tile."
+  },
+  "recipientsInfoAccount": "Account",
+  "@recipientsInfoAccount": {
+    "description": "Info-row label for a bank account value on a recipient list tile."
+  },
+  "recipientsInfoPhone": "Phone",
+  "@recipientsInfoPhone": {
+    "description": "Info-row label for a phone number value on a recipient list tile."
+  },
+  "recipientsInfoCard": "Card",
+  "@recipientsInfoCard": {
+    "description": "Info-row label for a card value on a recipient list tile."
+  },
+  "recipientsInfoLabel": "Label",
+  "@recipientsInfoLabel": {
+    "description": "Info-row label for the user-set label of a recipient on a list tile."
+  },
+  "recipientsValidationFieldRequired": "This field can't be empty",
+  "@recipientsValidationFieldRequired": {
+    "description": "Validation error shown when a required recipient form field is empty."
+  },
+  "recipientsLabelOptional": "Label (optional)",
+  "@recipientsLabelOptional": {
+    "description": "Label for the optional recipient label/nickname field in recipient forms."
+  },
+  "recipientsLabelHint": "Enter a label for this recipient",
+  "@recipientsLabelHint": {
+    "description": "Hint text for the optional recipient label/nickname field."
+  },
+  "recipientsFieldName": "Name",
+  "@recipientsFieldName": {
+    "description": "Label for the recipient name field used in several recipient forms."
+  },
+  "recipientsFieldNameHint": "Enter recipient name",
+  "@recipientsFieldNameHint": {
+    "description": "Hint text for the recipient name field."
+  },
+  "recipientsFieldRecipientNameLabel": "Name of the recipient",
+  "@recipientsFieldRecipientNameLabel": {
+    "description": "Longer label for the recipient name field used in the Colombia forms."
+  },
+  "recipientsFieldPhoneNumber": "Phone Number",
+  "@recipientsFieldPhoneNumber": {
+    "description": "Label for the recipient phone number field."
+  },
+  "recipientsFieldPhoneNumberHint": "Enter phone number",
+  "@recipientsFieldPhoneNumberHint": {
+    "description": "Hint text for the recipient phone number field."
+  },
+  "recipientsFieldSinpePhoneNumberHint": "8 digits without country code",
+  "@recipientsFieldSinpePhoneNumberHint": {
+    "description": "Hint text for the SINPE Móvil phone number field."
+  },
+  "recipientsFieldDocumentType": "Recipient ID type",
+  "@recipientsFieldDocumentType": {
+    "description": "Label for the ID document type selector in Colombia recipient forms."
+  },
+  "recipientsFieldDocumentNumberHint": "Enter recipient ID number",
+  "@recipientsFieldDocumentNumberHint": {
+    "description": "Hint text for the ID document number field."
+  },
+  "recipientsFieldOwnerName": "Owner Name",
+  "@recipientsFieldOwnerName": {
+    "description": "Label for the account owner name field in SINPE recipient forms."
+  },
+  "recipientsFieldOwnerNameHint": "Enter owner name",
+  "@recipientsFieldOwnerNameHint": {
+    "description": "Hint text for the account owner name field."
+  },
+  "recipientsAccountOwnerQuestion": "Who does this account belong to?",
+  "@recipientsAccountOwnerQuestion": {
+    "description": "Section header asking whose account is being added in recipient forms."
+  },
+  "recipientsAccountOwnerMine": "This is my account",
+  "@recipientsAccountOwnerMine": {
+    "description": "Radio option indicating the recipient account belongs to the current user."
+  },
+  "recipientsAccountOwnerSomeoneElse": "This is someone else's account",
+  "@recipientsAccountOwnerSomeoneElse": {
+    "description": "Radio option indicating the recipient account belongs to a third party."
+  },
+  "recipientsFieldIban": "IBAN",
+  "@recipientsFieldIban": {
+    "description": "Label for the IBAN field used in SEPA and SINPE forms."
+  },
+  "recipientsFieldIbanHint": "Enter IBAN",
+  "@recipientsFieldIbanHint": {
+    "description": "Hint text for the IBAN field."
+  },
+  "recipientsFieldClabe": "CLABE",
+  "@recipientsFieldClabe": {
+    "description": "Label for the Mexican CLABE field."
+  },
+  "recipientsFieldClabeHint": "Enter CLABE number",
+  "@recipientsFieldClabeHint": {
+    "description": "Hint text for the Mexican CLABE field."
+  },
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "@recipientsFieldCvuCbu": {
+    "description": "Label for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldCvuCbuHint": "Enter CVU/CBU number",
+  "@recipientsFieldCvuCbuHint": {
+    "description": "Hint text for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldBankInstitution": "Bank Institution",
+  "@recipientsFieldBankInstitution": {
+    "description": "Label for the bank institution selector in the Colombia bank account form."
+  },
+  "recipientsFieldBankInstitutionPlaceholder": "Select Bank Institution",
+  "@recipientsFieldBankInstitutionPlaceholder": {
+    "description": "Placeholder option in the bank institution selector."
+  },
+  "recipientsValidationBankInstitution": "Please select a bank institution",
+  "@recipientsValidationBankInstitution": {
+    "description": "Validation error when no bank institution is selected."
+  },
+  "recipientsFieldAccountType": "Account Type",
+  "@recipientsFieldAccountType": {
+    "description": "Label for the bank account type selector in the Colombia bank account form."
+  },
+  "recipientsAccountTypeSavings": "Savings",
+  "@recipientsAccountTypeSavings": {
+    "description": "Bank account type option for savings."
+  },
+  "recipientsAccountTypeChecking": "Checking",
+  "@recipientsAccountTypeChecking": {
+    "description": "Bank account type option for checking."
+  },
+  "recipientsFieldBankAccountNumber": "Bank Account Number",
+  "@recipientsFieldBankAccountNumber": {
+    "description": "Label for the bank account number field in the Colombia bank account form."
+  },
+  "recipientsFieldBankAccountNumberHint": "Enter bank account number",
+  "@recipientsFieldBankAccountNumberHint": {
+    "description": "Hint text for the bank account number field."
+  },
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "@recipientsCopDocCc": {
+    "description": "Colombia ID document type: citizenship card."
+  },
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "@recipientsCopDocCe": {
+    "description": "Colombia ID document type: foreign resident ID."
+  },
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "@recipientsCopDocNit": {
+    "description": "Colombia ID document type: tax identification number."
+  },
+  "recipientsCopDocPassport": "Passport",
+  "@recipientsCopDocPassport": {
+    "description": "Colombia ID document type: passport."
+  },
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "@recipientsCopDocTi": {
+    "description": "Colombia ID document type: minor identity card."
+  },
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "@recipientsCopDocRegistroCivil": {
+    "description": "Colombia ID document type: civil registry."
+  },
+  "recipientsCopDocCcRecipientNumber": "Recipient cédula number",
+  "@recipientsCopDocCcRecipientNumber": {
+    "description": "Label for the recipient cédula de ciudadanía number field."
+  },
+  "recipientsCopDocCeRecipientNumber": "Recipient cédula de extranjería number",
+  "@recipientsCopDocCeRecipientNumber": {
+    "description": "Label for the recipient cédula de extranjería number field."
+  },
+  "recipientsCopDocNitRecipientNumber": "Recipient tax ID number",
+  "@recipientsCopDocNitRecipientNumber": {
+    "description": "Label for the recipient NIT number field."
+  },
+  "recipientsCopDocPassportRecipientNumber": "Recipient passport number",
+  "@recipientsCopDocPassportRecipientNumber": {
+    "description": "Label for the recipient passport number field."
+  },
+  "recipientsCopDocTiRecipientNumber": "Recipient identity card number",
+  "@recipientsCopDocTiRecipientNumber": {
+    "description": "Label for the recipient tarjeta de identidad number field."
+  },
+  "recipientsCopDocRegistroCivilRecipientNumber": "Recipient civil registry number",
+  "@recipientsCopDocRegistroCivilRecipientNumber": {
+    "description": "Label for the recipient registro civil number field."
+  },
+  "recipientsFieldDebitCard": "Debit Card Number",
+  "@recipientsFieldDebitCard": {
+    "description": "Label for the debit card number field in the SPEI Card form."
+  },
+  "recipientsFieldDebitCardHint": "Enter debit card number",
+  "@recipientsFieldDebitCardHint": {
+    "description": "Hint text for the debit card number field."
+  },
+  "recipientsFieldOwnerNameSinpeHint": "Owner name will appear here",
+  "@recipientsFieldOwnerNameSinpeHint": {
+    "description": "Hint text for the owner name field while SINPE Móvil validation runs."
+  },
+  "recipientsValidationSinpePhoneCountryCode": "Remove the country code (+506). Enter only the 8-digit number",
+  "@recipientsValidationSinpePhoneCountryCode": {
+    "description": "Validation error when a SINPE Móvil phone number includes the Costa Rica country code."
+  },
+  "recipientsValidationSinpePhoneInvalidChars": "Use digits only (no letters or symbols)",
+  "@recipientsValidationSinpePhoneInvalidChars": {
+    "description": "Validation error when a SINPE Móvil phone number contains non-digit characters."
+  },
+  "recipientsValidationSinpePhoneTooShort": "Enter all 8 digits of the phone number",
+  "@recipientsValidationSinpePhoneTooShort": {
+    "description": "Validation error when a SINPE Móvil phone number has fewer than 8 digits."
+  },
+  "recipientsValidationSinpeOwner": "Please validate the phone number",
+  "@recipientsValidationSinpeOwner": {
+    "description": "Validation error when SINPE Móvil owner name is not validated yet."
+  },
+  "recipientsFieldEmailAddress": "Email Address",
+  "@recipientsFieldEmailAddress": {
+    "description": "Label for the email address field in the Interac e-Transfer form."
+  },
+  "recipientsFieldEmailAddressHint": "Enter email address",
+  "@recipientsFieldEmailAddressHint": {
+    "description": "Hint text for the email address field."
+  },
+  "recipientsFieldSecurityQuestion": "Security Question",
+  "@recipientsFieldSecurityQuestion": {
+    "description": "Label for the security question field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityQuestionHint": "Enter security question (10-40 characters)",
+  "@recipientsFieldSecurityQuestionHint": {
+    "description": "Hint text for the security question field."
+  },
+  "recipientsFieldSecurityAnswer": "Security Answer",
+  "@recipientsFieldSecurityAnswer": {
+    "description": "Label for the security answer field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityAnswerHint": "Enter security answer",
+  "@recipientsFieldSecurityAnswerHint": {
+    "description": "Hint text for the security answer field."
+  },
+  "recipientsValidationSecurityQuestionMin": "Security question must be at least 10 characters",
+  "@recipientsValidationSecurityQuestionMin": {
+    "description": "Validation error shown when the security question is shorter than 10 characters."
+  },
+  "recipientsCharCounter": "{count}/40 characters",
+  "@recipientsCharCounter": {
+    "description": "Character counter displayed below the security question field.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recipientsFieldInstitutionCode": "Institution Code",
+  "@recipientsFieldInstitutionCode": {
+    "description": "Label for the institution code field in SPEI SMS/Card forms."
+  },
+  "recipientsFieldInstitutionCodeHint": "Enter institution code",
+  "@recipientsFieldInstitutionCodeHint": {
+    "description": "Hint text for the institution code field."
+  },
+  "recipientsFieldInstitutionNumber": "Institution Number",
+  "@recipientsFieldInstitutionNumber": {
+    "description": "Label for the institution number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldInstitutionNumberHint": "Enter institution number",
+  "@recipientsFieldInstitutionNumberHint": {
+    "description": "Hint text for the institution number field."
+  },
+  "recipientsFieldTransitNumber": "Transit Number",
+  "@recipientsFieldTransitNumber": {
+    "description": "Label for the transit number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldTransitNumberHint": "Enter transit number",
+  "@recipientsFieldTransitNumberHint": {
+    "description": "Hint text for the transit number field."
+  },
+  "recipientsFieldAccountNumber": "Account Number",
+  "@recipientsFieldAccountNumber": {
+    "description": "Label for the account number field used in multiple recipient forms."
+  },
+  "recipientsFieldAccountNumberHint": "Enter account number",
+  "@recipientsFieldAccountNumberHint": {
+    "description": "Hint text for the account number field."
+  },
+  "recipientsFieldDefaultComment": "Default Comment (optional)",
+  "@recipientsFieldDefaultComment": {
+    "description": "Label for the optional default comment field in the Canadian bank transfer form."
+  },
+  "recipientsFieldDefaultCommentHint": "Enter default comment",
+  "@recipientsFieldDefaultCommentHint": {
+    "description": "Hint text for the optional default comment field."
+  },
+  "recipientsFieldCorporateAccount": "Corporate account",
+  "@recipientsFieldCorporateAccount": {
+    "description": "Checkbox label indicating the SEPA recipient is a corporate account."
+  },
+  "recipientsFieldFirstName": "First Name",
+  "@recipientsFieldFirstName": {
+    "description": "Label for the first name field in the SEPA recipient form."
+  },
+  "recipientsFieldFirstNameHint": "Enter first name",
+  "@recipientsFieldFirstNameHint": {
+    "description": "Hint text for the first name field."
+  },
+  "recipientsFieldLastName": "Last Name",
+  "@recipientsFieldLastName": {
+    "description": "Label for the last name field in the SEPA recipient form."
+  },
+  "recipientsFieldLastNameHint": "Enter last name",
+  "@recipientsFieldLastNameHint": {
+    "description": "Hint text for the last name field."
+  },
+  "recipientsFieldCorporateName": "Corporate Name",
+  "@recipientsFieldCorporateName": {
+    "description": "Label for the corporate name field in the SEPA recipient form."
+  },
+  "recipientsFieldCorporateNameHint": "Enter corporate name",
+  "@recipientsFieldCorporateNameHint": {
+    "description": "Hint text for the corporate name field."
+  },
+  "recipientsFieldBillerName": "Biller Name",
+  "@recipientsFieldBillerName": {
+    "description": "Label for the biller search field in the Canadian bill payment form."
+  },
+  "recipientsFieldBillerNameHint": "Search and select a biller",
+  "@recipientsFieldBillerNameHint": {
+    "description": "Hint text for the biller search field."
+  },
+  "recipientsValidationBillerSearchMin": "Enter 3 or more characters to search",
+  "@recipientsValidationBillerSearchMin": {
+    "description": "Validation error shown when biller search input is too short."
+  },
+  "recipientsValidationBillerSelect": "Please select a biller from the list",
+  "@recipientsValidationBillerSelect": {
+    "description": "Validation error shown when no biller is selected from the list."
+  },
+  "recipientsFieldPayeeAccountNumber": "Payee Account Number",
+  "@recipientsFieldPayeeAccountNumber": {
+    "description": "Label for the payee account number field in the bill payment form."
+  },
+  "recipientsErrorLoadFailed": "Your recipients could not be loaded. Please try again.",
+  "@recipientsErrorLoadFailed": {
+    "description": "Shown when the recipient list cannot be loaded from the API."
+  },
+  "recipientsErrorSaveFailed": "This recipient could not be saved. Please check the details and try again.",
+  "@recipientsErrorSaveFailed": {
+    "description": "Shown when creating a recipient fails."
+  },
+  "recipientsErrorSinpeLookupFailed": "We could not verify this phone number. Please check it and try again.",
+  "@recipientsErrorSinpeLookupFailed": {
+    "description": "Shown when the SINPE phone number lookup fails."
+  },
+  "recipientsErrorBillerSearchFailed": "Billers could not be searched. Please try again.",
+  "@recipientsErrorBillerSearchFailed": {
+    "description": "Shown when searching the CAD biller directory fails."
+  },
+  "recipientsErrorNetwork": "Check your internet connection and try again.",
+  "@recipientsErrorNetwork": {
+    "description": "Shown when a recipients request could not reach the server or timed out."
+  },
+  "recipientsListPullToRetry": "Pull down to retry.",
+  "@recipientsListPullToRetry": {
+    "description": "Hint under a recipients load failure. A pull-to-refresh affordance of the list screen, kept separate from the failure message itself."
+  },
+  "recipientsErrorSavedButNotSelected": "This recipient was saved, but we could not continue. Find them in your list to carry on.",
+  "@recipientsErrorSavedButNotSelected": {
+    "description": "Shown when a recipient saved successfully but the calling flow could not continue. Must not imply the save failed, or the user retries and creates a duplicate."
+  },
+  "recipientsTypeConfidentialSepa": "Confidential SEPA",
+  "@recipientsTypeConfidentialSepa": {
+    "description": "Recipient type label for a Confidential SEPA recipient"
+  },
+  "recipientsErrorVirtualIbanNotAvailable": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@recipientsErrorVirtualIbanNotAvailable": {
+    "description": "Shown when the user cannot get a virtual IBAN because their KYC is insufficient or Confidential SEPA is not offered to them"
+  },
+  "recipientsErrorEuResidencyRequired": "You need to be a resident of the European Union to activate Confidential SEPA.",
+  "@recipientsErrorEuResidencyRequired": {
+    "description": "Shown when virtual IBAN creation is rejected because the user is not an EU resident"
+  },
+  "recipientsConfidentialSepaActivatingTitle": "Activating recipient",
+  "@recipientsConfidentialSepaActivatingTitle": {
+    "description": "Title of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This may take a few minutes. We'll notify you when ready.",
+  "@recipientsConfidentialSepaActivatingDescription": {
+    "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaNotActivatedTitle": "Recipient not activated for Confidential SEPA",
+  "@recipientsConfidentialSepaNotActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This may take a few minutes. We'll notify you when ready. You can use Instant and Regular SEPA instead.",
+  "@recipientsConfidentialSepaNotActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaActivatedTitle": "Recipient activated",
+  "@recipientsConfidentialSepaActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaActivatedDescription": "Your recipient is now active for Confidential SEPA.",
+  "@recipientsConfidentialSepaActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaUseRegularSepa": "Use Instant and Regular SEPA instead",
+  "@recipientsConfidentialSepaUseRegularSepa": {
+    "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
+  },
+  "recipientsReturnHome": "Return Home",
+  "@recipientsReturnHome": {
+    "description": "Button that leaves the activation screen and returns to the app home; activation continues and the user is notified when ready"
+  },
+  "recipientsVirtualIbanIntroTitle": "Activate Confidential SEPA?",
+  "@recipientsVirtualIbanIntroTitle": {
+    "description": "Title of the virtual IBAN onboarding screen"
+  },
+  "recipientsVirtualIbanNewBadge": "New",
+  "@recipientsVirtualIbanNewBadge": {
+    "description": "Badge that marks Confidential SEPA as a new feature"
+  },
+  "recipientsVirtualIbanIntroDescription": "Fund your account privately using a personal virtual IBAN in your own name. It's free.",
+  "@recipientsVirtualIbanIntroDescription": {
+    "description": "Explains what the virtual IBAN is on the onboarding screen"
+  },
+  "recipientsVirtualIbanIntroSelfTransfer": "When sending funds to Bull Bitcoin from your bank, it appears as a transfer to yourself.",
+  "@recipientsVirtualIbanIntroSelfTransfer": {
+    "description": "Bullet point: a deposit appears as a transfer to yourself"
+  },
+  "recipientsVirtualIbanIntroNoTransferCode": "No transfer code required.",
+  "@recipientsVirtualIbanIntroNoTransferCode": {
+    "description": "Bullet point: no transfer code is needed"
+  },
+  "recipientsVirtualIbanNameWarningTitle": "Important: Name Matching Required",
+  "@recipientsVirtualIbanNameWarningTitle": {
+    "description": "Title of the warning that the bank account name must match"
+  },
+  "recipientsVirtualIbanNameWarningDescription": "Bank account name must exactly match your Bull Bitcoin virtual IBAN name, or the transfer will be returned automatically. Names don't match? Contact support.",
+  "@recipientsVirtualIbanNameWarningDescription": {
+    "description": "Warning that a transfer from a bank account with a different name is returned"
+  },
+  "recipientsVirtualIbanAccountOwnerName": "Account Owner Name",
+  "@recipientsVirtualIbanAccountOwnerName": {
+    "description": "Label above the name the virtual IBAN is issued in"
+  },
+  "recipientsVirtualIbanNameConfirmation": "I confirm the name matches my bank account(s)",
+  "@recipientsVirtualIbanNameConfirmation": {
+    "description": "Checkbox to confirm the name matches the user's bank accounts"
+  },
+  "recipientsVirtualIbanActivate": "Activate Confidential SEPA",
+  "@recipientsVirtualIbanActivate": {
+    "description": "Button that creates the virtual IBAN"
+  },
+  "recipientsVirtualIbanActivatingTitle": "Activating Confidential SEPA...",
+  "@recipientsVirtualIbanActivatingTitle": {
+    "description": "Title while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes. We'll notify you when ready.",
+  "@recipientsVirtualIbanActivatingDescription": {
+    "description": "Description while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatedTitle": "Confidential SEPA Activated",
+  "@recipientsVirtualIbanActivatedTitle": {
+    "description": "Title once the virtual IBAN is active"
+  },
+  "recipientsVirtualIbanActivatedDescription": "You can now use your personal virtual IBAN to withdraw money privately.",
+  "@recipientsVirtualIbanActivatedDescription": {
+    "description": "Description once the virtual IBAN is active, before creating a Confidential SEPA recipient for a withdrawal"
+  },
+  "recipientsVirtualIbanCopied": "Copied to clipboard",
+  "@recipientsVirtualIbanCopied": {
+    "description": "Toast shown after copying a virtual IBAN detail"
+  },
+  "recipientsVirtualIbanDone": "Done",
+  "@recipientsVirtualIbanDone": {
+    "description": "Button that leaves the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanRecipientName": "Recipient name",
+  "@recipientsVirtualIbanRecipientName": {
+    "description": "Label of the name to use as recipient when depositing to the virtual IBAN"
+  },
+  "recipientsVirtualIbanIbanLabel": "Virtual IBAN Account Number",
+  "@recipientsVirtualIbanIbanLabel": {
+    "description": "Label of the virtual IBAN account number"
+  },
+  "recipientsVirtualIbanCountry": "Bank account country",
+  "@recipientsVirtualIbanCountry": {
+    "description": "Label of the country of the virtual IBAN account"
+  },
+  "recipientsVirtualIbanBic": "BIC code",
+  "@recipientsVirtualIbanBic": {
+    "description": "Label of the BIC code of the virtual IBAN account"
+  },
+  "recipientsVirtualIbanActivatedFundingDescription": "You can now use your personal virtual IBAN to deposit money privately.",
+  "@recipientsVirtualIbanActivatedFundingDescription": {
+    "description": "Description once the virtual IBAN is active, when started from funding"
+  },
+  "recipientsVirtualIbanShowDetails": "Show my virtual IBAN details",
+  "@recipientsVirtualIbanShowDetails": {
+    "description": "Button that shows the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanDetailsDescription": "Fund your account privately using a personal virtual IBAN in your own name. The deposit will appear as a payment to yourself, with no transfer code required.",
+  "@recipientsVirtualIbanDetailsDescription": {
+    "description": "Explains how to deposit with the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddress": "Bank address",
+  "@recipientsVirtualIbanBankAddress": {
+    "description": "Label of the address of the bank that holds the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddressHelp": "The official bank address, in case your bank asks for it.",
+  "@recipientsVirtualIbanBankAddressHelp": {
+    "description": "Explains when the bank address of the virtual IBAN is needed"
+  },
+  "recipientsConfidentialSepaNameMustMatchHint": "Names must match between your bank and virtual IBAN accounts or transfers will be returned automatically.",
+  "@recipientsConfidentialSepaNameMustMatchHint": {
+    "description": "Hint under the read-only account owner name on the Confidential SEPA recipient form"
+  },
+  "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
+  "@recipientsFieldBankAccountIban": {
+    "description": "Label for the destination bank account IBAN on the SEPA recipient form"
+  },
+  "recipientsTypeConfidentialSepaDescription": "Withdrawals appear as a self-transfer with your account name",
+  "@recipientsTypeConfidentialSepaDescription": {
+    "description": "Explanation of Confidential SEPA in the payout method selector"
+  },
+  "withdrawAmountTitle": "Withdraw fiat",
+  "@withdrawAmountTitle": {
+    "description": "AppBar title for withdraw amount screen"
+  },
+  "withdrawAmountContinue": "Continue",
+  "@withdrawAmountContinue": {
+    "description": "Continue button on amount screen"
+  },
+  "withdrawConfirmTitle": "Confirm withdrawal",
+  "@withdrawConfirmTitle": {
+    "description": "Title on confirmation screen"
+  },
+  "withdrawConfirmRecipientName": "Recipient name",
+  "@withdrawConfirmRecipientName": {
+    "description": "Field label for recipient name"
+  },
+  "withdrawConfirmAmount": "Amount",
+  "@withdrawConfirmAmount": {
+    "description": "Field label for withdrawal amount"
+  },
+  "withdrawConfirmEmail": "Email",
+  "@withdrawConfirmEmail": {
+    "description": "Field label for email (Interac)"
+  },
+  "withdrawConfirmPayee": "Payee",
+  "@withdrawConfirmPayee": {
+    "description": "Field label for payee (Bill Payment)"
+  },
+  "withdrawConfirmAccount": "Account",
+  "@withdrawConfirmAccount": {
+    "description": "Field label for bank account"
+  },
+  "withdrawConfirmIban": "IBAN",
+  "@withdrawConfirmIban": {
+    "description": "Field label for IBAN"
+  },
+  "withdrawConfirmClabe": "CLABE",
+  "@withdrawConfirmClabe": {
+    "description": "Field label for CLABE (Mexico)"
+  },
+  "withdrawConfirmPhone": "Phone",
+  "@withdrawConfirmPhone": {
+    "description": "Field label for phone number"
+  },
+  "withdrawConfirmCard": "Card",
+  "@withdrawConfirmCard": {
+    "description": "Field label for debit card"
+  },
+  "withdrawConfirmButton": "Confirm withdrawal",
+  "@withdrawConfirmButton": {
+    "description": "Button to confirm withdrawal"
+  },
+  "withdrawSuccessTitle": "Withdrawal Initiated",
+  "@withdrawSuccessTitle": {
+    "description": "Title shown when withdrawal is successfully initiated"
+  },
+  "withdrawSuccessOrderDetails": "Order details",
+  "@withdrawSuccessOrderDetails": {
+    "description": "Button label to view order details after withdrawal"
+  },
+  "withdrawConfirmBankAccount": "Bank account",
+  "@withdrawConfirmBankAccount": {
+    "description": "Default label for bank account in confirmation screen"
+  },
+  "withdrawOwnershipQuestion": "Who does this account belong to?",
+  "@withdrawOwnershipQuestion": {
+    "description": "Question asking about account ownership"
+  },
+  "withdrawOwnershipMyAccount": "This is my account",
+  "@withdrawOwnershipMyAccount": {
+    "description": "Option indicating the account belongs to the user"
+  },
+  "withdrawOwnershipOtherAccount": "This is someone else's account",
+  "@withdrawOwnershipOtherAccount": {
+    "description": "Option indicating the account belongs to someone else"
+  },
+  "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@withdrawUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during withdraw"
+  },
+  "withdrawBelowMinAmountError": "Minimum amount is {amount} {currency}",
+  "@withdrawBelowMinAmountError": {
+    "description": "Shown when the withdrawal amount is under the account minimum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "withdrawAboveMaxAmountError": "Maximum amount is {amount} {currency}",
+  "@withdrawAboveMaxAmountError": {
+    "description": "Shown when the withdrawal amount is over the account maximum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "withdrawInteracSecurityDetailsTitle": "Transfer security details",
+  "@withdrawInteracSecurityDetailsTitle": {
+    "description": "Title for the email money transfer security question and answer screen."
+  },
+  "withdrawInteracSaveAsDefault": "Save these details as default",
+  "@withdrawInteracSaveAsDefault": {
+    "description": "Checkbox label for saving Interac security details on the recipient."
+  },
+  "withdrawInteracSecurityQuestionLengthError": "Security question must be 3-40 characters",
+  "@withdrawInteracSecurityQuestionLengthError": {
+    "description": "Validation error for an Interac security question outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerLengthError": "Security answer must be 3-40 characters",
+  "@withdrawInteracSecurityAnswerLengthError": {
+    "description": "Validation error for an Interac security answer outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerFormatError": "Use letters, numbers, or hyphens without spaces",
+  "@withdrawInteracSecurityAnswerFormatError": {
+    "description": "Validation error for unsupported Interac security answer characters."
+  },
+  "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
+  "@withdrawUnexpectedError": {
+    "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
+  },
+  "withdrawConfidentialSepaNotActivatedError": "Please activate the confidential payment option for this SEPA recipient.",
+  "@withdrawConfidentialSepaNotActivatedError": {
+    "description": "Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered"
+  },
+  "limitOrdersTitle": "Limit orders",
+  "@limitOrdersTitle": {
+    "description": "Title for the Limit Orders feature"
+  },
+  "limitOrdersActiveTitle": "Active limit orders",
+  "@limitOrdersActiveTitle": {
+    "description": "Heading above active Limit Orders"
+  },
+  "limitOrdersCreateNew": "Create new",
+  "@limitOrdersCreateNew": {
+    "description": "Action to create another Limit Order"
+  },
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "@limitOrdersMaximumActiveHint": {
+    "description": "Shown when the five-active-Limit-Order cap has been reached"
+  },
+  "limitOrdersBuyAt": "Buy at {price}",
+  "@limitOrdersBuyAt": {
+    "description": "Summary of a Limit Order target price",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersCancelAll": "Cancel all",
+  "@limitOrdersCancelAll": {
+    "description": "Action to cancel all active Limit Orders"
+  },
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "@limitOrdersCancelAllTitle": {
+    "description": "Title of the cancel-all Limit Orders confirmation"
+  },
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "@limitOrdersCancelAllMessage": {
+    "description": "Warning shown before all active Limit Orders are cancelled"
+  },
+  "limitOrdersDialogConfirm": "Confirm",
+  "@limitOrdersDialogConfirm": {
+    "description": "Confirmation action in Limit Order dialogs"
+  },
+  "limitOrdersDone": "Done",
+  "@limitOrdersDone": {
+    "description": "Closes a completed Limit Order screen"
+  },
+  "limitOrdersTargetPrice": "Target price",
+  "@limitOrdersTargetPrice": {
+    "description": "Label for the Limit Order target price"
+  },
+  "limitOrdersFiatAmount": "Amount",
+  "@limitOrdersFiatAmount": {
+    "description": "Label for the Limit Order fiat amount"
+  },
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "@limitOrdersEstimatedBuyPrice": {
+    "description": "Estimated user buy price after spread"
+  },
+  "limitOrderDetailsTitle": "Limit order details",
+  "@limitOrderDetailsTitle": {
+    "description": "Title of the Limit Order details screen"
+  },
+  "limitOrderDetailsStatus": "Status",
+  "@limitOrderDetailsStatus": {
+    "description": "Limit Order status label"
+  },
+  "limitOrderDetailsNumber": "Order number",
+  "@limitOrderDetailsNumber": {
+    "description": "Limit Order number label"
+  },
+  "limitOrderDetailsAddress": "Payout address",
+  "@limitOrderDetailsAddress": {
+    "description": "Limit Order payout address label"
+  },
+  "limitOrderDetailsCreated": "Created",
+  "@limitOrderDetailsCreated": {
+    "description": "Limit Order creation date label"
+  },
+  "limitOrderDetailsExpires": "Expires",
+  "@limitOrderDetailsExpires": {
+    "description": "Limit Order expiry date label"
+  },
+  "limitOrderCancel": "Cancel limit order",
+  "@limitOrderCancel": {
+    "description": "Action to cancel one active Limit Order"
+  },
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "@limitOrderCancelTitle": {
+    "description": "Title of the single Limit Order cancellation dialog"
+  },
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "@limitOrderCancelMessage": {
+    "description": "Warning before one Limit Order is cancelled"
+  },
+  "limitOrderStatusActive": "Active",
+  "@limitOrderStatusActive": {
+    "description": "Active Limit Order status"
+  },
+  "limitOrderStatusExecuted": "Executed",
+  "@limitOrderStatusExecuted": {
+    "description": "Executed Limit Order status"
+  },
+  "limitOrderStatusCancelled": "Cancelled",
+  "@limitOrderStatusCancelled": {
+    "description": "Cancelled Limit Order status"
+  },
+  "limitOrderStatusExpired": "Expired",
+  "@limitOrderStatusExpired": {
+    "description": "Expired Limit Order status"
+  },
+  "limitOrderStatusFailed": "Failed",
+  "@limitOrderStatusFailed": {
+    "description": "Failed or unknown Limit Order status"
+  },
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "@limitOrdersAccountUnavailableError": {
+    "description": "Shown when Limit Order account data is unavailable"
+  },
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "@limitOrderNotFoundError": {
+    "description": "Shown when a Limit Order no longer exists"
+  },
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "@limitOrdersLoadError": {
+    "description": "Shown when Limit Orders cannot be loaded"
+  },
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "@limitOrderCancellationError": {
+    "description": "Shown when one or all Limit Orders cannot be cancelled"
+  },
+  "limitOrderDetailsEstimatedBitcoin": "Estimated bitcoin",
+  "@limitOrderDetailsEstimatedBitcoin": {
+    "description": "Label for the estimated bitcoin amount row on the limit order details screen"
+  },
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "@limitOrdersMaximumActiveError": {
+    "description": "Shown when the backend rejects a sixth active Limit Order"
+  },
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "@limitOrderInvalidAddressError": {
+    "description": "Shown when the backend rejects a Limit Order payout address"
+  },
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "@limitOrderCreationError": {
+    "description": "Shown when a Limit Order cannot be created"
+  },
+  "exchangeSettingsLogOutTitle": "Log Out",
+  "@exchangeSettingsLogOutTitle": {
+    "description": "Title for the log out option in exchange settings"
+  },
+  "logoutConfirmationTitle": "Confirm Logout",
+  "@logoutConfirmationTitle": {
+    "description": "Title for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationDescription": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.",
+  "@logoutConfirmationDescription": {
+    "description": "Description text for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationCancel": "Cancel",
+  "@logoutConfirmationCancel": {
+    "description": "Cancel button label for logout confirmation"
+  },
+  "logoutConfirmationLogout": "Logout",
+  "@logoutConfirmationLogout": {
+    "description": "Logout button label for logout confirmation"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "buyEnterAmount": "Enter amount",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "buyPaymentMethod": "Payment method",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "buyMax": "Max",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buySelectWallet": "Select wallet",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyEnterBitcoinAddress": "Enter bitcoin address",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H…6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyConfirmPurchase": "Confirm purchase",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyYouBought": "You bought {amount} with {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought and the fiat amount debited",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyPayoutWillBeSentIn": "Your payout will be sent in ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "buyViewDetails": "View details",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "buyAccelerateTransaction": "Accelerate Transaction",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyGetConfirmedFaster": "Get it confirmed faster",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpressWithdrawal": "Confirm express withdrawal",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "buyNetworkFeeExplanation": "The Bitcoin network fee will be deducted from the amount you receive and collected by the Bitcoin miners",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "buyNetworkFees": "Network fees",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "buyEstimatedFeeValue": "Estimated fee value",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyNetworkFeeRate": "Network fee rate",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "buyConfirmationTime": "Confirmation time",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyConfirmationTimeValue": "~10 minutes",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyWaitForFreeWithdrawal": "Wait for free withdrawal",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "buyConfirmExpress": "Confirm express",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "buyBitcoinSent": "Bitcoin sent!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyThatWasFast": "That was fast, wasn't it?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaSuccessTitle": "Recurring Buy is Active!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSuccessMessageHourly": "You will buy {amount} every hour",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageDaily": "You will buy {amount} every day",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageWeekly": "You will buy {amount} every week",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageMonthly": "You will buy {amount} every month",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaBackToHomeButton": "Back to home",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "dcaChooseWalletTitle": "Choose Bitcoin Wallet",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "dcaWalletSelectionDescription": "Bitcoin purchases will be placed automatically per this schedule.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "dcaNetworkValidationError": "Please select a network",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "dcaEnterLightningAddressLabel": "Enter Lightning Address",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "dcaUseDefaultLightningAddress": "Use my default Lightning address.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "dcaWalletSelectionContinueButton": "Continue",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSelectFrequencyLabel": "Select Frequency",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaSelectWalletTypeLabel": "Select Bitcoin Wallet Type",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "dcaWalletTypeLightning": "Lightning Network (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "dcaWalletTypeLiquid": "Liquid (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaWalletBitcoinSubtitle": "Minimum 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletLightningSubtitle": "Requires compatible wallet, maximum 0.25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "dcaWalletLiquidSubtitle": "Requires compatible wallet",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "dcaSetupTitle": "Set Recurring Buy",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaSetupInsufficientBalance": "Insufficient Balance",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSetupInsufficientBalanceMessage": "You do not have enough balance to create this order.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaSetupFundAccount": "Fund your account",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "dcaSetupScheduleMessage": "Bitcoin purchases will be placed automatically per this schedule.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaSetupFrequencyError": "Please select a frequency",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "dcaSetupContinue": "Continue",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "dcaConfirmTitle": "Confirm Recurring Buy",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaConfirmAutoMessage": "Buy orders will be placed automatically per these settings. You can disable them anytime.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaConfirmFrequency": "Frequency",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmFrequencyHourly": "Every hour",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmFrequencyDaily": "Every day",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "dcaConfirmFrequencyWeekly": "Every week",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaConfirmFrequencyMonthly": "Every month",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "dcaConfirmAmount": "Amount",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmPaymentMethod": "Payment method",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "dcaConfirmPaymentBalance": "{currency} balance",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmOrderType": "Order type",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaConfirmOrderTypeValue": "Recurring buy",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaConfirmNetwork": "Network",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "dcaConfirmNetworkLightning": "Lightning",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaConfirmNetworkLiquid": "Liquid",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaConfirmLightningAddress": "Lightning address",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "dcaConfirmContinue": "Continue",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "buyInputTitle": "Buy Bitcoin",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buyInputMinAmountError": "You should buy at least",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "buyInputMaxAmountError": "You can't buy more than",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyInputKycPending": "KYC ID Verification Pending",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyInputKycMessage": "You must complete ID Verification first",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyInputCompleteKyc": "Complete KYC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "buyInputInsufficientBalance": "Insufficient balance",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "buyInputInsufficientBalanceMessage": "You do not have enough balance to create this order.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "buyInputFundAccount": "Fund your account",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyInputContinue": "Continue",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "buyConfirmTitle": "Buy Bitcoin",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyConfirmYouPay": "You pay",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "buyConfirmYouReceive": "You receive",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin Price",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyConfirmPayoutWallet": "Payout wallet",
+  "@buyConfirmPayoutWallet": {
+    "description": "Field label for the wallet a buy pays out to"
+  },
+  "buyConfirmPayoutMethod": "Payout method",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "buyPayoutMethodLiquid": "L-BTC on Liquid",
+  "@buyPayoutMethodLiquid": {
+    "description": "Payout method for buys paid out over the Liquid network"
+  },
+  "buyPayoutMethodBitcoin": "BTC on Bitcoin chain",
+  "@buyPayoutMethodBitcoin": {
+    "description": "Payout method for buys paid out over the Bitcoin network"
+  },
+  "buyConfirmExternalWallet": "External Bitcoin wallet",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmAwaitingConfirmation": "Awaiting confirmation ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "buyUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyBelowMinAmountError": "You are trying to buy below the minimum amount.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyAboveMaxAmountError": "You are trying to buy above the maximum amount.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
+  "@buyUnexpectedError": {
+    "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
+  },
+  "dcaAccountUnavailableError": "Could not load your account. Check your connection, make sure you are logged in, and try again.",
+  "@dcaAccountUnavailableError": {
+    "description": "Shown when the exchange account summary cannot be loaded, so DCA setup cannot start. Deliberately covers three causes the boundary cannot tell apart: not logged in, no connection, and a backend error."
+  },
+  "dcaLightningAddressRequiredError": "Enter a Lightning address to receive your purchases.",
+  "@dcaLightningAddressRequiredError": {
+    "description": "Shown when Lightning was chosen as the DCA payout network but no lightning address was provided."
+  },
+  "dcaReceiveAddressError": "Could not prepare a receiving address in your wallet. Please try again.",
+  "@dcaReceiveAddressError": {
+    "description": "Shown when no default wallet exists for the chosen DCA network or generating a receive address failed."
+  },
+  "dcaOrderCreationError": "The recurring buy could not be created. Please try again later.",
+  "@dcaOrderCreationError": {
+    "description": "Shown when the exchange rejects creating the recurring buy order."
+  },
+  "payjoinInProgress": "Payjoin in progress",
+  "@payjoinInProgress": {
+    "description": "Shown while a payjoin negotiation is still running, before its outcome is known"
+  },
+  "payjoinSucceeded": "Payjoin succeeded",
+  "@payjoinSucceeded": {
+    "description": "Shown when the payjoin negotiation completed and the payjoin transaction was broadcast"
+  },
+  "payjoinBuyRegularSend": "Bitcoin sent to your wallet via regular send",
+  "@payjoinBuyRegularSend": {
+    "description": "Shown on a buy when the payout did not use payjoin and arrived as a plain transaction"
+  },
+  "payjoinUseToggle": "Use payjoin",
+  "@payjoinUseToggle": {
+    "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
+  },
+  "limitOrdersLightningAddressHint": "you@domain.com",
+  "@limitOrdersLightningAddressHint": {
+    "description": "Hint for the lightning-address field showing the expected lightning address format"
+  },
+  "exchangeQuoteUnavailableError": "We couldn't get a fresh price. Try again, or go back and start a new order.",
+  "@exchangeQuoteUnavailableError": {
+    "description": "Shown on the buy, sell or pay confirmation when the price lock lapsed and the bounded quote refreshes brought no usable price back; nothing was paid."
+  },
+  "buyQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@buyQuoteExpiredError": {
+    "description": "Shown on the buy confirmation when the price lock expired before the order was confirmed; nothing was bought."
+  },
+  "sellTitle": "Sell Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellSelectWallet": "Select Wallet",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "sellWhichWalletQuestion": "Which wallet do you want to sell from?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "sellExternalWallet": "External wallet",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "sellFromAnotherWallet": "Sell from another Bitcoin wallet",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "sellAboveMaxAmountError": "You are trying to sell above the maximum amount that can be sold with this wallet.",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "sellBelowMinAmountError": "You are trying to sell below the minimum amount that can be sold with this wallet.",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this sell order.",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "sellOrderNotFoundError": "The sell order was not found. Please try again.",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "sellOrderAlreadyConfirmedError": "This sell order has already been confirmed.",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "sellSelectNetwork": "Select Network",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "sellHowToPayInvoice": "How do you want to pay this invoice?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "sellBitcoinOnChain": "Bitcoin on-chain",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellLightningNetwork": "Lightning Network",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellLiquidNetwork": "Liquid Network",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "sellConfirmPayment": "Confirm payment",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellPriceWillRefreshIn": "Price will refresh in ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellOrderNumber": "Order number",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "sellPayoutRecipient": "Payout recipient",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "sellCadBalance": "CAD Balance",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "sellCrcBalance": "CRC Balance",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "sellEurBalance": "EUR Balance",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellUsdBalance": "USD Balance",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellMxnBalance": "MXN Balance",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellArsBalance": "ARS Balance",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellCopBalance": "COP Balance",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellPayinAmount": "Payin amount",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellPayoutAmount": "Payout amount",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellExchangeRate": "Exchange rate",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellPayFromWallet": "Pay from wallet",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellInstantPayments": "Instant payments",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellSecureBitcoinWallet": "Secure Bitcoin wallet",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "sellFeePriority": "Fee Priority",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellFastest": "Fastest",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "sellAdvancedSettings": "Advanced Settings",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellAdvancedOptions": "Advanced options",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellReplaceByFeeActivated": "Replace-by-fee activated",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellSelectCoinsManually": "Select coins manually",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "sellDone": "Done",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellPleasePayInvoice": "Please pay this invoice",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "sellBitcoinAmount": "Bitcoin amount",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellCopyInvoice": "Copy invoice",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "sellShowQrCode": "Show QR code",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellQrCode": "QR Code",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellNoInvoiceData": "No invoice data available",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "sellInProgress": "Sell in progress…",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "sellGoHome": "Go home",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellOrderCompleted": "Order completed!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellBalanceWillBeCredited": "Your account balance will be credited after your transaction receives 1 confirmation onchain.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "sellYouSold": "You sold {amount} for {fiatAmount}",
+  "@sellYouSold": {
+    "description": "Success message with the amount sold and the fiat amount received",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "fiatAmount": {
+        "type": "String"
+      }
+    }
+  },
+  "payTitle": "Pay",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "payDescriptionLabel": "Payment description (optional)",
+  "@payDescriptionLabel": {
+    "description": "Label for the optional payment description input in the pay flow"
+  },
+  "payDescriptionHint": "Add a note for this payment",
+  "@payDescriptionHint": {
+    "description": "Hint text for the optional payment description input in the pay flow"
+  },
+  "payPaymentDescription": "Payment description",
+  "@payPaymentDescription": {
+    "description": "Label for the payment description on the pay confirmation screen"
+  },
+  "payRecipientType": "Recipient type",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "payRecipientName": "Recipient name",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payRecipientDetails": "Recipient details",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "payNoDetailsAvailable": "No details available",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "paySelectWallet": "Select Wallet",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "payExternalWallet": "External wallet",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payAboveMaxAmountError": "The maximum you can pay with this wallet is {amount}.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payBelowMinAmountError": "The minimum you can pay with this wallet is {amount}.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this pay order.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "payUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "paySelectNetwork": "Select Network",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payHowToPayInvoice": "How do you want to pay this invoice?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payConfirmPayment": "Confirm Payment",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "payOrderNumber": "Order number",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payPayinAmount": "Payin amount",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "payPayoutAmount": "Payout amount",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payExchangeRate": "Exchange rate",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "payPayFromWallet": "Pay from wallet",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payInstantPayments": "Instant payments",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "paySecureBitcoinWallet": "Secure Bitcoin wallet",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payFeePriority": "Fee Priority",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "payFastest": "Fastest",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payNetworkFees": "Network fees",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payAdvancedSettings": "Advanced Settings",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payAdvancedOptions": "Advanced options",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySelectCoinsManually": "Select coins manually",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payDone": "Done",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "payContinue": "Continue",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payPleasePayInvoice": "Please pay this invoice",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payBitcoinAmount": "Bitcoin amount",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "payBitcoinPrice": "Bitcoin Price",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "payCopyInvoice": "Copy Invoice",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "payShowQrCode": "Show QR code",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "payQrCode": "QR Code",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "payNoInvoiceData": "No invoice data available",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "payInvalidState": "Invalid state",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "payViewDetails": "View details",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "payCompleted": "Payment Completed!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "payCompletedDescriptionDetails": "The payment of {fiatAmount} to {recipient} has been completed.",
+  "@payCompletedDescriptionDetails": {
+    "description": "Description for payment completed, with the fiat amount and the recipient",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payOrderDetails": "Order Details",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "paySinpeMonto": "Amount",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeNumeroOrden": "Order number",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "paySinpeNumeroComprobante": "Reference number",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySinpeBeneficiario": "Beneficiary",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "paySinpeOrigen": "Origin",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "payPaymentInProgress": "Payment In Progress!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "payPaymentInProgressDescriptionDetails": "The payment of {fiatAmount} to {recipient} will be sent after your transaction receives 1 confirmation onchain.",
+  "@payPaymentInProgressDescriptionDetails": {
+    "description": "Description for payment in progress, before the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "payPaymentPayinConfirmedDescriptionDetails": "Your transaction is confirmed. The payment of {fiatAmount} to {recipient} is being processed.",
+  "@payPaymentPayinConfirmedDescriptionDetails": {
+    "description": "Description for payment in progress, once the payin transaction is confirmed onchain",
+    "placeholders": {
+      "fiatAmount": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "payPriceRefreshIn": "Price will refresh in ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payWhichWallet": "Which wallet do you want to pay from?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "payExternalWalletDescription": "Pay from another Bitcoin wallet",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "payRbfActivated": "Replace-by-fee activated",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "copyDialogButton": "Copy",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellCompleteKYC": "Complete KYC",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "sellSendPaymentNetworkFees": "Network fees",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "sellSendPaymentContinue": "Continue",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "exchangeSendingPayment": "Sending payment…",
+  "@exchangeSendingPayment": {
+    "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
+  },
+  "exchangePaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
+  "@exchangePaymentSentRefreshingOrder": {
+    "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
+  },
+  "sellBitcoinPriceLabel": "Bitcoin Price",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "View details",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "KYC ID Verification Pending",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "You must complete ID verification first",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellLoadingGeneric": "Loading…",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
+  },
+  "invoiceViewerTitle": "Invoice",
+  "@invoiceViewerTitle": {
+    "description": "Title shown in the invoice viewer detail dialog"
+  },
+  "payjoinViaPayjoin": "via Payjoin",
+  "@payjoinViaPayjoin": {
+    "description": "Suffix appended to a completed order summary when the payment used payjoin"
+  },
+  "payjoinViaRegularSend": "via regular send",
+  "@payjoinViaRegularSend": {
+    "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
+  },
+  "sellDepositAddress": "Deposit address",
+  "@sellDepositAddress": {
+    "description": "Sell confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "payDepositAddress": "Deposit address",
+  "@payDepositAddress": {
+    "description": "Pay confirm screen: label of the row showing the exchange deposit address the payin is sent to"
+  },
+  "sellDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@sellDepositAddressChangedError": {
+    "description": "Sell: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "payDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
+  "@payDepositAddressChangedError": {
+    "description": "Pay: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
+  },
+  "sellUnexpectedError": "Your sell order could not be completed right now. Please try again or contact support.",
+  "@sellUnexpectedError": {
+    "description": "Generic catch-all shown for any unexpected sell failure. Deliberately does not include the raw reason: this arm previously returned the exception text verbatim to the user (#1895)."
+  },
+  "sellErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@sellErrorFeeBelowRelayFloor": {
+    "description": "Shown when the built sell payin fee falls under the network relay floor. Actionable: the user must raise the fee. Wording matches the send equivalent."
+  },
+  "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@sellErrorFeesUnavailable": {
+    "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "payUnexpectedError": "Your payment could not be completed right now. Please try again or contact support.",
+  "@payUnexpectedError": {
+    "description": "Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895)."
+  },
+  "payErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@payErrorFeeBelowRelayFloor": {
+    "description": "Shown when a built pay payin's fee is under the network relay floor, so no node would accept it. Actionable: the user must raise the fee."
+  },
+  "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@payErrorFeesUnavailable": {
+    "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
+  },
+  "withdrawRecipientsPrompt": "Where and how should we send the money?",
+  "@withdrawRecipientsPrompt": {
+    "description": "Instructions on recipients screen"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "sellQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@sellQuoteExpiredError": {
+    "description": "Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid."
+  },
+  "exchangePaymentSentPastDeadline": "Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
+  "@exchangePaymentSentPastDeadline": {
+    "description": "Shown on the sell or pay confirmation after the payin was broadcast, when the exchange reports the order deadline expired before it saw the payment."
+  },
+  "exchangePaymentSentLeave": "Leave",
+  "@exchangePaymentSentLeave": {
+    "description": "Button that leaves the sell or pay confirmation once the exchange reports the payment arrived past the order deadline."
+  },
+  "payQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
+  "@payQuoteExpiredError": {
+    "description": "Shown on the pay confirmation when the price lock expired before the payment was sent; nothing was paid."
+  },
+  "sellPayoutBalance": "Add to my account balance",
+  "@sellPayoutBalance": {
+    "description": "EUR Sell payout option matching BBX: credit the user's exchange account balance."
+  },
+  "sellPayoutSepaDescription": "Withdrawals appear as sent by Leonod",
+  "@sellPayoutSepaDescription": {
+    "description": "EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod."
+  },
+  "sellPayoutTitle": "Select recipient",
+  "@sellPayoutTitle": {
+    "description": "Title for the EUR Sell payout selection screen, matching BBX Select recipient."
+  },
+  "sellPayoutNewBadge": "NEW",
+  "@sellPayoutNewBadge": {
+    "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
+  },
+  "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
+  "@walletSpendAwaitingObservation": {
+    "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
+  },
+  "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
+  "@sendPayjoinSpendPaused": {
+    "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
+  },
+  "exchangePayinNetworkMismatch": "The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.",
+  "@exchangePayinNetworkMismatch": {
+    "description": "Sell and Pay refuse to create the order when the selected wallet belongs to a different chain or environment."
+  },
+  "walletSpendBusy": "The wallet is busy. Try again in a moment.",
+  "@walletSpendBusy": {
+    "description": "Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments."
+  },
+  "broadcastSignedTxErrorOutcomeUnknown": "We couldn't confirm that your transaction was broadcast. Check a block explorer before trying again.",
+  "@broadcastSignedTxErrorOutcomeUnknown": {
+    "description": "Broadcast Transaction error when the failure does not show whether the transaction reached the network"
+  },
+  "sendSelectedUtxosInsufficient": "Selected utxos does not cover required amount",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Select amount",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "amountRequestedLabel": "Amount requested: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addressLabel": "Address: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "typeLabel": "Type: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "coinsKeychainReceive": "Receive",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Change",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "@limitOrdersIntroTitle": {
+    "description": "Title of the Limit Order introduction step"
+  },
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "@limitOrdersIntroDescription": {
+    "description": "Description of how Limit Orders work"
+  },
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "@limitOrdersIntroBulletPrice": {
+    "description": "Limit Order introduction bullet about the target price"
+  },
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "@limitOrdersIntroBulletBalance": {
+    "description": "Limit Order introduction bullet about account balance"
+  },
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "@limitOrdersIntroBulletExecution": {
+    "description": "Limit Order introduction bullet about payout"
+  },
+  "limitOrdersTargetTitle": "Choose your target price",
+  "@limitOrdersTargetTitle": {
+    "description": "Title of the Limit Order target-price step"
+  },
+  "limitOrdersPaymentMethod": "Payment method",
+  "@limitOrdersPaymentMethod": {
+    "description": "Label for the fiat balance used by a Limit Order"
+  },
+  "limitOrdersCurrentPrice": "Current index price",
+  "@limitOrdersCurrentPrice": {
+    "description": "Label for the current Bitcoin index price"
+  },
+  "limitOrdersDiscount": "Discount from current price",
+  "@limitOrdersDiscount": {
+    "description": "Label for the Limit Order discount percentage"
+  },
+  "limitOrdersAmountTitle": "Set the amount",
+  "@limitOrdersAmountTitle": {
+    "description": "Title of the Limit Order fiat-amount step"
+  },
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "@limitOrdersAvailableBalance": {
+    "description": "Available fiat balance",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "@limitOrdersEstimatedBitcoin": {
+    "description": "Estimated bitcoin amount for a Limit Order",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "@limitOrdersWalletTitle": {
+    "description": "Title of the Limit Order wallet-selection step"
+  },
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "@limitOrdersWalletDescription": {
+    "description": "Explains the Limit Order payout wallet"
+  },
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "@limitOrdersManageDefaultWallets": {
+    "description": "Opens default-wallet settings from Limit Orders"
+  },
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "@limitOrdersWalletBitcoin": {
+    "description": "Bitcoin on-chain Limit Order payout option"
+  },
+  "limitOrdersWalletLightning": "Lightning address",
+  "@limitOrdersWalletLightning": {
+    "description": "Lightning Limit Order payout option"
+  },
+  "limitOrdersWalletLiquid": "Liquid address",
+  "@limitOrdersWalletLiquid": {
+    "description": "Liquid Limit Order payout option"
+  },
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "@limitOrdersConfirmationTitle": {
+    "description": "Title of the Limit Order confirmation step"
+  },
+  "limitOrdersBalancePayment": "{currency} balance",
+  "@limitOrdersBalancePayment": {
+    "description": "Fiat balance used to fund the order",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "@limitOrdersTermsNotice": {
+    "description": "Terms and spread notice before creating a Limit Order"
+  },
+  "limitOrdersConfirm": "Confirm",
+  "@limitOrdersConfirm": {
+    "description": "Creates the Limit Order"
+  },
+  "limitOrdersCreatedTitle": "Limit order active",
+  "@limitOrdersCreatedTitle": {
+    "description": "Title shown after a Limit Order is created"
+  },
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "@limitOrdersCreatedMessage": {
+    "description": "Success summary after creating a Limit Order",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "@limitOrdersBackToExchange": {
+    "description": "Returns from Limit Order success to the Exchange dashboard"
+  },
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "@limitOrderInvalidTargetError": {
+    "description": "Shown for an invalid Limit Order target price"
+  },
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "@limitOrderInvalidAmountError": {
+    "description": "Shown for an invalid Limit Order fiat amount"
+  },
+  "limitOrdersYourWalletsTitle": "Your wallets",
+  "@limitOrdersYourWalletsTitle": {
+    "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
+  },
+  "limitOrdersLightningAddressLabel": "Lightning address",
+  "@limitOrdersLightningAddressLabel": {
+    "description": "Label for the manual lightning-address field in the limit-order destination step"
+  },
+  "limitOrdersLightningAddressError": "Enter a valid lightning address, not an invoice",
+  "@limitOrdersLightningAddressError": {
+    "description": "Error shown when the entered lightning destination is not a valid lightning address"
+  },
+  "limitOrdersAmountBelowOnchainMin": "Amount is below the on-chain minimum of {amount}",
+  "@limitOrdersAmountBelowOnchainMin": {
+    "description": "Buy-limit error when a limit order amount is below the on-chain minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountBelowLiquidMin": "Amount is below the Liquid minimum of {amount}",
+  "@limitOrdersAmountBelowLiquidMin": {
+    "description": "Buy-limit error when a limit order amount is below the Liquid minimum; {amount} is the minimum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersAmountAboveLightningMax": "Amount is above the Lightning maximum of {amount}",
+  "@limitOrdersAmountAboveLightningMax": {
+    "description": "Buy-limit error when a limit order amount is above the Lightning maximum; {amount} is the maximum in BTC",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "limitOrdersViewOrder": "View order details",
+  "@limitOrdersViewOrder": {
+    "description": "Opens the created Limit Order details from the success screen"
+  },
+  "limitOrdersInsufficientBalance": "Insufficient balance",
+  "@limitOrdersInsufficientBalance": {
+    "description": "Title of the info card shown when the user has no funded balance to create a limit order"
+  },
+  "limitOrdersInsufficientBalanceMessage": "You do not have enough balance to create this order.",
+  "@limitOrdersInsufficientBalanceMessage": {
+    "description": "Message of the info card shown when the user has no funded balance to create a limit order"
+  },
+  "limitOrdersFundAccount": "Fund your account",
+  "@limitOrdersFundAccount": {
+    "description": "Button that opens the fund exchange flow when the user has no balance to create a limit order"
+  },
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLandingConnectAccount": "Connect your Bull Bitcoin exchange account",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureSelfCustody": "• Buy Bitcoin straight to self-custody",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limit orders and Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureSellBitcoin": "• Sell Bitcoin, get paid with Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeFeatureBankTransfers": "• Send bank transfers and pay bills",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureCustomerSupport": "• Chat with customer support",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureUnifiedHistory": "• Unified transaction history",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeLandingDisclaimerLegal": "Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency exchange services are not available in the Bull Bitcoin mobile application.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLoginButton": "Login Or Sign up",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "Go to Bull Bitcoin exchange website",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   }
 }

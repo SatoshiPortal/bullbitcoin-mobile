@@ -1,9 +1,5 @@
 import 'package:primitives/primitives.dart' as bb;
-import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
+import 'package:transactions/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

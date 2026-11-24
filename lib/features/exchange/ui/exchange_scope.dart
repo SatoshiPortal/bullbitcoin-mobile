@@ -1,40 +1,56 @@
-import 'dart:async';
+import 'package:preferences/preferences.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ExchangeScope extends StatelessWidget {
-  final Widget child;
-
-  const ExchangeScope({required this.child, super.key});
+abstract final class ExchangeScope {
+  static final ExchangeAuthHost authHost = (
+    loadConfiguration: () => locator<Exchange>().loadWebPreferences(),
+    authenticate:
+        (
+          context,
+          evaluateJavaScript, {
+          required isTestnet,
+          required isCurrent,
+        }) => ExchangeSessionScope.finishAuthentication(
+          context,
+          ({required isCurrent}) => locator<Exchange>().authenticateWebSession(
+            isTestnet: isTestnet,
+            evaluateJavaScript: evaluateJavaScript,
+            isCurrent: isCurrent,
+          ),
+          isCurrent: isCurrent,
+        ),
+    failureMessage: (context, failure) => failure.toTranslated(context),
+    mainnetSignInUrl: Uri.parse(ExchangeDefaults.bbAuthUrl),
+    testnetSignInUrl: Uri.parse(ExchangeDefaults.bbAuthTestUrl),
+    returnUrl: Uri.parse(ExchangeDefaults.bbAppUrl),
+    testnetKycUrl: Uri.parse(ExchangeDefaults.bbKycTestUrl),
+    currentAccess: () => locator<ExchangeFacade>().currentAccess,
+    watchAccess: ExchangeScope.accessChanges,
+    accountSignedInChanges: ExchangeSessionScope.accountChanges,
+    retryAccess: (_) async {
+      final _ = await locator<Exchange>().resolveAccess();
+    },
+  );
 
   static bool isLoggedIn(BuildContext context) =>
       _signedIn(locator<ExchangeFacade>().currentAccess);
+
+  static Exchange exchange() => locator<Exchange>();
+
+  static Preferences preferences() => locator<Preferences>();
+
+  static ExchangeAccess currentAccess() =>
+      locator<ExchangeFacade>().currentAccess;
 
   static Stream<ExchangeAccess> accessChanges() =>
       locator<ExchangeFacade>().watchAccess();
 
   static Stream<bool> signedInChanges() => accessChanges().map(_signedIn);
-
-  /// A session that ends while access stays enabled can sign in again.
-  static bool isEnabled(BuildContext context) =>
-      locator<ExchangeFacade>().currentAccess is ExchangeAccessEnabled;
-
-  static Future<void> refreshSession(BuildContext context) =>
-      context.read<ExchangeCubit>().fetchUserSummary();
-
-  static Future<void> reconnectNotifications(BuildContext context) =>
-      context.read<ExchangeCubit>().reconnectWebSocket();
-
-  @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<ExchangeCubit>(),
-    child: ExchangeListener(child: child),
-  );
 }
 
 class ExchangeSessionBuilder extends StatelessWidget {
@@ -48,59 +64,9 @@ class ExchangeSessionBuilder extends StatelessWidget {
   );
 }
 
-class ExchangeSessionListener extends StatelessWidget {
-  final Widget child;
-  final bool Function(bool wasLoggedIn, bool isLoggedIn)? listenWhen;
-  final void Function(BuildContext, bool isLoggedIn) listener;
-
-  const ExchangeSessionListener({
-    required this.child,
-    required this.listener,
-    this.listenWhen,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) => _SessionChanges(owner: this);
-}
-
 bool _signedIn(ExchangeAccess access) =>
     access is ExchangeAccessEnabled &&
     access.session == ExchangeAccessSession.signedIn;
-
-class _SessionChanges extends StatefulWidget {
-  const _SessionChanges({required this.owner});
-  final ExchangeSessionListener owner;
-  @override
-  State<_SessionChanges> createState() => _SessionChangesState();
-}
-
-class _SessionChangesState extends State<_SessionChanges> {
-  StreamSubscription<ExchangeAccess>? _subscription;
-  @override
-  void initState() {
-    super.initState();
-    final exchange = locator<ExchangeFacade>();
-    var previous = _signedIn(exchange.currentAccess);
-    _subscription = exchange.watchAccess().listen((access) {
-      final current = _signedIn(access);
-      final changed = current != previous;
-      final notify =
-          changed && (widget.owner.listenWhen?.call(previous, current) ?? true);
-      previous = current;
-      if (mounted && notify) widget.owner.listener(context, current);
-    });
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.owner.child;
-}
 
 /// Rebuilds account entry points as the access/session decision changes.
 class ExchangeAccessBuilder extends StatelessWidget {

@@ -1,0 +1,130 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "요금 선택",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC 카드",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "관련 기사",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "한국어",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "PSBT 또는 거래 HEX를 붙여",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "- 연혁",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "방송 서명 거래",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "계정 정보",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "푸시Tx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "결제 방법",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "- 연혁",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "네트워크 수수료",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "빠른 속도",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "Original 거래",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "내 계정",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "예상 배송 ~ 10 분",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "한국어",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "계속하기",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "으로",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.",
+  "broadcastSignedTxErrorInvalidTransaction": "유효한 서명된 거래가 아닌 것 같습니다. PSBT나 거래 전체를 붙여넣었는지 확인하세요.",
+  "broadcastSignedTxErrorInvalidPushTx": "이 태그에서 거래를 읽을 수 없습니다. 다시 스캔해 주세요.",
+  "replaceByFeeFeeRateDisplay": "수수료율: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
+  "coreScreensFeeRateLabel": "수수료율",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "거스름돈 출력을 알 수 없음 — 모든 출력이 동일하게 표시됩니다",
+  "coreScreensUnknown": "알 수 없음",
+  "coreScreensFetchFailed": "Electrum에서 거래 {txid}를 가져올 수 없습니다.",
+  "coreScreensInputResolutionFailed": "입력을 찾을 수 없음: {parentTxId}의 출력 {vout}이 존재하지 않습니다.",
+  "coreScreensNoServersAvailable": "사용 가능한 Electrum 서버가 없습니다.",
+  "mempoolServerStatusUnknown": "알 수 없음",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Coldcard를 태그하여 NFC로 서명된 트랜잭션을 받으세요",
+  "consolidationDone": "완료",
+  "consolidationFailedBody": "예기치 않은 오류가 발생했습니다. 자금은 안전하며 어떤 거래도 브로드캐스트되지 않았습니다. 다시 시도해 주세요.",
+  "consolidationFailedTitle": "통합 실패",
+  "consolidationInProgress": "통합 중…",
+  "consolidationRequiredTitle": "지갑 통합",
+  "consolidationRequiredTitleNamed": "{walletName} 지갑 통합",
+  "consolidationRowAmount": "금액",
+  "consolidationRowNetworkFees": "네트워크 수수료",
+  "consolidationRowOutputs": "출력",
+  "consolidationRowTransactions": "거래",
+  "consolidationScreenDescription": "출력이 너무 많으면 지갑이 불안정해질 수 있습니다. 통합하면 더 적은 수로 합쳐져 지갑이 제대로 작동합니다.",
+  "consolidationScreenTitle": "통합",
+  "consolidationSuccessBody": "코인이 합쳐지고 있습니다. 네트워크가 확인되면 완료됩니다.",
+  "consolidationSuccessTitle": "통합 시작됨",
+  "walletLoadFailed": "지갑을 불러오지 못했습니다. 연결을 확인한 후 다시 시도하세요.",
+  "broadcastSignedTxErrorPsbtFinalization": "서명된 거래를 완료할 수 없습니다. 필요한 모든 서명이 포함되어 있는지 확인한 후 다시 시도하세요.",
+  "coreScreensOutputsExceedInputs": "출력이 입력을 초과합니다. 이 거래는 유효하지 않으며 네트워크에서 거부됩니다.",
+  "broadcastSignedTxErrorAlreadyInChain": "이 거래는 이미 블록체인에 있습니다. 더 이상 브로드캐스트할 것이 없습니다.",
+  "broadcastSignedTxErrorRejected": "네트워크가 이 거래를 거부했습니다. 서명이 완전하지 않거나, 유효하지 않거나, 다른 결제와 충돌할 수 있습니다.",
+  "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다."
+}

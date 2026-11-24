@@ -1,10 +1,9 @@
+import '../support/payin_ui_fixture.dart';
+
+import 'package:bull_exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/features/pay/ui/screens/pay_receive_payment_screen.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_receive_payment_screen.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart' show FontLoader, rootBundle;
@@ -63,9 +62,12 @@ Widget _payScreen() {
       payOrder: order,
     ),
   );
-  return BlocProvider<PayBloc>.value(
-    value: bloc,
-    child: const PayReceivePaymentScreen(),
+  return RepositoryProvider.value(
+    value: payinTestUi(),
+    child: BlocProvider<PayBloc>.value(
+      value: bloc,
+      child: const PayReceivePaymentScreen(),
+    ),
   );
 }
 
@@ -84,9 +86,12 @@ Widget _sellScreen() {
       sellOrder: order,
     ),
   );
-  return BlocProvider<SellBloc>.value(
-    value: bloc,
-    child: const SellReceivePaymentScreen(),
+  return RepositoryProvider.value(
+    value: payinTestUi(),
+    child: BlocProvider<SellBloc>.value(
+      value: bloc,
+      child: const SellReceivePaymentScreen(),
+    ),
   );
 }
 

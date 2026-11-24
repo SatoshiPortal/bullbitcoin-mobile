@@ -1,0 +1,375 @@
+import 'package:exchange/exchange.dart';
+
+/// Base class for form data from UI layer
+/// Each form submits its specific subtype
+/// Bloc receives base type and transforms to RecipientDetailsInput
+sealed class RecipientFormDataModel {
+  final String? label;
+  final RecipientType type;
+
+  const RecipientFormDataModel({required this.type, this.label});
+
+  /// Transform form data to domain input
+  RecipientDetailsInput toInput();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CANADA
+// ══════════════════════════════════════════════════════════════════════════════
+
+class InteracEmailCadFormDataModel extends RecipientFormDataModel {
+  final String email;
+  final String name;
+  final String securityQuestion;
+  final String securityAnswer;
+  final bool isOwner;
+
+  const InteracEmailCadFormDataModel({
+    required this.email,
+    required this.name,
+    required this.securityQuestion,
+    required this.securityAnswer,
+    required this.isOwner,
+    super.label,
+  }) : super(type: RecipientType.interacEmailCad);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      isOwner: isOwner,
+      label: label,
+      email: email,
+      name: name,
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
+    );
+  }
+}
+
+class BillPaymentCadFormDataModel extends RecipientFormDataModel {
+  final String payeeName;
+  final String payeeCode;
+  final String payeeAccountNumber;
+
+  const BillPaymentCadFormDataModel({
+    required this.payeeName,
+    required this.payeeCode,
+    required this.payeeAccountNumber,
+    super.label,
+  }) : super(type: RecipientType.billPaymentCad);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      payeeName: payeeName,
+      payeeCode: payeeCode,
+      payeeAccountNumber: payeeAccountNumber,
+    );
+  }
+}
+
+class BankTransferCadFormDataModel extends RecipientFormDataModel {
+  final String institutionNumber;
+  final String transitNumber;
+  final String accountNumber;
+  final String name;
+  final String? defaultComment;
+  final bool isOwner;
+
+  const BankTransferCadFormDataModel({
+    required this.institutionNumber,
+    required this.transitNumber,
+    required this.accountNumber,
+    required this.name,
+    required this.isOwner,
+    this.defaultComment,
+    super.label,
+  }) : super(type: RecipientType.bankTransferCad);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      isOwner: isOwner,
+      label: label,
+      institutionNumber: institutionNumber,
+      transitNumber: transitNumber,
+      accountNumber: accountNumber,
+      name: name,
+      defaultComment: defaultComment,
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// EUROPE
+// ══════════════════════════════════════════════════════════════════════════════
+
+class SepaEurFormDataModel extends RecipientFormDataModel {
+  final String iban;
+  final bool isCorporate;
+  final String? firstname;
+  final String? lastname;
+  final String? corporateName;
+  final bool isOwner;
+
+  const SepaEurFormDataModel({
+    required this.iban,
+    required this.isCorporate,
+    required this.isOwner,
+    this.firstname,
+    this.lastname,
+    this.corporateName,
+    bool isConfidential = false,
+    super.label,
+  }) : super(
+         type: isConfidential
+             ? RecipientType.confidentialSepaEur
+             : RecipientType.sepaEur,
+       );
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      isOwner: isOwner,
+      label: label,
+      iban: iban,
+      isCorporate: isCorporate,
+      firstname: firstname,
+      lastname: lastname,
+      corporateName: corporateName,
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MEXICO
+// ══════════════════════════════════════════════════════════════════════════════
+
+class SpeiClabeMxnFormDataModel extends RecipientFormDataModel {
+  final String clabe;
+  final String name;
+
+  const SpeiClabeMxnFormDataModel({
+    required this.clabe,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.speiClabeMxn);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      clabe: clabe,
+      name: name,
+    );
+  }
+}
+
+class SpeiSmsMxnFormDataModel extends RecipientFormDataModel {
+  final String institutionCode;
+  final String phone;
+  final String name;
+
+  const SpeiSmsMxnFormDataModel({
+    required this.institutionCode,
+    required this.phone,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.speiSmsMxn);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      institutionCode: institutionCode,
+      phone: phone,
+      name: name,
+    );
+  }
+}
+
+class SpeiCardMxnFormDataModel extends RecipientFormDataModel {
+  final String institutionCode;
+  final String debitcard;
+  final String name;
+
+  const SpeiCardMxnFormDataModel({
+    required this.institutionCode,
+    required this.debitcard,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.speiCardMxn);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      institutionCode: institutionCode,
+      debitcard: debitcard,
+      name: name,
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// COSTA RICA
+// ══════════════════════════════════════════════════════════════════════════════
+
+class SinpeIbanUsdFormDataModel extends RecipientFormDataModel {
+  final String iban;
+  final String ownerName;
+
+  const SinpeIbanUsdFormDataModel({
+    required this.iban,
+    required this.ownerName,
+    super.label,
+  }) : super(type: RecipientType.sinpeIbanUsd);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      iban: iban,
+      ownerName: ownerName,
+    );
+  }
+}
+
+class SinpeIbanCrcFormDataModel extends RecipientFormDataModel {
+  final String iban;
+  final String ownerName;
+
+  const SinpeIbanCrcFormDataModel({
+    required this.iban,
+    required this.ownerName,
+    super.label,
+  }) : super(type: RecipientType.sinpeIbanCrc);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      iban: iban,
+      ownerName: ownerName,
+    );
+  }
+}
+
+class SinpeMovilCrcFormDataModel extends RecipientFormDataModel {
+  final String phoneNumber;
+  final String ownerName;
+
+  const SinpeMovilCrcFormDataModel({
+    required this.phoneNumber,
+    required this.ownerName,
+    super.label,
+  }) : super(type: RecipientType.sinpeMovilCrc);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      phoneNumber: phoneNumber,
+      ownerName: ownerName,
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ARGENTINA
+// ══════════════════════════════════════════════════════════════════════════════
+
+class BankAccountArgentinaFormDataModel extends RecipientFormDataModel {
+  final String claveUniform;
+  final String name;
+
+  const BankAccountArgentinaFormDataModel({
+    required this.claveUniform,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.bankAccountArgentina);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      label: label,
+      claveUniform: claveUniform,
+      name: name,
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// COLOMBIA
+// ══════════════════════════════════════════════════════════════════════════════
+class PseColombiaFormDataModel extends RecipientFormDataModel {
+  final String bankCode;
+  final String accountType;
+  final String bankAccount;
+  final String documentType;
+  final String documentId;
+  final String name;
+
+  const PseColombiaFormDataModel({
+    required this.bankCode,
+    required this.accountType,
+    required this.bankAccount,
+    required this.documentType,
+    required this.documentId,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.pseColombia);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      bankCode: bankCode,
+      accountType: accountType,
+      bankAccount: bankAccount,
+      documentType: documentType,
+      documentId: documentId,
+      name: name,
+      label: label,
+    );
+  }
+}
+
+class NequiColombiaFormDataModel extends RecipientFormDataModel {
+  final String phoneNumber;
+  final String documentType;
+  final String documentId;
+  final String name;
+
+  const NequiColombiaFormDataModel({
+    required this.phoneNumber,
+    required this.documentType,
+    required this.documentId,
+    required this.name,
+    super.label,
+  }) : super(type: RecipientType.nequiColombia);
+
+  @override
+  RecipientDetailsInput toInput() {
+    return RecipientDetailsInput(
+      recipientType: type,
+      phoneNumber: phoneNumber,
+      documentType: documentType,
+      documentId: documentId,
+      name: name,
+      label: label,
+    );
+  }
+}

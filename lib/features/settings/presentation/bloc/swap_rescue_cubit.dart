@@ -2,14 +2,14 @@ import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:secrets/secrets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRescueStatus { loading, ready, rescuing, success, error }
 
 class SwapRescueState {
   final SwapRescueStatus status;
-  final List<Wallet> wallets;
+  final List<WalletRegistration> wallets;
   final String? selectedWalletId;
   final SwapsFailure? error;
 
@@ -27,7 +27,7 @@ class SwapRescueState {
 
   SwapRescueState copyWith({
     SwapRescueStatus? status,
-    List<Wallet>? wallets,
+    List<WalletRegistration>? wallets,
     String? selectedWalletId,
     SwapsFailure? error,
   }) {
@@ -72,14 +72,7 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
         log.warning(
           'SWAPS: rescue wallets read failed: ${failure.runtimeType}',
         );
-        emit(
-          state.copyWith(
-            status: SwapRescueStatus.error,
-            error: SwapsUnexpectedFailure(
-              'wallets read failed: ${failure.runtimeType}',
-            ),
-          ),
-        );
+        emit(state.copyWith(status: SwapRescueStatus.error, error: failure));
     }
   }
 

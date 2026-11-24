@@ -2,15 +2,11 @@
 library;
 
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:address_view/address_view.dart';
+import 'package:receive/testing.dart';
+import 'package:receive/receive.dart' show ReceiveWallet;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -29,21 +25,17 @@ const _invoice =
     'dq5xysxxatsyp3k7enxv4jsxqzpuaztrnwngzn3kdzw5hydlzf03qdgm2hdq27cqv3agm2aw'
     'hz5se903vruatfhq77w3ls4evs3ch9zw97j25emudupq63nyw24cg27h2rspfj9srp';
 
-Wallet _wallet({
+ReceiveWallet _wallet({
   String name = 'Savings',
   bool liquid = false,
   bool empty = false,
   SignerDevice? hardware,
-}) => Wallet(
-  origin: name,
+}) => ReceiveWallet(
+  id: name,
   label: name,
-  network: liquid ? Network.liquidMainnet : Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
+  network: liquid ? LiquidNetwork.mainnet : BitcoinNetwork.mainnet,
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: hardware == null ? SignerEntity.local : SignerEntity.remote,
+  signsLocally: hardware == null,
   signerDevice: hardware,
   balanceSat: empty ? BigInt.zero : BigInt.from(100000),
 );

@@ -1,15 +1,14 @@
-import 'package:primitives/primitives.dart' show ScriptType;
+import 'package:secrets/testing.dart';
+import 'package:secrets/secrets.dart' show WalletSigner;
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bull_ui/bull_ui.dart'
     show BullAmountInput, bullUiLocalizationsDelegate;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:spend/legacy_exceptions.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,17 +17,15 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockTransferBloc extends Mock implements TransferBloc {}
 
-final _wallet = Wallet(
-  origin: 'wallet-1',
-  network: Network.bitcoinTestnet,
-  xpubFingerprint: 'fingerprint',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'external',
-  internalPublicDescriptor: 'internal',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.from(100000),
+final _wallet = SwapWallet(
+  walletRegistrationForTesting(
+    id: 'wallet-1',
+    network: BitcoinNetwork.testnet,
+    isDefault: false,
+    signer: WalletSigner.local,
+  ),
+  BigInt.from(100000),
+  false,
 );
 
 void main() {

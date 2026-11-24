@@ -1,0 +1,73 @@
+{
+  "appStartupErrorMessage": "แอปไม่สามารถเริ่มต้นได้ ลองปิดแอปทั้งหมดแล้วเปิดใหม่อีกครั้ง หากยังมีปัญหา กรุณาติดต่อฝ่ายสนับสนุนและส่งบันทึกของคุณ",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "errorSharingLogsMessage": "เกิดข้อผิดพลาดในการแชร์บันทึก: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "การกู้คืน",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "appStartupErrorTitle": "ข้อผิดพลาด",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupContactSupportButton": "ติดต่อ",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "หน้า",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "appInitErrorTitle": "แอปเริ่มต้นล้มเหลว",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "แชร์บันทึก",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "เงินของคุณปลอดภัยเพราะคุณมีข้อมูลสำรอง\nลองรีสตาร์ทแอปก่อน หากยังใช้งานไม่ได้ ให้ติดตั้งใหม่และกู้คืนด้วยข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "ไม่มีข้อมูลสำรอง?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "อย่าลบแอป\nติดต่อทีมสนับสนุนของเราเพื่อพยายามกู้คืน",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "ติดต่อฝ่ายสนับสนุน",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "แสดงรายละเอียดข้อผิดพลาด",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
+  "logsShareOptionExport": "ส่งออก",
+  "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
+  "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ",
+  "deleteLogsTitle": "ลบบันทึก",
+  "logsDeletedMessage": "ลบบันทึกแล้ว"
+}

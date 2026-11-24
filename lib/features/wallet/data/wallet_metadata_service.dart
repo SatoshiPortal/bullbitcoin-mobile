@@ -1,14 +1,15 @@
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:primitives/legacy_exceptions.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
+import 'package:satoshifier/bip32_derivation.dart';
+import 'package:satoshifier/satoshifier.dart' show WatchOnlyDescriptorExtension;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:sync/sync.dart' show Keychain, bitcoinPublicDescriptor;
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:wallet_import/wallet_import.dart' show WatchOnlyDescriptorInput;
 import 'package:primitives/primitives.dart'
-    show Err, Ok, Result, ScriptType, ScriptTypeX, XpubType;
+    show Err, Ok, Result, ScriptType, ScriptTypeX, SignerEntity, XpubType;
 import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
@@ -283,29 +284,33 @@ class WalletMetadataService {
   }
 
   static Future<WalletMetadataModel> fromDescriptor(
-    WatchOnlyDescriptorEntity entity,
-  ) async {
+    WatchOnlyDescriptorInput input, {
+    required SignerEntity signer,
+    required String label,
+  }) async {
+    final network = Network.fromEnvironment(
+      environment: input.network.env,
+      isLiquid: false,
+    );
+    final descriptor = input.value;
     return WalletMetadataModel(
-      networkCode: WalletNetworkCodec.encode(entity.network),
+      networkCode: WalletNetworkCodec.encode(network),
       id: WalletMetadataService.encodeId(
-        fingerprint: entity.masterFingerprint,
-        network: entity.network,
-        scriptType: entity.scriptType,
+        fingerprint: descriptor.masterFingerprint,
+        network: network,
+        scriptType: input.scriptType,
       ),
-      masterFingerprint: entity.masterFingerprint,
-      xpubFingerprint: entity.pubkeyFingerprint,
-      signer: Signer.fromEntity(entity.signer),
-      signerDevice: switch (entity.signerDevice) {
-        final device? => SignerDevice.fromEntity(device),
-        null => null,
-      },
-      xpub: entity.pubkey,
-      externalPublicDescriptor: entity.descriptor.external,
-      internalPublicDescriptor: entity.descriptor.internal,
+      masterFingerprint: descriptor.masterFingerprint,
+      xpubFingerprint: descriptor.pubkeyFingerprint,
+      signer: signer.toSqlite(),
+      signerDevice: input.signerDevice?.toSqlite(),
+      xpub: input.pubkey,
+      externalPublicDescriptor: descriptor.descriptor.external,
+      internalPublicDescriptor: descriptor.descriptor.internal,
       isDefault: false,
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
-      label: entity.label,
+      label: label,
     );
   }
 }

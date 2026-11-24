@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/write.dart' show nativeWalletStoragePath;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -5,15 +6,15 @@ import 'package:sync/sync.dart' show SyncReason, WalletKey;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Fingerprint, Ok;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -55,8 +56,7 @@ void main() {
       when(() => values.getBalance(key: any(named: 'key')))
           .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
-        walletMetadataDatasource: metadata,
-        wallet: (_) async => throw StateError('no native access expected'),
+        walletRegistrations: metadata,
         walletValuesDatasource: values,
         synchronize: (
           _, {
@@ -64,10 +64,8 @@ void main() {
           allowInitialScan = true,
           reason = SyncReason.auto,
         }) async {},
-        isSyncing: ({walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
-        electrumSyncResultStream: const Stream.empty(),
       );
       for (final (environment, expected) in [
         (Environment.mainnet, Network.bitcoinMainnet),
@@ -93,8 +91,7 @@ void main() {
         final row = _row(Network.bitcoinRegtest).copyWith(networkCode: code);
         when(metadata.fetchAll).thenAnswer((_) async => [row]);
         final repository = WalletRepository(
-          walletMetadataDatasource: metadata,
-          wallet: (_) async => throw StateError('no native access expected'),
+          walletRegistrations: metadata,
           walletValuesDatasource: values,
           synchronize: (
             _, {
@@ -102,10 +99,8 @@ void main() {
             allowInitialScan = true,
             reason = SyncReason.auto,
           }) async {},
-          isSyncing: ({walletId}) => false,
           syncStarted: const Stream.empty(),
           syncFinished: const Stream.empty(),
-          electrumSyncResultStream: const Stream.empty(),
         );
         final result = await repository.hasSecretReference(
           Fingerprint('73c5da0a'),

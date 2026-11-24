@@ -10,6 +10,9 @@ final class WalletRegistration {
   final ScriptType scriptType;
   final WalletSigner signer;
 
+  /// Validated public key origin, for every signer type.
+  final Fingerprint? masterFingerprint;
+
   /// The expected local seed reference, not proof of seed availability or authority.
   final Fingerprint? secretFingerprint;
 
@@ -25,6 +28,7 @@ final class WalletRegistration {
     required this.network,
     required this.scriptType,
     required this.signer,
+    required this.masterFingerprint,
     required this.secretFingerprint,
     required this.derivationPath,
     required this.label,
@@ -37,15 +41,37 @@ final class WalletRegistration {
 final class WalletSelection {
   final List<WalletRegistration> wallets;
 
+  /// Whether every visible wallet on the requested network was readable.
+  final bool isComplete;
+
   /// All wallets explicitly marked as default, including any legacy conflict.
   final List<WalletRegistration> defaults;
 
   @internal
-  WalletSelection(List<WalletRegistration> wallets)
+  WalletSelection(List<WalletRegistration> wallets, {required this.isComplete})
     : wallets = List.unmodifiable(wallets),
       defaults = List.unmodifiable(wallets.where((wallet) => wallet.isDefault));
 
   /// The sole readable default; null if none or several are marked.
   WalletRegistration? get defaultWallet =>
       defaults.length == 1 ? defaults.single : null;
+}
+
+/// Public Bitcoin identity used to verify a recovery phrase before importing it.
+final class BitcoinRecoveryWallet {
+  final String id;
+  final BitcoinNetwork network;
+  final Fingerprint fingerprint;
+  final ScriptType scriptType;
+  final bool isDefault;
+  final ({String external, String internal}) descriptors;
+
+  const BitcoinRecoveryWallet({
+    required this.id,
+    required this.network,
+    required this.fingerprint,
+    required this.scriptType,
+    required this.isDefault,
+    required this.descriptors,
+  });
 }

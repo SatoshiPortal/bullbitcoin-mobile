@@ -1,9 +1,10 @@
+import '../support/transaction_ui_actions.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:transactions/testing.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -39,7 +40,7 @@ GoRouter _router({required String initialLocation}) {
         builder: (context, state) =>
             BlocProvider<TransactionDetailsCubit>.value(
               value: cubit,
-              child: const TransactionDetailsScreen(),
+              child: TransactionDetailsScreen(actions: transactionUiActions),
             ),
       ),
     ],
@@ -67,6 +68,36 @@ Future<void> _pump(WidgetTester tester, GoRouter router) async {
 }
 
 void main() {
+  testWidgets('exchange history opens the exchange-only route', (tester) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, _) => TextButton(
+            onPressed: () =>
+                TransactionsNavigation.openHistory(context, exchangeOnly: true),
+            child: const Text('History'),
+          ),
+        ),
+        for (final route in [
+          TransactionsRoute.transactions,
+          TransactionsRoute.exchangeTransactions,
+        ])
+          GoRoute(
+            name: route.name,
+            path: route.path,
+            builder: (_, state) => Text(state.uri.path),
+          ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('/transactions/exchange'), findsOneWidget);
+  });
+
   testWidgets('system back on a returnHome details screen goes home, not out', (
     tester,
   ) async {

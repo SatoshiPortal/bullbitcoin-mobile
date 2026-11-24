@@ -1,4 +1,8 @@
-# Legacy storage coordination
+# Legacy storage
+
+`package:legacy_storage/app_database.dart` exposes `SqliteDatabase` and the types used by the remaining legacy readers. The application database keeps its schema-16 table declarations, snapshots and seeds in this package. Run `make drift-migrations` from the workspace root to regenerate the migration helpers. App-level cutover tests exercise the historical database with the encrypted owner stores.
+
+## Cutover coordination
 
 `coordination.dart` owns the temporary split-v1 protocol. Composition supplies an inert legacy database factory, source path, the complete expected-owner manifest and the participants available in this development slice. The package has no dependency on an owner. The legacy constructor receives an owner-controlled worker executor; temporary and runtime connections explicitly acknowledge native closure before their admission is released. Composition also lists destination families so an orphaned owner store cannot be mistaken for a new installation. Each participant opens only under an admission and owns its mapping, receipt and close operation.
 

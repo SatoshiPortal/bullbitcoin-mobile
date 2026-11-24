@@ -1,0 +1,48 @@
+{
+  "@@locale": "bg",
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "transactionStatusPending": "В очакване",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "copyDialogButton": "Копирай",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "Зареждане на транзакции...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "QR код",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "transactionListYesterday": "Вчера",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "Днес",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "Сума",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "viewerTapToCopy": "Натиснете за копиране",
+  "viewerViewInExplorer": "Виж в експлорър",
+  "transactionViewerTitle": "ID на транзакция",
+  "viewerCopyLink": "Копиране на връзка",
+  "coinsTitle": "Монети",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "cancel": "Отказ",
+  "delete": "Изтрий",
+  "save": "Запази",
+  "copiedToClipboard": "Копирано в клипборда"
+}

@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
-import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
+import 'package:startup/setup.dart' show StartupLocalizations;
+import 'package:bull_ui/app_theme.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
+import 'package:startup/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +27,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: const [
+          StartupLocalizations.delegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         // Like the app: startup is built by MaterialApp.builder, outside the
         // Navigator and its Overlay.
@@ -54,7 +58,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: const [
+          StartupLocalizations.delegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         builder: (context, child) =>
             RestoreDefaultSecretScreen(onCancel: () {}),
@@ -75,7 +82,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: const [
+          StartupLocalizations.delegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         builder: (context, child) =>
             RestoreDefaultSecretScreen(onCancel: () => cancelled++),

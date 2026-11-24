@@ -1,3 +1,4 @@
+import 'package:startup/setup.dart' show AppBlocObserver;
 import 'package:labels/labels.dart';
 import 'package:labels/migration.dart';
 import 'package:electrum/electrum.dart';
@@ -8,7 +9,6 @@ import 'dart:io';
 
 import 'package:announcements/migration.dart';
 import 'package:announcements/setup.dart' show AnnouncementDismissals;
-import 'package:bb_mobile/features/swap/data/order_swaps_store.dart';
 import 'package:bb_mobile/storage_owner_manifest.dart';
 import 'package:bull_payjoin/migration.dart';
 import 'package:bull_recoverbull/migration.dart';
@@ -16,31 +16,41 @@ import 'package:swaps/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/migration.dart' show SecretsImport;
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
+import 'package:signers/storage.dart';
+import 'package:sync/storage.dart';
+import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+import 'package:background_tasks/wallet_jobs.dart';
+import 'package:notifications/payment_store.dart' show PaymentNotificationStore;
+import 'package:startup/startup.dart';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/background_setup.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_wallet_setup.dart'
+    show arkBoardFundingBinding, SqliteArkFundingReservations;
+import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/migration.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
-import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
+import 'package:exchange/exchange.dart' show Exchange;
+import 'package:wizard/wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -50,7 +60,11 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class Bull {
-  static Future<Result<void, Failure>> init() async {
+  static Future<Result<void, Failure>> init({
+    Future<void> Function(LegacyImportFailure)? retryStorage,
+    WizardFeature? wizard,
+  }) async {
+    final startupWizard = wizard ?? WizardFeature.mount();
     final bullDirectory = await getApplicationDocumentsDirectory();
 
     await initializeLogging(
@@ -62,9 +76,17 @@ class Bull {
     // it so Sentry initializes with the user's freshest answer rather
     // than a stale mirror, and so migration errors that happen on this
     // very boot are captured if the user just opted in.
+    final wizardConsent = await startupWizard.readReportingConsent();
+    final bool? consent;
+    switch (wizardConsent) {
+      case Ok(:final value):
+        consent = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
     await Report.init(
-      dsn: ApiServiceConstants.sentryDsn,
-      wizardConsent: await readStartupReportingConsent(),
+      dsn: 'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1',
+      wizardConsent: consent,
     );
 
     await initFlutterRustBridgeDependencies();
@@ -160,6 +182,14 @@ class Bull {
     final preferencesFile = File(
       p.join(support.path, 'databases', 'preferences.sqlite'),
     );
+    final secrets = Secrets(
+      scratchDirectory: () async => (await getTemporaryDirectory()).path,
+    );
+    final signerKeys = secrets.databaseKeys(module: 'signers');
+    final syncKeys = secrets.databaseKeys(module: 'sync');
+    final secretsFile = destination('secrets');
+    final signersFile = destination('signers');
+    final syncFile = destination('sync');
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -177,7 +207,9 @@ class Bull {
         regtestPayjoin.participant,
         recoverBull.participant,
         regtestRecoverBull.participant,
-        SecretsImport(file: destination('secrets')),
+        SecretsImport(file: secretsFile),
+        signersWalletMetadataImport(file: signersFile, keys: signerKeys),
+        syncWalletMetadataImport(file: syncFile, keys: syncKeys),
         PreferencesImport(
           file: preferencesFile,
           defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
@@ -188,25 +220,55 @@ class Bull {
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
-            ApiServiceConstants.bbMempoolUrlPath,
-            ApiServiceConstants.testnetMempoolUrlPath,
-            ApiServiceConstants.bbLiquidMempoolUrlPath,
-            ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
+            MempoolLegacyDefaults.bbMempoolUrlPath,
+            MempoolLegacyDefaults.testnetMempoolUrlPath,
+            MempoolLegacyDefaults.bbLiquidMempoolUrlPath,
+            MempoolLegacyDefaults.bbLiquidMempoolTestnetUrlPath,
           ],
         ),
         ElectrumImport(file: electrumFile),
         LabelsImport(file: labelsFile),
       ],
     );
-    final admitted = await cutover.prepare();
-    if (admitted case Err(:final failure)) return Err(failure);
-    final admission = (admitted as Ok<RuntimeAdmission, Failure>).value;
+    var admitted = await cutover.prepare();
+    while (admitted is Err<RuntimeAdmission, LegacyImportFailure>) {
+      if (retryStorage == null) return Err(admitted.failure);
+      switch (admitted.failure) {
+        case final failure
+            when failure is LegacyImportUnavailable ||
+                failure is LegacyImportDeferred:
+          await retryStorage(failure);
+          admitted = await cutover.prepare();
+        case final failure:
+          return Err(failure);
+      }
+    }
+    final admission =
+        (admitted as Ok<RuntimeAdmission, LegacyImportFailure>).value;
     locator.registerSingleton<RuntimeAdmission>(
       admission,
       dispose: (value) => value.close(),
     );
     var initialized = false;
     try {
+      final openedInventory = await openWalletInventory(
+        locator,
+        admission: admission,
+        legacy: legacy.source,
+        inventoryFile: secretsFile,
+        signersFile: signersFile,
+        syncFile: syncFile,
+        signerKeys: signerKeys,
+        syncKeys: syncKeys,
+        recoverBull: recoverBull,
+        regtestRecoverBull: regtestRecoverBull,
+      );
+      if (openedInventory case Err(:final failure)) return Err(failure);
+      final inventory =
+          (openedInventory as Ok<SecretsInventory, Failure>).value;
+      final protection = await inventory.isProtected();
+      if (protection case Err(:final failure)) return Err(failure);
+      final pinProtected = (protection as Ok<bool, SecretFailure>).value;
       locator.registerSingleton(payjoin);
       locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
       locator.registerSingleton(recoverBull);
@@ -243,13 +305,14 @@ class Bull {
       if (orderSwaps case Err(:final failure)) return Err(failure);
       if (orderSwaps case Ok(:final value)) {
         locator.registerSingleton(
-          value.database,
+          value.orders,
           dispose: (_) => value.handle.close(),
         );
       }
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),
+        secrets: secrets,
         openLabels: (sync, openWallet) => Labels.open(
           file: labelsFile,
           admission: admission,
@@ -280,7 +343,7 @@ class Bull {
         initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
       );
       if (setup case Err()) return setup;
-      await initializeWalletRuntime(locator);
+      if (!pinProtected) await locator<ForegroundWalletStartup>().start();
       // Custody inventory is already installed, independently of this profile.
       await _setupArkRegtestProfile();
       Bloc.observer = AppBlocObserver();
@@ -288,20 +351,28 @@ class Bull {
       // Flush wizard pending values (if any) to SQLite now that the
       // settings repository is available, then mark the wizard complete.
       final _ = await locator<ExchangeFacade>().resolveAccess();
-      await completeStartupWizard(locator);
+      final applied = await startupWizard.applyPendingChoices(
+        preferences: locator<Preferences>(),
+        exchange: locator<Exchange>(),
+      );
+      if (applied case Err(:final failure)) return Err(failure);
       await locator<QuickActionsCubit>().load();
       await AppLocator.setupRecoverBull(
         locator,
         databasePath: recoverBull.standalone.path,
       );
-      unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+      if (!pinProtected) {
+        unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+      }
       final settings = locator<Preferences>();
       configureLogTorContext(
         () => loadTorDiagnosticContext(settings, locator<Tor>()),
       );
-      await refreshReportingConsent(settings);
-      await prepareBackgroundWalletStores(locator);
-      await configureBackgroundTasks();
+      await settings.refreshReportingConsent();
+      await prepareBackgroundWalletStores(
+        openNotifications: () => locator<PaymentNotificationStore>().open(),
+      );
+      await locator<BackgroundSchedule>().apply();
 
       await Report.recordMigration();
       initialized = true;
@@ -334,8 +405,22 @@ Future<void> _setupArkRegtestProfile() async {
   final arkUrl = Uri.tryParse(_arkUrl);
   final esploraUrl = Uri.tryParse(_arkEsploraUrl);
   if (!_arkProfileAdmitted || arkUrl == null || esploraUrl == null) return;
-  await setupArkForeground(
+  await ArkForegroundHost.setup(
     locator,
+    inventory: locator<SecretsInventory>(),
+    boardFunding: () => arkBoardFundingBinding(
+      authority: locator<SqliteArkFundingReservations>(),
+      runtime: locator<WalletNativeRuntime>(),
+      inventory: locator<SecretsInventory>(),
+      synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+        key,
+        locator<WalletCatalogPort>(),
+        reason: SyncReason.manual,
+      ),
+      secrets: locator<Secrets>(),
+      fees: locator<Fees>(),
+      custody: locator<ParentCustodyAdmissionPort>(),
+    ),
     arkUrl: arkUrl,
     primaryEsploraUrl: esploraUrl,
     initializeNew: _arkInitializeNew,

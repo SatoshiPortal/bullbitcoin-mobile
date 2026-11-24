@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../default_wallets/ui/default_wallets_router.dart';
 import '../domain/usecases/get_account_info_usecase.dart';
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/get_exchange_statistics_usecase.dart';
@@ -14,6 +15,7 @@ import '../presentation/account_info_cubit.dart';
 import '../presentation/exchange_preferences_cubit.dart';
 import '../presentation/secure_file_upload_cubit.dart';
 import '../presentation/statistics_cubit.dart';
+import 'exchange_access_settings_route.dart';
 import 'exchange_settings_route.dart';
 import 'screens/account_info_screen.dart';
 import 'screens/exchange_preferences_screen.dart';
@@ -22,6 +24,7 @@ import 'screens/referrals_screen.dart';
 import 'screens/secure_file_upload_screen.dart';
 import 'screens/security_screen.dart';
 import 'screens/statistics_screen.dart';
+import 'widgets/exchange_account_actions.dart';
 
 final class ExchangeSettingsHost {
   final Exchange Function() exchange;
@@ -33,11 +36,14 @@ final class ExchangeSettingsHost {
   final Uri? Function(BuildContext) securityUrl;
   final String Function(BuildContext) title;
   final String Function(BuildContext) signedOutMessage;
-  final Widget Function(bool showDeleteAccount) buildAccountActions;
+  final bool Function(BuildContext) hasAccount;
+  final String Function(BuildContext, ExchangeFailure) accountFailureMessage;
   final void Function(BuildContext) onOpenRecipients;
   final void Function(BuildContext) onOpenTransactions;
   final void Function(BuildContext) onOpenDefaultWallets;
   final void Function(BuildContext) onOpenExchange;
+  final ExchangeAccessSettingsHost? access;
+  final DefaultWalletsHost? defaultWallets;
 
   const ExchangeSettingsHost({
     required this.exchange,
@@ -49,16 +55,27 @@ final class ExchangeSettingsHost {
     required this.securityUrl,
     required this.title,
     required this.signedOutMessage,
-    required this.buildAccountActions,
+    required this.hasAccount,
+    required this.accountFailureMessage,
     required this.onOpenRecipients,
     required this.onOpenTransactions,
     required this.onOpenDefaultWallets,
     required this.onOpenExchange,
+    this.access,
+    this.defaultWallets,
   });
 }
 
 class ExchangeSettingsRouter {
   static List<RouteBase> routes(ExchangeSettingsHost config) => [
+    if (config.defaultWallets case final host?)
+      defaultWalletsRoute(config.exchange, host),
+    if (config.access case final access?)
+      exchangeAccessSettingsRoute(
+        host: access,
+        isSuperuser: config.isSuperuser,
+        onOpenAccount: ExchangeSettingsRoute.home.open,
+      ),
     GoRoute(
       name: ExchangeSettingsRoute.home.name,
       path: ExchangeSettingsRoute.home.path,
@@ -68,7 +85,12 @@ class ExchangeSettingsRouter {
         isSuperuser: config.isSuperuser(context),
         title: config.title,
         signedOutMessage: config.signedOutMessage,
-        buildAccountActions: config.buildAccountActions,
+        buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
+          showDeleteAccount: showDeleteAccount,
+          exchange: config.exchange,
+          failureMessage: config.accountFailureMessage,
+          hasAccount: config.hasAccount,
+        ),
         onOpenRecipients: () => config.onOpenRecipients(context),
         onOpenTransactions: () => config.onOpenTransactions(context),
         onOpenDefaultWallets: () => config.onOpenDefaultWallets(context),

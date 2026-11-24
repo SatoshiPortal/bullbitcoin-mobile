@@ -1,0 +1,28 @@
+{
+  "@@locale": "fr",
+  "transactionStatusPending": "En attente",
+  "transactionListLoadingTransactions": "Chargement des transactions...",
+  "transactionListToday": "Aujourd'hui",
+  "transactionListYesterday": "Hier",
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "copyDialogButton": "Copier",
+  "amountLabel": "Montant",
+  "receiveQRCode": "Code QR",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "save": "Sauvegarder",
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "Appuyez pour copier",
+  "viewerViewInExplorer": "Voir dans l'explorateur",
+  "transactionViewerTitle": "ID de transaction",
+  "viewerCopyLink": "Copier le lien",
+  "coinsTitle": "Pièces",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Copié dans le presse-papiers",
+  "silentFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase."
+}

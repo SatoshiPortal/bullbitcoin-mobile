@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:bull_ui/app_theme.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
@@ -13,7 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, ScriptType;
 
 class _Cubit extends Mock implements SendCubit {}
 
@@ -22,7 +22,7 @@ void main() {
   const raw = PaymentRequest.bitcoin(address: address, isTestnet: false);
   const uri = PaymentRequest.bip21(
     address: address,
-    network: Network.bitcoinMainnet,
+    network: BitcoinNetwork.mainnet,
     uri: 'bitcoin:bc1qfirst',
   );
   final wallet = Wallet(

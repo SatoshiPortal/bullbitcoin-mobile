@@ -53,6 +53,7 @@ export 'src/data/codec/bitcoin_psbt_facts.dart';
 export 'src/data/codec/bitcoin_codec.dart'
     show
         bitcoinPsbtFee,
+        bitcoinPsbtSkeleton,
         inspectBitcoinPsbt,
         bitcoinPublicDescriptor,
         bitcoinScriptAddress,
@@ -81,3 +82,5 @@ export 'src/data/write/datasources/native_store_errors.dart'
     show isLiquidStatusConflict;
 export 'src/data/codec/bitcoin_recipient_amounts.dart'
     show bitcoinRecipientAmounts;
+
+export 'src/public/coin_freezes.dart' show CoinFreezes;

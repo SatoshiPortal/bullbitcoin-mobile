@@ -1,16 +1,9 @@
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -20,17 +13,11 @@ class _MockGetTransactionsUsecase extends Mock
 class _MockRefreshTransactionLabelsUsecase extends Mock
     implements RefreshTransactionLabelsUsecase {}
 
-class _MockWatchStartedWalletSyncsUsecase extends Mock
-    implements WatchStartedWalletSyncsUsecase {}
-
-class _MockWatchFinishedWalletSyncsUsecase extends Mock
-    implements WatchFinishedWalletSyncsUsecase {}
-
 Transaction _transaction({List<Label> labels = const []}) {
   return Transaction(
     walletTransaction: WalletTransaction(
       walletId: 'wallet-1',
-      network: Network.bitcoinMainnet,
+      network: BitcoinNetwork.mainnet,
       direction: WalletTransactionDirection.incoming,
       status: WalletTransactionStatus.confirmed,
       txId: 'txid-1',
@@ -48,33 +35,17 @@ Transaction _transaction({List<Label> labels = const []}) {
 void main() {
   late _MockGetTransactionsUsecase getTransactionsUsecase;
   late _MockRefreshTransactionLabelsUsecase refreshTransactionLabelsUsecase;
-  late _MockWatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase;
-  late _MockWatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase;
   late TransactionsCubit cubit;
   late int emissions;
 
   setUp(() {
     getTransactionsUsecase = _MockGetTransactionsUsecase();
     refreshTransactionLabelsUsecase = _MockRefreshTransactionLabelsUsecase();
-    watchStartedWalletSyncsUsecase = _MockWatchStartedWalletSyncsUsecase();
-    watchFinishedWalletSyncsUsecase = _MockWatchFinishedWalletSyncsUsecase();
-
-    when(
-      () => watchStartedWalletSyncsUsecase.execute(
-        walletId: any(named: 'walletId'),
-      ),
-    ).thenAnswer((_) => const Stream.empty());
-    when(
-      () => watchFinishedWalletSyncsUsecase.execute(
-        walletId: any(named: 'walletId'),
-      ),
-    ).thenAnswer((_) => const Stream.empty());
-
     cubit = TransactionsCubit(
       getTransactionsUsecase: getTransactionsUsecase,
       refreshTransactionLabelsUsecase: refreshTransactionLabelsUsecase,
-      watchStartedWalletSyncsUsecase: watchStartedWalletSyncsUsecase,
-      watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
+      watchStartedWalletSyncsUsecase: const Stream.empty(),
+      watchFinishedWalletSyncsUsecase: const Stream.empty(),
     );
     emissions = 0;
     cubit.stream.listen((_) => emissions++);

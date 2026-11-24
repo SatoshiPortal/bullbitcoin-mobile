@@ -1,0 +1,10 @@
+{
+  "@@locale": "vi",
+  "passphraseLabel": "Cụm mật khẩu (Passphrase)",
+  "optionalPassphraseHint": "Cụm mật khẩu (tùy chọn)",
+  "recipientsInfoLabel": "Nhãn",
+  "requiredHint": "Bắt buộc",
+  "submitButton": "Gửi",
+  "emptyMnemonicWordsError": "Nhập đầy đủ các từ trong mnemonic của bạn",
+  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi"
+}

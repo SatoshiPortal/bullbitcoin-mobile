@@ -1,7 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer, FullScreenScannerPage;
+import 'package:silent/localizations.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:address_view/address_view.dart' show AddressViewer;
+import 'package:address_view/payment_destination.dart'
+    show FullScreenScannerPage;
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards;
@@ -66,8 +68,8 @@ class RecipientAddressFields extends StatelessWidget {
               onChanged: (value) =>
                   onAddressChanged(recipients[index].id, value),
               pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
-              scanLabel: context.loc.spScan,
-              clearLabel: context.loc.spClearButton,
+              scanLabel: context.silentLoc.silentScan,
+              clearLabel: context.silentLoc.silentClearButton,
               removeLabel: context.loc.sendRemoveRecipient,
               onRemove: () => onRemoveRecipient(recipients[index].id),
               onClear: () => onAddressChanged(recipients[index].id, ''),

@@ -1,0 +1,162 @@
+{
+  "@@locale": "uk",
+  "save": "Зберегти",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "addressLabel": "Адреса: ",
+  "amountRequestedLabel": "{amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Якщо вимкнено, вам буде запропоновано дозволити автообмін, заблокований через високі комісії",
+  "autoswapAlwaysBlockInfoEnabled": "Якщо ввімкнено, автообміни з комісією понад встановлений ліміт завжди блокуватимуться",
+  "autoswapAlwaysBlockLabel": "Завжди блокувати високі Fees",
+  "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
+  "autoswapEnableToggleLabel": "Увімкнути автообмін",
+  "autoswapLoadSettingsError": "Переміщення для завантаження параметрів автоматичного затискання",
+  "autoswapMaxBalanceLabel": "Max Миттєвий баланс гаманця",
+  "autoswapMaxFeeInfoText": "Якщо загальна комісія обміну перевищує встановлений відсоток, автообмін буде заблоковано",
+  "autoswapMaxFeeLabel": "Макс. комісія обміну",
+  "autoswapMaximumBalanceLabel": "Максимальний баланс миттєвого гаманця",
+  "autoswapMaximumFeeError": "Максимальний термін оплати {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Мінімальний поріг балансу {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Мінімальний поріг балансу {amount} сати",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Виберіть який гаманець Bitcoin отримає передані кошти (обов'язково)",
+  "autoswapRecipientWalletLabel": "Отримувач Bitcoin Wallet",
+  "autoswapRecipientWalletPlaceholder": "Виберіть гаманець Bitcoin",
+  "autoswapRecipientWalletPlaceholderRequired": "Виберіть гаманець Bitcoin *",
+  "autoswapRecipientWalletRequired": "Ім'я *",
+  "autoswapSaveButton": "Зберегти",
+  "autoswapSelectWalletError": "Будь ласка, виберіть одержувача Bitcoin гаманець",
+  "autoswapSettingsTitle": "Налаштування автообміну",
+  "autoswapTargetBalanceLabel": "Цільовий баланс миттєвого гаманця",
+  "autoswapTriggerAtBalanceInfoText": "Автообмін ініціюватиметься, коли ваш баланс перевищить цей максимальний баланс.",
+  "autoswapTriggerBalanceError": "Максимальний баланс повинен бути щонайменше у 2 рази більшим за цільовий баланс.",
+  "autoswapUpdateSettingsError": "Не вдалося оновити налаштування автоматичного затискання",
+  "bitcoinPriceExchangeRateUnavailable": "Обмінний курс недоступний. Будь ласка, спробуйте пізніше.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не вдалося підтвердити, що транзакцію було трансльовано. Перевірте її в оглядачі блоків, перш ніж повторити спробу.",
+  "closeDialogButton": "Закрити",
+  "coinsKeychainChange": "Решта",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Отримання",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Консолідувати гаманець",
+  "coreScreensAmountLabel": "Сума",
+  "coreScreensConfirmButton": "Підтвердження",
+  "coreScreensExternalTransfer": "Зовнішній обмін",
+  "coreScreensFeeDeductionExplanation": "Це загальна плата, яка відхилена від суми, відправленого",
+  "coreScreensFeePriorityLabel": "Пріоритетність",
+  "coreScreensFromLabel": "З",
+  "coreScreensInternalTransfer": "Внутрішній обмін",
+  "coreScreensNetworkFeesLabel": "Мережеві збори",
+  "coreScreensReceiveAmountLabel": "Отримувати Amount",
+  "coreScreensReceiveNetworkFeeLabel": "Отримувати Мережі",
+  "coreScreensSendAmountLabel": "Надіслати",
+  "coreScreensSendNetworkFeeLabel": "Закупи хостинг »",
+  "coreScreensServerNetworkFeesLabel": "Статус на сервери",
+  "coreScreensToLabel": "До",
+  "coreScreensTransferFeeLabel": "Комісія обміну",
+  "coreScreensTransferIdLabel": "ID обміну",
+  "doneButton": "Сонце",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin у USD",
+  "globalDefaultLiquidWalletLabel": "Миттєві платежі",
+  "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
+  "receiveNote": "Зареєструватися",
+  "selectAmountTitle": "Оберіть розмір",
+  "sendAdvancedOptions": "Додаткові параметри",
+  "sendDone": "Сонце",
+  "sendErrorBuildFailed": "Не вдалося підготувати цей платіж. Будь ласка, спробуйте ще раз.",
+  "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
+  "sendFastFee": "Швидкий",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Замініть активоване",
+  "sendSelectCoinsManually": "Виберіть монети вручну",
+  "sendSelectedUtxosInsufficient": "Вибраний utxos не покриває необхідну кількість",
+  "sendSelfTransfer": "Переказ собі",
+  "swapAmountLabel": "Сума",
+  "swapAmountPlaceholder": "0 р",
+  "swapAvailableBalance": "Доступний баланс",
+  "swapConfirmTransferTitle": "Підтвердьте обмін",
+  "swapContinueButton": "Продовжити",
+  "swapDoNotUninstallWarning": "Не видаляйте застосунок, доки обмін не завершиться!",
+  "swapErrorAmountAboveMaximum": "Сума перевищила максимальну кількість ковпачок: {max} сати",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Сума нижче мінімальна сума затиску: {min} сати",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Введіть адресу зовнішнього гаманця",
+  "swapExternalTransferLabel": "Зовнішній обмін",
+  "swapFromLabel": "З",
+  "swapGoHomeButton": "Головна",
+  "swapInfoDescription": "Обмінюйте Bitcoin між своїми гаманцями без зайвих зусиль. Тримайте кошти на гаманці миттєвих платежів лише для щоденних витрат.",
+  "swapInsufficientFunds": "Недостатньо коштів",
+  "swapInternalTransferTitle": "Внутрішній обмін",
+  "swapMaxButton": "МАКС",
+  "swapReceiveExactAmountLabel": "Отримати точний розмір",
+  "swapSubtractFeesLabel": "Відрахування платежів від суми",
+  "swapToLabel": "До",
+  "swapTotalFees": "Всього коштів ",
+  "swapTransferCompletedMessage": "Ого, ви дочекалися! Обмін успішно завершено.",
+  "swapTransferCompletedTitle": "Обмін завершено",
+  "swapTransferPendingMessage": "Обмін виконується. Підтвердження транзакцій Bitcoin може тривати деякий час. Ви можете повернутися на головний екран і зачекати.",
+  "swapTransferPendingTitle": "Обмін у черзі",
+  "swapTransferRefundInProgressMessage": "Під час обміну сталася помилка. Повернення коштів виконується.",
+  "swapTransferRefundInProgressTitle": "Триває повернення коштів за обміном",
+  "swapTransferRefundedMessage": "Кошти за обміном успішно повернено.",
+  "swapTransferRefundedTitle": "Кошти за обміном повернено",
+  "swapTransferTitle": "Обмін",
+  "swapUnderReviewDescription": "Цей обмін потребує ручної перевірки. Зверніться до підтримки по допомогу. Якщо у вас немає облікового запису підтримки, достатньо його створити; KYC не потрібен.",
+  "swapUnderReviewSupportMessage": "Обмін на перевірці\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "swapUnderReviewTitle": "Обмін на перевірці",
+  "swapValidationSelectFromWallet": "Виберіть гаманець, з якого обміняти",
+  "swapValidationSelectToWallet": "Виберіть гаманець, на який обміняти",
+  "transactionNetworkBitcoin": "Bitcoin у USD",
+  "transactionNetworkLightning": "Освітлення",
+  "transactionNetworkLiquid": "Рідина",
+  "transactionStatusSwapExpired": "Обмінюється",
+  "transactionStatusSwapFailed": "Обмінюється",
+  "transactionSwapDescChainExpired": "Термін дії цього обміну минув. Кошти буде автоматично повернуто на ваш гаманець.",
+  "transactionSwapDescChainFailed": "Виникла проблема з вашим обміном. Зверніться до підтримки, якщо кошти не повернуто протягом 24 годин.",
+  "transactionSwapOpenWithin24h": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
+  "typeLabel": "Тип: ",
+  "walletLoadFailed": "Не вдалося завантажити ваші гаманці. Перевірте підключення та спробуйте ще раз."
+}

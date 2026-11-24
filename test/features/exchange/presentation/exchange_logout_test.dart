@@ -1,20 +1,9 @@
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_unread_support_message_count_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/mark_support_messages_read_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:exchange/testing.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -25,15 +14,7 @@ class _Preferences extends Mock implements SaveExchangePreferencesUsecase {}
 
 class _Announcements extends Mock implements GetExchangeAnnouncementsUsecase {}
 
-class _Delete extends Mock implements DeleteExchangeAccountUsecase {}
-
 class _WatchAccess extends Mock implements WatchExchangeAccessUsecase {}
-
-class _Enable extends Mock implements EnableExchangeUsecase {}
-
-class _Resolve extends Mock implements ResolveExchangeAccessUsecase {}
-
-class _SignOut extends Mock implements SignOutExchangeUsecase {}
 
 class _Authentication extends Mock
     implements CompleteExchangeAuthenticationUsecase {}
@@ -60,11 +41,7 @@ void main() {
   late _Account getAccount;
   late _Preferences preferences;
   late _Announcements announcements;
-  late _Delete deletion;
   late _WatchAccess watchAccess;
-  late _Enable enable;
-  late _Resolve resolve;
-  late _SignOut signOut;
   late _Notifications notifications;
   late _UnreadCount unreadCount;
   late _MarkRead markRead;
@@ -77,28 +54,25 @@ void main() {
   }
 
   ExchangeCubit build() => ExchangeCubit(
-    getExchangeAccountUsecase: getAccount,
-    saveExchangePreferencesUsecase: preferences,
-    getExchangeAnnouncementsUsecase: announcements,
-    deleteAccount: deletion,
-    enableAccess: enable,
-    resolveAccess: resolve,
-    signOut: signOut,
-    getUnreadSupportMessageCount: unreadCount,
-    markSupportMessagesRead: markRead,
-    watchAccess: watchAccess,
-    watchExchangeNotificationsUsecase: notifications,
+    getAccount: getAccount.execute,
+    getAnnouncements: announcements.execute,
+    stopDca: () => preferences.execute(dcaEnabled: false),
+    currentAccess: () => watchAccess.current,
+    accessChanges: watchAccess.execute(),
+    accountChanges: notifications.accountChanges(),
+    supportMessages: notifications.supportMessages(),
+    getUnreadSupportMessageCount: unreadCount.execute,
+    markSupportMessagesRead: markRead.execute,
+    connectNotifications: ({required reconnect}) =>
+        reconnect ? notifications.reconnect() : notifications.connect(),
+    disconnectNotifications: notifications.disconnect,
   );
 
   setUp(() {
     getAccount = _Account();
     preferences = _Preferences();
     announcements = _Announcements();
-    deletion = _Delete();
     watchAccess = _WatchAccess();
-    enable = _Enable();
-    resolve = _Resolve();
-    signOut = _SignOut();
     when(() => watchAccess.current).thenReturn(const ExchangeAccessDisabled());
     notifications = _Notifications();
     changes = StreamController<ExchangeAccess>.broadcast(sync: true);
@@ -222,30 +196,30 @@ void main() {
     },
   );
 
-  test('logout goes through the sign-out use case', () async {
-    when(signOut.execute)
-        .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
-    final cubit = build();
-    addTearDown(cubit.close);
-    final result = await cubit.logout();
-    expect(
-      (result as Err<void, ExchangeFailure>).failure,
-      isA<ExchangeSessionClearFailure>(),
-    );
-    verify(signOut.execute).called(1);
-  });
+  test(
+    'a mark confirms the count even when a new message refreshed meanwhile',
+    () async {
+      when(unreadCount.execute).thenAnswer((_) async => const Ok(2));
+      final cubit = build();
+      addTearDown(cubit.close);
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await pumpEventQueue();
 
-  test('support activation and retry go through their use cases', () async {
-    when(() => enable.execute(forSupport: true))
-        .thenAnswer((_) async => const Ok(null));
-    when(resolve.execute).thenAnswer((_) async => const Ok(null));
-    final cubit = build();
-    addTearDown(cubit.close);
-    expect(await cubit.enableForSupport(), isA<Ok<void, ExchangeFailure>>());
-    await cubit.retryAccess();
-    verify(() => enable.execute(forSupport: true)).called(1);
-    verify(resolve.execute).called(1);
-  });
+      final marked = Completer<Result<void, ExchangeFailure>>();
+      when(markRead.execute).thenAnswer((_) => marked.future);
+      final marking = cubit.markSupportMessagesRead();
+      supportMessages.add(
+        const NotificationMessage(kind: NotificationMessageKind.message),
+      );
+      await pumpEventQueue();
+      expect(cubit.state.unreadSupportMessages, 2);
+
+      when(unreadCount.execute).thenAnswer((_) async => const Ok(0));
+      marked.complete(const Ok(null));
+      await marking;
+      expect(cubit.state.unreadSupportMessages, 0);
+    },
+  );
 
   test('authentication loads the account only when it succeeds', () async {
     final authentication = _Authentication();
@@ -261,7 +235,7 @@ void main() {
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
 
     final failed = await cubit.completeAuthentication(
-      authentication,
+      authentication.execute,
       isCurrent: () => true,
     );
     expect(failed, isA<Err<void, ExchangeFailure>>());
@@ -269,24 +243,11 @@ void main() {
 
     outcome = const Ok(null);
     final saved = await cubit.completeAuthentication(
-      authentication,
+      authentication.execute,
       isCurrent: () => true,
     );
     expect(saved, isA<Ok<void, ExchangeFailure>>());
     expect(cubit.state.userSummary, account);
-  });
-
-  test('deletion failure is forwarded by the account use case', () async {
-    when(deletion.execute).thenAnswer(
-      (_) async => const Err(ExchangeAccountDeletionRequestFailure()),
-    );
-    final cubit = build();
-    addTearDown(cubit.close);
-    expect(
-      (await cubit.deleteAccount() as Err).failure,
-      isA<ExchangeAccountDeletionRequestFailure>(),
-    );
-    verify(deletion.execute).called(1);
   });
 
   test('a stale account response is not shown after access changes', () async {

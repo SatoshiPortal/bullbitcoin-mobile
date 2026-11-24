@@ -7,9 +7,6 @@
   "backupWarningLoseReasonCloudRestore": "palautat laitteen pilvivarmuuskopiosta",
   "backupWarningNoRecovery": "Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
   "@@locale": "fi",
-  "translationWarningTitle": "Tekoälyn luomat käännökset",
-  "translationWarningDescription": "Suurin osa tämän sovelluksen käännöksistä on luotu tekoälyllä ja ne voivat sisältää epätarkkuuksia. Jos huomaat virheitä tai haluat auttaa parantamaan käännöksiä, voit lähettää korjauksen GitHub-tietovarastoomme.",
-  "translationWarningContributeButton": "Auta parantamaan käännöksiä",
   "translationWarningDismissButton": "Selvä",
   "durationSeconds": "{seconds} sekuntia",
   "@durationSeconds": {
@@ -30,18 +27,10 @@
   "fiatCurrencySettingsLabel": "Fiat-valuutta",
   "languageSettingsScreenTitle": "Kieli",
   "settingsExchangeSettingsTitle": "Pörssin asetukset",
-  "settingsSecurityPinTitle": "Turva-PIN",
   "settingsCurrencyTitle": "Valuutta",
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
-  "settingsAppVersionLabel": "Sovellusversio: ",
-  "settingsServiceStatusTitle": "Palveluiden tila",
   "settingsLanguageTitle": "Kieli",
-  "settingsThemeTitle": "Teema",
-  "settingsDevModeWarningTitle": "Kehittäjätila",
-  "settingsDevModeWarningMessage": "Tämä tila on riskialtis. Ottamalla sen käyttöön hyväksyt, että voit menettää rahaa",
-  "settingsDevModeUnderstandButton": "Ymmärrän",
-  "settingsSuperuserModeDisabledMessage": "Superkäyttäjätila poistettu käytöstä.",
   "settingsSuperuserModeUnlockedMessage": "Superkäyttäjätila avattu!",
   "walletDetailsUnnamedWalletFallback": "Nimetön lompakko",
   "addressViewAddressesTitle": "Osoitteet",
@@ -63,19 +52,9 @@
   "mempoolCustomServerDelete": "Delete",
   "mempoolCustomServerUrl": "Server URL",
   "mempoolCustomServerSaveSuccess": "Mukautettu palvelin tallennettu onnistuneesti",
-  "walletSettingsImportWalletTitle": "Tuo lompakko",
-  "bitcoinSettingsBroadcastTransactionTitle": "Lähetä transaktio",
-  "bitcoinSettingsTestnetModeTitle": "Testnet-tila",
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministiset entropiat",
   "logSettingsLogsTitle": "Lokitiedot",
   "logSettingsErrorLoadingMessage": "Virhe lokitietojen latauksessa: ",
-  "appSettingsDevModeTitle": "Kehittäjätila",
   "exchangeTestnetBasicAuthTitle": "Testnet-pörssin tunnukset",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth testnet-pörssin verkkosivuille (kirjautuminen ja KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Käyttäjätunnus",
-  "exchangeTestnetBasicAuthPasswordLabel": "Salasana",
-  "exchangeTestnetBasicAuthClearButton": "Tyhjennä",
-  "exchangeTestnetBasicAuthSaveButton": "Tallenna",
   "currencySettingsDefaultFiatCurrencyLabel": "Oletus fiat-valuutta",
   "exchangeSettingsAccountInformationTitle": "Tilin tiedot",
   "exchangeSettingsSecuritySettingsTitle": "Turva-asetukset",
@@ -84,13 +63,6 @@
   "exchangeSettingsLogOutTitle": "Kirjaudu ulos",
   "exchangeTransactionsTitle": "Transaktiot",
   "exchangeTransactionsComingSoon": "Transaktiot - tulossa pian",
-  "exchangeSecurityManage2FAPasswordLabel": "2FA- ja salasana-asetukset",
-  "exchangeSecurityAccessSettingsButton": "Avaa asetukset",
-  "exchangeReferralsTitle": "Suosituskoodit",
-  "exchangeReferralsJoinMissionTitle": "Tule mukaan missioon",
-  "exchangeReferralsContactSupportMessage": "Ota yhteyttä tukeen saadaksesi lisätietoa suositusohjelmastamme",
-  "exchangeReferralsApplyToJoinMessage": "Liity ohjelmaan täällä",
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
   "exchangeRecipientsTitle": "Vastaanottajat",
   "exchangeFileUploadTitle": "Tiedostojen turvallinen lataus",
   "exchangeFileUploadDocumentTitle": "Lähetä dokumentti",
@@ -133,18 +105,9 @@
   "addressCardCopiedMessage": "Osoite kopioitu leikepöydälle",
   "addressCardIndexLabel": "Tunniste: ",
   "addressCardBalanceLabel": "Saldo: ",
-  "onboardingRecoverYourWallet": "Palauta lompakkosi",
   "onboardingEncryptedVault": "Salattu holvi",
-  "onboardingEncryptedVaultDescription": "Palauta varmuuskopio pilvestä PIN-koodillasi.",
-  "onboardingPhysicalBackup": "Fyysinen varmuuskopio",
-  "onboardingPhysicalBackupDescription": "Palauta lompakkosi 12 sanan avulla.",
   "onboardingRecover": "Palauta",
   "onboardingBullBitcoin": "Bull Bitcoin",
-  "onboardingOwnYourMoney": "Own your money",
-  "onboardingSplashDescription": "Suvereeni lompakko ja Bitcoin-pörssi.",
-  "onboardingRecoverWallet": "Palauta lompakko",
-  "onboardingRecoverWalletButton": "Palauta lompakko",
-  "onboardingCreateNewWallet": "Luo uusi lompakko",
   "sendTitle": "Lähetä",
   "sendRecipientAddressOrInvoice": "Vastaanottajan osoite tai lasku",
   "sendPasteAddressOrInvoice": "Liitä maksun osoite tai lasku",
@@ -225,7 +188,6 @@
   "receiveLiquidConfirmationMessage": "Se vahvistetaan muutamassa sekunnissa",
   "receiveWaitForPayjoin": "Odota, että lähettäjä suorittaa payjoin-transaktion",
   "receivePayjoinFailQuestion": "Eikö ole aikaa odottaa tai epäonnistuiko payjoin lähettäjän puolella?",
-  "buyTitle": "Osta bitcoinia",
   "buyEnterAmount": "Syötä määrä",
   "buyPaymentMethod": "Maksutapa",
   "buyMax": "Maksimi",
@@ -249,30 +211,6 @@
   "buyBitcoinPrice": "Bitcoin-kurssi",
   "buyPayoutMethod": "Maksutapa",
   "buyAwaitingConfirmation": "Odotetaan vahvistusta ",
-  "buyConfirmPurchase": "Vahvista osto",
-  "buyYouBought": "Ostit {amount} hintaan {fiatAmount}",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "Maksusi lähetetään ",
-  "buyViewDetails": "Näytä tiedot",
-  "buyAccelerateTransaction": "Kiihdytä transaktiota",
-  "buyGetConfirmedFaster": "Saat vahvistuksen nopeammin",
-  "buyConfirmExpressWithdrawal": "Vahvista pikanosto",
-  "buyNetworkFeeExplanation": "Bitcoin-louhijoille menevät Bitcoin-verkon kulut vähennetään saamastasi summasta.",
-  "buyNetworkFees": "Verkkokulut",
-  "buyEstimatedFeeValue": "Arvioitu kulujen määrä",
-  "buyNetworkFeeRate": "Verkkokulujen määrä",
-  "buyConfirmationTime": "Vahvistusviive",
-  "buyConfirmationTimeValue": "~10 minuuttia",
-  "buyWaitForFreeWithdrawal": "Odota ilmaista nostoa",
-  "buyConfirmExpress": "Vahvista pikamaksu",
-  "buyBitcoinSent": "Bitcoin lähetetty!",
-  "buyThatWasFast": "Se oli nopeaa, eikö ollutkin?",
   "sellTitle": "Myy bitcoinia",
   "sellSelectWallet": "Valitse lompakko",
   "sellWhichWalletQuestion": "Mistä lompakosta haluat myydä?",
@@ -471,71 +409,41 @@
   "payWhichWallet": "Mistä lompakosta haluat maksaa?",
   "payExternalWalletDescription": "Maksa toisesta Bitcoin-lompakosta",
   "payRbfActivated": "Replace-by-fee aktivoitu",
-  "transactionTitle": "Transaktiot",
-  "transactionDetailTitle": "Transaktion tiedot",
   "transactionDetailTransferProgress": "Swapin edistyminen",
   "transactionDetailSwapProgress": "Swapin edistyminen",
-  "transactionDetailAddNote": "Lisää kuvaus",
-  "transactionFilterAll": "Kaikki",
-  "transactionFilterSend": "Lähetetty",
-  "transactionFilterReceive": "Vastaanotettu",
   "transactionFilterTransfer": "Swapit",
-  "transactionFilterPayjoin": "Payjoin",
-  "transactionFilterSell": "Myynti",
-  "transactionFilterBuy": "Osto",
   "transactionNetworkLightning": "Lightning",
   "transactionNetworkBitcoin": "Bitcoin",
   "transactionNetworkLiquid": "Liquid",
-  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
-  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
-  "transactionStatusInProgress": "Käynnissä",
   "transactionStatusPending": "Odottaa",
   "transactionStatusTransferCompleted": "Swap suoritettu",
   "transactionStatusTransferInProgress": "Swap käynnissä",
-  "transactionStatusPaymentInProgress": "Maksu käynnissä",
-  "transactionStatusPaymentRefunded": "Maksu palautettu",
   "transactionStatusTransferFailed": "Swap epäonnistui",
   "transactionStatusSwapFailed": "Swap epäonnistui",
   "transactionStatusTransferExpired": "Swap vanhentui",
   "transactionStatusSwapExpired": "Vanhentunut swap",
-  "transactionStatusPayjoinRequested": "Payjoin pyydetty",
-  "transactionNotesLabel": "Transaktion muistiinpanot",
   "transactionNoteAddTitle": "Lisää kuvaus",
   "transactionNoteHint": "Muistiinpano",
-  "transactionPayjoinSendWithout": "Lähetä ilman payjoinia",
-  "transactionSwapProgressInitiated": "Aloitettu",
-  "transactionSwapProgressPaymentMade": "Maksu\nSuoritettu",
-  "transactionSwapProgressFundsClaimed": "Varat\nLunastettu",
-  "transactionSwapProgressBroadcasted": "Lähetetty",
-  "transactionSwapProgressInvoicePaid": "Lasku\nMaksettu",
-  "transactionSwapProgressConfirmed": "Vahvistettu",
-  "transactionSwapProgressClaim": "Lunastus",
-  "transactionSwapProgressCompleted": "Valmis",
-  "transactionSwapProgressInProgress": "Käynnissä",
   "transactionSwapStatusTransferStatus": "Swapin tila",
   "transactionSwapStatusSwapStatus": "Swapin tila",
   "transactionSwapDescLnReceivePending": "Swap on aloitettu. Odotamme maksun vastaanottamista Lightning-verkossa.",
-  "transactionSwapDescLnReceivePaid": "Swap vastaanotettu! Lähetämme nyt on-chain -transaktion lompakkoosi.",
   "transactionSwapDescLnReceiveClaimable": "On-chain -transaktio on vahvistettu. Lunastamme nyt varat ja toteutamme swappisi.",
   "transactionSwapDescLnReceiveCompleted": "Swap onnistui! Varat ovat nyt saatavilla lompakossasi.",
   "transactionSwapDescLnReceiveFailed": "Swapissä ilmeni ongelma. Ota yhteyttä tukeen, jos varoja ei ole palautettu 24 tunnin kuluessa.",
   "transactionSwapDescLnReceiveExpired": "Tämä swap on vanhentunut. Lähetetyt varat palautetaan automaattisesti lähettäjälle.",
   "transactionSwapDescLnReceiveDefault": "Swap on käynnissä. Prosessi on automatisoitu ja voi kestää hetken.",
   "transactionSwapDescLnSendPending": "Swap on aloitettu. Lukitsemme varasi lähettämällä on-chain -transaktion.",
-  "transactionSwapDescLnSendPaid": "On-chain -transaktio on lähetetty verkkoon. Yhden vahvistuksen jälkeen Lightning-maksu lähetetään.",
   "transactionSwapDescLnSendCompleted": "Lightning-maksu on lähetetty onnistuneesti! Swap on nyt valmis.",
   "transactionSwapDescLnSendFailed": "Swapissa ilmeni ongelma. Varat palautetaan automaattisesti lompakkoosi.",
   "transactionSwapDescLnSendExpired": "Tämä swap on vanhentunut. Varat palautetaan automaattisesti lompakkoosi.",
   "transactionSwapDescLnSendDefault": "Swap on käynnissä. Prosessi on automatisoitu ja voi kestää hetken.",
   "transactionSwapDescChainPending": "Swap on luotu, mutta sitä ei ole vielä aloitettu.",
-  "transactionSwapDescChainPaid": "Transaktiosi on lähetetty verkkoon. Odotamme nyt lukitustransaktion vahvistusta.",
   "transactionSwapDescChainClaimable": "Lukitustransaktio on vahvistettu. Lunastat nyt varat swapisi viimeistelemiseksi.",
   "transactionSwapDescChainRefundable": "Swap hyvitetään. Varat palautetaan automaattisesti lompakkoosi.",
   "transactionSwapDescChainCompleted": "Swapisi on suoritettu onnistuneesti! Varat ovat nyt saatavilla lompakossasi.",
   "transactionSwapDescChainFailed": "Swapissa ilmeni ongelma. Ota yhteyttä tukeen, jos varoja ei ole palautettu 24 tunnin kuluessa.",
   "transactionSwapDescChainExpired": "Tämä swap on vanhentunut. Varat palautetaan automaattisesti lompakkoosi.",
   "transactionSwapDescChainDefault": "Swapisi on käynnissä. Prosessi on automatisoitu ja voi kestää jonkin aikaa.",
-  "transactionSwapInfoFailedExpired": "Jos sinulla on kysyttävää tai huolia, ota yhteyttä tukeen.",
   "transactionSwapInfoChainDelay": "On-chain-swapit voivat kestää jonkin aikaa lohkoketjun vahvistusaikojen vuoksi.",
   "transactionSwapInfoClaimableTransfer": "Swap suoritetaan automaattisesti muutamassa sekunnissa. Jos ei, voit yrittää manuaalista lunastusta napsauttamalla \"Retry Swap Claim\" -painiketta.",
   "transactionSwapInfoClaimableSwap": "Vaihto suoritetaan automaattisesti muutamassa sekunnissa. Jos ei, voit yrittää manuaalista noutoa napsauttamalla \"Retry Swap Claim\" -painiketta.",
@@ -544,61 +452,17 @@
   "transactionListOngoingTransfersTitle": "Käynnissä olevat swapit",
   "transactionListOngoingTransfersDescription": "Nämä swapit ovat parhaillaan käynnissä. Varasi ovat turvassa ja ne tulevat saataville swapin valmistuessa.",
   "transactionListLoadingTransactions": "Ladataan transaktioita...",
-  "transactionListNoTransactions": "Ei transaktioita.",
   "transactionListToday": "Tänään",
   "transactionListYesterday": "Eilen",
   "transactionSwapDoNotUninstall": "Älä poista sovellusta ennen kuin swap on valmis.",
-  "transactionFeesDeductedFrom": "Nämä kulut vähennetään lähetetystä summasta",
-  "transactionFeesTotalDeducted": "Nämä ovat lähetetystä summasta vähennetyt kokonaiskulut.",
-  "transactionLabelSendAmount": "Lähetettävä määrä",
-  "transactionLabelReceiveAmount": "Vastaanotettava määrä",
-  "transactionLabelSendNetworkFees": "Transaktion verkkokulut",
-  "transactionLabelReceiveNetworkFee": "Vastaanoton verkkokulu",
-  "transactionLabelServerNetworkFees": "Palvelimen verkkokulut",
-  "transactionLabelPreimage": "Preimage",
-  "transactionOrderLabelReferenceNumber": "Viitenumero",
-  "transactionOrderLabelOriginName": "Lähteen nimi",
-  "transactionOrderLabelOriginCedula": "Lähteen aikataulu",
-  "transactionDetailAccelerate": "Kiihdytä",
-  "transactionDetailLabelTransactionId": "Transaktion ID",
-  "transactionDetailLabelToWallet": "Kohdelompakko",
-  "transactionDetailLabelFromWallet": "Lähdelompakko",
-  "transactionDetailLabelRecipientAddress": "Vastaanottajan osoite",
-  "transactionDetailLabelAddress": "Osoite",
-  "transactionDetailLabelAddressNotes": "Osoitteen kuvaus",
-  "transactionDetailLabelAmountReceived": "Vastaanotettu määrä",
-  "transactionDetailLabelAmountSent": "Lähetetty määrä",
-  "transactionDetailLabelTransactionFee": "Transaktiokulu",
-  "transactionDetailLabelStatus": "Tila",
-  "transactionDetailLabelConfirmationTime": "Vahvistusaika",
-  "transactionDetailLabelOrderType": "Tilaustyyppi",
-  "transactionDetailLabelOrderNumber": "Tilausnumero",
-  "transactionDetailLabelPaymentDescription": "Maksun kuvaus",
-  "transactionDetailLabelPayinAmount": "Sisäänmaksun määrä",
-  "transactionDetailLabelPayoutAmount": "Ulosmaksun määrä",
   "transactionDetailLabelExchangeRate": "Vaihtokurssi",
-  "transactionDetailLabelPayinMethod": "Sisäänmaksutapa",
-  "transactionDetailLabelPayoutMethod": "Ulosmaksutapa",
-  "transactionDetailLabelPayinStatus": "Sisäänmaksun tila",
-  "transactionDetailLabelOrderStatus": "Pyynnöntila",
-  "transactionDetailLabelPayoutStatus": "Ulosmaksun tila",
-  "transactionDetailLabelCreatedAt": "Luotu",
-  "transactionDetailLabelCompletedAt": "Suoritettu",
   "transactionDetailLabelTransferId": "Swap-tunnus",
   "transactionDetailLabelSwapId": "Swap-ID",
   "transactionDetailLabelTransferStatus": "Swapin tila",
   "transactionDetailLabelSwapStatus": "Swapin tila",
-  "transactionDetailLabelRefunded": "Palautettu",
-  "transactionDetailLabelLiquidTxId": "Liquid-transaktion ID",
-  "transactionDetailLabelBitcoinTxId": "Bitcoin-transaktion ID",
   "transactionDetailLabelTransferFees": "Swap-kulut",
   "transactionDetailLabelSwapFees": "Swap-kulut",
-  "transactionDetailLabelSendNetworkFee": "Lähetyksen verkkokulu",
   "transactionDetailLabelTransferFee": "Swap-kulu",
-  "transactionDetailLabelPayjoinStatus": "Payjoin-tila",
-  "transactionDetailLabelPayjoinCompleted": "Valmis",
-  "transactionDetailLabelPayjoinExpired": "Vanhentunut",
-  "transactionDetailLabelPayjoinCreationTime": "Payjoin luontiaika",
   "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
   "globalDefaultLiquidWalletLabel": "Pikamaksulompakko",
   "walletBalanceUnconfirmedIncoming": "Käynnissä",
@@ -890,7 +754,6 @@
   "recoverVia12WordsDescription": "Palauta lompakkosi 12 sanan avulla.",
   "recoverButton": "Palauta",
   "recoverWalletButton": "Palauta lompakko",
-  "importMnemonicTitle": "Tuo muistilauseke",
   "howToDecideBackupTitle": "Miten valita",
   "howToDecideBackupText1": "Yksi yleisimmistä tavoista, joilla ihmiset menettävät Bitcoininsa, on fyysisen varmuuskopion katoaminen. Kuka tahansa, joka löytää fyysisen varmuuskopiosi, voi ottaa kaikki Bitcoinisi. Jos olet erittäin varma, että osaat piilottaa sen hyvin etkä koskaan menetä sitä, se on hyvä vaihtoehto.",
   "howToDecideBackupText2": "Salattu holvi estää varkaita varastamasta varmuuskopioasi. Se myös estää sinua vahingossa menettämästä varmuuskopiota, koska se tallennetaan pilveen. Pilvipalveluntarjoajilla, kuten Googlella tai Applella, ei ole pääsyä Bitcoineihisi, koska salausavain on liian vahva. On kuitenkin pieni mahdollisuus, että palvelin, joka tallentaa varmuuskopion salausavaimen, voi joutua vaarantumaan. Tällöin varmuuskopion turvallisuus pilvitilissäsi voi olla uhattuna.",
@@ -1008,56 +871,8 @@
   "bip85NoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
   "connectingToKeyServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "anErrorOccurred": "Tapahtui virhe",
-  "dcaSuccessTitle": "Toistuva osto on aktiivinen!",
-  "dcaSuccessMessageHourly": "Ostat {amount} joka tunti",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "Ostat {amount} joka päivä",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "Ostat {amount} joka viikko",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "Ostat {amount} joka kuukausi",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "Kotisivulle",
-  "dcaChooseWalletTitle": "Valitse Bitcoin-lompakko",
-  "dcaWalletSelectionDescription": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
-  "dcaNetworkValidationError": "Valitse verkko",
-  "dcaEnterLightningAddressLabel": "Syötä Lightning-osoite",
   "dcaLightningAddressEmptyError": "Syötä Lightning-osoite",
   "dcaLightningAddressInvalidError": "Syötä kelvollinen Lightning-osoite",
-  "dcaUseDefaultLightningAddress": "Käytä oletus Lightning-osoitettani.",
-  "dcaWalletSelectionContinueButton": "Jatka",
-  "dcaSelectFrequencyLabel": "Aikataulu",
-  "dcaSelectWalletTypeLabel": "Valitse Bitcoin-lompakon tyyppi",
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "dcaWalletTypeLightning": "Lightning-verkko (LN)",
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "dcaWalletBitcoinSubtitle": "Vähintään 0.001 BTC",
-  "dcaWalletLightningSubtitle": "Vaatii yhteensopivan lompakon, enintään 0.25 BTC",
-  "dcaWalletLiquidSubtitle": "Vaatii yhteensopivan lompakon",
   "swapInternalTransferTitle": "Sisäinen swap",
   "swapConfirmTransferTitle": "Vahvista swap",
   "swapInfoDescription": "Swappaa Bitcoinia sujuvasti lompakoidesi välillä. Säilytä varoja pikamaksulompakossa vain päivittäistä käyttöä varten.",
@@ -1251,25 +1066,6 @@
   "pasteInputDefaultHint": "Liitä maksun osoite tai lasku",
   "copyDialogButton": "Kopioi",
   "closeDialogButton": "Sulje",
-  "scanningProgressLabel": "Skannataan: {percent}%",
-  "@scanningProgressLabel": {
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
-  "urProgressLabel": "UR:n eteneminen: {parts} osaa",
-  "@urProgressLabel": {
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
-  "scanningCompletedMessage": "Skannaus valmis",
-  "urDecodingFailedMessage": "UR:n dekoodaus epäonnistui",
-  "urProcessingFailedMessage": "UR:n käsittely epäonnistui",
   "scanNfcButton": "Skannaa NFC",
   "viewLogsLabel": "Näytä lokitiedot",
   "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
@@ -1280,10 +1076,6 @@
       }
     }
   },
-  "submitButton": "Lähetä",
-  "optionalPassphraseHint": "Valinnainen salafraasi",
-  "requiredHint": "Pakollinen",
-  "emptyMnemonicWordsError": "Syötä kaikki siemenlauseen sanat",
   "tryAgainButton": "Yritä uudelleen",
   "errorGenericTitle": "Hups! Jotain meni pieleen",
   "confirmSendTitle": "Vahvista lähetys",
@@ -2038,26 +1830,8 @@
   "coldcardStep13": "Bull-lompakko pyytää sinua skannaamaan Coldcardissa näkyvän QR-koodin. Skannaa se.",
   "coldcardStep14": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "coldcardStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
-  "importWalletTitle": "Lisää uusi lompakko",
   "importWalletConnectHardware": "Yhdistä laitteistolompakko",
   "importWalletImportMnemonic": "Tuo siemenlause",
-  "importWalletImportWatchOnly": "Tuo watch-only",
-  "importWalletSectionGeneric": "Yleiset lompakot",
-  "importWalletSectionHardware": "Laitteistolompakot",
-  "importWalletColdcardQ": "Coldcard Q",
-  "importWalletLedger": "Ledger",
-  "importWalletJade": "Blockstream Jade",
-  "importWalletKeystone": "Keystone",
-  "importWalletPassport": "Foundation Passport",
-  "importWalletSeedSigner": "SeedSigner",
-  "importWalletSpecter": "Specter",
-  "importWalletKrux": "Krux",
-  "importMnemonicContinue": "Jatka",
-  "importMnemonicSelectScriptType": "Tuo siemenlause",
-  "importMnemonicSyncMessage": "Kaikki kolme lompakkotyyppiä synkronoidaan, ja niiden saldot ja transaktiot näkyvät pian. Voit odottaa synkronoinnin valmistumista tai jatkaa tuontia, jos tiedät minkä lompakkotyypin haluat tuoda.",
-  "importMnemonicSegwit": "Segwit",
-  "importMnemonicNestedSegwit": "Nested Segwit",
-  "importMnemonicLegacy": "Legacy",
   "importMnemonicChecking": "Tarkistetaan...",
   "importMnemonicEmpty": "Tyhjä",
   "importMnemonicHasBalance": "Sisältää saldoa",
@@ -2080,45 +1854,14 @@
   "importMnemonicImport": "Tuo",
   "importMnemonicImporting": "Tuodaan...",
   "importMnemonicSelectType": "Valitse tuotava lompakkotyyppi",
-  "importMnemonicBalanceLabel": "Saldo: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "importMnemonicTransactionsLabel": "Transaktioita: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "importWatchOnlyTitle": "Tuo watch-only -lompakko",
-  "importWatchOnlyPasteHint": "Liitä xpub, ypub, zpub tai descriptor",
   "importWatchOnlyXpub": "xpub",
   "importWatchOnlyYpub": "ypub",
   "importWatchOnlyZpub": "zpub",
-  "importWatchOnlyDescriptor": "Descriptor",
-  "importWatchOnlyScanQR": "Skannaa QR",
   "importWatchOnlyScriptType": "Skriptityyppi",
   "importWatchOnlyFingerprint": "Sormenjälki",
   "importWatchOnlyDerivationPath": "Derivointipolku",
   "importWatchOnlyImportButton": "Tuo watch-only -lompakko",
   "importWatchOnlyCancel": "Peruuta",
-  "importWatchOnlyCopiedToClipboard": "Kopioitu leikepöydälle",
-  "importWatchOnlySelectDerivation": "Valitse derivointitapa",
-  "importWatchOnlyType": "Tyyppi",
-  "importWatchOnlySigningDevice": "Allekirjoituslaite",
-  "importWatchOnlyUnknown": "Tuntematon",
-  "importWatchOnlyLabel": "Tunniste",
-  "importWatchOnlyRequired": "Pakollinen",
-  "importWatchOnlyImport": "Tuo",
-  "importWatchOnlyExtendedPublicKey": "Laajennettu julkinen avain",
-  "importWatchOnlyDisclaimerTitle": "Derivointipolkuvaroitus",
-  "importWatchOnlyDisclaimerDescription": "Varmista, että valitsemasi derivointipolku vastaa sitä, jolla annettu xpub on tuotettu. Tarkista ennen käyttöä ensimmäinen lompakosta johdettu osoite. Väärän polun käyttäminen voi johtaa varojen menetykseen.",
   "bip85Title": "BIP85-deterministiset entropiat",
   "bip85ExperimentalWarning": "Kokeellinen\nVarmuuskopioi derivointipolut käsin",
   "bip85NextMnemonic": "Seuraava siemenlause",
@@ -2135,20 +1878,6 @@
   },
   "transactionHistoryTitle": "Tapahtumahistoria",
   "exportTransactionsDescription": "Vie kaikki lompakkosi tapahtumat (Bitcoin, Liquid, Lightning ja swapit) CSV-tiedostona. Halutessasi suodata päivämääräväliltä.",
-  "exportTransactionsStartDate": "Alkupäivä",
-  "exportTransactionsEndDate": "Loppupäivä",
-  "exportTransactionsAnyDate": "Mikä tahansa",
-  "exportTransactionsButton": "Vie CSV",
-  "exportTransactionsSuccess": "Tapahtumat viety onnistuneesti",
-  "exportTransactionsEmpty": "Ei vietäviä tapahtumia valitulla ajanjaksolla",
-  "exportTransactionsError": "Tapahtumien vienti epäonnistui",
-  "@exportTransactionsError": {
-    "description": "Message shown when an unexpected error occurs during CSV export"
-  },
-  "exportTransactionsInvalidDateRange": "Alkamispäivän on oltava ennen päättymispäivää",
-  "@exportTransactionsInvalidDateRange": {
-    "description": "Message shown when start date is after end date"
-  },
   "broadcastSignedTxTitle": "Lähetä transaktio",
   "broadcastSignedTxScanQR": "Skannaa laitteistolompakon QR-koodi",
   "broadcastSignedTxReviewTransaction": "Tarkista transaktio",
@@ -2158,10 +1887,6 @@
   "broadcastSignedTxBroadcast": "Lähetä",
   "broadcastSignedTxBroadcasting": "Lähetetään...",
   "broadcastSignedTxBroadcastError": "Tapahtumaasi ei voitu lähettää. Tarkista internetyhteytesi ja yritä uudelleen.",
-  "importWatchOnlyErrorNoWalletSelected": "Liitä tai skannaa ensin julkinen avain tai deskriptori.",
-  "importWatchOnlyErrorLabelRequired": "Anna lompakollesi nimi ennen tuontia.",
-  "importWatchOnlyErrorInvalidFormat": "Tämä ei näytä kelvolliselta julkiselta avaimelta tai deskriptorilta. Tarkista, mitä liitit.",
-  "importWatchOnlyErrorImportFailed": "Tämän vain katselun lompakon tuonti ei onnistunut. Tarkista tiedot ja yritä uudelleen.",
   "broadcastSignedTxErrorInvalidTransaction": "Tämä ei näytä kelvolliselta allekirjoitetulta tapahtumalta. Varmista, että liitit koko PSBT:n tai tapahtuman.",
   "broadcastSignedTxErrorInvalidPushTx": "Tästä tunnisteesta ei voitu lukea tapahtumaa. Yritä skannata uudelleen.",
   "broadcastSignedTxPageTitle": "Lähetä allekirjoitettu transaktio",
@@ -2176,22 +1901,6 @@
   "addressViewTransactions": "Transaktiot",
   "addressViewCopyAddress": "Kopioi osoite",
   "addressViewShowQR": "Näytä QR-koodi",
-  "importQrDeviceTitle": "Yhdistä {deviceName}",
-  "@importQrDeviceTitle": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "importQrDeviceScanPrompt": "Skannaa QR-koodi laitteestasi ({deviceName})",
-  "@importQrDeviceScanPrompt": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceScanning": "Skannataan...",
   "importQrDeviceImporting": "Tuodaan lompakkoa...",
   "importQrDeviceSuccess": "Lompakko tuotu onnistuneesti",
@@ -2200,73 +1909,6 @@
   "importQrDeviceWalletName": "Lompakon nimi",
   "importQrDeviceFingerprint": "Sormenjälki",
   "importQrDeviceImport": "Tuo",
-  "importQrDeviceButtonOpenCamera": "Avaa kamera",
-  "importQrDeviceButtonInstructions": "Ohjeet",
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade -ohjeet",
-  "importQrDeviceJadeStep1": "Kytke Jade-laite päälle",
-  "importQrDeviceJadeStep2": "Valitse päävalikosta \"QR Mode\"",
-  "importQrDeviceJadeStep3": "Noudata laitteen ohjeita avataksesi Jaden",
-  "importQrDeviceJadeStep4": "Valitse päävalikosta \"Options\"",
-  "importQrDeviceJadeStep5": "Valitse \"Wallet\"",
-  "importQrDeviceJadeStep6": "Valitse \"Export Xpub\"",
-  "importQrDeviceJadeStep7": "Tarvittaessa vaihda osoitetyyppi valitsemalla \"Options\"",
-  "importQrDeviceJadeStep8": "Napauta sovelluksessa \"Avaa kamera\"",
-  "importQrDeviceJadeStep9": "Skannaa Jade-laitteessa näkyvä QR-koodi",
-  "importQrDeviceJadeStep10": "Valmista!",
-  "importQrDeviceJadeFirmwareWarning": "Varmista, että laitteesi on päivitetty uusimpaan laiteohjelmistoon",
-  "importQrDeviceKruxName": "Krux",
-  "importQrDeviceKruxInstructionsTitle": "Krux-ohjeet",
-  "importQrDeviceKruxStep1": "Kytke Krux-laite päälle",
-  "importQrDeviceKruxStep2": "Valitse \"Extended Public Key\"",
-  "importQrDeviceKruxStep3": "Valitse \"XPUB - QR Code\"",
-  "importQrDeviceKruxStep4": "Napauta \"Avaa kamera\"",
-  "importQrDeviceKruxStep5": "Skannaa laitteessa näkyvä QR-koodi",
-  "importQrDeviceKruxStep6": "Valmista!",
-  "importQrDeviceKeystoneName": "Keystone",
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone-ohjeet",
-  "importQrDeviceKeystoneStep1": "Käynnistä Keystone",
-  "importQrDeviceKeystoneStep2": "Avaa lukitus syöttämällä PIN-koodi",
-  "importQrDeviceKeystoneStep3": "Napauta *** (kolme pistettä) oikeassa yläkulmassa",
-  "importQrDeviceKeystoneStep4": "Napauta \"Connect Software Wallet\"",
-  "importQrDeviceKeystoneStep5": "Valitse \"BULL\" lompakoiden luettelosta",
-  "importQrDeviceKeystoneStep6": "Napauta mobiililaitteellasi \"avaa kamera\"",
-  "importQrDevicePassportName": "Foundation Passport",
-  "importQrDevicePassportInstructionsTitle": "Foundation Passport -ohjeet",
-  "importQrDevicePassportStep1": "Kytke Passport-laite päälle",
-  "importQrDevicePassportStep2": "Syötä PIN-koodi",
-  "importQrDevicePassportStep3": "Valitse \"Wallet\"",
-  "importQrDevicePassportStep4": "Valitse \"Connect App\"",
-  "importQrDevicePassportStep5": "Valitse \"Bull\"",
-  "importQrDevicePassportStep6": "Skannaa Passport-laitteessa näkyvä QR-koodi",
-  "importQrDevicePassportStep7": "Valitse BULL-lompakkosovelluksessa \"Segwit (BIP84)\" johtamisvaihtoehdoksi",
-  "importQrDevicePassportStep8": "Anna Passport-lompakollesi tunniste ja valitse \"Tuo\"",
-  "importQrDevicePassportStep9": "Määritys valmis.",
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner-ohjeet",
-  "importQrDeviceSeedsignerStep1": "Kytke SeedSigner-laite päälle",
-  "importQrDeviceSeedsignerStep2": "Avaa \"Seeds\"-valikko",
-  "importQrDeviceSeedsignerStep3": "Skannaa SeedQR tai syötä 12–24 sanan siemenlause",
-  "importQrDeviceSeedsignerStep4": "Valitse \"Export Xpub\"",
-  "importQrDeviceSeedsignerStep5": "Valitse \"Single Sig\" ja skriptityyppi (valitse Native Segwit, jos et ole varma)",
-  "importQrDeviceSeedsignerStep6": "Valitse vientivaihtoehdoksi ”Animated”. Valitse vanhemmassa SeedSigner-laiteohjelmistossa ”Sparrow”.",
-  "importQrDeviceSeedsignerStep7": "Napauta mobiililaitteessa \"Avaa kamera\"",
-  "importQrDeviceSeedsignerStep8": "Skannaa SeedSigner-laitteessa näkyvä QR-koodi",
-  "importQrDeviceSeedsignerStep9": "Anna lompakolle tunniste ja napauta \"Tuo\"",
-  "importQrDeviceSeedsignerStep10": "Määritys valmis",
-  "importQrDeviceSpecterName": "Specter",
-  "importQrDeviceSpecterInstructionsTitle": "Specter-ohjeet",
-  "importQrDeviceSpecterStep1": "Kytke Specter-laite päälle",
-  "importQrDeviceSpecterStep2": "Syötä PIN-koodi",
-  "importQrDeviceSpecterStep3": "Syötä siemen tai avain (valitse sinulle sopiva menetelmä)",
-  "importQrDeviceSpecterStep4": "Noudata näytön ohjeita",
-  "importQrDeviceSpecterStep5": "Valitse \"Master public keys\"",
-  "importQrDeviceSpecterStep6": "Valitse \"Single key\"",
-  "importQrDeviceSpecterStep7": "Poista \"Use SLIP-132\" käytöstä",
-  "importQrDeviceSpecterStep8": "Napauta mobiililaitteessa \"Avaa kamera\"",
-  "importQrDeviceSpecterStep9": "Skannaa Specter-laitteessa näkyvä QR-koodi",
-  "importQrDeviceSpecterStep10": "Anna lompakolle tunniste ja napauta \"Tuo\"",
-  "importQrDeviceSpecterStep11": "Määritys valmis",
   "importColdcardTitle": "Yhdistä Coldcard Q",
   "importColdcardScanPrompt": "Skannaa Coldcard Q -laitteesi QR-koodi",
   "importColdcardMultisigPrompt": "Moniallekirjoituslompakoissa skannaa lompakon kuvaus (descriptor) -QR-koodi",
@@ -2276,8 +1918,6 @@
   "importColdcardError": "Coldcard-lompakon tuonti epäonnistui",
   "importColdcardInvalidQR": "Virheellinen Coldcard QR-koodi",
   "importColdcardDescription": "Tuo Coldcard Q -laitteesi lompakon kuvaus (descriptor) -QR-koodi",
-  "importColdcardButtonOpenCamera": "Avaa kamera",
-  "importColdcardButtonInstructions": "Ohjeet",
   "importColdcardInstructionsTitle": "Coldcard Q -ohjeet",
   "importColdcardInstructionsStep1": "Kirjaudu Coldcard Q -laitteeseesi",
   "importColdcardInstructionsStep2": "Syötä salasana, jos käytät sellaista",
@@ -2327,58 +1967,9 @@
   "fundExchangeSpeiSubtitle": "Siirrä varoja CLABE-tunnuksesi avulla",
   "fundExchangeBankTransfer": "Pankkisiirto",
   "fundExchangeBankTransferSubtitle": "Lähetä pankkisiirto pankkitililtäsi",
-  "dcaSetupTitle": "Aseta toistuva osto",
-  "dcaSetupInsufficientBalance": "Riittämätön saldo",
-  "dcaSetupInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
-  "dcaSetupFundAccount": "Talletus",
-  "dcaSetupScheduleMessage": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
-  "dcaSetupFrequencyError": "Valitse aikataulu",
-  "dcaSetupContinue": "Jatka",
-  "dcaConfirmTitle": "Vahvista toistuva osto",
-  "dcaConfirmAutoMessage": "Ostotoimeksiannot suoritetaan automaattisesti näiden asetusten mukaan. Voit poistaa ne käytöstä milloin tahansa.",
-  "dcaConfirmFrequency": "Aikataulu",
-  "dcaConfirmFrequencyHourly": "Joka tunti",
-  "dcaConfirmFrequencyDaily": "Joka päivä",
-  "dcaConfirmFrequencyWeekly": "Joka viikko",
-  "dcaConfirmFrequencyMonthly": "Joka kuukausi",
-  "dcaConfirmAmount": "Määrä",
-  "dcaConfirmPaymentMethod": "Maksutapa",
-  "dcaConfirmPaymentBalance": "{currency}-saldo",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "Toimeksiantotyyppi",
-  "dcaConfirmOrderTypeValue": "Toistuva osto",
-  "dcaConfirmNetwork": "Verkko",
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "dcaConfirmNetworkLightning": "Lightning",
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "dcaConfirmLightningAddress": "Lightning-osoite",
-  "dcaConfirmContinue": "Jatka",
-  "buyInputTitle": "Osta Bitcoinia",
-  "buyInputMinAmountError": "Sinun tulee ostaa vähintään",
-  "buyInputMaxAmountError": "Et voi ostaa enempää kuin",
   "buyInputKycPending": "KYC-vahvistus odottaa",
   "buyInputKycMessage": "Sinun täytyy suorittaa henkilöllisyyden vahvistus ensin",
   "buyInputCompleteKyc": "Suorita KYC",
-  "buyInputInsufficientBalance": "Riittämätön saldo",
-  "buyInputInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
-  "buyInputFundAccount": "Talletus",
-  "buyInputContinue": "Jatka",
-  "buyConfirmTitle": "Osta Bitcoinia",
-  "buyConfirmYouPay": "Maksat",
-  "buyConfirmYouReceive": "Saat",
-  "buyConfirmBitcoinPrice": "Bitcoinin hinta",
-  "buyConfirmPayoutWallet": "Maksun lompakko",
-  "buyPayoutMethodLiquid": "L-BTC Liquid-verkossa",
-  "buyPayoutMethodBitcoin": "BTC Bitcoin-lohkoketjussa",
-  "buyConfirmPayoutMethod": "Maksutapa",
-  "buyConfirmExternalWallet": "Ulkoinen Bitcoin-lompakko",
-  "buyConfirmAwaitingConfirmation": "Odottaa vahvistusta ",
   "sellSendPaymentTitle": "Vahvista maksu",
   "sellSendPaymentPriceRefresh": "Hinta päivittyy ",
   "sellSendPaymentOrderNumber": "Tilausnumero",
@@ -2443,30 +2034,14 @@
   "appStartupErrorMessage": "Sovelluksen käynnistys epäonnistui. Yritä sulkea sovellus kokonaan ja käynnistää se uudelleen. Jos ongelma jatkuu, ota yhteyttä tukeen ja jaa lokisi.",
   "appStartupContactSupportButton": "Ota yhteyttä tukeen",
   "ledgerDefaultWalletLabel": "Ledger-lompakko",
-  "exchangeBrandName": "BULL BITCOIN",
-  "exchangeLandingConnectAccount": "Yhdistä Bull Bitcoin -pörssitiliisi",
-  "exchangeLandingRecommendedExchange": "Suositeltu Bitcoin-pörssi",
-  "exchangeFeatureSelfCustody": "• Osta Bitcoinia omaan säilytykseen",
-  "exchangeFeatureDcaOrders": "• DCA-, Limit Order- ja automaattiostot",
-  "exchangeFeatureSellBitcoin": "• Myy tai vastaanota Bitcoinia",
-  "exchangeFeatureBankTransfers": "• Lähetä pankkisiirtoja ja maksa laskuja",
-  "exchangeFeatureCustomerSupport": "• Keskustele asiakastuen kanssa",
-  "exchangeFeatureUnifiedHistory": "• Yhdistetty tapahtumahistoria",
-  "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
-  "exchangeLandingDisclaimerNotAvailable": "Kryptovaluuttapörssin palvelut eivät ole käytettävissä Bull Bitcoin -mobiilisovelluksessa.",
   "exchangeLoginButton": "Kirjaudu tai rekisteröidy",
-  "exchangeGoToWebsiteButton": "Siirry Bull Bitcoin -pörssin verkkosivulle",
   "exchangeAuthLoginFailedTitle": "Kirjautuminen epäonnistui",
   "exchangeAuthLoginFailedMessage": "Tapahtui virhe, yritä kirjautua uudelleen.",
   "exchangeAuthLoginFailedOkButton": "OK",
   "exchangeHomeDepositButton": "Talleta",
   "exchangeHomeWithdrawButton": "Nosta",
   "exchangeSupportChatTitle": "Tukichatti",
-  "exchangeSupportChatEmptyState": "Ei viestejä vielä. Aloita keskustelu!",
   "exchangeSupportChatInputHint": "Kirjoita viesti...",
-  "exchangeSupportChatMessageRequired": "Liite vaatii viestiin sisältöä",
-  "exchangeSupportChatMessageEmptyError": "Viesti ei voi olla tyhjä",
-  "exchangeSupportChatYesterday": "Eilen",
   "exchangeSupportChatWalletIssuesInfo": "Tämä chatti on vain pörssiin liittyviä talletus/osto/myynti/nosto/maksu -ongelmia varten.\nLompakkotukea tarjoavaan Telegram-ryhmään pääset tästä.",
   "exchangeDcaUnableToGetConfig": "DCA-asetuksia ei saatu haettua",
   "exchangeDcaDeactivateTitle": "Poista toistuva osto käytöstä",
@@ -2601,10 +2176,6 @@
   "withdrawOwnershipOtherAccount": "Tämä on jonkun toisen tili",
   "navigationTabWallet": "Lompakko",
   "navigationTabExchange": "Pörssi",
-  "buyUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
-  "buyBelowMinAmountError": "Yrität ostaa alle vähimmäismäärän.",
-  "buyAboveMaxAmountError": "Yrität ostaa yli enimmäismäärän.",
-  "buyUnexpectedError": "Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "withdrawUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
   "withdrawBelowMinAmountError": "Minimimäärä on {amount} {currency}",
   "withdrawAboveMaxAmountError": "Maksimimäärä on {amount} {currency}",
@@ -2630,10 +2201,7 @@
   "coreScreensSendNetworkFeeLabel": "Lähetyksen verkkokulut",
   "coreScreensConfirmButton": "Vahvista",
   "coreSwapsStatusPending": "Odottaa",
-  "coreSwapsStatusInProgress": "Käynnissä",
   "coreSwapsStatusCompleted": "Valmis",
-  "coreSwapsStatusExpired": "Vanhentunut",
-  "coreSwapsStatusFailed": "Epäonnistui",
   "coreSwapsActionClaim": "Lunastus",
   "coreSwapsActionClose": "Sulje",
   "coreSwapsLnReceiveExpired": "Vanhentunut swap",
@@ -2642,21 +2210,16 @@
   "coreSwapsLnSendFailed": "Swap epäonnistui",
   "coreSwapsChainExpired": "Swap vanhentui",
   "coreSwapsChainFailed": "Swap epäonnistui.",
-  "coreWalletTransactionStatusPending": "Vireillä",
   "coreWalletTransactionStatusConfirmed": "Vahvistettu",
   "autoswapWarningOkButton": "OK",
-  "importQrDeviceKeystoneStep9": "Syötä nimi Keystone-lompakollesi ja napauta \"Tuo\"",
-  "importQrDeviceKeystoneStep10": "Keystone on nyt yhdistetty ja valmis käytettäväksi BULL Walletin kanssa.",
   "save": "Tallenna",
   "coreSwapsActionRefund": "Palautus",
   "coreSwapsLnReceivePending": "Swap ei ole vielä aloitettu.",
-  "coreSwapsLnReceivePaid": "Lähettäjä on maksanut laskun.",
   "coreSwapsLnReceiveClaimable": "Swap on valmis väittämään.",
   "coreSwapsLnReceiveRefundable": "Swap on valmis hyvitettäväksi.",
   "coreSwapsLnReceiveCanCoop": "Swap valmistuu hetkellisesti.",
   "coreSwapsLnReceiveCompleted": "Swap on valmis.",
   "coreSwapsLnSendPending": "Swap ei ole vielä aloitettu.",
-  "coreSwapsLnSendPaid": "Lasku maksetaan, kun maksusi saa vahvistuksen.",
   "coreSwapsLnSendClaimable": "Swap on valmis väittämään.",
   "coreSwapsLnSendRefundable": "Swap on valmis hyvitettäväksi.",
   "coreSwapsLnSendCanCoop": "Swap valmistuu hetkellisesti.",
@@ -2677,8 +2240,6 @@
   "autoswapWarningExplanation": "Kun saldosi ylittää maksimin saldon, käynnistyy swap. Tavoitesaldo pidetään Pikaisen maksulompakon sisällä ja jäljelle jäävä summa vaihdetaan Turvalliseen Bitcoin-lompakkoosi.",
   "autoswapWarningDontShowAgain": "Älä näytä tätä varoitusta uudelleen.",
   "autoswapWarningSettingsLink": "Vie minut autoswap-asetuksiin",
-  "importQrDeviceKeystoneStep7": "Skannaa Keystonessa näkyvä QR-koodi",
-  "importQrDeviceKeystoneStep8": "Valitse BULL-lompakossa haluamasi johdannaistyyppi. Jos et ole varma, valitse \"Segwit (BIP84)\"",
   "autoswapTriggerAtBalanceInfoText": "Autoswap aktivoituu, kun saldosi ylittää tämän suurimman saldon.",
   "autoswapWarningCardTitle": "Autoswap on käytössä.",
   "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC.",
@@ -2900,46 +2461,6 @@
   "autoswapWarningExplanationBold": "automaattisesti",
   "autoswapActiveCardTitle": "Autoswap on aktiivinen",
   "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?",
-  "settingsErrorReportingTitle": "Virheraportointi",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "Virheraportoinnin ohjelma",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescriptionP1": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.",
-  "@errorReportingProgramDescriptionP1": {
-    "description": "Intro paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP2": "Kun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista.",
-  "@errorReportingProgramDescriptionP2": {
-    "description": "Bold paragraph: anonymized error reports fact"
-  },
-  "errorReportingProgramDescriptionP3": "Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.",
-  "@errorReportingProgramDescriptionP3": {
-    "description": "Impact paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP4": "Emme jaa näitä tietoja kolmansien osapuolten kanssa.",
-  "@errorReportingProgramDescriptionP4": {
-    "description": "Privacy paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP5": "Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
-  "@errorReportingProgramDescriptionP5": {
-    "description": "Bold paragraph: open source verification fact"
-  },
-  "errorReportingAcceptButton": "Hyväksy",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "Peruuta",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "appInitErrorTitle": "Sovelluksen käynnistys epäonnistui",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -3056,41 +2577,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Ohita",
-  "wizardPageIndicator": "SIVU {current} / {total}",
-  "wizardNextButton": "Seuraava",
-  "wizardCustomizeTitle": "Mukauta kokemustasi",
-  "wizardCustomizeBody": "Käytä BULL-sovellusta omilla ehdoillasi näillä asetuksilla.",
-  "wizardCustomizeDefaultCurrency": "Oletusvaluutta",
-  "wizardMissionTitle": "Tue Bullin missiota",
-  "wizardMissionBody1": "Auttaaksesi meitä parantamaan ohjelmistoamme ja varmistamaan korkeimman turvallisuuden, yksityisyyden ja käytettävyyden tason, sovelluksesi voi lähettää meille virhelokeja, joiden avulla voimme havaita ongelmia ja korjata ne nopeasti seuraavissa päivityksissä.",
-  "wizardMissionBody2": "Nämä lokit on anonymisoitu, niitä ei ole liitetty IP-osoitteeseesi eivätkä ne koskaan jaa tietoja tapahtumistasi tai henkilöllisyydestäsi. Ne ovat puhtaasti teknisiä eivätkä aseta sinua mihinkään riskiin. Se on meille erittäin hyödyllistä eikä maksa sinulle mitään.",
-  "wizardMissionQuestion": "Hyväksytkö osallistumisen automaattiseen ongelmaraportointiohjelmaamme?",
-  "wizardMissionYes": "Kyllä",
-  "wizardMissionNo": "Ei",
-  "wizardMissionRequired": "Valitse Kyllä tai Ei ennen jatkamista.",
-  "wizardJourneyTitle": "Etene matkallasi",
-  "wizardJourneyBody": "Jos olet uusi BULL-lompakon käyttäjä, tässä on muutamia ominaisuuksia, joita voit hyödyntää parantaaksesi yksityisyyttäsi, turvallisuuttasi ja käyttökokemustasi.",
-  "wizardJourneyTip1": "Lisää suojaus-PIN-koodi lompakon avaamiseksi",
-  "wizardJourneyTip2": "Kokeile salattua holvivarmuuskopiota",
-  "wizardJourneyTip3": "Yhdistä omaan Bitcoin-solmuusi",
-  "wizardJourneyTip4": "Yhdistä omaan Mempool-selaimeesi",
-  "wizardJourneyTip5": "Swappaa Bitcoinin ja Liquidin välillä ilman KYC:tä",
-  "wizardJourneyTip6": "Mukauta autoswap-asetuksiasi",
-  "wizardJourneyTip7": "Vaihda Bitcoinin (BTC) ja Satoshien (sats) välillä",
-  "wizardJourneyTip8": "Luo air-gap-tapahtumia laitteistolompakollesi",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "walletSetupErrorTryAgain": "Jotain meni pieleen lompakkoasi määritettäessä. Yritä uudelleen.",
-  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa",
   "coreScreensResolvingInputs": "Selvitetään tapahtuman syötteitä...",
   "coreScreensFeeRateLabel": "Palkkioprosentti",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -3220,11 +2706,6 @@
   "recipientsFieldPayeeAccountNumber": "Maksunsaajan tilinumero",
   "exchangeFileUploadStatusRejectedBadge": "Hylätty",
   "exchangeFileUploadTapToReupload": "Lataa uudelleen napauttamalla",
-  "exchangeSupportChatAttachmentImage": "Kuva",
-  "exchangeSupportChatAttachmentUnknownFile": "Tuntematon tiedosto",
-  "exchangeSupportChatPickFilesFailed": "Tiedostojen valinta epäonnistui. Yritä uudelleen.",
-  "exchangeSupportChatAttachLogsFailed": "Lokien liittäminen epäonnistui. Yritä uudelleen.",
-  "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui.",
   "recipientsFieldSinpePhoneNumberHint": "8 numeroa ilman maakoodia",
   "recipientsCopDocCcRecipientNumber": "Vastaanottajan cédula-numero",
   "recipientsCopDocCeRecipientNumber": "Vastaanottajan cédula de extranjería -numero",
@@ -3235,7 +2716,6 @@
   "recipientsValidationSinpePhoneCountryCode": "Poista maakoodi (+506). Anna vain 8-numeroinen numero",
   "recipientsValidationSinpePhoneInvalidChars": "Käytä vain numeroita (ei kirjaimia tai symboleita)",
   "recipientsValidationSinpePhoneTooShort": "Anna kaikki 8 puhelinnumeron numeroa",
-  "transactionStatusPayjoinCompleted": "Payjoin suoritettu",
   "homeActionBuy": "Osta",
   "homeActionSell": "Myy",
   "homeActionPay": "Maksa",
@@ -3244,22 +2724,12 @@
   "backupCardSubtitle": "Varmuuskopioi lompakkosi nyt.",
   "autoswapTargetBalanceLabel": "Instant Wallet -tavoitesaldo",
   "autoswapMaximumBalanceLabel": "Instant Wallet -enimmäissaldo",
-  "onboardingAdvancedOptionsTitle": "Lisäasetukset",
-  "onboardingAdvancedOptionsDescription": "Määritä lisäasetukset ennen lompakon luomista tai palauttamista",
-  "onboardingAdvancedOptionsCustomElectrum": "Mukautettu Electrum-palvelin",
-  "onboardingAdvancedOptionsCustomMempool": "Mukautettu Mempool-palvelin",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Mukautettu Recoverbull-palvelin",
-  "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
   "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa",
   "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
   "allSeedViewErrorFetch": "Siementen lataaminen epäonnistui. Yritä uudelleen.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
-  },
-  "importMnemonicEmptyLabelError": "Muistisanan tuominen edellyttää tunnistetta",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "allSeedViewErrorDelete": "Siemenen poistaminen epäonnistui. Yritä uudelleen.",
   "@allSeedViewErrorDelete": {
@@ -3273,123 +2743,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "Kolikot",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 kolikko} other{{count} kolikkoa}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "Jäädytetty",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "Käytettävissä",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "Ei jäädytettyjä",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "Lajittele ja suodata",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "{visible}/{total} näkyvissä",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 käyttämätön ulostulo} other{{count} käyttämätöntä ulostuloa}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "Synkronoi",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "Tyhjennä kaikki",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "Määrä: suurin ensin",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "Määrä: pienin ensin",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "Päivämäärä: uusin ensin",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "Päivämäärä: vanhin ensin",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "Avainketju",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "Kaikki",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "Vastaanota",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "Vaihtoraha",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "Jäädytystila",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "Kaikki",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "Jäädytetyt",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "Jäädyttämättömät",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "Tunnisteet",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "Nollaa",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "Käytä",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{1 valittu} other{{count} valittua}}",
   "@coinsSelectedCount": {
@@ -3400,132 +2756,9 @@
       }
     }
   },
-  "coinsSelectAll": "Valitse kaikki",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "Jäädytä",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "Vapauta",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "Kumoa",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Jäädytetäänkö 1 kolikko?} other{Jäädytetäänkö {count} kolikkoa?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "Jäädytetyt kolikot pysyvät lompakossasi mutta jätetään käytön ulkopuolelle, kunnes vapautat ne.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "Näiden kolikoiden jäädyttäminen jättää sinut ilman käytettävissä olevaa saldoa.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{1 kolikko jäädytetty · jätetty käytön ulkopuolelle} other{{count} kolikkoa jäädytetty · jätetty käytön ulkopuolelle}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{1 kolikko vapautettu} other{{count} kolikkoa vapautettu}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 vahv.} other{{count} vahv.}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "Odottaa",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "Ei vielä kolikoita",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "Kolikot näkyvät täällä, kun vastaanotat bitcoinia.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "Ei osumia",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "Tyhjennä suodattimet",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "Yritä uudelleen",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "Pyyhkäise kolikkoa jäädyttääksesi · valitse pitkällä painalluksella",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "Kolikoiden lataaminen epäonnistui. Päivitä vetämällä ja yritä uudelleen.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "Valittujen kolikoiden jäädyttäminen epäonnistui. Yritä uudelleen.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "Valittujen kolikoiden vapauttaminen epäonnistui. Yritä uudelleen.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "Jotain meni pieleen. Yritä uudelleen.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO:ta}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} jäädytetty",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "logsShareOptionExport": "Vie",
   "logsExportedMessage": "Lokit viety onnistuneesti",
   "logsExportFailedMessage": "Lokien vienti epäonnistui",
-  "coreSwapsStatusRefunded": "Palautettu",
   "swapRestoreTitle": "Swapin palautus",
   "swapRestoreActionable": "{count, plural, =0{Ei palautettavia swappeja} =1{Voit yrittää palauttaa 1 swapin. Se saattaa jo olla lopullisessa tilassa.} other{Voit yrittää palauttaa {count} swappia. Huomaa, että osa niistä saattaa jo olla lopullisessa tilassa.}}",
   "swapRestoreNoSwaps": "Palautettavia swappeja ei löytynyt",
@@ -3547,63 +2780,17 @@
   "swapRescueButton": "Palauta",
   "swapRescueSuccess": "Swap palautettu — se jatkuu nyt",
   "receivePayjoinNoUtxos": "Vastaanota ensin varoja ottaaksesi tämän käyttöön.\nPayjoinin käyttö vaatii UTXO:ita.",
-  "payViewReceipt": "Näytä kuitti",
   "paySinpeReceipt": "SINPE-kuitti",
-  "transactionFilterWithdraw": "Nosto",
-  "transactionFilterPay": "Maksu",
-  "transactionFilterFunding": "Talletus",
-  "transactionFilterReward": "Palkkio",
-  "transactionFilterRefund": "Hyvitys",
-  "transactionListLoadingFailed": "Tapahtumia ei voitu ladata.",
-  "transactionLabelNetworkFees": "Verkkokulut",
   "receiveLiquidRiskDisclosureLabel": "Maksut muunnetaan Liquid L-BTC:ksi (ei BTC:ksi). Lue lisää.",
   "walletLiquidRiskDisclosureLabel": "Nämä varat ovat Liquid L-BTC:tä (ei BTC:tä). Lue lisää.",
   "liquidRiskDisclosureSemanticLabel": "Avaa Liquid Bitcoinin riskiselvitys",
   "liquidRiskDisclosureTitle": "Pikamaksulompakon Liquid Bitcoin -riskiselvitys",
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "fundExchangeJurisdictionColombia": "🇨🇴 Kolumbia",
-  "nfcNotAvailable": "NFC ei ole tuettu tällä laitteella",
-  "nfcDisabled": "NFC on pois käytöstä. Ota se käyttöön asetuksista.",
-  "nfcInvalidData": "Tuettua NFC-dataa ei löytynyt",
-  "nfcConnectionLost": "NFC-yhteys katkesi. Pidä laitettasi NFC-tunnisteen lähellä ja yritä uudelleen.",
-  "nfcWriteFailed": "NFC-siirto epäonnistui. Yritä uudelleen.",
-  "nfcError": "NFC-virhe: {error}",
   "sendCoordinatingPayjoinTransaction": "Koordinoidaan Payjoin-transaktiota.",
   "sendErrorInvoiceExpired": "Tämä lasku on vanhentunut. Pyydä vastaanottajalta uusi lasku.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Napauta Coldcard-laitettasi vastaanottaaksesi allekirjoitetun transaktion NFC:llä",
-  "importColdcardInvalidWalletData": "Virheelliset Coldcard-lompakkotiedot",
-  "importColdcardConnectTitle": "Yhdistä {deviceName}",
-  "importColdcardConnectDescription": "Tuo lompakon kuvaus (descriptor) {deviceName}-laitteestasi",
-  "importColdcardScanNfcSheetTitle": "Napauta {deviceName}-laitettasi tuodaksesi lompakon kuvauksen (descriptor) NFC:llä",
-  "importColdcardQInstructionsTitle": "Coldcard Q -ohjeet",
-  "importColdcardQStep1": "Kirjaudu Coldcard Q -laitteeseesi",
-  "importColdcardQStep2": "Lisää salasana, jos käytät sellaista (valinnainen)",
-  "importColdcardQStep3": "Valitse lisäasetusten/asetusten valikko",
-  "importColdcardQStep4": "Valitse \"export wallet\"",
-  "importColdcardQStep5": "Valitse vientityypiksi \"descriptor\"",
-  "importColdcardQStep6": "Paina \"Enter\" ensimmäisellä näytöllä",
-  "importColdcardQStep7": "Paina \"Enter\" toisella näytöllä",
-  "importColdcardQStep8": "Valitse osoitetyyppisi (käytä Segwitiä, jos olet epävarma)",
-  "importColdcardQStep9": "QR-koodille: napsauta laitteen QR-koodipainiketta. Laite näyttää sinulle QR-koodin",
-  "importColdcardQStep10": "NFC:lle: napsauta laitteen NFC-painiketta",
-  "importColdcardQStep11": "Valitse \"Avaa kamera\" / \"Skannaa NFC\" -painike",
-  "importColdcardQStep12": "Skannaa laitteessasi näkyvä QR-koodi tai aseta puhelimen NFC Coldcardin NFC-alueen päälle",
-  "importColdcardQStep13": "Valmista!",
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 -ohjeet",
-  "importColdcardMk4Step1": "Kirjaudu Coldcard Mk4 -laitteeseesi",
-  "importColdcardMk4Step2": "Lisää salasana, jos käytät sellaista (valinnainen)",
-  "importColdcardMk4Step3": "Valitse lisäasetusten/asetusten valikko",
-  "importColdcardMk4Step4": "Valitse \"export wallet\"",
-  "importColdcardMk4Step5": "Valitse vientityypiksi \"descriptor\"",
-  "importColdcardMk4Step6": "Paina \"Enter\" ensimmäisellä näytöllä",
-  "importColdcardMk4Step7": "Paina \"Enter\" toisella näytöllä",
-  "importColdcardMk4Step8": "Valitse osoitetyyppisi (käytä Segwitiä, jos olet epävarma)",
-  "importColdcardMk4Step9": "Valitse numero 3 käynnistääksesi Coldcardin NFC:n",
-  "importColdcardMk4Step10": "Valitse \"Scan NFC\" -painike",
-  "importColdcardMk4Step11": "Aseta puhelimen NFC Coldcardin NFC-alueen päälle",
-  "importColdcardMk4Step12": "Valmista!",
   "fundExchangeCopDailyLimitWarning": "Jos ylität päivittäisen tapahtumarajasi, tapahtuma epäonnistuu. Sinun on tällöin otettava yhteyttä asiakastukeen.",
   "fundExchangeCopSenderName": "Lähettäjän nimi",
   "fundExchangeCopIssuingBank": "Pankki",
@@ -3617,10 +2804,7 @@
   "viewerAddressTab": "Osoite",
   "viewerPaymentUriTab": "Maksu-URI",
   "transactionSwapOpenWithin24h": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapisi.",
-  "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "Käytettävissä oleva saldo ei riitä — {amount} on jäädytetty. Vapauta kolikot kohdassa Hallinnoi kolikoita käyttääksesi niitä.",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Valmis",
   "consolidationFailedBody": "Tapahtui odottamaton virhe. Varasi ovat turvassa: mitään tapahtumaa ei lähetetty. Yritä uudelleen.",
   "consolidationFailedTitle": "Yhdistäminen epäonnistui",
@@ -3635,67 +2819,16 @@
   "consolidationScreenTitle": "Yhdistä",
   "consolidationSuccessBody": "Kolikoitasi yhdistetään. Tämä valmistuu, kun verkko vahvistaa sen.",
   "consolidationSuccessTitle": "Yhdistäminen aloitettu",
-  "transactionStatusPayjoinAborted": "Payjoin keskeytetty",
-  "transactionDetailLabelPayjoinAborted": "Keskeytetty",
-  "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78).",
   "dcaAccountUnavailableError": "Tiliäsi ei voitu ladata. Tarkista yhteytesi, varmista että olet kirjautunut sisään ja yritä uudelleen.",
   "dcaLightningAddressRequiredError": "Anna Lightning-osoite ostojesi vastaanottamista varten.",
   "dcaReceiveAddressError": "Lompakkoosi ei voitu valmistella vastaanotto-osoitetta. Yritä uudelleen.",
   "dcaOrderCreationError": "Toistuvaa ostoa ei voitu luoda. Yritä myöhemmin uudelleen.",
   "settingsPayjoinDisclaimerTitle": "Payjoin-huomautus",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin-huomautus",
-  "settingsPayjoinAdvancedTitle": "Payjoinin lisäasetukset",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Tätä lompakkoa ei löytynyt.",
   "addressViewErrorLoadFailed": "Osoitteidesi lataaminen ei onnistunut. Yritä uudelleen.",
-  "coreSwapsStatusNotStarted": "Ei aloitettu",
-  "coreSwapsStatusAwaitingPayment": "Odottaa maksua",
-  "coreSwapsStatusAwaitingConfirmation": "Odottaa vahvistusta",
-  "coreSwapsStatusUnderReview": "Tarkistuksessa",
-  "coreSwapsStatusRejected": "Hylätty",
-  "coreSwapsStatusCanceled": "Peruutettu",
-  "coreSwapsStatusPaymentDeadlineExpired": "Maksun määräaika umpeutui",
-  "coreSwapsStatusScheduled": "Ajoitettu",
-  "coreSwapsStatusAwaitingClaim": "Odottaa lunastusta",
-  "coreSwapsStatusUnknown": "Tuntematon",
   "sendSwapExpiredTitle": "Tilaus vanheni",
   "sendSwapExpiredMessage": "Tämä tilaus vanheni ennen kuin varoja lähetettiin. Lompakostasi ei lähetetty mitään.",
-  "settingsScreenPrivacyTitle": "Näytön yksityisyys",
-  "settingsScreenPrivacyDisabledMessage": "Kuvakaappaukset ovat nyt sallittuja arkaluonteisilla näytöillä",
-  "settingsSearchHint": "Hae asetuksista",
-  "settingsSearchNoResults": "Asetuksia ei löytynyt.",
-  "settingsSearchMempoolKeywords": "lohkoketjuselain|maksuarvio|tapahtumamaksut|mempool API",
-  "settingsSearchExchangeKeywords": "tili|pörssitili|kaupankäynti|osta ja myy",
-  "settingsSearchStartBackupKeywords": "luo varmuuskopio|tallenna varmuuskopio|varmuuskopioi lompakko",
-  "settingsSearchRecoverbullKeywords": "salattu varmuuskopio|pilvivarmuuskopio|salattu holvi|holvin palautus|Recoverbull",
-  "settingsSearchLabelsKeywords": "lompakon tunnisteet|tapahtumien tunnisteet|BIP329|tuo tunnisteet|vie tunnisteet",
-  "settingsSearchTransactionHistoryKeywords": "vie tapahtumat|tapahtumien vienti|CSV|lompakon historia",
-  "settingsSearchAppSettingsKeywords": "sovelluksen asetukset|ohjelman asetukset|yleiset asetukset",
-  "settingsSearchTermsOfServiceKeywords": "käyttöehdot|oikeudelliset tiedot|käyttäjäsopimus|TOS",
-  "settingsSearchServicesStatusKeywords": "palveluiden tila|järjestelmän tila|verkossa|käyttökatko",
-  "settingsSearchImportWalletKeywords": "lisää lompakko|palauta lompakko|tuo muistisana|vain katseltava lompakko|laitteistolompakko",
-  "settingsSearchBroadcastTransactionKeywords": "lähetä allekirjoitettu tapahtuma|julkaise tapahtuma|raaka tapahtuma|tapahtuman hex|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin-yksityisyys|yhteistyötapahtuma|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "automaattinen vaihto|automaattinen swap|automaattinen siirto|pikakäyttölompakon saldo|Autoswap",
-  "settingsSearchElectrumKeywords": "Bitcoin-solmu|Electrum-solmu|mukautettu palvelin|oma solmu|Electrum",
-  "settingsSearchTestnetModeKeywords": "testiverkko|Bitcoin-testnet|Liquid-testnet|testitila|Testnet",
-  "settingsSearchSeedViewerKeywords": "seed-lause|palautuslause|muistisana|varmuuskopiosanat|näytä seedit",
-  "settingsSearchBip85Keywords": "deterministinen entropia|johdetut seedit|johdettu entropia|BIP85",
-  "settingsSearchLanguageKeywords": "alueasetus|käännös|näyttökieli|ensisijainen kieli",
-  "settingsSearchThemeKeywords": "ulkoasu|tumma tila|vaalea tila|järjestelmän teema",
-  "settingsSearchCurrencyKeywords": "fiat-valuutta|paikallinen valuutta|oletusvaluutta|muuntovaluutta",
-  "settingsSearchSecurityPinKeywords": "PIN-koodi|pääsykoodi|sovelluksen lukitus|todennus|vaihda PIN",
-  "settingsSearchLogsKeywords": "debug-lokit|diagnostiikkalokit|sovelluslokit|vie lokit",
-  "settingsSearchDevModeKeywords": "kehittäjätila|kehitysasetukset|debug-tila|edistynyt testaus",
-  "settingsSearchTestnetCredentialsKeywords": "testnet-tunnukset|testnet-kirjautuminen|testnet-käyttäjänimi|testnet-salasana|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "kaatumisraportit|virheraportit|diagnostiikka|telemetria|virhelokit",
-  "settingsSearchScreenPrivacyKeywords": "kuvakaappaukset|näytön tallennus|kaappaussuojaus|yksityisyys",
-  "settingsSearchStartTyping": "Aloita kirjoittaminen nähdäksesi tulokset.",
-  "exchangeSupportChatLoadMessagesError": "Viestien lataaminen epäonnistui. Yritä uudelleen.",
-  "exchangeSupportChatSendMessageError": "Viestin lähettäminen epäonnistui. Yritä uudelleen.",
-  "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen.",
-  "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen.",
   "sendErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
   "sendErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
@@ -3708,13 +2841,7 @@
   "walletWarningElectrumBothDown": "Bitcoin- ja Liquid-palvelimet eivät ole käytettävissä",
   "walletWarningElectrumAction": "Määritä palvelinasetukset napauttamalla",
   "walletLoadFailedRetryHint": "Päivitä vetämällä alaspäin ja yritä uudelleen",
-  "transactionDetailLoadError": "Tapahtuman tietoja ei voitu ladata.",
-  "transactionPayjoinBroadcastFailed": "Alkuperäistä tapahtumaa ei voitu lähettää. Yritä uudelleen.",
-  "transactionPayjoinOriginalUnavailable": "Alkuperäinen tapahtuma ei ole enää lähetettävissä.",
-  "transactionLabelLimitReached": "Voit lisätä enintään 10 tunnistetta.",
   "settingsErrorSavingSetting": "Asetusta ei voitu tallentaa. Yritä uudelleen.",
-  "settingsErrorConsentNotGiven": "Tämä asetus vaatii vahvistuksesi ennen muuttamista.",
-  "settingsErrorLoadingLogs": "Vianmäärityslokeja ei voitu valmistella. Yritä uudelleen.",
   "exchangeErrorSigningOut": "Uloskirjautumista ei voitu viimeistellä. Yritä uudelleen.",
   "exchangeErrorSavingPreferences": "Asetuksiasi ei voitu tallentaa. Yritä uudelleen.",
   "exchangeErrorLoadingAnnouncements": "Tiedotteita ei voitu ladata.",
@@ -3764,10 +2891,6 @@
   "autoBuyWalletRequiredError": "Lisää vähintään yksi Bitcoin-, Lightning- tai Liquid-oletusosoite.",
   "autoBuyUpdateError": "Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.",
   "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
-  "importWatchOnlyErrorNetworkMismatch": "Tämä lompakko käyttää parhaillaan eri Bitcoin-verkkoa. Vaihda Mainnet- ja Testnet-verkon välillä ja yritä uudelleen.",
-  "importWatchOnlyErrorAlreadyExists": "Tämä lompakko on jo tuotu.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Verkko: Bitcoin-pääverkko",
-  "importWatchOnlyNetworkBitcoinTestnet": "Verkko: Bitcoin-testiverkko",
   "broadcastSignedTxErrorPsbtFinalization": "Allekirjoitettua tapahtumaa ei voitu viimeistellä. Varmista, että se sisältää kaikki vaaditut allekirjoitukset, ja yritä uudelleen.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
@@ -3840,7 +2963,6 @@
   "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
   "exchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
   "walletBalancesMayBeStale": "Saldojasi ei voitu päivittää, ja ne voivat olla vanhentuneita.",
-  "settingsSearchTorKeywords": "Tor-välityspalvelin|Orbot|onion-reititys|sisäinen Tor|yksityisyysverkko",
   "limitOrdersInsufficientBalance": "Riittämätön saldo",
   "limitOrdersInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
   "limitOrdersFundAccount": "Talletus",
@@ -3897,21 +3019,15 @@
   "swapUnderReviewTitle": "Swap tarkistettavana",
   "swapUnderReviewDescription": "Tämä swap vaatii manuaalisen tarkistuksen. Ota yhteyttä tukeen saadaksesi apua. Jos sinulla ei ole tukitiliä, sinun tarvitsee vain luoda sellainen; KYC ei ole pakollinen.",
   "swapUnderReviewSupportMessage": "Swap tarkistettavana\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Automaattinen swap",
   "broadcastSignedTxErrorAlreadyInChain": "Tämä transaktio on jo lohkoketjussa. Lähetettävää ei ole enää.",
   "broadcastSignedTxErrorRejected": "Verkko hylkäsi tämän transaktion. Se voi olla puutteellisesti allekirjoitettu, virheellinen tai ristiriidassa toisen maksun kanssa.",
   "broadcastSignedTxErrorOutcomeUnknown": "Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa.",
   "settingsDarkModeTitle": "Tumma tila",
-  "settingsSourceCodeTitle": "Lähdekoodi",
   "torSettingsExternalProxyUnavailableDescription": "Bull ei saanut yhteyttä määritettyyn SOCKS5-välityspalvelimeen.",
   "backgroundTasksTitle": "Taustatehtävät",
   "blockedInSystemSettings": "Estetty järjestelmäasetuksissa",
-  "notificationsBlockedMessage": "Ilmoitukset on estetty järjestelmäasetuksissa.",
   "notificationsTitle": "Ilmoitukset",
   "openSystemSettings": "Avaa järjestelmäasetukset",
-  "permissionsTitle": "Käyttöoikeudet",
-  "settingsSearchPermissionsKeywords": "ilmoitukset|taustatehtävät|akku|hälytykset",
-  "wizardBackgroundTasksDescription": "Tarkistaa maksut, kun sovellus on suljettu.",
-  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu."
+  "sendErrorInvoiceExpiryTooShort": "Tämä lasku vanhenee liian pian. Pyydä vastaanottajalta uusi lasku."
 }

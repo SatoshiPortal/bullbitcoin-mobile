@@ -40,12 +40,13 @@ RecoverBullStorage recoverBullStorageForTesting(String path) =>
 RecoverBullCutover recoverBullCutoverForTesting({
   required File file,
   required File standalone,
+  bool regtest = false,
 }) {
   final path = file.path;
   return RecoverBullCutover.withTestExecutor(
     file: file,
     standalone: standalone,
-    regtest: false,
+    regtest: regtest,
     executor: () => NativeDatabase(File(path)),
   );
 }

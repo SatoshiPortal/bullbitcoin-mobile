@@ -1,0 +1,36 @@
+name: backup_metadata
+description: Automatic encrypted backup of wallet data such as labels.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bull_ui:
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  crypto: ^3.0.7
+  flutter_bloc: ^9.1.1
+  get_it: ^9.1.1
+  meta: ^1.17.0
+  primitives:
+  backup_storage:
+  labels:
+  secrets:
+  sqlite3: ^3.5.2
+
+dev_dependencies:
+  material_ui: ^1.11.0
+  flutter_test:
+    sdk: flutter

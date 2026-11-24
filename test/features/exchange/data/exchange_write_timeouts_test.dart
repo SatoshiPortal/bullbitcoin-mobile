@@ -1,10 +1,6 @@
 import 'package:preferences/preferences.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
-import 'package:bb_mobile/features/recipients/recipients_locator.dart';
 import 'package:bbx_api/bbx_api.dart' show Bbx, BbxTimeouts;
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
@@ -77,7 +73,6 @@ void main() {
             );
           },
         );
-        RecipientsLocator.registerRepositories(locator);
         final isTestnet = environment == Environment.testnet;
         final results = await Future.wait([
           exchange.limitOrders.create(
@@ -88,7 +83,7 @@ void main() {
               address: 'bc1qaddress',
             ),
           ),
-          locator<RecipientsRepository>().saveRecipient(
+          exchange.recipients.saveRecipient(
             InteracEmailCadDetails.create(
               email: 'recipient@example.invalid',
               name: 'Recipient',
@@ -100,7 +95,7 @@ void main() {
                 ? ExchangeEnvironment.testnet
                 : ExchangeEnvironment.mainnet,
           ),
-          locator<SepaVirtualPayeeRepository>().activate(
+          exchange.recipients.activate(
             recipientId: 'fixture-recipient',
             isTestnet: isTestnet,
           ),

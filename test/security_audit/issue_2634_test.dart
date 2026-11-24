@@ -16,12 +16,12 @@ void main() {
   group('Security audit #2634 orphaned mnemonic seed', () {
     test('failed wallet creation preserves custody for provisioning retry', () {
       final source = File(
-        'lib/features/import_mnemonic/domain/import_wallet_usecase.dart',
+        'features/wallet_import/lib/src/domain/mnemonic/import_wallet_usecase.dart',
       ).readAsStringSync();
 
       // A committed catalog entry may already refer to the imported secret.
       final persistSeed = source.indexOf('_secrets.import(');
-      final importWallet = source.indexOf('_wallet.importWallet(');
+      final importWallet = source.indexOf('await _provision(');
       expect(persistSeed, greaterThanOrEqualTo(0));
       expect(importWallet, greaterThanOrEqualTo(0));
       expect(persistSeed, lessThan(importWallet));
@@ -30,7 +30,7 @@ void main() {
 
     test('duplicate check remains separate from cleanup', () {
       final source = File(
-        'lib/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart',
+        'features/wallet_import/lib/src/domain/mnemonic/check_duplicate_mnemonic_usecase.dart',
       ).readAsStringSync();
 
       expect(source, contains('_secrets.find('));

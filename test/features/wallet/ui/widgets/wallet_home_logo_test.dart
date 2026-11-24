@@ -1,7 +1,5 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show SuperuserTapUnlocker;
+import 'package:bull_ui/app_theme.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +24,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SettingsCubit>.value(
           value: settings,
-          child: Scaffold(appBar: WalletHomeAppBar(onSettings: () {})),
+          child: Scaffold(appBar: const WalletHomeAppBar()),
         ),
       ),
     );

@@ -86,13 +86,13 @@ class BillerStats {
   bool get hasStats => stats.isNotEmpty;
 }
 
-/// Entity for complete order stats response
-class OrderStatsResponse {
+/// Account order and biller statistics as of an exchange snapshot.
+class OrderStatistics {
   final OrderStats orderStats;
   final BillerStats billerStats;
   final DateTime asOf;
 
-  const OrderStatsResponse({
+  const OrderStatistics({
     required this.orderStats,
     required this.billerStats,
     required this.asOf,

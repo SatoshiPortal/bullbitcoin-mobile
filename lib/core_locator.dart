@@ -2,12 +2,10 @@ import 'package:labels/labels.dart';
 import 'package:sync/sync.dart' show Sync, Wallet, WalletConnectionPort;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:preferences/preferences.dart' as settings;
-import 'package:bb_mobile/features/settings/settings_core_locator.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/swap/swaps_core_locator.dart';
+import 'package:settings/setup.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
@@ -30,7 +28,6 @@ class CoreLocator {
       ),
     );
     ExchangeLocator.registerDatasources(locator);
-    await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
   }
 
@@ -108,18 +105,13 @@ class CoreLocator {
         }
       },
     );
-    BlockchainLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
-    await SwapsLocator.registerRepositories(locator);
-    WalletLocator.registerRepositories(locator);
     return const Ok(null);
   }
 
   static void registerUsecases(GetIt locator) {
     bull_tor.TorLocator.registerUsecases(locator);
-    BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
-    SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
   }
 }

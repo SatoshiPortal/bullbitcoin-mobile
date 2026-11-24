@@ -1,0 +1,191 @@
+{
+  "@@locale": "es",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "save": "Guardar",
+  "swapSettingsTitle": "Intercambios",
+  "swapSettingsExchangeFallbackLabel": "Recurrir al exchange de Bull Bitcoin",
+  "swapSettingsExchangeFallbackDescription": "Los intercambios se realizan a través de Boltz. Cuando no se puede conectar con Boltz o no acepta el monto, se crea en su lugar una orden en el exchange de Bull Bitcoin. El exchange custodia los fondos hasta que se completa la orden.",
+  "swapSettingsRouteOverrideTitle": "Proveedor de intercambios",
+  "swapSettingsRouteOverrideAuto": "Automático",
+  "swapSettingsRouteOverrideBoltzOnly": "Solo Boltz",
+  "swapSettingsRouteOverrideExchangeOnly": "Solo el exchange",
+  "swapServerTitle": "Servidor de intercambios",
+  "swapServerSubtitle": "El servidor de Boltz que se usa para los intercambios sin confianza en esta red. Déjalo vacío para usar el predeterminado.",
+  "swapServerDefault": "Predeterminado",
+  "swapServerReset": "Restablecer el predeterminado",
+  "swapServerInvalid": "Introduce una dirección de servidor válida (p. ej., api.boltz.exchange/v2)",
+  "swapServerChangedNotice": "Los intercambios ahora usan este servidor.",
+  "swapServerBusyError": "Termina tus swaps en curso antes de cambiar el servidor de swaps.",
+  "networkFeatureUnavailable": "Esta función no está disponible en la red seleccionada.",
+  "addressLabel": "Dirección: ",
+  "amountEnteredAtRate": "Ingresaste {amount} {currency} · tipo de cambio de las {time}",
+  "amountRequestedLabel": "Monto solicitado: {amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Cuando está deshabilitado, se le dará la opción de permitir un intercambio automático que fue bloqueado debido a comisiones altas",
+  "autoswapAlwaysBlockInfoEnabled": "Cuando está habilitado, los intercambios automáticos con comisiones superiores al límite establecido siempre serán bloqueados",
+  "autoswapAlwaysBlockLabel": "Siempre Bloquear Comisiones Altas",
+  "autoswapBaseBalanceInfoText": "El saldo de tu billetera de pagos instantáneos volverá a este saldo destino tras un auto-intercambio.",
+  "autoswapEnableToggleLabel": "Habilitar Intercambio Automático",
+  "autoswapLoadSettingsError": "Error al cargar la configuración de intercambio automático",
+  "autoswapMaxBalanceLabel": "Saldo Máximo de Billetera Instantánea",
+  "autoswapMaxFeeInfoText": "Si la comisión total de intercambio supera el porcentaje establecido, el intercambio automático será bloqueado",
+  "autoswapMaxFeeLabel": "Comisión Máxima de Intercambio",
+  "autoswapMaximumBalanceLabel": "Saldo máximo de la billetera instantánea",
+  "autoswapMaximumFeeError": "El umbral máximo de comisión es {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "El umbral mínimo de saldo es {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "El umbral mínimo de saldo es {amount} sats",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Elija cual billetera Bitcoin recibirá los fondos transferidos (requerido)",
+  "autoswapRecipientWalletLabel": "Billetera Bitcoin Receptora",
+  "autoswapRecipientWalletPlaceholder": "Seleccione una billetera Bitcoin",
+  "autoswapRecipientWalletPlaceholderRequired": "Seleccione una billetera Bitcoin *",
+  "autoswapRecipientWalletRequired": "*",
+  "autoswapSaveButton": "Guardar",
+  "autoswapSelectWalletError": "Seleccione una billetera Bitcoin receptora",
+  "autoswapSettingsTitle": "Configuración de intercambio automático",
+  "autoswapTargetBalanceLabel": "Saldo objetivo de la billetera instantánea",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap se activará cuando tu saldo supere este saldo máximo.",
+  "autoswapTriggerBalanceError": "El saldo máximo debe ser al menos 2 veces el saldo objetivo",
+  "autoswapUpdateSettingsError": "Error al actualizar la configuración de intercambio automático",
+  "bitcoinPriceExchangeRateUnavailable": "Tipo de cambio no disponible. Por favor, inténtelo de nuevo más tarde.",
+  "broadcastSignedTxErrorOutcomeUnknown": "No pudimos confirmar que tu transacción se haya transmitido. Revisa un explorador de bloques antes de volver a intentarlo.",
+  "closeDialogButton": "Cerrar",
+  "coinsKeychainChange": "Cambio",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Recibir",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Consolidar la billetera",
+  "coreScreensAmountLabel": "Monto",
+  "coreScreensConfirmButton": "Confirmar",
+  "coreScreensExternalTransfer": "Intercambio externo",
+  "coreScreensFeeDeductionExplanation": "Este es el total de tarifas deducidas del monto enviado",
+  "coreScreensFeePriorityLabel": "Prioridad de tarifa",
+  "coreScreensFromLabel": "De",
+  "coreScreensInternalTransfer": "Intercambio interno",
+  "coreScreensNetworkFeesLabel": "Tarifas de red",
+  "coreScreensReceiveAmountLabel": "Monto a recibir",
+  "coreScreensReceiveNetworkFeeLabel": "Tarifa de red de recepción",
+  "coreScreensSendAmountLabel": "Monto a enviar",
+  "coreScreensSendNetworkFeeLabel": "Tarifa de red de envío",
+  "coreScreensServerNetworkFeesLabel": "Tarifas de red del servidor",
+  "coreScreensToLabel": "A",
+  "coreScreensTransferFeeLabel": "Comisión de intercambio",
+  "coreScreensTransferIdLabel": "ID de intercambio",
+  "doneButton": "Hecho",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
+  "globalDefaultLiquidWalletLabel": "Pagos instantáneos",
+  "payNetworkError": "Error de red. Por favor intente nuevamente",
+  "receiveNote": "Nota",
+  "selectAmountTitle": "Seleccionar monto",
+  "sendAdvancedOptions": "Opciones Avanzadas",
+  "sendDone": "Listo",
+  "sendErrorBuildFailed": "No se pudo preparar este pago. Inténtelo de nuevo.",
+  "sendErrorSelectedCoinsInsufficient": "Las monedas seleccionadas no cubren el monto y las comisiones. Selecciona más monedas o reduce el monto.",
+  "sendErrorSelectedCoinsUnavailable": "Una o varias de las monedas seleccionadas ya no están disponibles. Revisa tu selección de monedas e inténtalo de nuevo.",
+  "sendErrorSwapCreationFailed": "Error al crear el intercambio.",
+  "sendErrorTransactionChanged": "Los detalles de la transacción han cambiado. Revisa el monto, el destino y las comisiones, y vuelve a confirmar.",
+  "sendFastFee": "Rápida",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Reemplazar por comisión activado",
+  "sendSelectCoinsManually": "Seleccionar monedas manualmente",
+  "sendSelectedUtxosInsufficient": "Los UTXO seleccionados no cubren el monto requerido",
+  "sendSelfTransfer": "Autotransferencia",
+  "settingsPayjoinSatsUnit": "sats",
+  "swapAmountLabel": "Cantidad",
+  "swapAmountPlaceholder": "0",
+  "swapAvailableBalance": "Saldo disponible",
+  "swapConfirmTransferTitle": "Confirmar intercambio",
+  "swapContinueButton": "Continuar",
+  "swapDoNotUninstallWarning": "¡No desinstale la aplicación hasta que se complete el intercambio!",
+  "swapErrorAmountAboveMaximum": "La cantidad excede la cantidad máxima de intercambio: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "La cantidad está por debajo de la cantidad mínima de intercambio: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorInvalidBitcoinAddress": "Introduce una dirección de Bitcoin válida",
+  "swapErrorInvalidLiquidAddress": "Introduce una dirección de Liquid válida",
+  "swapErrorRateLimited": "Demasiadas solicitudes. Espera {seconds} segundos e inténtalo de nuevo.",
+  "swapErrorRouteUnavailable": "{fromNetwork} a {toNetwork} no está disponible.",
+  "swapErrorRouteUnavailableGeneric": "Este intercambio no está disponible.",
+  "swapExternalAddressHint": "Ingrese la dirección de la billetera externa",
+  "swapExternalTransferLabel": "Intercambio externo",
+  "swapFromLabel": "De",
+  "swapGoHomeButton": "Ir al inicio",
+  "swapInfoDescription": "Intercambie Bitcoin sin problemas entre sus billeteras. Mantenga fondos en la Billetera de Pagos Instantáneos solo para gastos del día a día.",
+  "swapInsufficientFunds": "Fondos insuficientes",
+  "swapInternalTransferTitle": "Intercambio interno",
+  "swapMaxButton": "MÁX",
+  "swapReceiveExactAmountLabel": "Recibir cantidad exacta",
+  "swapReverseDirectionTooltip": "Invertir el sentido",
+  "swapSubtractFeesLabel": "Restar comisiones de la cantidad",
+  "swapToLabel": "A",
+  "swapTotalFees": "Comisiones totales ",
+  "swapTransferCompletedMessage": "¡Vaya, esperó! El intercambio se ha completado exitosamente.",
+  "swapTransferCompletedTitle": "Intercambio completado",
+  "swapTransferPendingMessage": "El intercambio está en proceso. Las transacciones de Bitcoin pueden tardar en confirmarse. Puede volver al inicio y esperar.",
+  "swapTransferPendingTitle": "Intercambio pendiente",
+  "swapTransferRefundInProgressMessage": "Hubo un error con el intercambio. Su reembolso está en proceso.",
+  "swapTransferRefundInProgressTitle": "Reembolso de intercambio en proceso",
+  "swapTransferRefundedMessage": "El intercambio ha sido reembolsado exitosamente.",
+  "swapTransferRefundedTitle": "Intercambio reembolsado",
+  "swapTransferTitle": "Intercambio",
+  "swapUnderReviewContactSupport": "Contactar con soporte",
+  "swapUnderReviewDescription": "Este intercambio requiere una revisión manual. Contacte con soporte para obtener ayuda. Si no tiene una cuenta de soporte, solo necesita crear una; no se requiere KYC.",
+  "swapUnderReviewSupportMessage": "Intercambio en revisión\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "swapUnderReviewTitle": "Intercambio en revisión",
+  "swapValidationSelectFromWallet": "Por favor seleccione una billetera de origen para el intercambio",
+  "swapValidationSelectToWallet": "Por favor seleccione una billetera de destino para el intercambio",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLightning": "Lightning",
+  "transactionNetworkLiquid": "Liquid",
+  "transactionStatusSwapExpired": "Intercambio expirado",
+  "transactionStatusSwapFailed": "Intercambio fallido",
+  "transactionSwapDescChainExpired": "Este intercambio ha caducado. Sus fondos serán devueltos automáticamente a su billetera.",
+  "transactionSwapDescChainFailed": "Hubo un problema con su intercambio. Por favor contacte con soporte si los fondos no han sido devueltos dentro de 24 horas.",
+  "transactionSwapOpenWithin24h": "Abra la aplicación dentro de las próximas 24 horas para completar su intercambio.",
+  "typeLabel": "Tipo: ",
+  "walletLoadFailed": "No se pudieron cargar sus billeteras. Compruebe su conexión e inténtelo de nuevo.",
+  "walletSpendAwaitingObservation": "Los gastos no están disponibles hasta que esta cartera esté sincronizada y haya visto sus pagos anteriores en la red. Actualiza la cartera o busca transacciones faltantes y vuelve a intentarlo.",
+  "walletSpendBusy": "La cartera está ocupada. Vuelve a intentarlo en un momento."
+}

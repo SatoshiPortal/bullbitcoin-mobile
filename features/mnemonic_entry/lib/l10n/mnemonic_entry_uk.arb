@@ -1,0 +1,10 @@
+{
+  "@@locale": "uk",
+  "passphraseLabel": "Проксимус",
+  "optionalPassphraseHint": "Додатковий Пасфрас",
+  "recipientsInfoLabel": "Мітка",
+  "requiredHint": "Потрібні",
+  "submitButton": "Подати заявку",
+  "emptyMnemonicWordsError": "Введіть всі слова вашої мнемоніки",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно"
+}

@@ -1,17 +1,16 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:primitives/legacy_exceptions.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Outpoint;
 
 class ValidateBitcoinSelectionUsecase {
   final PayjoinSessions _payjoin;
-  final WalletUtxoRepository _walletUtxoRepository;
+  final Coins _coins;
 
   ValidateBitcoinSelectionUsecase({
     required PayjoinSessions payjoinSessions,
-    required this._walletUtxoRepository,
+    required this._coins,
   }) : _payjoin = payjoinSessions;
 
   Future<List<Outpoint>> execute({
@@ -19,7 +18,12 @@ class ValidateBitcoinSelectionUsecase {
     List<WalletUtxo>? selectedInputs,
   }) async {
     try {
-      final userFrozen = await _walletUtxoRepository.getAllFrozenOutpoints();
+      final userFrozen = switch (await _coins.frozenOutpoints()) {
+        Ok(:final value) => value,
+        Err() => throw ValidateBitcoinSelectionException(
+          'Failed to load frozen outpoints',
+        ),
+      };
       final payjoinResult = await _payjoin.reservedOutpoints();
       final payjoinReserved = switch (payjoinResult) {
         Ok(:final value) => value,
@@ -30,9 +34,12 @@ class ValidateBitcoinSelectionUsecase {
       final unspendable = {...userFrozen, ...payjoinReserved};
 
       if (selectedInputs != null && selectedInputs.isNotEmpty) {
-        final liveUtxos = await _walletUtxoRepository.getWalletUtxos(
-          walletId: walletId,
-        );
+        final liveUtxos = switch (await _coins.load(walletId: walletId)) {
+          Ok(:final value) => value,
+          Err() => throw ValidateBitcoinSelectionException(
+            'Failed to load wallet coins',
+          ),
+        };
         final spendableOutpoints = liveUtxos
             .where(
               (utxo) => !utxo.isFrozen && !unspendable.contains(utxo.outpoint),

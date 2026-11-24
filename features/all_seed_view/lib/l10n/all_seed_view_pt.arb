@@ -1,0 +1,45 @@
+{
+  "allSeedViewSecurityWarningMessage": "Exibir frases de sementes é um risco de segurança. Qualquer pessoa que veja sua frase de sementes pode acessar seus fundos. Certifique-se de que você está em um local privado e que ninguém pode ver sua tela.",
+  "cancel": "Cancelar",
+  "allSeedViewLoadingMessage": "Isso pode levar algum tempo para carregar se você tiver muitas sementes neste dispositivo.",
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "allSeedViewNoSeedsFound": "Nenhuma semente encontrada.",
+  "allSeedViewSecurityWarningTitle": "Aviso de Segurança",
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "allSeedViewOldWallets": "Carteiras antigas ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Eu compreendo",
+  "allSeedViewDeleteWarningTitle": "ATENÇÃO!",
+  "allSeedViewDeleteWarningMessage": "Excluir a semente é uma ação irreversível. Apenas faça isso se você tiver backups seguros desta semente ou as carteiras associadas foram totalmente drenadas.",
+  "delete": "Excluir",
+  "allSeedViewErrorDelete": "Falha ao excluir a seed. Por favor, tente novamente.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Falha ao carregar as seeds. Por favor, tente novamente.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Mostrar sementes",
+  "allSeedViewTitle": "Visualizador de sementes",
+  "allSeedViewExistingWallets": "Carteiras existentes ({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

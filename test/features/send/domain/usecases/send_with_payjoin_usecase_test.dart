@@ -1,11 +1,14 @@
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:primitives/primitives.dart' as core;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart' show WalletKey;
 
 class _MockPayjoinSender extends Mock implements PayjoinSender {}
 
@@ -22,16 +25,58 @@ PayjoinSenderSession _session() => PayjoinSenderSession(
 
 Future<core.Result<PayjoinSenderSession, SendFailure>> _start(
   PayjoinSender sender,
-) => SendWithPayjoinUsecase(sender).execute(
+) => SendWithPayjoinUsecase(sender, _SigningSpend()).execute(
   walletId: 'wallet-1',
   network: BitcoinNetwork.mainnet,
   bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
-  unsignedOriginalPsbt: 'cHNidP8=',
+  prepared: SpendFixtures.preparedBitcoin(
+    unsignedPsbt: 'cHNidP8=',
+    fee: Sats.zero,
+  ),
   amountSat: 10000,
   networkFeesSatPerVb: 2,
 );
 
 void main() {
+  test(
+    'admission receives the identical reviewed spend and signed original',
+    () async {
+      final sender = _MockPayjoinSender();
+      final spend = _HandoffSpend();
+      final prepared = SpendFixtures.preparedBitcoin(
+        unsignedPsbt: 'exact-review',
+        fee: Sats.fromInt(200),
+      );
+      when(() => sender.start(any())).thenAnswer((invocation) async {
+        final request =
+            invocation.positionalArguments.single as StartPayjoinSender;
+        expect(request.unsignedOriginalPsbt, prepared.unsignedPsbt);
+        final original = request.preparedOriginal;
+        expect(original?.signedPsbt, 'exact-signature');
+        if (original == null) fail('expected a prepared original');
+        final result = await original.admit(
+          sessionId: 'session',
+          persist: () async => fail('refused admission cannot persist'),
+        );
+        expect(result, isA<Err<void, PayjoinFailure>>());
+        return const Err(PayjoinSpendBlockedFailure(busy: true));
+      });
+
+      final result = await SendWithPayjoinUsecase(sender, spend).execute(
+        walletId: 'wallet-1',
+        network: BitcoinNetwork.mainnet,
+        bip21: 'bitcoin:recipient',
+        prepared: prepared,
+        amountSat: 10000,
+        networkFeesSatPerVb: 2,
+      );
+
+      expect((result as Err).failure, isA<SendSpendBlockedFailure>());
+      expect(spend.signedFrom, same(prepared));
+      expect(spend.admittedFrom, same(prepared));
+    },
+  );
+
   test(
     'proposal retry forwards only the retained session id and maps refusal',
     () async {
@@ -54,14 +99,18 @@ void main() {
       captured = call.positionalArguments.first as StartPayjoinSender;
       return const Err(PayjoinUnavailableFailure());
     });
-    final result = await SendWithPayjoinUsecase(sender).execute(
-      walletId: 'regtest-wallet',
-      network: BitcoinNetwork.regtest,
-      bip21: 'bitcoin:bcrt1unused?pj=https://localhost:8040/fixture',
-      unsignedOriginalPsbt: 'unused',
-      amountSat: 10000,
-      networkFeesSatPerVb: 1,
-    );
+    final result = await SendWithPayjoinUsecase(sender, _SigningSpend())
+        .execute(
+          walletId: 'regtest-wallet',
+          network: BitcoinNetwork.regtest,
+          bip21: 'bitcoin:bcrt1unused?pj=https://localhost:8040/fixture',
+          prepared: SpendFixtures.preparedBitcoin(
+            unsignedPsbt: 'unused',
+            fee: Sats.zero,
+          ),
+          amountSat: 10000,
+          networkFeesSatPerVb: 1,
+        );
     expect(result, isA<Err>());
     expect((result as Err).failure, isA<SendPayjoinUnavailableFailure>());
     expect(captured?.network, BitcoinNetwork.regtest);
@@ -159,4 +208,40 @@ void main() {
         expect(failure, isA<SendTransactionConfirmationFailure>());
     }
   });
+}
+
+final class _SigningSpend extends FakeSpend {
+  @override
+  Future<Result<SignedBitcoinSpend, SpendFailure>> signBitcoin({
+    required PreparedBitcoinSpend prepared,
+  }) async => Ok(SpendFixtures.signedBitcoin('signed-original'));
+}
+
+final class _HandoffSpend extends FakeSpend {
+  PreparedBitcoinSpend? signedFrom;
+  PreparedBitcoinSpend? admittedFrom;
+
+  @override
+  Future<Result<SignedBitcoinSpend, SpendFailure>> signBitcoin({
+    required PreparedBitcoinSpend prepared,
+  }) async {
+    signedFrom = prepared;
+    return Ok(SpendFixtures.signedBitcoin('exact-signature'));
+  }
+
+  @override
+  Future<Result<PayjoinSpendHandoff, SpendFailure>> handOffToPayjoin(
+    PreparedBitcoinSpend prepared, {
+    required WalletKey wallet,
+    required String sessionId,
+    required String signedPsbt,
+    required Future<void> Function() persist,
+  }) async {
+    admittedFrom = prepared;
+    expect(wallet.id, 'wallet-1');
+    expect(wallet.network, BitcoinNetwork.mainnet);
+    expect(sessionId, 'session');
+    expect(signedPsbt, 'exact-signature');
+    return const Err(SpendUnavailableFailure(busy: true));
+  }
 }

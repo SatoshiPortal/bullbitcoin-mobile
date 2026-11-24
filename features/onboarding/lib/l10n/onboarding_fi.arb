@@ -1,0 +1,31 @@
+{
+  "@@locale": "fi",
+  "settingsLanguageTitle": "Kieli",
+  "onboardingRecoverYourWallet": "Palauta lompakkosi",
+  "onboardingEncryptedVault": "Salattu holvi",
+  "onboardingEncryptedVaultDescription": "Palauta varmuuskopio pilvestä PIN-koodillasi.",
+  "onboardingPhysicalBackup": "Fyysinen varmuuskopio",
+  "onboardingPhysicalBackupDescription": "Palauta lompakkosi 12 sanan avulla.",
+  "onboardingRecover": "Palauta",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "Own your money",
+  "onboardingSplashDescription": "Suvereeni lompakko ja Bitcoin-pörssi.",
+  "onboardingRecoverWallet": "Palauta lompakko",
+  "onboardingRecoverWalletButton": "Palauta lompakko",
+  "onboardingCreateNewWallet": "Luo uusi lompakko",
+  "continueButton": "Jatka",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "torSettingsTitle": "Tor-asetukset",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "walletSetupErrorTryAgain": "Jotain meni pieleen lompakkoasi määritettäessä. Yritä uudelleen.",
+  "onboardingAdvancedOptionsTitle": "Lisäasetukset",
+  "onboardingAdvancedOptionsDescription": "Määritä lisäasetukset ennen lompakon luomista tai palauttamista",
+  "onboardingAdvancedOptionsCustomElectrum": "Mukautettu Electrum-palvelin",
+  "onboardingAdvancedOptionsCustomMempool": "Mukautettu Mempool-palvelin",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Mukautettu Recoverbull-palvelin",
+  "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
+  "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen."
+}

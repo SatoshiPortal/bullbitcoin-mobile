@@ -172,6 +172,7 @@ class _LabelEntryBottomSheetState extends State<_LabelEntryBottomSheet> {
     final tightGap = MediaQuery.sizeOf(context).height * 0.01;
     final gap = MediaQuery.sizeOf(context).height * 0.02;
     final hPad = MediaQuery.sizeOf(context).width * 0.04;
+    final inputHint = widget.hint ?? context.labelLoc.receiveEnterHere;
 
     return Padding(
       // max(): the keyboard inset already covers the home-indicator area
@@ -246,34 +247,44 @@ class _LabelEntryBottomSheetState extends State<_LabelEntryBottomSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BullText(
-                  widget.title,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  color: context.bull.secondary,
-                ),
-                const Gap(4),
-                TextFormField(
-                  controller: _controller,
-                  autofocus: true,
-                  maxLength: NoteValidator.maxNoteLength,
-                  maxLines: 1,
-                  inputFormatters: [
-                    // Strip newline / tab / carriage return on type or paste.
-                    FilteringTextInputFormatter.deny(RegExp(r'[\n\t\r]')),
-                  ],
-                  style: context.bullType.body.copyWith(
+                ExcludeSemantics(
+                  child: BullText(
+                    widget.title,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.bull.secondary,
                   ),
-                  decoration: InputDecoration(
-                    isCollapsed: true,
-                    border: InputBorder.none,
-                    hintText: widget.hint ?? context.labelLoc.receiveEnterHere,
-                    hintStyle: context.bullType.body.copyWith(
-                      color: context.bull.onSurfaceVariant,
+                ),
+                const Gap(4),
+                Semantics(
+                  label: widget.title,
+                  hint: inputHint,
+                  child: TextFormField(
+                    controller: _controller,
+                    autofocus: true,
+                    maxLength: NoteValidator.maxNoteLength,
+                    maxLines: 1,
+                    inputFormatters: [
+                      // Strip newline / tab / carriage return on type or paste.
+                      FilteringTextInputFormatter.deny(RegExp(r'[\n\t\r]')),
+                    ],
+                    style: context.bullType.body.copyWith(
+                      color: context.bull.secondary,
                     ),
-                    counterText: '',
+                    decoration: InputDecoration(
+                      isCollapsed: true,
+                      border: InputBorder.none,
+                      hint: ExcludeSemantics(
+                        child: Text(
+                          inputHint,
+                          style: context.bullType.body.copyWith(
+                            color: context.bull.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      counterText: '',
+                    ),
                   ),
                 ),
               ],

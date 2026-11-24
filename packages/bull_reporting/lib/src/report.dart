@@ -46,6 +46,12 @@ class Report {
   /// SQLite write notify here.
   static bool consent = false;
 
+  /// Refreshes the in-memory gate once the primary preference store is ready.
+  /// Unlike [updateConsent], this does not rewrite the startup mirror.
+  static Future<void> refreshConsent(Future<bool> Function() read) async {
+    consent = await read();
+  }
+
   /// Populates version context and the consent mirror so events fired
   /// during `Bull.init` (FSS fallback, Drift schema, etc.) carry
   /// from/to tags and so `SentryFlutter.init` can read consent. Safe

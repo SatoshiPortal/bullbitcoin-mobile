@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, FormatAmount, ScriptType;
@@ -5,11 +6,10 @@ import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -20,18 +20,18 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullDropdown,
         bullUiLocalizationsDelegate;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../coins/wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 class _MockSendCubit extends Mock implements SendCubit {}
 
@@ -93,7 +93,7 @@ void main() {
   for (final entry in <String, PaymentRequest>{
     'PSBT': const PaymentRequest.psbt(psbt: 'cHNidP8='),
     'Bitcoin address · 2,500 sats from the QR': const PaymentRequest.bip21(
-      network: Network.bitcoinMainnet,
+      network: BitcoinNetwork.mainnet,
       uri: 'bitcoin:bc1qfirst?amount=0.000025',
       address: 'bc1qfirst',
       amountSat: 2500,
@@ -203,7 +203,7 @@ void main() {
         wallets: [wallet],
         selectedWallet: SendWalletBitcoin(wallet),
         paymentRequest: const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qfirst?amount=0.000025',
           address: 'bc1qfirst',
           amountSat: 2500,

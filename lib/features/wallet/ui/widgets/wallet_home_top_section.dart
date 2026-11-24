@@ -1,7 +1,7 @@
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:settings/settings.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -9,7 +9,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullAmount, BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
-import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
@@ -113,15 +112,9 @@ class _Amounts extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Gap(WalletHomeTopSection._balanceTopSpacing),
-        Center(
-          child: IntrinsicWidth(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [_BtcTotalAmt(), Gap(12), _FiatAmt()],
-            ),
-          ),
-        ),
+        _BtcTotalAmt(),
+        Gap(12),
+        _FiatAmt(),
         Gap(8),
         _UnconfirmedIncomingBalance(),
       ],
@@ -149,14 +142,11 @@ class _BtcTotalAmt extends StatelessWidget {
     final btcTotal = walletState.totalBalance();
     if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
-    return _HomeBalanceFrame(
-      tint: context.appColors.bitcoinOrange,
-      child: BullAmount.signedSats(
-        btcTotal,
-        interactive: true,
-        style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
-        color: context.appColors.onPrimary,
-      ),
+    return BullAmount.signedSats(
+      btcTotal,
+      interactive: true,
+      style: context.bullType.headline,
+      color: context.appColors.onPrimary,
     );
   }
 }
@@ -174,45 +164,11 @@ class _FiatAmt extends StatelessWidget {
     final total = walletState.totalBalance();
     if (total == null) return Text(context.loc.walletLoadFailed);
     return HomeFiatBalance(
-      onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
+      onCurrencyChanged: Settings.changeDisplayCurrency,
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
-      frameBuilder: (context, child) => _HomeBalanceFrame(
-        tint: context.appColors.border,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: child,
-        ),
-      ),
     );
   }
-}
-
-/// Matches the unit toggle's minimum height for both balance controls.
-class _HomeBalanceFrame extends StatelessWidget {
-  const _HomeBalanceFrame({required this.tint, required this.child});
-
-  final Color tint;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 6),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(context.bullShapes.button),
-      border: Border.all(color: tint.withValues(alpha: 0.3)),
-      color: tint.withValues(alpha: 0.3),
-    ),
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 48),
-      child: Align(
-        alignment: Alignment.centerRight,
-        widthFactor: 1,
-        heightFactor: 1,
-        child: child,
-      ),
-    ),
-  );
 }
 
 class _WalletHomeBtcAmountSkeleton extends StatelessWidget {
@@ -271,7 +227,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
     final color = context.appColors.onPrimary;
     return GestureDetector(
       onTap: () {
-        context.pushNamed(TransactionsRoute.transactions.name);
+        TransactionsNavigation.openHistory(context);
       },
       child: Center(
         child: Column(

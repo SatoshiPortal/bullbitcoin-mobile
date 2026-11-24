@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 import 'dart:io';
@@ -19,13 +18,13 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:rust_bindings/testing.dart' show BullSdk, BullSdkApi;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 
 import 'support/wallet_model.dart';
@@ -35,8 +34,7 @@ import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockMetadataDatasource extends Mock
-    implements WalletMetadataDatasource {}
+class _MockMetadataDatasource extends Mock implements WalletRegistrations {}
 
 class _Spender extends Mock implements WalletSpender {}
 
@@ -46,9 +44,7 @@ class _Pset extends Mock implements lwk.PartiallySignedElementsTransaction {}
 
 class _Transaction extends Mock implements lwk.LiquidTransaction {}
 
-class _MockValues extends Mock implements SyncWalletValuesDatasource {}
-
-class _MockFrozenDatasource extends Mock implements SyncFreezesDatasource {}
+class _MockFrozenDatasource extends Mock implements CoinFreezes {}
 
 void main() {
   const walletId = 'elwpkh([73c5da0a/84h/1h/0h])';
@@ -59,7 +55,6 @@ void main() {
   late sync.Wallet wallet;
   late int walletOpens;
   final sdk = _Sdk();
-  late _MockValues values;
   late _MockFrozenDatasource frozen;
   late LiquidWalletRepository repository;
   late Result<UnsignedSpend, SyncFailure> built;
@@ -94,7 +89,6 @@ void main() {
     spender = _Spender();
     walletOpens = 0;
     reset(sdk);
-    values = _MockValues();
     frozen = _MockFrozenDatasource();
     store = FakeSecureStoragePlatform()..install();
     final scratch = Directory.systemTemp.createTempSync('ben-liquid-test-');
@@ -104,13 +98,12 @@ void main() {
       spender: spender,
     );
     repository = LiquidWalletRepository(
-      walletMetadataDatasource: metadata,
+      walletRegistrations: metadata,
       secrets: Secrets(scratchDirectory: () async => scratch.path),
       wallet: (_) async {
         walletOpens++;
         return Ok(wallet);
       },
-      walletValuesDatasource: values,
       freezesDatasource: frozen,
       // The address check needs lwk's native library; these tests cover
       // selection, so they accept every address.

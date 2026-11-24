@@ -1,0 +1,10 @@
+{
+  "@@locale": "pt",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "Passphrase opcional",
+  "recipientsInfoLabel": "Etiqueta",
+  "requiredHint": "Requisitos",
+  "submitButton": "Submeter-me",
+  "emptyMnemonicWordsError": "Digite todas as palavras de seu mnemônico",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal"
+}

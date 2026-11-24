@@ -1,33 +1,31 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:address_view/address_view.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
-class _MockGetReceiveAddressUsecase extends Mock
-    implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
 void main() {
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late _MockGetWalletUsecase getWallet;
   late _MockGetReceiveAddressUsecase getReceiveAddress;
   late CreateSendSwapUsecase usecase;
   final now = DateTime.utc(2026, 8, 5, 12);
 
   setUp(() {
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     getWallet = _MockGetWalletUsecase();
     getReceiveAddress = _MockGetReceiveAddressUsecase();
     usecase = CreateSendSwapUsecase(
@@ -75,8 +73,8 @@ void main() {
         final invoice = _invoice(amountSat: 1000, isTestnet: isTestnet);
         when(() => getWallet.execute('wallet-1'))
             .thenAnswer((_) async => _wallet(network));
-        when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
-            .thenAnswer((_) async => _address(address: fallback));
+        when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+            .thenAnswer((_) async => Ok(_address(address: fallback)));
         when(
           () => swapFacade.createOrder(
             amountSat: BigInt.from(1000),
@@ -122,8 +120,8 @@ void main() {
     final invoice = _invoice(amountSat: 0);
     when(() => getWallet.execute('wallet-1'))
         .thenAnswer((_) async => _wallet(Network.bitcoinTestnet));
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
-        .thenAnswer((_) async => _address());
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+        .thenAnswer((_) async => Ok(_address()));
     when(
       () => swapFacade.createOrder(
         amountSat: BigInt.from(2000),
@@ -193,7 +191,7 @@ void main() {
       isA<SendHardwareWalletFailure>(),
     );
     verifyNever(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
     );
     verifyZeroInteractions(swapFacade);
   });

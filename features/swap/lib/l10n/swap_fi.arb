@@ -1,0 +1,162 @@
+{
+  "@@locale": "fi",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "save": "Tallenna",
+  "addressLabel": "Osoite: ",
+  "amountRequestedLabel": "Pyydetty määrä: {amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Kun tämä on pois käytöstä, sinulle tarjotaan mahdollisuus sallia automaattinen swap, joka on estetty korkeiden kulujen vuoksi",
+  "autoswapAlwaysBlockInfoEnabled": "Kun tämä on käytössä, automaattiset swapit, joiden kulut ylittävät asetetun rajan, estetään aina",
+  "autoswapAlwaysBlockLabel": "Älä swappaa korkeilla kuluilla",
+  "autoswapBaseBalanceInfoText": "Pikaisen maksulompakon saldo palaa tähän tavoitesaldoon automaattisen swapin jälkeen.",
+  "autoswapEnableToggleLabel": "Ota automaattiset swapit käyttöön",
+  "autoswapLoadSettingsError": "Automaattisen swapin asetusten lataus epäonnistui",
+  "autoswapMaxBalanceLabel": "Pikamaksulompakon enimmäissaldo",
+  "autoswapMaxFeeInfoText": "Jos swapin kokonaiskulu ylittää asetetun prosenttiosuuden, automaattinen swap estetään",
+  "autoswapMaxFeeLabel": "Swapin enimmäiskulu",
+  "autoswapMaximumBalanceLabel": "Instant Wallet -enimmäissaldo",
+  "autoswapMaximumFeeError": "Suurin kuluraja on {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Minimisaldon raja on {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Minimisaldon raja on {amount} sat",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Valitse, mikä Bitcoin-lompakko vastaanottaa swapatut varat (pakollinen)",
+  "autoswapRecipientWalletLabel": "Vastaanottajan Bitcoin-lompakko",
+  "autoswapRecipientWalletPlaceholder": "Valitse Bitcoin-lompakko",
+  "autoswapRecipientWalletPlaceholderRequired": "Valitse Bitcoin-lompakko *",
+  "autoswapRecipientWalletRequired": "*",
+  "autoswapSaveButton": "Tallenna",
+  "autoswapSelectWalletError": "Valitse vastaanottajan Bitcoin-lompakko",
+  "autoswapSettingsTitle": "Automaattisen swapin asetukset",
+  "autoswapTargetBalanceLabel": "Instant Wallet -tavoitesaldo",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap aktivoituu, kun saldosi ylittää tämän suurimman saldon.",
+  "autoswapTriggerBalanceError": "Maksimi-saldo on oltava vähintään kaksi kertaa tavoitesaldo.",
+  "autoswapUpdateSettingsError": "Automaattisen swapin asetusten päivitys epäonnistui",
+  "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.",
+  "closeDialogButton": "Sulje",
+  "coinsKeychainChange": "Vaihtoraha",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Vastaanota",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Yhdistä lompakko",
+  "coreScreensAmountLabel": "Määrä",
+  "coreScreensConfirmButton": "Vahvista",
+  "coreScreensExternalTransfer": "Ulkoinen swap",
+  "coreScreensFeeDeductionExplanation": "Tämä on kokonaismaksu, joka vähennetään lähetetystä summasta",
+  "coreScreensFeePriorityLabel": "Maksun prioriteetti",
+  "coreScreensFromLabel": "Lähde",
+  "coreScreensInternalTransfer": "Sisäinen swap",
+  "coreScreensNetworkFeesLabel": "Verkkomaksut",
+  "coreScreensReceiveAmountLabel": "Vastaanotettava määrä",
+  "coreScreensReceiveNetworkFeeLabel": "Vastaanoton verkkomaksu",
+  "coreScreensSendAmountLabel": "Lähetettävä määrä",
+  "coreScreensSendNetworkFeeLabel": "Lähetyksen verkkokulut",
+  "coreScreensServerNetworkFeesLabel": "Palvelimen verkkomaksut",
+  "coreScreensToLabel": "Kohde",
+  "coreScreensTransferFeeLabel": "Swap-kulu",
+  "coreScreensTransferIdLabel": "Swap-tunnus",
+  "doneButton": "Valmis",
+  "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
+  "globalDefaultLiquidWalletLabel": "Pikamaksulompakko",
+  "payNetworkError": "Verkkovirhe. Yritä uudelleen",
+  "receiveNote": "Kuvaus",
+  "selectAmountTitle": "Valitse määrä",
+  "sendAdvancedOptions": "Lisäasetukset",
+  "sendDone": "Valmis",
+  "sendErrorBuildFailed": "Tätä maksua ei voitu valmistella. Yritä uudelleen.",
+  "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
+  "sendFastFee": "Nopea",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Replace-by-fee aktivoitu",
+  "sendSelectCoinsManually": "Valitse kolikot manuaalisesti",
+  "sendSelectedUtxosInsufficient": "Valitut UTXO:t eivät kata vaadittua määrää",
+  "sendSelfTransfer": "Siirto itselle",
+  "swapAmountLabel": "Määrä",
+  "swapAmountPlaceholder": "0",
+  "swapAvailableBalance": "Käytettävissä oleva saldo",
+  "swapConfirmTransferTitle": "Vahvista swap",
+  "swapContinueButton": "Jatka",
+  "swapDoNotUninstallWarning": "Älä poista sovellusta ennen kuin swap on valmis!",
+  "swapErrorAmountAboveMaximum": "Määrä ylittää suurimman sallitun siirtomäärän: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Määrä on alle minimisiirtomäärän: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Syötä ulkoinen lompakon osoite",
+  "swapExternalTransferLabel": "Ulkoinen swap",
+  "swapFromLabel": "Lähteestä",
+  "swapGoHomeButton": "Palaa kotisivulle",
+  "swapInfoDescription": "Swappaa Bitcoinia sujuvasti lompakoidesi välillä. Säilytä varoja pikamaksulompakossa vain päivittäistä käyttöä varten.",
+  "swapInsufficientFunds": "Riittämättömät varat",
+  "swapInternalTransferTitle": "Sisäinen swap",
+  "swapMaxButton": "Maksimi",
+  "swapReceiveExactAmountLabel": "Vastaanota tarkka määrä",
+  "swapSubtractFeesLabel": "Vähennä kulut määrästä",
+  "swapToLabel": "Kohteeseen",
+  "swapTotalFees": "Kokonaiskulut ",
+  "swapTransferCompletedMessage": "Hienoa, odotit! Swap on suoritettu onnistuneesti.",
+  "swapTransferCompletedTitle": "Swap suoritettu",
+  "swapTransferPendingMessage": "Swap on käynnissä. Bitcoin-transaktiot voivat kestää hetken vahvistua. Voit palata kotisivulle ja odottaa.",
+  "swapTransferPendingTitle": "Swap vireillä",
+  "swapTransferRefundInProgressMessage": "Swapissa tapahtui virhe. Hyvityksesi on käynnissä.",
+  "swapTransferRefundInProgressTitle": "Swapin hyvitys käynnissä",
+  "swapTransferRefundedMessage": "Swap on hyvitetty onnistuneesti.",
+  "swapTransferRefundedTitle": "Swap hyvitetty",
+  "swapTransferTitle": "Swap",
+  "swapUnderReviewDescription": "Tämä swap vaatii manuaalisen tarkistuksen. Ota yhteyttä tukeen saadaksesi apua. Jos sinulla ei ole tukitiliä, sinun tarvitsee vain luoda sellainen; KYC ei ole pakollinen.",
+  "swapUnderReviewSupportMessage": "Swap tarkistettavana\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "swapUnderReviewTitle": "Swap tarkistettavana",
+  "swapValidationSelectFromWallet": "Valitse lompakko, josta swap tehdään",
+  "swapValidationSelectToWallet": "Valitse lompakko, johon swap tehdään",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLightning": "Lightning",
+  "transactionNetworkLiquid": "Liquid",
+  "transactionStatusSwapExpired": "Vanhentunut swap",
+  "transactionStatusSwapFailed": "Swap epäonnistui",
+  "transactionSwapDescChainExpired": "Tämä swap on vanhentunut. Varat palautetaan automaattisesti lompakkoosi.",
+  "transactionSwapDescChainFailed": "Swapissa ilmeni ongelma. Ota yhteyttä tukeen, jos varoja ei ole palautettu 24 tunnin kuluessa.",
+  "transactionSwapOpenWithin24h": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapisi.",
+  "typeLabel": "Tyyppi: ",
+  "walletLoadFailed": "Lompakoitasi ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+}

@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 

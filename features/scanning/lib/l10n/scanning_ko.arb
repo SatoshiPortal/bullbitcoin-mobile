@@ -1,0 +1,46 @@
+{
+  "@@locale": "ko",
+  "scanningProgressLabel": "스캐닝: {percent} %",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR 진행: {parts} 부품",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "스캔 완료",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR 해독 실패",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR 처리 실패",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "검사 NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "NFC 연결이 끊어졌습니다. 기기를 NFC 태그 가까이에 대고 다시 시도해 주세요.",
+  "nfcWriteFailed": "NFC 전송에 실패했습니다. 다시 시도해 주세요.",
+  "nfcDisabled": "NFC가 비활성화되어 있습니다. 설정에서 활성화해 주세요.",
+  "nfcNotAvailable": "이 기기는 NFC를 지원하지 않습니다",
+  "nfcFailed": "인기 있는 뭔가 잘못되었습니다",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "지원되는 NFC 데이터를 찾을 수 없습니다"
+}

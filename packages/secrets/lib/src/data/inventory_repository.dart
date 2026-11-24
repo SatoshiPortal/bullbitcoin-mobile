@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sqlite3/sqlite3.dart' show SqliteException, SqlExtendedError;
 
 import '../domain/domain.dart';
+import '../domain/metadata_backup_wallet.dart';
 import '../domain/registered_wallet.dart';
 import '../domain/wallet_registration.dart';
 import 'boundary.dart';
@@ -23,6 +23,103 @@ final class InventoryRepository {
         return List.unmodifiable(rows.map((row) => _decode(row.data)));
       }, orElse: FetchSecretFailure.new);
 
+  Future<Result<List<MetadataBackupWallet>, SecretFailure>>
+  metadataBackupWallets(String view) => boundary(() async {
+    final rows = await _listRows(view);
+    return List.unmodifiable([
+      for (final row in rows) _metadataBackupWallet(row),
+    ]);
+  }, orElse: FetchSecretFailure.new);
+
+  MetadataBackupWallet _metadataBackupWallet(QueryRow row) {
+    final id = row.read<String>('id');
+    final registration = decodeWalletRegistration(row.data);
+    final secret = registration?.secretFingerprint;
+    if (registration == null || secret == null) {
+      return MetadataBackupWallet(id: id);
+    }
+    final network = registration.network;
+    final descriptors = <String>[];
+    if (network is BitcoinNetwork) {
+      final external = row.read<String>('external_descriptor');
+      final internal = row.read<String>('internal_descriptor');
+      if (!isPublicBitcoinBackupDescriptor(external) ||
+          !isPublicBitcoinBackupDescriptor(internal)) {
+        return MetadataBackupWallet(id: id);
+      }
+      descriptors.addAll([external, internal]);
+    }
+    return MetadataBackupWallet(
+      id: id,
+      network: network,
+      secret: secret,
+      label: registration.label,
+      isDefault: registration.isDefault,
+      bitcoinPublicDescriptors: descriptors,
+    );
+  }
+
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints(
+    String view,
+  ) => boundary(() async {
+    final rows = await _listRows(view);
+    final fingerprints = <Fingerprint>{
+      for (final row in rows)
+        ?Fingerprint.tryParse(row.read<String>('master_fingerprint')),
+    };
+    return List.unmodifiable(fingerprints);
+  }, orElse: FetchSecretFailure.new);
+
+  Future<Result<List<WalletRegistration>, SecretFailure>> listDefaults(
+    String view,
+  ) => boundary(() async {
+    final rows = await _listRows(view, defaultsOnly: true);
+    return List.unmodifiable([
+      for (final row in rows) ?decodeWalletRegistration(row.data),
+    ]);
+  }, orElse: FetchSecretFailure.new);
+
+  Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>> recoveryWallets(
+    String view,
+  ) async {
+    final rows = await boundary(
+      () => _listRows(view),
+      orElse: FetchSecretFailure.new,
+    );
+    if (rows case Err(:final failure)) return Err(failure);
+    final wallets = <BitcoinRecoveryWallet>[];
+    for (final row in (rows as Ok<List<QueryRow>, SecretFailure>).value) {
+      if (row.data case {'signer': 'local', 'network': final String code}
+          when code.startsWith('bitcoin')) {
+        final registration = decodeWalletRegistration(row.data);
+        if (registration case WalletRegistration(
+          network: final BitcoinNetwork network,
+          secretFingerprint: final Fingerprint fingerprint,
+        )) {
+          final data = row.data;
+          if (data case {
+            'external_descriptor': final String external,
+            'internal_descriptor': final String internal,
+          }) {
+            wallets.add(
+              BitcoinRecoveryWallet(
+                id: registration.id,
+                network: network,
+                fingerprint: fingerprint,
+                scriptType: registration.scriptType,
+                isDefault: registration.isDefault,
+                descriptors: (external: external, internal: internal),
+              ),
+            );
+            continue;
+          }
+        }
+        return const Err(UnreadableWalletFailure());
+      }
+    }
+    return Ok(List.unmodifiable(wallets));
+  }
+
   Future<Result<WalletSelection, SecretFailure>> listForNetwork(
     String view,
     Network network,
@@ -39,14 +136,22 @@ final class InventoryRepository {
       ];
       return rows.isNotEmpty && wallets.isEmpty
           ? const Err(UnreadableWalletFailure())
-          : Ok(WalletSelection(wallets));
+          : Ok(
+              WalletSelection(
+                wallets,
+                isComplete: wallets.length == rows.length,
+              ),
+            );
     }, Err.new);
   }
 
-  Future<List<QueryRow>> _listRows(String view, {String? networkCode}) =>
-      _database
-          .customSelect(
-            '''
+  Future<List<QueryRow>> _listRows(
+    String view, {
+    String? networkCode,
+    bool defaultsOnly = false,
+  }) => _database
+      .customSelect(
+        '''
           SELECT w.*
           FROM wallets w
           WHERE EXISTS (
@@ -55,15 +160,16 @@ final class InventoryRepository {
                 THEN 'wallet:' || w.id ELSE 'secret:' || w.secret_fingerprint END
           )
           ${networkCode == null ? '' : 'AND w.network = ?'}
+          ${defaultsOnly ? 'AND w.is_default = 1' : ''}
           ORDER BY w.id
           ''',
-            variables: [
-              Variable(view),
-              if (networkCode != null) Variable(networkCode),
-            ],
-            readsFrom: {_database.wallets, _database.viewMembers},
-          )
-          .get();
+        variables: [
+          Variable(view),
+          if (networkCode != null) Variable(networkCode),
+        ],
+        readsFrom: {_database.wallets, _database.viewMembers},
+      )
+      .get();
 
   Future<Result<RegisteredWallet?, SecretFailure>> find(
     String view,
@@ -143,48 +249,57 @@ final class InventoryRepository {
   Future<Result<void, SecretFailure>> register(
     RegisteredWallet wallet, {
     required String view,
-  }) => boundary(
-    () => _database.transaction(() async {
-      final secret = wallet.secretFingerprint;
-      if (wallet.signer == 'local'
-          ? secret != wallet.masterFingerprint || secret == null
-          : secret != null) {
-        throw const _InvalidRegistration();
-      }
-      final member = secret == null ? 'wallet:${wallet.id}' : 'secret:$secret';
-      try {
-        await _database
-            .into(_database.wallets)
-            .insert(
-              WalletsCompanion.insert(
-                id: wallet.id,
-                secretFingerprint: Value(secret),
-                masterFingerprint: wallet.masterFingerprint,
-                signer: wallet.signer,
-                network: wallet.network,
-                xpub: wallet.xpub,
-                externalDescriptor: wallet.externalDescriptor,
-                internalDescriptor: wallet.internalDescriptor,
-                label: Value(wallet.label),
-                birthday: Value(wallet.birthday),
-                isDefault: wallet.isDefault,
-              ),
-            );
-      } on SqliteException catch (error) {
-        if (error.extendedResultCode ==
-            SqlExtendedError.SQLITE_CONSTRAINT_PRIMARYKEY) {
-          throw const _InvalidRegistration();
-        }
-        rethrow;
-      }
-      await _database
-          .into(_database.viewMembers)
-          .insertOnConflictUpdate(
-            ViewMembersCompanion.insert(viewId: view, member: member),
-          );
-    }),
-    orElse: StoreSecretFailure.new,
-  );
+    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+  }) =>
+      boundary(
+        () => _database.transaction(() async {
+          final secret = wallet.secretFingerprint;
+          if (wallet.signer == 'local'
+              ? secret != wallet.masterFingerprint || secret == null
+              : secret != null) {
+            throw const _InvalidRegistration();
+          }
+          final member = secret == null
+              ? 'wallet:${wallet.id}'
+              : 'secret:$secret';
+          final inserted = await _database
+              .into(_database.wallets)
+              .insertReturningOrNull(
+                WalletsCompanion.insert(
+                  id: wallet.id,
+                  secretFingerprint: Value(secret),
+                  masterFingerprint: wallet.masterFingerprint,
+                  signer: wallet.signer,
+                  network: wallet.network,
+                  xpub: wallet.xpub,
+                  externalDescriptor: wallet.externalDescriptor,
+                  internalDescriptor: wallet.internalDescriptor,
+                  label: Value(wallet.label),
+                  birthday: Value(wallet.birthday),
+                  isDefault: wallet.isDefault,
+                ),
+                onConflict: DoNothing(target: [_database.wallets.id]),
+              );
+          if (inserted == null) return false;
+          if (await prepareProperties?.call() case Err()) {
+            throw const _InvalidRegistration();
+          }
+          await _database
+              .into(_database.viewMembers)
+              .insertOnConflictUpdate(
+                ViewMembersCompanion.insert(viewId: view, member: member),
+              );
+          return true;
+        }),
+        orElse: StoreSecretFailure.new,
+      ).then(
+        (result) => result.fold(
+          (inserted) => inserted
+              ? const Ok(null)
+              : const Err(WalletAlreadyRegisteredFailure()),
+          Err.new,
+        ),
+      );
 
   Future<Result<void, SecretFailure>> updateProperties({
     required String view,

@@ -668,7 +668,7 @@ packages:
     source: hosted
     version: "2.35.3"
   drift_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: drift_flutter
       sha256: "91acf4bee7c3c84467cba46455aa70e5292a3b889f4582645d74f2e5a8c106f2"
@@ -2214,7 +2214,7 @@ packages:
     source: hosted
     version: "0.11.2"
   toml:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: toml
       sha256: "35a35f782228656a2af31e8c73d1353cc4ef3d683fd68af1111b44631879c05e"

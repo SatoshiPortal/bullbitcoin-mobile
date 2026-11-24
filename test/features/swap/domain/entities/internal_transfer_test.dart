@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swap_feature/testing.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../internal_transfer_fixture.dart';

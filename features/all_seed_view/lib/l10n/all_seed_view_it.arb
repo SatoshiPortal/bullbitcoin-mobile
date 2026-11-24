@@ -1,0 +1,50 @@
+{
+  "allSeedViewDeleteSwapMnemonicMessage": "Questa operazione rimuove la chiave master degli swap dall'archivio sicuro. Verrà ricavata di nuovo dalla frase di recupero del portafoglio la prossima volta che l'app ne avrà bisogno, con la stessa impronta. Gli swap in corso non vengono toccati.",
+  "allSeedViewSecurityWarningMessage": "Mostrare le frasi di recupero è un rischio per la sicurezza. Chiunque veda la tua frase di recupero può accedere ai tuoi fondi. Assicurati di essere in un luogo privato e che nessuno possa vedere lo schermo.",
+  "cancel": "Annulla",
+  "allSeedViewLoadingMessage": "Il caricamento potrebbe richiedere un po' di tempo se su questo dispositivo ci sono molte frasi di recupero.",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "allSeedViewNoSeedsFound": "Nessuna frase di recupero trovata.",
+  "allSeedViewSecurityWarningTitle": "Avviso di sicurezza",
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "allSeedViewOldWallets": "Vecchi portafogli ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Ho capito",
+  "allSeedViewDeleteWarningTitle": "ATTENZIONE!",
+  "allSeedViewDeleteWarningMessage": "Eliminare la frase di recupero è un'azione irreversibile. Fallo solo se ne hai un backup sicuro o se i portafogli associati sono stati completamente svuotati.",
+  "delete": "Elimina",
+  "allSeedViewErrorDelete": "Impossibile eliminare la frase di recupero. Riprova.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Impossibile caricare le frasi di recupero. Riprova.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Mostra le frasi di recupero",
+  "allSeedViewSwapLinkedWallet": "Portafoglio collegato: {fingerprint}",
+  "allSeedViewDeleteSwapMnemonicTitle": "Eliminare la frase mnemonica degli swap?",
+  "allSeedViewTitle": "Frasi di recupero",
+  "allSeedViewSwapMnemonicTitle": "Frase mnemonica degli swap",
+  "allSeedViewSwapFingerprint": "Impronta: {fingerprint} ({network})",
+  "allSeedViewExistingWallets": "Portafogli esistenti ({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}
