@@ -2,6 +2,8 @@
 /// or transport answer into exactly one of these; nothing else reaches a flow.
 library;
 
+import 'exchange_failure.dart' show ExchangeOrderAmountBound;
+
 /// Why the exchange refused a call: codes only, never the server's text,
 /// which can quote account details.
 final class ExchangeRefusal {
@@ -9,22 +11,62 @@ final class ExchangeRefusal {
   final String? apiCode;
   final int? httpStatus;
 
-  const ExchangeRefusal({this.rpcCode, this.apiCode, this.httpStatus});
+  /// Set when the exchange refused an order for its amount: the bound it
+  /// broke, in the currency it names.
+  final ExchangeOrderLimit? orderLimit;
+
+  /// The exchange refused a Confidential SEPA payout because the recipient's
+  /// virtual payee is not active.
+  final bool payeeInactive;
+
+  const ExchangeRefusal({
+    this.rpcCode,
+    this.apiCode,
+    this.httpStatus,
+    this.orderLimit,
+    this.payeeInactive = false,
+  });
 
   @override
   bool operator ==(Object other) =>
       other is ExchangeRefusal &&
       other.rpcCode == rpcCode &&
       other.apiCode == apiCode &&
-      other.httpStatus == httpStatus;
+      other.httpStatus == httpStatus &&
+      other.orderLimit == orderLimit &&
+      other.payeeInactive == payeeInactive;
 
   @override
-  int get hashCode => Object.hash(rpcCode, apiCode, httpStatus);
+  int get hashCode =>
+      Object.hash(rpcCode, apiCode, httpStatus, orderLimit, payeeInactive);
 
   @override
   String toString() =>
       'ExchangeRefusal(rpcCode: $rpcCode, apiCode: $apiCode, '
-      'httpStatus: $httpStatus)';
+      'httpStatus: $httpStatus, orderLimit: $orderLimit, '
+      'payeeInactive: $payeeInactive)';
+}
+
+/// The order amount bound the exchange refused an order for.
+final class ExchangeOrderLimit {
+  final ExchangeOrderAmountBound bound;
+  final double amount;
+  final String currency;
+
+  const ExchangeOrderLimit(this.bound, this.amount, this.currency);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExchangeOrderLimit &&
+      other.bound == bound &&
+      other.amount == amount &&
+      other.currency == currency;
+
+  @override
+  int get hashCode => Object.hash(bound, amount, currency);
+
+  @override
+  String toString() => 'ExchangeOrderLimit(${bound.name}, $amount $currency)';
 }
 
 /// Why a call never left the app.

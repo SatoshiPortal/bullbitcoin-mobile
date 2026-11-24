@@ -66,9 +66,25 @@ void main() {
           code: -32000,
         ),
         isA<WriteRefused<int>>().having(
-          (r) => r.reason.rpcCode,
-          'rpcCode',
-          -32000,
+          (r) => r.reason,
+          'reason',
+          const ExchangeRefusal(
+            rpcCode: -32000,
+            orderLimit: ExchangeOrderLimit(
+              ExchangeOrderAmountBound.minimum,
+              20,
+              'CAD',
+            ),
+          ),
+        ),
+      ),
+      (
+        'an inactive Confidential SEPA payee',
+        const bbx.BbxConfidentialSepaInactiveFailure(code: -32000),
+        isA<WriteRefused<int>>().having(
+          (r) => r.reason,
+          'reason',
+          const ExchangeRefusal(rpcCode: -32000, payeeInactive: true),
         ),
       ),
       (
