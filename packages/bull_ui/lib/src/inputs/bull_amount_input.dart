@@ -680,8 +680,10 @@ class _BullAmountInputState extends State<BullAmountInput> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (centerControls && unitInset > fieldInset)
-              SizedBox(width: unitInset - fieldInset),
+            // Keep the editor at a stable child index as the number changes.
+            SizedBox(
+              width: centerControls ? math.max(0, unitInset - fieldInset) : 0,
+            ),
             Flexible(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
@@ -787,8 +789,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
               ),
             // Keep the visible number/unit pair centred without shrinking the
             // editor's 48 dp pointer and semantics target for a short number.
-            if (centerControls && fieldInset > unitInset)
-              SizedBox(width: fieldInset - unitInset),
+            SizedBox(
+              width: centerControls ? math.max(0, fieldInset - unitInset) : 0,
+            ),
           ],
         );
       },
