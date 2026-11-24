@@ -15,6 +15,8 @@ extension LimitOrderFailureMessage on ExchangeFailure {
         context.loc.limitOrderCancellationError,
       ExchangeLimitOrderProblem.notFound => context.loc.limitOrderNotFoundError,
       ExchangeLimitOrderProblem.create => context.loc.limitOrderCreationError,
+      ExchangeLimitOrderProblem.createOutcomeUnknown =>
+        context.loc.limitOrderCreationOutcomeUnknownError,
       ExchangeLimitOrderProblem.maximumActive =>
         context.loc.limitOrdersMaximumActiveError,
       ExchangeLimitOrderProblem.invalidAddress =>

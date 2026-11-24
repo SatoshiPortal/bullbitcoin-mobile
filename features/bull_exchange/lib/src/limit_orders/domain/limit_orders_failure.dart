@@ -40,6 +40,12 @@ final class LimitOrderCreationFailure extends LimitOrdersFailure {
   const LimitOrderCreationFailure([super.logMessage]);
 }
 
+/// The create request may have reached the exchange without a readable
+/// answer, so the limit order may exist. Confirm is not offered again.
+final class LimitOrderCreationOutcomeUnknownFailure extends LimitOrdersFailure {
+  const LimitOrderCreationOutcomeUnknownFailure([super.logMessage]);
+}
+
 final class LimitOrderCancellationFailure extends LimitOrdersFailure {
   const LimitOrderCancellationFailure([super.logMessage]);
 }

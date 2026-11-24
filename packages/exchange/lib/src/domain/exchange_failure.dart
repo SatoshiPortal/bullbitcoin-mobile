@@ -170,6 +170,10 @@ final class ExchangeChatLoadAttachmentFailure extends ExchangeFailure {
 enum ExchangeLimitOrderProblem {
   load,
   create,
+
+  /// The create may have reached the exchange without a readable answer: the
+  /// limit order may exist, so it is never offered again.
+  createOutcomeUnknown,
   cancel,
   maximumActive,
   notFound,

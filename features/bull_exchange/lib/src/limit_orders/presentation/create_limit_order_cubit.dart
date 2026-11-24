@@ -8,6 +8,7 @@ import 'package:bull_exchange/src/limit_orders/domain/usecases/load_limit_order_
 import 'package:bull_exchange/src/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/create_limit_order_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
@@ -223,6 +224,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
     if (currency == null ||
         wallet == null ||
         state.isSubmitting ||
+        state.isCreateOutcomeUnknown ||
         state.amountLimitViolation != null) {
       return;
     }
@@ -245,7 +247,14 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
           ),
         );
       case Err(:final failure):
-        emit(state.copyWith(isSubmitting: false, failure: failure));
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            failure: failure,
+            isCreateOutcomeUnknown:
+                failure is LimitOrderCreationOutcomeUnknownFailure,
+          ),
+        );
     }
   }
 }

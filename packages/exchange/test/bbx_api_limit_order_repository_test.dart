@@ -365,6 +365,74 @@ void main() {
   });
 
   group('failures', () {
+    group('create', () {
+      final draft = LimitOrderDraft(
+        limitPrice: 1,
+        fiatAmount: 1,
+        currency: FiatCurrency.cad,
+        address: 'bc1',
+      );
+
+      test('a timeout after sending is an unknown outcome', () async {
+        expect(
+          _failureOf(
+            await repository(
+              FakeBbxHttp(error: DioExceptionType.receiveTimeout),
+            ).create(draft),
+          ),
+          _problem(ExchangeLimitOrderProblem.createOutcomeUnknown),
+        );
+      });
+
+      test('a created order that cannot be mapped is an unknown outcome, '
+          'without the server value', () async {
+        final failure = _failureOf(
+          await repository(
+            FakeBbxHttp(
+              body: {
+                'result': {..._order, 'fiatAmount': 'fixture-sensitive-amount'},
+              },
+            ),
+          ).create(draft),
+        );
+        expect(
+          failure,
+          _problem(ExchangeLimitOrderProblem.createOutcomeUnknown),
+        );
+        expect(failure.logMessage, isNot(contains('fixture-sensitive')));
+      });
+
+      test('a connect timeout was not sent and can be retried', () async {
+        expect(
+          _failureOf(
+            await repository(
+              FakeBbxHttp(error: DioExceptionType.connectionTimeout),
+            ).create(draft),
+          ),
+          _problem(ExchangeLimitOrderProblem.create),
+        );
+      });
+
+      test('a 401 is a rejected session', () async {
+        expect(
+          _failureOf(
+            await repository(FakeBbxHttp(status: 401, body: {})).create(draft),
+          ),
+          isA<ExchangeSessionRejectedFailure>(),
+        );
+      });
+
+      test('an unknown refusal code is a creation failure without the '
+          'message', () async {
+        final failure = _failureOf(
+          await repository(FakeBbxHttp(body: _refusal('ERR_SOMETHING_NEW')))
+              .create(draft),
+        );
+        expect(failure, _problem(ExchangeLimitOrderProblem.create));
+        expect(failure.logMessage, isNot(contains('sat@example.com')));
+      });
+    });
+
     test('maps the limit order codes to their failures', () async {
       expect(
         _failureOf(

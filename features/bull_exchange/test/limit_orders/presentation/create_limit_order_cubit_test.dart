@@ -34,6 +34,8 @@ void main() {
   late MockResolveWalletAddressUsecase resolveAddress;
   late MockValidateLightningAddressUsecase validateLnAddress;
 
+  setUpAll(() => registerFallbackValue(FiatCurrency.cad));
+
   final bitcoinWallet = LimitOrderWallet(
     type: BtcNetwork.bitcoin,
     address: 'bc1qexample',
@@ -277,6 +279,50 @@ void main() {
       expect(cubit.state.step, CreateLimitOrderStep.confirmation);
       expect(cubit.state.failure, isA<LimitOrderCreationFailure>());
       expect(cubit.state.isSubmitting, isFalse);
+    },
+  );
+
+  blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
+    'an unknown create outcome is never sent again, also after going back',
+    setUp: () {
+      when(() => loadCreation.execute())
+          .thenAnswer((_) async => Ok(creationContext));
+      when(
+        () => create.execute(
+          limitPrice: any(named: 'limitPrice'),
+          fiatAmount: any(named: 'fiatAmount'),
+          currency: any(named: 'currency'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(LimitOrderCreationOutcomeUnknownFailure()),
+      );
+    },
+    build: buildCubit,
+    act: (cubit) async {
+      await cubit.load();
+      cubit.continueFromIntro();
+      cubit.continueFromTarget();
+      cubit.setAmount(100);
+      cubit.continueFromAmount();
+      cubit.selectWallet(bitcoinWallet);
+      cubit.continueFromWallet();
+      await cubit.submit();
+      await cubit.submit();
+      cubit.goBack();
+      cubit.continueFromWallet();
+      await cubit.submit();
+    },
+    verify: (cubit) {
+      expect(cubit.state.isCreateOutcomeUnknown, isTrue);
+      verify(
+        () => create.execute(
+          limitPrice: any(named: 'limitPrice'),
+          fiatAmount: any(named: 'fiatAmount'),
+          currency: any(named: 'currency'),
+          address: any(named: 'address'),
+        ),
+      ).called(1);
     },
   );
 

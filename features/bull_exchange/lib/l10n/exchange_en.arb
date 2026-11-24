@@ -2459,6 +2459,10 @@
   "@limitOrderCreationError": {
     "description": "Shown when a Limit Order cannot be created"
   },
+  "limitOrderCreationOutcomeUnknownError": "We could not tell whether your limit order was created. Check your limit orders before you try again.",
+  "@limitOrderCreationOutcomeUnknownError": {
+    "description": "Shown on the limit order confirmation when the create request failed after it may have reached the server, so the limit order may exist. Confirm is not offered again."
+  },
   "exchangeSettingsLogOutTitle": "Log Out",
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"

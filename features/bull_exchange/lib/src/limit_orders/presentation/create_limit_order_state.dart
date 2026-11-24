@@ -26,6 +26,10 @@ final class CreateLimitOrderState {
   final LimitOrder? createdOrder;
   final LimitOrdersFailure? failure;
 
+  /// The last create may have reached the exchange without an answer: the
+  /// limit order may exist, so this flow never sends another create.
+  final bool isCreateOutcomeUnknown;
+
   const CreateLimitOrderState({
     this.step = CreateLimitOrderStep.intro,
     this.isLoading = false,
@@ -45,6 +49,7 @@ final class CreateLimitOrderState {
     this.lightningAddressInvalid = false,
     this.createdOrder,
     this.failure,
+    this.isCreateOutcomeUnknown = false,
   });
 
   LimitOrderBalance? get selectedBalance => currency == null
@@ -91,6 +96,7 @@ final class CreateLimitOrderState {
     LimitOrder? createdOrder,
     LimitOrdersFailure? failure,
     bool clearFailure = false,
+    bool? isCreateOutcomeUnknown,
   }) => CreateLimitOrderState(
     step: step ?? this.step,
     isLoading: isLoading ?? this.isLoading,
@@ -113,5 +119,7 @@ final class CreateLimitOrderState {
         lightningAddressInvalid ?? this.lightningAddressInvalid,
     createdOrder: createdOrder ?? this.createdOrder,
     failure: clearFailure ? null : failure ?? this.failure,
+    isCreateOutcomeUnknown:
+        isCreateOutcomeUnknown ?? this.isCreateOutcomeUnknown,
   );
 }

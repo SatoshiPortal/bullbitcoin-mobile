@@ -21,6 +21,8 @@ extension LimitOrdersFailureL10n on LimitOrdersFailure {
       context.loc.limitOrderInvalidAmountError,
     LimitOrdersLoadFailure() => context.loc.limitOrdersLoadError,
     LimitOrderCreationFailure() => context.loc.limitOrderCreationError,
+    LimitOrderCreationOutcomeUnknownFailure() =>
+      context.loc.limitOrderCreationOutcomeUnknownError,
     LimitOrderCancellationFailure() => context.loc.limitOrderCancellationError,
     LimitOrdersUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };

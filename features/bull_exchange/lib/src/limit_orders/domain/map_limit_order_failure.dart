@@ -14,6 +14,8 @@ LimitOrdersFailure mapLimitOrderFailure(ExchangeFailure failure) =>
           ExchangeLimitOrderProblem.create => LimitOrderCreationFailure(
             logMessage,
           ),
+          ExchangeLimitOrderProblem.createOutcomeUnknown =>
+            LimitOrderCreationOutcomeUnknownFailure(logMessage),
           ExchangeLimitOrderProblem.cancel => LimitOrderCancellationFailure(
             logMessage,
           ),

@@ -142,7 +142,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       CreateLimitOrderStep.confirmation => _primaryButton(
         context,
         label: context.loc.limitOrdersConfirm,
-        disabled: state.isSubmitting,
+        disabled: state.isSubmitting || state.isCreateOutcomeUnknown,
         onPressed: cubit.submit,
       ),
       CreateLimitOrderStep.done => Column(
