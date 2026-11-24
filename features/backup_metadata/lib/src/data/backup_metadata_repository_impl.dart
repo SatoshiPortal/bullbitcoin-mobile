@@ -403,7 +403,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     BackupDestination destination,
   ) => _locked((_) async {
     final inventory = _value(await _inventory.read());
-    final session = await _authorize(destination, interactive: true);
+    final session = await _authorizeForDiscovery(destination);
     try {
       final objects = (await _list(session)).values.toList()
         ..sort((a, b) {
@@ -456,7 +456,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       }
       return List<DiscoveredBackup>.unmodifiable(discovered);
     } finally {
-      session.dispose();
+      await session.close();
     }
   });
 
@@ -538,7 +538,17 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     return _storageValue(await storage.authorize(interactive: interactive));
   }
 
-  Future<Map<String, StoredObject>> _list(StorageSession session) async {
+  /// Reads a destination without touching the configured grant: browsing for
+  /// a restore file never changes where scheduled backups are written.
+  Future<StorageReadSession> _authorizeForDiscovery(
+    BackupDestination destination,
+  ) async {
+    final storage = _storages[destination];
+    if (storage == null) throw const _OperationFailure.unexpected();
+    return _storageValue(await storage.authorizeForDiscovery());
+  }
+
+  Future<Map<String, StoredObject>> _list(StorageReadSession session) async {
     final objects = _storageValue(
       await session.list(
         mimeType: backupMetadataMimeType,
