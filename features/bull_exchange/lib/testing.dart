@@ -20,8 +20,6 @@ export 'src/pay/presentation/pay_flow.dart';
 export 'src/pay/presentation/pay_flow_bloc.dart';
 export 'src/pay/ui/pay_flow_shell.dart' show payPagesFor;
 export 'src/payin/exchange_payin_ui.dart' show ExchangePayinUi;
-export 'src/payin/payin_account.dart' show PayinAccount;
-export 'src/payin/payin_wallets.dart' show PayinWallets;
 export 'src/sell/presentation/sell_flow.dart';
 export 'src/sell/presentation/sell_flow_bloc.dart';
 export 'src/sell/ui/sell_flow_shell.dart' show sellPagesFor;
