@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mempool/mempool.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
+import 'package:silent/silent.dart';
 
 import 'electrum_settings/create_electrum_settings_bloc.dart';
 import 'electrum_settings/ui/electrum_settings_router.dart';
@@ -43,6 +44,7 @@ final class NetworkFeature {
     )
     readBackup,
     required Preferences preferences,
+    required Silent silent,
   }) {
     setupTorSettings(services, preferences);
     final wallets = ReadWalletNetworkUsecase(
@@ -66,6 +68,7 @@ final class NetworkFeature {
           checkServerConnection: services<RecoverBullFacade>().checkServer,
           preferences: preferences,
           tor: services<Tor>(),
+          silent: silent,
         ),
       ),
     );

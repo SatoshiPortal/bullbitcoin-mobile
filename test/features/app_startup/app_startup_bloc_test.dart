@@ -8,7 +8,7 @@ import 'dart:math';
 import 'package:access/setup.dart';
 import 'package:access/testing.dart' show PinCodeUnlockInputScreen;
 import 'package:startup/testing.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;

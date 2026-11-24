@@ -44,8 +44,12 @@ void main() {
   late _Metadata metadata;
   late FakeSecureStoragePlatform keystore;
   late WalletNativeRuntime runtime;
-  Future<Result<void, SyncFailure>> sourceSync(WalletKey key) async =>
-      const Ok(null);
+  late _Catalog catalog;
+  Future<Result<void, SyncFailure>> Function(WalletKey) syncSource = (
+    _,
+  ) async => const Ok(null);
+  Future<Result<void, SyncFailure>> sourceSync(WalletKey key) =>
+      syncSource(key);
   WalletRegistration registration({Fingerprint? parent}) =>
       walletRegistrationForTesting(
         id: fundingWalletId,
@@ -94,8 +98,9 @@ void main() {
       documentsDirectory: () async => fixture.directory.path,
       readRevision: (_) async => const Err(SyncNotFoundFailure()),
     );
+    catalog = _Catalog();
     runtime = WalletNativeRuntime.open(
-      catalog: _Catalog(),
+      catalog: catalog,
       reserved: _Reserved(),
       inputReservations: fixture.store,
       fundingReservations: fixture.store,
@@ -108,6 +113,7 @@ void main() {
       connections: connections,
     );
     selectSource = (_) async => fundingWalletId;
+    syncSource = (_) async => const Ok(null);
     when(
       () => metadata.readWallet(any()),
     ).thenAnswer((_) async => const Err(WalletRegistrationNotFoundFailure()));
@@ -261,6 +267,76 @@ void main() {
       verifyZeroInteractions(client);
     },
   );
+  test(
+    'a failed source sync is ignored before reading the native source',
+    () async {
+      final synced = <WalletKey>[];
+      syncSource = (key) async {
+        synced.add(key);
+        return const Err(SyncBusyFailure());
+      };
+      when(() => metadata.readWallet(fundingWalletId))
+          .thenAnswer((_) async => Ok(registration()));
+      final source = WalletKey(
+        id: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+      );
+      when(catalog.list).thenAnswer((_) async => const Ok([]));
+      when(() => catalog.find(source))
+          .thenAnswer((_) async => const Err(SyncStorageFailure()));
+      final result = await actor.prepare(config(account), Sats.fromInt(20000));
+      expect(synced, [source]);
+      verify(() => catalog.find(source)).called(1);
+      expect(
+        result,
+        isA<Err<ArkBoardPreparation, ArkFailure>>().having(
+          (r) => r.failure,
+          'native source failure',
+          isA<ArkFeatureStorageFailure>(),
+        ),
+      );
+      expect(keystore.reads, 0);
+      verifyZeroInteractions(client);
+    },
+  );
+  test(
+    'a failed source sync refuses reconcile and leaves the operation pending',
+    () async {
+      await fixture.reserve('operation', account: account.canonical);
+      syncSource = (_) async => const Err(SyncBusyFailure());
+      when(() => metadata.readWallet(fundingWalletId))
+          .thenAnswer((_) async => Ok(registration()));
+      final source = WalletKey(
+        id: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+      );
+      when(() => catalog.find(source))
+          .thenAnswer((_) async => const Err(SyncStorageFailure()));
+      when(catalog.list).thenAnswer((_) async => const Ok([]));
+      final before = sourceOk(await fixture.store.readBinding('operation'));
+      expect(
+        await actor.reconcileSource('operation'),
+        isA<Err<void, ArkFailure>>().having(
+          (result) => result.failure,
+          'retryable source failure',
+          isA<ArkOperationBusyFailure>(),
+        ),
+      );
+      // A source that could not be refreshed is never read: the journal keeps
+      // its pending operation for the next reconcile instead.
+      verifyNever(() => catalog.find(source));
+      expect(
+        sourceOk(await fixture.store.pendingForAccount(account.canonical)),
+        'operation',
+      );
+      final after = sourceOk(await fixture.store.readBinding('operation'));
+      expect(
+        (after.unsignedTxid, after.context),
+        (before.unsignedTxid, before.context),
+      );
+      expect(keystore.reads, 0);
+    },
+  );
   test('an unresolved original account operation returns its identity, no reprepare', () async {
     await fixture.reserve('original', account: account.canonical);
     final result = await actor.prepare(config(account), Sats.fromInt(20000));
@@ -396,6 +472,39 @@ void main() {
       },
     );
   }
+  test(
+    'resuming a signed Board never signs again, and waits when checks fail',
+    () async {
+      final data = await review();
+      sourceOk(
+        await fixture.store.admitBoardSigning(
+          expected: data.$1,
+          admittedRevision: fundingStamp,
+        ),
+      );
+      sourceOk(
+        await fixture.store.recordSigned('operation', structuralFinalWitness()),
+      );
+      sourceOk(
+        await fixture.store.advanceBoardDelivery(
+          'operation',
+          expectedPhase: 'signing',
+          nextPhase: 'signed',
+        ),
+      );
+      final result = await actor.deliverSigned(account, 'operation');
+      // Whatever the checks answer here, the stored signature is the only
+      // one: the keystore is never read again.
+      expect(keystore.reads, 0);
+      if (result is Err) {
+        // Refused: nothing moved, the Board waits for the next check.
+        expect(
+          sourceOk(await fixture.store.readBoardReview('operation')).phase,
+          'signed',
+        );
+      }
+    },
+  );
   test(
     'an expired original review refuses before any provider or signer stage',
     () async {

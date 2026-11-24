@@ -1,12 +1,17 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_exchange_activation_offer_usecase.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
 
-class _Exchange extends Mock implements ExchangeFacade {}
+class _Access extends Mock implements ExchangeAccessLifecycle {}
+
+class _Preferences extends Mock implements Preferences {}
 
 Future<void> _settle() async {
   await Future<void>.delayed(Duration.zero);
@@ -14,18 +19,32 @@ Future<void> _settle() async {
 }
 
 void main() {
-  late _Exchange exchange;
+  late Exchange exchange;
+  late _Preferences preferences;
   late StreamController<ExchangeAccess> access;
   late StreamController<bool> platform;
 
+  void stubEnvironment(Environment environment) =>
+      when(preferences.readExchangeWebPreferences).thenAnswer(
+        (_) async => Ok((
+          environment: environment,
+          exchangeTestnetBasicAuthUsername: null,
+          exchangeTestnetBasicAuthPassword: null,
+        )),
+      );
+
   setUp(() {
-    exchange = _Exchange();
+    final lifecycle = _Access();
+    preferences = _Preferences();
     access = StreamController<ExchangeAccess>();
     platform = StreamController<bool>();
-    when(exchange.networkUnavailable).thenAnswer((_) async => false);
-    when(exchange.watchAccess).thenAnswer((_) => access.stream);
-    when(() => exchange.currentAccess)
-        .thenReturn(const ExchangeAccessDisabled());
+    stubEnvironment(Environment.mainnet);
+    when(lifecycle.watch).thenAnswer((_) => access.stream);
+    when(() => lifecycle.current).thenReturn(const ExchangeAccessDisabled());
+    exchange = exchangeForTesting(
+      access: lifecycle,
+      sessionPreferences: preferences,
+    );
   });
 
   tearDown(() async {
@@ -85,7 +104,7 @@ void main() {
   });
 
   test('a network without exchange offers nothing', () async {
-    when(exchange.networkUnavailable).thenAnswer((_) async => true);
+    stubEnvironment(Environment.regtest);
     final values = <bool>[];
     final sub = WatchExchangeActivationOfferUsecase(
       exchange: exchange,

@@ -1494,5 +1494,90 @@
   "coinsKeychainChange": "잔돈",
   "@coinsKeychainChange": {
     "description": "Keychain filter / badge: change (internal) keychain"
-  }
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "충분한 균형",
+  "limitOrdersInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
+  "limitOrdersFundAccount": "계정 생성",
+  "exchangeLandingRecommendedExchange": "Bitcoin 교환",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureCustomerSupport": "· 고객 지원",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency 교환 서비스는 Bull Bitcoin 모바일 애플리케이션에서 사용할 수 없습니다.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLandingDisclaimerLegal": "교환 서비스에 대한 액세스는 Bull Bitcoin이 합법적으로 작동 할 수있는 국가에 제한되며 KYC가 필요할 수 있습니다.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeFeatureSelfCustody": "• Bitcoin을 Self-custody로 구매하십시오",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeLandingConnectAccount": "Bull Bitcoin 교환 계정 연결",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeFeatureSellBitcoin": "• Bitcoin을 판매, Bitcoin으로 지불",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeBrandName": "비트 코인",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLoginButton": "로그인 또는 회원가입",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeFeatureBankTransfers": "· 은행 송금 및 지불 청구서 발송",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeGoToWebsiteButton": "Bull Bitcoin 교환 웹 사이트로 이동",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, 제한 주문 및 자동 구매",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureUnifiedHistory": "• 통합된 거래 내역",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeErrorSigningOut": "완전히 로그아웃되지 않았습니다. 다시 시도해 주세요.",
+  "exchangeErrorLoadingAnnouncements": "공지사항을 불러올 수 없습니다.",
+  "exchangeErrorRequestingAccountDeletion": "계정 삭제 요청을 보낼 수 없습니다. 다시 시도해 주세요."
 }

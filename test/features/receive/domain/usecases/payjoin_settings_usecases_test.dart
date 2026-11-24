@@ -1,12 +1,12 @@
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockSettingsFacade extends Mock implements SettingsFacade {}
+class _MockSettingsFacade extends Mock implements Settings {}
 
 class _MockPolicy extends Mock implements PayjoinPolicyAccess {}
 

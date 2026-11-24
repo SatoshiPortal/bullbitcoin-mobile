@@ -6,6 +6,10 @@ import 'package:primitives/primitives.dart';
 /// variants. A failure never carries a request or a response payload; a
 /// [BbxRpcFailure] keeps the server's text only in [BbxRpcFailure.message],
 /// which [Object.toString] leaves out.
+///
+/// [requestId] is the server's identifier for the refused request, the one
+/// value that lets the backend trace it. It is null when the server sent none
+/// or the request never reached it.
 sealed class BbxFailure extends Failure {
   /// Where the failed operation originated, for compatibility boundaries that
   /// translate this value back into a thrown exception. Never part of
@@ -13,7 +17,21 @@ sealed class BbxFailure extends Failure {
   final StackTrace? origin;
 
   const BbxFailure([this.origin]);
+
+  String? get requestId => null;
+
+  /// ` requestId=<id>` to append to a diagnostic line, or nothing when the
+  /// server sent no identifier.
+  String get requestIdLabel {
+    final id = requestId;
+    return id == null ? '' : ' requestId=$id';
+  }
 }
+
+/// Written `requestId=` on purpose: the log sanitizer keeps a token with
+/// that label and redacts it under any other spelling.
+String _requestIdSuffix(String? requestId) =>
+    requestId == null ? '' : ', requestId=$requestId';
 
 /// The user is signed out: the credential read returned no key.
 ///
@@ -50,16 +68,21 @@ final class BbxRpcFailure extends BbxFailure {
   final int? code;
   final String? message;
   final String? apiCode;
+  @override
+  final String? requestId;
 
   const BbxRpcFailure({
     this.code,
     this.message,
     this.apiCode,
+    this.requestId,
     StackTrace? origin,
   }) : super(origin);
 
   @override
-  String toString() => 'BbxRpcFailure(code: $code, apiCode: $apiCode)';
+  String toString() =>
+      'BbxRpcFailure(code: $code, apiCode: $apiCode'
+      '${_requestIdSuffix(requestId)})';
 }
 
 /// The bound of an order limit that an amount crossed.
@@ -77,6 +100,8 @@ final class BbxOrderLimitFailure extends BbxFailure {
   final String currency;
   final int? code;
   final String? apiCode;
+  @override
+  final String? requestId;
 
   const BbxOrderLimitFailure({
     required this.bound,
@@ -84,13 +109,14 @@ final class BbxOrderLimitFailure extends BbxFailure {
     required this.currency,
     this.code,
     this.apiCode,
+    this.requestId,
     StackTrace? origin,
   }) : super(origin);
 
   @override
   String toString() =>
       'BbxOrderLimitFailure(bound: ${bound.name}, amount: $amount, '
-      'currency: $currency)';
+      'currency: $currency${_requestIdSuffix(requestId)})';
 }
 
 /// The server refused a Confidential SEPA order because the recipient's
@@ -98,15 +124,20 @@ final class BbxOrderLimitFailure extends BbxFailure {
 final class BbxConfidentialSepaInactiveFailure extends BbxFailure {
   final int? code;
   final String? apiCode;
+  @override
+  final String? requestId;
 
   const BbxConfidentialSepaInactiveFailure({
     this.code,
     this.apiCode,
+    this.requestId,
     StackTrace? origin,
   }) : super(origin);
 
   @override
-  String toString() => 'BbxConfidentialSepaInactiveFailure(code: $code)';
+  String toString() =>
+      'BbxConfidentialSepaInactiveFailure(code: $code'
+      '${_requestIdSuffix(requestId)})';
 }
 
 /// The phase of a request that ran out of time.

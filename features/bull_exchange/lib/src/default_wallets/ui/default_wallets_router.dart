@@ -14,7 +14,6 @@ abstract final class DefaultWalletsNavigation {
 }
 
 typedef DefaultWalletsHost = ({
-  DefaultWalletsPayoutFields payoutFields,
   Future<bool> Function() isAvailable,
   String unavailableRedirectPath,
 });
@@ -22,13 +21,12 @@ typedef DefaultWalletsHost = ({
 GoRoute defaultWalletsRoute(
   Exchange Function() exchange,
   DefaultWalletsHost host,
+  DefaultWalletsPayoutFields payoutFields,
 ) => GoRoute(
   name: DefaultWalletsNavigation.name,
   path: DefaultWalletsNavigation.path,
   redirect: (_, _) async =>
       await host.isAvailable() ? null : host.unavailableRedirectPath,
-  builder: (_, _) => DefaultWalletsScreen(
-    exchange: exchange(),
-    payoutFields: host.payoutFields,
-  ),
+  builder: (_, _) =>
+      DefaultWalletsScreen(exchange: exchange(), payoutFields: payoutFields),
 );

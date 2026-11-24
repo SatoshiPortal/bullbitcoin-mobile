@@ -24,6 +24,19 @@ class CheckForExistingDefaultWalletsUsecase {
 
   @useResult
   Future<Result<bool, AppStartupFailure>> execute() async {
+    try {
+      return await _check();
+    } on Object catch (error, trace) {
+      log.severe(
+        message: 'Default wallet check failed at startup',
+        error: error,
+        trace: trace,
+      );
+      return const Err(AppStartupWalletCheckFailure());
+    }
+  }
+
+  Future<Result<bool, AppStartupFailure>> _check() async {
     final environment = await _preferences.readActiveEnvironment();
     if (environment case Err(:final failure)) return Err(_readFailed(failure));
     final env = (environment as Ok<Environment, PreferencesFailure>).value;

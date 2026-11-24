@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:silent/src/data/key_value_sp_auto_scan_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/testing.dart';
@@ -7,6 +9,22 @@ import 'package:silent/silent.dart';
 import '../sp_fakes.dart';
 
 const _storageKey = 'sp_auto_scan_enabled';
+
+class _DelayedAutoScanRead extends FakeSecureStoragePlatform {
+  final reading = Completer<void>();
+  final release = Completer<void>();
+
+  @override
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async {
+    if (key != _storageKey) return super.read(key: key, options: options);
+    reading.complete();
+    await release.future;
+    return 'true';
+  }
+}
 
 void main() {
   group('KeyValueSpAutoScanRepository', () {
@@ -78,6 +96,40 @@ void main() {
       expect(storage.entries[_storageKey], 'false');
     });
 
+    test('a stale warm-up cannot undo a newer opt-out', () async {
+      final storage = _DelayedAutoScanRead();
+      final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
+      final warmUp = repo.warmUp();
+      await storage.reading.future;
+
+      expect(await repo.save(isEnabled: false), isA<Ok<void, SilentFailure>>());
+      storage.release.complete();
+      expect(await warmUp, isA<Ok<void, SilentFailure>>());
+
+      expect(repo.isEnabledNow, isFalse);
+      expect(storage.entries[_storageKey], 'false');
+    });
+
+    test('a failed opt-out write is still effective in this session', () async {
+      final storage = FakeSecureStoragePlatform(
+        entries: {_storageKey: 'true'},
+        writesFail: true,
+      );
+      final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
+
+      expect(
+        await repo.save(isEnabled: false),
+        isA<Err<void, SilentFailure>>(),
+      );
+      expect(await repo.warmUp(), isA<Ok<void, SilentFailure>>());
+
+      expect(repo.isEnabledNow, isFalse);
+      expect(storage.entries[_storageKey], 'true');
+      storage.writesFail = false;
+      expect(await repo.save(isEnabled: true), isA<Ok<void, SilentFailure>>());
+      expect(repo.isEnabledNow, isTrue);
+    });
+
     test('save writes the opt-in and applies it right away', () async {
       final storage = FakeSecureStoragePlatform();
       final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
@@ -110,6 +162,24 @@ void main() {
       );
 
       expect(await repo.warmUp(), isA<Err<void, SilentFailure>>());
+    });
+
+    test('warmUp reads the saved choice once the keystore unlocks', () async {
+      // The first tick after a cold start can run before the device is
+      // unlocked. The read fails, the optimistic default stands, and the next
+      // tick picks the stored opt-out up instead of keeping "enabled".
+      final storage = FakeSecureStoragePlatform(
+        entries: {_storageKey: 'false'},
+        locked: true,
+      );
+      final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
+
+      expect(await repo.warmUp(), isA<Err<void, SilentFailure>>());
+      expect(repo.isEnabledNow, isTrue);
+
+      storage.locked = false;
+      expect(await repo.warmUp(), isA<Ok<void, SilentFailure>>());
+      expect(repo.isEnabledNow, isFalse);
     });
 
     test(

@@ -599,10 +599,11 @@ void main() {
           broadcasts++;
           return 'a' * 64;
         });
-        when(() => orders.markBroadcastUnknown('local-1')).thenAnswer(
-          (_) async =>
-              Ok(_prepared(status: OrderSwapLocalStatus.broadcastUnknown)),
-        );
+        when(() => orders.markBroadcastUnknown('local-1', requireReady: true))
+            .thenAnswer(
+              (_) async =>
+                  Ok(_prepared(status: OrderSwapLocalStatus.broadcastUnknown)),
+            );
         when(
           () => orders.markPayinBroadcast(
             localId: 'local-1',
@@ -638,10 +639,11 @@ void main() {
     testWidgets(
       'refused ${sameChain ? "same-chain" : "order-swap"} transfer exposes spend failure without marking a payin broadcast',
       (tester) async {
-        when(() => orders.markBroadcastUnknown('local-1')).thenAnswer(
-          (_) async =>
-              Ok(_prepared(status: OrderSwapLocalStatus.broadcastUnknown)),
-        );
+        when(() => orders.markBroadcastUnknown('local-1', requireReady: true))
+            .thenAnswer(
+              (_) async =>
+                  Ok(_prepared(status: OrderSwapLocalStatus.broadcastUnknown)),
+            );
         when(
           () => broadcastBitcoin.execute(
             any(),
@@ -886,10 +888,11 @@ void main() {
     'blocked confirmation preserves prepared payin and permits a later edit',
     () async {
       spendStatus = BitcoinSpendStatus.unavailable;
-      when(() => orders.markBroadcastUnknown('local-1')).thenAnswer(
-        (_) async =>
-            Ok(_prepared(status: OrderSwapLocalStatus.broadcastUnknown)),
-      );
+      when(() => orders.markBroadcastUnknown('local-1', requireReady: true))
+          .thenAnswer(
+            (_) async =>
+                Ok(_prepared(status: OrderSwapLocalStatus.broadcastUnknown)),
+          );
       bloc.emit(
         TransferState(
           fromWallet: _wallet(balanceSat: BigInt.from(100000)),
@@ -904,7 +907,12 @@ void main() {
       );
       bloc.add(const TransferEvent.confirmed());
       await bloc.stream.firstWhere((state) => !state.isConfirming);
-      verifyNever(() => orders.markBroadcastUnknown(any()));
+      verifyNever(
+        () => orders.markBroadcastUnknown(
+          any(),
+          requireReady: any(named: 'requireReady'),
+        ),
+      );
       expect(bloc.state.swapFailure, isA<SwapSpendBlockedFailure>());
       verifyNever(
         () => orders.markPayinBroadcast(
@@ -1214,7 +1222,7 @@ void main() {
         status: OrderSwapLocalStatus.payinBroadcast,
         transactionId: 'txid-1',
       );
-      when(() => orders.markBroadcastUnknown('local-1'))
+      when(() => orders.markBroadcastUnknown('local-1', requireReady: true))
           .thenAnswer((_) async => Ok(broadcasting));
       when(() => orders.refreshOrder('local-1'))
           .thenAnswer((_) async => Ok(broadcasting));
@@ -1248,7 +1256,8 @@ void main() {
       bloc.add(const TransferEvent.confirmed());
       await completed;
       await subscription.cancel();
-      verify(() => orders.markBroadcastUnknown('local-1')).called(1);
+      verify(() => orders.markBroadcastUnknown('local-1', requireReady: true))
+          .called(1);
       verify(
         () => broadcastBitcoin.execute(
           'signed-psbt',
@@ -2107,7 +2116,7 @@ void main() {
       status: OrderSwapLocalStatus.payinBroadcast,
       transactionId: 'txid-1',
     );
-    when(() => orders.markBroadcastUnknown('local-1'))
+    when(() => orders.markBroadcastUnknown('local-1', requireReady: true))
         .thenAnswer((_) async => Ok(broadcasting));
     when(
       () => broadcastBitcoin.execute(
@@ -2333,7 +2342,12 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       verify(() => orders.refreshOrder('local-1')).called(1);
-      verifyNever(() => orders.markBroadcastUnknown(any()));
+      verifyNever(
+        () => orders.markBroadcastUnknown(
+          any(),
+          requireReady: any(named: 'requireReady'),
+        ),
+      );
       verifyNever(
         () => broadcastBitcoin.execute(
           any(),
@@ -2392,7 +2406,7 @@ void main() {
   test(
     'surfaces a broadcast network failure without raw exception text',
     () async {
-      when(() => orders.markBroadcastUnknown('local-1'))
+      when(() => orders.markBroadcastUnknown('local-1', requireReady: true))
           .thenAnswer((_) async => Ok(prepared));
       when(
         () => broadcastBitcoin.execute(
@@ -2425,7 +2439,7 @@ void main() {
   );
 
   test('preserves a typed swap failure while confirming', () async {
-    when(() => orders.markBroadcastUnknown('local-1'))
+    when(() => orders.markBroadcastUnknown('local-1', requireReady: true))
         .thenAnswer((_) async => const Err(SwapOrderExpiredFailure('expired')));
     bloc.emit(
       TransferState(

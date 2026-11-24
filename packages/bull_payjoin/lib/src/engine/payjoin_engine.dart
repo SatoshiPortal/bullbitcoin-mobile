@@ -712,25 +712,79 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     return _visibleCompetingTransaction(freshModel.toEntity());
   }
 
+  /// One presence read covering every stored body of [payjoin], keyed by the
+  /// txid the body decodes to: the payjoin transaction first and then the
+  /// original, judged together in one pass.
+  ///
+  /// The pass judges a candidate from the scripts it pays and the outpoints it
+  /// spends, so a body that is missing or no longer decodes contributes
+  /// nothing: asking about its id alone would have the wallet read a
+  /// transaction it may never hold. Such an id is simply absent from the
+  /// answers, which every caller treats as unknown rather than absent.
+  ///
+  /// A body that decodes to a different txid than the one the session stored is
+  /// left out too: the pass can only prove visibility of the transaction it
+  /// judges, and mapping that answer onto the stored id would settle or
+  /// broadcast a transaction nobody proved. A sender's original PSBT is the
+  /// ordinary case, since an unsigned legacy PSBT decodes to an id that differs
+  /// from the stored one, and it stays unknown rather than being inferred
+  /// absent.
+  Future<Map<String, bool?>> _competingPresence(Payjoin payjoin) async {
+    final candidates = <api.PayjoinTransaction>[];
+    void decode(String? txId, api.PayjoinTransaction Function() body) {
+      if (txId == null) return;
+      try {
+        final transaction = body();
+        if (transaction.txid != txId) return;
+        // An included candidate's decoded id is its stored id, so the pass
+        // answers it under the one id every caller looks up.
+        candidates.add(transaction);
+      } on Exception {
+        // A corrupt stored body. The cause is dropped: it may quote the PSBT.
+      }
+    }
+
+    if (payjoin.proposalPsbt case final psbt?) {
+      decode(payjoin.txId, () => _codec.decodePsbt(psbt));
+    }
+    switch (payjoin) {
+      case PayjoinReceiver(:final originalTxBytes, :final originalTxId):
+        if (originalTxBytes != null) {
+          decode(originalTxId, () => _codec.decodeTransaction(originalTxBytes));
+        }
+      case PayjoinSender(:final originalPsbt, :final originalTxId):
+        decode(originalTxId, () => _codec.decodePsbt(originalPsbt));
+    }
+    if (candidates.isEmpty) return const {};
+
+    final presence = await _io(
+      () => _transactions.transactionsPresence(
+        walletId: payjoin.walletId,
+        transactions: candidates,
+        refresh: true,
+      ),
+    );
+    final answers = <String, bool?>{};
+    for (final candidate in candidates) {
+      answers[candidate.txid] = presence[candidate.txid];
+    }
+    return answers;
+  }
+
   /// The first of the session's competing spends the network already knows,
   /// or null when neither is visible.
   ///
-  /// A fresh lookup covers both mempool and confirmed transactions. Check
-  /// both: persisted status can lag a transaction that has just reached the
-  /// network, and broadcasting the original in that gap could race a
-  /// successfully negotiated payjoin.
+  /// A fresh lookup covers both mempool and confirmed transactions, in one
+  /// pass over both candidates' scripts. Check both: persisted status can lag
+  /// a transaction that has just reached the network, and broadcasting the
+  /// original in that gap could race a successfully negotiated payjoin.
   Future<Result<String?, api.PayjoinFailure>> _visibleCompetingTransaction(
     Payjoin payjoin,
   ) async {
+    final answers = await _competingPresence(payjoin);
     for (final txId in [payjoin.originalTxId, payjoin.txId]) {
       if (txId == null) continue;
-      final visible = await _io(
-        () => _transactions.isTransactionVisible(
-          walletId: payjoin.walletId,
-          transactionId: txId,
-          refresh: true,
-        ),
-      );
+      final visible = answers[txId];
       if (visible == null) {
         return const Err(
           api.PayjoinUnavailableFailure(
@@ -1468,16 +1522,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         return;
       }
       retry.attempts++;
-      // Ask the remote visibility boundary; unknown is never absence.
+      // Ask the remote visibility boundary once for both competing spends;
+      // unknown is never absence.
+      final answers = await _competingPresence(model.toEntity());
       final proposalId = model.txId;
       if (proposalId != null) {
-        final visible = await _io(
-          () => _transactions.isTransactionVisible(
-            walletId: model.walletId,
-            transactionId: proposalId,
-            refresh: true,
-          ),
-        );
+        final visible = answers[proposalId];
         if (visible == null) {
           _stopProposalAfterFailedRead(id);
           return;
@@ -1487,13 +1537,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           return;
         }
       }
-      final originalVisible = await _io(
-        () => _transactions.isTransactionVisible(
-          walletId: model.walletId,
-          transactionId: model.originalTxId,
-          refresh: true,
-        ),
-      );
+      final originalVisible = answers[model.originalTxId];
       if (originalVisible == null) {
         _stopProposalAfterFailedRead(id);
         return;
@@ -1761,14 +1805,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final txId = payjoin.txId;
     if (txId == null) return null;
     try {
-      final visible = await _io(
-        () => _transactions.isTransactionVisible(
-          walletId: payjoin.walletId,
-          transactionId: txId,
-          refresh: true,
-        ),
-      );
-      return visible == true ? txId : null;
+      final answers = await _competingPresence(payjoin);
+      return answers[txId] == true ? txId : null;
     } catch (e, st) {
       _log.warning(
         code: api.PayjoinLogCode.watchFailure,
@@ -1795,27 +1833,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<bool> _isUnobservedAtExpiry(PayjoinSenderModel sender) async {
     try {
       final payjoinTxId = sender.txId ?? await _deriveSenderPayjoinTxId(sender);
+      // Both competing spends travel in one pass, so the pair of answers
+      // describes a single wallet state instead of two.
+      final answers = await _competingPresence(sender.toEntity());
       if (payjoinTxId != null) {
-        final visible = await _io(
-          () => _transactions.isTransactionVisible(
-            walletId: sender.walletId,
-            transactionId: payjoinTxId,
-            refresh: true,
-          ),
-        );
+        final visible = answers[payjoinTxId];
         if (visible == null) return false;
         if (visible) {
           await _completeOnPayjoinTransactionSeen(sender.id, payjoinTxId);
           return false;
         }
       }
-      final originalVisible = await _io(
-        () => _transactions.isTransactionVisible(
-          walletId: sender.walletId,
-          transactionId: sender.originalTxId,
-          refresh: true,
-        ),
-      );
+      final originalVisible = answers[sender.originalTxId];
       if (originalVisible == null) return false;
       if (originalVisible) {
         await _completeOnOriginalTransactionSeen(
@@ -1856,13 +1885,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     var absent = false;
     try {
-      final visible = await _io(
-        () => _transactions.isTransactionVisible(
-          walletId: sender.walletId,
-          transactionId: sender.originalTxId,
-          refresh: true,
-        ),
-      );
+      final answers = await _competingPresence(sender.toEntity());
+      final visible = answers[sender.originalTxId];
       if (visible == true) {
         await _completeOnOriginalTransactionSeen(
           sender.id,
@@ -2933,10 +2957,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           .watchWallet(walletId)
           .asyncMap((_) async {
             try {
-              return await _transactions.isTransactionVisible(
+              // Local and bounded: a finished sync of this wallet is the
+              // trigger, so this read only has to see what it left behind.
+              final answers = await _transactions.transactionsPresence(
                 walletId: walletId,
-                transactionId: txId,
+                transactions: [api.PayjoinTransaction.idOnly(txId)],
               );
+              return answers[txId];
             } catch (e) {
               _log.warning(
                 code: api.PayjoinLogCode.watchFailure,
@@ -3023,15 +3050,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       var visible = false;
       try {
-        visible =
-            await _io(
-              () => _transactions.isTransactionVisible(
-                walletId: walletId,
-                transactionId: txId,
-                refresh: true,
-              ),
-            ) ==
-            true;
+        // The session is reloaded here: a targeted pass judges the candidates
+        // the persisted row still describes, never a stale copy taken when the
+        // watch was armed.
+        final model =
+            await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
+            await _localPayjoinDatasource.fetchSender(payjoinId);
+        if (model != null) {
+          final answers = await _competingPresence(model.toEntity());
+          visible = answers[txId] == true;
+        }
       } catch (e) {
         _log.warning(
           code: api.PayjoinLogCode.watchFailure,

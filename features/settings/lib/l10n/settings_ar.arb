@@ -111,5 +111,205 @@
   "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
-  }
+  },
+  "bitcoinSettingsTestnetModeTitle": "نموذج الاختبار",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "اللوز",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "العملة الافتراضية",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "جدار استيراد",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "الخدمات",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "الأمن",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "Labels",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "أنا أفهم",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "العملة",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "اللغة",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "مقايضة",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "App Settings",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "بيانات اعتماد منصة تبادل testnet",
+  "exchangeTestnetBasicAuthDescription": "مصادقة HTTP الأساسية لصفحات ويب منصة تبادل testnet (تسجيل الدخول و KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "اسم المستخدم",
+  "exchangeTestnetBasicAuthPasswordLabel": "كلمة المرور",
+  "exchangeTestnetBasicAuthClearButton": "مسح",
+  "exchangeTestnetBasicAuthSaveButton": "حفظ",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "سجل المعاملات",
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "settingsSuperuserModeDisabledMessage": "وضع المستعمل الخارق معطل.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "مدة الخدمة",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "هذه الطريقة خطرة بتمكينها، تعترفين بأنكِ قد تخسرين المال",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "المعاملات الإذاعية",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "الموضوع",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsDevModeWarningTitle": "Dev Mode",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "نسخة التطبيق: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "تم",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "الترتيبات",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "إعدادات المبادلة التلقائية",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "torSettingsTitle": "تنظيمات التعذيب",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "backupSettingsStartBackup": "ابدأوا",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "استعادة المبادلات",
+  "settingsErrorReportingTitle": "الإبلاغ عن الأخطاء",
+  "errorReportingProgramTitle": "برنامج الإبلاغ عن الأخطاء",
+  "errorReportingProgramDescriptionP1": "ساعدنا في تحسين Bull من خلال المشاركة في برنامج الإبلاغ عن الأخطاء.",
+  "errorReportingProgramDescriptionP2": "ترسل بول بيتكوين تقارير أخطاء مجهولة الهوية عند حدوث عطل ما.",
+  "errorReportingProgramDescriptionP3": "يتيح لنا هذا معرفة عدد المستخدمين المتأثرين بكل خلل وتحديد أولويات الإصلاح وفقًا لذلك، وبدونه لا نملك وسيلة لقياس التأثير.",
+  "errorReportingProgramDescriptionP4": "تُرسَل التقارير فقط إلى خادم بول، ولا تُرسَل أبدًا إلى أطراف ثالثة.",
+  "errorReportingProgramDescriptionP5": "بول بيتكوين مفتوحة المصدر، لذا يمكنك التحقق مما يتم إرساله.",
+  "errorReportingAcceptButton": "قبول",
+  "errorReportingCancelButton": "إلغاء",
+  "errorReportingRestartSnackbar": "أعِد تشغيل التطبيق لتطبيق هذا التغيير",
+  "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
+  "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
+  "settingsScreenPrivacyTitle": "خصوصية الشاشة",
+  "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة",
+  "settingsSearchHint": "البحث في الإعدادات",
+  "settingsSearchNoResults": "لم يتم العثور على إعدادات.",
+  "settingsSearchMempoolKeywords": "مستكشف الكتل|تقدير الرسوم|رسوم المعاملات|واجهة mempool API",
+  "settingsSearchExchangeKeywords": "حساب|حساب المنصة|التداول|شراء وبيع",
+  "settingsSearchStartBackupKeywords": "إنشاء نسخة احتياطية|حفظ نسخة احتياطية|نسخ المحفظة احتياطيا",
+  "settingsSearchRecoverbullKeywords": "نسخة احتياطية مشفرة|نسخة احتياطية سحابية|خزنة مشفرة|استرداد الخزنة",
+  "settingsSearchLabelsKeywords": "تسميات المحفظة|تسميات المعاملات|BIP329|استيراد التسميات|تصدير التسميات",
+  "settingsSearchTransactionHistoryKeywords": "تصدير المعاملات|تصدير سجل المعاملات|CSV|سجل المحفظة",
+  "settingsSearchAppSettingsKeywords": "تفضيلات التطبيق|إعدادات التطبيق|الإعدادات العامة",
+  "settingsSearchTermsOfServiceKeywords": "الشروط والأحكام|قانوني|اتفاقية المستخدم|TOS",
+  "settingsSearchServicesStatusKeywords": "حالة الخدمات|حالة النظام|متصل|انقطاع الخدمة",
+  "settingsSearchImportWalletKeywords": "إضافة محفظة|استعادة محفظة|استيراد عبارة الاسترداد|محفظة للمشاهدة فقط|محفظة أجهزة",
+  "settingsSearchBroadcastTransactionKeywords": "بث معاملة موقعة|إرسال المعاملة|معاملة خام|بيانات المعاملة السداسية|PSBT",
+  "settingsSearchPayjoinKeywords": "خصوصية Payjoin|معاملة تعاونية|P2EP",
+  "settingsSearchAutoswapKeywords": "Autoswap|مبادلة تلقائية|تحويل تلقائي|رصيد المحفظة الفورية",
+  "settingsSearchElectrumKeywords": "عقدة بيتكوين|عقدة Electrum|خادم مخصص|عقدة شخصية",
+  "settingsSearchTestnetModeKeywords": "شبكة اختبار|شبكة اختبار بيتكوين|شبكة اختبار Liquid|وضع الاختبار",
+  "settingsSearchSeedViewerKeywords": "عبارة البذور|عبارة الاسترداد|Mnemonic|كلمات النسخ الاحتياطي|عرض البذور",
+  "settingsSearchBip85Keywords": "إنتروبيا حتمية|بذور فرعية|إنتروبيا مشتقة|BIP85",
+  "settingsSearchLanguageKeywords": "لغة التطبيق|الترجمة|لغة العرض|اللغة المفضلة",
+  "settingsSearchThemeKeywords": "المظهر|الوضع الداكن|الوضع الفاتح|سمة النظام",
+  "settingsSearchCurrencyKeywords": "العملة الورقية|العملة المحلية|العملة الأساسية|عملة الصرف",
+  "settingsSearchSecurityPinKeywords": "رمز PIN|رمز المرور|قفل التطبيق|المصادقة|تغيير رمز PIN",
+  "settingsSearchLogsKeywords": "سجلات التصحيح|سجلات التشخيص|سجلات التطبيق|تصدير السجلات",
+  "settingsSearchDevModeKeywords": "وضع المطور|إعدادات التطوير|وضع التصحيح|اختبارات متقدمة",
+  "settingsSearchTestnetCredentialsKeywords": "بيانات اعتماد شبكة الاختبار|تسجيل دخول شبكة الاختبار|اسم مستخدم شبكة الاختبار|كلمة مرور شبكة الاختبار|مصادقة أساسية",
+  "settingsSearchErrorReportingKeywords": "تقارير الأعطال|تقارير الأخطاء|التشخيص|بيانات الاستخدام|سجلات الأخطاء",
+  "settingsSearchScreenPrivacyKeywords": "لقطات الشاشة|تسجيل الشاشة|حماية التقاط الشاشة|الخصوصية",
+  "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
+  "settingsErrorSavingSetting": "تعذر حفظ هذا الإعداد. يرجى المحاولة مرة أخرى.",
+  "settingsErrorConsentNotGiven": "يتطلب هذا الإعداد تأكيدك قبل تغييره.",
+  "settingsErrorLoadingLogs": "تعذر تجهيز سجلات التشخيص. يرجى المحاولة مرة أخرى.",
+  "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية",
+  "bitcoinSettingsAutoTransferTitle": "المبادلة التلقائية",
+  "settingsDarkModeTitle": "الوضع الداكن",
+  "settingsSourceCodeTitle": "الشيفرة المصدرية",
+  "backgroundTasksTitle": "المهام في الخلفية",
+  "notificationsBlockedMessage": "الإشعارات محظورة في إعدادات النظام.",
+  "notificationsTitle": "الإشعارات",
+  "openSystemSettings": "فتح إعدادات النظام",
+  "permissionsTitle": "الأذونات",
+  "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات"
 }

@@ -1494,5 +1494,90 @@
   "coinsKeychainChange": "الفكة",
   "@coinsKeychainChange": {
     "description": "Keychain filter / badge: change (internal) keychain"
-  }
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "الرصيد غير الكافي",
+  "limitOrdersInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
+  "limitOrdersFundAccount": "صندوق حسابك",
+  "exchangeLandingDisclaimerNotAvailable": "ولا تتوافر خدمات تبادل العملات في تطبيقات بول بيتكوين المتنقلة.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLandingDisclaimerLegal": "وسيقتصر الوصول إلى خدمات الصرف على البلدان التي يمكن أن يعمل فيها بول بيتكوين بصورة قانونية وقد يتطلب ذلك من الشركة.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLoginButton": "لوجين أو وقع",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "الذهاب إلى موقع تبادل بول بيتكين",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureCustomerSupport": "• مطاردة مع دعم العملاء",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureSelfCustody": "• Buy Bitcoin straight to self-custody",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeLandingConnectAccount": "إجمعي حسابك في البول بيتكوين",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeFeatureSellBitcoin": "• Sell Bitcoin, get paid with Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeBrandName": "BUL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeFeatureBankTransfers": "• إرسال التحويلات المصرفية ودفع الفواتير",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limit orders and Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureUnifiedHistory": "● تاريخ المعاملات الموحد",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeErrorSigningOut": "تعذر تسجيل خروجك بالكامل. يرجى المحاولة مرة أخرى.",
+  "exchangeErrorLoadingAnnouncements": "تعذر تحميل الإعلانات.",
+  "exchangeErrorRequestingAccountDeletion": "تعذر إرسال طلب حذف حسابك. يرجى المحاولة مرة أخرى."
 }

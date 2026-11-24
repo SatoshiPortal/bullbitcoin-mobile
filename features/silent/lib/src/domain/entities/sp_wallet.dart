@@ -16,6 +16,14 @@ class SilentWallet {
   final String spAddress;
   final SilentBalance balance;
   final bool isScanning;
+
+  /// True when a manual scan left a resume marker on disk, so a restart can
+  /// pick the scan up instead of waiting for the user.
+  final bool hasPendingScan;
+
+  /// True when the pending scan was stopped by the user: it is reported, not
+  /// resumed automatically.
+  final bool isPendingScanPaused;
   final int? lastScannedHeight;
 
   const SilentWallet({
@@ -23,6 +31,8 @@ class SilentWallet {
     required this.spAddress,
     required this.balance,
     required this.isScanning,
+    this.hasPendingScan = false,
+    this.isPendingScanPaused = false,
     this.lastScannedHeight,
   });
 }

@@ -3,6 +3,10 @@
 Developer scripts for this repo. Run everything through `fvm` (see `AGENTS.md`).
 Each script is documented in its own section below.
 
+## Workspace dependency docs
+
+Run `make workspace-graph` to regenerate [WORKSPACE.md](../WORKSPACE.md) and [DEPENDENCIES.md](../DEPENDENCIES.md) from the Dart and Rust manifests. `make workspace-graph-check` compares both outputs without rewriting either file. Resolve the workspace with `make deps` first.
+
 ## arb.dart — manage the `.arb` localization files
 
 The files under `localization/` are large and easy to corrupt by hand. This tool

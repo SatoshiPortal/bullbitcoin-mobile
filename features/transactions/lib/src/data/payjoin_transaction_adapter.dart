@@ -5,12 +5,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart'
-    show
-        WalletConnectionPort,
-        SyncFailure,
-        SyncUnrecognizedReplyFailure,
-        WalletKey,
-        bitcoinTransactionKnown;
+    show SyncCompletion, SyncFailure, SyncTransactionTarget, WalletKey;
 
 import '../../transactions.dart';
 
@@ -19,18 +14,22 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
 
   final WalletInventory _wallets;
   final Future<Result<void, SyncFailure>> Function(WalletKey) _synchronize;
+  final Future<Result<SyncCompletion, SyncFailure>> Function(
+    WalletKey,
+    List<SyncTransactionTarget>,
+  )
+  _synchronizeTargeted;
   final Stream<WalletKey> _finished;
   final Transactions _transactions;
-  final WalletConnectionPort _connections;
   final Future<bool> Function(String, String) _protectSpend;
   // Pacing between two wallet syncs of [_reconcileWallet]; tests shorten it.
   final Duration reconcileDelay;
 
   const AppPayjoinTransactionAdapter(
     this._wallets,
-    this._transactions,
-    this._connections, {
+    this._transactions, {
     required this._synchronize,
+    required this._synchronizeTargeted,
     required this._finished,
     required this._protectSpend,
     this.reconcileDelay = const Duration(seconds: 5),
@@ -54,71 +53,120 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
       .where((admitted) => admitted)
       .map((_) {});
 
-  /// A refreshed lookup asks the Electrum server about this one transaction
-  /// instead of syncing the whole wallet, which takes 15 to 120 seconds
-  /// over Tor and delayed every payjoin outcome by as much.
+  /// A local read answers from the wallet's own copy, which is enough when a
+  /// sync has just finished.
   ///
-  /// The wallet's own copy only answers a non-refreshed lookup: a pending
-  /// transaction the wallet saw earlier can since have been evicted or
-  /// replaced, and the engine settles sessions on this answer.
+  /// A refreshed read takes the targeted pass instead: it asks the Electrum
+  /// server only about the scripts these candidates pay and the outpoints they
+  /// spend, instead of syncing the whole wallet, which takes 15 to 120 seconds
+  /// over Tor and delayed every payjoin outcome by as much. Only that pass may
+  /// answer `false`: a pending transaction the wallet saw earlier can since
+  /// have been evicted or replaced, and the engine settles sessions on this
+  /// answer.
   @override
-  Future<bool?> isTransactionVisible({
+  Future<Map<String, bool?>> transactionsPresence({
     required String walletId,
-    required String transactionId,
+    required List<PayjoinTransaction> transactions,
     bool refresh = false,
   }) async {
+    final answers = <String, bool?>{};
     if (!refresh) {
-      return _readTransaction(walletId, transactionId);
+      for (final transaction in transactions) {
+        answers[transaction.txid] = await _readTransaction(
+          walletId,
+          transaction.txid,
+        );
+      }
+      return answers;
     }
+    await _settleWithTargetedPass(walletId, transactions, answers);
+    return answers;
+  }
 
+  /// One pass, one answer per candidate: true where the pass saw it land,
+  /// false where the pass covered its scripts and did not, null everywhere
+  /// else — a candidate sent as its id alone, a malformed candidate, a target
+  /// the pass could not cover, or a pass that covered no script of this wallet
+  /// at all, failed, or could not be reached.
+  ///
+  /// A wallet that cannot be read, or that is not Bitcoin, is refused before
+  /// any target is built.
+  Future<void> _settleWithTargetedPass(
+    String walletId,
+    List<PayjoinTransaction> transactions,
+    Map<String, bool?> answers,
+  ) async {
     final key = await _readKey(walletId);
-    final network = key.network;
-    if (network is! BitcoinNetwork) {
+    if (key.network is! BitcoinNetwork) {
       throw Exception('Payjoin requires a Bitcoin wallet');
     }
-    final result = await _connections.run(
-      network: network,
-      operation: (connection) =>
-          bitcoinTransactionKnown(transactionId, connection),
-      mayRetry: (failure) => failure is! SyncUnrecognizedReplyFailure,
-    );
-    switch (result) {
-      case Ok(:final value):
-        if (value) {
-          unawaited(_reconcileWallet(walletId, transactionId));
-        }
-        return value;
-      case Err(failure: SyncUnrecognizedReplyFailure()):
-        // A server we cannot classify (Electrum Personal Server, bitcoind
-        // without txindex): take the slow road of a script-based wallet sync
-        // and read the wallet copy, instead of failing every lookup. A sync
-        // can join a pass that started before the broadcast, so an absence is
-        // only trusted after a second pass.
-        for (var pass = 1; pass <= 2; pass++) {
-          final visible = await _readTransaction(
-            walletId,
-            transactionId,
-            sync: true,
-          );
-          if (visible != false) return visible;
-        }
-        return false;
-      case Err(:final failure):
-        throw Exception(
-          'Payjoin transaction lookup failed: ${failure.logCode}',
+    final targets = <SyncTransactionTarget>[];
+    for (final transaction in transactions) {
+      answers[transaction.txid] = null;
+      if (transaction.outputs.isEmpty && transaction.inputs.isEmpty) continue;
+      try {
+        targets.add(
+          SyncTransactionTarget(
+            txid: transaction.txid,
+            outputScripts: [
+              for (final output in transaction.outputs) output.scriptPubkey,
+            ],
+            spentOutpoints: transaction.inputs,
+          ),
         );
+      } on ArgumentError {
+        // A malformed candidate cannot name a transaction a pass may judge.
+        // It stays unknown without throwing, so it neither follows the
+        // mutation nor keeps its valid peers from syncing.
+      }
+    }
+    if (targets.isEmpty) return;
+    try {
+      final SyncCompletion completion;
+      switch (await _synchronizeTargeted(key, targets)) {
+        case Ok(:final value):
+          completion = value;
+        case Err(:final failure):
+          log.warning(
+            'Payjoin targeted sync failed category=${failure.logCode}',
+          );
+          return;
+      }
+      final visible = completion.visibleTransactionIds;
+      final covered = completion.coveredTransactionIds;
+      if (visible == null || covered == null) return;
+      for (final target in targets) {
+        // A target the pass could not cover stays unknown: only a covered one
+        // may be answered, absent included.
+        if (!covered.contains(target.txid)) continue;
+        answers[target.txid] = visible.contains(target.txid);
+      }
+      if (visible.isNotEmpty) {
+        unawaited(_reconcileWallet(walletId, visible));
+      }
+    } on Exception {
+      // Every answer stays null: an unavailable pass proves nothing.
+      log.warning('Payjoin targeted sync unavailable');
     }
   }
 
-  /// Syncs until the wallet holds [transactionId], a few times at most: one
-  /// sync can fail, or join a pass that started before the transaction was
-  /// broadcast and so miss it. The session outcome never waits on this.
-  Future<void> _reconcileWallet(String walletId, String transactionId) async {
+  /// Settles the wallet's own copy for the transactions a pass proved visible,
+  /// a few times at most: the pass proved them on the server, and this only
+  /// brings the row and the history the UI reads up to date. The session
+  /// outcome never waits on this.
+  Future<void> _reconcileWallet(String walletId, Set<String> txids) async {
     for (var attempt = 1; attempt <= _reconcileAttempts; attempt++) {
       if (attempt > 1) await Future<void>.delayed(reconcileDelay * attempt);
       try {
         await refreshWallet(walletId);
-        if (await _readTransaction(walletId, transactionId) == true) {
+        var allSeen = true;
+        for (final txid in txids) {
+          if (await _readTransaction(walletId, txid) != true) {
+            allSeen = false;
+            break;
+          }
+        }
+        if (allSeen) {
           if (attempt > 1) {
             log.fine('Payjoin wallet reconcile recovered attempts=$attempt');
           }
@@ -133,15 +181,10 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     );
   }
 
-  Future<bool?> _readTransaction(
-    String walletId,
-    String transactionId, {
-    bool sync = false,
-  }) async {
+  Future<bool?> _readTransaction(String walletId, String transactionId) async {
     return switch (await _transactions.getWalletTransaction(
       transactionId,
       walletId: walletId,
-      sync: sync,
     )) {
       Ok(:final value) => value != null,
       Err(:final failure) => _unavailable(failure),

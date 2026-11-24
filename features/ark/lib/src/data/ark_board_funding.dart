@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
+import 'dart:math' show Random;
 import 'dart:typed_data';
 
 import 'package:ark/ark.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
@@ -96,11 +97,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       final parent = metadata.secretFingerprint;
       if (parent == null) throw const _HostFailure(ArkAccountRecoveryFailure());
       _require(parent == config.id.parent);
-      _sync(
-        await _sourceSync(
-          sync.WalletKey(id: metadata.id, network: metadata.network),
-        ),
-      );
+      await _refreshSource(metadata);
       final handle = _sync(
         await _runtime.wallet(
           sync.WalletKey(id: metadata.id, network: metadata.network),
@@ -249,8 +246,22 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       };
     } catch (error) {
       if (error is Error) rethrow;
+      final cause = _failure(error);
       if (journalAttempted) {
+        log.warning('Ark board prepare failed: ${cause.runtimeType}');
+        // Preparing never signs, so nothing can have left the wallet. Settle
+        // the reservation now: once it is released the outcome is known,
+        // and the user is told why and may simply try again.
+        _preparing.remove(config.id);
+        await reconcileSource(id);
         final pending = await _authority.pendingForAccount(config.id.canonical);
+        if (pending case Ok(value: null)) {
+          return Err(
+            cause is ArkSubmissionUncertainFailure
+                ? const ArkServiceUnavailableFailure()
+                : cause,
+          );
+        }
         return Err(
           ArkSubmissionUncertainFailure(switch (pending) {
             Ok(:final value) => value ?? id,
@@ -258,7 +269,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           }),
         );
       }
-      return Err(_failure(error));
+      return Err(cause);
     } finally {
       _preparing.remove(config.id);
     }
@@ -434,11 +445,80 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       return Ok(_packageOperation(_ark(await _client.read(account)), review));
     } catch (error) {
       if (error is Error) rethrow;
+      log.warning(
+        'Ark board confirm stopped: ${_failure(error).runtimeType} '
+        'signed=$admitted',
+      );
       return Err(
         admitted ? ArkSubmissionUncertainFailure(operationId) : _failure(error),
       );
     }
   }
+
+  /// Finishes a Board the user confirmed and the app signed but did not
+  /// broadcast: the check before broadcasting refused it then (a block
+  /// landed, Ark was busy, the app closed). Its coins stay held, and only
+  /// these signed bytes can move them, so the background check broadcasts
+  /// them once the same checks pass again. Never while a confirm for it
+  /// runs here; the durable phase arbitrates anything else.
+  Future<Result<void, ArkFailure>> deliverSigned(
+    ArkAccountId account,
+    String operationId,
+  ) => _track(() async {
+    if (_confirming.keys.any((key) => key.$2 == operationId)) {
+      return const Ok(null);
+    }
+    try {
+      final entry = _sync(await _authority.readBoardReview(operationId));
+      final signed = entry.signedPsbt;
+      if (signed == null ||
+          (entry.phase != 'signed' && entry.phase != 'broadcasting')) {
+        return const Ok(null);
+      }
+      final review = _Review(entry, account);
+      final metadata = await _eligible(
+        entry.binding.key.id,
+        expected: entry.binding,
+      );
+      await _fresh(review, quoteLifetime: false);
+      if (entry.phase == 'signed') {
+        _sync(
+          await _authority.advanceBoardDelivery(
+            operationId,
+            expectedPhase: 'signed',
+            nextPhase: 'broadcasting',
+          ),
+        );
+      }
+      final built = sync.UnsignedSpend(
+        revision: entry.binding.revision,
+        encoded: entry.binding.unsignedPsbt,
+        inputs: entry.binding.inputs,
+        owner: sync.SpendOwner(protocol: 'ark', session: operationId),
+      );
+      final receipt = _sync(
+        await _runtime.broadcast(
+          sync.WalletKey(id: metadata.id, network: metadata.network),
+          sync.SignedPsbt(signed),
+          network: BitcoinNetwork.regtest,
+          built: built,
+        ),
+      );
+      _require(
+        receipt.guarded &&
+            receipt.durable &&
+            receipt.txid == entry.binding.unsignedTxid,
+      );
+      _sync(await _authority.finishBoardBroadcast(operationId, receipt));
+      log.fine('Ark board delivered after signing');
+      return const Ok(null);
+    } catch (error) {
+      if (error is Error) rethrow;
+      final failure = _failure(error);
+      log.warning('Ark board delivery waiting: ${failure.runtimeType}');
+      return Err(failure);
+    }
+  });
 
   /// Positive native source evidence may close only its source pin. No caller
   /// history, package acknowledgement or absence proof. The only local closure
@@ -466,13 +546,17 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
               DateTime.now().toUtc(),
             ),
           );
+      // A reservation that stopped before Ark registered it can never be
+      // signed: release it, unless this app is preparing it right now.
+      final unregistered =
+          binding != null &&
+          !_preparing.any(
+            (account) => account.canonical == binding.accountIdentity,
+          ) &&
+          _sync(await _authority.unregisteredNeverSignedBoard(operationId));
       final metadata = await _eligible(key.id, expected: binding);
       _require(metadata.secretFingerprint == parent);
-      _sync(
-        await _sourceSync(
-          sync.WalletKey(id: metadata.id, network: metadata.network),
-        ),
-      );
+      _sync(await _refreshSource(metadata));
       final handle = _sync(
         await _runtime.wallet(
           sync.WalletKey(id: metadata.id, network: metadata.network),
@@ -510,13 +594,17 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
               admittedRevision: lease.revision,
             ),
           );
-          if (expiredUnsigned &&
-              _sync(
-                await _authority.expiredUnsignedBoardReview(
-                  operationId,
-                  DateTime.now().toUtc(),
-                ),
-              )) {
+          if ((expiredUnsigned &&
+                  _sync(
+                    await _authority.expiredUnsignedBoardReview(
+                      operationId,
+                      DateTime.now().toUtc(),
+                    ),
+                  )) ||
+              (unregistered &&
+                  _sync(
+                    await _authority.unregisteredNeverSignedBoard(operationId),
+                  ))) {
             // The CAS loses to every irreversible signing-start, including a
             // signer that has not yet persisted its signed bytes.
             _sync(
@@ -537,8 +625,35 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     }
   });
 
-  Future<void> _fresh(_Review review) async {
-    _unexpired(review);
+  /// Settles this account's unfinished Board, if any: a confirmed funding is
+  /// recorded, and a reservation that can no longer be signed gives its coins
+  /// back. Run by the host on startup and resume, never mid-preparation.
+  Future<Result<void, ArkFailure>> reconcilePending(
+    ArkAccountId account,
+  ) async {
+    if (_preparing.contains(account)) return const Ok(null);
+    final String? pending;
+    switch (await _authority.pendingForAccount(account.canonical)) {
+      case Ok(:final value):
+        pending = value;
+      case Err():
+        return const Err(ArkFeatureStorageFailure());
+    }
+    if (pending == null) return const Ok(null);
+    // Signed but never broadcast: finish it, then settle as usual.
+    if (await _authority.readBoardReview(pending) case Ok(
+      value: ArkBoardJournalEntry(phase: 'signed' || 'broadcasting'),
+    )) {
+      await deliverSigned(account, pending);
+    }
+    return reconcileSource(pending);
+  }
+
+  /// Current provider, tip, config and price still match [review]. A
+  /// signed Board resumed later skips only the quote's own lifetime
+  /// ([quoteLifetime] false): it is priced afresh here and must match.
+  Future<void> _fresh(_Review review, {bool quoteLifetime = true}) async {
+    if (quoteLifetime) _unexpired(review);
     final pass = _ark(await _client.synchronize(review.account, renew: false));
     final snapshot = pass.snapshot;
     final tip = snapshot.tipHeight;
@@ -575,7 +690,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           fresh.net == review.display.net &&
           fresh.amount == review.display.fundingAmount,
     );
-    _unexpired(review);
+    if (quoteLifetime) _unexpired(review);
   }
 
   ArkOperation _packageOperation(ArkSnapshot snapshot, _Review review) {
@@ -603,6 +718,21 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           funding.expiryHeight == review.display.expiryHeight,
     );
     return operation;
+  }
+
+  /// The native revision checks that follow a prepare decide on a stale source.
+  /// A reconcile must not read the journal from a source it could not refresh,
+  /// so it surfaces the refresh failure through [_sync] instead.
+  Future<Result<void, sync.SyncFailure>> _refreshSource(
+    WalletRegistration metadata,
+  ) async {
+    final refreshed = await _sourceSync(
+      sync.WalletKey(id: metadata.id, network: metadata.network),
+    );
+    if (refreshed case Err(:final failure)) {
+      log.warning('Ark Board source sync failed: ${failure.runtimeType}');
+    }
+    return refreshed;
   }
 
   Future<WalletRegistration> _eligible(
@@ -715,6 +845,9 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     ),
     Err(failure: ArkStaleQuoteFailure()) => throw const _HostFailure(
       ArkReviewExpiredFailure(),
+    ),
+    Err(failure: ArkWriterBusyFailure()) => throw const _HostFailure(
+      ArkOperationBusyFailure(),
     ),
     Err(
       failure: ArkValidationFailure(

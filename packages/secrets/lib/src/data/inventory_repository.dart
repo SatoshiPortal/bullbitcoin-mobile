@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/domain.dart';
+import '../domain/metadata_backup_wallet.dart';
 import '../domain/registered_wallet.dart';
 import '../domain/wallet_registration.dart';
 import 'boundary.dart';
@@ -21,6 +22,42 @@ final class InventoryRepository {
         final rows = await _listRows(view);
         return List.unmodifiable(rows.map((row) => _decode(row.data)));
       }, orElse: FetchSecretFailure.new);
+
+  Future<Result<List<MetadataBackupWallet>, SecretFailure>>
+  metadataBackupWallets(String view) => boundary(() async {
+    final rows = await _listRows(view);
+    return List.unmodifiable([
+      for (final row in rows) _metadataBackupWallet(row),
+    ]);
+  }, orElse: FetchSecretFailure.new);
+
+  MetadataBackupWallet _metadataBackupWallet(QueryRow row) {
+    final id = row.read<String>('id');
+    final registration = decodeWalletRegistration(row.data);
+    final secret = registration?.secretFingerprint;
+    if (registration == null || secret == null) {
+      return MetadataBackupWallet(id: id);
+    }
+    final network = registration.network;
+    final descriptors = <String>[];
+    if (network is BitcoinNetwork) {
+      final external = row.read<String>('external_descriptor');
+      final internal = row.read<String>('internal_descriptor');
+      if (!isPublicBitcoinBackupDescriptor(external) ||
+          !isPublicBitcoinBackupDescriptor(internal)) {
+        return MetadataBackupWallet(id: id);
+      }
+      descriptors.addAll([external, internal]);
+    }
+    return MetadataBackupWallet(
+      id: id,
+      network: network,
+      secret: secret,
+      label: registration.label,
+      isDefault: registration.isDefault,
+      bitcoinPublicDescriptors: descriptors,
+    );
+  }
 
   Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints(
     String view,

@@ -156,6 +156,75 @@ void main() {
     }
   });
 
+  group('getUnreadMessageCount', () {
+    test('asks api-commcenter for the count', () async {
+      final http = FakeHttp(body: {'result': 3});
+      expect(valueOf(await bbx(http).commcenter.getUnreadMessageCount()), 3);
+
+      final request = http.requests.single;
+      expect(request.path, '/ak/api-commcenter');
+      expect(
+        jsonEncode(request.data),
+        '{"jsonrpc":"2.0","id":"0","method":"getUnreadMessageCount",'
+        '"params":{}}',
+      );
+    });
+
+    test('reads a count held in an object', () async {
+      final http = FakeHttp(
+        body: {
+          'result': {'count': 7},
+        },
+      );
+      expect(valueOf(await bbx(http).commcenter.getUnreadMessageCount()), 7);
+    });
+
+    for (final body in <Object?>[
+      {'result': null},
+      {'result': '3'},
+      {
+        'result': {'count': '3'},
+      },
+    ]) {
+      test('$body is a format error', () async {
+        expect(
+          await failedCall(
+            bbx(FakeHttp(body: body)).commcenter.getUnreadMessageCount(),
+          ),
+          isA<BbxResponseFormatFailure>(),
+        );
+      });
+    }
+  });
+
+  group('setAllMessagesAsRead', () {
+    test('marks every message as read', () async {
+      final http = FakeHttp(body: {'result': null});
+      valueOf(await bbx(http).commcenter.setAllMessagesAsRead());
+
+      expect(
+        jsonEncode(http.requests.single.data),
+        '{"jsonrpc":"2.0","id":"0","method":"setAllMessagesAsRead",'
+        '"params":{"isRead":true}}',
+      );
+    });
+
+    test('a JSON-RPC error is a failure', () async {
+      expect(
+        await failedCall(
+          bbx(
+            FakeHttp(
+              body: {
+                'error': {'code': -32000},
+              },
+            ),
+          ).commcenter.setAllMessagesAsRead(),
+        ),
+        isA<BbxRpcFailure>(),
+      );
+    });
+  });
+
   group('sendMessageToSupport', () {
     test('sends the text, source and base64 attachments', () async {
       final http = FakeHttp(body: {'result': null});

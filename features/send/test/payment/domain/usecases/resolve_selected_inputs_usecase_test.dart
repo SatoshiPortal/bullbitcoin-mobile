@@ -6,7 +6,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../../../test/features/coins/wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:provisioning/provisioning.dart';
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:satoshifier/bip32_derivation.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
@@ -149,6 +150,12 @@ void main() {
   late FakeAdmission admission;
   late WalletProvisioning accounts;
   late Secret secret;
+
+  // A Liquid default derives its confidential descriptor through LWK, which
+  // reaches the app's Rust bridge: without this the Liquid BIP84 creation
+  // throws `Bad state: secrets: StateError` from `BaseEntrypoint._state`.
+  setUpAll(BullSdk.init);
+  tearDownAll(BullSdk.dispose);
 
   setUp(() async {
     FakeSecureStoragePlatform().install();

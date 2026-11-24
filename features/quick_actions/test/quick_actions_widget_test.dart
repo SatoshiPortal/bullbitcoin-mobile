@@ -19,6 +19,56 @@ import 'quick_actions_test.dart' show MemoryStorage;
 
 void main() {
   for (final pinned in [false, true]) {
+    testWidgets(
+      'unread support messages show on ${pinned ? 'Support' : 'More'}',
+      (tester) async {
+        final cubit = createQuickActionsCubit(
+          storage: MemoryStorage(),
+          warning: (_) {},
+          exchangeVisible: Stream.value(false),
+        );
+        addTearDown(cubit.close);
+        if (pinned) {
+          await cubit.save(QuickActionSelection([QuickAction.support]));
+        }
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(extensions: testBullExtensions),
+            localizationsDelegates: const [QuickActionsLocalizations.delegate],
+            home: Scaffold(
+              body: QuickActionsRow(
+                cubit: cubit,
+                onAction: (_) {},
+                onCustomize: () {},
+                unreadSupportMessages: 3,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        int badge(String label) => tester
+            .widget<BullQuickAction>(
+              find.byWidgetPredicate(
+                (widget) => widget is BullQuickAction && widget.label == label,
+              ),
+            )
+            .badgeCount;
+
+        expect(badge('More'), pinned ? 0 : 3);
+        if (pinned) {
+          expect(badge('Support'), 3);
+          expect(find.text('3'), findsOneWidget);
+        } else {
+          await tester.tap(find.text('More'));
+          await tester.pumpAndSettle();
+          expect(badge('Support'), 3);
+        }
+      },
+    );
+  }
+
+  for (final pinned in [false, true]) {
     testWidgets('amount visibility toggles in ${pinned ? 'Home' : 'More'}', (
       tester,
     ) async {

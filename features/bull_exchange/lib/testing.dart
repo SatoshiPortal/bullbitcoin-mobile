@@ -38,6 +38,7 @@ export 'src/sell/ui/screens/sell_send_payment_screen.dart'
     show SellSendPaymentScreen;
 export 'src/sell/ui/sell_router.dart' show SellRouter;
 export 'src/ui/screens/exchange_landing_screen.dart' show ExchangeLandingScreen;
+export 'src/auth/exchange_auth_host.dart' show exchangeAuthHost;
 export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthScreen;
 export 'src/auth/exchange_exit_on_back.dart' show ExchangeExitOnBack;
 export 'src/dashboard/exchange_home_screen.dart' show ExchangeHomeScreen;
@@ -80,6 +81,17 @@ export 'src/dca/presentation/dca_bloc.dart';
 export 'src/dca/ui/screens/dca_success_screen.dart';
 export 'src/buy/ui/buy_router.dart' show BuyRouter;
 export 'src/exchange_payout_wallets.dart' show ExchangePayoutWallets;
+
+export 'src/limit_orders/domain/entities/limit_order_amount_limits.dart';
+export 'src/limit_orders/domain/entities/limit_order_creation_context.dart';
+export 'src/limit_orders/domain/limit_orders_failure.dart';
+export 'src/limit_orders/domain/usecases/create_limit_order_usecase.dart';
+export 'src/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
+export 'src/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+export 'src/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
+export 'src/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
+export 'src/limit_orders/presentation/create_limit_order_cubit.dart';
+export 'src/limit_orders/presentation/create_limit_order_state.dart';
 
 Future<Result<AutoBuyStatus, AutoBuyFailure>> autoBuyStatusForTesting(
   Exchange exchange,

@@ -33,6 +33,27 @@ void main() {
   };
 
   group('BullSupportButton', () {
+    testWidgets('.icon shows the unread count and hides it at zero', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        scoped(const BullSupportButton.icon(label: 'Support', unreadCount: 3)),
+      );
+      expect(find.text('3'), findsOneWidget);
+
+      await tester.pumpWidget(
+        scoped(
+          const BullSupportButton.icon(label: 'Support', unreadCount: 120),
+        ),
+      );
+      expect(find.text('99+'), findsOneWidget);
+
+      await tester.pumpWidget(
+        scoped(const BullSupportButton.icon(label: 'Support')),
+      );
+      expect(tester.widget<Badge>(find.byType(Badge)).isLabelVisible, isFalse);
+    });
+
     for (final MapEntry(key: name, value: build) in variants.entries) {
       testWidgets('.$name forwards its message to the scope', (tester) async {
         await tester.pumpWidget(scoped(build(message: 'Order 42')));

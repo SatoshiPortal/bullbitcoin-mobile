@@ -141,8 +141,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "9ba4d5001620a8a840f3b33de17a667c08629b98"
-      resolved-ref: "9ba4d5001620a8a840f3b33de17a667c08629b98"
+      ref: "5dc0c9a0f46a5c7356a523035f8bb0b43b2bba26"
+      resolved-ref: "5dc0c9a0f46a5c7356a523035f8bb0b43b2bba26"
       url: "https://github.com/SatoshiPortal/bdk-dart"
     source: git
     version: "1.0.1"
@@ -1896,6 +1896,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.28.0"
+  sensors_plus:
+    dependency: transitive
+    description:
+      name: sensors_plus
+      sha256: "50a01f66846bff68de947bd5df225c3627c923c467f758867f3916350be059ac"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.1.1"
+  sensors_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: sensors_plus_platform_interface
+      sha256: "9e12a92569bf14ae04b2f086c3e087177a47e527b7666ae1bbe5f70f8450ab19"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   sentry:
     dependency: transitive
     description:
@@ -2214,7 +2230,7 @@ packages:
     source: hosted
     version: "0.11.2"
   toml:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: toml
       sha256: "35a35f782228656a2af31e8c73d1353cc4ef3d683fd68af1111b44631879c05e"

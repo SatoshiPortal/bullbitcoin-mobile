@@ -24,7 +24,6 @@ import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:background_tasks/wallet_jobs.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotificationStore;
@@ -36,18 +35,17 @@ import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart'
     show arkBoardFundingBinding, SqliteArkFundingReservations;
 import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
+import 'package:bb_mobile/features/wallet/wallet_ark_services.dart';
 import 'package:fees/fees.dart';
 import 'package:sync/write.dart'
     show ForegroundWalletSynchronization, WalletNativeRuntime;
-import 'package:background_tasks/background_tasks.dart'
-    show configureBackgroundTasks;
+import 'package:background_tasks/background_tasks.dart' show BackgroundSchedule;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
@@ -352,7 +350,7 @@ class Bull {
 
       // Flush wizard pending values (if any) to SQLite now that the
       // settings repository is available, then mark the wizard complete.
-      final _ = await locator<ExchangeFacade>().resolveAccess();
+      final _ = await locator<Exchange>().resolveAccess();
       final applied = await startupWizard.applyPendingChoices(
         preferences: locator<Preferences>(),
         exchange: locator<Exchange>(),
@@ -370,11 +368,11 @@ class Bull {
       configureLogTorContext(
         () => loadTorDiagnosticContext(settings, locator<Tor>()),
       );
-      await refreshReportingConsent(settings);
+      await settings.refreshReportingConsent();
       await prepareBackgroundWalletStores(
         openNotifications: () => locator<PaymentNotificationStore>().open(),
       );
-      await configureBackgroundTasks(backgroundTasksHandler);
+      await locator<BackgroundSchedule>().apply();
 
       await Report.recordMigration();
       initialized = true;
@@ -428,5 +426,6 @@ Future<void> _setupArkRegtestProfile() async {
     primaryEsploraUrl: esploraUrl,
     initializeNew: _arkInitializeNew,
     dispatcher: backgroundTasksHandler,
+    services: walletArkAppServices(locator),
   );
 }

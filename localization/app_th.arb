@@ -193,10 +193,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "การกู้คืนกระเป๋าสตางค์ของคุณ",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "เลือกค่าธรรมเนียม",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -208,10 +204,6 @@
   "coreScreensTransferFeeLabel": "ค่าธรรมเนียม Swap",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "การกู้คืนการสํารองข้อมูลของคุณผ่านทางระบบคลาวด์ของคุณ.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "สถานะ",
   "@transactionSwapStatusSwapStatus": {
@@ -268,10 +260,6 @@
   "transactionFilterTransfer": "Swap",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "exchangeLandingRecommendedExchange": "อัตราแลกเปลี่ยน Bitcoin",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
   },
   "receiveConfirming": "กำลังยืนยัน... ({count}/{required})",
   "@receiveConfirming": {
@@ -723,10 +711,6 @@
   "fundExchangeETransferLabelEmail": "ส่งอีเมล E-ส่งอีเมลนี้",
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
-  },
-  "bitcoinSettingsTestnetModeTitle": "โหมดทดสอบ",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
   },
   "fromLabel": "จาก",
   "@fromLabel": {
@@ -1269,10 +1253,6 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "walletSettingsImportWalletTitle": "รหัส",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "backupWalletErrorGoogleDriveConnection": "เชื่อมต่อกับ Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
     "description": "Error when Google Drive connection fails"
@@ -1642,10 +1622,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "Sovereign เครื่องช่วยฟัง Bitcoin และ Bitcoin- เท่านั้น.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". เงินทุนจะเพิ่มยอดเงินในบัญชีของคุณ.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -1874,10 +1850,6 @@
   "@backupSettingsError": {
     "description": "Header text for error message display"
   },
-  "exchangeFeatureCustomerSupport": "• • • แชทกับลูกค้า",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
   "sellPleasePayInvoice": "กรุณาชําระเงิน",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
@@ -1982,10 +1954,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "บริการ",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "ราคาจะผ่อนคลาย ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -2082,10 +2050,6 @@
   "exchangeAuthOk": "ตกลง",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "ความปลอดภัย",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "สมบูรณ์",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2266,10 +2230,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "แชร์กับ Bull Bitcoin.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "ผมเข้าใจ",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "อัพโหลดไฟล์",
   "@exchangeFileUploadTitle": {
@@ -2493,10 +2453,6 @@
   "payCorporate": "องค์กรองค์กร",
   "@payCorporate": {
     "description": "Label for corporate checkbox"
-  },
-  "onboardingCreateNewWallet": "สร้างข้อความใหม่",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
   },
   "buyExpressWithdrawalDesc": "รับการชําระเงิน Bitcoin",
   "@buyExpressWithdrawalDesc": {
@@ -2725,10 +2681,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "บริการแลกเปลี่ยนสกุลเงิน cryptocurrency ไม่สามารถใช้ได้ในโปรแกรมโทรศัพท์มือถือ.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "ค่าธรรมเนียมที่กําหนดเอง",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2858,10 +2810,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "exchangeLandingDisclaimerLegal": "เข้าถึงบริการแลกเปลี่ยนจะ จํากัด ไปยังประเทศที่ Bull Bitcoin สามารถใช้งานตามกฎหมายและอาจจําเป็นต้องใช้ CYC.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
-  },
   "backupWalletEncryptedVaultTitle": "การเข้ารหัส",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2953,10 +2901,6 @@
   "sendSwapDetails": "รายละเอียด",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "การกู้คืนกระเป๋าสตางค์ของคุณผ่าน 12 คํา.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "โหลด",
   "@pinStatusLoading": {
@@ -3567,10 +3511,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• ซื้อ Bitcoin ตรงกับตนเอง",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "จํานวนจํานวนสูงสุด",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -3966,10 +3906,6 @@
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
   },
-  "exchangeLandingConnectAccount": "เชื่อมต่อบัญชี Bitcoin",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
-  },
   "recoverYourWalletTitle": "การกู้คืนกระเป๋าสตางค์ของคุณ",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
@@ -4091,16 +4027,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "หน่วยความจํา",
   "exchangeTestnetBasicAuthTitle": "ข้อมูลรับรองการแลกเปลี่ยน testnet",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth สำหรับหน้าเว็บการแลกเปลี่ยน testnet (เข้าสู่ระบบและ KYC)",
-  "exchangeTestnetBasicAuthUsernameLabel": "ชื่อผู้ใช้",
-  "exchangeTestnetBasicAuthPasswordLabel": "รหัสผ่าน",
-  "exchangeTestnetBasicAuthClearButton": "ล้าง",
-  "exchangeTestnetBasicAuthSaveButton": "บันทึก",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "กรอกใบแจ้งหนี้",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4620,10 +4547,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "•ขาย Bitcoin ได้ชําระเงินกับ Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "เมล็ด",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4678,10 +4601,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "เงินของคุณ",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "โพสต์เมล็ดพันธุ์",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4710,10 +4629,6 @@
   "sendFastFee": "ได้อย่างรวดเร็ว",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "สหรัฐ",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "ไม่มีสถิติที่มีอยู่",
   "@exchangeStatisticsNoData": {
@@ -4775,10 +4690,6 @@
   "coldcardInstructionsTitle": "คําแนะนํา",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "หมายเลขอ้างอิง",
   "@transactionOrderLabelReferenceNumber": {
@@ -4867,10 +4778,6 @@
   "transactionStatusPending": "สิ้นสุด",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
-  },
-  "settingsSuperuserModeDisabledMessage": "โหมดที่ใช้งานง่าย.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
   },
   "settingsTermsOfServiceTitle": "ข้อกําหนดในการให้บริการ",
   "@settingsTermsOfServiceTitle": {
@@ -5117,10 +5024,6 @@
   "sellExchangeRate": "อัตราแลกเปลี่ยน",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "โหมดนี้มีความเสี่ยง โดยช่วยให้คุณสามารถสูญเสียเงิน",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "ขาย Bitcoin",
   "@sellTitle": {
@@ -5503,10 +5406,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "การทําธุรกรรม",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "ลงชื่อเข้าใช้",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5605,10 +5504,6 @@
   "quickAndEasyTag": "ง่ายและรวดเร็ว",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "settingsThemeTitle": "ธีม",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "อีเมล",
   "@payEmail": {
@@ -5759,10 +5654,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "การสํารองข้อมูลทางกายภาพ",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "จาก",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5770,10 +5661,6 @@
   "fundExchangeCrIbanCrcDescription": "ส่งธนาคารจากบัญชีธนาคารของคุณโดยใช้รายละเอียดด้านล่าง ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
-  },
-  "settingsDevModeWarningTitle": "หน่วยความจํา",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
   },
   "rbfOriginalTransaction": "ธุรกรรมทั่วไป",
   "@rbfOriginalTransaction": {
@@ -5786,10 +5673,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "จํานวนผู้ใช้คัดลอก",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "รุ่น: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "ชื่อคูปอง",
   "@payBillerNameValue": {
@@ -5848,17 +5731,9 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "• • • การโอนเงินและชําระเงิน",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "การชําระเงินทันที",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "การกู้คืนกระเป๋าสตางค์",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "ใช้ {pinOrPassword}",
   "@usePasswordInsteadButton": {
@@ -5971,10 +5846,6 @@
   "googleAppleCloudRecommendation": "Google หรือ Google แอปเปิ้ล: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "ไปที่ Google Bitcoin แลกเปลี่ยนเว็บไซต์",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "ทดสอบ {walletName}",
   "@testWalletTitle": {
@@ -6625,10 +6496,6 @@
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
   },
-  "exchangeFeatureDcaOrders": "• DCA, การสั่งซื้อและอัตโนมัติ",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
   "payIban": "ฉัน",
   "@payIban": {
     "description": "Label for IBAN field"
@@ -6783,10 +6650,6 @@
   "importMnemonicSelectType": "เลือกกระเป๋าสําหรับนําเข้า",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 การกําหนดข้อมูล",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
   "swapTransferAmount": "จำนวนเงินที่Swap",
   "@swapTransferAmount": {
@@ -7287,10 +7150,6 @@
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
   },
-  "exchangeFeatureUnifiedHistory": "•ประวัติการทําธุรกรรม",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
-  },
   "payViewDetails": "ดูรายละเอียด",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -7419,7 +7278,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "เกิดข้อผิดพลาดในการตั้งค่ากระเป๋าสตางค์ของคุณ กรุณาลองใหม่อีกครั้ง",
   "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
   "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7456,12 +7314,6 @@
   "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้",
   "autoswapTargetBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีเป้าหมาย",
   "autoswapMaximumBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีสูงสุด",
-  "onboardingAdvancedOptionsTitle": "ตัวเลือกขั้นสูง",
-  "onboardingAdvancedOptionsDescription": "กำหนดการตั้งค่าขั้นสูงก่อนสร้างหรือกู้คืนกระเป๋าเงินของคุณ",
-  "onboardingAdvancedOptionsCustomElectrum": "เซิร์ฟเวอร์ Electrum ที่กำหนดเอง",
-  "onboardingAdvancedOptionsCustomMempool": "เซิร์ฟเวอร์ Mempool ที่กำหนดเอง",
-  "onboardingAdvancedOptionsCustomRecoverbull": "เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง",
-  "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
@@ -7474,123 +7326,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "เหรียญ",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 เหรียญ} other{{count} เหรียญ}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "ถูกแช่แข็ง",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "ใช้ได้",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "ไม่มีที่ถูกแช่แข็ง",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "จัดเรียงและกรอง",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "แสดง {visible} จาก {total}",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 เอาต์พุตที่ยังไม่ถูกใช้} other{{count} เอาต์พุตที่ยังไม่ถูกใช้}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "ซิงค์",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "ล้างทั้งหมด",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "จำนวน: มากไปน้อย",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "จำนวน: น้อยไปมาก",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "วันที่: ใหม่สุด",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "วันที่: เก่าสุด",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "พวงกุญแจ",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "ทั้งหมด",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "รับ",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "เงินทอน",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "สถานะการแช่แข็ง",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "ทั้งหมด",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "ถูกแช่แข็ง",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "ไม่ถูกแช่แข็ง",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "ป้ายกำกับ",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "รีเซ็ต",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "นำไปใช้",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{เลือกแล้ว 1} other{เลือกแล้ว {count}}}",
   "@coinsSelectedCount": {
@@ -7598,128 +7336,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "เลือกทั้งหมด",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "แช่แข็ง",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "ยกเลิกการแช่แข็ง",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "เลิกทำ",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{แช่แข็ง 1 เหรียญหรือไม่?} other{แช่แข็ง {count} เหรียญหรือไม่?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "เหรียญที่ถูกแช่แข็งจะยังอยู่ในกระเป๋าเงินของคุณ แต่จะถูกกันออกจากการใช้จ่ายจนกว่าคุณจะยกเลิกการแช่แข็ง",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "การแช่แข็งเหรียญเหล่านี้จะทำให้คุณไม่มียอดคงเหลือที่ใช้ได้",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{แช่แข็ง 1 เหรียญแล้ว · ถูกกันออกจากการใช้จ่าย} other{แช่แข็ง {count} เหรียญแล้ว · ถูกกันออกจากการใช้จ่าย}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{ยกเลิกการแช่แข็ง 1 เหรียญแล้ว} other{ยกเลิกการแช่แข็ง {count} เหรียญแล้ว}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 การยืนยัน} other{{count} การยืนยัน}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "รอดำเนินการ",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "ยังไม่มีเหรียญ",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "เหรียญจะปรากฏที่นี่เมื่อคุณได้รับบิตคอยน์",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "ไม่มีเหรียญที่ตรงกัน",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "ล้างตัวกรอง",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "ลองอีกครั้ง",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "ปัดที่เหรียญเพื่อแช่แข็ง · กดค้างเพื่อเลือก",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "ไม่สามารถโหลดเหรียญของคุณได้ ดึงลงเพื่อรีเฟรชและลองอีกครั้ง",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "ไม่สามารถแช่แข็งเหรียญที่เลือกได้ โปรดลองอีกครั้ง",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "ไม่สามารถยกเลิกการแช่แข็งเหรียญที่เลือกได้ โปรดลองอีกครั้ง",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} ถูกแช่แข็ง",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -7790,16 +7406,6 @@
   "statusScreenContinue": "อ่านต่อ",
   "viewerAddressTab": "ที่อยู่",
   "viewerPaymentUriTab": "Payment URI",
-  "settingsErrorReportingTitle": "การรายงานข้อผิดพลาด",
-  "errorReportingProgramTitle": "โปรแกรมรายงานข้อผิดพลาด",
-  "errorReportingProgramDescriptionP1": "ช่วยเราปรับปรุง Bull ให้ดีขึ้นด้วยการเข้าร่วมโปรแกรมรายงานข้อผิดพลาดของเรา",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin ส่งรายงานข้อผิดพลาดแบบไม่ระบุตัวตนเมื่อเกิดปัญหาขึ้น",
-  "errorReportingProgramDescriptionP3": "ข้อมูลนี้ช่วยให้เราทราบว่าแต่ละบั๊กส่งผลกระทบต่อผู้ใช้กี่คน และจัดลำดับความสำคัญในการแก้ไขได้อย่างเหมาะสม หากไม่มีข้อมูลนี้ เราจะไม่มีทางวัดผลกระทบได้",
-  "errorReportingProgramDescriptionP4": "รายงานจะถูกส่งไปยังเซิร์ฟเวอร์ของ Bull เท่านั้น ไม่ส่งให้บุคคลที่สาม",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin เป็นโอเพนซอร์ส คุณจึงสามารถตรวจสอบได้ว่ามีการส่งข้อมูลอะไรบ้าง",
-  "errorReportingAcceptButton": "ยอมรับ",
-  "errorReportingCancelButton": "ยกเลิก",
-  "errorReportingRestartSnackbar": "รีสตาร์ทแอปเพื่อให้การเปลี่ยนแปลงนี้มีผล",
   "backupWarningTitle": "สำรองกระเป๋าสตางค์ของคุณตอนนี้",
   "backupWarningBackupNow": "ใช่",
   "backupWarningBackupLater": "ไม่ ฉันเข้าใจความเสี่ยง",
@@ -7929,45 +7535,11 @@
   "dcaReceiveAddressError": "ไม่สามารถเตรียมที่อยู่รับในกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
   "dcaOrderCreationError": "ไม่สามารถสร้างการซื้อแบบประจำได้ โปรดลองอีกครั้งภายหลัง",
   "settingsPayjoinDisclaimerTitle": "ข้อควรทราบเกี่ยวกับ Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "ข้อควรทราบเกี่ยวกับ Payjoin",
-  "settingsPayjoinAdvancedTitle": "การตั้งค่า Payjoin ขั้นสูง",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
   "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
   "sendSwapExpiredTitle": "คำสั่งหมดอายุ",
   "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ",
-  "settingsScreenPrivacyTitle": "ความเป็นส่วนตัวของหน้าจอ",
-  "settingsScreenPrivacyDisabledMessage": "ตอนนี้อนุญาตให้จับภาพหน้าจอในหน้าจอที่ละเอียดอ่อนได้แล้ว",
-  "settingsSearchHint": "ค้นหาการตั้งค่า",
-  "settingsSearchNoResults": "ไม่พบการตั้งค่า",
-  "settingsSearchMempoolKeywords": "ตัวสำรวจบล็อก|ประมาณค่าธรรมเนียม|ค่าธรรมเนียมธุรกรรม|API เมมพูล",
-  "settingsSearchExchangeKeywords": "บัญชี|บัญชีเอ็กซ์เชนจ์|ซื้อขาย|ซื้อและขาย",
-  "settingsSearchStartBackupKeywords": "สร้างข้อมูลสำรอง|บันทึกข้อมูลสำรอง|สำรองกระเป๋า",
-  "settingsSearchRecoverbullKeywords": "ข้อมูลสำรองเข้ารหัส|ข้อมูลสำรองบนคลาวด์|ห้องนิรภัยเข้ารหัส|กู้คืนห้องนิรภัย",
-  "settingsSearchLabelsKeywords": "ป้ายกำกับกระเป๋า|ป้ายกำกับธุรกรรม|BIP329|นำเข้าป้ายกำกับ|ส่งออกป้ายกำกับ",
-  "settingsSearchTransactionHistoryKeywords": "ส่งออกธุรกรรม|ส่งออกประวัติธุรกรรม|CSV|ประวัติกระเป๋า",
-  "settingsSearchAppSettingsKeywords": "การกำหนดค่าแอป|การตั้งค่าแอปพลิเคชัน|การตั้งค่าทั่วไป",
-  "settingsSearchTermsOfServiceKeywords": "ข้อกำหนดและเงื่อนไข|ข้อมูลทางกฎหมาย|ข้อตกลงผู้ใช้|TOS",
-  "settingsSearchServicesStatusKeywords": "สถานะบริการ|สถานะระบบ|ออนไลน์|บริการขัดข้อง",
-  "settingsSearchImportWalletKeywords": "เพิ่มกระเป๋า|กู้คืนกระเป๋า|นำเข้าคำช่วยจำ|กระเป๋าดูอย่างเดียว|กระเป๋าฮาร์ดแวร์",
-  "settingsSearchBroadcastTransactionKeywords": "เผยแพร่ธุรกรรมที่ลงนามแล้ว|ส่งธุรกรรม|ธุรกรรมดิบ|เลขฐานสิบหกของธุรกรรม|PSBT",
-  "settingsSearchPayjoinKeywords": "ความเป็นส่วนตัวของ Payjoin|ธุรกรรมร่วมกัน|P2EP",
-  "settingsSearchAutoswapKeywords": "สวอปอัตโนมัติ|แลกเปลี่ยนอัตโนมัติ|โอนอัตโนมัติ|ยอดคงเหลือกระเป๋าทันที",
-  "settingsSearchElectrumKeywords": "โหนดบิตคอยน์|โหนด Electrum|เซิร์ฟเวอร์กำหนดเอง|โหนดส่วนตัว",
-  "settingsSearchTestnetModeKeywords": "เครือข่ายทดสอบ|บิตคอยน์เทสต์เน็ต|Liquid เทสต์เน็ต|โหมดทดสอบ",
-  "settingsSearchSeedViewerKeywords": "วลีซีด|วลีกู้คืน|คำช่วยจำ|คำสำรอง|ดูซีด",
-  "settingsSearchBip85Keywords": "เอนโทรปีแบบกำหนดได้|ซีดย่อย|เอนโทรปีที่ได้มา|BIP85",
-  "settingsSearchLanguageKeywords": "ภูมิภาคภาษา|การแปล|ภาษาที่แสดง|ภาษาที่ต้องการ",
-  "settingsSearchThemeKeywords": "ลักษณะที่ปรากฏ|โหมดมืด|โหมดสว่าง|ธีมระบบ",
-  "settingsSearchCurrencyKeywords": "สกุลเงินเฟียต|สกุลเงินท้องถิ่น|สกุลเงินเริ่มต้น|สกุลเงินแลกเปลี่ยน",
-  "settingsSearchSecurityPinKeywords": "รหัส PIN|รหัสผ่าน|ล็อกแอป|การยืนยันตัวตน|เปลี่ยน PIN",
-  "settingsSearchLogsKeywords": "บันทึกดีบัก|บันทึกการวินิจฉัย|บันทึกแอป|ส่งออกบันทึก",
-  "settingsSearchDevModeKeywords": "โหมดนักพัฒนา|การตั้งค่านักพัฒนา|โหมดดีบัก|การทดสอบขั้นสูง",
-  "settingsSearchTestnetCredentialsKeywords": "ข้อมูลรับรองผู้ใช้เทสต์เน็ต|เข้าสู่ระบบเทสต์เน็ต|ชื่อผู้ใช้เทสต์เน็ต|รหัสผ่านเทสต์เน็ต|การยืนยันตัวตนพื้นฐาน",
-  "settingsSearchErrorReportingKeywords": "รายงานข้อขัดข้อง|รายงานข้อบกพร่อง|การวินิจฉัย|ข้อมูลการใช้งาน|บันทึกข้อผิดพลาด",
-  "settingsSearchScreenPrivacyKeywords": "ภาพหน้าจอ|การบันทึกหน้าจอ|การป้องกันการจับภาพ|ความเป็นส่วนตัว",
-  "settingsSearchStartTyping": "เริ่มพิมพ์เพื่อดูผลลัพธ์",
-  "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
   "sendErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sendErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
@@ -7981,8 +7553,6 @@
   "walletWarningElectrumAction": "แตะเพื่อตั้งค่าเซิร์ฟเวอร์",
   "walletLoadFailedRetryHint": "ดึงลงเพื่อรีเฟรชแล้วลองอีกครั้ง",
   "settingsErrorSavingSetting": "ไม่สามารถบันทึกการตั้งค่านี้ได้ โปรดลองอีกครั้ง",
-  "settingsErrorConsentNotGiven": "การตั้งค่านี้ต้องได้รับการยืนยันจากคุณก่อนจึงจะเปลี่ยนได้",
-  "settingsErrorLoadingLogs": "ไม่สามารถเตรียมบันทึกการวินิจฉัยได้ โปรดลองอีกครั้ง",
   "exchangeErrorSigningOut": "ไม่สามารถออกจากระบบได้อย่างสมบูรณ์ โปรดลองอีกครั้ง",
   "exchangeErrorSavingPreferences": "ไม่สามารถบันทึกการตั้งค่าของคุณได้ โปรดลองอีกครั้ง",
   "exchangeErrorLoadingAnnouncements": "ไม่สามารถโหลดประกาศได้",
@@ -8104,7 +7674,6 @@
   "fundExchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "exchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "walletBalancesMayBeStale": "ไม่สามารถอัปเดตยอดคงเหลือของคุณได้ และยอดอาจไม่เป็นปัจจุบัน",
-  "settingsSearchTorKeywords": "พร็อกซี Tor|Orbot|การกำหนดเส้นทางแบบหัวหอม|Tor ในตัว|เครือข่ายความเป็นส่วนตัว",
   "limitOrdersInsufficientBalance": "สมดุล",
   "limitOrdersInsufficientBalanceMessage": "คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.",
   "limitOrdersFundAccount": "บัญชีบัญชีของคุณ",
@@ -8161,20 +7730,15 @@
   "swapUnderReviewTitle": "Swap อยู่ระหว่างการตรวจสอบ",
   "swapUnderReviewDescription": "Swap นี้ต้องได้รับการตรวจสอบด้วยตนเอง โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือ หากคุณยังไม่มีบัญชีฝ่ายสนับสนุน เพียงสร้างบัญชีขึ้นมา โดยไม่จำเป็นต้องทำ KYC",
   "swapUnderReviewSupportMessage": "Swap อยู่ระหว่างการตรวจสอบ\nOrder ID: {orderId}\nRequest ID: {requestId}\nหมายเลขคำสั่งซื้อ: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
   "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
   "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
   "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
   "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
   "settingsDarkModeTitle": "โหมดมืด",
-  "settingsSourceCodeTitle": "ซอร์สโค้ด",
   "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้",
   "backgroundTasksTitle": "งานเบื้องหลัง",
   "blockedInSystemSettings": "ถูกบล็อกในการตั้งค่าระบบ",
-  "notificationsBlockedMessage": "การแจ้งเตือนถูกบล็อกในการตั้งค่าระบบ",
   "notificationsTitle": "การแจ้งเตือน",
   "openSystemSettings": "เปิดการตั้งค่าระบบ",
-  "permissionsTitle": "สิทธิ์",
-  "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
   "sendErrorInvoiceExpiryTooShort": "ใบแจ้งหนี้นี้จะหมดอายุเร็วเกินไป โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ"
 }

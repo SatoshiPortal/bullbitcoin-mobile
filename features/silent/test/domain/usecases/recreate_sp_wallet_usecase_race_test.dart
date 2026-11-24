@@ -189,6 +189,7 @@ void main() {
         .thenAnswer((_) => repository.notifications);
     cubit = SpCubit(
       loadSpWalletDataUsecase: loadSpWalletDataUsecase,
+      getScanServerTip: harness.scanTipUsecase,
       restampSpPaymentTimesUsecase: harness.restampUsecase,
       spNotificationsWatcher: SpNotificationsWatcher(
         watchSpNotificationsUsecase: harness.watchUsecase,

@@ -53,6 +53,8 @@
 		<true/>
 		<key>NSCameraUsageDescription</key>
 		<string>This app needs access to your camera to scan QR codes</string>
+		<key>NSMotionUsageDescription</key>
+		<string>Device motion lets the payment animation respond to the way you hold your phone.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>This app needs access to your photos and files to export and import wallet files like psbts, xpubs and recovery files, and to attach files in support chat</string>
 		<key>NSBluetoothPeripheralUsageDescription</key>

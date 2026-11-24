@@ -7,6 +7,12 @@ import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:wallet_import/src/domain/watch_only/import_watch_only_xpub_usecase.dart';
 import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
 
+final class _LiquidExtendedPubkey extends Fake
+    implements satoshifier.ExtendedPubkey {
+  @override
+  satoshifier.Network get network => satoshifier.Network.liquidMainnet;
+}
+
 final class _Accounts implements WalletProvisioning {
   final List<
     ({String xpub, BitcoinNetwork network, ScriptType script, String label})
@@ -75,11 +81,7 @@ void main() {
     final usecase = ImportWatchOnlyXpubUsecase(accounts);
     final liquid = WatchOnlyXpubEntity(
       watchOnlyXpub: satoshifier.WatchOnlyXpub(
-        extendedPubkey: satoshifier.ExtendedPubkey(
-          pubkey: List<int>.filled(78, 0),
-          derivation: satoshifier.Derivation.bip84,
-          network: satoshifier.Network.liquidMainnet,
-        ),
+        extendedPubkey: _LiquidExtendedPubkey(),
       ),
       label: '',
     );

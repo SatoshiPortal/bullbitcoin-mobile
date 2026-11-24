@@ -37,6 +37,7 @@ class _ExchangeListenerState extends State<ExchangeListener> {
       // The reconnect covers pushes from now on; this covers whatever was
       // pushed while the app was hidden and the socket was down.
       exchangeCubit.fetchUserSummary();
+      exchangeCubit.refreshUnreadSupportMessages();
     }
   }
 

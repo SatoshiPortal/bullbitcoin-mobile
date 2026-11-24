@@ -58,6 +58,15 @@ final class ArkMovement {
   final List<String> inputVtxoIds;
   final List<String> outputVtxoIds;
   final String? transactionId;
+
+  /// Where the funds went, for a movement that sent them out of Ark.
+  final List<String> sentTo;
+
+  /// Where the funds arrived, for a movement that brought them into Ark.
+  final List<String> receivedOn;
+
+  /// When the movement settled; null while it is pending.
+  final DateTime? completedAt;
   ArkMovement({
     required this.id,
     required this.kind,
@@ -68,8 +77,21 @@ final class ArkMovement {
     List<String> inputVtxoIds = const [],
     List<String> outputVtxoIds = const [],
     this.transactionId,
+    List<String> sentTo = const [],
+    List<String> receivedOn = const [],
+    this.completedAt,
   }) : inputVtxoIds = List.unmodifiable(inputVtxoIds),
-       outputVtxoIds = List.unmodifiable(outputVtxoIds);
+       outputVtxoIds = List.unmodifiable(outputVtxoIds),
+       sentTo = List.unmodifiable(sentTo),
+       receivedOn = List.unmodifiable(receivedOn);
+
+  /// A Board that failed with nothing reaching Ark: its review was left
+  /// before funding was signed, so no funds moved. An unknown amount, or any
+  /// amount that did reach Ark, is never treated as unfunded.
+  bool get isUnfundedBoard =>
+      kind == ArkMovementKind.board &&
+      status == ArkMovementStatus.failed &&
+      amount?.value == BigInt.zero;
 }
 
 final class ArkServerInfo {

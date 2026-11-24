@@ -1,4 +1,5 @@
 import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/src/bull_exchange_feature.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
@@ -20,13 +21,11 @@ void main() {
     when(() => orders.get('selected'))
         .thenAnswer((_) async => Ok(limitOrder(id: 'selected')));
     final exchange = exchangeForTesting(limitOrders: orders);
-    final feature = BullExchangeFeature.mount(
+    final feature = mountBullExchange(
       networkUnavailable: () async => false,
       showWebsiteOnly: (_) => false,
       unavailableRedirectPath: '/wallet',
       brandAssetPath: 'unused',
-      copy: (_) => fail('unexpected landing'),
-      onSignIn: (_) {},
       onExit: (_) {},
       limitOrders: () => exchange,
     );

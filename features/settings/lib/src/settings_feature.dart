@@ -12,10 +12,12 @@ import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 import 'domain/watch_settings_service_health_usecase.dart';
+import 'settings.dart';
 import 'settings_menu.dart';
-import 'wallet_details/wallet_details_route.dart';
 import 'ui/all_settings_screen.dart';
 import 'ui/settings_search_view.dart';
+import 'ui/settings_hub_bindings.dart';
+import 'wallet_details/wallet_details_route.dart';
 
 const _homePath = '/settings';
 const _homeName = 'settings';
@@ -56,10 +58,13 @@ final class SettingsFeature {
   ///
   /// [menuScope] can provide inherited display inputs to both screens.
   static SettingsFeature mount({
-    required SettingsMenu Function(BuildContext) menuOf,
-    required SettingsLabels Function(BuildContext) labelsOf,
+    SettingsMenu Function(BuildContext) menuOf = SettingsHubBindings.menuOf,
+    SettingsLabels Function(BuildContext) labelsOf =
+        SettingsHubBindings.labelsOf,
     required NetworkStatus status,
     required List<RouteBase> childRoutes,
+    List<RouteBase> appSettingsRoutes = const [],
+    Settings Function()? settings,
     Widget Function(Widget child)? menuScope,
   }) {
     Widget scoped(Widget child) => menuScope?.call(child) ?? child;
@@ -90,6 +95,10 @@ final class SettingsFeature {
               ),
             ),
           ),
+          if (settings != null) ...[
+            ...Settings.walletRoutes(),
+            Settings.appSettingsRoute(appSettingsRoutes, settings: settings),
+          ],
           ...childRoutes,
         ],
       ),

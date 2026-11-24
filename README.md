@@ -67,11 +67,12 @@ Development is tracked in [GitHub issues](https://github.com/SatoshiPortal/bullb
 
 ## Technical resources
 
-- [Architecture](ARCHITECTURE.md) and [feature dependencies](FEATURES.md).
+- [Architecture](ARCHITECTURE.md), [workspace dependency graphs](WORKSPACE.md), and [direct external dependencies](DEPENDENCIES.md).
 - [Toolchain, setup and development conventions](AGENTS.md). Start with an issue before implementation work; see [CONTRIBUTING.md](CONTRIBUTING.md).
 - Translations are AI-generated and community-reviewed. See the [translation tooling guide](tools/README.md) for changes to [`localization/`](localization/).
 - [Dependencies](pubspec.yaml) and default [Electrum](packages/electrum/lib/setup.dart), [Mempool](packages/mempool/lib/migration.dart) and [swap](packages/swaps/lib/setup.dart) endpoints.
 - [Android reproducible build and verification instructions](reproducibility/) and [BULL Wallet on WalletScrutiny](https://walletscrutiny.com/mobile/com.bullbitcoin.mobile/).
+- Releases are signed with the GPG key in [`keys/i5hi.asc`](keys/i5hi.asc), signing subkey fingerprint `7247 8AF1 8BD0 F955 3A16  B9F1 9F4E 17C3 203E 0D49`. See [verifying the release signature](reproducibility/README.md#verifying-the-release-signature).
 - Report vulnerabilities privately using the [security policy](SECURITY.md).
 - Licensed under [MIT](LICENSE).
 - [AI-generated code documentation on DeepWiki](https://deepwiki.com/SatoshiPortal/bullbitcoin-mobile).

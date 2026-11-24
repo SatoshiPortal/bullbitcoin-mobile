@@ -5,7 +5,8 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 import '../internal_recipient_policy.dart';
-import '../send_failure.dart';
+
+import 'package:send/send.dart';
 
 typedef PreparedInternalRecipient = ({SendSource wallet, String address});
 

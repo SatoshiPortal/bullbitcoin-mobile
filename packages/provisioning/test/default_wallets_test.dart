@@ -13,12 +13,14 @@ final class _Environment implements ActiveEnvironmentReader {
   _Environment(this.environment);
 
   final NetworkEnv environment;
+  Object? failure;
   int reads = 0;
 
   @override
   Future<Result<Environment, PreferencesFailure>>
   readActiveEnvironment() async {
     reads++;
+    if (failure case final cause?) throw cause;
     return Ok(Environment.values.byName(environment.name));
   }
 }
@@ -27,8 +29,10 @@ final class _Environment implements ActiveEnvironmentReader {
 /// asked to create and lets a test take custody of the committed rows.
 final class _Accounts implements WalletProvisioning {
   final List<Network> created = [];
+  final List<Secret> received = [];
   int resumes = 0;
   Network? failNetwork;
+  Object? failure;
   void Function(Secret secret, Network network)? onCreate;
 
   @override
@@ -44,9 +48,10 @@ final class _Accounts implements WalletProvisioning {
     DateTime? birthday,
   }) async {
     created.add(network);
+    received.add(secret);
     if (network == failNetwork) {
       failNetwork = null;
-      throw Exception('temporary failure');
+      throw failure ?? Exception('temporary failure');
     }
     onCreate?.call(secret, network);
     return Ok(network.toString());
@@ -214,6 +219,90 @@ void main() {
       }
     });
   }
+
+  test('a Liquid StateError preserves Bitcoin and resumes the same protected custody', () async {
+    final protected = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+      passphrase: 'synthetic-passphrase',
+    ) as Ok<Secret, SecretFailure>).value;
+    accounts.failNetwork = LiquidNetwork.mainnet;
+    accounts.failure = StateError('synthetic failure');
+    final first = await provisioning.execute(secret: protected);
+    expect((first as Err).failure, isA<DefaultWalletCreationFailure>());
+    expect(registrations.map((wallet) => wallet.network), [
+      BitcoinNetwork.mainnet,
+    ]);
+    final before = Map<String, String>.of(storage.entries);
+    final resumed = await provisioning.execute(secret: protected);
+    final wallets =
+        (resumed as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    expect(wallets.map((wallet) => wallet.network), [
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]);
+    expect(accounts.created, [
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]);
+    expect(
+      accounts.received.every((secret) => secret.id == protected.id),
+      isTrue,
+    );
+    expect(storage.entries, before);
+  });
+
+  test(
+    'a settings StateError returns a typed failure before wallet access',
+    () async {
+      environment.failure = StateError('synthetic failure');
+      expect(
+        (await provisioning.execute() as Err).failure,
+        isA<DefaultWalletUnexpectedFailure>(),
+      );
+      expect(storage.entries, isEmpty);
+      expect(inventory.reads, 0);
+      expect(accounts.resumes, 0);
+      expect(accounts.created, isEmpty);
+    },
+  );
+
+  test('both default wallets retain the supplied passphrase secret', () async {
+    final protected = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+      passphrase: 'synthetic-passphrase',
+    ) as Ok<Secret, SecretFailure>).value;
+    final wallets = (await provisioning.execute(
+      secret: protected,
+    ) as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    expect(wallets.map((wallet) => wallet.secretFingerprint), [
+      protected.id,
+      protected.id,
+    ]);
+    expect(accounts.received.map((secret) => secret.id), [
+      protected.id,
+      protected.id,
+    ]);
+    expect(
+      accounts.received.every((secret) => secret.info.hasPassphrase),
+      isTrue,
+    );
+  });
+
+  test('a passphrase without words is rejected before wallet access', () async {
+    final stored = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+    ) as Ok<Secret, SecretFailure>).value;
+    await expectLater(
+      provisioning.execute(secret: stored, passphrase: 'synthetic-passphrase'),
+      throwsArgumentError,
+    );
+    expect(inventory.reads, 0);
+    expect(accounts.created, isEmpty);
+  });
 
   for (final candidate in ['', 'incorrect', 'synthetic-passphrase']) {
     test(

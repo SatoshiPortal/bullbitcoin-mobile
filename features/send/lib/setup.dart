@@ -1,3 +1,4 @@
+import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 import 'package:electrum/electrum.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter/widgets.dart';
@@ -39,6 +40,7 @@ abstract final class SendFeature {
     required void Function(BuildContext, WalletKey) openCoins,
     required Widget Function(OrderSwapRecord) orderUnderReview,
     required ImageProvider paymentArrowImage,
+    ArkAccountsFacade? Function()? arkAccounts,
   }) => (
     payment: paymentRoute(
       createCubit: (args, spWalletLabel) => createPaymentCubit(
@@ -49,7 +51,7 @@ abstract final class SendFeature {
         fees: fees,
         environment: environment,
       ),
-      createArkCubit: () => createPaymentArkCubit(payment()),
+      createArkCubit: () => createPaymentArkCubit(arkAccounts?.call()),
       openSignedTransactionReader: (context, prepared, network) =>
           GoRouter.of(context).pushNamed<String>(
             BroadcastSignedTxRoute.broadcastHome.name,

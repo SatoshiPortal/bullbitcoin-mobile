@@ -108,7 +108,7 @@ void main() {
       );
       expect(
         tester.getSemantics(button),
-        containsSemantics(
+        isSemantics(
           tooltip: loc.walletDeletionConfirmationTitle,
           isButton: true,
           hasTapAction: true,
@@ -135,7 +135,7 @@ void main() {
       for (var index = 0; index < 2; index++) {
         final node = tester.getSemantics(buttons.at(index));
         expect(node.label.split('\n').last, loc.copyDialogButton);
-        expect(node, containsSemantics(isButton: true, hasTapAction: true));
+        expect(node, isSemantics(isButton: true, hasTapAction: true));
       }
     } finally {
       semantics.dispose();

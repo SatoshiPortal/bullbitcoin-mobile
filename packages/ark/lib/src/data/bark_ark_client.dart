@@ -155,6 +155,7 @@ final class BarkArkClient implements ArkClient {
       if (store.get('lifecycle')?['state'] != 'ready') {
         await session.synchronizeStage('initial-scan');
       }
+      await _connectServer(session);
       final snapshot = await _observe(store, session, config.id, source);
       store.put('lifecycle', {
         'state': 'ready',
@@ -205,6 +206,148 @@ final class BarkArkClient implements ArkClient {
       store?.close();
     }
   });
+  @override
+  Future<Result<ArkOperation?, ArkWalletFailure>> progressStartedExits(
+    ArkAccountId account,
+  ) async {
+    if (executionMode != ArkExecutionMode.foreground) {
+      return const Err(ArkUnavailableFailure());
+    }
+    switch (await read(account)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value)
+          when !value.exitDetails.any(
+            (exit) => exit.status == ArkExitStatus.pending,
+          ):
+        return const Ok(null);
+      case Ok():
+    }
+    // The ordinary quote and confirm path, with the rate Bark picks.
+    return _quoteAndConfirm(
+      account,
+      ArkQuoteRequest.exitProgress(),
+      // Nothing to broadcast yet: the last transaction is still confirming.
+      skip: (reviewed) => reviewed.fee.value == BigInt.zero,
+    );
+  }
+
+  /// Quotes [request] and confirms that exact quote, for work the user
+  /// authorized earlier and no one reviews now. A block landing between the
+  /// two makes the quote stale; then it is quoted afresh, a few times, under
+  /// the same checks. Null when [skip] says there is nothing to do.
+  Future<Result<ArkOperation?, ArkWalletFailure>> _quoteAndConfirm(
+    ArkAccountId account,
+    ArkQuoteRequest request, {
+    bool Function(ArkQuote reviewed)? skip,
+  }) async {
+    ArkWalletFailure failure = const ArkStaleQuoteFailure();
+    for (var attempt = 0; attempt < 3; attempt++) {
+      switch (await quote(account, request)) {
+        case Err(failure: ArkStaleQuoteFailure()):
+          continue;
+        case Err(failure: final refused):
+          return Err(refused);
+        case Ok(value: final reviewed) when skip?.call(reviewed) ?? false:
+          return const Ok(null);
+        case Ok(value: final reviewed):
+          switch (await submit(
+            account,
+            ArkSubmission.confirmQuote(
+              quoteId: reviewed.id,
+              operationId: _id(),
+            ),
+          )) {
+            case Ok(:final value):
+              return Ok(value);
+            case Err(failure: final stale && ArkStaleQuoteFailure()):
+              failure = stale;
+            case Err(failure: final refused):
+              return Err(refused);
+          }
+      }
+    }
+    return Err(failure);
+  }
+
+  @override
+  Future<Result<List<ArkOperation>, ArkWalletFailure>> claimAuthorized(
+    ArkAccountId account,
+  ) async {
+    if (executionMode != ArkExecutionMode.foreground) {
+      return const Err(ArkUnavailableFailure());
+    }
+    final List<String> claimable;
+    final Set<String> unrolling;
+    switch (await read(account)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        claimable = [
+          for (final exit in value.exitDetails)
+            if (exit.status == ArkExitStatus.claimable) exit.id,
+        ];
+        unrolling = {
+          for (final exit in value.exitDetails)
+            if (exit.status == ArkExitStatus.pending) exit.id,
+        };
+    }
+    if (claimable.isEmpty) return const Ok([]);
+    final path = ArkStore.accountPath(storagePath, account);
+    final List<
+      ({String destination, Sats remainingFee, List<String> remainingIds})
+    >
+    allowances;
+    ArkStore? store;
+    try {
+      store = ArkStore.open(
+        '$path/state.sqlite',
+        create: false,
+        readOnly: true,
+      );
+      allowances = store.claimAllowances();
+    } on FileSystemException {
+      return const Err(ArkUnavailableFailure(ArkFailureReason.accountMissing));
+    } catch (error) {
+      if (error is Error) rethrow;
+      return const Err(ArkStorageFailure());
+    } finally {
+      store?.close();
+    }
+    final admitted = <ArkOperation>[];
+    ArkWalletFailure? failed;
+    for (final allowance in allowances) {
+      // VTXOs exited together are claimed together, in one transaction with
+      // one fee: wait while any of them is still on its way. One that can no
+      // longer finish (swept, spent) is not waited for.
+      if (allowance.remainingIds.any(unrolling.contains)) continue;
+      final ids = [
+        for (final id in allowance.remainingIds)
+          if (claimable.contains(id)) id,
+      ];
+      if (ids.isEmpty || allowance.remainingFee.value <= BigInt.zero) continue;
+      // The ordinary quote and confirm path: every check a reviewed claim
+      // passes, against the authority recorded when the exit started.
+      switch (await _quoteAndConfirm(
+        account,
+        ArkQuoteRequest.claim(
+          ids: ids,
+          destination: allowance.destination,
+          maxFee: allowance.remainingFee,
+        ),
+      )) {
+        case Ok(:final value?):
+          admitted.add(value);
+        case Ok():
+          break;
+        case Err(:final failure):
+          failed ??= failure;
+      }
+    }
+    if (admitted.isEmpty && failed != null) return Err(failed);
+    return Ok(admitted);
+  }
+
   @override
   Stream<Result<ArkSnapshot, ArkWalletFailure>> watch(ArkAccountId account) {
     final controller = _changes.putIfAbsent(
@@ -421,8 +564,10 @@ final class BarkArkClient implements ArkClient {
     if (authority == null) return snapshot;
     final native = nativeIds ?? snapshot.vtxos.map((v) => v.id).toSet();
     final candidates = <String>{};
+    // Bark lists a pending Board's VTXO as unknown or, in newer versions,
+    // as locked while it waits for the funding transaction.
     for (final vtxo in snapshot.vtxos.where(
-      (v) => v.state == ArkVtxoState.unknown,
+      (v) => v.state == ArkVtxoState.unknown || v.state == ArkVtxoState.locked,
     )) {
       final boards = snapshot.pendingBoards
           .where((b) => b.vtxoId == vtxo.id)
@@ -561,6 +706,11 @@ final class BarkArkClient implements ArkClient {
       previousRecovery: _storedRecovery(store, previous),
     );
     onNativeStaleness?.call(observed.stale);
+    // Without a live server connection Bark reports no server information.
+    // Keep the last observed one instead of erasing it from the snapshot.
+    if ((observed.serverInfo, previous?.serverInfo) case (null, final kept?)) {
+      observed = copySnapshot(observed, serverInfo: kept);
+    }
     var reserveAddress = store.get('reserve-address')?['address'] as String?;
     if (reserveAddress == null &&
         executionMode == ArkExecutionMode.foreground) {
@@ -709,6 +859,19 @@ final class BarkArkClient implements ArkClient {
     if (pinned == null && key != null) store.put('server', {'key': key});
     if (commit) _commitObservation(store, observed);
     return observed;
+  }
+
+  /// Bark connects to the server lazily and reports no server information
+  /// until it has. A new account has no earlier information to keep, so its
+  /// first observation connects; an unreachable server leaves it without.
+  Future<void> _connectServer(ArkNativeSession session) async {
+    try {
+      await session.synchronizeStage('server');
+    } on ArkStageDeferred {
+      rethrow;
+    } catch (error) {
+      if (error is Error) rethrow;
+    }
   }
 
   void _commitObservation(
@@ -1393,6 +1556,8 @@ final class BarkArkClient implements ArkClient {
         ids: quote.selectedIds,
       ),
       ArkOperationKind.board => ArkQuoteRequest.board(amount: quote.amount),
+      // The rate and ceiling the quote recorded, never fresh automatic ones:
+      // a replay must price exactly what was reviewed.
       ArkOperationKind.emergencyExit
           when destination != null && feeRate != null && maxClaimFee != null =>
         ArkQuoteRequest.emergencyExit(
@@ -1611,6 +1776,20 @@ final class BarkArkClient implements ArkClient {
       (session, source, stages) async => Ok(await session.receive(request)),
     );
   });
+
+  @override
+  Future<Result<DateTime, ArkWalletFailure>> nextRound(ArkAccountId account) =>
+      _exclusive(account, (store, path) async {
+        if (executionMode != ArkExecutionMode.foreground) {
+          return const Err(ArkUnavailableFailure());
+        }
+        return _session(
+          store,
+          path,
+          account,
+          (session, source, stages) async => Ok(await session.nextRoundStart()),
+        );
+      });
   static ArkOperation _operation(
     ArkQuote quote,
     String id,
@@ -1672,6 +1851,7 @@ ArkSnapshot copySnapshot(
   List<ArkVtxo>? vtxos,
   Sats? pending,
   Sats? pendingBoardBalance,
+  ArkServerInfo? serverInfo,
 }) => ArkSnapshot(
   account: value.account,
   revision: value.revision,
@@ -1685,7 +1865,7 @@ ArkSnapshot copySnapshot(
   vtxos: vtxos ?? value.vtxos,
   movements: value.movements,
   operations: operations ?? value.operations,
-  serverInfo: value.serverInfo,
+  serverInfo: serverInfo ?? value.serverInfo,
   renewal: renewal ?? value.renewal,
   exits: value.exits,
   recovery: value.recovery,

@@ -34,7 +34,7 @@ void main() {
             .onChanged('${available + 1}');
         await tester.pump();
         final action = tester.widget<BullButton>(
-          find.widgetWithText(BullButton, 'Board'),
+          find.widgetWithText(BullButton, 'Continue'),
         );
         expect(action.disabled, isTrue);
         action.onPressed();
@@ -72,7 +72,7 @@ void main() {
     expect(maximum.disabled, true);
     maximum.onPressed();
     expect(requested, isEmpty);
-    final action = find.widgetWithText(BullButton, 'Board');
+    final action = find.widgetWithText(BullButton, 'Continue');
     expect(tester.getBottomRight(action).dy, greaterThan(780));
     expect(tester.widget<BullButton>(action).disabled, true);
     tester.widget<BullInputText>(find.byType(BullInputText)).onChanged('60000');

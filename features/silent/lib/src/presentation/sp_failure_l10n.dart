@@ -22,6 +22,8 @@ extension SpFailureL10n on SilentFailure {
     SilentConfigInvalid() => context.silentLoc.silentFailureConfigInvalid,
     SilentSetupCleanupFailed() =>
       context.silentLoc.silentFailureSetupCleanupFailed,
+    SilentBackendRollbackFailed() =>
+      context.silentLoc.silentFailureBackendRollbackFailed,
     SilentAmountBelowMinimum() =>
       context.silentLoc.silentFailureAmountBelowMinimum,
     SilentAmountExceedsBalance() =>

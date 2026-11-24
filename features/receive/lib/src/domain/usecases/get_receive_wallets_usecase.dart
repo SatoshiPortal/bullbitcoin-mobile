@@ -63,8 +63,7 @@ class GetReceiveWalletsUsecase {
     if (registrations.isEmpty) {
       return const Err(ReceiveAddressUnavailableFailure());
     }
-    final wallets = await Future.wait(registrations.map(_project));
-    return Ok(wallets.whereType<ReceiveWallet>().toList());
+    return Ok(await Future.wait(registrations.map(_project)));
   }
 
   @useResult
@@ -85,20 +84,20 @@ class GetReceiveWalletsUsecase {
         if (value.network != entry.network) {
           return const Err(ReceiveUnsupportedNetworkFailure());
         }
-        final wallet = await _project(value);
-        return wallet == null
-            ? const Err(ReceiveAddressUnavailableFailure())
-            : Ok(wallet);
+        return Ok(await _project(value));
     }
   }
 
-  Future<ReceiveWallet?> _project(WalletRegistration registration) async {
-    final device = await _readSigner(registration.id);
-    if (device case Err(:final failure)) {
-      log.warning(
-        'Failed to read receive wallet signer: ${failure.runtimeType}',
-      );
-      return null;
+  Future<ReceiveWallet> _project(WalletRegistration registration) async {
+    final SignerDevice? device;
+    switch (await _readSigner(registration.id)) {
+      case Ok(:final value):
+        device = value;
+      case Err(:final failure):
+        log.warning(
+          'Failed to read receive wallet signer: ${failure.runtimeType}',
+        );
+        device = null;
     }
     final loaded = await _loadWallet(
       native.WalletKey(id: registration.id, network: registration.network),
@@ -115,7 +114,7 @@ class GetReceiveWalletsUsecase {
       label: registration.label,
       scriptType: registration.scriptType,
       derivationPath: registration.derivationPath,
-      signerDevice: (device as Ok<SignerDevice?, SignerDeviceFailure>).value,
+      signerDevice: device,
       balanceSat: balance?.totalSat,
       confirmedBalanceSat: balance?.confirmedSat,
     );

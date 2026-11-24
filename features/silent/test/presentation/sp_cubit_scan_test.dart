@@ -65,6 +65,34 @@ void main() {
     await notifController.close();
   });
 
+  test('retry after BWK started resumes the native checkpoint', () async {
+    await cubit.load();
+    await cubit.scan(startHeight: 800000);
+    notifController.add(const SpScanStarted(800000, 850000));
+    notifController.add(const SpScanFailed(SilentBackendUnreachable()));
+    await Future<void>.delayed(Duration.zero);
+
+    await cubit.retryScan();
+
+    verifyInOrder([
+      () => scanUsecase.execute(startHeight: 800000),
+      () => scanUsecase.execute(),
+    ]);
+  });
+
+  test('a resumed scan clears the error from the previous attempt', () async {
+    await cubit.load();
+    notifController.add(const SpScanFailed(SilentBackendUnreachable()));
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.error, isA<SilentBackendUnreachable>());
+
+    notifController.add(const SpScanStarted(810000, 850000));
+    notifController.add(const SpScanCompleted());
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state.error, isNull);
+  });
+
   test(
     'ScanStarted notification sets isScanning=true and scan bounds',
     () async {
@@ -438,22 +466,17 @@ void main() {
       expect(cubit.state.error, isNull);
     });
 
-    test(
-      'stopScan() logs an Err without surfacing it as an error state',
-      () async {
-        when(() => stopUsecase.execute()).thenAnswer(
-          (_) async =>
-              const Err<void, SilentFailure>(SilentUnexpected('stop failed')),
-        );
-        await cubit.load();
+    test('stopScan() exposes a failure so the user can retry Stop', () async {
+      when(() => stopUsecase.execute()).thenAnswer(
+        (_) async =>
+            const Err<void, SilentFailure>(SilentUnexpected('stop failed')),
+      );
+      await cubit.load();
 
-        // Best-effort: the scan tears down async, so a failed stop is not the
-        // user's problem.
-        await cubit.stopScan();
+      await cubit.stopScan();
 
-        expect(cubit.state.error, isNull);
-      },
-    );
+      expect(cubit.state.error, isA<SilentUnexpected>());
+    });
 
     test(
       'stopScan() lets a thrown bug propagate instead of hiding it',

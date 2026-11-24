@@ -32,6 +32,14 @@ part 'data/legacy_preferences.dart';
 /// Encrypted preferences with borrowed legacy access for unmigrated owners.
 /// Opening requires runtime admission and committed owner readiness.
 class Preferences implements domain.SettingsRepository {
+  /// Applies the primary store's consent once foreground startup admits it.
+  Future<void> refreshReportingConsent() => Report.refreshConsent(
+    () async => (await fetch()).fold(
+      (value) => value.isErrorReportingEnabled,
+      (_) => throw Exception('Preferences read failed'),
+    ),
+  );
+
   final PreferencesDao _settingsDatasource;
   final PreferencesStore? _store;
   final LegacyPreferencesDao Function() _legacyFactory;

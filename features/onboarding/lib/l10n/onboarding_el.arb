@@ -1,0 +1,79 @@
+{
+  "@@locale": "el",
+  "onboardingRecoverYourWallet": "Ανακαλύψτε το πορτοφόλι σας",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "onboardingEncryptedVaultDescription": "Ανακαλύψτε το εφεδρικό σας μέσω cloud χρησιμοποιώντας το PIN σας.",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingSplashDescription": "Κυρίαρχο πορτοφόλι Bitcoin και υπηρεσία ανταλλαγής Bitcoin μόνο.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingEncryptedVault": "Αποκρυπτωμένο θησαυροφυλάκιο",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingCreateNewWallet": "Δημιουργήστε νέο Wallet",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "onboardingPhysicalBackupDescription": "Ανακαλύψτε το πορτοφόλι σας μέσω 12 λέξεων.",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "settingsLanguageTitle": "Γλώσσα",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Recover",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "Το δικό σας χρήμα",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingRecoverWallet": "Ανακαλύψτε το Wallet",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "onboardingPhysicalBackup": "Φυσικό backup",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "onboardingRecoverWalletButton": "Ανακαλύψτε το Wallet",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "continueButton": "Συνεχίστε να συνεχίζετε",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "torSettingsTitle": "Οι ρυθμίσεις Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "walletSetupErrorTryAgain": "Κάτι πήγε στραβά κατά τη ρύθμιση του πορτοφολιού σας. Παρακαλώ δοκιμάστε ξανά.",
+  "onboardingAdvancedOptionsTitle": "Σύνθετες επιλογές",
+  "onboardingAdvancedOptionsDescription": "Διαμορφώστε τις σύνθετες ρυθμίσεις πριν δημιουργήσετε ή ανακτήσετε το πορτοφόλι σας",
+  "onboardingAdvancedOptionsCustomElectrum": "Προσαρμοσμένος διακομιστής Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Προσαρμοσμένος διακομιστής Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Προσαρμοσμένος διακομιστής Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
+  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά."
+}

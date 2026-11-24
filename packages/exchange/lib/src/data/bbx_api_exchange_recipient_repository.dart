@@ -123,7 +123,8 @@ final class BbxApiExchangeRecipientRepository {
   /// A JSON-RPC error message can quote the request, so only its code is
   /// kept.
   static Object _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code) => 'BbxRpcFailure(code: $code)',
+    bbx.BbxRpcFailure(:final code) =>
+      'BbxRpcFailure(code: $code)${failure.requestIdLabel}',
     _ => failure.runtimeType.toString(),
   };
 }

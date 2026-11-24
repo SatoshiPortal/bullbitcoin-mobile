@@ -17,6 +17,7 @@ class ExchangeSupportChatRouter {
     required String Function(BuildContext) loginLabel,
     required String Function(BuildContext, ExchangeFailure) failureMessage,
     required void Function(BuildContext, bool fromExchange) onExit,
+    required void Function(BuildContext) onMessagesRead,
   }) => GoRoute(
     name: ExchangeSupportChatNavigation.routeName,
     path: '/exchange/support-chat',
@@ -33,6 +34,7 @@ class ExchangeSupportChatRouter {
             ? ExchangeSupportChatScreen(
                 exchange: exchange(),
                 onExit: exit,
+                onMessagesRead: () => onMessagesRead(context),
                 initialMessage: draft?.initialMessage,
               )
             : ExchangeSupportLoginScreen(

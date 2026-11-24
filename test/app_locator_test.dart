@@ -121,7 +121,7 @@ void main() {
       registerTestOwnerDatabases(locator);
       inventoryFixture = await InventoryFixture.open(
         directory,
-        includeSignerDevices: true,
+        withSignerDevices: true,
       );
       inventoryFixture.register(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
@@ -431,7 +431,7 @@ void main() {
       registerTestOwnerDatabases(locator);
       final inventoryFixture = await InventoryFixture.open(
         directory,
-        includeSignerDevices: true,
+        withSignerDevices: true,
       );
       inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
@@ -533,7 +533,7 @@ void main() {
     registerTestOwnerDatabases(locator);
     final inventoryFixture = await InventoryFixture.open(
       directory,
-      includeSignerDevices: true,
+      withSignerDevices: true,
     );
     inventoryFixture.register(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());

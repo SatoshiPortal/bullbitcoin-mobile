@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/services.dart' show Clipboard;
 import 'package:primitives/primitives.dart' show Sats;
 
 import '../domain/ark_display_data_port.dart';
@@ -10,6 +11,7 @@ import '../presentation/ark_payment_cubit.dart';
 import '../presentation/ark_failure_l10n.dart';
 import '../presentation/ark_operation_status_l10n.dart';
 import 'ark_amount.dart';
+import 'ark_review.dart';
 
 /// The caller replaces the owner for a full config or request replacement.
 /// Local navigation and scanning never request a quote or submit a payment.
@@ -21,6 +23,15 @@ class ArkPaymentScreen extends StatefulWidget {
   final Sats? observedSpendable;
   final Future<String?> Function()? onScan;
 
+  /// Leaves the finished payment for the app's home; without it, closes.
+  final VoidCallback? onHome;
+
+  /// Opens this payment's details, by the reference Ark recorded for it.
+  final ValueChanged<String>? onViewDetails;
+
+  /// The app's confirmation arrow, for the review header.
+  final Widget? confirmIcon;
+
   const ArkPaymentScreen({
     super.key,
     required this.cubit,
@@ -29,6 +40,9 @@ class ArkPaymentScreen extends StatefulWidget {
     this.displayData,
     this.observedSpendable,
     this.onScan,
+    this.onHome,
+    this.onViewDetails,
+    this.confirmIcon,
   });
 
   @override
@@ -43,6 +57,10 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
   Object? _scanInFlight;
   Object? _scanIntent;
   bool _scanFailed = false;
+  // The quote this screen confirmed, kept only to restate its amount once sent.
+  ArkQuote? _confirmed;
+  bool _showTransition = false;
+  String? _transitionId;
   late StreamSubscription<ArkPaymentState> _subscription;
 
   bool _owns(ArkPaymentCubit owner, ArkAccountId account) =>
@@ -60,9 +78,120 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
   void _listen() {
     final owner = widget.cubit;
     final account = owner.account;
-    _subscription = owner.stream.listen((_) {
-      if (_owns(owner, account)) setState(() {});
+    // A new owner is a new payment: it may leave once of its own.
+    _left = false;
+    _subscription = owner.stream.listen((next) {
+      if (_owns(owner, account)) {
+        setState(() {
+          if (next is ArkPaymentEditing) _showTransition = false;
+        });
+        _leaveIfUnsettled(next);
+      }
     });
+  }
+
+  bool _left = false;
+
+  static bool _started(ArkOperationStatus status) => switch (status) {
+    ArkOperationStatus.prepared ||
+    ArkOperationStatus.admitted ||
+    ArkOperationStatus.pending ||
+    ArkOperationStatus.succeeded => true,
+    ArkOperationStatus.failed ||
+    ArkOperationStatus.outcomeUnknown ||
+    ArkOperationStatus.conflicted => false,
+  };
+
+  /// A payment whose outcome the app cannot tell yet has no screen of its
+  /// own: the flow closes to home, Ark is refreshed, and a snackbar says so.
+  void _leaveIfUnsettled(ArkPaymentState state) {
+    final message = switch (state) {
+      ArkPaymentUncertain() => context.loc.paymentUncertain,
+      ArkPaymentSubmitted(:final operation)
+          when operation.kind != ArkOperationKind.payment ||
+              !_started(operation.status) =>
+        operation.status == ArkOperationStatus.outcomeUnknown
+            ? context.loc.paymentUncertain
+            : operation.status.toTranslated(context),
+      _ => null,
+    };
+    if (message == null || _left) return;
+    _left = true;
+    final owner = widget.cubit;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Only for the owner that left: never a replacement's handlers.
+      if (!mounted || !identical(owner, widget.cubit)) return;
+      BullSnackBar.show(context, message: message);
+      widget.onReconcile();
+      _home();
+    });
+  }
+
+  void _home() {
+    final home = widget.onHome;
+    if (home != null) {
+      home();
+    } else {
+      unawaited(Navigator.maybePop(context));
+    }
+  }
+
+  /// Like the app's other completed flows.
+  Widget _success(ArkAccountId account, ArkOperation operation) {
+    final l10n = context.loc;
+    final completed =
+        operation.status == ArkOperationStatus.succeeded &&
+        (_transitionId == null || operation.id == _transitionId);
+    final confirmed = _confirmed;
+    final amount = confirmed != null && confirmed.account == account
+        ? confirmed.net
+        : null;
+    final fiat = amount == null
+        ? null
+        : arkFiatText(context, amount, widget.displayData?.price);
+    final view = widget.onViewDetails;
+    return BullSuccessScreen(
+      title: l10n.send,
+      headline: completed
+          ? l10n.paymentSent
+          : operation.status == ArkOperationStatus.succeeded
+          ? l10n.pending
+          : operation.status.toTranslated(context),
+      icon: completed
+          ? null
+          : ExcludeSemantics(
+              child: BullIcon(
+                BullIcons.schedule,
+                size: 32,
+                color: context.bull.textMuted,
+              ),
+            ),
+      amountLine: amount == null
+          ? null
+          : fiat == null
+          ? formatArkSats(context, amount)
+          : '${formatArkSats(context, amount)} · ~$fiat',
+      message: completed
+          ? null
+          : BullText(
+              l10n.paymentPendingNote,
+              role: BullTextRole.body,
+              color: context.bull.textMuted,
+              textAlign: TextAlign.center,
+              maxLines: 4,
+            ),
+      onClose: _home,
+      actions: [
+        if ((view, operation.nativeReference)
+            case (final open?, final reference?)
+            when reference.trim().isNotEmpty &&
+                (_transitionId == null || operation.id == _transitionId))
+          BullButton.secondary(
+            label: l10n.viewDetails,
+            onPressed: () => open(reference),
+          ),
+      ],
+    );
   }
 
   @override
@@ -83,6 +212,9 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
       _amountStep = _destination.trim().isNotEmpty;
       _scanIntent = null;
       _scanFailed = false;
+      _confirmed = null;
+      _showTransition = false;
+      _transitionId = null;
       ++_phase;
       _listen();
     } else if (oldWidget.onScan != widget.onScan) {
@@ -175,7 +307,15 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     if (cancel) {
       owner.edit();
     } else {
-      unawaited(owner.confirm());
+      _confirmed = state.quote;
+      final submission = owner.confirm();
+      if (owner.state case ArkPaymentSubmitting(:final operationId)) {
+        setState(() {
+          _showTransition = true;
+          _transitionId = operationId;
+        });
+      }
+      unawaited(submission);
     }
   }
 
@@ -256,31 +396,6 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     }
   }
 
-  void _reconcile(
-    ArkPaymentCubit owner,
-    ArkAccountId account,
-    ArkPaymentState state,
-  ) {
-    if (!_current(owner, account, state) ||
-        (state is! ArkPaymentSubmitted && state is! ArkPaymentUncertain)) {
-      return;
-    }
-    unawaited(owner.reconcile());
-  }
-
-  void _done(
-    ArkPaymentCubit owner,
-    ArkAccountId account,
-    ArkPaymentSubmitted state,
-  ) {
-    if (!_current(owner, account, state) ||
-        state.operation.kind != ArkOperationKind.payment ||
-        state.operation.status != ArkOperationStatus.succeeded) {
-      return;
-    }
-    unawaited(Navigator.maybePop(context));
-  }
-
   Sats? get _preview {
     if (!RegExp(r'^[0-9]+$').hasMatch(_amount)) return null;
     final value = BigInt.tryParse(_amount);
@@ -292,23 +407,17 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     String label,
     VoidCallback callback, {
     bool disabled = false,
-  }) => BullButton.big(
-    label: label,
-    height: 56,
-    onPressed: callback,
-    disabled: disabled,
-    bgColor: context.bull.secondaryFixed,
-    textColor: context.bull.onSecondaryFixed,
-  );
+  }) => BullButton.primary(label: label, onPressed: disabled ? null : callback);
 
+  // Same insets as the app's send flow.
   Widget _footer(BuildContext context, Widget child) => SafeArea(
     top: false,
     child: Padding(
       padding: const EdgeInsets.fromLTRB(
-        BullSpacing.lg,
-        BullSpacing.sm,
-        BullSpacing.lg,
-        BullSpacing.lg,
+        BullSpacing.md,
+        BullSpacing.xs,
+        BullSpacing.md,
+        BullSpacing.md,
       ),
       child: child,
     ),
@@ -321,6 +430,42 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     final account = owner.account;
     final state = owner.state;
     final phase = _phase;
+    final transitionId = _transitionId;
+    if (_showTransition && transitionId != null) {
+      final operation = switch (state) {
+        ArkPaymentSubmitted(:final operation)
+            when operation.id == transitionId &&
+                operation.kind == ArkOperationKind.payment =>
+          operation,
+        _ => null,
+      };
+      final transitionPhase = switch (operation?.status) {
+        ArkOperationStatus.succeeded => BullPaymentPhase.success,
+        ArkOperationStatus.failed ||
+        ArkOperationStatus.conflicted => BullPaymentPhase.failed,
+        _ => BullPaymentPhase.sending,
+      };
+      final network = switch (_confirmed?.destinationKind) {
+        ArkDestinationKind.bitcoin => BullPaymentNetwork.bitcoin,
+        ArkDestinationKind.bolt11 => BullPaymentNetwork.lightning,
+        ArkDestinationKind.ark || null => BullPaymentNetwork.ark,
+      };
+      void dismiss() {
+        if (_owns(owner, account) && _transitionId == transitionId) {
+          setState(() => _showTransition = false);
+        }
+      }
+
+      return BullPaymentTransition(
+        network: network,
+        phase: transitionPhase,
+        status: operation?.status.toTranslated(context) ?? l10n.loading,
+        skipLabel: BullUiLocalizations.of(context).paymentViewStatus,
+        onSkip: dismiss,
+        onBackdropTap: dismiss,
+        onDone: dismiss,
+      );
+    }
     final editing = state is ArkPaymentEditing || state is ArkPaymentQuoting;
     final review =
         state is ArkPaymentReview &&
@@ -328,12 +473,11 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
             state.quote.kind == ArkOperationKind.payment
         ? state
         : null;
-    final succeeded =
-        state is ArkPaymentSubmitted &&
-            state.operation.kind == ArkOperationKind.payment &&
-            state.operation.status == ArkOperationStatus.succeeded
-        ? state
-        : null;
+    if (state case ArkPaymentSubmitted(:final operation)
+        when operation.kind == ArkOperationKind.payment &&
+            _started(operation.status)) {
+      return _success(account, operation);
+    }
     final localBack =
         (state is ArkPaymentEditing && _amountStep) || review != null;
     return PopScope<Object?>(
@@ -352,15 +496,6 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
                   () => _confirm(owner, account, review),
                 ),
               )
-            : succeeded != null
-            ? _footer(
-                context,
-                _action(
-                  context,
-                  l10n.done,
-                  () => _done(owner, account, succeeded),
-                ),
-              )
             : editing && _amountStep
             ? _footer(
                 context,
@@ -375,60 +510,35 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: BullSpacing.lg,
-                  bottom: BullSpacing.sm,
-                ),
-                child: BullTopBar(
-                  title: review != null ? l10n.confirmSend : l10n.send,
-                  titleWidget: BullText(
-                    review != null ? l10n.confirmSend : l10n.send,
-                    role: BullTextRole.subtitle,
-                  ),
-                  onBack: () => _back(owner, account, state, phase),
-                ),
+              BullTopBar(
+                title: l10n.send,
+                onBack: () => _back(owner, account, state, phase),
               ),
               Expanded(
                 child: editing
                     ? _amountStep
                           ? _amountForm(context, owner, account, state, phase)
                           : _addressForm(context, owner, account, state, phase)
+                    // Sending, or closing to home when unsettled: Bull's
+                    // cubes in the middle of the screen.
+                    : state is ArkPaymentSubmitting ||
+                          state is ArkPaymentSubmitted ||
+                          state is ArkPaymentUncertain
+                    ? const Center(child: BullLoader.large())
                     : SingleChildScrollView(
                         padding: const EdgeInsets.all(BullSpacing.lg),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (state is ArkPaymentReview && review == null)
-                              BullInfoBar(message: l10n.unavailable),
+                              // The app's error state, retried by editing.
+                              BullErrorState(
+                                message: l10n.unavailable,
+                                retryLabel: l10n.retry,
+                                onRetry: owner.edit,
+                              ),
                             if (review != null)
                               ..._reviewDetails(context, account, review),
-                            if (state is ArkPaymentSubmitting)
-                              BullText(l10n.loading, role: BullTextRole.body),
-                            if (succeeded != null) ...[
-                              Center(
-                                child: BullIcon(
-                                  BullIcons.checkCircle,
-                                  size: 72,
-                                  color: context.bull.success,
-                                ),
-                              ),
-                              const Gap(BullSpacing.lg),
-                              BullText(
-                                l10n.paymentSent,
-                                role: BullTextRole.headline,
-                                textAlign: TextAlign.center,
-                              ),
-                              const Gap(BullSpacing.lg),
-                            ],
-                            if (state is ArkPaymentSubmitted ||
-                                state is ArkPaymentUncertain)
-                              ..._operationDetails(
-                                context,
-                                owner,
-                                account,
-                                state,
-                              ),
                           ],
                         ),
                       ),
@@ -449,100 +559,70 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
   ) {
     final l10n = context.loc;
     final scanner = widget.onScan;
+    final editing = state is ArkPaymentEditing ? state : null;
+    void set(String value) {
+      final current = owner.state;
+      if (current is ArkPaymentEditing) {
+        _edit(owner, account, phase, value, destination: true);
+      }
+    }
+
+    // The app's send address step: one destination field with paste, scan
+    // and clear, and Continue pinned below.
     return Column(
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(BullSpacing.lg),
-            child: Column(
-              children: [
-                Container(
-                  width: 110,
-                  height: 110,
-                  decoration: BoxDecoration(
-                    color: context.bull.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(
-                      context.bullShapes.sheet,
-                    ),
-                  ),
-                  child: ExcludeSemantics(
-                    child: BullIcon(
-                      BullIcons.qrCodeScanner,
-                      size: 70,
-                      color: context.bull.text,
-                    ),
-                  ),
-                ),
-                const Gap(BullSpacing.lg),
-                BullText(
-                  l10n.paymentScanHint,
-                  role: BullTextRole.body,
-                  textAlign: TextAlign.center,
-                ),
-                const Gap(BullSpacing.lg),
-                BullButton.big(
-                  label: l10n.openCamera,
-                  compact: true,
-                  outlined: true,
-                  disabled:
-                      scanner == null ||
-                      _scanInFlight != null ||
-                      state is! ArkPaymentEditing,
-                  onPressed: () {
-                    if (scanner != null && state is ArkPaymentEditing) {
-                      unawaited(_scan(owner, account, state, phase, scanner));
-                    }
-                  },
-                  bgColor: context.bull.surface,
-                  textColor: context.bull.text,
-                ),
-                if (_scanFailed) ...[
-                  const Gap(BullSpacing.md),
-                  BullInfoBar(message: l10n.cameraUnavailable),
-                ],
-              ],
+            padding: const EdgeInsets.fromLTRB(
+              BullSpacing.md,
+              BullSpacing.xl,
+              BullSpacing.md,
+              BullSpacing.md,
+            ),
+            child: BullPaymentDestinationInput(
+              key: const ValueKey('ark-payment-address'),
+              label: l10n.recipientAddress,
+              value: _destination,
+              hint: l10n.paymentAddressHint,
+              enabled: editing != null,
+              onChanged: set,
+              pasteLabel: l10n.paymentPaste,
+              scanLabel: l10n.paymentScan,
+              clearLabel: l10n.paymentClear,
+              onClear: () => set(''),
+              onPaste: () async {
+                final text = (await Clipboard.getData('text/plain'))?.text;
+                if (mounted && text != null) set(text);
+              },
+              onScan: () {
+                // A callback kept from an earlier frame never acts for a
+                // replaced owner or scanner, or after dispose.
+                if (!mounted ||
+                    !identical(owner, widget.cubit) ||
+                    !identical(scanner, widget.onScan)) {
+                  return;
+                }
+                final current = owner.state;
+                if (scanner == null) {
+                  setState(() => _scanFailed = true);
+                } else if (_scanInFlight == null &&
+                    current is ArkPaymentEditing) {
+                  unawaited(_scan(owner, account, current, phase, scanner));
+                }
+              },
+              error: editing?.failure?.toTranslated(context),
+              helper: _scanFailed ? l10n.cameraUnavailable : null,
             ),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(BullSpacing.md),
-          decoration: BoxDecoration(
-            color: context.bull.surface,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(context.bullShapes.sheet),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              BullText(l10n.recipientAddress, role: BullTextRole.body),
-              const Gap(BullSpacing.sm),
-              BullInputText(
-                key: const ValueKey('ark-payment-address'),
-                value: _destination,
-                hint: l10n.paymentAddressHint,
-                onChanged: (value) =>
-                    _edit(owner, account, phase, value, destination: true),
-              ),
-              if (state case ArkPaymentEditing(:final failure?))
-                BullInfoBar(
-                  message: failure.toTranslated(context),
-                  tone: BullInfoTone.warning,
-                ),
-              const Gap(BullSpacing.md),
-              _action(
-                context,
-                l10n.continueAction,
-                () {
-                  if (state is ArkPaymentEditing) {
-                    _advance(owner, account, state, phase);
-                  }
-                },
-                disabled:
-                    state is! ArkPaymentEditing || _destination.trim().isEmpty,
-              ),
-            ],
-          ),
+        _footer(
+          context,
+          _action(context, l10n.continueAction, () {
+            final current = owner.state;
+            if (current is ArkPaymentEditing) {
+              _advance(owner, account, current, phase);
+            }
+          }, disabled: editing == null || _destination.trim().isEmpty),
         ),
       ],
     );
@@ -562,22 +642,17 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
         ? widget.displayData?.price
         : null;
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(BullSpacing.lg),
+      padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Center(
-            child: BullBadge(
-              label: l10n.title,
-              background: context.bull.surface,
-              foreground: context.bull.text,
-              radius: context.bullShapes.dot,
-              textStyle: context.bullType.label,
-              padding: const EdgeInsets.symmetric(
-                horizontal: BullSpacing.md,
-                vertical: BullSpacing.xs,
-              ),
-            ),
+          // Ark pays only from its own balance: the source is stated, not picked.
+          Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+            color: context.bull.surface,
+            alignment: Alignment.centerLeft,
+            child: BullText(l10n.title, role: BullTextRole.body),
           ),
           const Gap(BullSpacing.xl),
           BullInputText(
@@ -587,60 +662,79 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
             suffixText: l10n.satsUnit,
             digitsOnly: true,
             onlyNumbers: true,
+            hideBorder: true,
             style: context.bullType.display,
             disabled: state is ArkPaymentQuoting,
             onChanged: (value) =>
                 _edit(owner, account, phase, value, destination: false),
           ),
-          if (preview != null) ArkFiatAmount(amount: preview, price: price),
-          if (state case ArkPaymentEditing(:final failure?))
-            BullInfoBar(
-              message: failure.toTranslated(context),
-              tone: BullInfoTone.warning,
+          if (preview != null) ...[
+            const Gap(BullSpacing.xs),
+            ArkFiatAmount(amount: preview, price: price, approximate: true),
+          ],
+          if (state case ArkPaymentEditing(:final failure?)) ...[
+            const Gap(BullSpacing.xs),
+            // Refused: why, in red, as the app shows it.
+            BullText(
+              failure.toTranslated(context),
+              role: BullTextRole.body,
+              fontWeight: FontWeight.w500,
+              color: context.bull.error,
+              maxLines: 5,
             ),
+          ],
           const Gap(BullSpacing.xl),
+          Container(height: 1, color: context.bull.outline),
+          const Gap(BullSpacing.md),
           Row(
             children: [
               Expanded(
-                child: BullText(l10n.walletLabel, role: BullTextRole.body),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _labelled(context, l10n.walletLabel, l10n.title),
+                    const Gap(BullSpacing.xs),
+                    _labelled(
+                      context,
+                      l10n.balanceLabel,
+                      formatArkObservedSats(context, balance),
+                    ),
+                  ],
+                ),
               ),
               BullText(
-                l10n.title,
-                role: BullTextRole.body,
-                fontWeight: FontWeight.w700,
-              ),
-            ],
-          ),
-          const Gap(BullSpacing.sm),
-          Row(
-            children: [
-              Expanded(
-                child: BullText(l10n.balanceLabel, role: BullTextRole.label),
-              ),
-              BullText(
-                formatArkObservedSats(context, balance),
+                l10n.maxAmount.toUpperCase(),
                 role: BullTextRole.label,
+                color: context.bull.textMuted,
+              ),
+              const Gap(BullSpacing.sm),
+              // Max stays off until a current fee quote can bound it.
+              Semantics(
+                label: l10n.maxAmount,
+                child: const BullSwitch(value: false, onChanged: null),
               ),
             ],
           ),
-          const Gap(BullSpacing.sm),
-          BullButton.small(
-            label: l10n.maxAmount.toUpperCase(),
-            disabled: true,
-            compact: true,
-            onPressed: () {},
-            bgColor: context.bull.surfaceContainerHighest,
-            textColor: context.bull.textMuted,
-          ),
+          const Gap(BullSpacing.xs),
           BullText(
             l10n.maxPaymentUnavailable,
             role: BullTextRole.caption,
             color: context.bull.textMuted,
+            textAlign: TextAlign.end,
           ),
         ],
       ),
     );
   }
+
+  Widget _labelled(BuildContext context, String label, String value) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      BullText(label, role: BullTextRole.label, color: context.bull.textMuted),
+      const Gap(BullSpacing.xxs),
+      Flexible(child: BullText(value, role: BullTextRole.label)),
+    ],
+  );
 
   List<Widget> _reviewDetails(
     BuildContext context,
@@ -652,101 +746,40 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     final price = widget.displayData?.account == account
         ? widget.displayData?.price
         : null;
+    String? fiat(Sats amount) => switch (arkFiatText(context, amount, price)) {
+      final value? => '~$value',
+      null => null,
+    };
+    // The app's send confirmation: its header, then From, To, Amount and
+    // Network fees between thin lines. Ark has no fee priority to choose.
     return [
-      Center(
-        child: Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: context.bull.surfaceContainerHighest,
-          ),
-          child: BullIcon(
-            BullIcons.arrowUpward,
-            size: 28,
-            color: context.bull.text,
-          ),
-        ),
+      ArkReviewHeader(
+        title: l10n.confirmSend,
+        amount: formatArkSats(context, quote.net),
+        icon: widget.confirmIcon,
       ),
-      const Gap(BullSpacing.lg),
-      BullText(
-        formatArkSats(context, quote.net),
-        role: BullTextRole.headline,
-        fontWeight: FontWeight.w700,
-        textAlign: TextAlign.center,
-      ),
-      ArkFiatAmount(amount: quote.net, price: price),
-      const Gap(BullSpacing.lg),
-      BullDetailsTable(
-        items: [
-          BullDetailsTableItem(label: l10n.fromLabel, displayValue: l10n.title),
-          BullDetailsTableItem(
-            label: l10n.toLabel,
-            displayValue: quote.destination ?? l10n.unknown,
-            copyValue: quote.destination,
-            copiedMessage: l10n.copied,
-            displayWidget: BullText(
-              quote.destination ?? l10n.unknown,
-              role: BullTextRole.body,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+      const Gap(BullSpacing.xl),
+      ArkReviewFacts(
+        children: [
+          ArkReviewFact(label: l10n.fromLabel, value: l10n.title),
+          switch (quote.destination) {
+            final address? => ArkReviewAddress(
+              label: l10n.toLabel,
+              address: address,
+              copiedMessage: l10n.copied,
             ),
-          ),
-          BullDetailsTableItem(
+            null => ArkReviewFact(label: l10n.toLabel, value: l10n.unknown),
+          },
+          ArkReviewFact(
             label: l10n.amountLabel,
-            displayValue: formatArkSats(context, quote.net),
+            value: formatArkSats(context, quote.net),
+            detail: fiat(quote.net),
           ),
-          BullDetailsTableItem(
+          ArkReviewFact(
             label: l10n.networkFees,
-            displayValue: formatArkSats(context, quote.fee),
+            value: formatArkSats(context, quote.fee),
           ),
-          if (quote.amount != quote.net)
-            BullDetailsTableItem(
-              label: l10n.totalLabel,
-              displayValue: formatArkSats(context, quote.amount),
-            ),
         ],
-      ),
-    ];
-  }
-
-  List<Widget> _operationDetails(
-    BuildContext context,
-    ArkPaymentCubit owner,
-    ArkAccountId account,
-    ArkPaymentState state,
-  ) {
-    final l10n = context.loc;
-    return [
-      if (state is ArkPaymentUncertain)
-        BullInfoBar(message: l10n.uncertain, tone: BullInfoTone.warning),
-      if (state is ArkPaymentSubmitted &&
-          state.operation.kind != ArkOperationKind.payment)
-        BullInfoBar(message: l10n.unavailable),
-      BullDetailsTable(
-        items: [
-          BullDetailsTableItem(
-            label: l10n.id,
-            displayValue: switch (state) {
-              ArkPaymentSubmitted(:final operation) => operation.id,
-              ArkPaymentUncertain(:final operationId) => operationId,
-              _ => l10n.unknown,
-            },
-          ),
-          if (state case ArkPaymentSubmitted(:final operation))
-            BullDetailsTableItem(
-              label: l10n.state,
-              displayValue: operation.status.toTranslated(context),
-            ),
-        ],
-      ),
-      const Gap(BullSpacing.md),
-      BullButton.big(
-        label: l10n.refresh,
-        disabled: !owner.canReconcile,
-        onPressed: () => _reconcile(owner, account, state),
-        bgColor: context.bull.surface,
-        textColor: context.bull.text,
       ),
     ];
   }

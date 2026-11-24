@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
-import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 
 /// One open foreground session over a temporary inventory file.

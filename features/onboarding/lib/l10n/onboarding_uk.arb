@@ -1,0 +1,31 @@
+{
+  "@@locale": "uk",
+  "settingsLanguageTitle": "Українська",
+  "onboardingRecoverYourWallet": "Відновити гаманець",
+  "onboardingEncryptedVault": "Зашифрована сорочка",
+  "onboardingEncryptedVaultDescription": "Відновити резервну копію через хмару за допомогою PIN.",
+  "onboardingPhysicalBackup": "Фізична резервна копія",
+  "onboardingPhysicalBackupDescription": "Відновити гаманець через 12 слів.",
+  "onboardingRecover": "Відновити",
+  "onboardingBullBitcoin": "Bitcoin у USD",
+  "onboardingOwnYourMoney": "Власні гроші",
+  "onboardingSplashDescription": "Bitcoin у USD.",
+  "onboardingRecoverWallet": "Відновлення гаманця",
+  "onboardingRecoverWalletButton": "Відновлення гаманця",
+  "onboardingCreateNewWallet": "Створити новий гаманець",
+  "continueButton": "Продовжити",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "torSettingsTitle": "Налаштування Tor",
+  "retry": "Птиця",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "walletSetupErrorTryAgain": "Щось пішло не так під час налаштування вашого гаманця. Будь ласка, спробуйте ще раз.",
+  "onboardingAdvancedOptionsTitle": "Розширені параметри",
+  "onboardingAdvancedOptionsDescription": "Налаштуйте розширені параметри перед створенням або відновленням гаманця",
+  "onboardingAdvancedOptionsCustomElectrum": "Власний сервер Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Власний сервер Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Власний сервер Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
+  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз."
+}

@@ -5,6 +5,7 @@ import 'package:preferences/preferences.dart';
 import 'package:address_view/address_view.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:signers/testing.dart';
 import 'package:sync/sync.dart' as native;
 import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
@@ -41,6 +42,7 @@ void main() {
       id: 'w1',
       network: BitcoinNetwork.testnet,
       isDefault: true,
+      signer: WalletSigner.local,
     );
     late _Environment preferences;
     late _Inventory inventory;
@@ -86,6 +88,40 @@ void main() {
           requested.single,
           native.WalletKey(id: 'w1', network: BitcoinNetwork.testnet),
         );
+      },
+    );
+
+    test(
+      'an unreadable signer keeps the wallet listed and admissible',
+      () async {
+        final read = GetReceiveWalletsUsecase(
+          preferences,
+          inventory,
+          (_) async => const Err(native.SyncNotFoundFailure()),
+          (_) async => const Err(SignerDeviceUnavailable()),
+        );
+        when(() => inventory.walletsForNetwork(BitcoinNetwork.testnet))
+            .thenAnswer(
+              (_) async => Ok(walletSelectionForTesting([registration])),
+            );
+        when(() => inventory.readWallet(registration.id))
+            .thenAnswer((_) async => Ok(registration));
+
+        final listed = (await read.execute(onlyBitcoin: true)).fold(
+          (wallets) => wallets,
+          (failure) =>
+              fail('Expected a listed wallet, got ${failure.runtimeType}'),
+        );
+        expect(listed.map((wallet) => wallet.id), [registration.id]);
+
+        final admitted = (await read.resolveEntry(listed.single)).fold(
+          (wallet) => wallet,
+          (failure) => fail('Expected admission, got ${failure.runtimeType}'),
+        );
+        for (final wallet in [listed.single, admitted]) {
+          expect(wallet.signsLocally, isTrue);
+          expect(wallet.signerDevice, isNull);
+        }
       },
     );
 

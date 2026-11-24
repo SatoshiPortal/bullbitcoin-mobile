@@ -1,6 +1,6 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
-import 'package:swaps/order_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

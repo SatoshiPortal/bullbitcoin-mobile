@@ -102,8 +102,8 @@ final class ElectrumFixture {
   }
 
   /// Mines one broadcast; the others leave the mempool as its conflicts would.
-  Future<void> confirmBroadcast(String txid) async {
-    await _call(['confirmBroadcast', txid]);
+  Future<void> confirmBroadcast(String txid, {bool validAnchor = true}) async {
+    await _call(['confirmBroadcast', txid, validAnchor]);
   }
 
   void close() => _isolate.kill(priority: Isolate.immediate);
@@ -149,7 +149,10 @@ final class ElectrumFixture {
           'failHistoriesAfter' => chain.failHistoriesAfter(command[1] as int?),
           'dropBroadcasts' => chain.dropBroadcasts(),
           'reorgTip' => chain.reorgTip(),
-          'confirmBroadcast' => chain.confirmBroadcast(command[1] as String),
+          'confirmBroadcast' => chain.confirmBroadcast(
+            command[1] as String,
+            validAnchor: command[2] as bool,
+          ),
           _ => StateError('unknown command ${command[0]}'),
         });
       } catch (error) {
@@ -236,7 +239,7 @@ final class _Chain {
     return advanceTip();
   }
 
-  bool confirmBroadcast(String txid) {
+  bool confirmBroadcast(String txid, {required bool validAnchor}) {
     broadcastsVisible = false;
     mempool.removeWhere(broadcasts.contains);
     final height = headers.length;
@@ -244,7 +247,7 @@ final class _Chain {
     headers.add(
       _header(
         _sha256d(headers.last),
-        _merkle([txid], 0).root,
+        validAnchor ? _merkle([txid], 0).root : Uint8List(32),
         1296688602 + height * 600,
         height * 100,
       ),

@@ -1,13 +1,10 @@
-import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
-
 import 'dart:async';
 
 import 'package:address_view/address_view.dart' show AddressView;
 import 'package:address_view/routes.dart';
+import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bull_ark/bull_ark.dart' show ArkFacade;
-import 'package:bull_payjoin/bull_payjoin.dart' show Payjoin;
-import 'package:coins/coins.dart' show Coins;
+import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 import 'package:receive/receive.dart' show Receive;
 import 'package:secrets/custody.dart' show SeedReferences;
 import 'package:signers/storage.dart' show SignerDevices;
@@ -17,8 +14,7 @@ import 'package:sync/sync.dart' show WalletKey, WalletCatalogPort;
 import 'package:sync/write.dart'
     show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:transactions/transactions.dart' show Transactions;
-import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:overview/setup.dart' show OverviewSynchronization;
+import 'package:primitives/primitives.dart' show Err, NetworkEnv, Result;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
 import 'package:backups/backups.dart';
@@ -27,16 +23,23 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show BuyRoute, ExchangeHomeAction, PayRoute, SellRoute;
-import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
+    show
+        BullExchangeFeature,
+        BullExchangeNavigation,
+        BuyRoute,
+        ExchangeFailureL10n,
+        ExchangeHomeAction,
+        ExchangeSessionScope,
+        ExchangeTradingGuard,
+        PayRoute,
+        SellRoute;
 import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:startup/startup.dart' show RouteErrorScreen;
@@ -52,24 +55,24 @@ import 'package:send/setup.dart';
 import 'package:electrum/electrum.dart' show Electrum;
 import 'package:fees/fees.dart' show Fees;
 import 'package:spend/spend.dart' show Spend;
-import 'package:bb_mobile/features/coins/public/coins.dart';
-import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
+import 'package:coins/coins.dart';
+import 'package:coins/setup.dart';
 import 'package:network/network.dart';
-import 'package:settings/settings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart'
     show OrderSwapUnderReviewCard, SwapFeature, SwapNavigation;
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:wallet_import/setup.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:onboarding/setup.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
+import 'package:overview/setup.dart' show OverviewSynchronization;
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show Payjoin, PayjoinPolicyAccess, PayjoinReceiver, PayjoinSessions;
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -80,7 +83,6 @@ import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:preferences/preferences.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -96,11 +98,11 @@ class AppRouter {
     secrets: locator(),
     readDefaultFingerprint: readDefaultFingerprint,
     readRouteAccess: (context) {
-      final settings = context.read<SettingsCubit>().state;
+      final settings = Settings.readEnvironment(context);
       return (
         environment: settings.environment?.networkEnv,
-        isSuperuser: settings.isSuperuser ?? false,
-        isDevModeEnabled: settings.isDevModeEnabled ?? false,
+        isSuperuser: settings.isSuperuser,
+        isDevModeEnabled: settings.isDevModeEnabled,
       );
     },
     walletHomePath: WalletRoute.walletHome.path,
@@ -111,26 +113,10 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
-  static final _exchangeConfig = ExchangeRouterConfig(
-    networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
-    loadKyc: () => locator<Exchange>().loadKyc(),
-    isSuperuser: (context) =>
-        context.read<SettingsCubit>().state.isSuperuser ?? false,
-    homePath: WalletRoute.walletHome.path,
-    onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
-    onOpenSettings: SettingsNavigation.open,
-    onAction: (context, action) => switch (action) {
-      ExchangeHomeAction.buy => context.pushNamed<void>(BuyRoute.buy.name),
-      ExchangeHomeAction.sell => context.pushNamed<void>(SellRoute.sell.name),
-      ExchangeHomeAction.pay => context.pushNamed<void>(PayRoute.pay.name),
-      ExchangeHomeAction.transfer => SwapNavigation.open(context),
-    },
-  );
-
   static void _openQuickAction(BuildContext context, QuickAction action) {
     switch (action) {
       case QuickAction.toggleAmounts:
-        SettingsFacade.toggleAmountVisibility(context);
+        Settings.toggleAmountVisibility(context);
       case QuickAction.map:
         context.pushNamed(BtcMapFeature.routeName);
       case QuickAction.transfer:
@@ -140,16 +126,16 @@ class AppRouter {
       case QuickAction.settings:
         SettingsNavigation.open(context);
       case QuickAction.support:
-        SupportFacade.contactSupport(context);
+        Support.contactSupport(context);
       case QuickAction.priceHistory:
         BitcoinPriceFeature.openHistory(context);
       case QuickAction.pay:
         context.pushNamed(PayRoute.pay.name);
       case QuickAction.exchange:
-        if (locator<ExchangeFacade>().currentAccess is ExchangeAccessDisabled) {
+        if (locator<Exchange>().currentAccess is ExchangeAccessDisabled) {
           unawaited(_activateExchange(context));
         } else {
-          context.pushNamed(ExchangeRoute.exchangeHome.name);
+          context.pushNamed(BullExchangeNavigation.dashboardName);
         }
     }
   }
@@ -161,7 +147,7 @@ class AppRouter {
     _activatingExchange = true;
     final Result<void, ExchangeFailure> result;
     try {
-      result = await locator<ExchangeFacade>().enable();
+      result = await locator<Exchange>().enableAccess();
     } finally {
       _activatingExchange = false;
     }
@@ -171,21 +157,45 @@ class AppRouter {
       return;
     }
     final signedIn = ExchangeAvailability.canManageAccount(
-      locator<ExchangeFacade>().currentAccess,
+      locator<Exchange>().currentAccess,
     );
     if (signedIn) {
-      context.pushNamed(ExchangeRoute.exchangeHome.name);
+      context.pushNamed(BullExchangeNavigation.dashboardName);
     } else {
-      context.goNamed(ExchangeRoute.exchangeAuth.name);
+      context.goNamed(BullExchangeNavigation.authName);
     }
   }
 
-  static final _exchangeFeature = ExchangeRouter.mount(
-    _exchangeConfig,
+  static final _exchangeFeature = BullExchangeFeature.mount(
     exchange: () => locator<Exchange>(),
     preferences: () => locator<Preferences>(),
+    isSuperuser: (context) => Settings.readEnvironment(context).isSuperuser,
+    homePath: WalletRoute.walletHome.path,
+    onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
+    onOpenSettings: SettingsNavigation.open,
+    onAction: (context, action) => switch (action) {
+      ExchangeHomeAction.buy => context.pushNamed<void>(BuyRoute.buy.name),
+      ExchangeHomeAction.sell => context.pushNamed<void>(SellRoute.sell.name),
+      ExchangeHomeAction.pay => context.pushNamed<void>(PayRoute.pay.name),
+      ExchangeHomeAction.transfer => SwapNavigation.open(context),
+    },
+    brandAssetPath: Assets.logos.bbLogoSmall.path,
+    settingsAssetPath: Assets.icons.settingsLine.path,
     settings: SettingsRouter.exchangeSettingsHost,
-    purchases: exchangePurchaseHost(locator),
+    purchases: (
+      displayPreferences: () => locator<AmountDisplayPreferencesReader>(),
+      inventory: () => locator<SecretsInventory>(),
+      native: () => locator<WalletNativeRuntime>(),
+      fees: () => locator<Fees>(),
+      payjoinSessions: () => locator<PayjoinSessions>(),
+      payjoinReceiver: () => locator<PayjoinReceiver>(),
+      payjoinPolicy: () => locator<PayjoinPolicyAccess>(),
+      pollWallet: (id) => locator<OverviewSynchronization>().coordinator
+          .pollWallet(id, isActive: () => true),
+      transactions: () => locator<Transactions>(),
+      bitcoinAsset: Assets.icons.btc.path,
+      onClose: (context) => context.goNamed(WalletRoute.walletHome.name),
+    ),
     payins: exchangePayinHost(locator),
   );
 
@@ -229,10 +239,11 @@ class AppRouter {
       transactions: locator<Transactions>(),
       labels: locator<Labels>(),
       silent: locator<Silent>(),
-      ark: locator.isRegistered<ArkFacade>() ? locator<ArkFacade>() : null,
     ),
-    openCoins: (context, wallet) =>
-        context.pushReplacementNamed(CoinsRoute.coins.name, extra: wallet),
+    arkAccounts: () => locator.isRegistered<ArkAccountsFacade>()
+        ? locator<ArkAccountsFacade>()
+        : null,
+    openCoins: CoinsNavigation.replace,
     orderUnderReview: (order) => OrderSwapUnderReviewCard(orderSwap: order),
     paymentArrowImage: AssetImage(Assets.icons.rightArrow.path),
   );
@@ -240,8 +251,9 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     onEnter: ExchangeTradingGuard(
-      locator<ExchangeFacade>(),
-      rootNavigatorKey,
+      navigatorKey: rootNavigatorKey,
+      checkAvailability: locator<Exchange>().guardTradingEntry,
+      resolveAccess: locator<Exchange>().resolveAccess,
     ).onEnter,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
@@ -259,9 +271,8 @@ class AppRouter {
         notifyRootObserver: true,
         builder: (context, state, child) {
           final location = state.uri.toString();
-          final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
-              ? 1
-              : 0;
+          final tabIndex =
+              location.startsWith(BullExchangeNavigation.dashboardPath) ? 1 : 0;
 
           final shell = PopScope(
             canPop: false,
@@ -293,32 +304,32 @@ class AppRouter {
                 context.pushNamed(SettingsRoute.quickActions.name),
             exchangePrompt: locator<ExchangePromptCubit>(),
             onActivateExchange: _activateExchange,
+            watchUnreadSupportMessages:
+                ExchangeSessionScope.watchUnreadSupportMessages,
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
             announcements: () => _announcements.carousel(),
           ),
-          ...ExchangeRouter.routes(
-            _exchangeConfig,
-            exchangeFeature: _exchangeFeature,
-          ),
+          ?_exchangeFeature.dashboardRoute,
+          ..._exchangeFeature.routes,
         ],
       ),
       ?_exchangeFeature.authRoute,
       ?_exchangeFeature.supportChatRoute,
-      OnboardingRouter.route,
+      locator<OnboardingFeature>().route,
       ...locator<AccessFeature>().routes.root,
       WalletRouter.walletDetailRoute(
         scopeWalletHistory: locator<TransactionsFeature>().scopeWalletHistory,
         loadCoinSummary: (id) => locator<Coins>().summary(id),
-        onOpenCoins: (context, wallet) => context.pushNamed<void>(
-          CoinsRoute.coins.name,
-          extra: WalletKey(id: wallet.id, network: wallet.network.shared),
+        onOpenCoins: (context, wallet) => CoinsNavigation.open(
+          context,
+          WalletKey(id: wallet.id, network: wallet.network.shared),
         ),
       ),
       _sendRoutes.consolidation,
       SettingsFeature.mount(
-        menuOf: SettingsHubBindings.menuOf,
-        labelsOf: SettingsHubBindings.labelsOf,
-        menuScope: SettingsHubBindings.menuScope,
+        menuScope: SettingsRouter.menuScope,
+        settings: locator.call<Settings>,
+        appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
@@ -326,7 +337,6 @@ class AppRouter {
           accessRoutes: locator<AccessFeature>().routes.settings,
           seedViewRoute: locator<AllSeedViewFeature>().route,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
-          appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
           backupRoutes: [
             BackupsFeature.mount(
               secrets: () => locator<Secrets>(),
@@ -376,11 +386,7 @@ class AppRouter {
       ...locator<TransactionsFeature>().routes,
       locator<ReceiveFeature>().route,
       _sendRoutes.payment,
-      CoinsRouter.route(
-        missingWalletRedirect: WalletRoute.walletHome.path,
-        onSend: SendNavigation.openSelected,
-        onSweep: SendNavigation.openSweep,
-      ),
+      locator<CoinsFeature>().route,
       ...locator<SwapFeature>().routes,
       ..._exchangeFeature.buyRoutes,
       ..._exchangeFeature.fundingRoutes,
@@ -391,7 +397,7 @@ class AppRouter {
       ...locator<SignersFeature>().routes,
       ?_exchangeFeature.dcaRoute,
       ?_exchangeFeature.autoBuy,
-      LimitOrdersRouter.create,
+      ?_exchangeFeature.limitOrderCreate,
       ?_exchangeFeature.limitOrderDetails,
       _sendRoutes.replaceByFee,
       locator<Bip85Feature>().route,

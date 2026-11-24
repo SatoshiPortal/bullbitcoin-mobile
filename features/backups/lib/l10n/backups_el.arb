@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
   "backupWalletEncryptedVaultTag": "Εύκολο και απλό (1 λεπτό)",
   "@backupWalletEncryptedVaultTag": {
     "description": "Tag indicating difficulty and time for encrypted vault backup"

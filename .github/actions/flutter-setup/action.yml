@@ -95,15 +95,16 @@ runs:
         path: ~/fvm/versions
         key: fvm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.fvmrc') }}
 
-    - name: Cache pub (hosted + git deps)
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+    # Pub and Cargo are RESTORE ONLY, like build_runner below: a cache saved by a PR is scoped to that PR, so per-PR saves (about 200 MB pub + 380 MB Cargo each) only filled the 10 GB quota. cache-warmer.yml saves both on develop, where every PR can read them; keep paths and keys in sync with its save steps.
+    - name: Restore pub cache (hosted + git deps)
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/.pub-cache
         key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
 
-    - name: Cache Cargo (FRB native crates)
+    - name: Restore Cargo cache (FRB native crates)
       if: ${{ inputs.cargo-cache == 'true' }}
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           ~/.cargo/registry

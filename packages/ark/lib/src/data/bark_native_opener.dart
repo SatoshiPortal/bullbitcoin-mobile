@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' show max;
 
 import 'package:bark_bitcoin/bark_bitcoin.dart' as bark;
 import 'package:primitives/primitives.dart';
@@ -304,13 +305,28 @@ final class BarkNativeSession implements ArkNativeSession {
                 'failed' || 'canceled' => ArkMovementStatus.failed,
                 _ => ArkMovementStatus.unknown,
               },
-              amount: Sats.fromInt(v.effectiveBalanceSats.abs()),
+              amount: v.subsystemName == 'bark.round'
+                  ? renewedMovementAmount(v, nativeVtxos)
+                  : Sats.fromInt(v.effectiveBalanceSats.abs()),
               fee: Sats.fromInt(v.offchainFeeSats),
               createdAt: DateTime.tryParse(v.createdAt),
               inputVtxoIds: v.subsystemName == 'bark.lightning_receive'
                   ? _lightningReceiveInputs(v.metadataJson)
                   : List.unmodifiable(v.inputVtxoIds),
               outputVtxoIds: List.unmodifiable(v.outputVtxoIds),
+              transactionId: v.subsystemName == 'bark.board'
+                  ? _boardFundingTxid(v.metadataJson)
+                  : null,
+              sentTo: List.unmodifiable(
+                v.sentToAddresses.map(movementDestinationValue),
+              ),
+              receivedOn: List.unmodifiable(
+                v.receivedOnAddresses.map(movementDestinationValue),
+              ),
+              completedAt: switch (v.completedAt) {
+                final at? => DateTime.tryParse(at),
+                null => null,
+              },
             ),
           )
           .toList(),
@@ -384,6 +400,7 @@ final class BarkNativeSession implements ArkNativeSession {
     FeeRate? rate;
     int? exitFee;
     int? exitAmount;
+    int? claimFee;
     switch (request) {
       case ArkPaymentQuoteRequest(:final amount, :final destination):
         kind = ArkOperationKind.payment;
@@ -463,22 +480,39 @@ final class BarkNativeSession implements ArkNativeSession {
           );
         }
         selected = ids;
-        maximumClaim = maxClaimFee;
-        rate = feeRate;
-        final estimateExit = await _run(
-          'estimate-exit',
-          () => _wallet.estimateEmergencyExitFee(
-            vtxoIds: ids,
-            feeRateSatPerVb: _integerRate(feeRate),
-            destination: destination,
-            feeMargin: null,
-          ),
+        Future<bark.EmergencyExitFeeEstimate> estimateExit(int? satsPerVb) =>
+            _run(
+              'estimate-exit',
+              () => _wallet.estimateEmergencyExitFee(
+                vtxoIds: ids,
+                feeRateSatPerVb: satsPerVb,
+                destination: destination,
+                feeMargin: null,
+              ),
+            );
+        var estimated = await estimateExit(
+          feeRate == null ? null : _integerRate(feeRate),
         );
-        exitFee = estimateExit.totalFeeSats;
+        if (feeRate == null) {
+          // Bark prices the broadcast at the chain's fast rate and the claim
+          // at its regular rate. Pricing both at the fast rate it picked makes
+          // the quote reproducible on replay, and errs on the high side.
+          final picked = estimated.feeRateSatPerVb;
+          if (picked <= 0) {
+            throw const ArkBoundaryException(
+              ArkValidationFailure(ArkFailureReason.validation),
+            );
+          }
+          estimated = await estimateExit(picked);
+        }
+        rate = feeRate ?? FeeRate(estimated.feeRateSatPerVb.toDouble());
+        exitFee = estimated.exitBroadcastFeeSats;
+        claimFee = estimated.claimFeeSats;
+        maximumClaim =
+            maxClaimFee ?? Sats.fromInt(max(2 * estimated.claimFeeSats, 1));
         exitAmount = _sumSelected(snapshot, ids);
       case ArkExitProgressQuoteRequest(:final feeRate):
         kind = ArkOperationKind.exitProgress;
-        rate = feeRate;
         final live = await _run('live-exits', _wallet.getExitVtxos);
         selected = live
             .where(
@@ -495,15 +529,32 @@ final class BarkNativeSession implements ArkNativeSession {
             ArkValidationFailure(ArkFailureReason.validation),
           );
         }
-        final estimated = await _run(
+        Future<bark.EmergencyExitFeeEstimate> estimateProgress(
+          int? satsPerVb,
+        ) => _run(
           'estimate-progress',
           () => _wallet.estimateEmergencyExitFee(
             vtxoIds: selected,
-            feeRateSatPerVb: _integerRate(feeRate),
+            feeRateSatPerVb: satsPerVb,
             destination: null,
             feeMargin: null,
           ),
         );
+        var estimated = await estimateProgress(
+          feeRate == null ? null : _integerRate(feeRate),
+        );
+        if (feeRate == null) {
+          // Bark reports its pick as a whole rate; pricing at exactly that
+          // rate makes the quote reproducible on replay.
+          final picked = estimated.feeRateSatPerVb;
+          if (picked <= 0) {
+            throw const ArkBoundaryException(
+              ArkValidationFailure(ArkFailureReason.validation),
+            );
+          }
+          estimated = await estimateProgress(picked);
+        }
+        rate = feeRate ?? FeeRate(estimated.feeRateSatPerVb.toDouble());
         exitFee = estimated.exitBroadcastFeeSats;
         exitAmount = live
             .where((v) => selected.contains(v.vtxoId))
@@ -558,8 +609,18 @@ final class BarkNativeSession implements ArkNativeSession {
               .toList()
             ..sort();
       exposure = Sats.fromInt(reserve.confirmedSats);
-      if (BigInt.from(exitFee ?? 0) > exposure.value) {
-        throw const ArkBoundaryException(ArkInsufficientFundsFailure());
+      // Starting an exit broadcasts nothing and needs no reserve. Progress
+      // pays its fees now from confirmed reserve coins, as Bark does; short
+      // of them, the exit waits for the host to fund the reserve.
+      final short = BigInt.from(exitFee ?? 0) - exposure.value;
+      if (kind == ArkOperationKind.exitProgress && short > BigInt.zero) {
+        final incoming = reserve.totalSats - reserve.confirmedSats;
+        throw ArkBoundaryException(
+          ArkExitFeesShortFailure(
+            missing: Sats(short),
+            incoming: Sats.fromInt(incoming < 0 ? 0 : incoming),
+          ),
+        );
       }
     }
     if (estimate case final value?) {
@@ -597,7 +658,10 @@ final class BarkNativeSession implements ArkNativeSession {
     }
     final amount = estimate?.grossAmountSats ?? exitAmount;
     final fee = estimate?.feeSats ?? exitFee;
-    final net = estimate?.netAmountSats ?? ((amount ?? 0) - (fee ?? 0));
+    // An exit's broadcast fee comes from the on-chain reserve; only its claim
+    // fee comes out of the exited amount.
+    final net =
+        estimate?.netAmountSats ?? ((amount ?? 0) - (claimFee ?? fee ?? 0));
     if (amount == null || fee == null || net < 0) {
       throw const ArkBoundaryException(
         ArkValidationFailure(ArkFailureReason.validation),
@@ -633,6 +697,7 @@ final class BarkNativeSession implements ArkNativeSession {
       feeRate: rate,
       confirmedReserveExposure: exposure,
       maxClaimFee: maximumClaim,
+      claimFee: claimFee == null ? null : Sats.fromInt(claimFee),
     );
   }
 
@@ -829,6 +894,14 @@ final class BarkNativeSession implements ArkNativeSession {
   Future<String> broadcast(String rawTransaction) =>
       _run('broadcast-claim', () => _wallet.broadcastTx(txHex: rawTransaction));
   @override
+  Future<DateTime> nextRoundStart() async {
+    // bark returns unix seconds (bark-ffi `as_secs()` of bark 0.8.1's
+    // `next_round_start_time`, which asks the server over gRPC).
+    final seconds = await _run('next-round', _wallet.nextRoundStartTime);
+    return DateTime.fromMillisecondsSinceEpoch(seconds * 1000, isUtc: true);
+  }
+
+  @override
   Future<ArkReceiveDestination> receive(ArkReceiveRequest request) async {
     switch (request) {
       case ArkAddressReceiveRequest(:final amount, :final message):
@@ -881,6 +954,26 @@ final class BarkNativeSession implements ArkNativeSession {
           net: Sats.fromInt(fee.netAmountSats),
           fee: Sats.fromInt(fee.feeSats),
         );
+    }
+  }
+
+  // bark 0.8.1 stores a Board's funding outpoint as its chain_anchor.
+  String? _boardFundingTxid(String encoded) {
+    if (encoded.length > 1024 * 1024) return null;
+    try {
+      final data = jsonDecode(encoded);
+      if (data is! Map<String, dynamic>) return null;
+      final anchor = data['chain_anchor'];
+      if (anchor is! String) return null;
+      final parts = anchor.split(':');
+      if (parts.length != 2 ||
+          !RegExp(r'^[0-9a-f]{64}$').hasMatch(parts[0]) ||
+          !RegExp(r'^(0|[1-9][0-9]{0,9})$').hasMatch(parts[1])) {
+        return null;
+      }
+      return parts[0];
+    } on FormatException {
+      return null;
     }
   }
 
@@ -1130,4 +1223,32 @@ final class FfiBarkOpenBoundary implements BarkOpenBoundary {
     config: config,
     args: args,
   );
+}
+
+/// A renewal changes the balance only by its fee, so its amount is what it
+/// renewed: the total of its input VTXOs. Bark keeps spent VTXOs, so a
+/// finished renewal still knows them; any unknown input falls back to the
+/// balance change rather than a partial total.
+Sats renewedMovementAmount(bark.Movement movement, List<bark.Vtxo> vtxos) {
+  final amounts = {for (final v in vtxos) v.id: v.amountSats};
+  final inputs = movement.inputVtxoIds;
+  if (inputs.isEmpty || !inputs.every(amounts.containsKey)) {
+    return Sats.fromInt(movement.effectiveBalanceSats.abs());
+  }
+  return Sats.fromInt(inputs.fold(0, (sum, id) => sum + (amounts[id] ?? 0)));
+}
+
+/// Bark encodes a movement's destination as JSON, `{"type":"bitcoin",
+/// "value":"bc1…"}`; the user sees only its value. Anything else is shown
+/// as Bark gave it rather than dropped.
+String movementDestinationValue(String raw) {
+  try {
+    if (jsonDecode(raw) case {'value': final String value}
+        when value.trim().isNotEmpty) {
+      return value;
+    }
+  } on FormatException {
+    // Not JSON: already a plain destination.
+  }
+  return raw;
 }

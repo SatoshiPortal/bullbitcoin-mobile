@@ -36,6 +36,7 @@ import 'third_party/boltz/api/swap_status.dart';
 import 'third_party/boltz/api/transactions.dart';
 import 'third_party/boltz/api/types.dart';
 import 'third_party/dart_bbqr/api.dart';
+import 'third_party/dart_bip138/api.dart';
 import 'third_party/dart_bwk/api/regtest.dart';
 import 'third_party/dart_bwk/api/sp_account.dart';
 import 'third_party/dart_bwk/api/types.dart';
@@ -102,7 +103,7 @@ class BullSdk extends BaseEntrypoint<BullSdkApi, BullSdkApiImpl, BullSdkWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 787595051;
+  int get rustContentHash => -1238775167;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -563,6 +564,23 @@ abstract class BullSdkApi extends BaseApi {
     required String addressString,
   });
 
+  Future<List<Bip138Item>?> dartBip138ApiBip138Decrypt({
+    required List<int> bytes,
+    required List<String> candidatePublicDescriptors,
+  });
+
+  Future<Uint8List> dartBip138ApiBip138Encrypt({
+    required List<String> publicDescriptors,
+    required List<Bip138Item> items,
+    required bool padded,
+  });
+
+  Future<List<Bip138ExcludedKey>> dartBip138ApiBip138ExcludedKeys({
+    required List<String> publicDescriptors,
+  });
+
+  Future<int> dartBwkApiSpAccountBlindbitTip({required String url});
+
   Future<String> lwkApiBlockchainBlockchainBroadcastSignedPset({
     required LiquidNetwork network,
     required String electrumUrl,
@@ -1012,6 +1030,10 @@ abstract class BullSdkApi extends BaseApi {
     required BigInt msats,
   });
 
+  Future<LnurlPayBounds> boltzApiLnurlLnurlFetchPayLimits({
+    required Lnurl that,
+  });
+
   Future<BigInt> boltzApiLnurlLnurlGetVoucherMaxAmount({required Lnurl that});
 
   Future<Lnurl> boltzApiLnurlLnurlNew({required String value});
@@ -1133,6 +1155,8 @@ abstract class BullSdkApi extends BaseApi {
   String boltzApiSwapStatusSwapStreamStatusToJson({
     required SwapStreamStatus that,
   });
+
+  Future<int> dartBwkApiSpAccountTestBlindbitScanData({required String url});
 
   Future<void> dartBwkApiSpAccountTestBlindbitUrl({required String url});
 
@@ -4665,6 +4689,121 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   );
 
   @override
+  Future<List<Bip138Item>?> dartBip138ApiBip138Decrypt({
+    required List<int> bytes,
+    required List<String> candidatePublicDescriptors,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_list_prim_u_8_loose(bytes);
+          var arg1 = cst_encode_list_String(candidatePublicDescriptors);
+          return wire.wire__dart_bip138__api__bip138_decrypt(port_, arg0, arg1);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_list_bip_138_item,
+          decodeErrorData: dco_decode_bip_138_error,
+        ),
+        constMeta: kDartBip138ApiBip138DecryptConstMeta,
+        argValues: [bytes, candidatePublicDescriptors],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kDartBip138ApiBip138DecryptConstMeta => const TaskConstMeta(
+    debugName: "bip138_decrypt",
+    argNames: ["bytes", "candidatePublicDescriptors"],
+  );
+
+  @override
+  Future<Uint8List> dartBip138ApiBip138Encrypt({
+    required List<String> publicDescriptors,
+    required List<Bip138Item> items,
+    required bool padded,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_list_String(publicDescriptors);
+          var arg1 = cst_encode_list_bip_138_item(items);
+          var arg2 = cst_encode_bool(padded);
+          return wire.wire__dart_bip138__api__bip138_encrypt(
+            port_,
+            arg0,
+            arg1,
+            arg2,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_prim_u_8_strict,
+          decodeErrorData: dco_decode_bip_138_error,
+        ),
+        constMeta: kDartBip138ApiBip138EncryptConstMeta,
+        argValues: [publicDescriptors, items, padded],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kDartBip138ApiBip138EncryptConstMeta => const TaskConstMeta(
+    debugName: "bip138_encrypt",
+    argNames: ["publicDescriptors", "items", "padded"],
+  );
+
+  @override
+  Future<List<Bip138ExcludedKey>> dartBip138ApiBip138ExcludedKeys({
+    required List<String> publicDescriptors,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_list_String(publicDescriptors);
+          return wire.wire__dart_bip138__api__bip138_excluded_keys(port_, arg0);
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_bip_138_excluded_key,
+          decodeErrorData: dco_decode_bip_138_error,
+        ),
+        constMeta: kDartBip138ApiBip138ExcludedKeysConstMeta,
+        argValues: [publicDescriptors],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kDartBip138ApiBip138ExcludedKeysConstMeta =>
+      const TaskConstMeta(
+        debugName: "bip138_excluded_keys",
+        argNames: ["publicDescriptors"],
+      );
+
+  @override
+  Future<int> dartBwkApiSpAccountBlindbitTip({required String url}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(url);
+          return wire.wire__dart_bwk__api__sp_account__blindbit_tip(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kDartBwkApiSpAccountBlindbitTipConstMeta,
+        argValues: [url],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kDartBwkApiSpAccountBlindbitTipConstMeta =>
+      const TaskConstMeta(debugName: "blindbit_tip", argNames: ["url"]);
+
+  @override
   Future<String> lwkApiBlockchainBlockchainBroadcastSignedPset({
     required LiquidNetwork network,
     required String electrumUrl,
@@ -7901,6 +8040,36 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
       );
 
   @override
+  Future<LnurlPayBounds> boltzApiLnurlLnurlFetchPayLimits({
+    required Lnurl that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_lnurl(that);
+          return wire.wire__boltz__api__lnurl__lnurl_fetch_pay_limits(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_lnurl_pay_bounds,
+          decodeErrorData: dco_decode_boltz_error,
+        ),
+        constMeta: kBoltzApiLnurlLnurlFetchPayLimitsConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kBoltzApiLnurlLnurlFetchPayLimitsConstMeta =>
+      const TaskConstMeta(
+        debugName: "lnurl_fetch_pay_limits",
+        argNames: ["that"],
+      );
+
+  @override
   Future<BigInt> boltzApiLnurlLnurlGetVoucherMaxAmount({required Lnurl that}) {
     return handler.executeNormal(
       NormalTask(
@@ -8769,6 +8938,34 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
       );
 
   @override
+  Future<int> dartBwkApiSpAccountTestBlindbitScanData({required String url}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_String(url);
+          return wire.wire__dart_bwk__api__sp_account__test_blindbit_scan_data(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_32,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kDartBwkApiSpAccountTestBlindbitScanDataConstMeta,
+        argValues: [url],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kDartBwkApiSpAccountTestBlindbitScanDataConstMeta =>
+      const TaskConstMeta(
+        debugName: "test_blindbit_scan_data",
+        argNames: ["url"],
+      );
+
+  @override
   Future<void> dartBwkApiSpAccountTestBlindbitUrl({required String url}) {
     return handler.executeNormal(
       NormalTask(
@@ -9316,6 +9513,47 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  Bip138ContentType dco_decode_bip_138_content_type(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return Bip138ContentType_Bip(number: dco_decode_u_16(raw[1]));
+      case 1:
+        return Bip138ContentType_Vendor(
+          tag: dco_decode_list_prim_u_8_strict(raw[1]),
+        );
+      case 2:
+        return Bip138ContentType_Text();
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
+  Bip138Error dco_decode_bip_138_error(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return Bip138Error.values[raw as int];
+  }
+
+  @protected
+  Bip138ExcludedKey dco_decode_bip_138_excluded_key(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return Bip138ExcludedKey.values[raw as int];
+  }
+
+  @protected
+  Bip138Item dco_decode_bip_138_item(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return Bip138Item(
+      contentType: dco_decode_bip_138_content_type(arr[0]),
+      bytes: dco_decode_list_prim_u_8_strict(arr[1]),
+    );
+  }
+
+  @protected
   BitBoxKeychain dco_decode_bit_box_keychain(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return BitBoxKeychain.values[raw as int];
@@ -9849,6 +10087,18 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  List<Bip138ExcludedKey> dco_decode_list_bip_138_excluded_key(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_bip_138_excluded_key).toList();
+  }
+
+  @protected
+  List<Bip138Item> dco_decode_list_bip_138_item(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_bip_138_item).toList();
+  }
+
+  @protected
   List<BtcLnSwap> dco_decode_list_btc_ln_swap(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_btc_ln_swap).toList();
@@ -9998,6 +10248,18 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  LnurlPayBounds dco_decode_lnurl_pay_bounds(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return LnurlPayBounds(
+      minSendableMsat: dco_decode_u_64(arr[0]),
+      maxSendableMsat: dco_decode_u_64(arr[1]),
+    );
+  }
+
+  @protected
   LwkError dco_decode_lwk_error(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -10120,6 +10382,12 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_u_8(raw);
+  }
+
+  @protected
+  List<Bip138Item>? dco_decode_opt_list_bip_138_item(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_list_bip_138_item(raw);
   }
 
   @protected
@@ -10831,6 +11099,12 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  int dco_decode_u_16(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
+  }
+
+  @protected
   int dco_decode_u_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
@@ -11160,6 +11434,51 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
     var var_assetId = sse_decode_String(deserializer);
     var var_value = sse_decode_i_64(deserializer);
     return Balance(assetId: var_assetId, value: var_value);
+  }
+
+  @protected
+  Bip138ContentType sse_decode_bip_138_content_type(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        var var_number = sse_decode_u_16(deserializer);
+        return Bip138ContentType_Bip(number: var_number);
+      case 1:
+        var var_tag = sse_decode_list_prim_u_8_strict(deserializer);
+        return Bip138ContentType_Vendor(tag: var_tag);
+      case 2:
+        return Bip138ContentType_Text();
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  Bip138Error sse_decode_bip_138_error(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return Bip138Error.values[inner];
+  }
+
+  @protected
+  Bip138ExcludedKey sse_decode_bip_138_excluded_key(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return Bip138ExcludedKey.values[inner];
+  }
+
+  @protected
+  Bip138Item sse_decode_bip_138_item(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_contentType = sse_decode_bip_138_content_type(deserializer);
+    var var_bytes = sse_decode_list_prim_u_8_strict(deserializer);
+    return Bip138Item(contentType: var_contentType, bytes: var_bytes);
   }
 
   @protected
@@ -11794,6 +12113,32 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  List<Bip138ExcludedKey> sse_decode_list_bip_138_excluded_key(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <Bip138ExcludedKey>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_bip_138_excluded_key(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<Bip138Item> sse_decode_list_bip_138_item(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <Bip138Item>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_bip_138_item(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   List<BtcLnSwap> sse_decode_list_btc_ln_swap(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -12080,6 +12425,17 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  LnurlPayBounds sse_decode_lnurl_pay_bounds(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_minSendableMsat = sse_decode_u_64(deserializer);
+    var var_maxSendableMsat = sse_decode_u_64(deserializer);
+    return LnurlPayBounds(
+      minSendableMsat: var_minSendableMsat,
+      maxSendableMsat: var_maxSendableMsat,
+    );
+  }
+
+  @protected
   LwkError sse_decode_lwk_error(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_msg = sse_decode_String(deserializer);
@@ -12273,6 +12629,19 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_box_autoadd_u_8(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  List<Bip138Item>? sse_decode_opt_list_bip_138_item(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_list_bip_138_item(deserializer));
     } else {
       return null;
     }
@@ -13062,6 +13431,12 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  int sse_decode_u_16(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getUint16();
+  }
+
+  @protected
   int sse_decode_u_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint32();
@@ -13322,6 +13697,18 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  int cst_encode_bip_138_error(Bip138Error raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
+  }
+
+  @protected
+  int cst_encode_bip_138_excluded_key(Bip138ExcludedKey raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
+  }
+
+  @protected
   int cst_encode_bit_box_keychain(BitBoxKeychain raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_i_32(raw.index);
@@ -13445,6 +13832,12 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   int cst_encode_swap_type(SwapType raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_i_32(raw.index);
+  }
+
+  @protected
+  int cst_encode_u_16(int raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw;
   }
 
   @protected
@@ -13750,6 +14143,46 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.assetId, serializer);
     sse_encode_i_64(self.value, serializer);
+  }
+
+  @protected
+  void sse_encode_bip_138_content_type(
+    Bip138ContentType self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case Bip138ContentType_Bip(number: final number):
+        sse_encode_i_32(0, serializer);
+        sse_encode_u_16(number, serializer);
+      case Bip138ContentType_Vendor(tag: final tag):
+        sse_encode_i_32(1, serializer);
+        sse_encode_list_prim_u_8_strict(tag, serializer);
+      case Bip138ContentType_Text():
+        sse_encode_i_32(2, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_bip_138_error(Bip138Error self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_bip_138_excluded_key(
+    Bip138ExcludedKey self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_bip_138_item(Bip138Item self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_bip_138_content_type(self.contentType, serializer);
+    sse_encode_list_prim_u_8_strict(self.bytes, serializer);
   }
 
   @protected
@@ -14313,6 +14746,30 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  void sse_encode_list_bip_138_excluded_key(
+    List<Bip138ExcludedKey> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_bip_138_excluded_key(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_bip_138_item(
+    List<Bip138Item> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_bip_138_item(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_list_btc_ln_swap(
     List<BtcLnSwap> self,
     SseSerializer serializer,
@@ -14582,6 +15039,16 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  void sse_encode_lnurl_pay_bounds(
+    LnurlPayBounds self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_64(self.minSendableMsat, serializer);
+    sse_encode_u_64(self.maxSendableMsat, serializer);
+  }
+
+  @protected
   void sse_encode_lwk_error(LwkError self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.msg, serializer);
@@ -14777,6 +15244,19 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_box_autoadd_u_8(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_list_bip_138_item(
+    List<Bip138Item>? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_list_bip_138_item(self, serializer);
     }
   }
 
@@ -15398,6 +15878,12 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  void sse_encode_u_16(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putUint16(self);
+  }
+
+  @protected
   void sse_encode_u_32(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint32(self);
@@ -15924,18 +16410,11 @@ class SpAccountImpl extends RustOpaque implements SpAccount {
   Future<void> restartElectrum() => BullSdk.instance.api
       .dartBwkApiSpAccountSpAccountRestartElectrum(that: this);
 
-  /// USER-TRIGGERED ONLY. The bb-mobile app contract is that this method
-  /// is invoked exclusively from `ScanSpWalletUsecase`, which itself is
-  /// invoked exclusively from `SpCubit.scan()` (the Scan button handler).
-  /// Do not call from app lifecycle hooks, route observers, timers, or
-  /// background services. Doing so violates the documented invariant.
+  /// Starts a one-shot scan. The Dart ScanSpWalletUsecase accepts manual starts
+  /// and foreground starts admitted by its wallet sync policy.
   ///
-  /// Not `#[frb(sync)]`: the underlying bwk_sp scan walker is fully
-  /// synchronous and would freeze the Dart UI isolate for the entire
-  /// scan duration if dispatched there. FRB runs `async` methods on a
-  /// worker isolate. The inner mutex is held for the full scan — that
-  /// serializes against other methods, which is acceptable because SP
-  /// scans are user-triggered and rare.
+  /// The Rust bridge dispatches this off the Dart UI isolate. BWK owns the
+  /// scanner worker and publishes progress and terminal notifications.
   ///
   /// Cancellation: `stop_scan` flips `self.scan_cancel` (a clone of the
   /// bwk_sp::Account's internal `scanner_stop`), which causes the scan

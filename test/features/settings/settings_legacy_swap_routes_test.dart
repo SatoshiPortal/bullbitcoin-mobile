@@ -8,7 +8,6 @@ void main() {
       accessRoutes: const [],
       addressRoutes: const [],
       exchangeSettingsRoutes: const [],
-      appSettingsRoutes: const [],
       backupRoutes: const [],
       priceRoutes: const [],
       walletRoutes: [

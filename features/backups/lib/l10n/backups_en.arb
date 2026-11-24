@@ -1,4 +1,7 @@
 {
+  "backupSettingsMoneySection": "Money backup",
+  "backupSettingsDataSection": "Data backup",
+  "backupSettingsAutomaticBackup": "Automatic backup",
   "@@locale": "en",
   "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
   "@walletDetailsUnnamedWalletFallback": {
@@ -132,6 +135,7 @@
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
   },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
   "testBackupWalletTitle": "Test {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",

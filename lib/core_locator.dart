@@ -2,9 +2,11 @@ import 'package:labels/labels.dart';
 import 'package:sync/sync.dart' show Sync, Wallet, WalletConnectionPort;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
+import 'package:bull_exchange/setup.dart';
+import 'package:exchange/exchange.dart' show Exchange;
+import 'package:secrets/secrets.dart' show Secrets;
 import 'package:preferences/preferences.dart' as settings;
-import 'package:bb_mobile/features/settings/settings_core_locator.dart';
+import 'package:settings/setup.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -27,7 +29,13 @@ class CoreLocator {
         warningCallback: log.warning,
       ),
     );
-    ExchangeLocator.registerDatasources(locator);
+    locator.registerLazySingleton<Exchange>(
+      () => BullExchangeServices.open(
+        keychain: locator<Secrets>().exchangeKeychain,
+        preferences: locator<settings.Preferences>(),
+      ),
+      dispose: (exchange) => exchange.close(),
+    );
     await WalletLocator.registerDatasources(locator);
   }
 
@@ -105,13 +113,11 @@ class CoreLocator {
         }
       },
     );
-    ExchangeLocator.registerRepositories(locator);
     return const Ok(null);
   }
 
   static void registerUsecases(GetIt locator) {
     bull_tor.TorLocator.registerUsecases(locator);
-    ExchangeLocator.registerUseCases(locator);
     WalletLocator.registerUsecases(locator);
   }
 }

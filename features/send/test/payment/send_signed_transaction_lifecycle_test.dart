@@ -46,7 +46,6 @@ import 'package:labels/labels.dart';
 import 'package:send/src/payment/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:send/src/payment/domain/usecases/create_send_swap_usecase.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:send/src/payment/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -70,6 +69,8 @@ import 'package:send/src/payment/domain/usecases/validate_sp_amount_for_send_use
 import 'package:send/src/payment/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:send/src/payment/presentation/bloc/send_cubit.dart';
 import 'package:send/src/payment/presentation/bloc/send_state.dart';
+import 'package:send/src/payment/domain/lnurl_pay_limits_repository.dart';
+import 'package:send/src/payment/domain/usecases/load_lnurl_pay_limits_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -89,8 +90,10 @@ class _MockDetectBitcoinStringUsecase extends Mock
 
 class _MockPreferences extends Mock implements Preferences {}
 
-class _MockGetSendExchangeRateUsecase extends Mock
-    implements GetSendExchangeRateUsecase {}
+class _MockSend extends Mock implements Send {}
+
+class _MockLnurlPayLimitsRepository extends Mock
+    implements LnurlPayLimitsRepository {}
 
 class _MockFees extends Mock implements Fees {}
 
@@ -233,7 +236,7 @@ class _TestSendCubit extends SendCubit {
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.loadPreferencesUsecase,
-    required super.getSendExchangeRateUsecase,
+    required super.readExchangeRate,
     required super.loadNetworkFeesUsecase,
     required super.loadCoins,
     required super.validateBitcoinSelectionUsecase,
@@ -244,6 +247,7 @@ class _TestSendCubit extends SendCubit {
     required super.createSendCrossChainSwapUsecase,
     required super.getSendCrossChainQuoteUsecase,
     required super.resolveLightningAddressUsecase,
+    required super.loadLnurlPayLimitsUsecase,
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
     required super.sendWithPayjoinUsecase,
@@ -331,7 +335,7 @@ void main() {
       loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
         _MockPreferences(),
       ),
-      getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
+      readExchangeRate: _MockSend().exchangeRate,
       loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: _MockFees()),
       loadCoins: LoadSendCoinsUsecase(coins),
       spend: SendSpendTestDouble(
@@ -355,6 +359,9 @@ void main() {
       createSendCrossChainSwapUsecase: _MockCreateSendCrossChainSwapUsecase(),
       getSendCrossChainQuoteUsecase: _MockGetSendCrossChainQuoteUsecase(),
       resolveLightningAddressUsecase: _MockResolveLightningAddressUsecase(),
+      loadLnurlPayLimitsUsecase: LoadLnurlPayLimitsUsecase(
+        _MockLnurlPayLimitsRepository(),
+      ),
       updateSendSwapPayinUsecase: _MockUpdateSendSwapPayinUsecase(),
       watchSendSwapUsecase: _MockWatchSendSwapUsecase(),
       sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
@@ -459,7 +466,7 @@ void main() {
               isFrozen: isFrozen,
             );
 
-        when(() => coins.coins(any())).thenAnswer(
+        when(() => coins.load(walletId: any(named: 'walletId'))).thenAnswer(
           (_) async => Ok([
             utxo(amountSat: walletBalanceSat - frozenSat, isFrozen: false),
             utxo(amountSat: frozenSat, isFrozen: true),

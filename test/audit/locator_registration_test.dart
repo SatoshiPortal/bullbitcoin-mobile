@@ -60,11 +60,11 @@ void main() {
     // separate cleanup, not something to smuggle into this test.
     const purchaseRoutes =
         'features/bull_exchange/lib/src/exchange_purchase_routes.dart';
+    const payMount = 'features/bull_exchange/lib/src/pay/mount_pay.dart';
+    const sellMount = 'features/bull_exchange/lib/src/sell/mount_sell.dart';
     const owners = {
-      'PlacePayOrderUsecase':
-          'features/bull_exchange/lib/src/pay/mount_pay.dart',
-      'RefreshSellOrderUsecase':
-          'features/bull_exchange/lib/src/sell/mount_sell.dart',
+      'PlacePayOrderUsecase': payMount,
+      'RefreshSellOrderUsecase': sellMount,
       'ConfirmBuyOrderUsecase': purchaseRoutes,
       'RefreshBuyOrderUsecase': purchaseRoutes,
       'AccelerateBuyOrderUsecase': purchaseRoutes,
@@ -84,7 +84,7 @@ void main() {
       }
     }
 
-    // The exchange mounts construct their use cases in the route-owned Bloc.
+    // Count each route-owned construction, even under the wrong route.
     for (final path in owners.values.toSet()) {
       final source = File(path).readAsStringSync();
       for (final type in owners.keys) {

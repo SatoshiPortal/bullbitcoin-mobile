@@ -174,7 +174,9 @@ An accepted transaction missing from the canonical wallet is settled only by a c
 
 ## Electrum sync
 
-`ElectrumSync.execute` opens existing stores only, in a compute worker. Every Bitcoin pass first queries the revealed scripts; at checkpoint height zero or on explicit discovery it then full-scans. The pass applies both updates and persists once; spend evidence is reported only after that persist. The parents cache prefills the client and is best effort. The pinned bdk_chain full scan counts the stop gap from index 0, so it never replaces revealed-script coverage. Only connection establishment, before a store is opened, may fall back to another server. Requests for the same wallet share one pass, a queued discovery still runs, and anything other than an `Exception` thrown during a pass reaches every waiting caller. Incoming payment ids are collected only with `collectIncoming`.
+`ElectrumSync.execute` opens existing stores only, in a compute worker. Every non-targeted Bitcoin pass first queries the revealed scripts; at checkpoint height zero or on explicit discovery it then full-scans. The pass applies both updates and persists once; spend evidence is reported only after that persist. The parents cache prefills the client and is best effort. The pinned bdk_chain full scan counts the stop gap from index 0, so it never replaces revealed-script coverage. Only connection establishment, before a store is opened, may fall back to another server. A routine request for the same wallet joins a routine pass already running, a queued discovery and any request the active pass cannot answer run after it, and anything other than an `Exception` thrown during a pass reaches every waiting caller. Incoming payment ids are collected only with `collectIncoming`.
+
+A targeted pass (`ElectrumSync.execute` with `targets`, `ForegroundWalletSynchronization.executeTargeted`) queries only the revealed wallet indices its targets pay or spend, applies and persists once, and skips the routine revealed-script and full-scan queries. Its completion reports conclusive answers only: a queried target with ambiguous evidence still stays unknown. A targeted pass never initializes or scans a wallet, so a wallet without an initial scan fails `SyncInitialScanRequiredFailure`, and a non-Bitcoin wallet rejects targets with `SyncUnsupportedNetworkFailure` instead of running a routine sync. Targeted requests merge into a targeted pass that has not started, a later one gets its own pass, and a routine refresh is never satisfied by a targeted pass.
 
 ⚠️ Liquid never goes through Tor: the pinned LWK has no SOCKS option, so the connection policy drops the proxy for Liquid and both the probe and the LWK sync connect directly.
 
@@ -207,3 +209,7 @@ Spend preparation consumers resolve a `WalletKey` and call the Result-returning 
 ## Persisted wallet sync times
 
 The storage library imports the historical sync time for each wallet id into Sync's encrypted metadata store. It preserves the original nullable value through the migration. The native revision and writer lease stores continue to coordinate wallet operations.
+
+## Dependencies
+
+- `secrets` supplies authorized wallet descriptors to the foreground inventory projection; Sync turns them into native catalog entries.

@@ -40,6 +40,8 @@ void main() {
               sendMessage: ({required text, attachments}) async =>
                   fail('unexpected send'),
               getAttachment: (_) async => fail('unexpected download'),
+              getUnreadCount: () async => fail('unexpected unread count'),
+              markAllRead: () async => fail('unexpected mark read'),
             ),
           ),
         );
@@ -86,6 +88,8 @@ void main() {
               sendMessage: ({required text, attachments}) async =>
                   const Err(ExchangeChatSendMessageFailure('raw')),
               getAttachment: (_) async => fail('unexpected download'),
+              getUnreadCount: () async => fail('unexpected unread count'),
+              markAllRead: () async => fail('unexpected mark read'),
             ),
           ),
         );
@@ -107,6 +111,8 @@ void main() {
                   fail('unexpected send'),
               getAttachment: (_) async =>
                   const Err(ExchangeChatLoadAttachmentFailure('raw')),
+              getUnreadCount: () async => fail('unexpected unread count'),
+              markAllRead: () async => fail('unexpected mark read'),
             ),
           ),
         );

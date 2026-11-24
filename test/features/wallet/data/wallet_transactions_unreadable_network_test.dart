@@ -41,9 +41,12 @@ void main() {
         toAddress: any(named: 'toAddress'),
       ),
     ).thenAnswer((_) async => const Ok([]));
+    final labels = _Labels();
+    when(() => labels.fetch(reference: any(named: 'reference')))
+        .thenAnswer((_) async => const Ok(<Label>[]));
     repository = WalletTransactionRepositoryImpl(
       inventory: metadata,
-      labelsFacade: _Labels(),
+      labelsFacade: labels,
       history: bdk,
       synchronize: (key) async {
         synchronized.add(key);
@@ -78,6 +81,50 @@ void main() {
     expect(read.map((wallet) => (wallet as WalletKey).id), ['readable']);
     expect(synchronized.map((row) => row.id), ['readable']);
   });
+
+  test(
+    'a loaded transaction is returned, not lost to an untyped list',
+    () async {
+      when(() => metadata.walletsForNetwork(BitcoinNetwork.testnet))
+          .thenAnswer((_) async => Ok(walletSelectionForTesting([readable])));
+      when(() => metadata.walletsForNetwork(LiquidNetwork.testnet))
+          .thenAnswer((_) async => const Err(UnreadableWalletFailure()));
+      when(
+        () => bdk.getTransactions(
+          key: any(named: 'key'),
+          toAddress: any(named: 'toAddress'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok([
+          WalletTransactionModel(
+            txId: 'public-transaction',
+            isIncoming: true,
+            amountSat: 1000,
+            feeSat: 0,
+            vsize: 100,
+            inputs: [],
+            outputs: [],
+            network: BitcoinNetwork.testnet,
+            isRbf: false,
+          ),
+        ]),
+      );
+
+      final loaded = await repository.getWalletTransactions(
+        environment: Environment.testnet,
+        sync: false,
+      );
+      expect(
+        loaded
+            .fold(
+              (value) => value,
+              (failure) => fail(failure.runtimeType.toString()),
+            )
+            .map((tx) => tx.txId),
+        ['public-transaction'],
+      );
+    },
+  );
 
   test('a wallet asked for by id with an unreadable network fails', () async {
     when(() => metadata.readWallet('unreadable'))

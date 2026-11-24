@@ -566,7 +566,7 @@
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sendErrorInvoiceExpiryTooShort": "تنتهي صلاحية هذه الفاتورة مبكرًا جدًا. اطلب من المستلم فاتورة جديدة.",
-  "closeDialogButton": "اقترب",
+  "closeDialogButton": "إغلاق",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   }

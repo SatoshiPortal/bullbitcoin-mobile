@@ -2,14 +2,13 @@ import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bull_exchange/testing.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:sync/write.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
@@ -99,7 +98,16 @@ class _Logger extends Mock implements Logger {}
 
 class _Inventory extends Mock implements WalletInventory {}
 
+class _Native extends Mock implements WalletNativeLifecycle {}
+
 class _Rates extends Mock implements ExchangeLimitOrders {}
+
+/// The Bitcoin destination check the default-wallet editor uses.
+Future<String?> _validateBitcoin(WalletAddressType _, String raw) async =>
+    (await const PaymentDestinations().validate(
+      raw,
+      acceptedTypes: const {PaymentDestinationType.bitcoin},
+    ))?.address;
 
 void main() {
   late _Logger logger;
@@ -133,10 +141,6 @@ void main() {
     for (final name in ['limit orders', 'autobuy status', 'autobuy update']) {
       test('$name classifies $label', () async {
         final repo = _users(refusal);
-        final summary = GetExchangeUserSummaryUsecase(
-          exchange: repo,
-          settingsRepository: _Settings(),
-        );
         final wallets = _Inventory();
         for (final network in <Network>[
           BitcoinNetwork.testnet,
@@ -147,12 +151,12 @@ void main() {
         }
         final pending = switch (name) {
           'limit orders' => LoadLimitOrderCreationUsecase(
-            summary,
             exchangeForTesting(
               getDefaultWallets: () async => const Ok(DefaultWallets()),
+              getUserSummary: repo.getUserSummary,
             ),
-            wallets,
             _Settings(),
+            ExchangePayoutWallets(wallets, _Native()),
             _Rates(),
           ).execute(),
           'autobuy status' => autoBuyStatusForTesting(repo),
@@ -165,6 +169,16 @@ void main() {
         } else if (refusal is _MissingKey || refusal is _UnreadableKey) {
           expect(await pending, isA<Err>());
           noReport();
+        } else if (name == 'limit orders') {
+          expect(await pending, isA<Err>());
+          verify(
+            () => logger.severe(
+              message:
+                  'Failed to load the account before creating a limit order',
+              error: ExchangeAccountUnavailableFailure,
+              trace: any(named: 'trace'),
+            ),
+          ).called(1);
         } else {
           expect(await pending, isA<Err>());
           verify(
@@ -190,7 +204,7 @@ void main() {
         const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
         var failLoad = false;
         final cubit = defaultWalletsCubitForTesting(
-          validate: exchangePayoutFields.validate,
+          validate: _validateBitcoin,
           exchange: exchangeForTesting(
             getDefaultWallets: () async => failLoad
                 ? Err(failure)
@@ -233,7 +247,7 @@ void main() {
     'default wallet loading does not report or swallow programmer errors',
     () async {
       final cubit = defaultWalletsCubitForTesting(
-        validate: exchangePayoutFields.validate,
+        validate: _validateBitcoin,
         exchange: _users(_Thrown(StateError('synthetic programming error'))),
       );
       addTearDown(cubit.close);

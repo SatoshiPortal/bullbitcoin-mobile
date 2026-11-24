@@ -33,6 +33,8 @@ void main() {
   late _MockDeleteWallet delete;
   late WalletDetailsCubit cubit;
   late List<WalletDetailsState> states;
+  late Completer<void> stateDelivered;
+  late bool streamClosed;
   late bool closed;
 
   setUp(() {
@@ -41,7 +43,20 @@ void main() {
     cubit = WalletDetailsCubit(read, delete);
     states = [];
     closed = false;
-    final subscription = cubit.stream.listen(states.add);
+    streamClosed = false;
+    stateDelivered = Completer<void>();
+    final subscription = cubit.stream.listen(
+      (state) {
+        states.add(state);
+        final delivered = stateDelivered;
+        stateDelivered = Completer<void>();
+        delivered.complete();
+      },
+      onDone: () {
+        streamClosed = true;
+        if (!stateDelivered.isCompleted) stateDelivered.complete();
+      },
+    );
     addTearDown(subscription.cancel);
   });
 
@@ -52,6 +67,17 @@ void main() {
   Future<void> closeCubit() async {
     closed = true;
     await cubit.close();
+  }
+
+  /// Waits until the cubit has delivered [count] states, so an assertion reads
+  /// a settled history instead of racing the asynchronous cubit stream.
+  Future<void> waitForStates(int count) async {
+    while (states.length < count) {
+      if (streamClosed) {
+        fail('the cubit closed after ${states.length} states, expected $count');
+      }
+      await stateDelivered.future;
+    }
   }
 
   WalletDetailsCubit loadOk() {
@@ -68,6 +94,7 @@ void main() {
     when(() => read.execute(_walletId)).thenAnswer((_) async => Ok(_details));
 
     await cubit.load(_walletId);
+    await waitForStates(1);
 
     expect(states, hasLength(1));
     expect(
@@ -84,6 +111,7 @@ void main() {
         .thenAnswer((_) async => const Err(WalletDetailsNotFoundFailure()));
 
     await cubit.load(_walletId);
+    await waitForStates(1);
 
     expect(
       states.single,
@@ -98,11 +126,11 @@ void main() {
   test('reports progress, then the deletion', () async {
     final gate = Completer<Result<void, WalletDetailsFailure>>();
     loadOk();
-    await pumpEventQueue();
+    await waitForStates(1);
     when(() => delete.execute(_walletId)).thenAnswer((_) => gate.future);
 
     final pending = cubit.delete();
-    await pumpEventQueue();
+    await waitForStates(2);
 
     expect(
       states.last,
@@ -115,6 +143,7 @@ void main() {
     );
     gate.complete(const Ok(null));
     await pending;
+    await waitForStates(3);
 
     expect(states.last, isA<WalletDetailsDeleted>());
     verify(() => delete.execute(_walletId)).called(1);
@@ -122,11 +151,12 @@ void main() {
 
   test('returns to the wallet with the deletion failure', () async {
     loadOk();
-    await pumpEventQueue();
+    await waitForStates(1);
     when(() => delete.execute(_walletId))
         .thenAnswer((_) async => const Err(WalletDetailsOngoingSwapsFailure()));
 
     await cubit.delete();
+    await waitForStates(3);
 
     expect(
       states.last,
@@ -151,15 +181,16 @@ void main() {
   test('ignores a second deletion while one is running', () async {
     final gate = Completer<Result<void, WalletDetailsFailure>>();
     loadOk();
-    await pumpEventQueue();
+    await waitForStates(1);
     when(() => delete.execute(_walletId)).thenAnswer((_) => gate.future);
 
     final first = cubit.delete();
-    await pumpEventQueue();
+    await waitForStates(2);
     final second = cubit.delete();
     gate.complete(const Ok(null));
     await first;
     await second;
+    await waitForStates(3);
 
     verify(() => delete.execute(_walletId)).called(1);
     expect(states.last, isA<WalletDetailsDeleted>());
@@ -179,10 +210,10 @@ void main() {
   test('a late deletion cannot emit after the cubit is closed', () async {
     final gate = Completer<Result<void, WalletDetailsFailure>>();
     loadOk();
-    await pumpEventQueue();
+    await waitForStates(1);
     when(() => delete.execute(_walletId)).thenAnswer((_) => gate.future);
     final pending = cubit.delete();
-    await pumpEventQueue();
+    await waitForStates(2);
     await closeCubit();
     gate.complete(const Ok(null));
 

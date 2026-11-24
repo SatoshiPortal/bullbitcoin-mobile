@@ -1,4 +1,5 @@
 {
+  "retry": "Yritä uudelleen",
   "@@locale": "fi",
   "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
   "save": "Tallenna",

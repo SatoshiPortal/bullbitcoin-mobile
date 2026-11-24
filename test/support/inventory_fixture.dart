@@ -20,10 +20,12 @@ import 'wallet_registrations.dart';
 final class InventoryFixture {
   final RuntimeAdmission admission;
   final SecretsInventory inventory;
-  final SignerDevices? signerDevices;
+  final SignerDevices? _signerDevices;
   final backup = const VerifiedBackups();
 
-  InventoryFixture._(this.admission, this.inventory, this.signerDevices);
+  InventoryFixture._(this.admission, this.inventory, this._signerDevices);
+
+  SignerDevices? get signerDevices => _signerDevices;
 
   Future<void> addPublicWallet({
     required String id,
@@ -54,13 +56,15 @@ final class InventoryFixture {
 
   static Future<InventoryFixture> open(
     Directory directory, {
-    bool includeSignerDevices = false,
+    bool withSignerDevices = false,
   }) async {
     final file = File('${directory.path}/test-secrets.sqlite');
-    final signersFile = File('${directory.path}/test-signers.sqlite');
-    final signerKeys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'signers');
     final gate = NativeFileGate(File('${directory.path}/test-secrets.gate'));
+    final signerFile = File('${directory.path}/test-signers.sqlite');
+    final signerKeys = withSignerDevices
+        ? Secrets(scratchDirectory: () async => directory.path)
+              .databaseKeys(module: 'signers')
+        : null;
     final exclusive = await gate.acquire(
       exclusive: true,
       timeout: Duration.zero,
@@ -68,8 +72,8 @@ final class InventoryFixture {
     try {
       for (final participant in [
         SecretsImport(file: file),
-        if (includeSignerDevices)
-          signersWalletMetadataImport(file: signersFile, keys: signerKeys),
+        if (signerKeys != null)
+          signersWalletMetadataImport(file: signerFile, keys: signerKeys),
       ]) {
         final prepared = await participant.prepare(
           exclusive,
@@ -79,11 +83,11 @@ final class InventoryFixture {
             (prepared as Ok<PreparedOwner, LegacyImportFailure>).value;
         try {
           if (await owner.initializeFresh() case Err()) {
-            throw StateError('Inventory fixture initialization failed');
+            throw StateError('${participant.ownerId} initialization failed');
           }
         } finally {
           if (await owner.close() case Err()) {
-            throw StateError('Inventory fixture owner close failed');
+            throw StateError('${participant.ownerId} owner close failed');
           }
         }
       }
@@ -94,25 +98,32 @@ final class InventoryFixture {
       exclusive: false,
       timeout: Duration.zero,
     ) as RuntimeAdmission;
+    SecretsInventory? inventory;
     try {
-      final inventory =
-          (await SecretsInventory.open(file: file, admission: admission)).fold(
-            (value) => value,
-            (_) => throw StateError('Inventory open failed'),
-          );
-      final signers = includeSignerDevices
-          ? (await SignerDevices.open(
-              file: signersFile,
-              admission: admission,
-              keys: signerKeys,
-            )).fold(
-              (value) => value,
-              (_) => throw StateError('Signer devices open failed'),
-            )
-          : null;
-      return InventoryFixture._(admission, inventory, signers);
+      final opened = await SecretsInventory.open(
+        file: file,
+        admission: admission,
+      );
+      if (opened case Err()) throw StateError('Inventory open failed');
+      inventory = (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+      SignerDevices? signerDevices;
+      if (signerKeys != null) {
+        final opened = await SignerDevices.open(
+          file: signerFile,
+          admission: admission,
+          keys: signerKeys,
+        );
+        if (opened case Err()) throw StateError('Signer devices open failed');
+        signerDevices =
+            (opened as Ok<SignerDevices, SignerDeviceFailure>).value;
+      }
+      return InventoryFixture._(admission, inventory, signerDevices);
     } catch (_) {
-      await admission.close();
+      try {
+        await inventory?.close();
+      } finally {
+        await admission.close();
+      }
       rethrow;
     }
   }
@@ -179,7 +190,9 @@ final class InventoryFixture {
 
   void register(GetIt services) {
     services.registerSingleton<SecretsInventory>(inventory);
-    if (signerDevices case final devices?) services.registerSingleton(devices);
+    if (_signerDevices case final signers?) {
+      services.registerSingleton<SignerDevices>(signers);
+    }
     services.registerSingleton<InventoryBackupVerification>(backup);
     services.registerSingleton<WalletRegistrations>(
       MemoryWalletRegistrations(),
@@ -187,8 +200,11 @@ final class InventoryFixture {
   }
 
   Future<void> close() async {
-    await inventory.close();
-    await admission.close();
+    try {
+      await inventory.close();
+    } finally {
+      await admission.close();
+    }
   }
 }
 

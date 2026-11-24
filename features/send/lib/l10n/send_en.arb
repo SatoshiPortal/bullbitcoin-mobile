@@ -622,6 +622,26 @@
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
   },
+  "sendLnurlLimitsUnavailable": "Could not read the Lightning recipient’s payment limits. Try again.",
+  "@sendLnurlLimitsUnavailable": {
+    "description": "Shown on the recipient step when LNURL-pay limits cannot be fetched"
+  },
+  "sendLnurlNoPayableAmount": "This Lightning request doesn’t allow a whole-satoshi amount.",
+  "@sendLnurlNoPayableAmount": {
+    "description": "Shown when no whole-satoshi amount fits the LNURL-pay limits"
+  },
+  "sendLnurlAmountRange": "This recipient accepts {minimumSat}–{maximumSat} sats.",
+  "@sendLnurlAmountRange": {
+    "description": "Inclusive range allowed by a Lightning recipient",
+    "placeholders": {
+      "minimumSat": {
+        "type": "int"
+      },
+      "maximumSat": {
+        "type": "int"
+      }
+    }
+  },
   "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"

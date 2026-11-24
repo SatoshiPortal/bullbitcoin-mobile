@@ -67,11 +67,9 @@
   "fundExchangeCanadaPostStep5": "5. 支付现金或借用卡",
   "addressViewNoAddressesFound": "没有地址",
   "backupWalletErrorSaveBackup": "未能挽救备份",
-  "onboardingRecoverYourWallet": "恢复您的钱包",
   "replaceByFeeErrorNoFeeRateSelected": "请选择收费率",
   "transactionSwapDescChainPending": "您的 Swap 已创建，但尚未发起。",
   "coreScreensTransferFeeLabel": "Swap 费用",
-  "onboardingEncryptedVaultDescription": "利用你的PIN,通过云层回收.",
   "transactionSwapStatusSwapStatus": "差距",
   "receiveInvoiceCopied": "Invoice copied to clippad",
   "autoswapUpdateSettingsError": "未能更新汽车互换环境",
@@ -85,7 +83,6 @@
   "backupInstruction4": "不要提供你背书的数字副本。 在纸面上书写,或在金属中填写.",
   "hwKrux": "Krux",
   "transactionFilterTransfer": "Swap",
-  "exchangeLandingRecommendedExchange": "提议交换",
   "receiveConfirming": "1. 确认......({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -221,7 +218,6 @@
   "physicalBackupRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
   "payPaymentInProgress": "支付:!",
   "fundExchangeETransferLabelEmail": "E- transfer to this email",
-  "bitcoinSettingsTestnetModeTitle": "检测网",
   "fromLabel": "摘自",
   "sellCompleteKYC": "页: 1",
   "hwConnectTitle": "连接硬件钱包",
@@ -387,7 +383,6 @@
   "sellSelectNetwork": "选定网络",
   "sellSendPaymentOrderNumber": "命令号数",
   "sellSendPaymentAdvanced": "先进环境",
-  "walletSettingsImportWalletTitle": "导入钱包",
   "backupWalletErrorGoogleDriveConnection": "未能与谷歌运动连接",
   "payEnterInvoice": "加入",
   "broadcastSignedTxPasteHint": "PSBT或交易",
@@ -526,7 +521,6 @@
   "paySecurityAnswer": "安保",
   "passwordLabel": "密码",
   "importQrDeviceError": "导入钱包失败",
-  "onboardingSplashDescription": "主权自控墙和特制交换服务.",
   "fundExchangeCrIbanCrcDescriptionEnd": "。 资金将计入你的账户结余.",
   "payAccount": "账户",
   "testBackupGoogleDrivePrivacyPart2": "不 ",
@@ -581,7 +575,6 @@
   "transactionNoteAddTitle": "附加说明",
   "paySecurityAnswerHint": "进入安全区",
   "backupSettingsError": "Error",
-  "exchangeFeatureCustomerSupport": "•  • 客户支持的查塔",
   "sellPleasePayInvoice": "请支付这一发票",
   "fundExchangeMethodCanadaPost": "加拿大个人现金或借项",
   "payInvoiceDecoded": "成功编码",
@@ -606,7 +599,6 @@
   "autoswapRecipientRequired": "* E/CN.6/2009/1",
   "exchangeLandingFeature4": "银行转账和付款账单",
   "sellSendPaymentPayFromWallet": "付款钱包",
-  "settingsServiceStatusTitle": "现况",
   "sellPriceWillRefreshIn": "价格上涨 ",
   "buyVerifyIdentity": "身份证明",
   "exchangeDcaCancelDialogConfirmButton": "是的,中止",
@@ -636,7 +628,6 @@
   "backupSettingsTested": "测试",
   "receiveLiquidConfirmationMessage": "几秒将予以确认",
   "exchangeAuthOk": "OK",
-  "settingsSecurityPinTitle": "安保科",
   "transactionDetailLabelPayjoinCompleted": "完成",
   "sellArsBalance": "ARS 平衡",
   "fundExchangeCanadaPostStep1": "1. 导言 前往加拿大",
@@ -682,7 +673,6 @@
   "fundExchangeLabelBankAddress": "银行地址",
   "exchangeDcaAddressLabelLiquid": "流动资金",
   "backupWalletGoogleDrivePrivacyMessage5": "提 交点.",
-  "settingsDevModeUnderstandButton": "我的理解是:",
   "exchangeFileUploadTitle": "1. 安全档案库",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
   "sendErrorAmountAboveSwapLimits": "数额高于互换限额",
@@ -747,7 +737,6 @@
   "selectCoinsManuallyLabel": "手工选编",
   "buyShouldBuyAtLeast": "你们至少应当购买",
   "payCorporate": "公司",
-  "onboardingCreateNewWallet": "创立新墙",
   "buyExpressWithdrawalDesc": "付款后立即收到",
   "backupIdLabel": "Backup ID:",
   "sellBalanceWillBeCredited": "你的账户余额将在交易收到1份链条确认书后入账.",
@@ -808,7 +797,6 @@
   "sellSendPaymentContinue": "继续",
   "coreSwapsStatusPending": "待决",
   "autoswapTriggerAtBalanceInfoText": "当您的余额超过此最大余额时，自动换币将触发。",
-  "exchangeLandingDisclaimerNotAvailable": "自动交换服务没有在“自动交换”申请中提供.",
   "sendCustomFeeRate": "习俗收费率",
   "swapErrorAmountExceedsMaximum": "数额超过最高汇率",
   "errorLabel": "Error",
@@ -841,7 +829,6 @@
   "buyInputKycPending": "KYC ID 有待核查",
   "hwPassport": "护照",
   "fundExchangeMethodRegularSepaSubtitle": "只使用30 000欧元以上的大宗交易",
-  "exchangeLandingDisclaimerLegal": "进入交换服务将仅限于“鹿特丹”能够合法运作并且可能需要“科索沃”的国家.",
   "backupWalletEncryptedVaultTitle": "加密",
   "mempoolNetworkLiquidMainnet": "流动主机",
   "sellFromAnotherWallet": "Sell from another Plaza",
@@ -865,7 +852,6 @@
   "settingsCurrencyTitle": "货币",
   "transactionSwapDescChainClaimable": "锁定交易已确认。您现在正在领取资金以完成 Swap。",
   "sendSwapDetails": "差距",
-  "onboardingPhysicalBackupDescription": "通过 12 个助记词恢复您的钱包",
   "pinStatusLoading": "抢劫",
   "payTitle": "薪金",
   "payDescriptionLabel": "付款说明（可选）",
@@ -1054,7 +1040,6 @@
   "fundExchangeJurisdictionEurope": "🇪🇺 欧洲",
   "settingsExchangeSettingsTitle": "交易所",
   "sellFeePriority": "妇女优先",
-  "exchangeFeatureSelfCustody": "• 自行保管",
   "payAmountTooHigh": "数额超过上限",
   "sellBankTransfer": "银行转账",
   "replaceByFeeFastestTitle": "快速",
@@ -1175,7 +1160,6 @@
   "receiveVerifyAddressOnLedger": "更正",
   "sellSendPaymentCrcBalance": "CRC 结余",
   "backupSettingsKeyWarningBold": "警告: 如果你节省了支助钥匙,则谨慎行事.",
-  "exchangeLandingConnectAccount": "连接您的履带",
   "recoverYourWalletTitle": "恢复您的钱包",
   "settingsAppSettingsTitle": "申请情况",
   "swapTransferRefundInProgressMessage": "Swap 出现错误。您的退款正在处理中。",
@@ -1210,13 +1194,7 @@
   "receiveAwaitingPayment": "退款......",
   "onboardingRecover": "恢复",
   "receiveQRCode": "QR 法典",
-  "appSettingsDevModeTitle": "D. 德 国",
   "exchangeTestnetBasicAuthTitle": "测试网交易所凭证",
-  "exchangeTestnetBasicAuthDescription": "测试网交易所网页（登录和 KYC）的 HTTP 基本认证。",
-  "exchangeTestnetBasicAuthUsernameLabel": "用户名",
-  "exchangeTestnetBasicAuthPasswordLabel": "密码",
-  "exchangeTestnetBasicAuthClearButton": "清除",
-  "exchangeTestnetBasicAuthSaveButton": "保存",
   "payDecodeFailed": "未编码发票",
   "rbfErrorFeeTooLow": "您需要将收费率提高到至少1分之一的CO/vbyte,而不是原来的交易",
   "backupWalletTitle": "页: 1",
@@ -1377,7 +1355,6 @@
   "transactionHistoryTitle": "交易记录",
   "exportTransactionsDescription": "将您钱包的所有交易（Bitcoin、Liquid、Lightning 和兑换）导出为 CSV 文件。可选择按日期范围筛选。",
   "autoswapSelectWalletRequired": "选择一个比特币钱包 *",
-  "exchangeFeatureSellBitcoin": "• Sell, 获得有偿服务",
   "hwSeedSigner": "SeedSigner",
   "payNetworkError": "网络错误。 请再次审判",
   "payWhichWallet": "你们想要从哪条墙上花钱?",
@@ -1398,7 +1375,6 @@
   "receiveTitle": "收 款",
   "transactionSwapInfoRefundableSwap": "将在几秒内自动退款。 如果没有,你可以点击“Retry Swap Refund”纽芬兰,尝试人工退款.",
   "payCancelPayment": "Cancel",
-  "onboardingOwnYourMoney": "贵 会",
   "allSeedViewTitle": "Seed Viewer",
   "connectHardwareWalletLedger": "Ledger",
   "rbfFeeRate": "Fee rate: {rate} sat/vbyte",
@@ -1411,7 +1387,6 @@
   },
   "leaveYourPhone": "页: 1 ",
   "sendFastFee": "快速",
-  "exchangeBrandName": "BUL BITCOIN",
   "dcaConfirmTitle": "同意 1. 采购",
   "fundExchangeCrIbanUsdTransferCodeWarning": "在付款时,必须将转让法作为“对象”或“理由”或“说明”。 如果你忘记列入这一法典,你的支付可能会被拒绝.",
   "sendAdvancedSettings": "先进环境",
@@ -1433,7 +1408,6 @@
   "pinButtonRemove": "移除安全局",
   "transactionDetailLabelAddressNotes": "地址说明",
   "coldcardInstructionsTitle": "冷卡加指示",
-  "onboardingRecoverWallet": "恢复钱包",
   "transactionOrderLabelReferenceNumber": "参考数字",
   "backupWalletHowToDecide": "如何决定?",
   "fundExchangeSpeiInfo": "采用SPEI转让进行存款.",
@@ -1456,7 +1430,6 @@
   "walletDetailsWalletFingerprintLabel": "Wallet finger",
   "testBackupCreatedAt": "创建:",
   "transactionStatusPending": "待决",
-  "settingsSuperuserModeDisabledMessage": "超级用户模式残疾.",
   "settingsTermsOfServiceTitle": "任期",
   "importQrDeviceScanning": "扫描......",
   "payNewRecipients": "新受益者",
@@ -1539,7 +1512,6 @@
   "payWalletNotSynced": "Wallet没有合成。 等候",
   "transactionSwapInfoChainDelay": "由于区块链确认需要时间，链上 Swap 可能需要一段时间才能完成。",
   "sellExchangeRate": "汇率",
-  "settingsDevModeWarningMessage": "这种方式具有风险。 你们承认你可能失去金钱",
   "sellTitle": "Sell:",
   "transactionListToday": "今天",
   "payFeeRate": "收费率",
@@ -1658,7 +1630,6 @@
   "payBelowMinAmountError": "使用此钱包可支付的最低金额为 {amount}。",
   "autoswapRecipientWalletInfo": "选择接收转账资金的比特币钱包（必选）",
   "swapContinueButton": "继续",
-  "bitcoinSettingsBroadcastTransactionTitle": "广播交易",
   "sendSignWithLedger": "签字人",
   "pinSecurityTitle": "安保部",
   "swapValidationPositiveAmount": "进入正值",
@@ -1707,7 +1678,6 @@
   "payInstitutionNumberHint": "进入机构的数量",
   "sendSlowPaymentWarning": "低付款警告",
   "quickAndEasyTag": "快速和容易",
-  "settingsThemeTitle": "主题",
   "payEmail": "电子邮件",
   "coldcardStep10": "• 在 but子上签署交易.",
   "sendErrorAmountBelowSwapLimits": "数额低于互换限额",
@@ -1759,14 +1729,11 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "物理备份",
   "swapFromLabel": "摘自",
   "fundExchangeCrIbanCrcDescription": "采用以下详细情况,从贵国银行账户转账 ",
-  "settingsDevModeWarningTitle": "D. 德 国",
   "rbfOriginalTransaction": "原始交易",
   "payViewRecipient": "观点接受者",
   "exchangeAccountInfoUserNumberCopiedMessage": "用户编号为纸板",
-  "settingsAppVersionLabel": "申请文本: ",
   "payBillerNameValue": "选定的账簿名称",
   "sendSelectCoins": "Select",
   "fundExchangeLabelRoutingNumber": "序号",
@@ -1787,9 +1754,7 @@
     }
   },
   "exchangeAccountInfoVerificationLightVerification": "轻型核查",
-  "exchangeFeatureBankTransfers": "•  • 银行转账和付款账单",
   "sellSendPaymentInstantPayments": "经常付款",
-  "onboardingRecoverWalletButton": "恢复钱包",
   "usePasswordInsteadButton": "使用{pinOrPassword} 替代",
   "@usePasswordInsteadButton": {
     "placeholders": {
@@ -1838,7 +1803,6 @@
     }
   },
   "googleAppleCloudRecommendation": "谷歌 肥料云: ",
-  "exchangeGoToWebsiteButton": "Go to Bullchange website",
   "testWalletTitle": "测试{walletName}",
   "@testWalletTitle": {
     "placeholders": {
@@ -2053,7 +2017,6 @@
   "importColdcardImporting": "导入 Coldcard 钱包中...",
   "exchangeDcaHideSettings": "良好做法",
   "coreScreensPageNotFound": "页 次",
-  "exchangeFeatureDcaOrders": "• DCA, Limit Order and Auto-buy",
   "payIban": "IBAN",
   "sellSendPaymentPayoutRecipient": "收款人",
   "swapInfoDescription": "在您的钱包之间无缝 Swap Bitcoin。仅将资金保留在即时支付钱包中用于日常支出。",
@@ -2109,7 +2072,6 @@
   "paySendMax": "Max",
   "googleDriveSignInMessage": "你们将需要在谷歌运动上签字",
   "importMnemonicSelectType": "选择进口的围墙类型",
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 决定因素",
   "swapTransferAmount": "Swap 金额",
   "feePriorityLabel": "妇女优先",
   "coreScreensToLabel": "致",
@@ -2281,7 +2243,6 @@
   },
   "swapProgressRefunded": "Swap 已退款",
   "payPaymentHistory": "支付史",
-  "exchangeFeatureUnifiedHistory": "• 统一交易史",
   "payViewDetails": "观点细节",
   "autoswapSelectWallet": "选择一个比特币钱包",
   "autoswapRecipientWalletRequired": "* E/CN.6/2009/1",
@@ -2517,46 +2478,6 @@
   "sendSelfTransfer": "自转账",
   "autoswapInfoConsentMessage": "自动交换目前已启用，但在您同意之前不会触发。您想保持启用吗？",
   "mempoolServerStatusUnknown": "未知",
-  "settingsErrorReportingTitle": "错误报告",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "错误报告计划",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescriptionP1": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。",
-  "@errorReportingProgramDescriptionP1": {
-    "description": "Intro paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP2": "启用后，当应用程序发生问题时，我们会自动发送错误报告。",
-  "@errorReportingProgramDescriptionP2": {
-    "description": "Bold paragraph: anonymized error reports fact"
-  },
-  "errorReportingProgramDescriptionP3": "这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。",
-  "@errorReportingProgramDescriptionP3": {
-    "description": "Impact paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP4": "我们不会与第三方分享此信息。",
-  "@errorReportingProgramDescriptionP4": {
-    "description": "Privacy paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP5": "我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
-  "@errorReportingProgramDescriptionP5": {
-    "description": "Bold paragraph: open source verification fact"
-  },
-  "errorReportingAcceptButton": "接受",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "取消",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "重新启动应用程序以应用此更改",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "appInitErrorTitle": "应用启动失败",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -2673,7 +2594,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "设置钱包时出了点问题，请重试。",
   "coreScreensResolvingInputs": "正在解析交易输入...",
   "coreScreensFeeRateLabel": "费率",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -2710,12 +2630,6 @@
   "backupCardSubtitle": "立即备份您的钱包。",
   "autoswapTargetBalanceLabel": "目标即时钱包余额",
   "autoswapMaximumBalanceLabel": "最大即时钱包余额",
-  "onboardingAdvancedOptionsTitle": "高级选项",
-  "onboardingAdvancedOptionsDescription": "在创建或恢复钱包前配置高级设置",
-  "onboardingAdvancedOptionsCustomElectrum": "自定义 Electrum 服务器",
-  "onboardingAdvancedOptionsCustomMempool": "自定义 Mempool 服务器",
-  "onboardingAdvancedOptionsCustomRecoverbull": "自定义 Recoverbull 服务器",
-  "onboardingAdvancedOptionsFooter": "您可以稍后在应用设置中更改这些设置",
   "appStartupContactSupportMessage": "请通过 app.bullbitcoin.com/support 联系支持",
   "importWalletBitboxAndroidOnly": "BitBox 仅支持 Android",
   "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
@@ -2735,123 +2649,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "币",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 个币} other{{count} 个币}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "已冻结",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "可花费",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "无冻结",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "排序和筛选",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "已显示 {total} 中的 {visible}",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 个未花费输出} other{{count} 个未花费输出}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "同步",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "全部清除",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "金额：从高到低",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "金额：从低到高",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "日期：最新",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "日期：最旧",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "密钥链",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "全部",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "接收",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "找零",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "冻结状态",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "全部",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "已冻结",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "未冻结",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "标签",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "重置",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "应用",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{已选择 1 个} other{已选择 {count} 个}}",
   "@coinsSelectedCount": {
@@ -2859,128 +2659,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "全选",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "冻结",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "解冻",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "撤销",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{冻结 1 个币？} other{冻结 {count} 个币？}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "冻结的币仍保留在您的钱包中，但在解冻前将被排除在花费之外。",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "冻结这些币将使您没有可花费的余额。",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{已冻结 1 个币 · 已排除在花费之外} other{已冻结 {count} 个币 · 已排除在花费之外}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{已解冻 1 个币} other{已解冻 {count} 个币}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 次确认} other{{count} 次确认}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "待确认",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "暂无币",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "收到比特币后，币将显示在此处。",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "没有匹配的币",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "清除筛选",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "重试",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "滑动币以冻结 · 长按以选择",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "无法加载您的币。下拉刷新以重试。",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "无法冻结所选的币。请重试。",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "无法解冻所选的币。请重试。",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "出了点问题。请重试。",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} 已冻结",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -3163,45 +2841,11 @@
   "dcaReceiveAddressError": "无法在您的钱包中准备接收地址。请重试。",
   "dcaOrderCreationError": "无法创建定期买入。请稍后重试。",
   "settingsPayjoinDisclaimerTitle": "Payjoin 说明",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin 说明",
-  "settingsPayjoinAdvancedTitle": "Payjoin 高级设置",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "找不到此钱包。",
   "addressViewErrorLoadFailed": "无法加载您的地址，请重试。",
   "sendSwapExpiredTitle": "订单已过期",
   "sendSwapExpiredMessage": "此订单在发送任何资金前已过期。您的钱包未发送任何资金。",
-  "settingsScreenPrivacyTitle": "屏幕隐私",
-  "settingsScreenPrivacyDisabledMessage": "现在允许在敏感屏幕上截屏",
-  "settingsSearchHint": "搜索设置",
-  "settingsSearchNoResults": "未找到设置。",
-  "settingsSearchMempoolKeywords": "区块浏览器|手续费估算|交易手续费|内存池 API",
-  "settingsSearchExchangeKeywords": "账户|交易所账户|交易|买卖",
-  "settingsSearchStartBackupKeywords": "创建备份|保存备份|备份钱包",
-  "settingsSearchRecoverbullKeywords": "加密备份|云备份|加密保险库|保险库恢复",
-  "settingsSearchLabelsKeywords": "钱包标签|交易标签|BIP329|导入标签|导出标签",
-  "settingsSearchTransactionHistoryKeywords": "导出交易|交易导出|CSV|钱包历史记录",
-  "settingsSearchAppSettingsKeywords": "应用偏好设置|应用程序设置|通用设置",
-  "settingsSearchTermsOfServiceKeywords": "条款与条件|法律信息|用户协议|TOS",
-  "settingsSearchServicesStatusKeywords": "服务运行状况|系统状态|在线|服务中断",
-  "settingsSearchImportWalletKeywords": "添加钱包|恢复钱包|导入助记词|只读钱包|硬件钱包",
-  "settingsSearchBroadcastTransactionKeywords": "广播已签名交易|推送交易|原始交易|交易十六进制数据|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin 隐私|协作交易|P2EP",
-  "settingsSearchAutoswapKeywords": "自动兑换|自动交换|自动转账|即时钱包余额",
-  "settingsSearchElectrumKeywords": "比特币节点|Electrum 节点|自定义服务器|个人节点",
-  "settingsSearchTestnetModeKeywords": "测试网络|比特币测试网|Liquid 测试网|测试模式",
-  "settingsSearchSeedViewerKeywords": "助记词|恢复短语|助记词组|备份词|查看助记词",
-  "settingsSearchBip85Keywords": "确定性熵|子助记词|派生熵|BIP85",
-  "settingsSearchLanguageKeywords": "区域设置|翻译|显示语言|首选语言",
-  "settingsSearchThemeKeywords": "外观|深色模式|浅色模式|系统主题",
-  "settingsSearchCurrencyKeywords": "法定货币|本地货币|默认货币|兑换货币",
-  "settingsSearchSecurityPinKeywords": "PIN 码|密码|应用锁|身份验证|更改 PIN",
-  "settingsSearchLogsKeywords": "调试日志|诊断日志|应用日志|导出日志",
-  "settingsSearchDevModeKeywords": "开发者模式|开发设置|调试模式|高级测试",
-  "settingsSearchTestnetCredentialsKeywords": "测试网用户凭据|测试网登录|测试网用户名|测试网密码|基本身份验证",
-  "settingsSearchErrorReportingKeywords": "崩溃报告|错误报告|诊断|遥测|错误日志",
-  "settingsSearchScreenPrivacyKeywords": "屏幕截图|屏幕录制|截屏保护|隐私",
-  "settingsSearchStartTyping": "开始输入以查看结果。",
-  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。",
   "sendErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
   "sendErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
@@ -3215,8 +2859,6 @@
   "walletWarningElectrumAction": "点按以配置服务器设置",
   "walletLoadFailedRetryHint": "下拉刷新后重试",
   "settingsErrorSavingSetting": "无法保存该设置。请重试。",
-  "settingsErrorConsentNotGiven": "更改此设置需要您的确认。",
-  "settingsErrorLoadingLogs": "无法准备诊断日志。请重试。",
   "exchangeErrorSigningOut": "未能完全退出登录。请重试。",
   "exchangeErrorSavingPreferences": "无法保存您的偏好设置。请重试。",
   "exchangeErrorLoadingAnnouncements": "无法加载公告。",
@@ -3338,7 +2980,6 @@
   "fundExchangeErrorNetwork": "请检查您的网络连接后重试。",
   "exchangeErrorNetwork": "请检查您的网络连接后重试。",
   "walletBalancesMayBeStale": "无法更新您的余额，余额可能不是最新的。",
-  "settingsSearchTorKeywords": "Tor 代理|Orbot|洋葱路由|内置 Tor|隐私网络",
   "limitOrdersInsufficientBalance": "结余不足",
   "limitOrdersInsufficientBalanceMessage": "你们没有足够的平衡来建立这一秩序.",
   "limitOrdersFundAccount": "基金",
@@ -3400,20 +3041,15 @@
   "swapUnderReviewTitle": "Swap 审核中",
   "swapUnderReviewDescription": "此 Swap 需要人工审核。请联系客服获取帮助。如果您没有客服账户，只需创建一个即可，无需 KYC。",
   "swapUnderReviewSupportMessage": "Swap 审核中\n订单 ID：{orderId}\n请求 ID：{requestId}\n订单号：{orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
   "broadcastSignedTxErrorAlreadyInChain": "此交易已在区块链中，无需再次广播。",
   "broadcastSignedTxErrorRejected": "网络拒绝了此交易。它可能未完全签名、无效，或与另一笔付款冲突。",
   "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
   "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。",
   "settingsDarkModeTitle": "深色模式",
-  "settingsSourceCodeTitle": "源代码",
   "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。",
   "backgroundTasksTitle": "后台任务",
   "blockedInSystemSettings": "已在系统设置中屏蔽",
-  "notificationsBlockedMessage": "通知已在系统设置中被屏蔽。",
   "notificationsTitle": "通知",
   "openSystemSettings": "打开系统设置",
-  "permissionsTitle": "权限",
-  "settingsSearchPermissionsKeywords": "通知|后台任务|电池|提醒",
   "sendErrorInvoiceExpiryTooShort": "该发票即将过期，剩余时间不足。请向收款人索取新的发票。"
 }

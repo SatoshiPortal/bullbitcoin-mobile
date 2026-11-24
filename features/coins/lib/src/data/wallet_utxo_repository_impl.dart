@@ -1,109 +1,32 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:labels/labels.dart';
-import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
+import 'package:coins/src/domain/coins_failure.dart';
+import 'package:secrets/secrets.dart'
+    show WalletInventory, WalletRegistrationNotFoundFailure;
 import 'package:sync/sync.dart';
+import 'package:coins/src/data/mappers/wallet_utxo_mapper.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Outpoint, Result;
+import 'package:coins/src/domain/wallet_utxo.dart';
+import 'package:coins/src/domain/repositories/wallet_utxo_repository.dart';
+import 'package:labels/labels.dart';
 
-import '../domain/coins_failure.dart';
-import '../domain/wallet_utxo.dart';
-import '../domain/wallet_utxo_repository.dart';
-import 'wallet_utxo_mapper.dart';
-
-final class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
+class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletInventory _inventory;
-  final Labels _labels;
+  final Labels _labelsFacade;
   final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
-  final CoinFreezes _freezes;
+  final Future<Result<Sync, SyncFailure>> Function() _foreground;
 
   WalletUtxoRepositoryImpl({
     required this._inventory,
-    required Labels labelsFacade,
+    required this._labelsFacade,
     required this._loadWallet,
-    required CoinFreezes freezesDatasource,
-  }) : _labels = labelsFacade,
-       _freezes = freezesDatasource;
+    required this._foreground,
+  });
 
-  Future<List<Label>> _fetchLabels(String reference) async =>
-      (await _labels.fetch(reference: reference))
-          .fold((labels) => labels, (_) => const <Label>[]);
-
-  @override
-  Future<Result<List<WalletUtxo>, CoinsFailure>> coins(String walletId) async {
-    try {
-      final key = await _readKey(walletId);
-      final wallet = _readSync(await _loadWallet(key));
-      // An unavailable freeze policy must never publish apparently spendable coins.
-      final coins = _readSync(wallet.coins.now.latest);
-      final utxos = await Future.wait(
-        coins.map((coin) async {
-          final (txId: txId, vout: vout) = coin.outpoint;
-          final labels = await _fetchLabels('$txId:$vout');
-          final txLabels = await _fetchLabels(txId);
-          List<Label> addressLabels;
-          switch (coin) {
-            case LiquidCoin():
-              final (standard, confidential) = await (
-                _fetchLabels(coin.standardAddress),
-                _fetchLabels(coin.confidentialAddress),
-              ).wait;
-              addressLabels = [...standard, ...confidential];
-            case BitcoinCoin():
-              addressLabels = await _fetchLabels(coin.address ?? '');
-          }
-          return WalletUtxoMapper.toEntity(
-            coin,
-            walletId: walletId,
-            labels: labels,
-            txLabels: txLabels,
-            addressLabels: addressLabels,
-          );
-        }),
-      );
-      return Ok(utxos);
-    } on Exception catch (error, stackTrace) {
-      log.warning(
-        'Failed to load wallet coins',
-        error: error.runtimeType,
-        trace: stackTrace,
-      );
-      return Err(CoinsLoadFailure(error.runtimeType.toString()));
-    }
-  }
-
-  @override
-  Future<Result<void, CoinsFailure>> freeze(
-    String walletId,
-    List<Outpoint> outpoints,
-  ) async {
-    try {
-      await _freezes.freeze(await _readKey(walletId), outpoints);
-      return const Ok(null);
-    } on Exception catch (error, stackTrace) {
-      log.warning(
-        'Failed to freeze wallet coins',
-        error: error.runtimeType,
-        trace: stackTrace,
-      );
-      return Err(CoinsFreezeFailure(error.runtimeType.toString()));
-    }
-  }
-
-  @override
-  Future<Result<void, CoinsFailure>> unfreeze(List<Outpoint> outpoints) async {
-    try {
-      await _freezes.unfreeze(outpoints);
-      return const Ok(null);
-    } on Exception catch (error, stackTrace) {
-      log.warning(
-        'Failed to unfreeze wallet coins',
-        error: error.runtimeType,
-        trace: stackTrace,
-      );
-      return Err(CoinsUnfreezeFailure(error.runtimeType.toString()));
-    }
-  }
-
-  Future<WalletKey> _readKey(String walletId) async =>
+  /// The stored wallet's key, with the storage failure mapped to the sync
+  /// vocabulary this repository speaks. The lookup lives here, not in the
+  /// composition root: a missing registration and a failed read are distinct
+  /// and both are coins storage boundaries.
+  Future<WalletKey> _walletKey(String walletId) async =>
       switch (await _inventory.readWallet(walletId)) {
         Ok(:final value) => WalletKey(id: value.id, network: value.network),
         Err(failure: WalletRegistrationNotFoundFailure()) =>
@@ -111,8 +34,119 @@ final class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
         Err() => throw const WalletSnapshotException(SyncStorageFailure()),
       };
 
-  static T _readSync<T>(Result<T, SyncFailure> result) => switch (result) {
+  static T _value<T>(Result<T, SyncFailure> result) => switch (result) {
     Ok(:final value) => value,
     Err(:final failure) => throw WalletSnapshotException(failure),
   };
+
+  Future<Result<T, CoinsFailure>> _read<T>(
+    Future<T> Function() operation,
+    CoinsFailure Function(String) failure,
+    String message,
+  ) async {
+    try {
+      return Ok(await operation());
+    } on Exception catch (error, trace) {
+      log.warning(message, error: error.runtimeType, trace: trace);
+      return Err(failure(error.runtimeType.toString()));
+    }
+  }
+
+  Future<List<Label>> _fetchLabels(String reference) async =>
+      (await _labelsFacade.fetch(reference: reference))
+          .fold((labels) => labels, (_) => const <Label>[]);
+
+  @override
+  Future<Result<List<WalletUtxo>, CoinsFailure>> getWalletUtxos({
+    required String walletId,
+  }) => _read(
+    () => _getWalletUtxos(walletId),
+    CoinsLoadFailure.new,
+    'Failed to load wallet coins',
+  );
+
+  Future<List<WalletUtxo>> _getWalletUtxos(String walletId) async {
+    final key = await _walletKey(walletId);
+    final wallet = _value(await _loadWallet(key));
+    // An unavailable freeze policy must never publish apparently spendable coins.
+    final coins = _value(wallet.coins.now.latest);
+
+    final utxos = await Future.wait(
+      coins.map((coin) async {
+        final (txId: txId, vout: vout) = coin.outpoint;
+        final labelModels = await _fetchLabels('$txId:$vout');
+        final txLabels = await _fetchLabels(txId);
+        List<Label> addressLabels;
+        switch (coin) {
+          case LiquidCoin():
+            final (standardAddressLabels, confidentialAddressLabels) = await (
+              _fetchLabels(coin.standardAddress),
+              _fetchLabels(coin.confidentialAddress),
+            ).wait;
+
+            addressLabels = [
+              ...standardAddressLabels,
+              ...confidentialAddressLabels,
+            ];
+          case BitcoinCoin():
+            final labels = await _fetchLabels(coin.address ?? '');
+            addressLabels = labels;
+        }
+
+        return WalletUtxoMapper.toEntity(
+          coin,
+          walletId: walletId,
+          labels: labelModels,
+          txLabels: txLabels,
+          addressLabels: addressLabels,
+        );
+      }).toList(),
+    );
+
+    return utxos;
+  }
+
+  @override
+  Future<Result<void, CoinsFailure>> freezeUtxos({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) => _read(
+    () async {
+      final key = await _walletKey(walletId);
+      final sync = _value(await _foreground());
+      final wallet = _value(await sync.wallet(key));
+      for (final outpoint in outpoints) {
+        _value(await wallet.coins.freeze(outpoint));
+      }
+    },
+    CoinsFreezeFailure.new,
+    'Failed to freeze wallet coins',
+  );
+
+  @override
+  Future<Result<void, CoinsFailure>> unfreezeUtxos({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) => _read(
+    () async {
+      final sync = _value(await _foreground());
+      for (final outpoint in outpoints) {
+        _value(await sync.coins.unfreeze(outpoint));
+      }
+    },
+    CoinsUnfreezeFailure.new,
+    'Failed to unfreeze wallet coins',
+  );
+
+  @override
+  Future<Result<List<Outpoint>, CoinsFailure>> getAllFrozenOutpoints() => _read(
+    () async {
+      final sync = _value(await _foreground());
+      return {
+        for (final row in _value(await sync.coins.listFrozen())) row.outpoint,
+      }.toList();
+    },
+    CoinsLoadFailure.new,
+    'Failed to load frozen outpoints',
+  );
 }

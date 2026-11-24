@@ -11,8 +11,11 @@ import 'dart:math';
 import 'package:bull_ui/app_theme.dart';
 import 'package:access/access.dart';
 import 'package:access/testing.dart';
-import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
+import 'package:onboarding/onboarding.dart';
+import 'package:onboarding/setup.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:preferences/preferences.dart' as preferences;
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
@@ -456,17 +459,24 @@ void registerPhysicalRecoveryTests() {
       bip39.Language.english,
     ).words;
     const phrase = 'synthetic passphrase é';
-    final onboarding = locator<OnboardingBloc>();
+    final onboarding = OnboardingFeature.mount(
+      defaultWallets: locator<DefaultWalletProvisioning>(),
+      records: (network) => locator<RecoverBullWalletBackups>(
+        instanceName: network.env == NetworkEnv.regtest ? 'regtest' : null,
+      ),
+      walletImport: locator<ImportFeature>(),
+      onWalletReady: (context) => context.goNamed(WalletRoute.walletHome.name),
+      languageOf: (_) => preferences.Language.unitedStatesEnglish,
+      changeLanguage: (_, _) {},
+      logo: const SizedBox.shrink(),
+      background: AssetImage(Assets.backgrounds.bgLong.path),
+      encryptedBackupIcon: AssetImage(Assets.misc.encryptedVault.path),
+      physicalBackupIcon: AssetImage(Assets.misc.physicalBackup.path),
+    );
     final router = GoRouter(
-      initialLocation: '/',
+      initialLocation: OnboardingNavigation.physicalRecoveryPath,
       routes: [
-        GoRoute(
-          path: '/',
-          builder: (_, _) => BlocProvider.value(
-            value: onboarding,
-            child: const OnboardingPhysicalRecovery(),
-          ),
-        ),
+        onboarding.route,
         GoRoute(
           name: WalletRoute.walletHome.name,
           path: WalletRoute.walletHome.path,
@@ -598,7 +608,6 @@ void registerPhysicalRecoveryTests() {
     } finally {
       await tester.pumpWidget(const SizedBox.shrink());
       router.dispose();
-      await onboarding.close();
       await backupBloc?.close();
     }
   }, timeout: const Timeout(Duration(minutes: 4)));

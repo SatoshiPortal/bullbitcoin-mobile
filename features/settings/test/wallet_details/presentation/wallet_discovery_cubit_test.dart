@@ -12,6 +12,8 @@ void main() {
   late List<String> requested;
   late WalletDiscoveryCubit cubit;
   late List<WalletDiscoveryState> states;
+  late Completer<void> stateDelivered;
+  late bool streamClosed;
   late bool closed;
 
   setUp(() {
@@ -29,7 +31,20 @@ void main() {
   ) {
     cubit = WalletDiscoveryCubit(DiscoverWalletUsecase(discover));
     states = [];
-    final subscription = cubit.stream.listen(states.add);
+    streamClosed = false;
+    stateDelivered = Completer<void>();
+    final subscription = cubit.stream.listen(
+      (state) {
+        states.add(state);
+        final delivered = stateDelivered;
+        stateDelivered = Completer<void>();
+        delivered.complete();
+      },
+      onDone: () {
+        streamClosed = true;
+        if (!stateDelivered.isCompleted) stateDelivered.complete();
+      },
+    );
     addTearDown(subscription.cancel);
     return cubit;
   }
@@ -39,6 +54,17 @@ void main() {
     await cubit.close();
   }
 
+  /// Waits until the cubit has delivered [count] states, so an assertion reads
+  /// a settled history instead of racing the asynchronous cubit stream.
+  Future<void> waitForStates(int count) async {
+    while (states.length < count) {
+      if (streamClosed) {
+        fail('the cubit closed after ${states.length} states, expected $count');
+      }
+      await stateDelivered.future;
+    }
+  }
+
   test('runs, then reports the completed scan', () async {
     build((walletId) async {
       requested.add(walletId);
@@ -46,6 +72,7 @@ void main() {
     });
 
     await cubit.discover('wallet-1');
+    await waitForStates(2);
 
     expect(requested, ['wallet-1']);
     expect(states, hasLength(2));
@@ -57,6 +84,7 @@ void main() {
     build((_) async => const Err(WalletDetailsDiscoveryFailure()));
 
     await cubit.discover('wallet-1');
+    await waitForStates(2);
 
     expect(
       states.last,
@@ -76,11 +104,12 @@ void main() {
     });
 
     final first = cubit.discover('wallet-1');
-    await pumpEventQueue();
+    await waitForStates(1);
     final second = cubit.discover('wallet-2');
     gate.complete(const Ok(null));
     await first;
     await second;
+    await waitForStates(2);
 
     expect(requested, ['wallet-1']);
     expect(states.last, isA<WalletDiscoverySucceeded>());
@@ -91,8 +120,8 @@ void main() {
     build((_) => gate.future);
 
     final pending = cubit.discover('wallet-1');
-    await pumpEventQueue();
-    await cubit.close();
+    await waitForStates(1);
+    await closeCubit();
     final emittedBeforeClose = List.of(states);
     gate.complete(const Ok(null));
 

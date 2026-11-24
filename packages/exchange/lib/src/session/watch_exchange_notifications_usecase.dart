@@ -40,6 +40,17 @@ class WatchExchangeNotificationsUsecase {
         },
       );
 
+  /// Emits whenever the server says the support chat has a new message.
+  Stream<NotificationMessage> supportMessages() =>
+      _exchange.notifications.expand(
+        (event) => switch (event) {
+          Ok(value: final message)
+              when message.kind == NotificationMessageKind.message =>
+            [message],
+          _ => const [],
+        },
+      );
+
   /// The handshake stays outside the access queue so it cannot delay sign-out
   /// or trading. Sign-out, reconciliation and expiry disconnect, but an attempt
   /// may start after that disconnect (the service first reads settings), so a

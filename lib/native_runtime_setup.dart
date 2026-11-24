@@ -12,13 +12,12 @@ import 'package:provisioning/provisioning.dart';
 import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
+import 'package:settings/settings.dart' show LanguageExtension;
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:sync/inventory.dart';
 import 'package:sync/storage.dart' show SyncFreshness;
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
-
-import 'package:bb_mobile/features/settings/public/language_locale.dart';
 
 /// Composes the native wallet runtime, account provisioning and custody
 /// references from their owners' published entry points.

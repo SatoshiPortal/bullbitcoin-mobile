@@ -8,17 +8,34 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullInputText,
+        BullPaymentTransition,
+        BullPaymentDestinationInput,
         BullTopBar,
         SizedBox,
+        ValueChanged,
         ValueKey,
         VoidCallback;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import 'ark_information_widget_test.dart' show app;
-import 'ark_operation_review_screen_test.dart' show details;
+
+import 'package:bull_ark/src/ui/ark_review.dart';
+
 import 'ark_operations_test.dart' show account;
 import 'ark_payment_cubit_test.dart' show PaymentRig, paymentQuote, destination;
+
+/// The send confirmation's rows, as label to value.
+Map<String, String> details(WidgetTester tester) => {
+  for (final fact in tester.widgetList<ArkReviewFact>(
+    find.byType(ArkReviewFact),
+  ))
+    fact.label: fact.value,
+  for (final address in tester.widgetList<ArkReviewAddress>(
+    find.byType(ArkReviewAddress),
+  ))
+    address.label: address.address,
+};
 
 Future<void> frame(WidgetTester tester) async {
   await tester.pump();
@@ -31,12 +48,29 @@ BullButton action(WidgetTester tester, String label) {
   return tester.widget<BullButton>(finder);
 }
 
-BullInputText input(WidgetTester tester, int index) =>
-    tester.widget<BullInputText>(
-      find.byKey(
-        ValueKey(index == 0 ? 'ark-payment-address' : 'ark-payment-amount'),
-      ),
+/// The address field (0) or the amount field (1): its value and edit callback.
+({String value, ValueChanged<String> onChanged}) input(
+  WidgetTester tester,
+  int index,
+) {
+  if (index == 0) {
+    final field = tester.widget<BullPaymentDestinationInput>(
+      find.byKey(const ValueKey('ark-payment-address')),
     );
+    return (value: field.value, onChanged: field.onChanged);
+  }
+  final field = tester.widget<BullInputText>(
+    find.byKey(const ValueKey('ark-payment-amount')),
+  );
+  return (value: field.value, onChanged: field.onChanged);
+}
+
+/// The destination field's scan action.
+VoidCallback scanAction(WidgetTester tester) => tester
+    .widget<BullPaymentDestinationInput>(
+      find.byKey(const ValueKey('ark-payment-address')),
+    )
+    .onScan;
 
 VoidCallback cancelAction(WidgetTester tester) {
   final callback = tester.widget<BullTopBar>(find.byType(BullTopBar)).onBack;
@@ -63,68 +97,74 @@ ArkPaymentScreen page(
 );
 
 void main() {
-  testWidgets(
-    'Refresh reconciles the displayed payment without another submit',
-    (tester) async {
-      final r = PaymentRig(reconciliation: true);
-      r.cubit.emit(const ArkPaymentUncertain('original'));
-      final pending = ArkOperation(
-        id: 'original',
+  testWidgets('skipping a pending payment reveals status without details', (
+    tester,
+  ) async {
+    final r = PaymentRig();
+    final viewed = <String>[];
+    r.client.submitted = Ok(
+      ArkOperation(
+        id: 'payment-1',
         kind: ArkOperationKind.payment,
         status: ArkOperationStatus.pending,
         chainSource: Uri.parse('http://localhost:3000'),
         configGeneration: 1,
-      );
-      r.client.pass = Ok(
-        ArkPassOutcome(
-          snapshot: ArkSnapshot(
-            account: r.cubit.account,
-            revision: 1,
-            observedAt: DateTime.utc(2026),
-            operations: [pending],
-          ),
+      ),
+    );
+    await tester.pumpWidget(
+      app(
+        ArkPaymentScreen(
+          cubit: r.cubit,
+          initialDestination: destination,
+          onReconcile: () {},
+          onViewDetails: viewed.add,
         ),
-      );
-      await tester.pumpWidget(app(page(r)));
-      await frame(tester);
-      action(tester, 'Refresh').onPressed();
-      await frame(tester);
-      expect(
-        (r.cubit.state as ArkPaymentSubmitted).operation.status,
-        ArkOperationStatus.pending,
-      );
-      expect(r.client.calls, ['sync']);
-    },
-  );
-  testWidgets(
-    'stale Refresh cannot synchronize a replacement or disposed owner',
-    (tester) async {
-      final first = PaymentRig(reconciliation: true);
-      first.cubit.emit(const ArkPaymentUncertain('original'));
-      await tester.pumpWidget(app(page(first)));
-      await frame(tester);
-      final originalRefresh = action(tester, 'Refresh').onPressed;
+      ),
+    );
+    await r.ready();
+    await frame(tester);
+    action(tester, 'Confirm').onPressed();
+    await frame(tester);
+    expect(find.byType(BullPaymentTransition), findsOneWidget);
+    await tester.tap(find.text('View status'));
+    await frame(tester);
+    expect(find.text('Pending'), findsOneWidget);
+    expect(find.text('Payment sent'), findsNothing);
+    expect(find.widgetWithText(BullButton, 'View details'), findsNothing);
+    expect(viewed, isEmpty);
+    expect(r.client.calls.where((call) => call == 'submit').length, 1);
+  });
 
-      first.cubit.emit(const ArkPaymentUncertain('replacement'));
-      await frame(tester);
-      originalRefresh();
-      expect(first.client.calls, isEmpty);
-
-      final replacementRefresh = action(tester, 'Refresh').onPressed;
-      final second = PaymentRig(reconciliation: true);
-      second.cubit.emit(const ArkPaymentUncertain('second-owner'));
-      await tester.pumpWidget(app(page(second)));
-      await frame(tester);
-      replacementRefresh();
-      expect(first.client.calls, isEmpty);
-      expect(second.client.calls, isEmpty);
-
-      final disposedRefresh = action(tester, 'Refresh').onPressed;
-      await tester.pumpWidget(app(const SizedBox.shrink()));
-      disposedRefresh();
-      expect(second.client.calls, isEmpty);
-    },
-  );
+  testWidgets('an unclear payment closes to home and Ark checks it', (
+    tester,
+  ) async {
+    final r = PaymentRig(reconciliation: true);
+    var reconciles = 0, homes = 0;
+    await tester.pumpWidget(
+      app(
+        ArkPaymentScreen(
+          cubit: r.cubit,
+          onReconcile: () => reconciles++,
+          onHome: () => homes++,
+        ),
+      ),
+    );
+    await frame(tester);
+    r.cubit.emit(const ArkPaymentUncertain('original'));
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    // No page of its own: a snackbar, Ark refreshed, back home.
+    expect(find.widgetWithText(BullButton, 'Refresh'), findsNothing);
+    expect(
+      find.textContaining('couldn’t confirm whether your payment'),
+      findsOneWidget,
+    );
+    expect(reconciles, 1);
+    expect(homes, 1);
+    expect(r.client.calls.where((c) => c == 'submit'), isEmpty);
+    await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
+  });
   testWidgets(
     'initial destination and edits never quote; explicit Review captures current locals',
     (tester) async {
@@ -142,12 +182,12 @@ void main() {
       review();
       await frame(tester);
       expect(r.client.calls, ['quote']);
+      // The app's send confirmation rows; Ark has no fee priority.
       expect(details(tester), {
         'From': 'Ark',
         'To': destination,
         'Amount': '900 sats',
         'Network fees': '100 sats',
-        'Total': '1,000 sats',
       });
       expect(find.widgetWithText(BullButton, 'Continue'), findsNothing);
       expect(r.ids, 0);
@@ -179,7 +219,7 @@ void main() {
       oldField('9999');
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentReview>());
-      expect(details(tester)['Total'], '2,000 sats');
+      expect(details(tester)['Amount'], '1,900 sats');
       cancelAction(tester)();
       await frame(tester);
       expect(input(tester, 1).value, '2000');
@@ -217,7 +257,8 @@ void main() {
       pending.complete(const Err(ArkStorageFailure()));
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentUncertain>());
-      expect(details(tester)['Identifier'], 'payment-1');
+      // Unclear: no page of its own, the flow closes and Ark checks it.
+      expect(find.widgetWithText(BullButton, 'Refresh'), findsNothing);
       confirm1();
       cancel1();
       confirm2();
@@ -230,6 +271,7 @@ void main() {
       expect(r.client.journal.keys, ['payment-1']);
       expect(find.widgetWithText(BullButton, 'Continue'), findsNothing);
       expect(find.widgetWithText(BullButton, 'Cancel'), findsNothing);
+      await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
     },
   );
   for (final sameAccount in [true, false]) {
@@ -248,7 +290,6 @@ void main() {
         final oldCancel = cancelAction(tester);
         a.cubit.emit(const ArkPaymentUncertain('original'));
         await frame(tester);
-        final oldRefresh = action(tester, 'Refresh').onPressed;
         final original = account();
         final b = PaymentRig(
           owner: sameAccount
@@ -269,13 +310,14 @@ void main() {
         oldReview();
         oldConfirm();
         oldCancel();
-        oldRefresh();
         await frame(tester);
         await expectDestination(tester, 'new-initial');
         expect(input(tester, 1).value, '');
         expect(b.client.calls, isEmpty);
         expect(a.client.calls, ['quote']);
-        expect(a.ids + b.ids + oldReconciles + newReconciles, 0);
+        // The unclear payment refreshed Ark once, by itself; nothing else.
+        expect(a.ids + b.ids + newReconciles, 0);
+        expect(oldReconciles, 1);
         expect(a.cubit.isClosed, false);
         final field = input(tester, 1).onChanged;
         final review = action(tester, 'Continue').onPressed;
@@ -285,17 +327,16 @@ void main() {
         final cancel = cancelAction(tester);
         b.cubit.emit(const ArkPaymentUncertain('current'));
         await frame(tester);
-        final refresh = action(tester, 'Refresh').onPressed;
         await tester.pumpWidget(app(const SizedBox.shrink()));
         field('1');
         review();
         confirm();
         cancel();
-        refresh();
         await frame(tester);
         expect(b.client.calls, ['quote']);
-        expect(b.ids + newReconciles, 0);
+        expect(b.ids, 0);
         expect(b.cubit.isClosed, false);
+        await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
       },
     );
   }
@@ -305,11 +346,15 @@ void main() {
       final r = PaymentRig();
       await tester.pumpWidget(app(page(r)));
       await frame(tester);
-      final oldReview = action(tester, 'Continue').onPressed;
       final field = input(tester, 1).onChanged;
       field('1000');
       await frame(tester);
-      // Editing may retain its canonical state identity: Review captures CURRENT locals.
+      // A disabled Continue is inert, so capture it once enabled; then edit
+      // again. Editing may retain its canonical state identity: Review
+      // captures CURRENT locals, not the ones from the captured frame.
+      final oldReview = action(tester, 'Continue').onPressed;
+      field('2000');
+      await frame(tester);
       r.client.quoted = Ok(paymentQuote(r.cubit.account));
       oldReview();
       await frame(tester);
@@ -336,28 +381,26 @@ void main() {
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentUncertain>());
       expect(r.client.calls, ['quote', 'quote', 'submit']);
+      await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
     },
   );
   testWidgets(
     'backend status and original ID remain non-rearm, including failed/conflicted',
     (tester) async {
       final r = PaymentRig();
-      final labels = [
-        'Prepared',
-        'Admitted',
-        'Pending',
-        'Completed',
-        'Failed',
-        'Outcome unknown',
-        'Conflicting transaction observed',
-      ];
-      for (var i = 0; i < ArkOperationStatus.values.length; i++) {
+      const started = {
+        ArkOperationStatus.prepared,
+        ArkOperationStatus.admitted,
+        ArkOperationStatus.pending,
+        ArkOperationStatus.succeeded,
+      };
+      for (final status in ArkOperationStatus.values) {
         r.cubit.emit(
           ArkPaymentSubmitted(
             ArkOperation(
               id: 'backend-original',
               kind: ArkOperationKind.payment,
-              status: ArkOperationStatus.values[i],
+              status: status,
               chainSource: Uri.parse('http://localhost:3000'),
               configGeneration: 1,
             ),
@@ -365,23 +408,33 @@ void main() {
         );
         await tester.pumpWidget(app(page(r)));
         await frame(tester);
+        // Only a completed operation can be announced as sent.
         expect(
-          details(tester).values,
-          containsAll(['backend-original', labels[i]]),
+          find.text('Payment sent'),
+          status == ArkOperationStatus.succeeded
+              ? findsOneWidget
+              : findsNothing,
         );
+        if (started.contains(status) &&
+            status != ArkOperationStatus.succeeded) {
+          expect(
+            find.text(
+              status == ArkOperationStatus.pending
+                  ? 'Pending'
+                  : status == ArkOperationStatus.admitted
+                  ? 'Admitted'
+                  : 'Prepared',
+            ),
+            findsOneWidget,
+          );
+        }
+        // A submitted payment never re-arms editing, review or confirm.
         r.cubit.edit();
         await r.cubit.confirm();
         await r.cubit.review(destination: destination, amount: '1000');
         expect(r.client.calls, isEmpty);
         expect(r.ids, 0);
-        expect(
-          tester.widgetList<BullButton>(find.byType(BullButton)),
-          hasLength(
-            ArkOperationStatus.values[i] == ArkOperationStatus.succeeded
-                ? 2
-                : 1,
-          ),
-        );
+        await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
       }
     },
   );

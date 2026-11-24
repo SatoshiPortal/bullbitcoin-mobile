@@ -123,7 +123,7 @@ void main() {
     registerFallbackValue(BitcoinNetwork.mainnet);
   });
 
-  ImportWalletUsecase _usecaseWith(CheckDuplicateMnemonicUsecase duplicate) =>
+  ImportWalletUsecase usecaseWith(CheckDuplicateMnemonicUsecase duplicate) =>
       ImportWalletUsecase(
         checkDuplicateMnemonicUsecase: duplicate,
         secrets: secrets,
@@ -148,7 +148,7 @@ void main() {
     );
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
     settingsRepository = _MockSettingsRepository();
-    usecase = _usecaseWith(checkDuplicate);
+    usecase = usecaseWith(checkDuplicate);
     when(
       () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
@@ -171,7 +171,7 @@ void main() {
           settings: settingsRepository,
           secrets: secrets,
         );
-        final usecase = _usecaseWith(duplicate);
+        final usecase = usecaseWith(duplicate);
         final words = bip39.Mnemonic(List.filled(16, 0), language).words;
         final result = await usecase.execute(
           mnemonicWords: words,
@@ -264,6 +264,7 @@ void main() {
     });
 
     test('a duplicate stops before anything else is touched', () async {
+      final before = Map<String, String>.of(storage.entries);
       when(
         () => checkDuplicate.execute(
           mnemonicWords: any(named: 'mnemonicWords'),
@@ -279,7 +280,15 @@ void main() {
 
       expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
       verifyNever(() => settingsRepository.fetch());
-      expect(storage.entries, isEmpty);
+      expect(native.creates, 0);
+      expect(
+        storage.entries.length == before.length &&
+            before.entries.every(
+              (entry) => storage.entries[entry.key] == entry.value,
+            ),
+        isTrue,
+        reason: 'duplicate detection must not change secure storage',
+      );
     });
 
     test(
@@ -360,7 +369,7 @@ void main() {
     test(
       'concurrent imports create one wallet and preserve its secret',
       () async {
-        final usecase = _usecaseWith(
+        final usecase = usecaseWith(
           CheckDuplicateMnemonicUsecase(
             inventory: fixture.inventory,
             settings: settingsRepository,

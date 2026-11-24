@@ -1,6 +1,5 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:coins/coins.dart';
-import 'package:bb_mobile/features/coins/public/wallet_coin_selection.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart' show Uint8List;

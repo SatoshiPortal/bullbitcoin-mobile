@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
 
 /// Whether the platform and the network let the user reach the exchange, or,
@@ -16,7 +15,7 @@ class WatchExchangeActivationOfferUsecase {
 
   final bool onlyWhileOff;
 
-  final ExchangeFacade _exchange;
+  final Exchange _exchange;
   final bool Function() _platformAllowed;
   final Stream<bool> _platformChanges;
 

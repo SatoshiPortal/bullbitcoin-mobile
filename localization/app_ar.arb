@@ -177,10 +177,6 @@
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
   },
-  "onboardingRecoverYourWallet": "استرجع محفظتك",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "يرجى اختيار معدل الرسوم",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -188,10 +184,6 @@
   "coreScreensTransferFeeLabel": "رسوم المبادلة",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "إسترجع دعمك عبر السحابة باستخدام جهازك.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "Swap Status",
   "@transactionSwapStatusSwapStatus": {
@@ -657,10 +649,6 @@
   "payPaymentInProgress": "الدفع في التقدم!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "bitcoinSettingsTestnetModeTitle": "نموذج الاختبار",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
   },
   "fromLabel": "من",
   "@fromLabel": {
@@ -1155,10 +1143,6 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "walletSettingsImportWalletTitle": "جدار استيراد",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "payEnterInvoice": "الفواتير",
   "@payEnterInvoice": {
     "description": "Placeholder text for invoice input field"
@@ -1500,10 +1484,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "محفظة (بيتكوين) الذاتية الملكية وخدمة التبادل فقط.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -1812,10 +1792,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "الخدمات",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "ستنعش الأسعار ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -1904,10 +1880,6 @@
   "exchangeAuthOk": "حسنا",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "الأمن",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "مكتملة",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2072,10 +2044,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "(تشارك مع (بول بيتكين.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "أنا أفهم",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "الشحن الآمن",
   "@exchangeFileUploadTitle": {
@@ -2283,10 +2251,6 @@
   "payCorporate": "الشركة",
   "@payCorporate": {
     "description": "Label for corporate checkbox"
-  },
-  "onboardingCreateNewWallet": "Create New Wallet",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
   },
   "buyExpressWithdrawalDesc": "الاستلام فورا بعد الدفع",
   "@buyExpressWithdrawalDesc": {
@@ -2507,10 +2471,6 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "exchangeLandingDisclaimerNotAvailable": "ولا تتوافر خدمات تبادل العملات في تطبيقات بول بيتكوين المتنقلة.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "معدل الرسوم الجمركية",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2635,10 +2595,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "exchangeLandingDisclaimerLegal": "وسيقتصر الوصول إلى خدمات الصرف على البلدان التي يمكن أن يعمل فيها بول بيتكوين بصورة قانونية وقد يتطلب ذلك من الشركة.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
-  },
   "backupWalletEncryptedVaultTitle": "الخزنة المشفرة",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2722,10 +2678,6 @@
   "sendSwapDetails": "التفاصيل",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "إسترجع محفظتك عبر 12 كلمة.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "Loading",
   "@pinStatusLoading": {
@@ -3748,16 +3700,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Dev Mode",
   "exchangeTestnetBasicAuthTitle": "بيانات اعتماد منصة تبادل testnet",
-  "exchangeTestnetBasicAuthDescription": "مصادقة HTTP الأساسية لصفحات ويب منصة تبادل testnet (تسجيل الدخول و KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "اسم المستخدم",
-  "exchangeTestnetBasicAuthPasswordLabel": "كلمة المرور",
-  "exchangeTestnetBasicAuthClearButton": "مسح",
-  "exchangeTestnetBasicAuthSaveButton": "حفظ",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "فشل في فك شفرة الفاتورة",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4285,10 +4228,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "مالك",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "Seed Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4375,10 +4314,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "onboardingRecoverWallet": "Recover Wallet",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
-  },
   "transactionOrderLabelReferenceNumber": "العدد المرجعي",
   "@transactionOrderLabelReferenceNumber": {
     "description": "Label for reference number in order details"
@@ -4462,10 +4397,6 @@
   "transactionStatusPending": "معلقة",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
-  },
-  "settingsSuperuserModeDisabledMessage": "وضع المستعمل الخارق معطل.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
   },
   "settingsTermsOfServiceTitle": "مدة الخدمة",
   "@settingsTermsOfServiceTitle": {
@@ -4712,10 +4643,6 @@
   "sellExchangeRate": "سعر الصرف",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "هذه الطريقة خطرة بتمكينها، تعترفين بأنكِ قد تخسرين المال",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "Sell Bitcoin",
   "@sellTitle": {
@@ -5052,10 +4979,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "المعاملات الإذاعية",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "وقع مع ليدجر",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5150,10 +5073,6 @@
   "sendSlowPaymentWarning": "بطء الإنذار بالمدفوعات",
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
-  },
-  "settingsThemeTitle": "الموضوع",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "Email",
   "@payEmail": {
@@ -5286,10 +5205,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "الدعم المادي",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "من",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5297,10 +5212,6 @@
   "fundExchangeCrIbanCrcDescription": "أرسل تحويل مصرفي من حسابك المصرفي باستخدام التفاصيل أدناه ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
-  },
-  "settingsDevModeWarningTitle": "Dev Mode",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
   },
   "rbfOriginalTransaction": "المعاملة الأصلية",
   "@rbfOriginalTransaction": {
@@ -5313,10 +5224,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "مستعمل رقم مستنسخ",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "نسخة التطبيق: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "Selected Biller Name",
   "@payBillerNameValue": {
@@ -5378,10 +5285,6 @@
   "sellSendPaymentInstantPayments": "المدفوعات الثابتة",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "Recover Wallet",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "{pinOrPassword} instead >>",
   "@usePasswordInsteadButton": {
@@ -5476,10 +5379,6 @@
   "backupWalletBestPracticesTitle": "أفضل الممارسات",
   "@backupWalletBestPracticesTitle": {
     "description": "AppBar title for physical backup checklist screen"
-  },
-  "exchangeGoToWebsiteButton": "الذهاب إلى موقع تبادل بول بيتكين",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "اختبار {walletName}",
   "@testWalletTitle": {
@@ -6221,10 +6120,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
-  },
   "swapTransferAmount": "مبلغ المبادلة",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
@@ -6731,10 +6626,6 @@
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
-  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "customLocationTitle": "الموقع العرفي",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
@@ -6860,10 +6751,6 @@
   "encryptedVaultRecommendation": "السرداب المشفرة: ",
   "@encryptedVaultRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
-  },
-  "exchangeFeatureCustomerSupport": "• مطاردة مع دعم العملاء",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
   },
   "informationWillNotLeave": "هذه المعلومات ",
   "@informationWillNotLeave": {
@@ -6999,10 +6886,6 @@
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
   },
-  "exchangeFeatureSelfCustody": "• Buy Bitcoin straight to self-custody",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "autoswapMaxBalanceInfoText": "عندما يتجاوز رصيد المحفظة ضعف هذا المبلغ، ستبدأ المبادلة التلقائية لخفض الرصيد إلى هذا المستوى",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
@@ -7032,10 +6915,6 @@
   "takeYourTimeTag": "خذ وقتك",
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
-  },
-  "exchangeLandingConnectAccount": "إجمعي حسابك في البول بيتكوين",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "transactionSwapDescLnReceiveCompleted": "مبادلتك قد اكتملت بنجاح يجب أن تكون الأموال متاحة الآن في محفظتك.",
   "@transactionSwapDescLnReceiveCompleted": {
@@ -7079,10 +6958,6 @@
   "@recoverWalletScreenTitle": {
     "description": "Title for recover wallet screen"
   },
-  "exchangeFeatureSellBitcoin": "• Sell Bitcoin, get paid with Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "autoswapBaseBalanceInfoText": "رصيد محفظة الدفع الفوري الخاص بك سوف يعود إلى هذا التوازن الهدف بعد التبديل الآلي.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
@@ -7090,10 +6965,6 @@
   "leaveYourPhone": "اترك هاتفك ",
   "@leaveYourPhone": {
     "description": "Middle part of privacy assurance message"
-  },
-  "exchangeBrandName": "BUL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "loadingBackupFile": "وضع ملف احتياطي...",
   "@loadingBackupFile": {
@@ -7171,10 +7042,6 @@
   "@savingToDevice": {
     "description": "Message shown when saving to device"
   },
-  "exchangeFeatureBankTransfers": "• إرسال التحويلات المصرفية ودفع الفواتير",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "backupWalletVaultProviderAppleICloud": "Apple iCloud",
   "@backupWalletVaultProviderAppleICloud": {
     "description": "Name of Apple iCloud vault provider option"
@@ -7237,10 +7104,6 @@
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
   },
-  "exchangeFeatureDcaOrders": "• DCA, Limit orders and Auto-buy",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
   "autoswapSaveButton": "أنقذ",
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
@@ -7293,10 +7156,6 @@
   "customLocationRecommendation": "الموقع العرفي: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "exchangeFeatureUnifiedHistory": "● تاريخ المعاملات الموحد",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "autoswapRecipientWalletRequired": "♪",
   "@autoswapRecipientWalletRequired": {
@@ -7406,7 +7265,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
   "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
   "coreScreensFeeRateLabel": "معدل الرسوم",
@@ -7444,12 +7302,6 @@
   "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن.",
   "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
   "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
-  "onboardingAdvancedOptionsTitle": "خيارات متقدمة",
-  "onboardingAdvancedOptionsDescription": "اضبط الإعدادات المتقدمة قبل إنشاء محفظتك أو استردادها",
-  "onboardingAdvancedOptionsCustomElectrum": "خادم Electrum مخصص",
-  "onboardingAdvancedOptionsCustomMempool": "خادم Mempool مخصص",
-  "onboardingAdvancedOptionsCustomRecoverbull": "خادم Recoverbull مخصص",
-  "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
   "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
@@ -7462,123 +7314,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "العملات",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, zero{لا توجد عملات} one{عملة واحدة} two{عملتان} few{{count} عملات} many{{count} عملة} other{{count} عملة}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "مجمّدة",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "قابلة للإنفاق",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "لا شيء مجمّد",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "الترتيب والتصفية",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "يتم عرض {visible} من {total}",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, zero{لا مخرجات غير منفقة} one{مخرج غير منفق واحد} two{مخرجان غير منفقَين} few{{count} مخرجات غير منفقة} many{{count} مخرجًا غير منفق} other{{count} مخرج غير منفق}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "مزامنة",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "مسح الكل",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "المبلغ: من الأعلى إلى الأدنى",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "المبلغ: من الأدنى إلى الأعلى",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "التاريخ: الأحدث",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "التاريخ: الأقدم",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "سلسلة المفاتيح",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "الكل",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "الاستلام",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "الفكة",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "حالة التجميد",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "الكل",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "مجمّدة",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "غير مجمّدة",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "التسميات",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "إعادة تعيين",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "تطبيق",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, zero{لم يتم التحديد} one{تم تحديد عنصر واحد} two{تم تحديد عنصرين} few{تم تحديد {count} عناصر} many{تم تحديد {count} عنصرًا} other{تم تحديد {count} عنصر}}",
   "@coinsSelectedCount": {
@@ -7586,128 +7324,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "تحديد الكل",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "تجميد",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "إلغاء التجميد",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "تراجع",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, zero{تجميد العملات؟} one{تجميد عملة واحدة؟} two{تجميد عملتين؟} few{تجميد {count} عملات؟} many{تجميد {count} عملة؟} other{تجميد {count} عملة؟}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "تبقى العملات المجمّدة في محفظتك لكنها مستبعدة من الإنفاق حتى تلغي تجميدها.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "سيؤدي تجميد هذه العملات إلى ترك رصيد قابل للإنفاق صفر.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, zero{لا عملات مجمّدة} one{تم تجميد عملة واحدة · مستبعدة من الإنفاق} two{تم تجميد عملتين · مستبعدتان من الإنفاق} few{تم تجميد {count} عملات · مستبعدة من الإنفاق} many{تم تجميد {count} عملة · مستبعدة من الإنفاق} other{تم تجميد {count} عملة · مستبعدة من الإنفاق}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, zero{لا عملات} one{تم إلغاء تجميد عملة واحدة} two{تم إلغاء تجميد عملتين} few{تم إلغاء تجميد {count} عملات} many{تم إلغاء تجميد {count} عملة} other{تم إلغاء تجميد {count} عملة}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, zero{لا تأكيدات} one{تأكيد واحد} two{تأكيدان} few{{count} تأكيدات} many{{count} تأكيدًا} other{{count} تأكيد}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "قيد الانتظار",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "لا توجد عملات بعد",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "ستظهر العملات هنا بمجرد استلامك للبيتكوين.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "لا توجد عملات مطابقة",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "مسح عوامل التصفية",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "إعادة المحاولة",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "اسحب عملة للتجميد · اضغط مطولًا للتحديد",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "تعذّر تحميل عملاتك. اسحب للأسفل للتحديث والمحاولة مرة أخرى.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "تعذّر تجميد العملات المحددة. يُرجى المحاولة مرة أخرى.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "تعذّر إلغاء تجميد العملات المحددة. يُرجى المحاولة مرة أخرى.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "حدث خطأ ما. يُرجى المحاولة مرة أخرى.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, zero{لا توجد UTXO} one{UTXO واحد} two{UTXO اثنان} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} مجمّد",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -7778,16 +7394,6 @@
   "statusScreenContinue": "متابعة",
   "viewerAddressTab": "العنوان",
   "viewerPaymentUriTab": "رابط الدفع (URI)",
-  "settingsErrorReportingTitle": "الإبلاغ عن الأخطاء",
-  "errorReportingProgramTitle": "برنامج الإبلاغ عن الأخطاء",
-  "errorReportingProgramDescriptionP1": "ساعدنا في تحسين Bull من خلال المشاركة في برنامج الإبلاغ عن الأخطاء.",
-  "errorReportingProgramDescriptionP2": "ترسل بول بيتكوين تقارير أخطاء مجهولة الهوية عند حدوث عطل ما.",
-  "errorReportingProgramDescriptionP3": "يتيح لنا هذا معرفة عدد المستخدمين المتأثرين بكل خلل وتحديد أولويات الإصلاح وفقًا لذلك، وبدونه لا نملك وسيلة لقياس التأثير.",
-  "errorReportingProgramDescriptionP4": "تُرسَل التقارير فقط إلى خادم بول، ولا تُرسَل أبدًا إلى أطراف ثالثة.",
-  "errorReportingProgramDescriptionP5": "بول بيتكوين مفتوحة المصدر، لذا يمكنك التحقق مما يتم إرساله.",
-  "errorReportingAcceptButton": "قبول",
-  "errorReportingCancelButton": "إلغاء",
-  "errorReportingRestartSnackbar": "أعِد تشغيل التطبيق لتطبيق هذا التغيير",
   "backupWarningTitle": "انسخ محفظتك احتياطيًا الآن",
   "backupWarningBackupNow": "نعم",
   "backupWarningBackupLater": "لا، أنا أتفهّم المخاطرة",
@@ -7916,45 +7522,11 @@
   "dcaReceiveAddressError": "تعذر تجهيز عنوان استلام في محفظتك. يُرجى المحاولة مرة أخرى.",
   "dcaOrderCreationError": "تعذر إنشاء الشراء المتكرر. يُرجى المحاولة لاحقًا.",
   "settingsPayjoinDisclaimerTitle": "إخلاء مسؤولية Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
-  "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
   "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
   "sendSwapExpiredTitle": "انتهت صلاحية الطلب",
   "sendSwapExpiredMessage": "انتهت صلاحية هذا الطلب قبل إرسال أي أموال. لم يتم إرسال أي شيء من محفظتك.",
-  "settingsScreenPrivacyTitle": "خصوصية الشاشة",
-  "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة",
-  "settingsSearchHint": "البحث في الإعدادات",
-  "settingsSearchNoResults": "لم يتم العثور على إعدادات.",
-  "settingsSearchMempoolKeywords": "مستكشف الكتل|تقدير الرسوم|رسوم المعاملات|واجهة mempool API",
-  "settingsSearchExchangeKeywords": "حساب|حساب المنصة|التداول|شراء وبيع",
-  "settingsSearchStartBackupKeywords": "إنشاء نسخة احتياطية|حفظ نسخة احتياطية|نسخ المحفظة احتياطيا",
-  "settingsSearchRecoverbullKeywords": "نسخة احتياطية مشفرة|نسخة احتياطية سحابية|خزنة مشفرة|استرداد الخزنة",
-  "settingsSearchLabelsKeywords": "تسميات المحفظة|تسميات المعاملات|BIP329|استيراد التسميات|تصدير التسميات",
-  "settingsSearchTransactionHistoryKeywords": "تصدير المعاملات|تصدير سجل المعاملات|CSV|سجل المحفظة",
-  "settingsSearchAppSettingsKeywords": "تفضيلات التطبيق|إعدادات التطبيق|الإعدادات العامة",
-  "settingsSearchTermsOfServiceKeywords": "الشروط والأحكام|قانوني|اتفاقية المستخدم|TOS",
-  "settingsSearchServicesStatusKeywords": "حالة الخدمات|حالة النظام|متصل|انقطاع الخدمة",
-  "settingsSearchImportWalletKeywords": "إضافة محفظة|استعادة محفظة|استيراد عبارة الاسترداد|محفظة للمشاهدة فقط|محفظة أجهزة",
-  "settingsSearchBroadcastTransactionKeywords": "بث معاملة موقعة|إرسال المعاملة|معاملة خام|بيانات المعاملة السداسية|PSBT",
-  "settingsSearchPayjoinKeywords": "خصوصية Payjoin|معاملة تعاونية|P2EP",
-  "settingsSearchAutoswapKeywords": "Autoswap|مبادلة تلقائية|تحويل تلقائي|رصيد المحفظة الفورية",
-  "settingsSearchElectrumKeywords": "عقدة بيتكوين|عقدة Electrum|خادم مخصص|عقدة شخصية",
-  "settingsSearchTestnetModeKeywords": "شبكة اختبار|شبكة اختبار بيتكوين|شبكة اختبار Liquid|وضع الاختبار",
-  "settingsSearchSeedViewerKeywords": "عبارة البذور|عبارة الاسترداد|Mnemonic|كلمات النسخ الاحتياطي|عرض البذور",
-  "settingsSearchBip85Keywords": "إنتروبيا حتمية|بذور فرعية|إنتروبيا مشتقة|BIP85",
-  "settingsSearchLanguageKeywords": "لغة التطبيق|الترجمة|لغة العرض|اللغة المفضلة",
-  "settingsSearchThemeKeywords": "المظهر|الوضع الداكن|الوضع الفاتح|سمة النظام",
-  "settingsSearchCurrencyKeywords": "العملة الورقية|العملة المحلية|العملة الأساسية|عملة الصرف",
-  "settingsSearchSecurityPinKeywords": "رمز PIN|رمز المرور|قفل التطبيق|المصادقة|تغيير رمز PIN",
-  "settingsSearchLogsKeywords": "سجلات التصحيح|سجلات التشخيص|سجلات التطبيق|تصدير السجلات",
-  "settingsSearchDevModeKeywords": "وضع المطور|إعدادات التطوير|وضع التصحيح|اختبارات متقدمة",
-  "settingsSearchTestnetCredentialsKeywords": "بيانات اعتماد شبكة الاختبار|تسجيل دخول شبكة الاختبار|اسم مستخدم شبكة الاختبار|كلمة مرور شبكة الاختبار|مصادقة أساسية",
-  "settingsSearchErrorReportingKeywords": "تقارير الأعطال|تقارير الأخطاء|التشخيص|بيانات الاستخدام|سجلات الأخطاء",
-  "settingsSearchScreenPrivacyKeywords": "لقطات الشاشة|تسجيل الشاشة|حماية التقاط الشاشة|الخصوصية",
-  "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
-  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
@@ -7968,8 +7540,6 @@
   "walletWarningElectrumAction": "اضغط لضبط إعدادات الخادم",
   "walletLoadFailedRetryHint": "اسحب للأسفل للتحديث وحاول مرة أخرى",
   "settingsErrorSavingSetting": "تعذر حفظ هذا الإعداد. يرجى المحاولة مرة أخرى.",
-  "settingsErrorConsentNotGiven": "يتطلب هذا الإعداد تأكيدك قبل تغييره.",
-  "settingsErrorLoadingLogs": "تعذر تجهيز سجلات التشخيص. يرجى المحاولة مرة أخرى.",
   "exchangeErrorSigningOut": "تعذر تسجيل خروجك بالكامل. يرجى المحاولة مرة أخرى.",
   "exchangeErrorSavingPreferences": "تعذر حفظ تفضيلاتك. يرجى المحاولة مرة أخرى.",
   "exchangeErrorLoadingAnnouncements": "تعذر تحميل الإعلانات.",
@@ -8091,7 +7661,6 @@
   "fundExchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "exchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "walletBalancesMayBeStale": "تعذّر تحديث أرصدتك وقد لا تكون محدّثة.",
-  "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية",
   "limitOrdersInsufficientBalance": "الرصيد غير الكافي",
   "limitOrdersInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
   "limitOrdersFundAccount": "صندوق حسابك",
@@ -8148,20 +7717,15 @@
   "swapUnderReviewTitle": "المبادلة قيد المراجعة",
   "swapUnderReviewDescription": "تتطلب هذه المبادلة مراجعة يدوية. تواصل مع الدعم للحصول على المساعدة. إذا لم يكن لديك حساب دعم، فعليك فقط إنشاء حساب؛ لا يلزم KYC.",
   "swapUnderReviewSupportMessage": "المبادلة قيد المراجعة\nمعرّف الطلبية: {orderId}\nمعرّف الطلب: {requestId}\nرقم الطلبية: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "المبادلة التلقائية",
   "broadcastSignedTxErrorAlreadyInChain": "هذه المعاملة موجودة بالفعل في سلسلة الكتل. لم يتبقَّ شيء لبثه.",
   "broadcastSignedTxErrorRejected": "رفضت الشبكة هذه المعاملة. قد تكون غير مكتملة التوقيع أو غير صالحة أو متعارضة مع دفعة أخرى.",
   "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
   "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
   "settingsDarkModeTitle": "الوضع الداكن",
-  "settingsSourceCodeTitle": "الشيفرة المصدرية",
   "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
   "backgroundTasksTitle": "المهام في الخلفية",
   "blockedInSystemSettings": "محظور في إعدادات النظام",
-  "notificationsBlockedMessage": "الإشعارات محظورة في إعدادات النظام.",
   "notificationsTitle": "الإشعارات",
   "openSystemSettings": "فتح إعدادات النظام",
-  "permissionsTitle": "الأذونات",
-  "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
   "sendErrorInvoiceExpiryTooShort": "تنتهي صلاحية هذه الفاتورة مبكرًا جدًا. اطلب من المستلم فاتورة جديدة."
 }

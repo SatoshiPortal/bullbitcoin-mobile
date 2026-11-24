@@ -234,16 +234,23 @@ class _BullMapViewState extends State<BullMapView> {
               ['get', 'point_count'],
             ],
             1000,
+            // One decimal by rounding, not number-format: iOS MapLibre aborts on its options object.
             [
               'concat',
               [
-                'number-format',
+                'to-string',
                 [
                   '/',
-                  ['get', 'point_count'],
-                  1000,
+                  [
+                    'round',
+                    [
+                      '/',
+                      ['get', 'point_count'],
+                      100,
+                    ],
+                  ],
+                  10,
                 ],
-                {'min-fraction-digits': 0, 'max-fraction-digits': 1},
               ],
               'k',
             ],

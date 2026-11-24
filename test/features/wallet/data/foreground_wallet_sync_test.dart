@@ -326,7 +326,7 @@ void main() {
   );
 
   test(
-    'single-wallet usecase forwards discovery through the foreground pass',
+    'single-wallet usecase forwards discovery and initial-scan policy',
     () async {
       log = Logger.replace(directory: directory);
       final forwarding = _Policy();
@@ -348,16 +348,14 @@ void main() {
       await repository.sync(wallet);
       await repository.sync(wallet, discover: true);
       await repository.sync(wallet, allowInitialScan: false);
-      // Every call reaches the pass; only the discovery request is marked.
       expect(forwarding.calls, 3);
       final rows = (await log.readLogs())
-          .where((row) => row.contains('Electrum sync '))
+          .where((row) => row.contains('Electrum sync started '))
           .toList();
-      expect(rows.where((row) => row.contains('discovery=true')), hasLength(1));
-      expect(
-        rows.where((row) => row.contains('discovery=false')),
-        hasLength(2),
-      );
+      expect(rows, hasLength(3));
+      expect(rows[0], contains('discovery=false allow_initial_scan=true'));
+      expect(rows[1], contains('discovery=true allow_initial_scan=true'));
+      expect(rows[2], contains('discovery=false allow_initial_scan=false'));
     },
   );
 

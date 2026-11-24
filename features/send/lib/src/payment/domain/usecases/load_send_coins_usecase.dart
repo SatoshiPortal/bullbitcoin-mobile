@@ -11,6 +11,6 @@ class LoadSendCoinsUsecase {
   Future<Result<List<WalletUtxo>, SendFailure>> execute(
     String walletId,
   ) async =>
-      (await _coins.coins(walletId))
+      (await _coins.load(walletId: walletId))
           .mapErr((failure) => SendUnexpectedFailure(failure.logMessage));
 }

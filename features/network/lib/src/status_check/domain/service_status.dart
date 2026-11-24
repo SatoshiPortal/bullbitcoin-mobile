@@ -41,6 +41,7 @@ sealed class AllServicesStatus with _$AllServicesStatus {
     ServiceStatusInfo tor,
     @Default(ServiceStatusInfo(status: ServiceStatus.unknown))
     ServiceStatusInfo recoverbull,
+    ServiceStatusInfo? silent,
     @Default(null) DateTime? lastChecked,
   }) = _AllServicesStatus;
 
@@ -55,7 +56,8 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       pricer.isOnline &&
       mempool.isOnline &&
       (tor.isOnline || tor.isUnknown) &&
-      (recoverbull.isOnline || recoverbull.isUnknown);
+      (recoverbull.isOnline || recoverbull.isUnknown) &&
+      (silent == null || silent?.isOnline == true);
 
   bool get hasAnyServiceOffline => !allServicesOnline;
 }

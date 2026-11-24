@@ -3,11 +3,6 @@
   "fundExchangeRestrictedMessage": "დაფინანსება მიუწვდომელია თქვენს ანგარიშზე. დამატებითი ინფორმაციისთვის დაუკავშირდით მხარდაჭერას.",
   "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
   "exchangeTestnetBasicAuthTitle": "Testnet გაცვლის სერთიფიკატები",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth testnet გაცვლის ვებგვერდებისთვის (შესვლა და KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "მომხმარებლის სახელი",
-  "exchangeTestnetBasicAuthPasswordLabel": "პაროლი",
-  "exchangeTestnetBasicAuthClearButton": "გასუფთავება",
-  "exchangeTestnetBasicAuthSaveButton": "შენახვა",
   "backupWarningLoseReasonLostPhone": "დაკარგავთ თქვენს ტელეფონს",
   "backupWarningLoseReasonDeletedApp": "წაშლით აპლიკაციას",
   "backupWarningLoseReasonCriticalIssue": "მოხდება აპლიკაციის ან მოწყობილობის კრიტიკული ხარვეზი",
@@ -222,7 +217,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "საფულის დაყენებისას მოხდა შეცდომა. გთხოვთ, სცადოთ ხელახლა.",
   "appStartupErrorMessage": "აპის გაშვება ვერ მოხერხდა. სცადეთ მისი სრულად დახურვა და თავიდან გაშვება. თუ შეცდომა გაგრძელდა, დაუკავშირდით მხარდაჭერას და გააზიარეთ ლოგები.",
   "coreScreensResolvingInputs": "ტრანზაქციის შესატანების დამუშავება მიმდინარეობს...",
   "coreScreensFeeRateLabel": "Fee rate",
@@ -265,12 +259,6 @@
   "backupCardSubtitle": "შექმენით თქვენი საფულის სარეზერვო ასლი ახლავე.",
   "autoswapTargetBalanceLabel": "მყისიერი საფულის სამიზნე ბალანსი",
   "autoswapMaximumBalanceLabel": "მყისიერი საფულის მაქსიმალური ბალანსი",
-  "onboardingAdvancedOptionsTitle": "გაფართოებული პარამეტრები",
-  "onboardingAdvancedOptionsDescription": "დააკონფიგურირეთ გაფართოებული პარამეტრები თქვენი საფულის შექმნამდე ან აღდგენამდე",
-  "onboardingAdvancedOptionsCustomElectrum": "მორგებული Electrum სერვერი",
-  "onboardingAdvancedOptionsCustomMempool": "მორგებული Mempool სერვერი",
-  "onboardingAdvancedOptionsCustomRecoverbull": "მორგებული Recoverbull სერვერი",
-  "onboardingAdvancedOptionsFooter": "ამ პარამეტრების შეცვლა მოგვიანებით შეგიძლიათ აპლიკაციის პარამეტრებში",
   "appStartupContactSupportMessage": "დაუკავშირდით მხარდაჭერას მისამართზე app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox მხარდაჭერილია მხოლოდ Android-ზე",
   "sendErrorUnsupportedQrCodeFormat": "QR კოდის ფორმატი მხარდაჭერილი არ არის",
@@ -305,123 +293,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "მონეტები",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 მონეტა} other{{count} მონეტა}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "გაყინული",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "დახარჯვადი",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "გაყინული არ არის",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "დახარისხება და ფილტრი",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "ნაჩვენებია {visible} / {total}",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 დაუხარჯავი გამოსავალი} other{{count} დაუხარჯავი გამოსავალი}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "სინქრონიზაცია",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "ყველას გასუფთავება",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "თანხა: მაღლიდან დაბლა",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "თანხა: დაბლიდან მაღლა",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "თარიღი: უახლესი",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "თარიღი: უძველესი",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "გასაღებების ჯაჭვი",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "ყველა",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "მიღება",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "ხურდა",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "გაყინვის სტატუსი",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "ყველა",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "გაყინული",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "გაუყინავი",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "ლეიბლები",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "გადატვირთვა",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "გამოყენება",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{1 არჩეული} other{{count} არჩეული}}",
   "@coinsSelectedCount": {
@@ -429,128 +303,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "ყველას მონიშვნა",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "გაყინვა",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "გაყინვის გაუქმება",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "მოქმედების გაუქმება",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{გაიყინოს 1 მონეტა?} other{გაიყინოს {count} მონეტა?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "გაყინული მონეტები რჩება თქვენს საფულეში, მაგრამ გამორიცხულია დახარჯვისგან მათ გაყინვის გაუქმებამდე.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "ამ მონეტების გაყინვის შემდეგ დახარჯვადი ბალანსი არ დაგრჩებათ.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{1 მონეტა გაიყინა · გამორიცხულია დახარჯვისგან} other{{count} მონეტა გაიყინა · გამორიცხულია დახარჯვისგან}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{1 მონეტის გაყინვა გაუქმდა} other{{count} მონეტის გაყინვა გაუქმდა}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 დადასტურება} other{{count} დადასტურება}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "მოლოდინში",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "მონეტები ჯერ არ არის",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "მონეტები აქ გამოჩნდება, როცა ბიტკოინს მიიღებთ.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "მონეტები ვერ მოიძებნა",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "ფილტრების გასუფთავება",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "ხელახლა ცდა",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "გადაასრიალეთ მონეტა გასაყინად · დააჭირეთ ხანგრძლივად მოსანიშნად",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "თქვენი მონეტების ჩატვირთვა ვერ მოხერხდა. ჩამოწიეთ განახლებისთვის და სცადეთ ხელახლა.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "არჩეული მონეტების გაყინვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "არჩეული მონეტების გაყინვის გაუქმება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "რაღაც შეცდომა მოხდა. გთხოვთ, სცადოთ ხელახლა.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} გაყინული",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -619,18 +371,10 @@
   "fiatCurrencySettingsLabel": "ფიატ ვალუტა",
   "languageSettingsScreenTitle": "ენა",
   "settingsExchangeSettingsTitle": "გაცვლის პარამეტრები",
-  "settingsSecurityPinTitle": "უსაფრთხოების PIN",
   "settingsCurrencyTitle": "ვალუტა",
   "settingsAppSettingsTitle": "აპლიკაციის პარამეტრები",
   "settingsTermsOfServiceTitle": "მომსახურების პირობები",
-  "settingsAppVersionLabel": "აპლიკაციის ვერსია: ",
-  "settingsServiceStatusTitle": "სერვისების სტატუსი",
   "settingsLanguageTitle": "ენა",
-  "settingsThemeTitle": "თემა",
-  "settingsDevModeWarningTitle": "დეველოპერის რეჟიმი",
-  "settingsDevModeWarningMessage": "ეს რეჟიმი სარისკოა. მისი ჩართვით თქვენ ადასტურებთ, რომ შესაძლოა დაკარგოთ ფული",
-  "settingsDevModeUnderstandButton": "მესმის",
-  "settingsSuperuserModeDisabledMessage": "სუპერმომხმარებლის რეჟიმი გამორთულია.",
   "settingsSuperuserModeUnlockedMessage": "სუპერმომხმარებლის რეჟიმი განბლოკილია!",
   "addressViewAddressesTitle": "მისამართები",
   "walletDetailsWalletFingerprintLabel": "საფულის თითის ანაბეჭდი",
@@ -643,13 +387,8 @@
   "mempoolCustomServerUrl": "სერვერის URL",
   "mempoolCustomServerSaveSuccess": "მორგებული სერვერი წარმატებით შეინახა",
   "mempoolServerStatusUnknown": "უცნობია",
-  "walletSettingsImportWalletTitle": "საფულის იმპორტი",
-  "bitcoinSettingsBroadcastTransactionTitle": "ტრანზაქციის ტრანსლაცია",
-  "bitcoinSettingsTestnetModeTitle": "Testnet რეჟიმი",
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 დეტერმინისტული ენტროპიები",
   "logSettingsLogsTitle": "ჟურნალები",
   "logSettingsErrorLoadingMessage": "ჟურნალების ჩატვირთვის შეცდომა: ",
-  "appSettingsDevModeTitle": "დეველოპერის რეჟიმი",
   "currencySettingsDefaultFiatCurrencyLabel": "ნაგულისხმევი ფიატ ვალუტა",
   "exchangeSettingsAccountInformationTitle": "ანგარიშის ინფორმაცია",
   "exchangeSettingsSecuritySettingsTitle": "უსაფრთხოების პარამეტრები",
@@ -738,18 +477,9 @@
   "addressCardCopiedMessage": "მისამართი დაკოპირდა",
   "addressCardIndexLabel": "ინდექსი: ",
   "addressCardBalanceLabel": "ბალანსი: ",
-  "onboardingRecoverYourWallet": "თქვენი საფულის აღდგენა",
   "onboardingEncryptedVault": "დაშიფრული საცავი",
-  "onboardingEncryptedVaultDescription": "აღადგინეთ თქვენი სარეზერვო ასლი ღრუბლიდან თქვენი PIN-ის გამოყენებით.",
-  "onboardingPhysicalBackup": "ფიზიკური სარეზერვო ასლი",
-  "onboardingPhysicalBackupDescription": "აღადგინეთ თქვენი საფულე 12 სიტყვის მეშვეობით.",
   "onboardingRecover": "აღდგენა",
   "onboardingBullBitcoin": "Bull Bitcoin",
-  "onboardingOwnYourMoney": "ფლობდეთ საკუთარ ფულს",
-  "onboardingSplashDescription": "სუვერენული თვითდაცვის Bitcoin საფულე და Bitcoin-ზე ორიენტირებული გაცვლის სერვისი.",
-  "onboardingRecoverWallet": "საფულის აღდგენა",
-  "onboardingRecoverWalletButton": "საფულის აღდგენა",
-  "onboardingCreateNewWallet": "ახალი საფულის შექმნა",
   "sendTitle": "გაგზავნა",
   "sendRecipientAddressOrInvoice": "მიმღების მისამართი ან ინვოისი",
   "sendPasteAddressOrInvoice": "ჩასვით გადახდის მისამართი ან ინვოისი",
@@ -2132,22 +1862,10 @@
   "appStartupErrorTitle": "გაშვების შეცდომა",
   "appStartupContactSupportButton": "მხარდაჭერასთან დაკავშირება",
   "ledgerDefaultWalletLabel": "Ledger საფულე",
-  "exchangeBrandName": "BULL BITCOIN",
-  "exchangeLandingConnectAccount": "დააკავშირეთ თქვენი Bull Bitcoin გაცვლის ანგარიში",
-  "exchangeLandingRecommendedExchange": "რეკომენდებული Bitcoin გაცვლა",
-  "exchangeFeatureSelfCustody": "• იყიდეთ Bitcoin პირდაპირ თვითდაცვაში",
-  "exchangeFeatureDcaOrders": "• DCA, ლიმიტირებული შეკვეთები და ავტომატური ყიდვა",
-  "exchangeFeatureSellBitcoin": "• გაყიდეთ Bitcoin, მიიღეთ თანხა Bitcoin-ით",
-  "exchangeFeatureBankTransfers": "• გააგზავნეთ საბანკო გადარიცხვები და გადაიხადეთ ინვოისები",
-  "exchangeFeatureCustomerSupport": "• ჩაატარეთ მიმოწერა მომხმარებელთა მხარდაჭერასთან",
-  "exchangeFeatureUnifiedHistory": "• გაერთიანებული ტრანზაქციების ისტორია",
   "priceFailedToLoad": "ფასის ჩატვირთვა ვერ მოხერხდა",
   "statusScreenTryAgain": "ხელახლა ცდა",
   "statusScreenContinue": "გაგრძელება",
-  "exchangeLandingDisclaimerLegal": "გაცვლის სერვისებზე წვდომა შეზღუდულია იმ ქვეყნებით, სადაც Bull Bitcoin-ს კანონიერად შეუძლია საქმიანობა, და შესაძლოა მოითხოვდეს KYC-ს.",
-  "exchangeLandingDisclaimerNotAvailable": "კრიპტოვალუტის გაცვლის სერვისები მიუწვდომელია Bull Bitcoin მობილურ აპლიკაციაში.",
   "exchangeLoginButton": "შესვლა ან რეგისტრაცია",
-  "exchangeGoToWebsiteButton": "გადადით Bull Bitcoin-ის გაცვლის ვებგვერდზე",
   "exchangeAuthLoginFailedTitle": "შესვლა ვერ მოხერხდა",
   "exchangeAuthLoginFailedMessage": "მოხდა შეცდომა, გთხოვთ, სცადოთ ხელახლა შესვლა.",
   "exchangeAuthLoginFailedOkButton": "კარგი",
@@ -2253,16 +1971,6 @@
   "logoutConfirmationDescription": "დარწმუნებული ხართ, რომ გსურთ გახვიდეთ თქვენი Bull Bitcoin ანგარიშიდან? გაცვლის ფუნქციებზე წვდომისთვის ხელახლა მოგიწევთ სისტემაში შესვლა.",
   "logoutConfirmationCancel": "გაუქმება",
   "logoutConfirmationLogout": "გასვლა",
-  "settingsErrorReportingTitle": "შეცდომების შესახებ ანგარიშგება",
-  "errorReportingProgramTitle": "შეცდომების ანგარიშგების პროგრამა",
-  "errorReportingProgramDescriptionP1": "დაგვეხმარეთ Bull-ის გაუმჯობესებაში, შეცდომების ანგარიშგების პროგრამაში ჩართვით.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin აგზავნის ანონიმიზებულ შეცდომების ანგარიშებს, როცა რაიმე გაფუჭდება.",
-  "errorReportingProgramDescriptionP3": "ეს გვაძლევს საშუალებას ვნახოთ, რამდენ მომხმარებელზე მოქმედებს თითოეული ხარვეზი და შესაბამისად დავანიშნოთ პრიორიტეტები გამოსწორებისთვის — ამის გარეშე ჩვენ არ გვაქვს გავლენის შეფასების საშუალება.",
-  "errorReportingProgramDescriptionP4": "ანგარიშები მიდის მხოლოდ Bull-ის სერვერზე და არასდროს — მესამე მხარეებთან.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin ღია კოდის პროექტია, ასე რომ შეგიძლიათ დაადასტუროთ, რა იგზავნება.",
-  "errorReportingAcceptButton": "დათანხმება",
-  "errorReportingCancelButton": "გაუქმება",
-  "errorReportingRestartSnackbar": "გადატვირთეთ აპლიკაცია ამ ცვლილების გასააქტიურებლად",
   "backupWarningTitle": "დაცავით თქვენი საფულე ახლავე",
   "backupWarningBackupNow": "დიახ",
   "backupWarningBackupLater": "არა, მესმის რისკის შესახებ",
@@ -2393,45 +2101,11 @@
   "dcaReceiveAddressError": "თქვენს საფულეში მიმღები მისამართის მომზადება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "dcaOrderCreationError": "განმეორებადი შესყიდვის შექმნა ვერ მოხერხდა. გთხოვთ, სცადოთ მოგვიანებით.",
   "settingsPayjoinDisclaimerTitle": "Payjoin-ის გაფრთხილება",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin-ის გაფრთხილება",
-  "settingsPayjoinAdvancedTitle": "Payjoin-ის დამატებითი პარამეტრები",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "ეს საფულე ვერ მოიძებნა.",
   "addressViewErrorLoadFailed": "თქვენი მისამართების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "sendSwapExpiredTitle": "შეკვეთის ვადა ამოიწურა",
   "sendSwapExpiredMessage": "ამ შეკვეთის ვადა ამოიწურა თანხის გაგზავნამდე. თქვენი საფულიდან არაფერი გაიგზავნა.",
-  "settingsScreenPrivacyTitle": "ეკრანის კონფიდენციალურობა",
-  "settingsScreenPrivacyDisabledMessage": "სკრინშოტები ახლა დაშვებულია მგრძნობიარე ეკრანებზე",
-  "settingsSearchHint": "პარამეტრების ძიება",
-  "settingsSearchNoResults": "პარამეტრები ვერ მოიძებნა.",
-  "settingsSearchMempoolKeywords": "ბლოკების მიმომხილველი|საკომისიოს შეფასება|ტრანზაქციის საკომისიო|მემპულის API",
-  "settingsSearchExchangeKeywords": "ანგარიში|ბირჟის ანგარიში|ვაჭრობა|ყიდვა და გაყიდვა",
-  "settingsSearchStartBackupKeywords": "სარეზერვო ასლის შექმნა|სარეზერვო ასლის შენახვა|საფულის სარეზერვო ასლი",
-  "settingsSearchRecoverbullKeywords": "დაშიფრული სარეზერვო ასლი|ღრუბლოვანი სარეზერვო ასლი|დაშიფრული საცავი|საცავის აღდგენა",
-  "settingsSearchLabelsKeywords": "საფულის იარლიყები|ტრანზაქციის იარლიყები|BIP329|იარლიყების იმპორტი|იარლიყების ექსპორტი",
-  "settingsSearchTransactionHistoryKeywords": "ტრანზაქციების ექსპორტი|ტრანზაქციების ისტორიის ექსპორტი|CSV|საფულის ისტორია",
-  "settingsSearchAppSettingsKeywords": "აპის პარამეტრები|აპლიკაციის პარამეტრები|ზოგადი პარამეტრები",
-  "settingsSearchTermsOfServiceKeywords": "წესები და პირობები|იურიდიული ინფორმაცია|მომხმარებლის შეთანხმება|TOS",
-  "settingsSearchServicesStatusKeywords": "სერვისის მდგომარეობა|სისტემის სტატუსი|ონლაინ|სერვისის შეფერხება",
-  "settingsSearchImportWalletKeywords": "საფულის დამატება|საფულის აღდგენა|მნემონიკური ფრაზის იმპორტი|მხოლოდ სანახავი საფულე|აპარატული საფულე",
-  "settingsSearchBroadcastTransactionKeywords": "ხელმოწერილი ტრანზაქციის გავრცელება|ტრანზაქციის გაგზავნა|დაუმუშავებელი ტრანზაქცია|ტრანზაქციის თექვსმეტობითი კოდი|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin-ის კონფიდენციალურობა|ერთობლივი ტრანზაქცია|P2EP",
-  "settingsSearchAutoswapKeywords": "ავტომატური სვოპი|ავტომატური გაცვლა|ავტომატური გადარიცხვა|მყისიერი საფულის ბალანსი",
-  "settingsSearchElectrumKeywords": "ბიტკოინის კვანძი|Electrum-ის კვანძი|მორგებული სერვერი|პირადი კვანძი",
-  "settingsSearchTestnetModeKeywords": "სატესტო ქსელი|ბიტკოინის testnet|Liquid testnet|ტესტირების რეჟიმი",
-  "settingsSearchSeedViewerKeywords": "სიდ-ფრაზა|აღდგენის ფრაზა|მნემონიკა|სარეზერვო სიტყვები|სიდის ნახვა",
-  "settingsSearchBip85Keywords": "დეტერმინისტული ენტროპია|შვილობილი სიდები|წარმოებული ენტროპია|BIP85",
-  "settingsSearchLanguageKeywords": "ლოკალი|თარგმანი|ჩვენების ენა|სასურველი ენა",
-  "settingsSearchThemeKeywords": "გარეგნობა|მუქი რეჟიმი|ღია რეჟიმი|სისტემის თემა",
-  "settingsSearchCurrencyKeywords": "ფიატ ვალუტა|ადგილობრივი ვალუტა|ნაგულისხმევი ვალუტა|გაცვლის ვალუტა",
-  "settingsSearchSecurityPinKeywords": "PIN კოდი|პასკოდი|აპის დაბლოკვა|ავთენტიფიკაცია|PIN-ის შეცვლა",
-  "settingsSearchLogsKeywords": "გამართვის ჟურნალები|დიაგნოსტიკური ჟურნალები|აპის ჟურნალები|ჟურნალების ექსპორტი",
-  "settingsSearchDevModeKeywords": "დეველოპერის რეჟიმი|დეველოპერის პარამეტრები|გამართვის რეჟიმი|გაფართოებული ტესტირება",
-  "settingsSearchTestnetCredentialsKeywords": "testnet მომხმარებლის ავტორიზაციის მონაცემები|testnet-ში შესვლა|testnet მომხმარებლის სახელი|testnet პაროლი|საბაზისო ავთენტიფიკაცია",
-  "settingsSearchErrorReportingKeywords": "ავარიული დახურვის ანგარიშები|ხარვეზების ანგარიშები|დიაგნოსტიკა|ტელემეტრია|შეცდომების ჟურნალები",
-  "settingsSearchScreenPrivacyKeywords": "სკრინშოტი|ეკრანის ჩაწერა|ეკრანის გადაღების დაცვა|კონფიდენციალურობა",
-  "settingsSearchStartTyping": "შედეგების სანახავად დაიწყეთ აკრეფა.",
-  "onboardingBackupVerificationError": "თქვენი საფულე აღდგა, მაგრამ სარეზერვო ასლის დადასტურება ვერ დასრულდა. გთხოვთ, სცადოთ ხელახლა.",
   "sendErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
   "sendErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
@@ -2445,8 +2119,6 @@
   "walletWarningElectrumAction": "შეეხეთ სერვერის პარამეტრების გასაწყობად",
   "walletLoadFailedRetryHint": "ჩამოწიეთ განახლებისთვის და სცადეთ ხელახლა",
   "settingsErrorSavingSetting": "ამ პარამეტრის შენახვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
-  "settingsErrorConsentNotGiven": "ამ პარამეტრის შესაცვლელად საჭიროა თქვენი დადასტურება.",
-  "settingsErrorLoadingLogs": "დიაგნოსტიკური ჟურნალების მომზადება ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "exchangeErrorSigningOut": "სისტემიდან სრულად გამოსვლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "exchangeErrorSavingPreferences": "თქვენი პარამეტრების შენახვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "exchangeErrorLoadingAnnouncements": "განცხადებების ჩატვირთვა ვერ მოხერხდა.",
@@ -2568,7 +2240,6 @@
   "fundExchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "exchangeErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "walletBalancesMayBeStale": "თქვენი ნაშთების განახლება ვერ მოხერხდა და ისინი შეიძლება მოძველებული იყოს.",
-  "settingsSearchTorKeywords": "Tor პროქსი|Orbot|ონიონ მარშრუტიზაცია|ჩაშენებული Tor|კონფიდენციალურობის ქსელი",
   "limitOrdersInsufficientBalance": "არასაკმარისი ბალანსი",
   "limitOrdersInsufficientBalanceMessage": "ამ შეკვეთის შესაქმნელად საკმარისი ბალანსი არ გაქვთ.",
   "limitOrdersFundAccount": "შეავსეთ თქვენი ანგარიში",
@@ -2625,20 +2296,15 @@
   "swapUnderReviewTitle": "სვაპი განხილვის პროცესშია",
   "swapUnderReviewDescription": "ამ სვაპს ხელით განხილვა სჭირდება. დაუკავშირდით მხარდაჭერას. თუ მხარდაჭერის ანგარიში არ გაქვთ, საკმარისია შექმნათ — KYC საჭირო არ არის.",
   "swapUnderReviewSupportMessage": "სვაპი განხილვის პროცესშია\nორდერის ID: {orderId}\nმოთხოვნის ID: {requestId}\nორდერის ნომერი: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "ავტომატური სვაპი",
   "broadcastSignedTxErrorAlreadyInChain": "ეს ტრანზაქცია უკვე ბლოკჩეინშია. გასავრცელებელი აღარაფერი დარჩა.",
   "broadcastSignedTxErrorRejected": "ქსელმა ეს ტრანზაქცია უარყო. შესაძლოა ის ბოლომდე არ არის ხელმოწერილი, არასწორია ან სხვა გადახდასთან კონფლიქტშია.",
   "broadcastSignedTxErrorOutcomeUnknown": "ვერ დავადასტურეთ, რომ თქვენი ტრანზაქცია გავრცელდა. ხელახლა ცდამდე შეამოწმეთ ბლოკების მიმოხილველში.",
   "broadcastSignedTxErrorNetworkNotEnabled": "ამ ქსელში გავრცელება მიმდინარე პარამეტრებში ჩართული არ არის.",
   "settingsDarkModeTitle": "მუქი რეჟიმი",
-  "settingsSourceCodeTitle": "საწყისი კოდი",
   "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის.",
   "backgroundTasksTitle": "ფონური ამოცანები",
   "blockedInSystemSettings": "დაბლოკილია სისტემის პარამეტრებში",
-  "notificationsBlockedMessage": "შეტყობინებები დაბლოკილია სისტემის პარამეტრებში.",
   "notificationsTitle": "შეტყობინებები",
   "openSystemSettings": "სისტემის პარამეტრების გახსნა",
-  "permissionsTitle": "ნებართვები",
-  "settingsSearchPermissionsKeywords": "შეტყობინებები|ფონური ამოცანები|ბატარეა|გაფრთხილებები",
   "sendErrorInvoiceExpiryTooShort": "ამ ინვოისს ვადა ძალიან მალე ეწურება. სთხოვეთ მიმღებს ახალი ინვოისი."
 }

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:overview/overview.dart' show WalletDetailBalanceCard;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -21,7 +21,7 @@ abstract final class SilentWalletPresentation {
         eyeToggle: const EyeToggle(),
         fiatBalance: HomeFiatBalance(
           balanceSat: balanceSat,
-          onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
+          onCurrencyChanged: Settings.changeDisplayCurrency,
         ),
       );
 

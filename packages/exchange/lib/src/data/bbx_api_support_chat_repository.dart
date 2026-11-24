@@ -96,6 +96,42 @@ final class BbxApiSupportChatRepository {
     }
   }
 
+  Future<Result<int, ExchangeFailure>> getUnreadMessageCount() async {
+    try {
+      final result = await _commcenter.getUnreadMessageCount();
+      return switch (result) {
+        Ok(:final value) => Ok(value < 0 ? 0 : value),
+        Err(:final failure) => Err(
+          _failure(
+            failure,
+            ExchangeChatLoadMessagesFailure.new,
+            'count unread',
+          ),
+        ),
+      };
+    } catch (e, st) {
+      return Err(
+        _unexpected(e, st, ExchangeChatLoadMessagesFailure.new, 'count unread'),
+      );
+    }
+  }
+
+  Future<Result<void, ExchangeFailure>> markAllMessagesRead() async {
+    try {
+      final result = await _commcenter.setAllMessagesAsRead();
+      return switch (result) {
+        Ok() => const Ok(null),
+        Err(:final failure) => Err(
+          _failure(failure, ExchangeChatLoadMessagesFailure.new, 'mark read'),
+        ),
+      };
+    } catch (e, st) {
+      return Err(
+        _unexpected(e, st, ExchangeChatLoadMessagesFailure.new, 'mark read'),
+      );
+    }
+  }
+
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   getMessageAttachment(String attachmentId) async {
     try {
@@ -138,7 +174,7 @@ final class BbxApiSupportChatRepository {
         return onFailure('Exchange credential unavailable');
       default:
         log.warning(
-          'Failed to $operation support chat data',
+          'Failed to $operation support chat data${failure.requestIdLabel}',
           error: failure.runtimeType,
         );
         return onFailure('$operation failed: ${failure.runtimeType}');

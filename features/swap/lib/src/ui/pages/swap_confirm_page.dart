@@ -9,6 +9,12 @@ import 'package:swap_feature/src/presentation/transfer_confirm_error.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:swaps/swaps.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:swap_feature/src/ui/swap_router.dart';
+import 'package:swap_feature/src/ui/swap_transition_policy.dart';
+import 'package:transactions/routes.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBottomSheet,
@@ -16,12 +22,82 @@ import 'package:bull_ui/bull_ui.dart'
         BullConfirmationHeader,
         BullFadingLinearProgress,
         BullOnchainSendInfoSection,
+        BullPaymentNetwork,
+        BullPaymentPhase,
+        BullPaymentTransition,
         BullText,
         BullTypographyX,
+        BullUiLocalizations,
         Gap;
 
-class SwapConfirmPage extends StatelessWidget {
+class SwapConfirmPage extends StatefulWidget {
   const SwapConfirmPage({super.key});
+
+  @override
+  State<SwapConfirmPage> createState() => _SwapConfirmPageState();
+}
+
+class _SwapConfirmPageState extends State<SwapConfirmPage> {
+  String? _attemptSwapId;
+  String? _attemptOrderId;
+  BullPaymentNetwork? _network;
+  bool _showTransition = false;
+  bool _statusOpen = false;
+  bool _confirmArmed = false;
+
+  void _confirm(TransferState state) {
+    if (_confirmArmed || state.isConfirming) return;
+    _confirmArmed = true;
+    final swap = state.swap;
+    if (!state.isSameChainTransfer && swap != null) {
+      setState(() {
+        _attemptSwapId = swap.id;
+        _attemptOrderId = state.orderSwap?.localId;
+        _network = swap.type == SwapType.bitcoinToLiquid
+            ? BullPaymentNetwork.liquid
+            : BullPaymentNetwork.bitcoin;
+        _showTransition = true;
+      });
+    }
+    context.read<TransferBloc>().add(const TransferEvent.confirmed());
+  }
+
+  Future<void> _openStatus() async {
+    if (_statusOpen) return;
+    setState(() {
+      _showTransition = false;
+      _statusOpen = true;
+    });
+    final bloc = context.read<TransferBloc>();
+    final state = bloc.state;
+    final orderId = _attemptOrderId ?? state.orderSwap?.localId;
+    try {
+      if (state.txId.isNotEmpty) {
+        if (orderId != null) {
+          TransactionsNavigation.goToDetails(
+            context,
+            TransactionDetailsTarget.orderSwap(orderId),
+            returnHome: true,
+          );
+        } else {
+          context.goNamed(TransferRoute.inProgressSwap.name, extra: bloc);
+        }
+      } else if (orderId != null) {
+        await TransactionsNavigation.openDetails(
+          context,
+          TransactionDetailsTarget.orderSwap(orderId),
+          returnHome: true,
+        );
+      } else {
+        await context.pushNamed<void>(
+          TransferRoute.inProgressSwap.name,
+          extra: bloc,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _statusOpen = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,190 +130,383 @@ class SwapConfirmPage extends StatelessWidget {
       (TransferBloc bloc) =>
           bloc.state.isSameChainTransfer || bloc.state.swap != null,
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.swapCopyForLocale.swapConfirmTransferTitle),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: BullFadingLinearProgress(
-            height: 3,
-            trigger: isConfirming,
-            backgroundColor: context.appColors.onPrimary,
-            foregroundColor: context.appColors.primary,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
-            child: Column(
-              crossAxisAlignment: .stretch,
-              children: [
-                const Gap(8),
-                BullConfirmationHeader(
-                  amount: formattedConfirmedAmountBitcoin,
-                  title: sendToExternal
-                      ? context.swapCopyForLocale.coreScreensExternalTransfer
-                      : context.swapCopyForLocale.coreScreensInternalTransfer,
-                  icon: Image.asset(
-                    'assets/icons/swap.png',
-                    height: 24,
-                    width: 24,
-                  ),
-                ),
-                if (context.select(
-                      (TransferBloc bloc) => bloc.state.confirmedConversion,
-                    )
-                    case final conversion?)
-                  Text(
-                    context.swapCopyForLocale.amountEnteredAtRate(
-                      conversion.enteredText,
-                      conversion.currencyCode,
-                      MaterialLocalizations.of(context).formatTimeOfDay(
-                        TimeOfDay.fromDateTime(conversion.quotedAt.toLocal()),
-                        alwaysUse24HourFormat: true,
+    final state = context.watch<TransferBloc>().state;
+    final canRetryRejectedPayin =
+        context.read<TransferBloc>().canRetryRejectedOrderPayin &&
+        state.txId.isEmpty &&
+        state.swap?.status == SwapStatus.pending &&
+        !(state.swap?.sendTxid?.isNotEmpty ?? false) &&
+        state.swap?.refundTxid == null;
+    final attemptId = _attemptSwapId;
+    final currentSwap = state.swap;
+    final sameAttempt =
+        attemptId != null &&
+        currentSwap?.id == attemptId &&
+        (_attemptOrderId == null ||
+            state.orderSwap?.localId == _attemptOrderId);
+    final phase = attemptId == null
+        ? BullPaymentPhase.sending
+        : swapTransitionPhase(
+            swapId: attemptId,
+            orderId: _attemptOrderId,
+            swap: currentSwap,
+            order: state.orderSwap,
+            fundingTxId: state.txId,
+          );
+    final completed = phase == BullPaymentPhase.success;
+    final failed = phase == BullPaymentPhase.failed;
+    final provisionalFailure =
+        sameAttempt &&
+        currentSwap != null &&
+        (currentSwap.status == SwapStatus.failed ||
+            currentSwap.status == SwapStatus.expired) &&
+        phase == BullPaymentPhase.sending;
+    final requiresStatus =
+        !state.isSameChainTransfer &&
+        (state.txId.isNotEmpty ||
+            (sameAttempt &&
+                currentSwap != null &&
+                currentSwap.status != SwapStatus.pending) ||
+            (state.orderSwap?.hasFundsMoved ?? false) ||
+            (currentSwap?.pendingLockupTx?.isNotEmpty ?? false) ||
+            state.swapFailure is SwapLockupPendingFailure ||
+            (state.orderSwap?.localStatus ==
+                    OrderSwapLocalStatus.broadcastUnknown &&
+                !canRetryRejectedPayin));
+    return BlocListener<TransferBloc, TransferState>(
+      listenWhen: (previous, current) =>
+          previous.isConfirming && !current.isConfirming,
+      listener: (context, state) {
+        setState(() {
+          _confirmArmed = false;
+          if (state.txId.isEmpty) {
+            _showTransition = false;
+          }
+        });
+      },
+      child: PopScope<Object?>(
+        canPop: !_showTransition && !requiresStatus,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return;
+          if (_showTransition) {
+            setState(() => _showTransition = false);
+          } else if (requiresStatus) {
+            _openStatus();
+          }
+        },
+        child: Stack(
+          children: [
+            ExcludeSemantics(
+              excluding: _showTransition,
+              child: ExcludeFocus(
+                excluding: _showTransition,
+                child: IgnorePointer(
+                  ignoring: _showTransition,
+                  child: Scaffold(
+                    appBar: AppBar(
+                      title: Text(
+                        context.swapCopyForLocale.swapConfirmTransferTitle,
+                      ),
+                      bottom: PreferredSize(
+                        preferredSize: const Size.fromHeight(3),
+                        child: BullFadingLinearProgress(
+                          height: 3,
+                          trigger: isConfirming,
+                          backgroundColor: context.appColors.onPrimary,
+                          foregroundColor: context.appColors.primary,
+                        ),
                       ),
                     ),
-                    style: context.bullType.label.copyWith(
-                      color: context.appColors.textMuted,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                const Gap(40),
-                BlocSelector<TransferBloc, TransferState, bool>(
-                  selector: (state) => state.isSameChainTransfer,
-                  builder: (context, isSameChainTransfer) {
-                    if (fromWallet == null) return const SizedBox.shrink();
-                    if (isSameChainTransfer) {
-                      final formattedFiatEquivalent = context.select((
-                        TransferBloc bloc,
-                      ) {
-                        final amount = bloc.state.inputAmountSat;
-                        final rate = bloc.state.exchangeRate;
-                        final currency = bloc.state.fiatCurrencyCode ?? 'CAD';
-                        if (rate == null) return '';
-                        final fiatAmount = amount * rate / 100000000;
-                        return '${fiatAmount.toStringAsFixed(2)} $currency';
-                      });
-                      final selectedFeeOption = context.select(
-                        (TransferBloc bloc) => bloc.state.selectedFeeOption,
-                      );
-                      final customFee = context.select(
-                        (TransferBloc bloc) => bloc.state.customFee,
-                      );
-                      final selectedFeeOptionTitle = feeSelectionRowLabel(
-                        context,
-                        ui: FeeUi.standard,
-                        selection: selectedFeeOption,
-                        customFee: customFee,
-                        fastestLabel: context.swapCopyForLocale.sendFastFee,
-                      );
-                      final toWalletLabel = context.select(
-                        (TransferBloc bloc) =>
-                            bloc.state.toWallet?.swapWalletLabel(context) ?? '',
-                      );
-                      return BullOnchainSendInfoSection(
-                        labels: context.swapCopyForLocale.onchainSendLabels,
-                        sendWalletLabel: fromWallet.swapWalletLabel(context),
-                        addressBuilder: (style, color) => AddressViewer(
-                          toWalletLabel,
-                          style: style,
-                          color: color,
-                        ),
-                        formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
-                        formattedFiatEquivalent: formattedFiatEquivalent,
-                        absoluteFees: absoluteFeesFormatted,
-                        selectedFeeOptionTitle: selectedFeeOptionTitle,
-                        onFeePriorityTap: () {
-                          final bloc = context.read<TransferBloc>();
-                          BullBottomSheet.show(
-                            context: context,
-                            child: FeeOptionsModal(
-                              ui: FeeUi.standard,
-                              viewState: bloc,
-                              actions: bloc,
-                              defaultAbsoluteCustomFee: true,
-                              customFeeColors: FeeModalCustomFeeColors(
-                                tile: context.appColors.onSecondary,
-                                shadow: context.appColors.secondary,
-                                unselectedIcon: context.appColors.surface,
+                    body: SafeArea(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 24,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: .stretch,
+                            children: [
+                              const Gap(8),
+                              BullConfirmationHeader(
+                                amount: formattedConfirmedAmountBitcoin,
+                                title: sendToExternal
+                                    ? context
+                                          .swapCopyForLocale
+                                          .coreScreensExternalTransfer
+                                    : context
+                                          .swapCopyForLocale
+                                          .coreScreensInternalTransfer,
+                                icon: Image.asset(
+                                  'assets/icons/swap.png',
+                                  height: 24,
+                                  width: 24,
+                                ),
                               ),
+                              if (context.select(
+                                    (TransferBloc bloc) =>
+                                        bloc.state.confirmedConversion,
+                                  )
+                                  case final conversion?)
+                                Text(
+                                  context.swapCopyForLocale.amountEnteredAtRate(
+                                    conversion.enteredText,
+                                    conversion.currencyCode,
+                                    MaterialLocalizations.of(context)
+                                        .formatTimeOfDay(
+                                          TimeOfDay.fromDateTime(
+                                            conversion.quotedAt.toLocal(),
+                                          ),
+                                          alwaysUse24HourFormat: true,
+                                        ),
+                                  ),
+                                  style: context.bullType.label.copyWith(
+                                    color: context.appColors.textMuted,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              const Gap(40),
+                              BlocSelector<TransferBloc, TransferState, bool>(
+                                selector: (state) => state.isSameChainTransfer,
+                                builder: (context, isSameChainTransfer) {
+                                  if (fromWallet == null) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  if (isSameChainTransfer) {
+                                    final formattedFiatEquivalent = context.select((
+                                      TransferBloc bloc,
+                                    ) {
+                                      final amount = bloc.state.inputAmountSat;
+                                      final rate = bloc.state.exchangeRate;
+                                      final currency =
+                                          bloc.state.fiatCurrencyCode ?? 'CAD';
+                                      if (rate == null) return '';
+                                      final fiatAmount =
+                                          amount * rate / 100000000;
+                                      return '${fiatAmount.toStringAsFixed(2)} $currency';
+                                    });
+                                    final selectedFeeOption = context.select(
+                                      (TransferBloc bloc) =>
+                                          bloc.state.selectedFeeOption,
+                                    );
+                                    final customFee = context.select(
+                                      (TransferBloc bloc) =>
+                                          bloc.state.customFee,
+                                    );
+                                    final selectedFeeOptionTitle =
+                                        feeSelectionRowLabel(
+                                          context,
+                                          ui: FeeUi.standard,
+                                          selection: selectedFeeOption,
+                                          customFee: customFee,
+                                          fastestLabel: context
+                                              .swapCopyForLocale
+                                              .sendFastFee,
+                                        );
+                                    final toWalletLabel = context.select(
+                                      (TransferBloc bloc) =>
+                                          bloc.state.toWallet?.swapWalletLabel(
+                                            context,
+                                          ) ??
+                                          '',
+                                    );
+                                    return BullOnchainSendInfoSection(
+                                      labels: context
+                                          .swapCopyForLocale
+                                          .onchainSendLabels,
+                                      sendWalletLabel: fromWallet
+                                          .swapWalletLabel(context),
+                                      addressBuilder: (style, color) =>
+                                          AddressViewer(
+                                            toWalletLabel,
+                                            style: style,
+                                            color: color,
+                                          ),
+                                      formattedBitcoinAmount:
+                                          formattedConfirmedAmountBitcoin,
+                                      formattedFiatEquivalent:
+                                          formattedFiatEquivalent,
+                                      absoluteFees: absoluteFeesFormatted,
+                                      selectedFeeOptionTitle:
+                                          selectedFeeOptionTitle,
+                                      onFeePriorityTap: () {
+                                        final bloc = context
+                                            .read<TransferBloc>();
+                                        BullBottomSheet.show(
+                                          context: context,
+                                          child: FeeOptionsModal(
+                                            ui: FeeUi.standard,
+                                            viewState: bloc,
+                                            actions: bloc,
+                                            defaultAbsoluteCustomFee: true,
+                                            customFeeColors:
+                                                FeeModalCustomFeeColors(
+                                                  tile: context
+                                                      .appColors
+                                                      .onSecondary,
+                                                  shadow: context
+                                                      .appColors
+                                                      .secondary,
+                                                  unselectedIcon:
+                                                      context.appColors.surface,
+                                                ),
+                                          ),
+                                        ).then((selected) {
+                                          if (!context.mounted) return;
+                                          final bloc = context
+                                              .read<TransferBloc>();
+                                          if (selected != null) {
+                                            // Preset picked — commit it. The
+                                            // event handler clears any in-flight
+                                            // arm from custom typing.
+                                            try {
+                                              final fee =
+                                                  FeeSelectionName.fromString(
+                                                    selected,
+                                                  );
+                                              bloc.add(
+                                                TransferEvent.feeOptionSelected(
+                                                  fee,
+                                                ),
+                                              );
+                                            } catch (e) {
+                                              // Ignore invalid fee selection
+                                            }
+                                          } else {
+                                            // User dismissed the modal (tap
+                                            // outside, back, swipe). Finalize the
+                                            // typed custom rate if any. Replaces
+                                            // the old "Confirm Custom Fee" button.
+                                            bloc.add(
+                                              const TransferEvent.customFeeFinalized(),
+                                            );
+                                          }
+                                        });
+                                      },
+                                    );
+                                  } else {
+                                    if (swap == null) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    final receiveWalletLabel = sendToExternal
+                                        ? null
+                                        : toWallet?.swapWalletLabel(context);
+                                    return SwapConfirmationDetails(
+                                      sendWalletLabel: fromWallet
+                                          .swapWalletLabel(context),
+                                      receiveWalletLabel: receiveWalletLabel,
+                                      formattedBitcoinAmount:
+                                          formattedConfirmedAmountBitcoin,
+                                      swap: swap,
+                                    );
+                                  }
+                                },
+                              ),
+                              const Gap(24),
+                              _SwapConfirmationError(
+                                errorMessage: transferConfirmErrorMessage(
+                                  buildTransactionException:
+                                      buildTransactionException,
+                                  swapFailureMessage: swapFailure?.toTranslated(
+                                    context,
+                                  ),
+                                  buildFailureMessage: context
+                                      .swapCopyForLocale
+                                      .sendErrorBuildFailed,
+                                  selectedCoinsUnavailableMessage: context
+                                      .swapCopyForLocale
+                                      .sendErrorSelectedCoinsUnavailable,
+                                  selectedCoinsInsufficientMessage: context
+                                      .swapCopyForLocale
+                                      .sendErrorSelectedCoinsInsufficient,
+                                  transactionChangedMessage: context
+                                      .swapCopyForLocale
+                                      .sendErrorTransactionChanged,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    bottomNavigationBar: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            BullButton.primary(
+                              label: requiresStatus
+                                  ? BullUiLocalizations.of(context)
+                                        .paymentViewStatus
+                                  : canRetryRejectedPayin
+                                  ? context.swapCopyForLocale.retry
+                                  : context
+                                        .swapCopyForLocale
+                                        .coreScreensConfirmButton,
+                              onPressed: requiresStatus
+                                  ? _openStatus
+                                  : _confirmArmed ||
+                                        isConfirming ||
+                                        fromWallet == null ||
+                                        !transferReady
+                                  ? null
+                                  : () => _confirm(state),
                             ),
-                          ).then((selected) {
-                            if (!context.mounted) return;
-                            final bloc = context.read<TransferBloc>();
-                            if (selected != null) {
-                              // Preset picked — commit it. The
-                              // event handler clears any in-flight
-                              // arm from custom typing.
-                              try {
-                                final fee = FeeSelectionName.fromString(
-                                  selected,
-                                );
-                                bloc.add(TransferEvent.feeOptionSelected(fee));
-                              } catch (e) {
-                                // Ignore invalid fee selection
-                              }
-                            } else {
-                              // User dismissed the modal (tap
-                              // outside, back, swipe). Finalize the
-                              // typed custom rate if any. Replaces
-                              // the old "Confirm Custom Fee" button.
-                              bloc.add(
-                                const TransferEvent.customFeeFinalized(),
-                              );
-                            }
-                          });
-                        },
-                      );
-                    } else {
-                      if (swap == null) return const SizedBox.shrink();
-                      final receiveWalletLabel = sendToExternal
-                          ? null
-                          : toWallet?.swapWalletLabel(context);
-                      return SwapConfirmationDetails(
-                        sendWalletLabel: fromWallet.swapWalletLabel(context),
-                        receiveWalletLabel: receiveWalletLabel,
-                        formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
-                        swap: swap,
-                      );
-                    }
-                  },
-                ),
-                const Gap(24),
-                _SwapConfirmationError(
-                  errorMessage: transferConfirmErrorMessage(
-                    buildTransactionException: buildTransactionException,
-                    swapFailureMessage: swapFailure?.toTranslated(context),
-                    buildFailureMessage:
-                        context.swapCopyForLocale.sendErrorBuildFailed,
-                    selectedCoinsUnavailableMessage: context
-                        .swapCopyForLocale
-                        .sendErrorSelectedCoinsUnavailable,
-                    selectedCoinsInsufficientMessage: context
-                        .swapCopyForLocale
-                        .sendErrorSelectedCoinsInsufficient,
-                    transactionChangedMessage:
-                        context.swapCopyForLocale.sendErrorTransactionChanged,
+                            if (attemptId != null &&
+                                !requiresStatus &&
+                                swapFailure != null) ...[
+                              const Gap(8),
+                              BullButton.secondary(
+                                label: context
+                                    .swapCopyForLocale
+                                    .swapContinueButton,
+                                onPressed: _openStatus,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: BullButton.primary(
-            label: context.swapCopyForLocale.coreScreensConfirmButton,
-            onPressed: isConfirming || fromWallet == null || !transferReady
-                ? null
-                : () => context.read<TransferBloc>().add(
-                    const TransferEvent.confirmed(),
+            if (_showTransition)
+              if (_network case final network?)
+                Positioned.fill(
+                  child: BullPaymentTransition(
+                    network: network,
+                    phase: phase,
+                    status: completed
+                        ? context.swapCopyForLocale.swapTransferCompletedTitle
+                        : sameAttempt &&
+                              (currentSwap?.refundTxid != null ||
+                                  currentSwap?.status == SwapStatus.refunded)
+                        ? context.swapCopyForLocale.swapTransferRefundedTitle
+                        : sameAttempt &&
+                              currentSwap?.status == SwapStatus.refundable
+                        ? context
+                              .swapCopyForLocale
+                              .swapTransferRefundInProgressTitle
+                        : provisionalFailure
+                        ? context.swapCopyForLocale.swapTransferPendingTitle
+                        : sameAttempt &&
+                              currentSwap?.status == SwapStatus.expired
+                        ? context.swapCopyForLocale.transactionStatusSwapExpired
+                        : failed
+                        ? context.swapCopyForLocale.transactionStatusSwapFailed
+                        : context.swapCopyForLocale.swapTransferPendingTitle,
+                    skipLabel: BullUiLocalizations.of(context)
+                        .paymentViewStatus,
+                    onSkip: _openStatus,
+                    onDone: _openStatus,
+                    onBackdropTap: () =>
+                        setState(() => _showTransition = false),
                   ),
-          ),
+                ),
+          ],
         ),
       ),
     );

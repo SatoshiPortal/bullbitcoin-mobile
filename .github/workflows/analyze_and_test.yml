@@ -78,6 +78,9 @@ jobs:
             while IFS= read -r path; do
               file_count=$((file_count + 1))
               case "$path" in
+                WORKSPACE.md|DEPENDENCIES.md)
+                  run_app_checks=true
+                  ;;
                 *.md|docs/*|LICENSE|.gitignore|.git-blame-ignore-revs|.github/ISSUE_TEMPLATE/*)
                   ;;
                 *)
@@ -225,8 +228,10 @@ jobs:
     # Measured 2026-11-14 on develop: ~18 min of setup (free disk, Flutter,
     # build_runner), ~3 min of static checks, then the unit suites alone pass
     # 27 min (the app suite is ~22 min of that), so 45 min cancelled healthy
-    # runs with every test still green.
-    timeout-minutes: 75
+    # runs with every test still green. Raised to 90 min on 2026-11-23: the
+    # sibling unit-shards job already allows 90, and a slow runner must not
+    # cancel a green run.
+    timeout-minutes: 90
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -269,6 +274,10 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make analyze
 
+      - name: Workspace dependency docs should be current
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make workspace-graph-check
+
       - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
@@ -277,9 +286,17 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make custody-check
 
+      - name: Native stores have exactly one writer
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make native-write-check
+
       - name: Secrets public API trees should be current
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make secrets-api-docs-check
+
+      - name: Sync public API trees should be current
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make sync-api-docs-check
 
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
@@ -315,7 +332,7 @@ jobs:
     needs: prepare-x64
     name: Unit tests (shard ${{ matrix.shard }} of 3)
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:

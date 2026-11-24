@@ -8,7 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'ark_information_widget_test.dart' show app;
 import 'ark_payment_cubit_test.dart' show PaymentRig, destination;
-import 'ark_payment_screen_test.dart' show action, input, frame, cancelAction;
+import 'ark_payment_screen_test.dart'
+    show action, input, frame, cancelAction, scanAction;
 
 ArkPaymentScreen page(PaymentRig rig, {Future<String?> Function()? scan}) =>
     ArkPaymentScreen(cubit: rig.cubit, onReconcile: () {}, onScan: scan);
@@ -20,7 +21,13 @@ void main() {
     final rig = PaymentRig();
     await tester.pumpWidget(app(page(rig)));
     expect(find.byKey(const ValueKey('ark-payment-address')), findsOneWidget);
-    expect(action(tester, 'Open the Camera').disabled, isTrue);
+    // Without a camera, scanning explains why and keeps manual entry.
+    scanAction(tester)();
+    await frame(tester);
+    expect(
+      find.text("Camera is unavailable. Enter the recipient's address."),
+      findsOneWidget,
+    );
     final staleAddress = input(tester, 0).onChanged;
     staleAddress(destination);
     await frame(tester);
@@ -52,7 +59,7 @@ void main() {
     }
 
     await tester.pumpWidget(app(page(rig, scan: scan)));
-    final open = action(tester, 'Open the Camera').onPressed;
+    final open = scanAction(tester);
     open();
     open();
     await frame(tester);
@@ -62,7 +69,10 @@ void main() {
     reply.complete('late-scanner-value');
     await frame(tester);
     expect(input(tester, 0).value, destination);
-    expect(action(tester, 'Open the Camera').disabled, isFalse);
+    // A finished scan frees the camera for the next one.
+    scanAction(tester)();
+    await frame(tester);
+    expect(scans, 2);
     expect(rig.client.calls, isEmpty);
   });
 
@@ -72,7 +82,7 @@ void main() {
     final rig = PaymentRig();
     const raw = '  lnbcrt1publicfixture  ';
     await tester.pumpWidget(app(page(rig, scan: () async => raw)));
-    action(tester, 'Open the Camera').onPressed();
+    scanAction(tester)();
     await frame(tester);
     expect(input(tester, 0).value, raw);
     expect(rig.client.calls, isEmpty);
@@ -91,7 +101,7 @@ void main() {
       final reply = Completer<String?>();
       Future<String?> scan() => reply.future;
       await tester.pumpWidget(app(page(first, scan: scan)));
-      final oldOpen = action(tester, 'Open the Camera').onPressed;
+      final oldOpen = scanAction(tester);
       oldOpen();
       await frame(tester);
       switch (replacement) {
@@ -117,13 +127,13 @@ void main() {
   ) async {
     final rig = PaymentRig();
     await tester.pumpWidget(app(page(rig, scan: () async => null)));
-    action(tester, 'Open the Camera').onPressed();
+    scanAction(tester)();
     await frame(tester);
     expect(input(tester, 0).value, '');
     await tester.pumpWidget(
       app(page(rig, scan: () async => throw Exception('camera fixture'))),
     );
-    action(tester, 'Open the Camera').onPressed();
+    scanAction(tester)();
     await frame(tester);
     expect(
       find.text("Camera is unavailable. Enter the recipient's address."),
@@ -135,31 +145,85 @@ void main() {
     expect(rig.client.calls, isEmpty);
   });
 
-  testWidgets('only a succeeded payment exposes Payment sent and Done', (
+  testWidgets('a sent payment shows the app success screen and goes home', (
     tester,
   ) async {
-    final rig = PaymentRig();
-    for (final kind in ArkOperationKind.values) {
+    for (final status in [
+      ArkOperationStatus.pending,
+      ArkOperationStatus.succeeded,
+    ]) {
+      final rig = PaymentRig();
+      var homes = 0;
+      final details = <String>[];
       rig.cubit.emit(
         ArkPaymentSubmitted(
           ArkOperation(
             id: 'actual-operation',
-            kind: kind,
-            status: ArkOperationStatus.succeeded,
+            kind: ArkOperationKind.payment,
+            status: status,
+            nativeReference: 'payment-movement',
             chainSource: Uri.parse('http://localhost:3000'),
             configGeneration: 1,
           ),
         ),
       );
-      await tester.pumpWidget(app(page(rig)));
+      await tester.pumpWidget(
+        app(
+          ArkPaymentScreen(
+            cubit: rig.cubit,
+            onReconcile: () {},
+            onHome: () => homes++,
+            onViewDetails: details.add,
+          ),
+        ),
+      );
       await frame(tester);
-      final count = kind == ArkOperationKind.payment
-          ? findsOneWidget
-          : findsNothing;
-      expect(find.text('Payment sent'), count);
-      expect(find.widgetWithText(BullButton, 'Done'), count);
-      expect(find.text('actual-operation'), findsOneWidget);
+      expect(find.byType(BullSuccessScreen), findsOneWidget);
+      expect(find.text('Payment sent'), findsOneWidget);
+      expect(
+        find.textContaining('next round'),
+        status == ArkOperationStatus.pending ? findsOneWidget : findsNothing,
+      );
+      expect(find.widgetWithText(BullButton, 'Refresh'), findsNothing);
+      tester
+          .widget<BullButton>(find.widgetWithText(BullButton, 'View details'))
+          .onPressed();
+      expect(details, ['payment-movement']);
+      await tester.tap(find.byTooltip('Close').first);
+      expect(homes, 1);
       expect(rig.client.calls, isEmpty);
     }
+  });
+
+  testWidgets('another kind of operation is never shown as a payment', (
+    tester,
+  ) async {
+    final rig = PaymentRig();
+    var homes = 0;
+    await tester.pumpWidget(
+      app(
+        ArkPaymentScreen(
+          cubit: rig.cubit,
+          onReconcile: () {},
+          onHome: () => homes++,
+        ),
+      ),
+    );
+    await frame(tester);
+    rig.cubit.emit(
+      ArkPaymentSubmitted(
+        ArkOperation(
+          id: 'actual-operation',
+          kind: ArkOperationKind.renewal,
+          status: ArkOperationStatus.succeeded,
+          chainSource: Uri.parse('http://localhost:3000'),
+          configGeneration: 1,
+        ),
+      ),
+    );
+    await frame(tester);
+    expect(find.text('Payment sent'), findsNothing);
+    expect(homes, 1);
+    await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
   });
 }

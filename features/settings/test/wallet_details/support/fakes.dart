@@ -1,4 +1,5 @@
-import 'package:primitives/primitives.dart' show Failure, Fingerprint, Result;
+import 'package:primitives/primitives.dart'
+    show Failure, Fingerprint, Ok, Result;
 import 'package:secrets/secrets.dart' show SeedReferencePort;
 import 'package:swaps/swaps.dart' show Swap, SwapStore, SwapsFailure;
 import 'package:sync/sync.dart' show SyncFailure, WalletKey;

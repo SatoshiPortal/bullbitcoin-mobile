@@ -1,6 +1,5 @@
 import 'package:send/src/payment/domain/usecases/load_send_display_preferences_usecase.dart';
-
-import 'domain/usecases/get_send_amount_quotes_usecase.dart';
+import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
 import 'presentation/send_ark_cubit.dart';
@@ -17,7 +16,6 @@ import 'package:send/send.dart';
 import 'package:send/src/payment/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:send/src/payment/domain/usecases/create_send_swap_usecase.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:send/src/payment/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:send/src/payment/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
@@ -28,6 +26,8 @@ import 'package:send/src/payment/domain/usecases/create_boltz_send_swap_usecase.
 import 'package:send/src/payment/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:send/src/payment/domain/usecases/validate_bitcoin_selection_usecase.dart';
+import 'package:send/src/payment/data/boltz_lnurl_pay_limits_repository.dart';
+import 'package:send/src/payment/domain/usecases/load_lnurl_pay_limits_usecase.dart';
 import 'package:send/src/payment/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:send/src/payment/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:send/src/payment/domain/usecases/select_best_wallet_usecase.dart';
@@ -44,7 +44,6 @@ import 'package:send/src/payment/domain/usecases/send_sp_payment_for_send_usecas
 import 'package:send/src/payment/domain/usecases/get_sp_network_for_send_usecase.dart';
 import 'package:send/src/payment/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:send/src/payment/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
-import 'package:bull_pricer/bull_pricer.dart';
 import 'package:spend/spend.dart';
 import 'package:send/src/payment/domain/usecases/load_send_label_suggestions_usecase.dart';
 import 'package:send/src/payment/domain/usecases/store_send_transaction_label_usecase.dart';
@@ -75,6 +74,7 @@ SendCubit createPaymentCubit({
   );
   final recipientAmount = ReadSendRecipientAmountUsecase(d.inventory, d.native);
   final spNetwork = GetSpNetworkForSendUsecase(d.silent);
+  final quotes = Send.open(preferences: d.preferences);
   return SendCubit(
     walletKey: args?.wallet,
     mode: switch (spWalletLabel) {
@@ -98,14 +98,8 @@ SendCubit createPaymentCubit({
       settings: d.preferences,
     ),
     loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(d.preferences),
-    getSendExchangeRateUsecase: GetSendExchangeRateUsecase(
-      getSettingsUsecase: d.preferences,
-      getIndexPrice: Pricer.getIndexPrice,
-    ),
-    getSendAmountQuotesUsecase: GetSendAmountQuotesUsecase(
-      settings: d.preferences,
-      read: Pricer.getIndexPrices,
-    ),
+    readExchangeRate: quotes.exchangeRate,
+    readAmountQuotes: quotes.amountQuotes,
     loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: fees),
     loadCoins: LoadSendCoinsUsecase(d.coins),
     validateBitcoinSelectionUsecase: ValidateBitcoinSelectionUsecase(spend),
@@ -123,6 +117,9 @@ SendCubit createPaymentCubit({
     ),
     getSendCrossChainQuoteUsecase: GetSendCrossChainQuoteUsecase(d.orders),
     resolveLightningAddressUsecase: ResolveLightningAddressUsecase(),
+    loadLnurlPayLimitsUsecase: const LoadLnurlPayLimitsUsecase(
+      BoltzLnurlPayLimitsRepository(),
+    ),
     updateSendSwapPayinUsecase: UpdateSendSwapPayinUsecase(d.orders),
     watchSendSwapUsecase: WatchSendSwapUsecase(d.orders),
     sendWithPayjoinUsecase: SendWithPayjoinUsecase(d.payjoin.sender, spend),
@@ -191,7 +188,6 @@ SendCubit createPaymentCubit({
   );
 }
 
-SendArkCubit createPaymentArkCubit(SendPaymentDependencies dependencies) {
-  final ark = dependencies.ark;
-  return SendArkCubit(ark == null ? null : RecognizeArkAddressUsecase(ark));
-}
+SendArkCubit createPaymentArkCubit(ArkAccountsFacade? accounts) => SendArkCubit(
+  accounts == null ? null : RecognizeArkAddressUsecase(accounts),
+);

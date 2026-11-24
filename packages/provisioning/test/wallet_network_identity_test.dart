@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:provisioning/provisioning.dart';
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
@@ -30,6 +31,11 @@ const _fingerprint = '73c5da0a';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  // A Liquid default derives its confidential descriptor through LWK, which
+  // reaches the app's Rust bridge: without this the first Liquid creation
+  // throws `Bad state: secrets: StateError` from `BaseEntrypoint._state`.
+  setUpAll(BullSdk.init);
+  tearDownAll(BullSdk.dispose);
   late Directory directory;
   late InventoryFixture fixture;
   late Secrets secrets;

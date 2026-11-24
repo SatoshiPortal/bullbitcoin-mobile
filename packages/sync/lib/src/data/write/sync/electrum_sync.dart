@@ -23,6 +23,7 @@ import '../../../domain/sync_completion.dart';
 import '../../../domain/sync_reason.dart';
 import '../../../domain/wallet_revision.dart';
 import '../../../domain/sync_failure.dart';
+import '../../../domain/sync_transaction_target.dart';
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/ports/wallet_connection_port.dart';
 import '../../../domain/wallet_key.dart';
@@ -41,7 +42,7 @@ final class ElectrumSync {
   _onCompletion;
   final bool _collectIncoming;
   final Future<String> Function() _documentsDirectory;
-  final _active = <WalletKey, Future<Result<SyncCompletion, SyncFailure>>>{};
+  final _active = <WalletKey, _PendingPass>{};
   final _failures = <WalletKey, String>{};
   int _runSequence = 0;
   final _started = StreamController<WalletKey>.broadcast();
@@ -67,6 +68,14 @@ final class ElectrumSync {
   /// means they were not collected, an empty set an empty history.
   /// [onCompletion] receives a completion only when they were collected.
   ///
+  /// [targets] asks for a targeted pass: the server is asked only about the
+  /// wallet scripts those transactions touch, and the completion reports which
+  /// of them the pass proved visible. A targeted pass never initializes or
+  /// scans a wallet, so it fails with `SyncInitialScanRequiredFailure` on one
+  /// that has not completed its initial scan. Only a Bitcoin wallet has
+  /// targeted passes: non-empty [targets] on another chain fail with
+  /// `SyncUnsupportedNetworkFailure` before any work, never as a routine pass.
+  ///
   /// Recoverable outcomes are a [Result]; an unexpected [Exception] becomes a
   /// storage failure. Anything else thrown, a programmer [Error] above all,
   /// completes this future, and every caller joined to it, with that error.
@@ -78,28 +87,61 @@ final class ElectrumSync {
     bool headless = false,
     bool allowInitialScan = true,
     bool? collectIncoming,
+    List<SyncTransactionTarget> targets = const <SyncTransactionTarget>[],
     Future<Result<void, SyncFailure>> Function(SyncCompletion)? onCompletion,
   }) {
     final failure = nativeDescriptorFailure(descriptor);
     if (failure != null) return Future.value(Err(failure));
     final key = descriptor.key;
+    final targeted = targets.isNotEmpty;
+    // A targeted pass resolves the wallet's own derivation indices, which only
+    // a Bitcoin descriptor has. A Liquid wallet must never satisfy one with a
+    // routine Liquid sync that covers no target.
+    if (targeted && key.network is! BitcoinNetwork) {
+      return Future.value(
+        const Err<SyncCompletion, SyncFailure>(SyncUnsupportedNetworkFailure()),
+      );
+    }
     final previous = _active[key];
     // Joined requests keep the existing pass's reason; each queued discovery owns its reason.
-    if (previous != null && !discover) return previous;
-    // A discovery request must not disappear behind a routine sync. Queue it after the current operation; all native access still happens in workers.
-    final completer = Completer<Result<SyncCompletion, SyncFailure>>();
-    _active[key] = completer.future;
+    if (previous != null) {
+      // A routine refresh coalesces with a routine pass, which may already be
+      // running: it asks only for what that pass already covers.
+      if (!targeted && !discover && !previous.targeted) return previous.future;
+      // A targeted request coalesces only with a targeted pass that has not
+      // started, whose covered scripts it extends. Joining a pass already under
+      // way would read a pass that began before this target existed, and its
+      // answer would prove nothing about it.
+      if (targeted && previous.targeted && !previous.started) {
+        previous.targets.addAll(targets);
+        return previous.future;
+      }
+    }
+    // A discovery request must not disappear behind a routine sync. Queue it after the current operation; all native access still happens in workers. So does anything the active pass cannot answer, which keeps a single writer per wallet.
+    final pass = _PendingPass(targeted: targeted, targets: List.of(targets));
+    _active[key] = pass;
+    final completer = pass.completer;
     unawaited(() async {
       try {
         // A failed predecessor, whatever it threw, never cancels a queued pass.
         if (previous != null) {
-          await previous.then<void>((_) {}, onError: (Object _) {});
+          await previous.future.then<void>((_) {}, onError: (Object _) {});
         }
+        // Yield once before fixing the covered scripts: a targeted request
+        // issued before this pass actually starts still merges into it, while
+        // one issued after gets its own pass.
+        await Future<void>.value();
+        // The covered scripts are fixed once the pass starts: a later request
+        // that arrives from here on gets its own pass.
+        pass.started = true;
+        final coveredTargets = List<SyncTransactionTarget>.of(pass.targets);
         final watch = Stopwatch()..start();
         final runId = ++_runSequence;
         final context =
             'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=$headless reason=${reason.name}';
-        log.fine('Electrum sync started $context discovery=$discover');
+        log.fine(
+          'Electrum sync started $context discovery=$discover allow_initial_scan=$allowInitialScan targeted=${coveredTargets.length}',
+        );
         _started.add(key);
         var connectionSummary = 'route=unselected';
         var cacheSummary = '';
@@ -110,6 +152,7 @@ final class ElectrumSync {
           headless: headless,
           allowInitialScan: allowInitialScan,
           collectIncoming: collectIncoming ?? _collectIncoming,
+          targets: coveredTargets,
           onCompletion: onCompletion ?? _onCompletion,
           onCache: (summary) => cacheSummary = summary,
           onConnection: (connection) {
@@ -154,8 +197,8 @@ final class ElectrumSync {
         _unexpected(key, reason);
         _finished.add(SyncFinished(key, const Err(SyncStorageFailure())));
       } finally {
-        if (identical(_active[key], completer.future)) {
-          unawaited(_active.remove(key));
+        if (identical(_active[key], pass)) {
+          _active.remove(key);
         }
       }
     }());
@@ -181,6 +224,7 @@ final class ElectrumSync {
     required bool headless,
     required bool allowInitialScan,
     required bool collectIncoming,
+    required List<SyncTransactionTarget> targets,
     required Future<Result<void, SyncFailure>> Function(SyncCompletion)?
     onCompletion,
     required void Function(WalletConnection) onConnection,
@@ -235,9 +279,13 @@ final class ElectrumSync {
               generation,
               events.sendPort,
               headless,
-              allowInitialScan,
+              // A targeted pass judges its targets from the wallet's own
+              // scripts; it never initializes one. The preflight check below
+              // defers a wallet that has not completed its initial scan.
+              allowInitialScan && targets.isEmpty,
               collectIncoming,
               runId,
+              targets: targets,
             ),
           );
           retryable = attempt.retryable;
@@ -258,6 +306,21 @@ final class ElectrumSync {
       await log.flush();
     }
   }
+}
+
+/// One pass of [ElectrumSync], queued or running, with the targets a targeted
+/// one must cover. [targets] grows while the pass has not started; [started]
+/// marks the instant it fixed them, after which a further request gets its own
+/// pass.
+final class _PendingPass {
+  final Completer<Result<SyncCompletion, SyncFailure>> completer = Completer();
+  final bool targeted;
+  final List<SyncTransactionTarget> targets;
+  bool started = false;
+
+  _PendingPass({required this.targeted, required this.targets});
+
+  Future<Result<SyncCompletion, SyncFailure>> get future => completer.future;
 }
 
 Future<SyncPassOutcome> _performSync(SyncParams params) async {

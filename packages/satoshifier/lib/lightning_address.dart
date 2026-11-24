@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:rust_bindings/boltz.dart';
 
@@ -29,11 +30,23 @@ resolveLightningAddress(String address, Sats amount) async {
       final Bolt11PaymentRequest request
           when BigInt.from(request.amountSat) == amount.value =>
         Ok(request),
-      _ => const Err(InvalidLightningAddressInvoice()),
+      _ => _invalidInvoice(),
     };
-  } on BoltzError {
-    return const Err(LightningAddressUnavailable());
-  } on Exception {
-    return const Err(LightningAddressUnavailable());
+  } on BoltzError catch (error) {
+    return _unavailable(error);
+  } on Exception catch (error) {
+    return _unavailable(error);
   }
+}
+
+// Support diagnostics carry only the failure category: never the address, the
+// invoice or an error message that may quote them.
+Err<Bolt11PaymentRequest, LightningAddressFailure> _invalidInvoice() {
+  log.warning('Lightning address returned an invalid invoice');
+  return const Err(InvalidLightningAddressInvoice());
+}
+
+Err<Bolt11PaymentRequest, LightningAddressFailure> _unavailable(Object error) {
+  log.warning('Lightning address unavailable error=${error.runtimeType}');
+  return const Err(LightningAddressUnavailable());
 }

@@ -1,0 +1,266 @@
+{
+  "@@locale": "en",
+  "dataBackup": "Data backup",
+  "intro": "BULL keeps an encrypted copy of your wallet data up to date after every change, so you can get it back on a new phone.",
+  "whatIsSaved": "What is saved",
+  "labels": "Labels",
+  "labelsDescription": "Your notes on transactions, addresses and coins, and which coins are frozen.",
+  "neverRecoveryPhrase": "Never your recovery phrase",
+  "physicalBackup": "Keep your physical backup: without the wallet, this copy can’t be opened.",
+  "whoCanRead": "Who can read it",
+  "privacy": "Encrypted on this phone. Anyone with the wallet’s recovery phrase or its public key (xpub) can open it.",
+  "where": "Where",
+  "googleDrive": "Google Drive",
+  "iCloud": "iCloud",
+  "customLocation": "Custom location",
+  "driveDescription": "Hidden app folder of your Google account",
+  "iCloudDescription": "Your iCloud Drive, in BULL’s folder",
+  "folderDescription": "A folder you choose: phone, SD card, USB drive or another app",
+  "continueAction": "Continue",
+  "walletsTitle": "Wallets to back up",
+  "walletsIntro": "One encrypted file per recovery phrase. Each one opens only with that wallet.",
+  "testBackup": "Test it",
+  "turnOn": "Turn on backup",
+  "unverified": "Physical backup not tested. Keep it available to recover this wallet.",
+  "publicKeyWarning": "Opens with its public key. Apps or servers that know it could read these labels.",
+  "unsupported": "This wallet is not supported.",
+  "wallets": "Wallets",
+  "upToDate": "Up to date",
+  "actionNeeded": "Action needed",
+  "backUpNow": "Back up now",
+  "destination": "Destination",
+  "restoreFromBackup": "Restore from backup",
+  "turnOff": "Turn off",
+  "turnOffTitle": "Turn off automatic backup?",
+  "turnOffMessage": "New changes will stay on this phone. To also delete existing backups created by this phone, select the option below.",
+  "alsoDelete": "Also delete the backups",
+  "cancel": "Cancel",
+  "restorePrompt": "Restore your labels?",
+  "restorePromptMessage": "If automatic data backup was on, your labels and frozen coins can come back. BULL looks for the backup of this wallet only.",
+  "lookInDrive": "Look in Google Drive",
+  "lookInICloud": "Look in iCloud",
+  "chooseFile": "Choose a backup file",
+  "notNow": "Not now",
+  "restoreLater": "You can do it later in Backup › Data backup.",
+  "restoreLabels": "Restore labels",
+  "version": "Version",
+  "changesTitle": "What changes on this phone",
+  "labelsToAdd": "Labels to add",
+  "coinsToFreeze": "Coins to freeze",
+  "alreadySame": "Already the same",
+  "different": "Different on this phone",
+  "nothingDeleted": "Nothing on this phone is deleted.",
+  "restore": "Restore",
+  "labelsRestored": "Labels restored",
+  "restorePartial": "Restore partially completed",
+  "freezePending": "{count, plural, one{1 coin has not been discovered yet.} other{{count} coins have not been discovered yet.}}",
+  "freezeFailed": "{count, plural, one{1 coin could not be frozen.} other{{count} coins could not be frozen.}}",
+  "retryFreezes": "Retry freezing coins",
+  "done": "Done",
+  "enableAfterRestore": "Turn on automatic backup",
+  "failureNotReady": "Open BULL and try again after it finishes starting.",
+  "failureStalePlan": "Your labels changed. Review the backup again before restoring.",
+  "failureTooLarge": "This backup is too large.",
+  "failureUnexpected": "Something went wrong. Please try again.",
+  "privacyProvider": "{provider} can’t open it without those credentials.",
+  "@privacyProvider": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "backUpWallet": "Back up {wallet}",
+  "@backUpWallet": {
+    "placeholders": {
+      "wallet": {
+        "type": "String"
+      }
+    }
+  },
+  "unattributedLabels": "{count, plural, one{1 label without a wallet is not backed up.} other{{count} labels without a wallet are not backed up.}}",
+  "@unattributedLabels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "changesWaiting": "{count, plural, one{1 change waiting} other{{count} changes waiting}}",
+  "@changesWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reconnect": "Reconnect {provider}",
+  "@reconnect": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "walletCount": "{selected} of {total}",
+  "@walletCount": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "foundIn": "Found in {provider}",
+  "@foundIn": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "keepLabel": "Keep « {label} »",
+  "@keepLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "useBackupLabel": "Use backup « {label} »",
+  "@useBackupLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "restoredAmounts": "{labels, plural, one{1 label} other{{labels} labels}} · {coins, plural, one{1 coin frozen} other{{coins} coins frozen}}",
+  "@restoredAmounts": {
+    "placeholders": {
+      "labels": {
+        "type": "int"
+      },
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingAmounts": "{labels, plural, one{1 label} other{{labels} labels}} · {coins, plural, one{1 coin pending} other{{coins} coins pending}}",
+  "@pendingAmounts": {
+    "placeholders": {
+      "labels": {
+        "type": "int"
+      },
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "labelsRejected": "{count, plural, one{1 label could not be restored.} other{{count} labels could not be restored.}}",
+  "@labelsRejected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "differencesResolved": "{count, plural, one{1 difference resolved as you chose.} other{{count} differences resolved as you chose.}}",
+  "@differencesResolved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@freezePending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@freezeFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "handedTo": "Handed to {provider} {when}",
+  "@handedTo": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingStatus": "Saved as soon as the phone is online. Last backup {when}.",
+  "@pendingStatus": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "reconnectStatus": "BULL can’t reach {provider} anymore. {count, plural, one{1 change is kept} other{{count} changes are kept}} on this phone until you reconnect.",
+  "@reconnectStatus": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labelCount": "{count, plural, one{1 label} other{{count} labels}}",
+  "@labelCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "previousVersionKept": "{labels} · previous version kept",
+  "@previousVersionKept": {
+    "placeholders": {
+      "labels": {
+        "type": "String"
+      }
+    }
+  },
+  "latestVersion": "Latest · {date}",
+  "@latestVersion": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "previousVersion": "Previous · {date}",
+  "@previousVersion": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sameRecoveryPhrase": "Same recovery phrase",
+  "importedPhrase": "Imported phrase",
+  "watchOnly": "Watch-only",
+  "off": "Off",
+  "recentStatus": "Up to date · {when}",
+  "@recentStatus": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  }
+}

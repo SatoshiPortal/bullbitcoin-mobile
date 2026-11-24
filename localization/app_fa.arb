@@ -38,57 +38,9 @@
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
   },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "exchangeLandingConnectAccount": "حساب تبادل Bitcoin Bull خود را به هم متصل کنید",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
-  },
-  "exchangeLandingRecommendedExchange": "Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
-  "exchangeFeatureSelfCustody": "خرید Bitcoin مستقیم به Self-custody",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "exchangeFeatureDcaOrders": "DCA، سفارشات محدود و خرید خودکار",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
-  "exchangeFeatureSellBitcoin": "• فروش Bitcoin، پرداخت با Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
-  "exchangeFeatureBankTransfers": "• ارسال انتقال بانکی و پرداخت صورتحساب",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
-  "exchangeFeatureCustomerSupport": "• چت با پشتیبانی مشتری",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
-  "exchangeFeatureUnifiedHistory": "• سابقه معامله یکپارچه",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
-  },
-  "exchangeLandingDisclaimerLegal": "دسترسی به خدمات تبادل به کشورهایی که بیت کوین بول می تواند به صورت قانونی کار کند محدود خواهد شد و ممکن است نیاز به KYC داشته باشد.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
-  },
-  "exchangeLandingDisclaimerNotAvailable": "خدمات مبادله Cryptocurrency در برنامه تلفن همراه Bull Bitcoin در دسترس نیست.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "exchangeLoginButton": "ثبت نام یا ثبت نام",
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
-  },
-  "exchangeGoToWebsiteButton": "به سایت تبادل Bitcoin Bull بروید",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "exchangeAuthLoginFailedTitle": "ورود شکست خورده",
   "@exchangeAuthLoginFailedTitle": {
@@ -707,17 +659,9 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "بازیابی کیف پول",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "لطفا نرخ هزینه را انتخاب کنید",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
-  },
-  "onboardingEncryptedVaultDescription": "پشتیبان گیری خود را از طریق ابر با استفاده از PIN خود بازیابی کنید.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "تغییر وضعیت",
   "@transactionSwapStatusSwapStatus": {
@@ -1151,10 +1095,6 @@
   "payPaymentInProgress": "پرداخت در پیشرفت!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
   },
   "fromLabel": "از",
   "@fromLabel": {
@@ -1625,10 +1565,6 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "walletSettingsImportWalletTitle": "واردات کیف پول",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "backupWalletErrorGoogleDriveConnection": "شکست در اتصال به Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
     "description": "Error when Google Drive connection fails"
@@ -1940,10 +1876,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "بانک مرکزی خود، کیف پول Bitcoin و سرویس تبادل بیت کوین را در اختیار دارد.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "... وجوه به حساب شما اضافه خواهد شد.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2236,10 +2168,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "خدمات وضعیت",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "قیمت در ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -2324,10 +2252,6 @@
   "exchangeAuthOk": "OK",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "امنیتی Pin",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "تکمیل شده",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2472,10 +2396,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "مشترک با Bitcoin Bull.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "درک می کنم",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "فایل امن",
   "@exchangeFileUploadTitle": {
@@ -2651,10 +2571,6 @@
   "payCorporate": "شرکت های شرکتی",
   "@payCorporate": {
     "description": "Label for corporate checkbox"
-  },
-  "onboardingCreateNewWallet": "ایجاد کیف پول جدید",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
   },
   "buyExpressWithdrawalDesc": "دریافت بیت کوین بلافاصله پس از پرداخت",
   "@buyExpressWithdrawalDesc": {
@@ -3045,10 +2961,6 @@
   "sendSwapDetails": "جزئیات تبادل",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "کیف پول خود را از طریق 12 کلمه بازیابی کنید.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "بارگیری",
   "@pinStatusLoading": {
@@ -4019,16 +3931,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Mode",
   "exchangeTestnetBasicAuthTitle": "اعتبارنامه‌های صرافی testnet",
-  "exchangeTestnetBasicAuthDescription": "احراز هویت پایه HTTP برای صفحات وب صرافی testnet (ورود و KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "نام کاربری",
-  "exchangeTestnetBasicAuthPasswordLabel": "گذرواژه",
-  "exchangeTestnetBasicAuthClearButton": "پاک کردن",
-  "exchangeTestnetBasicAuthSaveButton": "ذخیره",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "شکست در رمزگشایی فاکتور",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4488,10 +4391,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "پول خود را داشته باشید",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "connectHardwareWalletLedger": "Ledger",
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
@@ -4574,10 +4473,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "onboardingRecoverWallet": "بازیابی کیف پول",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
-  },
   "transactionOrderLabelReferenceNumber": "شماره مرجع",
   "@transactionOrderLabelReferenceNumber": {
     "description": "Label for reference number in order details"
@@ -4645,10 +4540,6 @@
   "transactionStatusPending": "امتناع",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
-  },
-  "settingsSuperuserModeDisabledMessage": "حالت Superuser غیرفعال شده است.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
   },
   "settingsTermsOfServiceTitle": "شرایط خدمات",
   "@settingsTermsOfServiceTitle": {
@@ -4875,10 +4766,6 @@
   "sellExchangeRate": "نرخ تبادل",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "این حالت خطرناک است. با فعال کردن آن، تصدیق می کنید که ممکن است پول خود را از دست بدهید",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "فروش Bitcoin",
   "@sellTitle": {
@@ -5183,10 +5070,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "دانلود بازی Broadcast",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "ثبت نام با Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5265,10 +5148,6 @@
   "sendSlowPaymentWarning": "هشدار پرداخت آهسته",
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
-  },
-  "settingsThemeTitle": "Theme",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "ایمیل",
   "@payEmail": {
@@ -5385,10 +5264,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "پشتیبانی فیزیکی",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "از",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5396,10 +5271,6 @@
   "fundExchangeCrIbanCrcDescription": "ارسال یک انتقال بانکی از حساب بانکی خود با استفاده از جزئیات زیر ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
-  },
-  "settingsDevModeWarningTitle": "Mode",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
   },
   "rbfOriginalTransaction": "معاملات اصلی",
   "@rbfOriginalTransaction": {
@@ -5412,10 +5283,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "تعداد کاربران کپی شده برای Clipboard",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "نسخه App: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "نام انتخاب شده Biller",
   "@payBillerNameValue": {
@@ -5473,10 +5340,6 @@
   "sellSendPaymentInstantPayments": "پرداخت های فوری",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "بازیابی کیف پول",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "استفاده از {pinOrPassword} به جای >>",
   "@usePasswordInsteadButton": {
@@ -6273,10 +6136,6 @@
   "importMnemonicSelectType": "انتخاب یک نوع کیف پول برای واردات",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 تعیین کننده Entropies",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
   "swapTransferAmount": "مقدار مبادله",
   "@swapTransferAmount": {
@@ -7415,7 +7274,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "در راه‌اندازی کیف پول شما مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
   "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
   "coreScreensFeeRateLabel": "نرخ کارمزد",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7452,12 +7310,6 @@
   "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید.",
   "autoswapTargetBalanceLabel": "موجودی هدف کیف پول فوری",
   "autoswapMaximumBalanceLabel": "حداکثر موجودی کیف پول فوری",
-  "onboardingAdvancedOptionsTitle": "گزینه‌های پیشرفته",
-  "onboardingAdvancedOptionsDescription": "پیش از ساخت یا بازیابی کیف پول خود، تنظیمات پیشرفته را پیکربندی کنید",
-  "onboardingAdvancedOptionsCustomElectrum": "سرور Electrum سفارشی",
-  "onboardingAdvancedOptionsCustomMempool": "سرور Mempool سفارشی",
-  "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
-  "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
   "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
   "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
   "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
@@ -7470,123 +7322,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "سکه‌ها",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{۱ سکه} other{{count} سکه}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "مسدودشده",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "قابل خرج",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "هیچ‌کدام مسدود نشده",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "مرتب‌سازی و فیلتر",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "{visible} از {total} نمایش داده شد",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{۱ خروجی خرج‌نشده} other{{count} خروجی خرج‌نشده}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "همگام‌سازی",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "پاک کردن همه",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "مبلغ: زیاد به کم",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "مبلغ: کم به زیاد",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "تاریخ: جدیدترین",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "تاریخ: قدیمی‌ترین",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "زنجیره کلید",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "همه",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "دریافت",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "باقی‌مانده",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "وضعیت مسدودی",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "همه",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "مسدودشده",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "مسدودنشده",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "برچسب‌ها",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "بازنشانی",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "اعمال",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{۱ انتخاب‌شده} other{{count} انتخاب‌شده}}",
   "@coinsSelectedCount": {
@@ -7594,128 +7332,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "انتخاب همه",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "مسدود کردن",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "رفع مسدودی",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "واگرد",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{۱ سکه مسدود شود؟} other{{count} سکه مسدود شوند؟}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "سکه‌های مسدودشده در کیف پول شما باقی می‌مانند اما تا زمانی که آنها را رفع مسدودی کنید از خرج کردن مستثنا هستند.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "مسدود کردن این سکه‌ها شما را بدون موجودی قابل خرج باقی می‌گذارد.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{۱ سکه مسدود شد · از خرج کردن مستثنا} other{{count} سکه مسدود شدند · از خرج کردن مستثنا}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{۱ سکه رفع مسدودی شد} other{{count} سکه رفع مسدودی شدند}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{۱ تأیید} other{{count} تأیید}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "در انتظار",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "هنوز سکه‌ای نیست",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "سکه‌ها پس از دریافت بیت‌کوین اینجا ظاهر می‌شوند.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "هیچ سکه‌ای مطابقت ندارد",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "پاک کردن فیلترها",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "تلاش مجدد",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "برای مسدود کردن سکه را بکشید · برای انتخاب فشار طولانی دهید",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "بارگیری سکه‌های شما ممکن نشد. برای تلاش مجدد به‌پایین بکشید تا تازه‌سازی شود.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "مسدود کردن سکه‌های انتخاب‌شده ممکن نشد. لطفاً دوباره تلاش کنید.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "رفع مسدودی سکه‌های انتخاب‌شده ممکن نشد. لطفاً دوباره تلاش کنید.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{۱ UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} مسدود شده",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -7786,16 +7402,6 @@
   "statusScreenContinue": "ادامه",
   "viewerAddressTab": "آدرس",
   "viewerPaymentUriTab": "نشانی پرداخت",
-  "settingsErrorReportingTitle": "گزارش خطا",
-  "errorReportingProgramTitle": "برنامه‌ی گزارش خطا",
-  "errorReportingProgramDescriptionP1": "با مشارکت در برنامه‌ی گزارش خطای ما، به بهبود Bull کمک کنید.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin هنگام بروز مشکل، گزارش‌های خطای ناشناس ارسال می‌کند.",
-  "errorReportingProgramDescriptionP3": "این کار به ما اجازه می‌دهد ببینیم هر باگ چند کاربر را تحت تأثیر قرار می‌دهد و بر اساس آن اولویت‌بندی رفع مشکل را انجام دهیم؛ بدون آن، هیچ راهی برای سنجش میزان تأثیر نداریم.",
-  "errorReportingProgramDescriptionP4": "گزارش‌ها فقط به سرور Bull ارسال می‌شوند و هرگز به اشخاص ثالث نمی‌رسند.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin متن‌باز است، بنابراین می‌توانید بررسی کنید چه چیزی ارسال می‌شود.",
-  "errorReportingAcceptButton": "پذیرفتن",
-  "errorReportingCancelButton": "لغو",
-  "errorReportingRestartSnackbar": "برای اعمال این تغییر، برنامه را دوباره راه‌اندازی کنید",
   "backupWarningTitle": "همین حالا از کیف پول خود پشتیبان بگیرید",
   "backupWarningBackupNow": "بله",
   "backupWarningBackupLater": "خیر، ریسک را می‌پذیرم",
@@ -7925,45 +7531,11 @@
   "dcaReceiveAddressError": "آماده‌سازی آدرس دریافت در کیف پول شما امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.",
   "dcaOrderCreationError": "ایجاد خرید تکرارشونده امکان‌پذیر نبود. لطفاً بعداً دوباره تلاش کنید.",
   "settingsPayjoinDisclaimerTitle": "اطلاعیه Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "اطلاعیه Payjoin",
-  "settingsPayjoinAdvancedTitle": "تنظیمات پیشرفته Payjoin",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "این کیف پول پیدا نشد.",
   "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
   "sendSwapExpiredTitle": "سفارش منقضی شد",
   "sendSwapExpiredMessage": "این سفارش پیش از ارسال هرگونه وجهی منقضی شد. هیچ مبلغی از کیف پول شما ارسال نشد.",
-  "settingsScreenPrivacyTitle": "حریم خصوصی صفحه",
-  "settingsScreenPrivacyDisabledMessage": "اکنون گرفتن اسکرین‌شات در صفحه‌های حساس مجاز است",
-  "settingsSearchHint": "جستجو در تنظیمات",
-  "settingsSearchNoResults": "هیچ تنظیماتی یافت نشد.",
-  "settingsSearchMempoolKeywords": "کاوشگر بلوک|تخمین کارمزد|کارمزد تراکنش|رابط mempool API",
-  "settingsSearchExchangeKeywords": "حساب|حساب صرافی|معامله|خرید و فروش",
-  "settingsSearchStartBackupKeywords": "ایجاد نسخه پشتیبان|ذخیره نسخه پشتیبان|پشتیبان گیری از کیف پول",
-  "settingsSearchRecoverbullKeywords": "نسخه پشتیبان رمزگذاری شده|پشتیبان ابری|خزانه رمزگذاری شده|بازیابی خزانه",
-  "settingsSearchLabelsKeywords": "برچسب های کیف پول|برچسب های تراکنش|BIP329|وارد کردن برچسب ها|خروجی گرفتن از برچسب ها",
-  "settingsSearchTransactionHistoryKeywords": "خروجی تراکنش ها|خروجی تاریخچه تراکنش|CSV|تاریخچه کیف پول",
-  "settingsSearchAppSettingsKeywords": "ترجیحات برنامه|تنظیمات برنامه|تنظیمات عمومی",
-  "settingsSearchTermsOfServiceKeywords": "شرایط و ضوابط|موارد حقوقی|توافق نامه کاربر|TOS",
-  "settingsSearchServicesStatusKeywords": "سلامت سرویس|وضعیت سیستم|آنلاین|قطعی سرویس",
-  "settingsSearchImportWalletKeywords": "افزودن کیف پول|بازیابی کیف پول|وارد کردن عبارت بازیابی|کیف پول فقط نظارتی|کیف پول سخت افزاری",
-  "settingsSearchBroadcastTransactionKeywords": "انتشار تراکنش امضا شده|ارسال تراکنش|تراکنش خام|هگز تراکنش|PSBT",
-  "settingsSearchPayjoinKeywords": "حریم خصوصی Payjoin|تراکنش مشارکتی|P2EP",
-  "settingsSearchAutoswapKeywords": "Autoswap|مبادله خودکار|انتقال خودکار|موجودی کیف پول آنی",
-  "settingsSearchElectrumKeywords": "نود بیت کوین|نود Electrum|سرور سفارشی|نود شخصی",
-  "settingsSearchTestnetModeKeywords": "شبکه آزمایشی|شبکه آزمایشی بیت کوین|شبکه آزمایشی Liquid|حالت آزمایش",
-  "settingsSearchSeedViewerKeywords": "عبارت سید|عبارت بازیابی|Mnemonic|کلمات پشتیبان|نمایش سیدها",
-  "settingsSearchBip85Keywords": "آنتروپی قطعی|سیدهای فرزند|آنتروپی مشتق شده|BIP85",
-  "settingsSearchLanguageKeywords": "زبان برنامه|ترجمه|زبان نمایش|زبان ترجیحی",
-  "settingsSearchThemeKeywords": "ظاهر|حالت تیره|حالت روشن|پوسته سیستم",
-  "settingsSearchCurrencyKeywords": "ارز فیات|ارز محلی|ارز پیش فرض|ارز صرافی",
-  "settingsSearchSecurityPinKeywords": "کد PIN|رمز عبور|قفل برنامه|احراز هویت|تغییر PIN",
-  "settingsSearchLogsKeywords": "گزارش های اشکال زدایی|گزارش های تشخیصی|گزارش های برنامه|خروجی گرفتن از گزارش ها",
-  "settingsSearchDevModeKeywords": "حالت توسعه دهنده|تنظیمات توسعه|حالت اشکال زدایی|آزمایش پیشرفته",
-  "settingsSearchTestnetCredentialsKeywords": "اطلاعات ورود شبکه آزمایشی|ورود به شبکه آزمایشی|نام کاربری شبکه آزمایشی|گذرواژه شبکه آزمایشی|احراز هویت پایه",
-  "settingsSearchErrorReportingKeywords": "گزارش های خرابی|گزارش خطا|اطلاعات تشخیصی|تله متری|گزارش های خطا",
-  "settingsSearchScreenPrivacyKeywords": "اسکرین‌شات|ضبط صفحه|محافظت از ضبط صفحه|حریم خصوصی",
-  "settingsSearchStartTyping": "برای مشاهده نتایج شروع به تایپ کنید.",
-  "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید.",
   "sendErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
   "sendErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
@@ -7977,8 +7549,6 @@
   "walletWarningElectrumAction": "برای پیکربندی تنظیمات سرور ضربه بزنید",
   "walletLoadFailedRetryHint": "برای به‌روزرسانی به پایین بکشید و دوباره تلاش کنید",
   "settingsErrorSavingSetting": "این تنظیم ذخیره نشد. لطفاً دوباره تلاش کنید.",
-  "settingsErrorConsentNotGiven": "این تنظیم پیش از تغییر به تأیید شما نیاز دارد.",
-  "settingsErrorLoadingLogs": "گزارش‌های تشخیصی آماده نشد. لطفاً دوباره تلاش کنید.",
   "exchangeErrorSigningOut": "خروج کامل از حساب انجام نشد. لطفاً دوباره تلاش کنید.",
   "exchangeErrorSavingPreferences": "تنظیمات شما ذخیره نشد. لطفاً دوباره تلاش کنید.",
   "exchangeErrorLoadingAnnouncements": "اطلاعیه‌ها بارگذاری نشد.",
@@ -8100,7 +7670,6 @@
   "fundExchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "exchangeErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "walletBalancesMayBeStale": "موجودی‌های شما به‌روزرسانی نشد و ممکن است به‌روز نباشند.",
-  "settingsSearchTorKeywords": "پروکسی Tor|Orbot|مسیریابی پیازی|Tor داخلی|شبکه حریم خصوصی",
   "limitOrdersInsufficientBalance": "عدم تعادل",
   "limitOrdersInsufficientBalanceMessage": "شما تعادل کافی برای ایجاد این دستور ندارید.",
   "limitOrdersFundAccount": "بودجه حساب شما",
@@ -8157,20 +7726,15 @@
   "swapUnderReviewTitle": "مبادله در حال بررسی",
   "swapUnderReviewDescription": "این مبادله به بررسی دستی نیاز دارد. برای دریافت کمک با پشتیبانی تماس بگیرید. اگر حساب پشتیبانی ندارید، فقط کافی است یکی بسازید؛ KYC لازم نیست.",
   "swapUnderReviewSupportMessage": "مبادله در حال بررسی\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "مبادله خودکار",
   "broadcastSignedTxErrorAlreadyInChain": "این تراکنش از قبل در بلاک‌چین ثبت شده است. چیزی برای انتشار باقی نمانده است.",
   "broadcastSignedTxErrorRejected": "شبکه این تراکنش را رد کرد. ممکن است به‌طور کامل امضا نشده، نامعتبر یا در تعارض با پرداخت دیگری باشد.",
   "broadcastSignedTxErrorOutcomeUnknown": "نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.",
   "broadcastSignedTxErrorNetworkNotEnabled": "انتشار در این شبکه در تنظیمات فعلی فعال نیست.",
   "settingsDarkModeTitle": "حالت تیره",
-  "settingsSourceCodeTitle": "کد منبع",
   "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود.",
   "backgroundTasksTitle": "وظایف پس‌زمینه",
   "blockedInSystemSettings": "در تنظیمات سیستم مسدود است",
-  "notificationsBlockedMessage": "اعلان‌ها در تنظیمات سیستم مسدود شده‌اند.",
   "notificationsTitle": "اعلان‌ها",
   "openSystemSettings": "باز کردن تنظیمات سیستم",
-  "permissionsTitle": "مجوزها",
-  "settingsSearchPermissionsKeywords": "اعلان‌ها|وظایف پس‌زمینه|باتری|هشدارها",
   "sendErrorInvoiceExpiryTooShort": "این invoice خیلی زود منقضی می‌شود. از گیرنده یک invoice جدید بخواهید."
 }

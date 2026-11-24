@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, FormatAmount, Sats;
 
-import '../../../../../../test/features/coins/wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 import 'package:send/src/payment/presentation/send_wallet_view.dart';
 

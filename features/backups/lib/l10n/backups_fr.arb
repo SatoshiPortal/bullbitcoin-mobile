@@ -1,4 +1,8 @@
 {
+  "backupSettingsMoneySection": "Sauvegarde des fonds",
+  "backupSettingsDataSection": "Sauvegarde des données",
+  "backupSettingsAutomaticBackup": "Sauvegarde automatique",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sécurisé",
   "@@locale": "fr",
   "walletDetailsUnnamedWalletFallback": "Portefeuille sans nom",
   "backupWalletTitle": "Sauvegarder votre portefeuille",

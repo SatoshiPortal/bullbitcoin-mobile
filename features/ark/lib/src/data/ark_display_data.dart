@@ -21,6 +21,7 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
   final Future<Result<String, ArkFailure>> Function(ArkAccountId)
   _selectedSource;
   final Future<String> Function() _currency;
+  final Future<ArkSourceWalletName?> Function(String walletId) _walletName;
   final IndexPriceReader _price;
   final bool Function() _isActive;
   final _pending = <Future<Result<ArkDisplayData, ArkFailure>>>{};
@@ -36,6 +37,7 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
     required Stream<String> currencyChanges,
     required this._selectedSource,
     required this._currency,
+    required this._walletName,
     required this._isActive,
     this._price = _readIndexPrice,
   }) {
@@ -131,6 +133,8 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
         return const Err(ArkFeatureStorageFailure());
       }
       if (price != null && await _currency() != code) price = null;
+      // A missing name only falls back to a generic label in the review.
+      final name = await _walletName(id);
       if (!_live) return const Err(ArkServiceUnavailableFailure());
       Sats? available;
       if (coins case Ok(:final value)) {
@@ -152,6 +156,7 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
           walletId: id,
           available: available,
           price: price,
+          walletName: name,
         ),
       );
     } on Exception {
@@ -165,7 +170,8 @@ Future<Result<BitcoinPrice, PricerFailure>> _readIndexPrice({
   required SupportedCurrency currency,
 }) => Pricer.getIndexPrice(network: network, currency: currency);
 
-/// A protected or incoherent observation is unknown, never a guessed maximum.
+/// An incoherent observation is unknown, never a guessed maximum. Protected
+/// coins are left out of the amount rather than hiding it.
 @visibleForTesting
 Sats? availableArkSourceBalance({
   required WalletRevision stamp,
@@ -184,9 +190,17 @@ Sats? availableArkSourceBalance({
       value.spendableSat < BigInt.zero) {
     return null;
   }
+  // A coin a pending Board holds, or the user froze, cannot fund this Board,
+  // but the rest of the wallet still can: the native balance knows neither,
+  // so they come off it. A held coin outside the trusted balance only makes
+  // the amount shown smaller, never larger.
   final held = reservations.map((item) => item.outpoint).toSet();
-  if (coins.any((coin) => coin.frozen || held.contains(coin.outpoint))) {
-    return null;
+  var protected = BigInt.zero;
+  for (final coin in coins) {
+    if (coin.frozen || held.contains(coin.outpoint)) {
+      protected += coin.amountSat;
+    }
   }
-  return Sats(value.spendableSat);
+  final free = value.spendableSat - protected;
+  return Sats(free < BigInt.zero ? BigInt.zero : free);
 }

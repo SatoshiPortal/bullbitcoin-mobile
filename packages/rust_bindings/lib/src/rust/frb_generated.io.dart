@@ -35,6 +35,7 @@ import 'third_party/boltz/api/swap_status.dart';
 import 'third_party/boltz/api/transactions.dart';
 import 'third_party/boltz/api/types.dart';
 import 'third_party/dart_bbqr/api.dart';
+import 'third_party/dart_bip138/api.dart';
 import 'third_party/dart_bwk/api/regtest.dart';
 import 'third_party/dart_bwk/api/sp_account.dart';
 import 'third_party/dart_bwk/api/types.dart';
@@ -204,6 +205,18 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   Balance dco_decode_balance(dynamic raw);
+
+  @protected
+  Bip138ContentType dco_decode_bip_138_content_type(dynamic raw);
+
+  @protected
+  Bip138Error dco_decode_bip_138_error(dynamic raw);
+
+  @protected
+  Bip138ExcludedKey dco_decode_bip_138_excluded_key(dynamic raw);
+
+  @protected
+  Bip138Item dco_decode_bip_138_item(dynamic raw);
 
   @protected
   BitBoxKeychain dco_decode_bit_box_keychain(dynamic raw);
@@ -395,6 +408,12 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   List<Balance> dco_decode_list_balance(dynamic raw);
 
   @protected
+  List<Bip138ExcludedKey> dco_decode_list_bip_138_excluded_key(dynamic raw);
+
+  @protected
+  List<Bip138Item> dco_decode_list_bip_138_item(dynamic raw);
+
+  @protected
   List<BtcLnSwap> dco_decode_list_btc_ln_swap(dynamic raw);
 
   @protected
@@ -467,6 +486,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   Lnurl dco_decode_lnurl(dynamic raw);
 
   @protected
+  LnurlPayBounds dco_decode_lnurl_pay_bounds(dynamic raw);
+
+  @protected
   LwkError dco_decode_lwk_error(dynamic raw);
 
   @protected
@@ -523,6 +545,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw);
+
+  @protected
+  List<Bip138Item>? dco_decode_opt_list_bip_138_item(dynamic raw);
 
   @protected
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
@@ -675,6 +700,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   TxSimulation dco_decode_tx_simulation(dynamic raw);
 
   @protected
+  int dco_decode_u_16(dynamic raw);
+
+  @protected
   int dco_decode_u_32(dynamic raw);
 
   @protected
@@ -822,6 +850,22 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   Balance sse_decode_balance(SseDeserializer deserializer);
+
+  @protected
+  Bip138ContentType sse_decode_bip_138_content_type(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  Bip138Error sse_decode_bip_138_error(SseDeserializer deserializer);
+
+  @protected
+  Bip138ExcludedKey sse_decode_bip_138_excluded_key(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  Bip138Item sse_decode_bip_138_item(SseDeserializer deserializer);
 
   @protected
   BitBoxKeychain sse_decode_bit_box_keychain(SseDeserializer deserializer);
@@ -1041,6 +1085,14 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   List<Balance> sse_decode_list_balance(SseDeserializer deserializer);
 
   @protected
+  List<Bip138ExcludedKey> sse_decode_list_bip_138_excluded_key(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<Bip138Item> sse_decode_list_bip_138_item(SseDeserializer deserializer);
+
+  @protected
   List<BtcLnSwap> sse_decode_list_btc_ln_swap(SseDeserializer deserializer);
 
   @protected
@@ -1131,6 +1183,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   Lnurl sse_decode_lnurl(SseDeserializer deserializer);
 
   @protected
+  LnurlPayBounds sse_decode_lnurl_pay_bounds(SseDeserializer deserializer);
+
+  @protected
   LwkError sse_decode_lwk_error(SseDeserializer deserializer);
 
   @protected
@@ -1195,6 +1250,11 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   int? sse_decode_opt_box_autoadd_u_8(SseDeserializer deserializer);
+
+  @protected
+  List<Bip138Item>? sse_decode_opt_list_bip_138_item(
+    SseDeserializer deserializer,
+  );
 
   @protected
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -1369,6 +1429,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   TxSimulation sse_decode_tx_simulation(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_u_16(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_32(SseDeserializer deserializer);
@@ -1736,6 +1799,29 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
     final ans = wire.cst_new_list_balance(raw.length);
     for (var i = 0; i < raw.length; ++i) {
       cst_api_fill_to_wire_balance(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_bip_138_excluded_key>
+  cst_encode_list_bip_138_excluded_key(List<Bip138ExcludedKey> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_bip_138_excluded_key(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      ans.ref.ptr[i] = cst_encode_bip_138_excluded_key(raw[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_bip_138_item> cst_encode_list_bip_138_item(
+    List<Bip138Item> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_bip_138_item(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_bip_138_item(raw[i], ans.ref.ptr[i]);
     }
     return ans;
   }
@@ -2115,6 +2201,14 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_list_bip_138_item> cst_encode_opt_list_bip_138_item(
+    List<Bip138Item>? raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? ffi.nullptr : cst_encode_list_bip_138_item(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_cst_list_prim_u_8_strict>
   cst_encode_opt_list_prim_u_8_strict(Uint8List? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
@@ -2145,6 +2239,41 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   void cst_api_fill_to_wire_balance(Balance apiObj, wire_cst_balance wireObj) {
     wireObj.asset_id = cst_encode_String(apiObj.assetId);
     wireObj.value = cst_encode_i_64(apiObj.value);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_bip_138_content_type(
+    Bip138ContentType apiObj,
+    wire_cst_bip_138_content_type wireObj,
+  ) {
+    if (apiObj is Bip138ContentType_Bip) {
+      var pre_number = cst_encode_u_16(apiObj.number);
+      wireObj.tag = 0;
+      wireObj.kind.Bip.number = pre_number;
+      return;
+    }
+    if (apiObj is Bip138ContentType_Vendor) {
+      var pre_tag = cst_encode_list_prim_u_8_strict(apiObj.tag);
+      wireObj.tag = 1;
+      wireObj.kind.Vendor.tag = pre_tag;
+      return;
+    }
+    if (apiObj is Bip138ContentType_Text) {
+      wireObj.tag = 2;
+      return;
+    }
+  }
+
+  @protected
+  void cst_api_fill_to_wire_bip_138_item(
+    Bip138Item apiObj,
+    wire_cst_bip_138_item wireObj,
+  ) {
+    cst_api_fill_to_wire_bip_138_content_type(
+      apiObj.contentType,
+      wireObj.content_type,
+    );
+    wireObj.bytes = cst_encode_list_prim_u_8_strict(apiObj.bytes);
   }
 
   @protected
@@ -2573,6 +2702,15 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   @protected
   void cst_api_fill_to_wire_lnurl(Lnurl apiObj, wire_cst_lnurl wireObj) {
     wireObj.value = cst_encode_String(apiObj.value);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_lnurl_pay_bounds(
+    LnurlPayBounds apiObj,
+    wire_cst_lnurl_pay_bounds wireObj,
+  ) {
+    wireObj.min_sendable_msat = cst_encode_u_64(apiObj.minSendableMsat);
+    wireObj.max_sendable_msat = cst_encode_u_64(apiObj.maxSendableMsat);
   }
 
   @protected
@@ -3369,6 +3507,12 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   );
 
   @protected
+  int cst_encode_bip_138_error(Bip138Error raw);
+
+  @protected
+  int cst_encode_bip_138_excluded_key(Bip138ExcludedKey raw);
+
+  @protected
   int cst_encode_bit_box_keychain(BitBoxKeychain raw);
 
   @protected
@@ -3430,6 +3574,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   int cst_encode_swap_type(SwapType raw);
+
+  @protected
+  int cst_encode_u_16(int raw);
 
   @protected
   int cst_encode_u_32(int raw);
@@ -3585,6 +3732,24 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   void sse_encode_balance(Balance self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_bip_138_content_type(
+    Bip138ContentType self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_bip_138_error(Bip138Error self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_bip_138_excluded_key(
+    Bip138ExcludedKey self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_bip_138_item(Bip138Item self, SseSerializer serializer);
 
   @protected
   void sse_encode_bit_box_keychain(
@@ -3866,6 +4031,18 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   void sse_encode_list_balance(List<Balance> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_bip_138_excluded_key(
+    List<Bip138ExcludedKey> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_bip_138_item(
+    List<Bip138Item> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_btc_ln_swap(
     List<BtcLnSwap> self,
     SseSerializer serializer,
@@ -3989,6 +4166,12 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   void sse_encode_lnurl(Lnurl self, SseSerializer serializer);
 
   @protected
+  void sse_encode_lnurl_pay_bounds(
+    LnurlPayBounds self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_lwk_error(LwkError self, SseSerializer serializer);
 
   @protected
@@ -4071,6 +4254,12 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   void sse_encode_opt_box_autoadd_u_8(int? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_list_bip_138_item(
+    List<Bip138Item>? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_list_prim_u_8_strict(
@@ -4278,6 +4467,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   void sse_encode_tx_simulation(TxSimulation self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_u_16(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_32(int self, SseSerializer serializer);
@@ -4750,6 +4942,36 @@ class BullSdkWire implements BaseWire {
       >('frbgen_rust_bindings_cst_new_list_balance');
   late final _cst_new_list_balance = _cst_new_list_balancePtr
       .asFunction<ffi.Pointer<wire_cst_list_balance> Function(int)>();
+
+  ffi.Pointer<wire_cst_list_bip_138_excluded_key>
+  cst_new_list_bip_138_excluded_key(int len) {
+    return _cst_new_list_bip_138_excluded_key(len);
+  }
+
+  late final _cst_new_list_bip_138_excluded_keyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_bip_138_excluded_key> Function(ffi.Int32)
+        >
+      >('frbgen_rust_bindings_cst_new_list_bip_138_excluded_key');
+  late final _cst_new_list_bip_138_excluded_key =
+      _cst_new_list_bip_138_excluded_keyPtr
+          .asFunction<
+            ffi.Pointer<wire_cst_list_bip_138_excluded_key> Function(int)
+          >();
+
+  ffi.Pointer<wire_cst_list_bip_138_item> cst_new_list_bip_138_item(int len) {
+    return _cst_new_list_bip_138_item(len);
+  }
+
+  late final _cst_new_list_bip_138_itemPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_bip_138_item> Function(ffi.Int32)
+        >
+      >('frbgen_rust_bindings_cst_new_list_bip_138_item');
+  late final _cst_new_list_bip_138_item = _cst_new_list_bip_138_itemPtr
+      .asFunction<ffi.Pointer<wire_cst_list_bip_138_item> Function(int)>();
 
   ffi.Pointer<wire_cst_list_btc_ln_swap> cst_new_list_btc_ln_swap(int len) {
     return _cst_new_list_btc_ln_swap(len);
@@ -7731,6 +7953,23 @@ class BullSdkWire implements BaseWire {
       _wire__boltz__api__lnurl__lnurl_fetch_invoicePtr
           .asFunction<void Function(int, ffi.Pointer<wire_cst_lnurl>, int)>();
 
+  void wire__boltz__api__lnurl__lnurl_fetch_pay_limits(
+    int port_,
+    ffi.Pointer<wire_cst_lnurl> that,
+  ) {
+    return _wire__boltz__api__lnurl__lnurl_fetch_pay_limits(port_, that);
+  }
+
+  late final _wire__boltz__api__lnurl__lnurl_fetch_pay_limitsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_lnurl>)
+        >
+      >('frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_fetch_pay_limits');
+  late final _wire__boltz__api__lnurl__lnurl_fetch_pay_limits =
+      _wire__boltz__api__lnurl__lnurl_fetch_pay_limitsPtr
+          .asFunction<void Function(int, ffi.Pointer<wire_cst_lnurl>)>();
+
   void wire__boltz__api__lnurl__lnurl_get_voucher_max_amount(
     int port_,
     ffi.Pointer<wire_cst_lnurl> that,
@@ -8611,6 +8850,94 @@ class BullSdkWire implements BaseWire {
             )
           >();
 
+  void wire__dart_bip138__api__bip138_decrypt(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_loose> bytes,
+    ffi.Pointer<wire_cst_list_String> candidate_public_descriptors,
+  ) {
+    return _wire__dart_bip138__api__bip138_decrypt(
+      port_,
+      bytes,
+      candidate_public_descriptors,
+    );
+  }
+
+  late final _wire__dart_bip138__api__bip138_decryptPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_loose>,
+            ffi.Pointer<wire_cst_list_String>,
+          )
+        >
+      >('frbgen_rust_bindings_wire__dart_bip138__api__bip138_decrypt');
+  late final _wire__dart_bip138__api__bip138_decrypt =
+      _wire__dart_bip138__api__bip138_decryptPtr
+          .asFunction<
+            void Function(
+              int,
+              ffi.Pointer<wire_cst_list_prim_u_8_loose>,
+              ffi.Pointer<wire_cst_list_String>,
+            )
+          >();
+
+  void wire__dart_bip138__api__bip138_encrypt(
+    int port_,
+    ffi.Pointer<wire_cst_list_String> public_descriptors,
+    ffi.Pointer<wire_cst_list_bip_138_item> items,
+    bool padded,
+  ) {
+    return _wire__dart_bip138__api__bip138_encrypt(
+      port_,
+      public_descriptors,
+      items,
+      padded,
+    );
+  }
+
+  late final _wire__dart_bip138__api__bip138_encryptPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_String>,
+            ffi.Pointer<wire_cst_list_bip_138_item>,
+            ffi.Bool,
+          )
+        >
+      >('frbgen_rust_bindings_wire__dart_bip138__api__bip138_encrypt');
+  late final _wire__dart_bip138__api__bip138_encrypt =
+      _wire__dart_bip138__api__bip138_encryptPtr
+          .asFunction<
+            void Function(
+              int,
+              ffi.Pointer<wire_cst_list_String>,
+              ffi.Pointer<wire_cst_list_bip_138_item>,
+              bool,
+            )
+          >();
+
+  void wire__dart_bip138__api__bip138_excluded_keys(
+    int port_,
+    ffi.Pointer<wire_cst_list_String> public_descriptors,
+  ) {
+    return _wire__dart_bip138__api__bip138_excluded_keys(
+      port_,
+      public_descriptors,
+    );
+  }
+
+  late final _wire__dart_bip138__api__bip138_excluded_keysPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_list_String>)
+        >
+      >('frbgen_rust_bindings_wire__dart_bip138__api__bip138_excluded_keys');
+  late final _wire__dart_bip138__api__bip138_excluded_keys =
+      _wire__dart_bip138__api__bip138_excluded_keysPtr
+          .asFunction<void Function(int, ffi.Pointer<wire_cst_list_String>)>();
+
   void wire__dart_bwk__api__regtest__get_regtest_defaults(int port_) {
     return _wire__dart_bwk__api__regtest__get_regtest_defaults(port_);
   }
@@ -9485,6 +9812,28 @@ class BullSdkWire implements BaseWire {
       _wire__dart_bwk__api__sp_account__SpAccount_unified_historyPtr
           .asFunction<void Function(int, int)>();
 
+  void wire__dart_bwk__api__sp_account__blindbit_tip(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> url,
+  ) {
+    return _wire__dart_bwk__api__sp_account__blindbit_tip(port_, url);
+  }
+
+  late final _wire__dart_bwk__api__sp_account__blindbit_tipPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_rust_bindings_wire__dart_bwk__api__sp_account__blindbit_tip');
+  late final _wire__dart_bwk__api__sp_account__blindbit_tip =
+      _wire__dart_bwk__api__sp_account__blindbit_tipPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
   void wire__dart_bwk__api__sp_account__derive_sp_address_from_seed(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_loose> seed,
@@ -9513,6 +9862,33 @@ class BullSdkWire implements BaseWire {
       _wire__dart_bwk__api__sp_account__derive_sp_address_from_seedPtr
           .asFunction<
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_loose>, int)
+          >();
+
+  void wire__dart_bwk__api__sp_account__test_blindbit_scan_data(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> url,
+  ) {
+    return _wire__dart_bwk__api__sp_account__test_blindbit_scan_data(
+      port_,
+      url,
+    );
+  }
+
+  late final _wire__dart_bwk__api__sp_account__test_blindbit_scan_dataPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >(
+        'frbgen_rust_bindings_wire__dart_bwk__api__sp_account__test_blindbit_scan_data',
+      );
+  late final _wire__dart_bwk__api__sp_account__test_blindbit_scan_data =
+      _wire__dart_bwk__api__sp_account__test_blindbit_scan_dataPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
 
   void wire__dart_bwk__api__sp_account__test_blindbit_url(
@@ -11216,6 +11592,12 @@ class BullSdkWire implements BaseWire {
           .asFunction<void Function(int, int)>();
 }
 
+final class Bip138ContentTypeKind extends ffi.Union {
+  external wire_cst_Bip138ContentType_Bip Bip;
+
+  external wire_cst_Bip138ContentType_Vendor Vendor;
+}
+
 typedef DartPort = ffi.Int64;
 typedef DartDartPort = int;
 typedef DartPostCObjectFnType =
@@ -11284,6 +11666,25 @@ final class TxSignatureVerificationKind extends ffi.Union {
   external wire_cst_TxSignatureVerification_InvalidSignatures InvalidSignatures;
 
   external wire_cst_TxSignatureVerification_Malformed Malformed;
+}
+
+final class wire_cst_Bip138ContentType_Bip extends ffi.Struct {
+  @ffi.Uint16()
+  external int number;
+
+  static ffi.Pointer<wire_cst_Bip138ContentType_Bip> $allocate(
+    ffi.Allocator $allocator, {
+    required int number,
+  }) => $allocator<wire_cst_Bip138ContentType_Bip>()..ref.number = number;
+}
+
+final class wire_cst_Bip138ContentType_Vendor extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> tag;
+
+  static ffi.Pointer<wire_cst_Bip138ContentType_Vendor> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> tag,
+  }) => $allocator<wire_cst_Bip138ContentType_Vendor>()..ref.tag = tag;
 }
 
 final class wire_cst_RecipientView_Sp extends ffi.Struct {
@@ -11646,6 +12047,19 @@ final class wire_cst_balance extends ffi.Struct {
   }) => $allocator<wire_cst_balance>()
     ..ref.asset_id = asset_id
     ..ref.value = value;
+}
+
+final class wire_cst_bip_138_content_type extends ffi.Struct {
+  @ffi.Int32()
+  external int tag;
+
+  external Bip138ContentTypeKind kind;
+}
+
+final class wire_cst_bip_138_item extends ffi.Struct {
+  external wire_cst_bip_138_content_type content_type;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> bytes;
 }
 
 final class wire_cst_blockchain extends ffi.Opaque {}
@@ -12067,6 +12481,36 @@ final class wire_cst_list_balance extends ffi.Struct {
     ..ref.len = len;
 }
 
+final class wire_cst_list_bip_138_excluded_key extends ffi.Struct {
+  external ffi.Pointer<ffi.Int32> ptr;
+
+  @ffi.Int32()
+  external int len;
+
+  static ffi.Pointer<wire_cst_list_bip_138_excluded_key> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<ffi.Int32> ptr,
+    required int len,
+  }) => $allocator<wire_cst_list_bip_138_excluded_key>()
+    ..ref.ptr = ptr
+    ..ref.len = len;
+}
+
+final class wire_cst_list_bip_138_item extends ffi.Struct {
+  external ffi.Pointer<wire_cst_bip_138_item> ptr;
+
+  @ffi.Int32()
+  external int len;
+
+  static ffi.Pointer<wire_cst_list_bip_138_item> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_bip_138_item> ptr,
+    required int len,
+  }) => $allocator<wire_cst_list_bip_138_item>()
+    ..ref.ptr = ptr
+    ..ref.len = len;
+}
+
 final class wire_cst_list_btc_ln_swap extends ffi.Struct {
   external ffi.Pointer<wire_cst_btc_ln_swap> ptr;
 
@@ -12419,6 +12863,22 @@ final class wire_cst_lnurl extends ffi.Struct {
     ffi.Allocator $allocator, {
     required ffi.Pointer<wire_cst_list_prim_u_8_strict> value,
   }) => $allocator<wire_cst_lnurl>()..ref.value = value;
+}
+
+final class wire_cst_lnurl_pay_bounds extends ffi.Struct {
+  @ffi.Uint64()
+  external int min_sendable_msat;
+
+  @ffi.Uint64()
+  external int max_sendable_msat;
+
+  static ffi.Pointer<wire_cst_lnurl_pay_bounds> $allocate(
+    ffi.Allocator $allocator, {
+    required int min_sendable_msat,
+    required int max_sendable_msat,
+  }) => $allocator<wire_cst_lnurl_pay_bounds>()
+    ..ref.min_sendable_msat = min_sendable_msat
+    ..ref.max_sendable_msat = max_sendable_msat;
 }
 
 final class wire_cst_lwk_error extends ffi.Struct {

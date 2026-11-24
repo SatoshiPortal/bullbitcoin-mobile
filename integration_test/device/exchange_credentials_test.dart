@@ -6,10 +6,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
-    as core_exchange;
 import 'package:exchange/testing.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bbx_api/bbx_api.dart'
@@ -384,9 +381,9 @@ void main() {
         (tester) async {
           probe.restore();
           try {
-            core_exchange.ExchangeLocator.registerDatasources(locator);
-            core_exchange.ExchangeLocator.registerRepositories(locator);
-            final credentials = locator<ExchangeCredentials>();
+            final credentials = ExchangeCredentials.open(
+              locator<Secrets>().exchangeKeychain,
+            );
             final before = await credentials.readActiveApiKey(isTestnet: true);
             final authenticated =
                 before is Ok<String?, ExchangeFailure> && before.value != null;

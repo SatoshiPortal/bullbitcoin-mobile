@@ -563,7 +563,7 @@
   "sendErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sendErrorInvoiceExpiryTooShort": "این invoice خیلی زود منقضی می‌شود. از گیرنده یک invoice جدید بخواهید.",
-  "closeDialogButton": "نزدیک",
+  "closeDialogButton": "بستن",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   }

@@ -3,11 +3,6 @@
   "fundExchangeRestrictedMessage": "Nạp tiền không khả dụng trên tài khoản của bạn. Vui lòng liên hệ bộ phận hỗ trợ để biết thêm thông tin.",
   "backupWarningDescription": "Nếu không có bản sao lưu, bạn sẽ mất quyền truy cập vào bitcoin của mình nếu:",
   "exchangeTestnetBasicAuthTitle": "Thông tin đăng nhập sàn testnet",
-  "exchangeTestnetBasicAuthDescription": "Xác thực HTTP basic cho các trang web của sàn testnet (đăng nhập và KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Tên người dùng",
-  "exchangeTestnetBasicAuthPasswordLabel": "Mật khẩu",
-  "exchangeTestnetBasicAuthClearButton": "Xóa",
-  "exchangeTestnetBasicAuthSaveButton": "Lưu",
   "backupWarningLoseReasonLostPhone": "Bạn làm mất điện thoại",
   "backupWarningLoseReasonDeletedApp": "Bạn xóa ứng dụng",
   "backupWarningLoseReasonCriticalIssue": "Xảy ra sự cố nghiêm trọng với ứng dụng hoặc thiết bị",
@@ -130,7 +125,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Đã xảy ra lỗi khi thiết lập ví của bạn. Vui lòng thử lại.",
   "appStartupErrorMessage": "Không thể khởi động ứng dụng. Hãy thử đóng hoàn toàn ứng dụng và khởi động lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ hỗ trợ và gửi nhật ký của bạn.",
   "coreScreensResolvingInputs": "Đang giải quyết đầu vào giao dịch...",
   "coreScreensFeeRateLabel": "Fee rate",
@@ -173,12 +167,6 @@
   "backupCardSubtitle": "Sao lưu ví của bạn ngay bây giờ.",
   "autoswapTargetBalanceLabel": "Số dư Ví Tức thời mục tiêu",
   "autoswapMaximumBalanceLabel": "Số dư Ví Tức thời tối đa",
-  "onboardingAdvancedOptionsTitle": "Tùy chọn nâng cao",
-  "onboardingAdvancedOptionsDescription": "Cấu hình cài đặt nâng cao trước khi tạo hoặc khôi phục ví của bạn",
-  "onboardingAdvancedOptionsCustomElectrum": "Máy chủ Electrum tùy chỉnh",
-  "onboardingAdvancedOptionsCustomMempool": "Máy chủ Mempool tùy chỉnh",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Máy chủ Recoverbull tùy chỉnh",
-  "onboardingAdvancedOptionsFooter": "Bạn có thể thay đổi các cài đặt này sau trong Cài đặt ứng dụng",
   "appStartupContactSupportMessage": "Liên hệ hỗ trợ tại app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android",
   "sendErrorUnsupportedQrCodeFormat": "Định dạng mã QR không được hỗ trợ",
@@ -213,123 +201,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "Đồng coin",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 đồng coin} other{{count} đồng coin}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "Đã đóng băng",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "Có thể chi tiêu",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "Không có đồng nào bị đóng băng",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "Sắp xếp & Lọc",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "Hiển thị {visible} trên {total}",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 đầu ra chưa chi tiêu} other{{count} đầu ra chưa chi tiêu}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "Đồng bộ",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "Xóa tất cả",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "Số tiền: Cao đến Thấp",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "Số tiền: Thấp đến Cao",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "Ngày: Mới nhất",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "Ngày: Cũ nhất",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "Chuỗi khóa",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "Tất cả",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "Nhận",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "Tiền thừa",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "Trạng thái đóng băng",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "Tất cả",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "Đã đóng băng",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "Chưa đóng băng",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "Nhãn",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "Đặt lại",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "Áp dụng",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{Đã chọn 1} other{Đã chọn {count}}}",
   "@coinsSelectedCount": {
@@ -337,128 +211,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "Chọn tất cả",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "Đóng băng",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "Gỡ đóng băng",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "Hoàn tác",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Đóng băng 1 đồng coin?} other{Đóng băng {count} đồng coin?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "Các đồng coin đã đóng băng vẫn nằm trong ví của bạn nhưng bị loại khỏi việc chi tiêu cho đến khi bạn gỡ đóng băng.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "Đóng băng các đồng coin này sẽ khiến bạn không còn số dư có thể chi tiêu.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{Đã đóng băng 1 đồng coin · bị loại khỏi việc chi tiêu} other{Đã đóng băng {count} đồng coin · bị loại khỏi việc chi tiêu}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{Đã gỡ đóng băng 1 đồng coin} other{Đã gỡ đóng băng {count} đồng coin}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 xác nhận} other{{count} xác nhận}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "Đang chờ",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "Chưa có đồng coin nào",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "Các đồng coin sẽ xuất hiện ở đây khi bạn nhận bitcoin.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "Không có đồng coin nào khớp",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "Xóa bộ lọc",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "Thử lại",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "Vuốt một đồng coin để đóng băng · nhấn giữ để chọn",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "Không thể tải các đồng coin của bạn. Kéo để làm mới và thử lại.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "Không thể đóng băng các đồng coin đã chọn. Vui lòng thử lại.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "Không thể gỡ đóng băng các đồng coin đã chọn. Vui lòng thử lại.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "Đã xảy ra lỗi. Vui lòng thử lại.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} đã đóng băng",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -530,18 +282,10 @@
   "fiatCurrencySettingsLabel": "Tiền tệ pháp định",
   "languageSettingsScreenTitle": "Ngôn ngữ",
   "settingsExchangeSettingsTitle": "Cài đặt sàn giao dịch",
-  "settingsSecurityPinTitle": "Mã PIN bảo mật",
   "settingsCurrencyTitle": "Tiền tệ",
   "settingsAppSettingsTitle": "Cài đặt ứng dụng",
   "settingsTermsOfServiceTitle": "Điều khoản dịch vụ",
-  "settingsAppVersionLabel": "Phiên bản ứng dụng: ",
-  "settingsServiceStatusTitle": "Trạng thái dịch vụ",
   "settingsLanguageTitle": "Ngôn ngữ",
-  "settingsThemeTitle": "Giao diện",
-  "settingsDevModeWarningTitle": "Chế độ nhà phát triển",
-  "settingsDevModeWarningMessage": "Chế độ này có rủi ro. Khi bật, bạn xác nhận rằng mình có thể bị mất tiền",
-  "settingsDevModeUnderstandButton": "Tôi đã hiểu",
-  "settingsSuperuserModeDisabledMessage": "Đã tắt chế độ superuser.",
   "settingsSuperuserModeUnlockedMessage": "Đã mở khóa chế độ superuser!",
   "addressViewAddressesTitle": "Địa chỉ",
   "walletDetailsWalletFingerprintLabel": "Fingerprint của ví",
@@ -554,13 +298,8 @@
   "mempoolCustomServerUrl": "URL máy chủ",
   "mempoolCustomServerSaveSuccess": "Đã lưu máy chủ tùy chỉnh thành công",
   "mempoolServerStatusUnknown": "Không xác định",
-  "walletSettingsImportWalletTitle": "Nhập ví",
-  "bitcoinSettingsBroadcastTransactionTitle": "Phát giao dịch",
-  "bitcoinSettingsTestnetModeTitle": "Chế độ Testnet",
-  "bitcoinSettingsBip85EntropiesTitle": "Entropy tất định BIP85",
   "logSettingsLogsTitle": "Nhật ký",
   "logSettingsErrorLoadingMessage": "Lỗi khi tải nhật ký: ",
-  "appSettingsDevModeTitle": "Chế độ nhà phát triển",
   "currencySettingsDefaultFiatCurrencyLabel": "Tiền tệ pháp định mặc định",
   "exchangeSettingsAccountInformationTitle": "Thông tin tài khoản",
   "exchangeSettingsSecuritySettingsTitle": "Cài đặt bảo mật",
@@ -650,18 +389,9 @@
   "addressCardCopiedMessage": "Đã sao chép địa chỉ vào bộ nhớ tạm",
   "addressCardIndexLabel": "Chỉ số: ",
   "addressCardBalanceLabel": "Số dư: ",
-  "onboardingRecoverYourWallet": "Khôi phục ví của bạn",
   "onboardingEncryptedVault": "Kho lưu trữ mã hóa",
-  "onboardingEncryptedVaultDescription": "Khôi phục bản sao lưu qua đám mây bằng mã PIN của bạn.",
-  "onboardingPhysicalBackup": "Sao lưu vật lý",
-  "onboardingPhysicalBackupDescription": "Khôi phục ví của bạn bằng 12 từ.",
   "onboardingRecover": "Khôi phục",
   "onboardingBullBitcoin": "Bull Bitcoin",
-  "onboardingOwnYourMoney": "Làm chủ tiền của bạn",
-  "onboardingSplashDescription": "Ví Bitcoin tự quản có chủ quyền và dịch vụ sàn giao dịch chỉ dành cho Bitcoin.",
-  "onboardingRecoverWallet": "Khôi phục ví",
-  "onboardingRecoverWalletButton": "Khôi phục ví",
-  "onboardingCreateNewWallet": "Tạo ví mới",
   "sendTitle": "Gửi",
   "sendRecipientAddressOrInvoice": "Địa chỉ hoặc hóa đơn của người nhận",
   "sendPasteAddressOrInvoice": "Dán địa chỉ thanh toán hoặc hóa đơn",
@@ -2062,22 +1792,10 @@
   "appStartupErrorTitle": "Lỗi khởi động",
   "appStartupContactSupportButton": "Liên hệ hỗ trợ",
   "ledgerDefaultWalletLabel": "Ví Ledger",
-  "exchangeBrandName": "BULL BITCOIN",
-  "exchangeLandingConnectAccount": "Kết nối tài khoản sàn giao dịch Bull Bitcoin của bạn",
-  "exchangeLandingRecommendedExchange": "Sàn giao dịch Bitcoin được khuyến nghị",
-  "exchangeFeatureSelfCustody": "• Mua Bitcoin trực tiếp vào ví tự quản",
-  "exchangeFeatureDcaOrders": "• DCA, lệnh giới hạn và tự động mua",
-  "exchangeFeatureSellBitcoin": "• Bán Bitcoin, nhận thanh toán bằng Bitcoin",
-  "exchangeFeatureBankTransfers": "• Gửi chuyển khoản ngân hàng và thanh toán hóa đơn",
-  "exchangeFeatureCustomerSupport": "• Trò chuyện với bộ phận hỗ trợ khách hàng",
-  "exchangeFeatureUnifiedHistory": "• Lịch sử giao dịch hợp nhất",
   "priceFailedToLoad": "Không thể tải giá",
   "statusScreenTryAgain": "Thử lại",
   "statusScreenContinue": "Tiếp tục",
-  "exchangeLandingDisclaimerLegal": "Quyền truy cập vào các dịch vụ sàn giao dịch sẽ bị giới hạn ở các quốc gia mà Bull Bitcoin có thể hoạt động hợp pháp và có thể yêu cầu KYC.",
-  "exchangeLandingDisclaimerNotAvailable": "Các dịch vụ sàn giao dịch tiền mã hóa không khả dụng trong ứng dụng di động Bull Bitcoin.",
   "exchangeLoginButton": "Đăng nhập hoặc đăng ký",
-  "exchangeGoToWebsiteButton": "Đến trang web sàn giao dịch Bull Bitcoin",
   "exchangeAuthLoginFailedTitle": "Đăng nhập thất bại",
   "exchangeAuthLoginFailedMessage": "Đã xảy ra lỗi, vui lòng thử đăng nhập lại.",
   "exchangeAuthLoginFailedOkButton": "OK",
@@ -2184,16 +1902,6 @@
   "logoutConfirmationDescription": "Bạn có chắc muốn đăng xuất khỏi tài khoản Bull Bitcoin của mình không? Bạn sẽ cần đăng nhập lại để sử dụng các tính năng của sàn giao dịch.",
   "logoutConfirmationCancel": "Hủy",
   "logoutConfirmationLogout": "Đăng xuất",
-  "settingsErrorReportingTitle": "Báo cáo lỗi",
-  "errorReportingProgramTitle": "Chương trình báo cáo lỗi",
-  "errorReportingProgramDescriptionP1": "Giúp chúng tôi cải thiện Bull bằng cách tham gia chương trình báo cáo lỗi của chúng tôi.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin gửi báo cáo lỗi được ẩn danh khi có sự cố xảy ra.",
-  "errorReportingProgramDescriptionP3": "Điều này giúp chúng tôi biết được mỗi lỗi ảnh hưởng đến bao nhiêu người dùng và ưu tiên khắc phục tương ứng; nếu không có nó, chúng tôi không có cách nào đo lường mức độ ảnh hưởng.",
-  "errorReportingProgramDescriptionP4": "Báo cáo chỉ được gửi đến máy chủ của Bull, không bao giờ gửi cho bên thứ ba.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin là mã nguồn mở, vì vậy bạn có thể tự kiểm chứng những gì được gửi đi.",
-  "errorReportingAcceptButton": "Chấp nhận",
-  "errorReportingCancelButton": "Hủy",
-  "errorReportingRestartSnackbar": "Khởi động lại ứng dụng để áp dụng thay đổi này",
   "backupWarningTitle": "SAO LƯU VÍ CỦA BẠN NGAY",
   "backupWarningBackupNow": "CÓ",
   "backupWarningBackupLater": "KHÔNG, TÔI HIỂU RỦI RO",
@@ -2324,45 +2032,11 @@
   "dcaReceiveAddressError": "Không thể chuẩn bị địa chỉ nhận trong ví của bạn. Vui lòng thử lại.",
   "dcaOrderCreationError": "Không thể tạo giao dịch mua định kỳ. Vui lòng thử lại sau.",
   "settingsPayjoinDisclaimerTitle": "Lưu ý về Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "Lưu ý về Payjoin",
-  "settingsPayjoinAdvancedTitle": "Cài đặt Payjoin nâng cao",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Không tìm thấy ví này.",
   "addressViewErrorLoadFailed": "Không thể tải địa chỉ của bạn. Vui lòng thử lại.",
   "sendSwapExpiredTitle": "Đơn hàng đã hết hạn",
   "sendSwapExpiredMessage": "Đơn hàng này đã hết hạn trước khi bất kỳ khoản tiền nào được gửi. Không có gì được gửi từ ví của bạn.",
-  "settingsScreenPrivacyTitle": "Quyền riêng tư màn hình",
-  "settingsScreenPrivacyDisabledMessage": "Ảnh chụp màn hình hiện được cho phép trên các màn hình nhạy cảm",
-  "settingsSearchHint": "Tìm kiếm cài đặt",
-  "settingsSearchNoResults": "Không tìm thấy cài đặt nào.",
-  "settingsSearchMempoolKeywords": "trình khám phá khối|ước tính phí|phí giao dịch|API mempool",
-  "settingsSearchExchangeKeywords": "tài khoản|tài khoản sàn giao dịch|giao dịch|mua và bán",
-  "settingsSearchStartBackupKeywords": "tạo bản sao lưu|lưu bản sao lưu|sao lưu ví",
-  "settingsSearchRecoverbullKeywords": "bản sao lưu mã hóa|sao lưu đám mây|kho mã hóa|khôi phục kho",
-  "settingsSearchLabelsKeywords": "nhãn ví|nhãn giao dịch|BIP329|nhập nhãn|xuất nhãn",
-  "settingsSearchTransactionHistoryKeywords": "xuất giao dịch|xuất lịch sử giao dịch|CSV|lịch sử ví",
-  "settingsSearchAppSettingsKeywords": "tùy chọn ứng dụng|cài đặt ứng dụng|cài đặt chung",
-  "settingsSearchTermsOfServiceKeywords": "điều khoản và điều kiện|pháp lý|thỏa thuận người dùng|TOS",
-  "settingsSearchServicesStatusKeywords": "tình trạng dịch vụ|trạng thái hệ thống|trực tuyến|gián đoạn dịch vụ",
-  "settingsSearchImportWalletKeywords": "thêm ví|khôi phục ví|nhập cụm từ ghi nhớ|ví chỉ xem|ví phần cứng",
-  "settingsSearchBroadcastTransactionKeywords": "phát giao dịch đã ký|đẩy giao dịch|giao dịch thô|mã hex giao dịch|PSBT",
-  "settingsSearchPayjoinKeywords": "quyền riêng tư Payjoin|giao dịch cộng tác|P2EP",
-  "settingsSearchAutoswapKeywords": "hoán đổi tự động|trao đổi tự động|chuyển tự động|số dư ví tức thời",
-  "settingsSearchElectrumKeywords": "nút bitcoin|nút Electrum|máy chủ tùy chỉnh|nút cá nhân",
-  "settingsSearchTestnetModeKeywords": "mạng thử nghiệm|testnet bitcoin|testnet Liquid|chế độ thử nghiệm",
-  "settingsSearchSeedViewerKeywords": "cụm từ seed|cụm từ khôi phục|cụm từ ghi nhớ|từ sao lưu|xem seed",
-  "settingsSearchBip85Keywords": "entropy tất định|seed con|entropy dẫn xuất|BIP85",
-  "settingsSearchLanguageKeywords": "ngôn ngữ vùng|bản dịch|ngôn ngữ hiển thị|ngôn ngữ ưu tiên",
-  "settingsSearchThemeKeywords": "giao diện|chế độ tối|chế độ sáng|chủ đề hệ thống",
-  "settingsSearchCurrencyKeywords": "tiền pháp định|tiền tệ địa phương|tiền tệ mặc định|tiền tệ quy đổi",
-  "settingsSearchSecurityPinKeywords": "mã PIN|mật mã|khóa ứng dụng|xác thực|đổi PIN",
-  "settingsSearchLogsKeywords": "nhật ký gỡ lỗi|nhật ký chẩn đoán|nhật ký ứng dụng|xuất nhật ký",
-  "settingsSearchDevModeKeywords": "chế độ nhà phát triển|cài đặt phát triển|chế độ gỡ lỗi|thử nghiệm nâng cao",
-  "settingsSearchTestnetCredentialsKeywords": "thông tin đăng nhập testnet|đăng nhập testnet|tên người dùng testnet|mật khẩu testnet|xác thực cơ bản",
-  "settingsSearchErrorReportingKeywords": "báo cáo sự cố|báo cáo lỗi|chẩn đoán|dữ liệu đo từ xa|nhật ký lỗi",
-  "settingsSearchScreenPrivacyKeywords": "ảnh chụp màn hình|ghi màn hình|bảo vệ chụp màn hình|quyền riêng tư",
-  "settingsSearchStartTyping": "Bắt đầu nhập để xem kết quả.",
-  "onboardingBackupVerificationError": "Ví của bạn đã được khôi phục, nhưng không thể hoàn tất việc xác minh bản sao lưu. Vui lòng thử lại.",
   "sendErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
   "sendErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
@@ -2376,8 +2050,6 @@
   "walletWarningElectrumAction": "Chạm để định cấu hình cài đặt máy chủ",
   "walletLoadFailedRetryHint": "Kéo xuống để làm mới và thử lại",
   "settingsErrorSavingSetting": "Không thể lưu cài đặt đó. Vui lòng thử lại.",
-  "settingsErrorConsentNotGiven": "Cài đặt này cần bạn xác nhận trước khi thay đổi.",
-  "settingsErrorLoadingLogs": "Không thể chuẩn bị nhật ký chẩn đoán. Vui lòng thử lại.",
   "exchangeErrorSigningOut": "Không thể đăng xuất hoàn toàn. Vui lòng thử lại.",
   "exchangeErrorSavingPreferences": "Không thể lưu tùy chọn của bạn. Vui lòng thử lại.",
   "exchangeErrorLoadingAnnouncements": "Không thể tải thông báo.",
@@ -2499,7 +2171,6 @@
   "fundExchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
   "exchangeErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
   "walletBalancesMayBeStale": "Không thể cập nhật số dư của bạn và số dư có thể chưa chính xác.",
-  "settingsSearchTorKeywords": "proxy Tor|Orbot|định tuyến onion|Tor tích hợp|mạng riêng tư",
   "limitOrdersInsufficientBalance": "Số dư không đủ",
   "limitOrdersInsufficientBalanceMessage": "Bạn không có đủ số dư để tạo đơn hàng này.",
   "limitOrdersFundAccount": "Nạp tiền vào tài khoản của bạn",
@@ -2556,20 +2227,15 @@
   "swapUnderReviewTitle": "Swap đang được xem xét",
   "swapUnderReviewDescription": "Swap này cần được xem xét thủ công. Hãy liên hệ hỗ trợ để được trợ giúp. Nếu bạn chưa có tài khoản hỗ trợ, bạn chỉ cần tạo một tài khoản; không cần KYC.",
   "swapUnderReviewSupportMessage": "Swap đang được xem xét\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
   "broadcastSignedTxErrorAlreadyInChain": "Giao dịch này đã có trên blockchain. Không còn gì để phát sóng.",
   "broadcastSignedTxErrorRejected": "Mạng đã từ chối giao dịch này. Giao dịch có thể chưa được ký đầy đủ, không hợp lệ hoặc xung đột với một khoản thanh toán khác.",
   "broadcastSignedTxErrorOutcomeUnknown": "Không thể xác nhận giao dịch của bạn đã được phát sóng. Hãy kiểm tra trên trình khám phá khối trước khi thử lại.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Phát sóng trên mạng này chưa được bật trong cài đặt hiện tại.",
   "settingsDarkModeTitle": "Chế độ tối",
-  "settingsSourceCodeTitle": "Mã nguồn",
   "torSettingsExternalProxyUnavailableDescription": "Bull không thể kết nối tới proxy SOCKS5 đã cấu hình.",
   "backgroundTasksTitle": "Tác vụ nền",
   "blockedInSystemSettings": "Bị chặn trong cài đặt hệ thống",
-  "notificationsBlockedMessage": "Thông báo bị chặn trong cài đặt hệ thống.",
   "notificationsTitle": "Thông báo",
   "openSystemSettings": "Mở cài đặt hệ thống",
-  "permissionsTitle": "Quyền",
-  "settingsSearchPermissionsKeywords": "thông báo|tác vụ nền|pin|cảnh báo",
   "sendErrorInvoiceExpiryTooShort": "Hóa đơn này hết hạn quá sớm. Hãy yêu cầu người nhận gửi hóa đơn mới."
 }

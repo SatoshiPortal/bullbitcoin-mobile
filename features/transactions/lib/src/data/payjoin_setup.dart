@@ -16,6 +16,7 @@ import 'package:sync/write.dart';
 
 import '../../transactions.dart';
 import 'payjoin_blockchain_adapter.dart';
+import 'payjoin_broadcast_wallet.dart';
 import 'payjoin_transaction_adapter.dart';
 import 'payjoin_wallet_adapter.dart';
 
@@ -50,6 +51,19 @@ void mountPayjoin(GetIt locator, {bool startRecovery = true}) {
 
   final runtime = RecoverablePayjoin(() async {
     final profile = await captureProfile();
+    // One engine serves the ordinary and the targeted pass of every session.
+    // It is built on the first pass, so a Payjoin open that never syncs does
+    // not resolve the native writer; every call resolves its descriptor from
+    // the catalog.
+    ForegroundWalletSynchronization? openedWalletSync;
+    ForegroundWalletSynchronization walletSync() =>
+        openedWalletSync ??= ForegroundWalletSynchronization(
+          locator<ElectrumSync>(),
+          native: locator<WalletNativeRuntime>(),
+        );
+    Future<Result<PublicWalletDescriptor, SyncFailure>> descriptorOf(
+      WalletKey key,
+    ) async => locator<WalletCatalogPort>().find(key);
     return openPayjoin(
       regtestHostProfile: profile,
       isCurrent: isCurrent,
@@ -75,34 +89,35 @@ void mountPayjoin(GetIt locator, {bool startRecovery = true}) {
             built,
             owner,
             replacing,
-          }) async =>
-              switch (await locator<SecretsInventory>().readWallet(id)) {
-                Ok(:final value) => locator<WalletNativeRuntime>().broadcast(
-                  WalletKey(id: value.id, network: value.network),
-                  transaction,
-                  network: network,
-                  built: built,
-                  owner: owner,
-                  replacing: replacing,
-                ),
-                Err(failure: WalletRegistrationNotFoundFailure()) => const Err(
-                  SyncNotFoundFailure(),
-                ),
-                Err() => const Err(SyncStorageFailure()),
-              },
+          }) async => switch (payjoinBroadcastWallet(
+            await locator<SecretsInventory>().readWallet(id),
+          )) {
+            Ok(:final value) => locator<WalletNativeRuntime>().broadcast(
+              value,
+              transaction,
+              network: network,
+              built: built,
+              owner: owner,
+              replacing: replacing,
+            ),
+            Err(:final failure) => Err(failure),
+          },
         ),
       ),
       fees: locator<Fees>().payjoin,
       transactions: AppPayjoinTransactionAdapter(
         locator<SecretsInventory>(),
         locator<Transactions>(),
-        locator<WalletConnectionPort>(),
-        synchronize: (key) async =>
-            switch (await locator<WalletCatalogPort>().find(key)) {
-              Ok(:final value) => ForegroundWalletSynchronization(
-                locator<ElectrumSync>(),
-                native: locator<WalletNativeRuntime>(),
-              ).execute(value),
+        synchronize: (key) async => switch (await descriptorOf(key)) {
+          Ok(:final value) => walletSync().execute(value),
+          Err(:final failure) => Err(failure),
+        },
+        synchronizeTargeted: (key, targets) async =>
+            switch (await descriptorOf(key)) {
+              Ok(:final value) => walletSync().executeTargeted(
+                value,
+                targets: targets,
+              ),
               Err(:final failure) => Err(failure),
             },
         finished: locator<ElectrumSync>().finished.map((event) => event.key),

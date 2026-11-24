@@ -26,17 +26,20 @@ import 'package:transactions/setup.dart';
 
 import '../transactions/support/transaction_ui_actions.dart';
 
+import 'package:coins/setup.dart' show CoinsFeature;
 import 'package:fees/fees.dart';
 import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
-import 'package:spend/spend.dart' show Spend;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
 import 'package:wallet_import/wallet_import.dart';
+import 'package:onboarding/setup.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
 
 import 'package:access/setup.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart' show Exchange;
+import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
+import 'package:exchange/testing.dart' show exchangeForTesting;
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -57,16 +60,19 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Fingerprint, Network, ScriptType;
 import 'package:receive/setup.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/secrets.dart' hide Language;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
+import 'package:spend/spend.dart' show Spend;
+import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
 import '../../support/wallet_registrations.dart';
 
 import 'package:silent/setup.dart';
+import 'package:silent/silent.dart' show Silent;
 import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:sync/write.dart'
     show ElectrumSync, WalletNativeLifecycle, WalletNativeRuntime;
@@ -81,9 +87,11 @@ class ImportPreferences extends Mock implements Preferences {}
 
 class ElectrumServers extends Mock implements ElectrumServersPort {}
 
-class Exchange extends Mock implements ExchangeFacade {}
+class _ExchangeAccess extends Mock implements ExchangeAccessLifecycle {}
 
 class SilentPreferences extends Mock implements Preferences {}
+
+class _Silent extends Mock implements Silent {}
 
 class Wallets extends Mock implements RecoverBullWalletPort {}
 
@@ -100,15 +108,9 @@ class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
 
-class _UnusedSpend extends Mock implements Spend {}
+class _MockElectrum extends Mock implements Electrum {}
 
-class _UnusedElectrum extends Mock implements Electrum {
-  @override
-  final transactions = _UnusedElectrumTransactions();
-}
-
-class _UnusedElectrumTransactions extends Mock
-    implements ElectrumTransactions {}
+class _MockElectrumTransactions extends Mock implements ElectrumTransactions {}
 
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
@@ -203,12 +205,14 @@ class _UnusedAccounts implements WalletProvisioning {
   }) => throw StateError('Unexpected xpub provisioning');
 }
 
+class _UnusedProvisioning extends Mock implements DefaultWalletProvisioning {}
+
 void main() {
   testWidgets(
     'actual shell routes keep unavailable Ark entries inert and navigable',
     (tester) async {
       final directory = Directory.systemTemp.createTempSync('ark-route-');
-      final exchange = Exchange();
+      final exchange = _ExchangeAccess();
       final wallets = Wallets();
       final quickActions = createQuickActionsCubit(
         storage: Memory(),
@@ -219,7 +223,7 @@ void main() {
         secrets: Secrets(scratchDirectory: () async => directory.path),
         wallets: wallets,
       );
-      locator.registerSingleton<ExchangeFacade>(exchange);
+      locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
       locator.registerSingleton<QuickActionsCubit>(quickActions);
       final exchangePrompt = createExchangePromptCubit(
         storage: Memory(),
@@ -230,7 +234,7 @@ void main() {
       locator.registerSingleton<RecoverBullFeature>(recovery);
       FakeSecureStoragePlatform().install();
       final inventoryFixture = await tester.runAsync(
-        () => InventoryFixture.open(directory, includeSignerDevices: true),
+        () => InventoryFixture.open(directory, withSignerDevices: true),
       );
       if (inventoryFixture == null) throw StateError('Inventory unavailable');
       final signerDevices = inventoryFixture.signerDevices;
@@ -254,10 +258,12 @@ void main() {
         ),
       );
       final networkServices = GetIt.asNewInstance();
-      networkServices.registerSingleton<Fees>(_MockFees());
+      final fees = _MockFees();
+      networkServices.registerSingleton<Fees>(fees);
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
+          silent: _Silent(),
           preferences: _UnusedPreferences(),
           inventory: inventoryFixture.inventory,
           readBackup: (_) async => const Ok(null),
@@ -281,11 +287,35 @@ void main() {
         ),
       );
       final preferences = PricePreferences();
+      final electrum = _MockElectrum();
+      when(() => electrum.transactions).thenReturn(_MockElectrumTransactions());
+      locator.registerSingleton<Spend>(FakeSpend());
+      locator.registerSingleton<Fees>(fees);
+      locator.registerSingleton<Electrum>(electrum);
+      locator.registerSingleton<ActiveEnvironmentReader>(preferences);
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
           environment: preferences,
           amountDisplay: preferences,
           display: preferences,
+        ),
+      );
+      locator.registerSingleton(
+        CoinsFeature.mount<String>(
+          inventory: inventoryFixture.inventory,
+          loadWallet: (_) async =>
+              throw StateError('Unexpected coins wallet read'),
+          foreground: () async => throw StateError('Unexpected coins sync'),
+          labels: _UnusedLabels(),
+          preferences: preferences,
+          poll: (_) async {},
+          watchRevisions: (_) => const Stream.empty(),
+          watchStartedSyncs: (_) => const Stream.empty(),
+          watchFinishedSyncs: (_) => const Stream.empty(),
+          walletId: (id) => id,
+          missingWalletRedirect: '/wallet-home',
+          onSend: (_, _, _) async {},
+          onSweep: (_, _, _) async {},
         ),
       );
       final secrets = Secrets(scratchDirectory: () async => directory.path);
@@ -405,10 +435,21 @@ void main() {
           orderSwapUnderReview: (_) => const SizedBox(),
         ),
       );
-      locator.registerSingleton<Spend>(_UnusedSpend());
-      locator.registerSingleton<Fees>(_MockFees());
-      locator.registerSingleton<Electrum>(_UnusedElectrum());
-      locator.registerSingleton<ActiveEnvironmentReader>(preferences);
+      const unusedImage = AssetImage('unused.png');
+      locator.registerSingleton(
+        OnboardingFeature.mount(
+          defaultWallets: _UnusedProvisioning(),
+          records: (_) => throw StateError('Unexpected backup records'),
+          walletImport: locator<ImportFeature>(),
+          onWalletReady: (_) {},
+          languageOf: (_) => Language.unitedStatesEnglish,
+          changeLanguage: (_, _) {},
+          logo: const SizedBox.shrink(),
+          background: unusedImage,
+          encryptedBackupIcon: unusedImage,
+          physicalBackupIcon: unusedImage,
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -419,26 +460,27 @@ void main() {
         await locator.unregister<Bip85Feature>();
         await locator.unregister<AllSeedViewFeature>();
         await accessServices.reset();
-        await inventoryFixture.close();
         await locator.unregister<SignersFeature>();
         await signerServices.reset();
-        await locator.unregister<ExchangeFacade>();
+        await locator.unregister<Exchange>();
         await locator.unregister<QuickActionsCubit>();
         await exchangePrompt.close();
         await locator.unregister<ExchangePromptCubit>();
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<Spend>();
+        await locator.unregister<Fees>();
+        await locator.unregister<Electrum>();
+        await locator.unregister<ActiveEnvironmentReader>();
         await locator.unregister<SwapFeature>();
         await locator.unregister<ImportFeature>();
+        await locator.unregister<OnboardingFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<CoinsFeature>();
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
         await locator.unregister<ReceiveFeature>();
-        await locator.unregister<ActiveEnvironmentReader>();
-        await locator.unregister<Electrum>();
-        await locator.unregister<Fees>();
-        await locator.unregister<Spend>();
         await locator.unregister<WalletNativeRuntime>();
         await nativeRuntime.close();
         await locator.unregister<ElectrumSync>();
@@ -449,6 +491,7 @@ void main() {
         await locator.unregister<SignerDevices>();
         await locator.unregister<Secrets>();
         await locator.unregister<SecretsInventory>();
+        await inventoryFixture.close();
         await receiveServices.reset();
         await transactionServices.reset();
         await networkServices.reset();
@@ -461,6 +504,13 @@ void main() {
       expect(router.namedLocation('receiveLiquid'), '/receive/liquid');
       expect(router.namedLocation('settings'), '/settings');
       expect(router.namedLocation('search'), '/settings/search');
+      expect(
+        router.namedLocation(
+          'walletDetailsSelectedWallet',
+          pathParameters: {'walletId': 'watch-only'},
+        ),
+        '/settings/wallet-details/watch-only',
+      );
       expect(
         router.namedLocation('backupSettings'),
         '/settings/backup-settings',

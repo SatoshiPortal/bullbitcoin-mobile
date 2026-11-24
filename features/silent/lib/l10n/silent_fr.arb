@@ -1,4 +1,5 @@
 {
+  "silentFailureBackendRollbackFailed": "Impossible de rétablir la connexion précédente du portefeuille. Vérifiez les serveurs enregistrés avant de réessayer.",
   "@@locale": "fr",
   "transactionStatusPending": "En attente",
   "transactionListLoadingTransactions": "Chargement des transactions...",

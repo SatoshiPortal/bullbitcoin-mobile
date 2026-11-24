@@ -1,0 +1,79 @@
+{
+  "@@locale": "th",
+  "onboardingRecoverYourWallet": "การกู้คืนกระเป๋าสตางค์ของคุณ",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "onboardingEncryptedVaultDescription": "การกู้คืนการสํารองข้อมูลของคุณผ่านทางระบบคลาวด์ของคุณ.",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingSplashDescription": "Sovereign เครื่องช่วยฟัง Bitcoin และ Bitcoin- เท่านั้น.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingEncryptedVault": "การเข้ารหัส",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingCreateNewWallet": "สร้างข้อความใหม่",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "onboardingPhysicalBackupDescription": "การกู้คืนกระเป๋าสตางค์ของคุณผ่าน 12 คํา.",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "settingsLanguageTitle": "ภาษา",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "การกู้คืน",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "onboardingBullBitcoin": "เงิน",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "เงินของคุณ",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "onboardingPhysicalBackup": "การสํารองข้อมูลทางกายภาพ",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "onboardingRecoverWalletButton": "การกู้คืนกระเป๋าสตางค์",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "continueButton": "อ่านต่อ",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "torSettingsTitle": "ปุ่ม",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "walletSetupErrorTryAgain": "เกิดข้อผิดพลาดในการตั้งค่ากระเป๋าสตางค์ของคุณ กรุณาลองใหม่อีกครั้ง",
+  "onboardingAdvancedOptionsTitle": "ตัวเลือกขั้นสูง",
+  "onboardingAdvancedOptionsDescription": "กำหนดการตั้งค่าขั้นสูงก่อนสร้างหรือกู้คืนกระเป๋าเงินของคุณ",
+  "onboardingAdvancedOptionsCustomElectrum": "เซิร์ฟเวอร์ Electrum ที่กำหนดเอง",
+  "onboardingAdvancedOptionsCustomMempool": "เซิร์ฟเวอร์ Mempool ที่กำหนดเอง",
+  "onboardingAdvancedOptionsCustomRecoverbull": "เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง",
+  "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
+  "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง"
+}

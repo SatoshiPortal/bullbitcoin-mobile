@@ -4,6 +4,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:provisioning/provisioning.dart';
+import 'package:satoshifier/bip32_derivation.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
@@ -30,6 +31,14 @@ const _words = [
 
 const _fingerprint = '73c5da0a';
 const _bip84MainnetId = 'wpkh([$_fingerprint/84h/0h/0h])';
+
+/// An xpub-only import carries no master fingerprint, so `importXpub` keys its
+/// catalog row on the imported account key's own fingerprint — `fd13aac9` for
+/// the test vector's BIP84 mainnet account, the same value
+/// `wallet_identity_pins_test.dart` pins as `xpubFingerprint` — exactly as the
+/// parent `WalletMetadataService.deriveFromXpub` did, with an empty stored
+/// master fingerprint.
+const _bip84MainnetWatchOnlyId = 'wpkh([fd13aac9/84h/0h/0h])';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -123,6 +132,11 @@ void main() {
     };
     expect(secret.id.hex, _fingerprint);
     xpub = await deriveXpub(secret, BitcoinNetwork.mainnet, ScriptType.bip84);
+    expect(
+      Bip32Derivation.getBip32Xpub(xpub).fingerprintHex,
+      'fd13aac9',
+      reason: 'the xpub import identifies the account key, not the master key',
+    );
     fixture = await InventoryFixture.open(directory);
     native = FakeNativeLifecycle();
     admission = FakeAdmission();
@@ -288,7 +302,7 @@ void main() {
         );
         paused.release();
         expect(await first, isA<Ok<void, WalletProvisioningFailure>>());
-        expect((await singleRow()).id, _bip84MainnetId);
+        expect((await singleRow()).id, _bip84MainnetWatchOnlyId);
         expect(native.created, hasLength(1));
         expect(native.deleted, isEmpty);
       },
@@ -367,7 +381,10 @@ void main() {
               isA<Ok<void, WalletProvisioningFailure>>(),
             );
         }
-        expect((await singleRow()).id, _bip84MainnetId);
+        expect(
+          (await singleRow()).id,
+          path == 'xpub' ? _bip84MainnetWatchOnlyId : _bip84MainnetId,
+        );
         expect(native.deleted, isEmpty);
       });
     }

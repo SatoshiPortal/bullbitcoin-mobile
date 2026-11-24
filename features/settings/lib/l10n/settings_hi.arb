@@ -112,5 +112,235 @@
   "globalDefaultLiquidWalletLabel": "तत्काल भुगतान",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
-  }
+  },
+  "bitcoinSettingsTestnetModeTitle": "Testnet मोड",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "लॉग",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "डिफ़ॉल्ट फ़िएट मुद्रा",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "वॉलेट आयात करें",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "सेवाओं की स्थिति",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "सुरक्षा PIN",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "लेबल",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "मैं समझता/समझती हूँ",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "मुद्रा",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "भाषा",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "electrumTestnet": "टेस्टनेट",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "एक्सचेंज सेटिंग्स",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "ऐप सेटिंग्स",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Dev मोड",
+  "exchangeTestnetBasicAuthTitle": "Testnet एक्सचेंज क्रेडेंशियल",
+  "exchangeTestnetBasicAuthDescription": "Testnet एक्सचेंज वेब पेजों के लिए HTTP बेसिक ऑथ (लॉगिन और KYC)।",
+  "exchangeTestnetBasicAuthUsernameLabel": "उपयोगकर्ता नाम",
+  "exchangeTestnetBasicAuthPasswordLabel": "पासवर्ड",
+  "exchangeTestnetBasicAuthClearButton": "साफ़ करें",
+  "exchangeTestnetBasicAuthSaveButton": "सहेजें",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "मेननेट",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "लेनदेन इतिहास",
+  "allSeedViewTitle": "बीज दर्शक",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "settingsSuperuserModeDisabledMessage": "सुपरयूज़र मोड अक्षम।",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "सेवा की शर्तें",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "यह मोड जोखिमपूर्ण है। इसे सक्षम करके, आप स्वीकार करते हैं कि आप पैसे खो सकते हैं",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "लेनदेन प्रसारित करें",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "थीम",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsDevModeWarningTitle": "Dev मोड",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "ऐप संस्करण: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "दान",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "सुपरयूज़र मोड अनलॉक!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "सेटिंग्स",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 निर्धारित एंट्रॉपी",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "ऑटो स्वैप सेटिंग्स",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "torSettingsTitle": "Tor सेटिंग्स",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "backupSettingsStartBackup": "बैकअप",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "settingsErrorReportingTitle": "त्रुटि रिपोर्टिंग",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "त्रुटि रिपोर्टिंग कार्यक्रम",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingAcceptButton": "स्वीकार करें",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "रद्द करें",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "यह परिवर्तन लागू करने के लिए ऐप पुनः प्रारंभ करें",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "errorReportingProgramDescriptionP2": "कुछ समस्या होने पर Bull Bitcoin बेनामी त्रुटि रिपोर्ट भेजता है।",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin ओपन-सोर्स है, इसलिए आप सत्यापित कर सकते हैं कि क्या भेजा जा रहा है।",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
+  },
+  "errorReportingProgramDescriptionP1": "हमारे त्रुटि रिपोर्टिंग कार्यक्रम में योगदान देकर Bull को बेहतर बनाने में हमारी मदद करें।",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP3": "इससे हमें यह देखने में मदद मिलती है कि प्रत्येक बग कितने उपयोगकर्ताओं को प्रभावित करता है और तदनुसार सुधारों को प्राथमिकता देने में मदद मिलती है; इसके बिना, प्रभाव मापने का हमारे पास कोई तरीका नहीं है।",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "रिपोर्ट केवल Bull के सर्वर पर जाती हैं, कभी भी तृतीय पक्षों को नहीं।",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "swapRestoreTitle": "Swap रिस्टोर",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin अस्वीकरण",
+  "settingsPayjoinAdvancedTitle": "उन्नत Payjoin सेटिंग्स",
+  "settingsScreenPrivacyTitle": "स्क्रीन गोपनीयता",
+  "settingsScreenPrivacyDisabledMessage": "अब संवेदनशील स्क्रीन पर स्क्रीनशॉट लेने की अनुमति है",
+  "settingsSearchHint": "सेटिंग खोजें",
+  "settingsSearchNoResults": "कोई सेटिंग नहीं मिली।",
+  "settingsSearchMempoolKeywords": "ब्लॉक एक्सप्लोरर|फीस अनुमान|लेनदेन शुल्क|mempool API",
+  "settingsSearchExchangeKeywords": "खाता|एक्सचेंज खाता|ट्रेडिंग|खरीदना और बेचना",
+  "settingsSearchStartBackupKeywords": "बैकअप बनाएँ|बैकअप सहेजें|वॉलेट का बैकअप लें",
+  "settingsSearchRecoverbullKeywords": "एन्क्रिप्टेड बैकअप|क्लाउड बैकअप|एन्क्रिप्टेड वॉल्ट|वॉल्ट पुनर्प्राप्ति",
+  "settingsSearchLabelsKeywords": "वॉलेट लेबल|लेनदेन लेबल|BIP329|लेबल आयात करें|लेबल निर्यात करें",
+  "settingsSearchTransactionHistoryKeywords": "लेनदेन निर्यात करें|लेनदेन इतिहास निर्यात करें|CSV|वॉलेट इतिहास",
+  "settingsSearchAppSettingsKeywords": "ऐप प्राथमिकताएँ|एप्लिकेशन सेटिंग्स|सामान्य सेटिंग्स",
+  "settingsSearchTermsOfServiceKeywords": "नियम और शर्तें|कानूनी|उपयोगकर्ता समझौता|TOS",
+  "settingsSearchServicesStatusKeywords": "सेवाओं की स्थिति|सिस्टम की स्थिति|ऑनलाइन|सेवा बाधित",
+  "settingsSearchImportWalletKeywords": "वॉलेट जोड़ें|वॉलेट पुनर्प्राप्त करें|रिकवरी वाक्यांश आयात करें|केवल देखने वाला वॉलेट|हार्डवेयर वॉलेट",
+  "settingsSearchBroadcastTransactionKeywords": "हस्ताक्षरित लेनदेन प्रसारित करें|लेनदेन भेजें|रॉ लेनदेन|लेनदेन hex|PSBT",
+  "settingsSearchPayjoinKeywords": "Payjoin गोपनीयता|सहयोगी लेनदेन|P2EP",
+  "settingsSearchAutoswapKeywords": "Autoswap|स्वचालित स्वैप|स्वचालित ट्रांसफर|तत्काल वॉलेट बैलेंस",
+  "settingsSearchElectrumKeywords": "बिटकॉइन नोड|Electrum नोड|कस्टम सर्वर|निजी नोड",
+  "settingsSearchTestnetModeKeywords": "टेस्ट नेटवर्क|Bitcoin Testnet|Liquid Testnet|परीक्षण मोड",
+  "settingsSearchSeedViewerKeywords": "सीड वाक्यांश|रिकवरी वाक्यांश|Mnemonic|बैकअप शब्द|सीड दिखाएँ",
+  "settingsSearchBip85Keywords": "नियतात्मक एन्ट्रॉपी|चाइल्ड सीड|व्युत्पन्न एन्ट्रॉपी|BIP85",
+  "settingsSearchLanguageKeywords": "ऐप की भाषा|अनुवाद|डिस्प्ले भाषा|पसंदीदा भाषा",
+  "settingsSearchThemeKeywords": "दिखावट|गहरा मोड|हल्का मोड|सिस्टम थीम|डार्क मोड|लाइट मोड",
+  "settingsSearchCurrencyKeywords": "फ़िएट मुद्रा|स्थानीय मुद्रा|डिफ़ॉल्ट मुद्रा|एक्सचेंज मुद्रा",
+  "settingsSearchSecurityPinKeywords": "PIN कोड|पासकोड|ऐप लॉक|प्रमाणीकरण|PIN बदलें",
+  "settingsSearchLogsKeywords": "Debug लॉग|डायग्नोस्टिक लॉग|ऐप लॉग|लॉग निर्यात करें",
+  "settingsSearchDevModeKeywords": "डेवलपर मोड|डेवलपमेंट सेटिंग्स|Debug मोड|उन्नत परीक्षण",
+  "settingsSearchTestnetCredentialsKeywords": "Testnet उपयोगकर्ता क्रेडेंशियल|Testnet लॉगिन|Testnet उपयोगकर्ता नाम|Testnet पासवर्ड|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "Crash report|त्रुटि रिपोर्ट|डायग्नोस्टिक्स|Telemetry|त्रुटि लॉग",
+  "settingsSearchScreenPrivacyKeywords": "स्क्रीनशॉट|स्क्रीन रिकॉर्डिंग|स्क्रीन कैप्चर सुरक्षा|गोपनीयता",
+  "settingsSearchStartTyping": "परिणाम देखने के लिए टाइप करना शुरू करें।",
+  "settingsErrorSavingSetting": "वह सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।",
+  "settingsErrorConsentNotGiven": "इस सेटिंग को बदलने से पहले आपकी पुष्टि आवश्यक है।",
+  "settingsErrorLoadingLogs": "डायग्नोस्टिक लॉग तैयार नहीं किए जा सके। कृपया पुनः प्रयास करें।",
+  "settingsSearchTorKeywords": "Tor प्रॉक्सी|Orbot|ऑनियन रूटिंग|अंतर्निहित Tor|गोपनीयता नेटवर्क",
+  "bitcoinSettingsAutoTransferTitle": "ऑटो स्वैप",
+  "settingsDarkModeTitle": "डार्क मोड",
+  "settingsSourceCodeTitle": "सोर्स कोड",
+  "backgroundTasksTitle": "बैकग्राउंड कार्य",
+  "notificationsBlockedMessage": "सूचनाएँ सिस्टम सेटिंग्स में अवरुद्ध हैं।",
+  "notificationsTitle": "सूचनाएँ",
+  "openSystemSettings": "सिस्टम सेटिंग्स खोलें",
+  "permissionsTitle": "अनुमतियाँ",
+  "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट"
 }

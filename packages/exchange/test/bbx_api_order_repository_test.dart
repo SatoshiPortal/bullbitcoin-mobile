@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
 import 'package:dio/dio.dart';
@@ -15,6 +16,32 @@ const _rpcError = {
 
 const _min = 'GREATER_THAN_OR_EQUAL';
 const _max = 'LESS_THAN_OR_EQUAL';
+
+final class _Pages extends FakeBbxHttp {
+  final Map<int, List<Object?>> pages;
+  final int? failurePage;
+  final int failureStatus;
+
+  _Pages(this.pages, {this.failurePage, this.failureStatus = 200});
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    requests.add(options);
+    final page =
+        ((options.data as Map)['params'] as Map)['paginator']['page'] as int;
+    return ResponseBody.fromString(
+      jsonEncode(page == failurePage ? _rpcError : _list(pages[page] ?? [])),
+      page == failurePage ? failureStatus : 200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+}
 
 const _notActivated = {
   'error': {
@@ -58,8 +85,10 @@ Map<String, Object?> _list(List<Object?> elements) => {
   'result': {'elements': elements},
 };
 
-ExchangeOrders _repository(FakeBbxHttp http, {bool isTestnet = false}) =>
-    testExchangeOrders(http, isTestnet: isTestnet);
+ExchangeOrders _repository(FakeBbxHttp http, {bool isTestnet = false}) {
+  http.endHistoryAfterFirstPage = true;
+  return testExchangeOrders(http, isTestnet: isTestnet);
+}
 
 ExchangeOrders _signedOut(FakeBbxHttp http) =>
     testExchangeOrders(http, readApiKey: () async => const Ok(null));
@@ -86,6 +115,136 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 };
 
 void main() {
+  test('history and txid lookup include orders after the first page', () async {
+    _Pages pages() => _Pages({
+      1: [orderJsonFixture(orderId: 'first')],
+      2: [
+        orderJsonFixture(
+          orderId: 'second',
+          overrides: const {'bitcoinTransactionId': 'later-tx'},
+        ),
+      ],
+    });
+    expect(
+      _valueOf(await _repository(pages()).getOrders()).map((o) => o.orderId),
+      ['first', 'second'],
+    );
+    expect(
+      _valueOf(await _repository(pages()).getOrderByTxId('later-tx'))?.orderId,
+      'second',
+    );
+  });
+
+  test(
+    'continues after an entirely rejected page and preserves the first id',
+    () async {
+      final http = _Pages({
+        1: [
+          {'orderId': 'broken'},
+        ],
+        2: [orderJsonFixture(orderId: 'one')],
+        3: [
+          orderJsonFixture(orderId: 'one', orderType: 'Sell Bitcoin'),
+          orderJsonFixture(orderId: 'two'),
+        ],
+      });
+      final orders = _valueOf(await _repository(http).getOrders());
+      expect(orders.map((o) => o.orderId), ['one', 'two']);
+      expect(orders.first, isA<BuyOrder>());
+      expect(http.requests, hasLength(4));
+    },
+  );
+
+  test(
+    'a repeated page fails rather than claiming a complete history',
+    () async {
+      final order = orderJsonFixture();
+      final http = _Pages({
+        1: [order],
+        2: [order],
+      });
+      expect(
+        await _repository(http).getOrders(),
+        _fails(isA<ExchangeOrderLoadFailure>()),
+      );
+    },
+  );
+
+  test('a later page failure does not return a partial history', () async {
+    final http = _Pages({
+      1: [orderJsonFixture()],
+    }, failurePage: 2);
+    expect(
+      await _repository(http).getOrders(),
+      _fails(isA<ExchangeOrderLoadFailure>()),
+    );
+  });
+
+  test('a later 401 remains a session rejection', () async {
+    final http = _Pages(
+      {
+        1: [orderJsonFixture()],
+      },
+      failurePage: 2,
+      failureStatus: 401,
+    );
+    expect(
+      await _repository(http).getOrders(),
+      _fails(isA<ExchangeSessionRejectedFailure>()),
+    );
+  });
+
+  test('the page limit is a failure, not an end of history', () async {
+    final http = _Pages({
+      for (var page = 1; page <= 1000; page++)
+        page: [orderJsonFixture(orderId: 'order-$page')],
+    });
+    expect(
+      await _repository(http).getOrders(),
+      _fails(isA<ExchangeOrderLoadFailure>()),
+    );
+    expect(http.requests, hasLength(1000));
+  });
+
+  test('filtering and slicing include later server pages', () async {
+    final http = _Pages({
+      1: [orderJsonFixture(orderId: 'buy')],
+      2: [
+        orderJsonFixture(orderId: 'sell-1', orderType: 'Sell Bitcoin'),
+        orderJsonFixture(orderId: 'sell-2', orderType: 'Sell Bitcoin'),
+      ],
+    });
+    final orders = _valueOf(
+      await _repository(http)
+          .getOrders(type: OrderType.sell, offset: 1, limit: 1),
+    );
+    expect(orders.map((o) => o.orderId), ['sell-2']);
+  });
+
+  test('txid absence is uncertain after a rejected row', () async {
+    final http = _Pages({
+      1: [
+        {'orderId': 'broken'},
+      ],
+    });
+    expect(
+      await _repository(http).getOrderByTxId('missing'),
+      _fails(isA<ExchangeOrderLoadFailure>()),
+    );
+  });
+
+  test('txid lookup stops on a match before the next page', () async {
+    final http = _Pages({
+      1: [
+        orderJsonFixture(overrides: const {'bitcoinTransactionId': 'target'}),
+      ],
+    });
+    expect(
+      _valueOf(await _repository(http).getOrderByTxId('target')),
+      isNotNull,
+    );
+    expect(http.requests, hasLength(1));
+  });
   group('getOrder', () {
     test('reads the order through api-orders', () async {
       final http = FakeBbxHttp(
@@ -243,7 +402,7 @@ void main() {
       );
       final orders = _valueOf(await _repository(http).getOrders());
 
-      expect((http.requests.single.data as Map)['params'], {
+      expect((http.requests.first.data as Map)['params'], {
         'sortBy': {'id': 'createdAt', 'sort': 'desc'},
         'paginator': {'page': 1, 'pageSize': 50},
       });
@@ -311,13 +470,13 @@ void main() {
       );
     });
 
-    test('missing elements are an empty history', () async {
+    test('missing elements are a load failure', () async {
       expect(
-        _valueOf(
+        _failureOf(
           await _repository(FakeBbxHttp(body: {'result': <String, Object?>{}}))
               .getOrders(),
         ),
-        isEmpty,
+        isA<ExchangeOrderLoadFailure>(),
       );
     });
 
@@ -808,6 +967,7 @@ void main() {
                   'apiError': {
                     'code': 'ERR_ORD_PO404',
                     'message': 'Account details must stay out',
+                    'requestId': '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0',
                   },
                 },
               },
@@ -828,6 +988,7 @@ void main() {
       final logs = (await capture.logger.readLogs()).join('\n');
       expect(logs, contains('apiCode: ERR_ORD_PO404'));
       expect(logs, contains('rpcCode: -32603'));
+      expect(logs, contains('requestId=60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0'));
       expect(logs, isNot(contains('Account details')));
     });
 

@@ -10,6 +10,10 @@ import 'package:meta/meta.dart';
 /// Kept apart from `SpBackendConfigRepository`, which only persists what the
 /// user settled on.
 abstract interface class SpBackendProbePort {
+  /// Probe only the Blindbit tip, without opening an account or scanning.
+  @useResult
+  Future<Result<void, SilentFailure>> blindbitTip(String url);
+
   /// Test one backend URL by actually connecting. `Ok(null)` when it connects;
   /// `Err` with [SilentBackendUnreachable] carrying the raw reason as `logMessage`
   /// (never shown to the user) otherwise. This is a try/catch boundary.

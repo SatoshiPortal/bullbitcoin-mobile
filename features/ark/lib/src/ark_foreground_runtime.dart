@@ -23,6 +23,10 @@ import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:secrets/secrets.dart';
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:material_ui/material_ui.dart' show WidgetsBinding;
+
+import 'ark_app_services.dart';
+import 'data/ark_board_funding.dart';
 
 /// Constructs the wallet-owned Board actor over the runtime's single client.
 typedef ArkBoardFundingFactory = ArkBoardFundingPort Function(
@@ -49,8 +53,13 @@ final class ArkForegroundRuntime {
   final ArkForegroundMaintenance _maintenance;
   final _WalletArkSelection _selection;
   final ArkAccountConfig _config;
+
+  /// This runtime's Board funding, which releases a stuck reservation.
+  final ArkBoardFundingPort _board;
   Future<void>? _closing;
   Future<void>? _maintaining;
+  Future<void>? _exiting;
+  Timer? _exitPolling;
 
   ArkForegroundRuntime._(
     this.feature,
@@ -60,6 +69,7 @@ final class ArkForegroundRuntime {
     this._maintenance,
     this._selection,
     this._config,
+    this._board,
   );
 
   /// The selected account this runtime was opened for.
@@ -101,11 +111,49 @@ final class ArkForegroundRuntime {
     _maintaining = null;
   });
 
+  /// Exit transactions confirm one block at a time, so while the app is open
+  /// the exit lane runs every minute. Only in the foreground: a backgrounded
+  /// app moves nothing.
+  void _pollExits() {
+    _exitPolling?.cancel();
+    _exitPolling = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+        return;
+      }
+      unawaited(maintainExits());
+    });
+  }
+
+  Future<void> maintainExits() => _exiting ??= () async {
+    if (_maintaining != null || !await isCurrent()) return;
+    final result = await _maintenance.runExits(_config.id);
+    if (result case Err(:final failure)) {
+      log.warning('Ark exit maintenance failed: ${failure.runtimeType}');
+    }
+    // A Board that confirms while the app is open gives its coins back now,
+    // not on the next resume. Nothing pending: a local read, nothing more.
+    await _reconcileBoard();
+  }().whenComplete(() => _exiting = null);
+
   Future<void> _maintain() async {
     if (!await isCurrent()) return;
     final result = await _maintenance.run(_config.id);
     if (result case Err(:final failure)) {
       log.warning('Ark foreground maintenance failed: ${failure.runtimeType}');
+    }
+    // An interrupted Board must not hold the wallet's coins until the next
+    // Board attempt: settle it here too.
+    await _reconcileBoard();
+  }
+
+  /// Records a confirmed Board, or releases one that can never be signed,
+  /// so its coins stop being held.
+  Future<void> _reconcileBoard() async {
+    if (_board case final WalletArkBoardFunding funding) {
+      final board = await funding.reconcilePending(_config.id);
+      if (board case Err(:final failure)) {
+        log.warning('Ark board reconcile failed: ${failure.runtimeType}');
+      }
     }
   }
 
@@ -121,6 +169,7 @@ final class ArkForegroundRuntime {
   Future<void> _close() async {
     Object? error;
     StackTrace? trace;
+    _exitPolling?.cancel();
     try {
       invalidate();
     } catch (failure, stack) {
@@ -183,6 +232,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   ArkPreferencesRepository? preferences,
   BackgroundTaskDispatcher? dispatcher,
   ArkScanner? scanner,
+  ArkAppServices services = const ArkAppServices(),
 }) async {
   try {
     final selection = _WalletArkSelection(
@@ -226,6 +276,16 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     );
     ArkForegroundMaintenance? maintenance;
     WalletArkDisplayData? displayData;
+    final exitFunding = ArkExitFunding();
+    // An exit's fees come from Secure Bitcoin, at its start and when it
+    // needs more. Built on first use: opening Ark never needs the send stack.
+    final send = services.send;
+    final exitTopUp = send == null
+        ? null
+        : WalletArkReserveTopUp(
+            sourceWallet: selection.displaySourceWalletId,
+            send: send,
+          );
     try {
       final language =
           (await locator<RuntimeDisplayPreferencesReader>().readLanguage())
@@ -246,6 +306,10 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         client: client,
         accounts: registry,
         initializeNew: initializeNew,
+        // An exit's fees come from Secure Bitcoin when it needs them. Built
+        // on first use: opening Ark never needs the send stack.
+        exitTopUp: exitTopUp,
+        exitFunding: exitFunding,
       );
       if (openedMaintenance case Err(:final failure)) {
         throw _SelectionFailure(failure);
@@ -272,6 +336,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           currencyChanges: settings.currencyChangeStream.expand<String>(
             (result) => result.fold((value) => [value], (_) => const []),
           ),
+          walletName: services.walletName ?? (_) async => null,
           isActive: () => policy.active,
         );
       }
@@ -289,21 +354,38 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         registry: managedRegistry,
         boardFunding: board,
         displayData: displayData,
+        exitFunding: exitFunding,
+        exitTopUp: exitTopUp,
+        exitDestination: switch (services.nextReceiveAddress) {
+          final nextAddress? => WalletArkExitDestination(
+            sourceWallet: selection.displaySourceWalletId,
+            nextAddress: nextAddress,
+          ),
+          null => null,
+        },
         scanner: scanner,
+        walletBackground: services.walletBackground,
+        confirmIcon: services.confirmIcon,
+        onHome: services.onHome,
       );
       final runtime = ArkForegroundRuntime._(
         feature,
         client,
-        () => _closeArkDisplayAndBoard(displayData, boardFunding.close),
+        () async {
+          await _closeArkDisplayAndBoard(displayData, boardFunding.close);
+          await exitFunding.close();
+        },
         policy,
         maintenance,
         selection,
         config,
+        board,
       );
       final inventory = await registry.list();
       if (inventory case Ok(:final value)
           when value.any((item) => item.id == config.id)) {
         unawaited(runtime.maintain());
+        runtime._pollExits();
       }
       return Ok(runtime);
     } catch (failure, stack) {

@@ -23,6 +23,11 @@ extension SendFailureL10n on SendFailure {
       context.loc.sendErrorInvoiceExpiryTooShort,
     SendInvoiceAmountRequiredFailure() =>
       context.loc.sendErrorInvoiceMustContainAmount,
+    SendLnurlLimitsUnavailableFailure() =>
+      context.loc.sendLnurlLimitsUnavailable,
+    SendLnurlNoPayableAmountFailure() => context.loc.sendLnurlNoPayableAmount,
+    SendLnurlAmountOutOfBoundsFailure(:final minimumSat, :final maximumSat) =>
+      context.loc.sendLnurlAmountRange(minimumSat, maximumSat),
     SendHardwareWalletFailure() =>
       context.loc.sendErrorHardwareWalletCannotSwap,
     SendInsufficientBalanceFailure() =>
