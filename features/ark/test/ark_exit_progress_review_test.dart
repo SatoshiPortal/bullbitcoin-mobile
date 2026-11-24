@@ -90,20 +90,15 @@ void main() {
     ),
   ];
   for (final (label, progress, quote) in missing) {
-    testWidgets('$label disables Confirm with explicit incomplete review', (
+    testWidgets('$label disables Confirm for an incomplete review', (
       tester,
     ) async {
       final r = _Rig(progress: progress);
       await r.load(quote);
       await tester.pumpWidget(app(r.screen));
       await pumpState(tester);
+      // No warning bar any more: Confirm itself stays unavailable.
       expect(button(tester, 'Confirm').disabled, true);
-      expect(
-        find.text(
-          'This exit progression review is incomplete or mismatched. Confirmation is unavailable.',
-        ),
-        findsOneWidget,
-      );
       expect(r.client.calls, ['quote']);
       expect(r.ids, 0);
     });
@@ -156,12 +151,6 @@ void main() {
         expect(details(tester)['Fee rate (sat/vB)'], '2.5');
         expect(details(tester)['Confirmed reserve at risk (sats)'], '$reserve');
         expect(details(tester)['Estimated fee (sats)'], '0');
-        expect(
-          find.text(
-            'This one foreground attempt is account-wide and may expose the entire quoted confirmed internal reserve. The fee is an estimate and the returned quote rate is not a strict financial cap. This is not standing consent for later attempts or new deposits.',
-          ),
-          findsOneWidget,
-        );
         expect(q.reserveOutpoints, isEmpty);
         expect(button(tester, 'Confirm').disabled, false);
         expect(r.client.calls, [
@@ -176,6 +165,7 @@ void main() {
         expect(r.cubit.state, isA<ArkOperationUncertain>());
         await r.cubit.load();
         expect(r.client.calls.where((c) => c == 'quote'), hasLength(1));
+        await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
       },
     );
   }
@@ -209,6 +199,7 @@ void main() {
         await pumpState(tester);
         expect(r.submissions, completeFirst ? 0 : 1);
         expect(r.ids, completeFirst ? 0 : 1);
+        await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
       },
     );
   }

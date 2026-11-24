@@ -66,4 +66,33 @@ void main() {
       expect(cubit.state, isNull);
     },
   );
+
+  test(
+    'a refresh of the same account keeps its balance until it is read',
+    () async {
+      final replies = <Completer<ArkSnapshot?>>[];
+      final cubit = ArkHomeCubit(
+        ReadArkHomeUsecase(() {
+          final reply = Completer<ArkSnapshot?>();
+          replies.add(reply);
+          return reply.future;
+        }),
+      );
+      addTearDown(cubit.close);
+      var pending = cubit.load();
+      replies.last.complete(observation('first', 42));
+      await pending;
+      pending = cubit.load(keep: true);
+      // No "unavailable" flash while it is read again.
+      expect(cubit.state?.spendable, Sats.fromInt(42));
+      replies.last.complete(observation('first', 50));
+      await pending;
+      expect(cubit.state?.spendable, Sats.fromInt(50));
+      // Nothing to show any more is shown as such.
+      pending = cubit.load(keep: true);
+      replies.last.complete(null);
+      await pending;
+      expect(cubit.state, isNull);
+    },
+  );
 }

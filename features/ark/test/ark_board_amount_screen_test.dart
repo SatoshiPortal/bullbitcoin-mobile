@@ -1,15 +1,25 @@
 import 'package:ark/ark.dart';
+import 'package:bull_ark/src/domain/ark_display_data_port.dart';
 import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInputText, SizedBox, Widget;
+    show
+        BuildContext,
+        BullButton,
+        BullInputText,
+        BullText,
+        BullThemeX,
+        SizedBox,
+        Widget;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import 'ark_information_widget_test.dart' show app, config;
 import 'ark_operations_test.dart' show account;
 
+BuildContext context(WidgetTester tester) =>
+    tester.element(find.byType(ArkBoardAmountScreen));
 BullButton review(WidgetTester tester) =>
-    tester.widget<BullButton>(find.widgetWithText(BullButton, 'Board'));
+    tester.widget<BullButton>(find.widgetWithText(BullButton, 'Continue'));
 BullInputText input(WidgetTester tester) =>
     tester.widget<BullInputText>(find.byType(BullInputText));
 Future<void> edit(WidgetTester tester, String raw) async {
@@ -32,16 +42,11 @@ void main() {
     expect(input(tester).hint, '0');
     expect(find.textContaining('00112233/regtest/'), findsNothing);
     expect(find.text('Available on-chain'), findsOneWidget);
-    expect(
-      find.text('FAST fee policy only. No fee speed selection.'),
-      findsOneWidget,
-    );
-    expect(
-      find.text(
-        'The actual miner fee and source debit are determined in the future funding review.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.textContaining('fee policy'), findsNothing);
+    expect(find.textContaining('funding review'), findsNothing);
+    expect(find.textContaining('Max is unavailable'), findsNothing);
+    expect(find.text('Ark info'), findsNothing);
+    expect(find.textContaining('Minimum'), findsNothing);
     expect(find.text('0 sat'), findsNothing);
     expect(find.text('Slow'), findsNothing);
     await edit(tester, '42');
@@ -324,5 +329,74 @@ void main() {
     expect(events, hasLength(1));
     expect(identical(events.single.$1, supplied), true);
     expect(events.single.$2.value, BigInt.from(42));
+  });
+
+  testWidgets('the server minimum is the only help under the amount', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      app(
+        ArkBoardAmountScreen(
+          config: config(),
+          minimumBoard: Sats.fromInt(20000),
+          onReviewRequest: (_, _) {},
+        ),
+      ),
+    );
+    await tester.pump();
+    BullText minimumLine() => tester.widget<BullText>(
+      find.widgetWithText(BullText, 'Minimum: 20,000 sats'),
+    );
+    expect(minimumLine().color, isNot(context(tester).bull.error));
+    expect(review(tester).disabled, true);
+
+    // Below the minimum: the line turns red and Board stays off, live.
+    await edit(tester, '19999');
+    expect(minimumLine().color, context(tester).bull.error);
+    expect(review(tester).disabled, true);
+
+    // At the minimum: Board is offered and the line is plain again.
+    await edit(tester, '20000');
+    expect(minimumLine().color, isNot(context(tester).bull.error));
+    expect(review(tester).disabled, false);
+
+    // Another error shows on its own line; the minimum stays visible.
+    await edit(tester, '1.5');
+    expect(find.text('Minimum: 20,000 sats'), findsOneWidget);
+    expect(
+      find.text(
+        'Enter a positive whole amount in sats within the Bitcoin supply limit.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('preparing keeps the balance the user saw, never Unavailable', (
+    tester,
+  ) async {
+    ArkDisplayData display(Sats? available) => ArkDisplayData(
+      account: config().id,
+      walletId: 'secure',
+      available: available,
+    );
+    Widget screen({required bool busy, Sats? available}) => app(
+      ArkBoardAmountScreen(
+        config: config(),
+        displayData: display(available),
+        busy: busy,
+      ),
+    );
+    await tester.pumpWidget(screen(busy: false, available: Sats.fromInt(5000)));
+    await tester.pump();
+    expect(find.text('5,000 sats'), findsOneWidget);
+    // Preparing reserves the coin: the live balance becomes unknown.
+    await tester.pumpWidget(screen(busy: true));
+    await tester.pump();
+    expect(find.text('5,000 sats'), findsOneWidget);
+    expect(find.text('Unavailable'), findsNothing);
+    // Back to editing, the live value is shown again, unknown included.
+    await tester.pumpWidget(screen(busy: false));
+    await tester.pump();
+    expect(find.text('Unavailable'), findsOneWidget);
   });
 }

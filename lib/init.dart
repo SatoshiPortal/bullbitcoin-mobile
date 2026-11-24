@@ -37,6 +37,7 @@ import 'package:bull_ark/ark_wallet_setup.dart'
     show arkBoardFundingBinding, SqliteArkFundingReservations;
 import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:bb_mobile/features/wallet/wallet_ark_services.dart';
 import 'package:fees/fees.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:background_tasks/background_tasks.dart';
@@ -425,5 +426,6 @@ Future<void> _setupArkRegtestProfile() async {
     primaryEsploraUrl: esploraUrl,
     initializeNew: _arkInitializeNew,
     dispatcher: backgroundTasksHandler,
+    services: walletArkAppServices(locator),
   );
 }

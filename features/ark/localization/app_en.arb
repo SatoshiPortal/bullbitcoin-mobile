@@ -26,8 +26,6 @@
   "@expiryTitle": {},
   "expiryBody": "Open Ark to check and renew your VTXOs. Block times and background delivery vary.",
   "@expiryBody": {},
-  "renewalDelegated": "Renewal started. Your warning stays until replacement VTXOs are observed.",
-  "@renewalDelegated": {},
   "offFunded": "Ark is off for new payments. Existing funds still need renewal and recovery remains available.",
   "@offFunded": {},
   "privacy": "Ark connects directly without Tor. The configured Ark and Esplora providers can see your IP and wallet queries. The fallback is used only if the primary cannot be reached and has the same privacy exposure.",
@@ -36,8 +34,10 @@
   "@enable": {},
   "disable": "Turn off new payments",
   "@disable": {},
-  "acceptPrivacy": "I understand the direct connection",
-  "@acceptPrivacy": {},
+  "acceptPrivacy": "I understand",
+  "@acceptPrivacy": {
+    "description": "Confirms the direct-connection privacy dialog before Ark is turned on; kept short to fit the dialog button"
+  },
   "send": "Send",
   "@send": {},
   "receive": "Receive",
@@ -86,15 +86,13 @@
   "@empty": {},
   "renew": "Review renewal",
   "@renew": {},
-  "expiryHeight": "Expiry block height",
-  "@expiryHeight": {},
   "state": "State",
   "@state": {},
   "id": "Identifier",
   "@id": {},
   "copy": "Copy",
   "@copy": {},
-  "copied": "Copied",
+  "copied": "Copied to clipboard",
   "@copied": {},
   "arkAddress": "Ark address",
   "@arkAddress": {},
@@ -104,13 +102,11 @@
   "@invoiceExpires": {},
   "generate": "Create request",
   "@generate": {},
-  "foregroundExit": "Exit and fee spending require foreground review. Background maintenance never starts or progresses an exit.",
-  "@foregroundExit": {},
   "nativeUnavailable": "This Ark action is unavailable in this build.",
   "@nativeUnavailable": {},
   "notificationsUnavailable": "Expiry reminders could not be scheduled. Check notification permissions and open Ark regularly.",
   "@notificationsUnavailable": {},
-  "backgroundNotice": "Open Ark regularly. Device restrictions can delay Android background renewal. Scheduled renewal on iOS is unavailable.",
+  "backgroundNotice": "Open Ark from time to time so your VTXOs are renewed before they expire.",
   "@backgroundNotice": {},
   "spendableState": "Spendable",
   "@spendableState": {},
@@ -134,8 +130,16 @@
   "@primaryChainSource": {},
   "fallbackChainSource": "Unreachable-only fallback",
   "@fallbackChainSource": {},
-  "minimumBoard": "Minimum boarding amount (sats)",
-  "@minimumBoard": {},
+  "boardMinimum": "Minimum: {amount} sats",
+  "@boardMinimum": {
+    "description": "Board amount screen: the Ark server's minimum Board amount, also shown when an amount is below it",
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "maximumVtxo": "Maximum VTXO amount (sats)",
   "@maximumVtxo": {},
   "boardConfirmations": "Board confirmations",
@@ -162,8 +166,6 @@
   "@signedClaimRecovery": {},
   "reannounceSignedClaim": "Resubmit this signed claim",
   "@reannounceSignedClaim": {},
-  "sameSignedClaim": "Resubmit the same signed transaction with its saved destination and fee. Its network status is checked before sending.",
-  "@sameSignedClaim": {},
   "claimDestination": "On-chain return address",
   "@claimDestination": {},
   "claimConfirmed": "The saved claim transaction is confirmed.",
@@ -180,26 +182,22 @@
   "@feeInSats": {},
   "reminderMigrationPending": "Some older Ark reminders remain unresolved. New VTXO reminders can still be scheduled. Open Ark regularly.",
   "@reminderMigrationPending": {},
-  "exitStatusUnknown": "Unknown exit state",
+  "exitStatusUnknown": "Unknown",
   "@exitStatusUnknown": {},
   "exitStatusNone": "No exit observed",
   "@exitStatusNone": {},
-  "exitStatusPending": "Exit pending",
+  "exitStatusPending": "Pending",
   "@exitStatusPending": {},
-  "exitStatusClaimable": "Exit claimable",
+  "exitStatusClaimable": "Claimable",
   "@exitStatusClaimable": {},
-  "exitStatusSubmitted": "Claim submitted",
+  "exitStatusSubmitted": "Claiming",
   "@exitStatusSubmitted": {},
-  "exitStatusClaimed": "Exit claimed",
+  "exitStatusClaimed": "Claimed",
   "@exitStatusClaimed": {},
-  "exitStatusFailed": "Exit needs attention",
+  "exitStatusFailed": "Failed",
   "@exitStatusFailed": {},
   "spendableInSats": "Spendable (sats)",
   "@spendableInSats": {},
-  "pendingInSats": "Pending (sats)",
-  "@pendingInSats": {},
-  "reserveInSats": "On-chain fee reserve (sats)",
-  "@reserveInSats": {},
   "operationPrepared": "Prepared",
   "@operationPrepared": {},
   "operationAdmitted": "Admitted",
@@ -218,7 +216,7 @@
   "@observedActivity": {},
   "activityObservationsUnavailable": "Activity observations unavailable",
   "@activityObservationsUnavailable": {},
-  "movementBoard": "Board funding",
+  "movementBoard": "Board",
   "@movementBoard": {},
   "movementPayment": "Payment",
   "@movementPayment": {},
@@ -226,60 +224,30 @@
   "@movementRenewal": {},
   "movementExit": "Exit",
   "@movementExit": {},
-  "movementLightningReceipt": "Lightning receipt",
+  "movementLightningReceipt": "Lightning",
   "@movementLightningReceipt": {},
-  "observedTimeUtc": "Observed time (UTC)",
-  "@observedTimeUtc": {},
   "transactionId": "Transaction ID",
   "@transactionId": {},
   "share": "Share",
   "@share": {},
-  "boardDestination": "Board destination: {account}",
-  "@boardDestination": {
-    "placeholders": {
-      "account": {
-        "type": "String"
-      }
-    }
-  },
-  "boardFastPolicy": "FAST fee policy only. No fee speed selection.",
-  "@boardFastPolicy": {},
-  "boardFeeReview": "The actual miner fee and source debit are determined in the future funding review.",
-  "@boardFeeReview": {},
   "boardAmountInvalid": "Enter a positive whole amount in sats within the Bitcoin supply limit.",
   "@boardAmountInvalid": {},
-  "exitProgressAccount": "Exit progression account: {account}",
-  "@exitProgressAccount": {
-    "placeholders": {
-      "account": {
-        "type": "String"
-      }
-    }
-  },
   "exitProgressFeeRate": "Fee rate (sat/vB)",
   "@exitProgressFeeRate": {},
-  "exitProgressReserveNotice": "Progress may expose the account-wide confirmed exit reserve. A future review must show the actual fee and reserve at risk.",
-  "@exitProgressReserveNotice": {},
-  "exitProgressRateInvalid": "Enter a positive whole rate in sat/vB within the supported exact-integer input range.",
-  "@exitProgressRateInvalid": {},
   "exitProgressEstimatedFee": "Estimated fee (sats)",
   "@exitProgressEstimatedFee": {},
   "exitProgressReserveExposure": "Confirmed reserve at risk (sats)",
   "@exitProgressReserveExposure": {},
-  "exitProgressReviewWarning": "This one foreground attempt is account-wide and may expose the entire quoted confirmed internal reserve. The fee is an estimate and the returned quote rate is not a strict financial cap. This is not standing consent for later attempts or new deposits.",
-  "@exitProgressReviewWarning": {},
-  "exitProgressReviewIncomplete": "This exit progression review is incomplete or mismatched. Confirmation is unavailable.",
-  "@exitProgressReviewIncomplete": {},
-  "boardSourceWallet": "Source wallet",
-  "@boardSourceWallet": {},
+  "boardSourceWallet": "On-chain wallet",
+  "@boardSourceWallet": {
+    "description": "Board review: the wallet the bitcoin moves from"
+  },
   "boardMinerFeeInSats": "Miner fee (sats)",
   "@boardMinerFeeInSats": {},
   "boardArkFeeInSats": "Ark board fee (sats)",
   "@boardArkFeeInSats": {},
   "boardSourceDebitInSats": "Source debit (sats)",
   "@boardSourceDebitInSats": {},
-  "boardValidUntil": "Review valid until (UTC)",
-  "@boardValidUntil": {},
   "exitMaximumClaimFee": "Maximum claim fee (sats)",
   "@exitMaximumClaimFee": {},
   "abandonedBoardState": "Abandoned board (never signed)",
@@ -332,14 +300,6 @@
   "maxAmount": "Max",
   "@maxAmount": {
     "description": "Maximum spend action"
-  },
-  "maxUnavailable": "Max is unavailable without a current fast-fee estimate.",
-  "@maxUnavailable": {
-    "description": "Maximum remains disabled when no applicable miner fee quote exists"
-  },
-  "boardAction": "Board",
-  "@boardAction": {
-    "description": "Continue from the Board amount form to the actual funding review"
   },
   "satsUnit": "sats",
   "@satsUnit": {
@@ -421,40 +381,12 @@
   "@vtxoCreated": {
     "description": "Ark VTXO or emergency exit presentation"
   },
-  "vtxoAnchor": "Anchor",
-  "@vtxoAnchor": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
   "vtxoAll": "All",
   "@vtxoAll": {
     "description": "Ark VTXO or emergency exit presentation"
   },
   "vtxoExpired": "Expired",
   "@vtxoExpired": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "vtxoBlocksRemaining": "Blocks remaining",
-  "@vtxoBlocksRemaining": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "vtxoTotal": "Total value",
-  "@vtxoTotal": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "vtxoEmptyTitle": "No VTXOs",
-  "@vtxoEmptyTitle": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "vtxoEmptyBody": "Your VTXOs will appear here once you receive funds.",
-  "@vtxoEmptyBody": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "vtxoNoMatches": "No VTXOs match this filter.",
-  "@vtxoNoMatches": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "vtxoCount": "VTXOs",
-  "@vtxoCount": {
     "description": "Ark VTXO or emergency exit presentation"
   },
   "emergencyOnlyTitle": "For emergency use only",
@@ -505,31 +437,6 @@
   "@exitFeesAfterReview": {
     "description": "Ark VTXO or emergency exit presentation"
   },
-  "exitProgressTitle": "Progress emergency exits",
-  "@exitProgressTitle": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "exitProgressBody": "Choose a fee rate to request a foreground review of exit progression.",
-  "@exitProgressBody": {
-    "description": "Ark VTXO or emergency exit presentation"
-  },
-  "feeReserveTitle": "On-chain fee reserve",
-  "@feeReserveTitle": {
-    "description": "Public funding destination for emergency exit miner fees"
-  },
-  "feeReserveHelp": "Fund this address with on-chain bitcoin before starting an emergency exit when the fee reserve is insufficient.",
-  "@feeReserveHelp": {
-    "description": "Explains why the native fee reserve must be funded"
-  },
-  "feeReserveAmount": "{amount} sats",
-  "@feeReserveAmount": {
-    "description": "Observed native on-chain fee reserve balance",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "hiddenAmount": "••••",
   "@hiddenAmount": {
     "description": "Privacy placeholder for hidden balances"
@@ -546,12 +453,911 @@
   "@operationEstimatedNet": {
     "description": "Native operation review outcome or estimate"
   },
-  "arkWalletSubtitle": "Off-chain bitcoin",
+  "arkWalletSubtitle": "Off-chain Bitcoin",
   "@arkWalletSubtitle": {
     "description": "Ark account presentation"
   },
   "nextRound": "Next round",
   "@nextRound": {
     "description": "Ark account presentation"
-  }
+  },
+  "settingsOffTitle": "Ark is off",
+  "@settingsOffTitle": {
+    "description": "Ark settings and server information"
+  },
+  "settingsOffBody": "Turn on Ark to send bitcoin instantly and with lower fees.",
+  "@settingsOffBody": {
+    "description": "Ark settings and server information"
+  },
+  "settingsConsentTitle": "Direct connection",
+  "@settingsConsentTitle": {
+    "description": "Ark settings and server information"
+  },
+  "infoServerSection": "Ark server",
+  "@infoServerSection": {
+    "description": "Ark settings and server information"
+  },
+  "infoKeysSection": "Keys",
+  "@infoKeysSection": {
+    "description": "Ark settings and server information"
+  },
+  "infoLimitsSection": "Boarding limits",
+  "@infoLimitsSection": {
+    "description": "Ark settings and server information"
+  },
+  "infoTimingSection": "Timing",
+  "@infoTimingSection": {
+    "description": "Ark settings and server information"
+  },
+  "infoChainSection": "Blockchain data",
+  "@infoChainSection": {
+    "description": "Ark settings and server information"
+  },
+  "infoServerPublicKey": "Server public key",
+  "@infoServerPublicKey": {
+    "description": "Ark settings and server information"
+  },
+  "infoMinimumBoard": "Minimum board amount",
+  "@infoMinimumBoard": {
+    "description": "Ark settings and server information"
+  },
+  "infoMaximumVtxo": "Maximum VTXO amount",
+  "@infoMaximumVtxo": {
+    "description": "Ark settings and server information"
+  },
+  "infoNoLimit": "No limit",
+  "@infoNoLimit": {
+    "description": "Ark server information: the server reported no maximum for this amount"
+  },
+  "infoRequiredConfirmations": "Required confirmations",
+  "@infoRequiredConfirmations": {
+    "description": "Ark settings and server information"
+  },
+  "infoVtxoLifetime": "VTXO lifetime",
+  "@infoVtxoLifetime": {
+    "description": "Ark settings and server information"
+  },
+  "infoRoundInterval": "Round interval",
+  "@infoRoundInterval": {
+    "description": "Ark settings and server information"
+  },
+  "infoAutoRenew": "Auto-renew before expiry",
+  "@infoAutoRenew": {
+    "description": "Ark settings and server information"
+  },
+  "infoBlocks": "{count, plural, =1{1 block} other{{count} blocks}}",
+  "@infoBlocks": {
+    "description": "Ark settings and server information",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "infoBlocksDays": "{count} blocks (~{days, plural, =1{1 day} other{{days} days}})",
+  "@infoBlocksDays": {
+    "description": "Ark settings and server information",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "infoSeconds": "{seconds} sec",
+  "@infoSeconds": {
+    "description": "Ark settings and server information",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "infoSecondsMinutes": "{seconds} sec ({minutes} min)",
+  "@infoSecondsMinutes": {
+    "description": "Ark settings and server information",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsWalletRow": "Ark wallet",
+  "@settingsWalletRow": {
+    "description": "Ark settings row opening the Ark account page"
+  },
+  "boardConfirmTitle": "Confirm board",
+  "@boardConfirmTitle": {
+    "description": "Heading of the Board funding review"
+  },
+  "boardArkFee": "Ark boarding fee",
+  "@boardArkFee": {
+    "description": "Fee the Ark server charges to board, from the funding review"
+  },
+  "boardFees": "Fees",
+  "@boardFees": {
+    "description": "Board review: total of the network fee and the Ark boarding fee, expandable to show each"
+  },
+  "boardFeesShow": "Show fee details",
+  "@boardFeesShow": {
+    "description": "Board review: accessibility label to expand the fee breakdown"
+  },
+  "boardFeesHide": "Hide fee details",
+  "@boardFeesHide": {
+    "description": "Board review: accessibility label to collapse the fee breakdown"
+  },
+  "boardArkReceives": "Receive amount",
+  "@boardArkReceives": {
+    "description": "Net amount credited to the Ark balance after boarding"
+  },
+  "boardTotalDebit": "Total debited",
+  "@boardTotalDebit": {
+    "description": "Amount plus miner fee taken from the on-chain source wallet"
+  },
+  "boardStarted": "Boarding started",
+  "@boardStarted": {
+    "description": "Board submitted and not yet completed"
+  },
+  "boardStartedMessage": "Your on-chain bitcoin is moving into Ark. It will become spendable after the board completes.",
+  "@boardStartedMessage": {
+    "description": "Explanation after a Board was submitted"
+  },
+  "boardCompleted": "Boarding complete",
+  "@boardCompleted": {
+    "description": "Board reported as completed by the backend"
+  },
+  "boardFundingTransaction": "Funding transaction",
+  "@boardFundingTransaction": {
+    "description": "Board started screen: heading above the on-chain transaction that funds the Board"
+  },
+  "boardCopyFundingTransaction": "Copy funding transaction ID",
+  "@boardCopyFundingTransaction": {
+    "description": "Board started screen: accessibility label of the copy button"
+  },
+  "defaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@defaultBitcoinWalletLabel": {
+    "description": "Name of the default Bitcoin wallet, same as the app's globalDefaultBitcoinWalletLabel"
+  },
+  "boardOperationHeading": "Board operation",
+  "@boardOperationHeading": {
+    "description": "Heading of the submitted Board operation card"
+  },
+  "walletArkSettings": "Ark settings",
+  "@walletArkSettings": {
+    "description": "Ark wallet screen (send and receive flow)"
+  },
+  "activityToday": "Today",
+  "@activityToday": {
+    "description": "Activity list: heading of today's movements"
+  },
+  "activityYesterday": "Yesterday",
+  "@activityYesterday": {
+    "description": "Activity list: heading of yesterday's movements"
+  },
+  "movementDetailsTitle": "Transaction details",
+  "@movementDetailsTitle": {
+    "description": "Ark movement details screen title, as for app transactions"
+  },
+  "movementToWallet": "To wallet",
+  "@movementToWallet": {
+    "description": "Ark movement details: the wallet receiving"
+  },
+  "movementFromWallet": "From wallet",
+  "@movementFromWallet": {
+    "description": "Ark movement details: the wallet sending"
+  },
+  "movementAmountReceived": "Amount received",
+  "@movementAmountReceived": {
+    "description": "Ark movement details: amount of an incoming movement"
+  },
+  "movementAmountSent": "Amount sent",
+  "@movementAmountSent": {
+    "description": "Ark movement details: amount of an outgoing movement"
+  },
+  "movementAmount": "Amount",
+  "@movementAmount": {
+    "description": "Ark movement details: amount of a movement without a known direction"
+  },
+  "movementFee": "Transaction Fee",
+  "@movementFee": {
+    "description": "Ark movement details: fee, worded as for app transactions"
+  },
+  "movementStatus": "Status",
+  "@movementStatus": {
+    "description": "Ark movement details: status row"
+  },
+  "movementDate": "Date",
+  "@movementDate": {
+    "description": "Ark movement details: when the movement was created"
+  },
+  "walletActivityEmptyTitle": "No transactions yet.",
+  "@walletActivityEmptyTitle": {
+    "description": "Ark wallet screen (send and receive flow)"
+  },
+  "walletActivityDateUnknown": "Date unavailable",
+  "@walletActivityDateUnknown": {
+    "description": "Ark wallet screen (send and receive flow)"
+  },
+  "walletActivityShowDetails": "Show details",
+  "@walletActivityShowDetails": {
+    "description": "Ark wallet screen (send and receive flow)"
+  },
+  "walletApproximateAmount": "~{amount}",
+  "@walletApproximateAmount": {
+    "description": "Ark wallet screen (send and receive flow)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "exitListTitle": "Emergency exits",
+  "@exitListTitle": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitSendOnChain": "Send on-chain",
+  "@exitSendOnChain": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitListUnknownTitle": "Couldn’t confirm your emergency exits",
+  "@exitListUnknownTitle": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitListUnknownBody": "Exit information is unavailable or out of date. Refresh to check again.",
+  "@exitListUnknownBody": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitTryAgain": "Try again",
+  "@exitTryAgain": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitRowSemantics": "{amount}, {status}. Show details",
+  "@exitRowSemantics": {
+    "description": "Ark emergency exit flow",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "exitClaimableAt": "Claimable at block {height}",
+  "@exitClaimableAt": {
+    "description": "Ark emergency exit flow",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "exitStepStarted": "Exit started",
+  "@exitStepStarted": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepStartedDetail": "These VTXOs can no longer be used for Ark payments.",
+  "@exitStepStartedDetail": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepUnrolling": "Unrolling exit transactions",
+  "@exitStepUnrolling": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepUnrollingPending": "The app broadcasts the next transactions by itself while it’s open. Keep it open until this step is done.",
+  "@exitStepUnrollingPending": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepUnrollingDone": "Exit transactions completed",
+  "@exitStepUnrollingDone": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepDelay": "Exit delay",
+  "@exitStepDelay": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepDelayWaiting": "Waiting for the exit delay to pass.",
+  "@exitStepDelayWaiting": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepDelayBlocksLeft": "{count, plural, =1{1 block left} other{{count} blocks left}}",
+  "@exitStepDelayBlocksLeft": {
+    "description": "Ark emergency exit flow",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exitStepDelayUnknown": "Starts after the last exit transaction confirms.",
+  "@exitStepDelayUnknown": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepDelayDone": "Exit delay passed",
+  "@exitStepDelayDone": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepClaim": "Claim",
+  "@exitStepClaim": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepClaimUpcoming": "After the exit delay, the app claims the funds to the wallet you chose.",
+  "@exitStepClaimUpcoming": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepClaimReady": "Ready to claim. The app sends the funds to the wallet you chose by itself while it’s open.",
+  "@exitStepClaimReady": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepClaimSubmitted": "Claim transaction sent. Waiting for confirmation.",
+  "@exitStepClaimSubmitted": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepClaimed": "Funds claimed on-chain.",
+  "@exitStepClaimed": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepDoneSemantics": "Done",
+  "@exitStepDoneSemantics": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepCurrentSemantics": "In progress",
+  "@exitStepCurrentSemantics": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitStepUpcomingSemantics": "Not started",
+  "@exitStepUpcomingSemantics": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitDetailFailed": "This exit needs attention. Refresh, and contact support if it stays this way.",
+  "@exitDetailFailed": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitDetailUnknown": "The state of this exit is unknown. Refresh to check again.",
+  "@exitDetailUnknown": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitContinue": "Continue exit",
+  "@exitContinue": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitReviewClaim": "Review claim",
+  "@exitReviewClaim": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitDone": "Done",
+  "@exitDone": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitDetails": "Details",
+  "@exitDetails": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitChooseVtxos": "Choose VTXOs",
+  "@exitChooseVtxos": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitSelectAll": "Select all",
+  "@exitSelectAll": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitClearAll": "Clear all",
+  "@exitClearAll": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitAvailableVtxos": "Available VTXOs",
+  "@exitAvailableVtxos": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitSelectedValue": "Selected value",
+  "@exitSelectedValue": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitVtxoExpiresIn": "{count, plural, =1{Expires in 1 block} other{Expires in {count} blocks}}",
+  "@exitVtxoExpiresIn": {
+    "description": "Ark emergency exit flow",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exitVtxoExpired": "Expired",
+  "@exitVtxoExpired": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitChooseAtLeastOne": "Choose at least one VTXO.",
+  "@exitChooseAtLeastOne": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitFeesTitle": "Fees",
+  "@exitFeesTitle": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitSendFundsTo": "Send funds to",
+  "@exitSendFundsTo": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitBitcoinAddress": "Bitcoin address",
+  "@exitBitcoinAddress": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitReviewExit": "Review exit",
+  "@exitReviewExit": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitIrreversible": "This can’t be undone. Network fees are paid from your on-chain fee reserve and may change. Keep the app open: an exit only moves forward while you review each step. The quoted fees are shown on the next screen before you confirm.",
+  "@exitIrreversible": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitHoldToContinue": "Hold to continue",
+  "@exitHoldToContinue": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitKeepHolding": "Keep holding…",
+  "@exitKeepHolding": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitHoldHint": "Press and hold for a few seconds.",
+  "@exitHoldHint": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitHoldReleased": "Keep holding until the bar fills.",
+  "@exitHoldReleased": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitCancel": "Cancel",
+  "@exitCancel": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitClaimTitle": "Claim emergency exit",
+  "@exitClaimTitle": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitClaimBody": "Choose where to send the claimed funds and the most you are willing to pay in fees.",
+  "@exitClaimBody": {
+    "description": "Ark emergency exit flow"
+  },
+  "exitClaimCount": "Exits to claim",
+  "@exitClaimCount": {
+    "description": "Ark emergency exit flow"
+  },
+  "vtxosTotalInArk": "Total in Ark",
+  "@vtxosTotalInArk": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosCount": "{count, plural, =1{1 VTXO} other{{count} VTXOs}}",
+  "@vtxosCount": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vtxosCountNextExpiry": "{count, plural, =1{1 VTXO} other{{count} VTXOs}} · Next expiry in {time}",
+  "@vtxosCountNextExpiry": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosAboutHours": "{count, plural, =1{~1 hour} other{~{count} hours}}",
+  "@vtxosAboutHours": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vtxosAboutDays": "{count, plural, =1{~1 day} other{~{count} days}}",
+  "@vtxosAboutDays": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vtxosFilterCount": "{label} {count}",
+  "@vtxosFilterCount": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vtxosFilterActive": "Active",
+  "@vtxosFilterActive": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosFilterExpiring": "Expiring",
+  "@vtxosFilterExpiring": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosFilterLocked": "Locked",
+  "@vtxosFilterLocked": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosExpiresIn": "Expires in {time}",
+  "@vtxosExpiresIn": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosExpiringIn": "Expiring · in {time}",
+  "@vtxosExpiringIn": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosExpiring": "Expiring",
+  "@vtxosExpiring": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosLockedReason": "Locked · {reason}",
+  "@vtxosLockedReason": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosJoiningRound": "Joining the next round",
+  "@vtxosJoiningRound": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosRowSemantics": "{amount}, {status}. Show details",
+  "@vtxosRowSemantics": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosEmptyAll": "No VTXOs yet",
+  "@vtxosEmptyAll": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosEmptyBody": "Bitcoin you receive shows up here.",
+  "@vtxosEmptyBody": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosBoardToArk": "Board to Ark",
+  "@vtxosBoardToArk": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosNoneAll": "No VTXOs.",
+  "@vtxosNoneAll": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosNoneActive": "No active VTXOs.",
+  "@vtxosNoneActive": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosNoneExpiring": "Nothing is expiring soon.",
+  "@vtxosNoneExpiring": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosNoneExpired": "No expired VTXOs.",
+  "@vtxosNoneExpired": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosNoneLocked": "No locked VTXOs.",
+  "@vtxosNoneLocked": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosExpires": "Expires",
+  "@vtxosExpires": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosBlockHeight": "Block {height}",
+  "@vtxosBlockHeight": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosBlocksLeft": "Blocks left",
+  "@vtxosBlocksLeft": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosBlocksLeftValue": "{blocks} ({time})",
+  "@vtxosBlocksLeftValue": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "blocks": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosId": "VTXO ID",
+  "@vtxosId": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosIdCopied": "VTXO ID copied",
+  "@vtxosIdCopied": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosAnchorPoint": "Anchor point",
+  "@vtxosAnchorPoint": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosAnchorCopied": "Anchor point copied",
+  "@vtxosAnchorCopied": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosRenewNote": "Ark funds have an expiry date. The app renews them for you automatically, as long as you open it during the last {days, plural, =1{day} other{{days} days}}. You can also renew them yourself at any time, for a fee.",
+  "@vtxosRenewNote": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "vtxosRenewNoteDue": "Less than {blocks} blocks left. Renew now so this VTXO does not expire.",
+  "@vtxosRenewNoteDue": {
+    "description": "Ark VTXOs screen",
+    "placeholders": {
+      "blocks": {
+        "type": "String"
+      }
+    }
+  },
+  "vtxosExpiredNote": "This VTXO has expired and can’t be renewed.",
+  "@vtxosExpiredNote": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosLockedNote": "This VTXO is locked. It can’t be spent or renewed until that finishes.",
+  "@vtxosLockedNote": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosLockedRoundNote": "Joining the next round. This VTXO can’t be spent or renewed until that finishes.",
+  "@vtxosLockedRoundNote": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosRenew": "Renew",
+  "@vtxosRenew": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosExpired": "Expired",
+  "@vtxosExpired": {
+    "description": "Ark VTXOs screen"
+  },
+  "vtxosLocked": "Locked",
+  "@vtxosLocked": {
+    "description": "Ark VTXOs screen"
+  },
+  "nextRoundNow": "Now",
+  "@nextRoundNow": {
+    "description": "Next round countdown once the scheduled start has passed"
+  },
+  "nextRoundSeconds": "in {seconds} sec.",
+  "@nextRoundSeconds": {
+    "description": "Next round countdown under one minute",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "nextRoundMinutes": "in {minutes} min.",
+  "@nextRoundMinutes": {
+    "description": "Next round countdown, rounded up to whole minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsConsentBody": "Ark connects without Tor, so these servers can see your IP address and wallet activity.",
+  "@settingsConsentBody": {
+    "description": "One-sentence privacy notice in the sheet shown before Ark is turned on; the servers are listed below it"
+  },
+  "paymentPaste": "Paste",
+  "@paymentPaste": {
+    "description": "Pastes the clipboard into the Ark payment destination"
+  },
+  "paymentScan": "Scan",
+  "@paymentScan": {
+    "description": "Opens the camera to scan an Ark payment destination"
+  },
+  "paymentClear": "Clear",
+  "@paymentClear": {
+    "description": "Clears the Ark payment destination field"
+  },
+  "renewSheetTitle": "Renew VTXO?",
+  "@renewSheetTitle": {
+    "description": "Ark renew sheet"
+  },
+  "renewSheetDescription": "This renews the VTXO in the next Ark round.",
+  "@renewSheetDescription": {
+    "description": "Ark renew sheet"
+  },
+  "renewAmountSelected": "Amount selected",
+  "@renewAmountSelected": {
+    "description": "Ark renew sheet"
+  },
+  "renewVtxosSelected": "VTXOs selected",
+  "@renewVtxosSelected": {
+    "description": "Ark renew sheet"
+  },
+  "renewFee": "Renew fee",
+  "@renewFee": {
+    "description": "Ark renew sheet"
+  },
+  "renewAmountAfterFee": "Amount after fee",
+  "@renewAmountAfterFee": {
+    "description": "Ark renew sheet"
+  },
+  "exitServerOnline": "Ark server is online",
+  "@exitServerOnline": {
+    "description": "Ark emergency exit home"
+  },
+  "exitServerOffline": "Ark server is offline",
+  "@exitServerOffline": {
+    "description": "Ark emergency exit home"
+  },
+  "exitEstimatedTotalFees": "Estimated total fees",
+  "exitBroadcastFees": "Network fees",
+  "exitBroadcastFeesNote": "Paid from Secure Bitcoin as the exit moves forward.",
+  "exitClaimFee": "Claim fee",
+  "exitClaimFeeNote": "Deducted from the recovered funds.",
+  "exitEstimatedToReceive": "Estimated to receive",
+  "exitFeesEstimateNote": "Fees are estimated from current network fees and may change as the exit moves forward. You choose where the funds go on the next step.",
+  "exitSummaryAll": "All eligible · {count, plural, =1{1 VTXO} other{{count} VTXOs}}",
+  "@exitSummaryAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exitSummarySelected": "Selected · {count, plural, =1{1 VTXO} other{{count} VTXOs}}",
+  "@exitSummarySelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exitSecureBitcoinWallet": "Secure Bitcoin wallet",
+  "exitAnotherWallet": "Another Bitcoin wallet",
+  "exitAddressUnavailable": "Couldn’t get an address from your Secure Bitcoin wallet.",
+  "exitHoldToStart": "Hold to start exit",
+  "exitStartNote": "This can’t be undone. Network fees are paid from your Secure Bitcoin wallet as the exit moves forward, and may change. Keep the app open so the exit keeps moving. After the exit delay, the app claims the funds to the wallet you chose.",
+  "operationExitStarted": "Emergency exit started",
+  "movementAddress": "Address",
+  "movementConfirmationTime": "Confirmation time",
+  "vtxosIncomplete": "Some VTXO details are still loading. Pull down to refresh.",
+  "arkLoadFailedTitle": "Couldn’t load Ark",
+  "tryAgain": "Try again",
+  "exitVtxoCount": "{count, plural, =1{1 VTXO} other{{count} VTXOs}}",
+  "@exitVtxoCount": {
+    "description": "Ark emergency exit flow",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "renewalDelegated": "Renewal started. Your warning stays until replacement VTXOs are observed.",
+  "@renewalDelegated": {},
+  "expiryHeight": "Expiry block height",
+  "@expiryHeight": {},
+  "minimumBoard": "Minimum boarding amount (sats)",
+  "@minimumBoard": {},
+  "pendingInSats": "Pending (sats)",
+  "@pendingInSats": {},
+  "reserveInSats": "On-chain fee reserve (sats)",
+  "@reserveInSats": {},
+  "observedTimeUtc": "Observed time (UTC)",
+  "@observedTimeUtc": {},
+  "boardDestination": "Board destination: {account}",
+  "@boardDestination": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "boardFastPolicy": "FAST fee policy only. No fee speed selection.",
+  "@boardFastPolicy": {},
+  "boardFeeReview": "The actual miner fee and source debit are determined in the future funding review.",
+  "@boardFeeReview": {},
+  "boardValidUntil": "Review valid until (UTC)",
+  "@boardValidUntil": {},
+  "maxUnavailable": "Max is unavailable without a current fast-fee estimate.",
+  "@maxUnavailable": {
+    "description": "Maximum remains disabled when no applicable miner fee quote exists"
+  },
+  "boardAction": "Board",
+  "@boardAction": {
+    "description": "Continue from the Board amount form to the actual funding review"
+  },
+  "vtxoAnchor": "Anchor",
+  "@vtxoAnchor": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoBlocksRemaining": "Blocks remaining",
+  "@vtxoBlocksRemaining": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoTotal": "Total value",
+  "@vtxoTotal": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoEmptyTitle": "No VTXOs",
+  "@vtxoEmptyTitle": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoEmptyBody": "Your VTXOs will appear here once you receive funds.",
+  "@vtxoEmptyBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoNoMatches": "No VTXOs match this filter.",
+  "@vtxoNoMatches": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoCount": "VTXOs",
+  "@vtxoCount": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitWaitingForFunds": "Your emergency exit is waiting for fees. Add at least {amount} to your Secure Bitcoin wallet and it continues on its own.",
+  "@exitWaitingForFunds": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "boardUncertain": "We couldn’t confirm whether your Board was sent. Ark is checking it and will update by itself.",
+  "viewDetails": "View details",
+  "paymentUncertain": "We couldn’t confirm whether your payment was sent. Ark is checking it and will update by itself.",
+  "paymentPendingNote": "It completes with Ark’s next round.",
+  "exitFeesUnfunded": "Secure Bitcoin doesn’t have enough to pay the exit fees. Add at least {amount} and try again.",
+  "@exitFeesUnfunded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "uncertainChecking": "We couldn’t confirm the outcome. Ark is checking it and will update by itself.",
+  "receiveTabArk": "Ark",
+  "receiveTabLightning": "Lightning",
+  "receiveAddressLabel": "Address",
+  "receiveInvoiceLabel": "Invoice"
 }

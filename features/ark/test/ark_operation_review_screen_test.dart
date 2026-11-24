@@ -17,9 +17,10 @@ import 'package:bull_ui/bull_ui.dart'
         BullDetailsTableItem,
         BullTopBar,
         SingleChildScrollView,
+        ValueKey,
         SizedBox;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart' show Size, Offset;
+import 'package:material_ui/material_ui.dart' show KeyedSubtree, Offset, Size;
 import 'package:primitives/primitives.dart';
 
 import 'ark_information_widget_test.dart' show app;
@@ -117,7 +118,59 @@ Future<void> pumpState(WidgetTester tester) async {
   await tester.pump();
 }
 
+// Let a leaving screen show its snackbar after the frame.
+Future<void> pumpLeave(WidgetTester tester) async {
+  for (var i = 0; i < 5; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+}
+
 void main() {
+  testWidgets('payment review reads as the Send confirmation step', (
+    tester,
+  ) async {
+    final r = Rig(
+      request: ArkQuoteRequest.payment(
+        destination: ArkPaymentDestination(
+          kind: ArkDestinationKind.ark,
+          value: 'reviewed-destination',
+        ),
+        amount: Sats.fromInt(1000),
+      ),
+    );
+    final base = reviewed(r.cubit.account);
+    r.client.quoted = Ok(
+      ArkQuote(
+        id: base.id,
+        account: base.account,
+        generation: base.generation,
+        chainSource: base.chainSource,
+        configGeneration: base.configGeneration,
+        kind: ArkOperationKind.payment,
+        amount: base.amount,
+        fee: base.fee,
+        net: base.net,
+        selectedIds: base.selectedIds,
+        destination: base.destination,
+        observedTip: base.observedTip,
+        validUntil: base.validUntil,
+      ),
+    );
+    await r.cubit.load();
+    await tester.pumpWidget(app(r.screen));
+    await pumpState(tester);
+    expect(tester.widget<BullTopBar>(find.byType(BullTopBar)).title, 'Send');
+    expect(find.text('Confirm Send'), findsOneWidget);
+    expect(details(tester), {
+      'From': 'Ark',
+      'To': 'reviewed-destination',
+      'Amount': '900 sats',
+      'Network fees': '100 sats',
+      'Total': '1,000 sats',
+    });
+    expect(button(tester, 'Confirm').disabled, false);
+    expect(r.client.calls, ['quote']);
+  });
   testWidgets(
     'incomplete progression quote keeps defensive confirm without a net hero',
     (tester) async {
@@ -240,11 +293,17 @@ void main() {
         ),
       ]) {
     testWidgets(
-      'native $kind success title needs the matching request and succeeded status',
+      'native $kind submission leaves with its backend status and no success page',
       (tester) async {
         final r = Rig(request: request);
-        await tester.pumpWidget(app(r.screen));
+        var mounts = 0;
         for (final status in ArkOperationStatus.values) {
+          // A fresh page per submission: each one leaves exactly once.
+          await tester.pumpWidget(
+            app(KeyedSubtree(key: ValueKey(status), child: r.screen)),
+          );
+          await pumpState(tester);
+          mounts++;
           r.cubit.emit(
             ArkOperationSubmitted(
               ArkOperation(
@@ -256,37 +315,16 @@ void main() {
               ),
             ),
           );
-          await pumpState(tester);
-          expect(
-            find.text(label),
-            status == ArkOperationStatus.succeeded
-                ? findsOneWidget
-                : findsNothing,
-          );
-          expect(details(tester)['Identifier'], 'native-id');
+          await pumpLeave(tester);
+          expect(find.text(statusLabel(status).$1), findsOneWidget);
+          expect(find.text(label), findsNothing);
+          expect(r.reconciles, mounts);
           expect(find.widgetWithText(BullButton, 'Confirm'), findsNothing);
           expect(find.text('900 sats'), findsNothing);
+          await tester.pump(const Duration(seconds: 4));
         }
-        final mismatch = kind == ArkOperationKind.payment
-            ? ArkOperationKind.renewal
-            : ArkOperationKind.payment;
-        r.cubit.emit(
-          ArkOperationSubmitted(
-            ArkOperation(
-              id: 'mismatched-kind',
-              kind: mismatch,
-              status: ArkOperationStatus.succeeded,
-              chainSource: Uri.parse('http://localhost:3000'),
-              configGeneration: 1,
-            ),
-          ),
-        );
-        await pumpState(tester);
-        expect(find.text('Renewal started'), findsNothing);
-        expect(find.text('Emergency exit started'), findsNothing);
-        expect(find.text('Payment sent'), findsNothing);
-        expect(details(tester)['Identifier'], 'mismatched-kind');
         expect(r.client.calls, isEmpty);
+        expect(r.ids, 0);
       },
     );
   }
@@ -364,7 +402,7 @@ void main() {
       expect(r.client.calls.where((c) => c == 'submit'), hasLength(1));
       expect(r.cubit.state, isA<ArkOperationSubmitting>());
       reply.complete(const Err(ArkStorageFailure()));
-      await pumpState(tester);
+      await pumpLeave(tester);
       expect(
         r.cubit.state,
         isA<ArkOperationUncertain>().having(
@@ -373,16 +411,28 @@ void main() {
           'attempt-1',
         ),
       );
+      // Unknown outcome: a snackbar says so and Ark reconciles once.
+      expect(find.text(uncertainText), findsOneWidget);
+      expect(r.reconciles, 1);
       q1();
       q2();
       await r.cubit.load();
       await pumpState(tester);
       expect(r.ids, 1);
+      expect(r.client.calls.where((c) => c == 'submit'), hasLength(1));
       expect(r.client.calls.where((c) => c == 'quote'), hasLength(2));
       expect(find.widgetWithText(BullButton, 'Review'), findsNothing);
-      expect(details(tester)['Identifier'], 'attempt-1');
-      button(tester, 'Refresh').onPressed();
+      expect(find.widgetWithText(BullButton, 'Confirm'), findsNothing);
+      expect(
+        r.cubit.state,
+        isA<ArkOperationUncertain>().having(
+          (s) => s.operationId,
+          'original attempt',
+          'attempt-1',
+        ),
+      );
       expect(r.reconciles, 1);
+      await tester.pump(const Duration(seconds: 4));
     },
   );
   testWidgets(
@@ -411,7 +461,7 @@ void main() {
     },
   );
   for (final sameAccount in [false, true]) {
-    for (final action in ['confirm', 'retry', 'reconcile']) {
+    for (final action in ['confirm', 'retry']) {
       testWidgets(
         'old $action refuses replaced owner sameAccount=$sameAccount and disposal',
         (tester) async {
@@ -419,18 +469,12 @@ void main() {
           await tester.pumpWidget(app(a.screen));
           await pumpState(tester);
           a.client.calls.clear();
-          final state = switch (action) {
-            'confirm' => ArkOperationReview(reviewed(a.cubit.account)),
-            'retry' => const ArkOperationFailed(ArkServiceUnavailableFailure()),
-            _ => const ArkOperationUncertain('original'),
-          };
+          final state = action == 'confirm'
+              ? ArkOperationReview(reviewed(a.cubit.account))
+              : const ArkOperationFailed(ArkServiceUnavailableFailure());
           a.cubit.emit(state);
           await pumpState(tester);
-          final label = switch (action) {
-            'confirm' => 'Confirm',
-            'retry' => 'Review',
-            _ => 'Refresh',
-          };
+          final label = action == 'confirm' ? 'Confirm' : 'Review';
           final old = button(tester, label).onPressed;
           final original = account();
           final b = Rig(
@@ -451,11 +495,11 @@ void main() {
           expect(a.ids + b.ids + a.reconciles + b.reconciles, 0);
           expect(a.cubit.isClosed, false);
           expect(b.cubit.isClosed, false);
-          b.cubit.emit(switch (action) {
-            'confirm' => ArkOperationReview(reviewed(b.cubit.account)),
-            'retry' => const ArkOperationFailed(ArkServiceUnavailableFailure()),
-            _ => const ArkOperationUncertain('current'),
-          });
+          b.cubit.emit(
+            action == 'confirm'
+                ? ArkOperationReview(reviewed(b.cubit.account))
+                : const ArkOperationFailed(ArkServiceUnavailableFailure()),
+          );
           await pumpState(tester);
           final disposed = button(tester, label).onPressed;
           await tester.pumpWidget(app(const SizedBox.shrink()));
@@ -468,6 +512,51 @@ void main() {
       );
     }
   }
+  for (final sameAccount in [false, true]) {
+    testWidgets(
+      'old reconcile refuses replaced owner sameAccount=$sameAccount and disposal',
+      (tester) async {
+        final a = Rig();
+        await tester.pumpWidget(app(a.screen));
+        await pumpState(tester);
+        a.client.calls.clear();
+        final original = account();
+        final b = Rig(
+          owner: sameAccount
+              ? original
+              : ArkAccountId(
+                  parent: original.parent,
+                  network: original.network,
+                  serverIdentity: 'new-server',
+                ),
+        );
+        await tester.pumpWidget(app(b.screen));
+        await pumpState(tester);
+        // The replaced owner's late outcome reconciles nothing.
+        a.cubit.emit(const ArkOperationUncertain('original'));
+        await pumpLeave(tester);
+        expect(find.text(uncertainText), findsNothing);
+        expect(a.client.calls, isEmpty);
+        expect(b.client.calls, isEmpty);
+        expect(a.ids + b.ids + a.reconciles + b.reconciles, 0);
+        expect(a.cubit.isClosed, false);
+        expect(b.cubit.isClosed, false);
+        b.cubit.emit(const ArkOperationUncertain('current'));
+        await pumpLeave(tester);
+        expect(find.text(uncertainText), findsOneWidget);
+        expect(b.reconciles, 1);
+        expect(a.reconciles, 0);
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpWidget(app(const SizedBox.shrink()));
+        b.cubit.emit(const ArkOperationUncertain('disposed'));
+        await pumpState(tester);
+        expect(b.client.calls, isEmpty);
+        expect(b.ids, 0);
+        expect(b.reconciles, 1);
+        expect(b.cubit.isClosed, false);
+      },
+    );
+  }
   testWidgets(
     'reconcile binds exact original state and current handler without rearming',
     (tester) async {
@@ -475,10 +564,9 @@ void main() {
       await tester.pumpWidget(app(r.screen));
       await pumpState(tester);
       r.client.calls.clear();
-      r.cubit.emit(const ArkOperationUncertain('original'));
-      await pumpState(tester);
-      final old = button(tester, 'Refresh').onPressed;
       var currentCalls = 0;
+      r.cubit.emit(const ArkOperationUncertain('original'));
+      // The handler is replaced before the post-frame reconcile runs.
       await tester.pumpWidget(
         app(
           ArkOperationReviewScreen(
@@ -487,15 +575,16 @@ void main() {
           ),
         ),
       );
-      old();
+      await pumpLeave(tester);
       expect(currentCalls, 1);
       expect(r.reconciles, 0);
+      expect(find.text(uncertainText), findsOneWidget);
       r.cubit.emit(const ArkOperationUncertain('replacement'));
       await pumpState(tester);
-      old();
       expect(currentCalls, 1);
       expect(r.client.calls, isEmpty);
       expect(r.ids, 0);
+      await tester.pump(const Duration(seconds: 4));
     },
   );
   testWidgets('every actual backend status stays non-rearm and is localized', (
@@ -508,60 +597,63 @@ void main() {
     r.cubit.emit(const ArkOperationFailed(ArkServiceUnavailableFailure()));
     await pumpState(tester);
     final oldRetry = button(tester, 'Review').onPressed;
-    final labels = {
-      ArkOperationStatus.prepared: ('Prepared', 'Préparée'),
-      ArkOperationStatus.admitted: ('Admitted', 'Admise'),
-      ArkOperationStatus.pending: ('Pending', 'En attente'),
-      ArkOperationStatus.succeeded: ('Completed', 'Terminée'),
-      ArkOperationStatus.failed: ('Failed', 'Échec'),
-      ArkOperationStatus.outcomeUnknown: (
-        'Outcome unknown',
-        'Résultat inconnu',
-      ),
-      ArkOperationStatus.conflicted: (
-        'Conflicting transaction observed',
-        'Transaction conflictuelle observée',
-      ),
-    };
-    for (final entry in labels.entries) {
-      r.cubit.emit(
-        ArkOperationSubmitted(
-          ArkOperation(
-            id: 'backend-id',
-            kind: ArkOperationKind.renewal,
-            status: entry.key,
-            chainSource: Uri.parse('http://localhost:3000'),
-            configGeneration: 1,
-          ),
-        ),
-      );
+    var mounts = 0;
+    for (final entry in {
+      for (final status in ArkOperationStatus.values)
+        status: statusLabel(status),
+    }.entries) {
       for (final locale in ['en', 'fr']) {
-        await tester.pumpWidget(app(r.screen, language: locale));
-        await pumpState(tester);
-        expect(
-          details(tester).values,
-          containsAll([
-            'backend-id',
-            locale == 'en' ? entry.value.$1 : entry.value.$2,
-          ]),
+        // A fresh page per locale: each one leaves exactly once.
+        await tester.pumpWidget(
+          app(
+            KeyedSubtree(key: ValueKey((entry.key, locale)), child: r.screen),
+            language: locale,
+          ),
         );
+        await pumpState(tester);
+        mounts++;
+        r.cubit.emit(
+          ArkOperationSubmitted(
+            ArkOperation(
+              id: 'backend-id-$locale',
+              kind: ArkOperationKind.renewal,
+              status: entry.key,
+              chainSource: Uri.parse('http://localhost:3000'),
+              configGeneration: 1,
+            ),
+          ),
+        );
+        await pumpLeave(tester);
+        expect(
+          find.text(locale == 'en' ? entry.value.$1 : entry.value.$2),
+          findsOneWidget,
+        );
+        expect(r.reconciles, mounts);
         oldRetry();
         await r.cubit.load();
         await r.cubit.confirm();
         expect(r.client.calls, isEmpty);
         expect(r.ids, 0);
-        expect(
-          tester.widgetList<BullButton>(find.byType(BullButton)),
-          hasLength(1),
-        );
-        expect(
-          find.widgetWithText(
-            BullButton,
-            locale == 'en' ? 'Confirm' : 'Confirmer',
-          ),
-          findsNothing,
-        );
+        expect(find.byType(BullButton), findsNothing);
+        await tester.pump(const Duration(seconds: 4));
       }
     }
   });
 }
+
+const uncertainText =
+    'We couldn’t confirm the outcome. Ark is checking it and will update by itself.';
+
+/// Each status's English and French label; a new status fails to compile.
+(String, String) statusLabel(ArkOperationStatus status) => switch (status) {
+  ArkOperationStatus.prepared => ('Prepared', 'Préparée'),
+  ArkOperationStatus.admitted => ('Admitted', 'Admise'),
+  ArkOperationStatus.pending => ('Pending', 'En attente'),
+  ArkOperationStatus.succeeded => ('Completed', 'Terminée'),
+  ArkOperationStatus.failed => ('Failed', 'Échec'),
+  ArkOperationStatus.outcomeUnknown => ('Outcome unknown', 'Résultat inconnu'),
+  ArkOperationStatus.conflicted => (
+    'Conflicting transaction observed',
+    'Transaction conflictuelle observée',
+  ),
+};

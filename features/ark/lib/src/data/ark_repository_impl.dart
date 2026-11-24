@@ -70,6 +70,21 @@ final class ArkRepositoryImpl implements ArkRepository {
     ArkAccountId account,
     ArkReceiveRequest request,
   ) => _run(() => _client.receive(account, request));
+  @override
+  Future<Result<ArkOperation?, ArkFailure>> progressStartedExits(
+    ArkAccountId account,
+  ) => _run(() => _client.progressStartedExits(account));
+
+  // A claim interrupted after admission is journalled; saved-claim delivery
+  // reconciles it on the next pass, so a lost reply is not a lost claim.
+  @override
+  Future<Result<List<ArkOperation>, ArkFailure>> claimAuthorized(
+    ArkAccountId account,
+  ) => _run(() => _client.claimAuthorized(account));
+
+  @override
+  Future<Result<DateTime, ArkFailure>> nextRound(ArkAccountId account) =>
+      _run(() => _client.nextRound(account));
 
   static ArkFailure _map(ArkWalletFailure failure) => switch (failure) {
     ArkUnavailableFailure() => const ArkServiceUnavailableFailure(),
@@ -79,6 +94,8 @@ final class ArkRepositoryImpl implements ArkRepository {
     ArkStaleQuoteFailure() => const ArkReviewExpiredFailure(),
     ArkRecoveryRequiredFailure() => const ArkAccountRecoveryFailure(),
     ArkInsufficientFundsFailure() => const ArkPaymentInsufficientFundsFailure(),
+    ArkExitFeesShortFailure(:final missing, :final incoming) =>
+      ArkExitAwaitingFeesFailure(missing: missing, incoming: incoming),
     ArkOutcomeUnknownFailure(:final operationId) =>
       ArkSubmissionUncertainFailure(operationId),
     ArkNativeFailure() => const ArkUnexpectedFailure(),

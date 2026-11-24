@@ -8,10 +8,14 @@ final class ArkHomeCubit extends Cubit<ArkSnapshot?> {
   int _generation = 0;
   ArkHomeCubit(this._read) : super(null);
 
-  Future<void> load() async {
+  /// Reads home's observation again. By default the previous one is
+  /// cleared first, so another account's balance is never shown meanwhile.
+  /// [keep] leaves it on screen while the same open account is read again,
+  /// so a refresh does not flash "unavailable".
+  Future<void> load({bool keep = false}) async {
     if (isClosed) return;
     final generation = ++_generation;
-    emit(null);
+    if (!keep) emit(null);
     final snapshot = await _read.execute();
     if (!isClosed && generation == _generation) emit(snapshot);
   }

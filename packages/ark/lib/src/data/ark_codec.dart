@@ -72,6 +72,9 @@ Map<String, Object?> movementToJson(ArkMovement v) => {
   'fee': v.fee?.toString(),
   'createdAt': v.createdAt?.toIso8601String(),
   'txid': v.transactionId,
+  'sentTo': v.sentTo,
+  'receivedOn': v.receivedOn,
+  'completedAt': v.completedAt?.toIso8601String(),
   'inputs': v.inputVtxoIds,
   'outputs': v.outputVtxoIds,
 };
@@ -86,6 +89,11 @@ ArkMovement movementFromJson(Map<String, Object?> m) => _decode(
         ? null
         : DateTime.parse(m['createdAt'] as String),
     transactionId: m['txid'] as String?,
+    sentTo: m['sentTo'] == null ? const [] : strings(m['sentTo']),
+    receivedOn: m['receivedOn'] == null ? const [] : strings(m['receivedOn']),
+    completedAt: m['completedAt'] == null
+        ? null
+        : DateTime.parse(m['completedAt'] as String),
     inputVtxoIds: strings(m['inputs']),
     outputVtxoIds: strings(m['outputs']),
   ),
@@ -227,6 +235,7 @@ Map<String, Object?> quoteToJson(ArkQuote q) => {
   'rate': q.feeRate?.satsPerVbyte,
   'exposure': q.confirmedReserveExposure?.toString(),
   'maxClaim': q.maxClaimFee?.toString(),
+  'claimFee': q.claimFee?.toString(),
 };
 ArkQuote quoteFromJson(Map<String, Object?> m) => _decode(
   () => ArkQuote(
@@ -250,6 +259,7 @@ ArkQuote quoteFromJson(Map<String, Object?> m) => _decode(
     feeRate: m['rate'] == null ? null : FeeRate((m['rate'] as num).toDouble()),
     confirmedReserveExposure: nullableSats(m['exposure']),
     maxClaimFee: nullableSats(m['maxClaim']),
+    claimFee: nullableSats(m['claimFee']),
   ),
 );
 Map<String, Object?> operationToJson(ArkOperation o) => {
@@ -324,14 +334,21 @@ T _decode<T>(T Function() action) {
   }
 }
 
-// Terminal native movements retire only inputs also observed natively spent.
+// Terminal native movements retire only VTXOs also observed natively spent:
+// the inputs of a failed movement or a received Lightning payment, and the
+// output of a failed Board. Bark fails a Board once a confirmed transaction
+// spends its funding coins, and then marks the VTXO it promised spent: that
+// VTXO never existed as money.
 bool terminalMovementRetires(
   ArkMovement movement,
   String id,
   List<ArkVtxo> inventory,
 ) =>
-    movement.inputVtxoIds.contains(id) &&
     inventory.any((v) => v.id == id && v.state == ArkVtxoState.spent) &&
-    (movement.status == ArkMovementStatus.failed ||
-        (movement.status == ArkMovementStatus.successful &&
-            movement.kind == ArkMovementKind.lightningReceive));
+    ((movement.inputVtxoIds.contains(id) &&
+            (movement.status == ArkMovementStatus.failed ||
+                (movement.status == ArkMovementStatus.successful &&
+                    movement.kind == ArkMovementKind.lightningReceive))) ||
+        (movement.outputVtxoIds.contains(id) &&
+            movement.kind == ArkMovementKind.board &&
+            movement.status == ArkMovementStatus.failed));

@@ -5,9 +5,21 @@ import '../ark_board_funding_port.dart';
 import '../repositories/ark_preferences_repository.dart';
 
 final class PrepareArkBoardUsecase {
+  /// A busy Ark wallet (an exit or renewal pass holding it) is waited out,
+  /// and a stale price prepared again, this many times before the user is
+  /// told; busy attempts are this long apart.
+  static const busyAttempts = 5;
+  static const busyDelay = Duration(seconds: 1);
+
   final ArkBoardFundingPort _funding;
   final ArkPreferencesRepository _preferences;
-  const PrepareArkBoardUsecase(this._funding, this._preferences);
+  final Future<void> Function(Duration) _wait;
+
+  PrepareArkBoardUsecase(
+    this._funding,
+    this._preferences, {
+    Future<void> Function(Duration)? wait,
+  }) : _wait = wait ?? Future<void>.delayed;
 
   Future<Result<ArkBoardPreparation, ArkFailure>> execute(
     ArkAccountConfig config,
@@ -31,18 +43,31 @@ final class PrepareArkBoardUsecase {
       case Ok():
         break;
     }
-    final Result<ArkBoardPreparation, ArkFailure> result;
-    switch ((expectedSourceWalletId, _funding)) {
-      case (null, final funding):
-        result = await funding.prepare(config, amount);
-      case (final source?, ArkTransferBoardFundingPort funding):
-        result = await funding.prepareFrom(
-          config,
-          amount,
-          sourceWalletId: source,
-        );
-      default:
-        return const Err(ArkServiceUnavailableFailure());
+    Future<Result<ArkBoardPreparation, ArkFailure>> prepare() async =>
+        switch ((expectedSourceWalletId, _funding)) {
+          (null, final funding) => await funding.prepare(config, amount),
+          (final source?, ArkTransferBoardFundingPort funding) =>
+            await funding.prepareFrom(config, amount, sourceWalletId: source),
+          _ => const Err(ArkServiceUnavailableFailure()),
+        };
+    // A busy or stale refusal released everything it held: preparing again
+    // is safe. Busy is waited out; a stale price (a block landed while it
+    // was being prepared) is simply priced again.
+    var result = await prepare();
+    for (
+      var attempt = 1;
+      attempt < busyAttempts && result is Err<ArkBoardPreparation, ArkFailure>;
+      attempt++
+    ) {
+      switch (result) {
+        case Err(failure: ArkOperationBusyFailure()):
+          await _wait(busyDelay);
+          result = await prepare();
+        case Err(failure: ArkReviewExpiredFailure()):
+          result = await prepare();
+        default:
+          attempt = busyAttempts;
+      }
     }
     if (result case Ok(:final value)) {
       if (value.account != config.id ||

@@ -395,6 +395,18 @@ final class ArkStore {
     return true;
   }
 
+  /// What each started exit may still claim: its destination, the fee
+  /// ceiling left and the VTXOs not yet claimed.
+  List<({String destination, Sats remainingFee, List<String> remainingIds})>
+  claimAllowances() => [
+    for (final row in _db.select('SELECT * FROM claim_allowances'))
+      (
+        destination: row['destination'] as String,
+        remainingFee: Sats(BigInt.parse(row['remaining_fee'] as String)),
+        remainingIds: strings(jsonDecode(row['remaining_ids'] as String)),
+      ),
+  ];
+
   String? claimAuthority(List<String> ids, String destination, Sats maximum) {
     final rows = _db.select(
       'SELECT * FROM claim_allowances WHERE destination=?',

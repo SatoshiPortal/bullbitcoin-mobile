@@ -1123,6 +1123,27 @@ final class SqliteArkFundingReservations
     return !now.isBefore(until);
   });
 
+  /// A reserved Board that stopped before its review was saved: Ark never
+  /// registered it, so it has no review, and signing needs one. It can never
+  /// be signed, so holding its inputs protects nothing. The caller releases
+  /// it through the same never-signed CAS, which loses to any signing-start.
+  @useResult
+  Future<Result<bool, SyncFailure>> unregisteredNeverSignedBoard(
+    String operationId,
+  ) async => _run(() {
+    _inventory();
+    final row = _operation(operationId);
+    if (_state(row) != 'reserved' ||
+        _authority(row)?['signing'] != 'never_started' ||
+        row['signed_psbt'] != null) {
+      return false;
+    }
+    _binding(row); // Reapplies all unsigned/native-SegWit facts.
+    return _db.select('SELECT 1 FROM ark_board_reviews WHERE operation=?', [
+      operationId,
+    ]).isEmpty;
+  });
+
   /// CAS claims the one signer, and seals the source in the SAME transaction.
   @useResult
   Future<Result<void, SyncFailure>> admitBoardSigning({

@@ -1,6 +1,9 @@
 library;
 
 export 'src/domain/ark_board_funding_port.dart';
+export 'src/domain/ark_exit_destination_port.dart';
+export 'src/domain/ark_exit_funding.dart';
+export 'src/domain/ark_reserve_top_up_port.dart';
 export 'src/domain/ark_account_selection_port.dart';
 export 'src/domain/repositories/ark_preferences_repository.dart';
 

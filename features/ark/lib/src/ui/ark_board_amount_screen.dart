@@ -8,7 +8,6 @@ import '../presentation/ark_failure_l10n.dart';
 import 'ark_amount.dart';
 
 import '../presentation/ark_l10n.dart';
-import 'ark_connection_details.dart';
 
 /// Input handoff only; no source wallet, fee estimate or funding authority.
 class ArkBoardAmountScreen extends StatefulWidget {
@@ -16,10 +15,18 @@ class ArkBoardAmountScreen extends StatefulWidget {
   final void Function(ArkAccountConfig config, Sats amount)? onReviewRequest;
   final ArkDisplayData? displayData;
   final ArkFailure? failure;
+
+  /// The server's minimum Board amount, when an observation provides it.
+  final Sats? minimumBoard;
+
+  /// The review is being prepared: the amount stays, nothing is editable.
+  final bool busy;
   const ArkBoardAmountScreen({
     super.key,
     this.displayData,
     this.failure,
+    this.minimumBoard,
+    this.busy = false,
     required this.config,
     this.onReviewRequest,
   });
@@ -28,6 +35,11 @@ class ArkBoardAmountScreen extends StatefulWidget {
 }
 
 class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
+  /// The balance last shown for this account. Preparing a board reserves its
+  /// coin, which makes the live balance unknown; until the review opens the
+  /// screen keeps what the user saw when they pressed Continue.
+  Sats? _shownAvailable;
+
   String _amount = '';
   int _epoch = 0;
   Object? _inputToken;
@@ -97,6 +109,8 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
         ? display?.available
         : null;
     if (available != null && amount.value > available.value) return;
+    final minimum = rendered.minimumBoard;
+    if (minimum != null && amount.value < minimum.value) return;
     setState(() => _consumed = true);
     _inputToken = null;
     delegate(rendered.config, amount); // A throw is not permission to retry.
@@ -113,10 +127,52 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
     final id = rendered.config.id;
     final display = rendered.displayData;
     final source = display?.account == id ? display : null;
-    final available = source?.available;
+    final live = source?.available;
+    // While the Board is prepared its coins get reserved, and the live
+    // amount drops: keep showing what was available when Continue was
+    // pressed, until the Board is ready or refused.
+    final available = rendered.busy ? (_shownAvailable ?? live) : live;
+    if (!rendered.busy) _shownAvailable = live;
     final amount = _parse(raw);
     final insufficient =
         amount != null && available != null && amount.value > available.value;
+    final failure = rendered.failure;
+    // Amount refusals read as field help; anything else stays a warning bar.
+    final amountFailure = switch (failure) {
+      ArkBoardBelowMinimumFailure() ||
+      ArkPaymentInsufficientFundsFailure() ||
+      ArkInvalidRequestFailure() => failure,
+      _ => null,
+    };
+    final otherFailure = amountFailure == null ? failure : null;
+    final minimum = rendered.minimumBoard;
+    // Checked while typing; the server re-checks its current minimum anyway.
+    final belowMinimum =
+        amount != null && minimum != null && amount.value < minimum.value;
+    final refusedBelowMinimum = failure is ArkBoardBelowMinimumFailure;
+    final String? amountError = raw.isNotEmpty && amount == null
+        ? l10n.boardAmountInvalid
+        : insufficient
+        ? l10n.insufficient
+        : belowMinimum || refusedBelowMinimum
+        ? null // The minimum line below turns red instead.
+        : amountFailure?.toTranslated(context);
+    final minimumText = switch ((minimum, failure)) {
+      (final minimum?, _) => l10n.boardMinimum(minimum.value.toInt()),
+      (null, ArkBoardBelowMinimumFailure(:final minimum)) => l10n.boardMinimum(
+        minimum.value.toInt(),
+      ),
+      _ => null,
+    };
+    final minimumMissed =
+        belowMinimum || (refusedBelowMinimum && amount == null);
+    final enabled =
+        !rendered.busy &&
+        !_consumed &&
+        rendered.onReviewRequest != null &&
+        amount != null &&
+        !insufficient &&
+        !belowMinimum;
     return BullScaffold(
       backgroundColor: context.bull.background,
       bottomNavigationBar: SafeArea(
@@ -128,17 +184,10 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
             BullSpacing.lg,
             BullSpacing.lg,
           ),
-          child: BullButton.big(
-            label: l10n.boardAction,
+          child: BullButton.primary(
+            label: l10n.continueAction,
             height: 56,
-            disabled:
-                _consumed ||
-                rendered.onReviewRequest == null ||
-                amount == null ||
-                insufficient,
-            onPressed: () => _review(rendered, epoch, raw),
-            bgColor: context.bull.secondaryFixed,
-            textColor: context.bull.onSecondaryFixed,
+            onPressed: enabled ? () => _review(rendered, epoch, raw) : null,
           ),
         ),
       ),
@@ -159,6 +208,12 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                 ),
                 onBack: () => Navigator.pop(context),
               ),
+            ),
+            BullFadingLinearProgress(
+              height: 3,
+              trigger: rendered.busy,
+              backgroundColor: context.bull.background,
+              foregroundColor: context.bull.primary,
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -201,7 +256,6 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                           BullText(
                             formatArkObservedSats(context, available),
                             role: BullTextRole.subtitle,
-                            fontWeight: FontWeight.w700,
                           ),
                         ],
                       ),
@@ -220,7 +274,7 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                       style: context.bullType.headline,
                       digitsOnly: true,
                       onlyNumbers: true,
-                      disabled: _consumed,
+                      disabled: _consumed || rendered.busy,
                       rightIcon: Padding(
                         padding: const EdgeInsets.all(BullSpacing.xxs),
                         child: BullButton.small(
@@ -237,60 +291,53 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                       onChanged: (value) => _edit(rendered, token, value),
                     ),
                     const Gap(BullSpacing.xs),
-                    if (raw.isNotEmpty && amount == null)
-                      BullInfoBar(message: l10n.boardAmountInvalid),
-                    if (insufficient)
-                      BullInfoBar(
-                        message: l10n.insufficient,
-                        tone: BullInfoTone.warning,
-                      ),
-                    if (rendered.failure case final failure?)
-                      BullInfoBar(
-                        message: failure.toTranslated(context),
-                        tone: BullInfoTone.warning,
-                      ),
                     if (amount != null)
                       ArkFiatAmount(amount: amount, price: source?.price),
-                    BullText(
-                      l10n.maxUnavailable,
-                      role: BullTextRole.caption,
-                      color: context.bull.textMuted,
-                    ),
-                    const Gap(BullSpacing.md),
-                    BullText(
-                      l10n.boardFastPolicy,
-                      role: BullTextRole.caption,
-                      color: context.bull.textMuted,
-                    ),
-                    const Gap(BullSpacing.xs),
-                    BullText(
-                      l10n.boardFeeReview,
-                      role: BullTextRole.caption,
-                      color: context.bull.textMuted,
-                    ),
-                    if (rendered.onReviewRequest == null)
-                      BullInfoBar(message: l10n.nativeUnavailable),
-                    const Gap(BullSpacing.lg),
-                    BullDetailsTable(
-                      items: [
-                        BullDetailsTableItem(
-                          label: l10n.arkInfo,
-                          displayValue: rendered.config.arkUrl.host,
-                          expandableChild: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              BullText(
-                                l10n.boardDestination(
-                                  '${id.parent.hex}/${id.network.name}/${id.serverIdentity}',
-                                ),
-                                role: BullTextRole.caption,
-                              ),
-                              ArkConnectionDetails(config: rendered.config),
-                            ],
+                    for (final (text, isError) in [
+                      if (amountError != null) (amountError, true),
+                      if (minimumText != null) (minimumText, minimumMissed),
+                    ])
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: BullSpacing.xxs,
+                        ),
+                        child: Semantics(
+                          liveRegion: isError,
+                          child: BullText(
+                            text,
+                            role: BullTextRole.caption,
+                            color: isError
+                                ? context.bull.error
+                                : context.bull.textMuted,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    // Like the app's forms: why it was refused, in red, no
+                    // frame. The user may simply try again.
+                    if (otherFailure != null) ...[
+                      const Gap(BullSpacing.md),
+                      Semantics(
+                        liveRegion: true,
+                        child: BullText(
+                          otherFailure.toTranslated(context),
+                          role: BullTextRole.body,
+                          fontWeight: FontWeight.w500,
+                          color: context.bull.error,
+                          textAlign: TextAlign.center,
+                          maxLines: 5,
+                        ),
+                      ),
+                    ],
+                    if (rendered.onReviewRequest == null) ...[
+                      const Gap(BullSpacing.md),
+                      BullText(
+                        l10n.nativeUnavailable,
+                        role: BullTextRole.body,
+                        fontWeight: FontWeight.w500,
+                        color: context.bull.error,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ],
                 ),
               ),

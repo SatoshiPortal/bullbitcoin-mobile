@@ -48,9 +48,13 @@ final class ConfirmArkBoardUsecase {
         return Err(ArkSubmissionUncertainFailure(reviewed.operationId));
       }
     }
-    // Every post-dispatch Err can follow an admitted effect. Keep the same ID.
+    // The host answers an unknown outcome once signing may have begun, and
+    // the real reason before it: a refusal then left nothing signed, and is
+    // shown as such. Any unknown outcome keeps this Board's ID.
     return result.mapErr(
-      (_) => ArkSubmissionUncertainFailure(reviewed.operationId),
+      (failure) => failure is ArkSubmissionUncertainFailure
+          ? ArkSubmissionUncertainFailure(reviewed.operationId)
+          : failure,
     );
   }
 }

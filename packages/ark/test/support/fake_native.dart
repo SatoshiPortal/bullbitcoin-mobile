@@ -94,6 +94,10 @@ final class FakeOpener implements ArkNativeOpener {
   int fundings = 0;
   int boardExpiry = 2000;
   int tip = 100;
+
+  /// Runs right after a quote is priced, e.g. to mine a block before its
+  /// confirmation.
+  void Function()? afterEstimate;
   bool failExecute = false;
   bool requireBoardServerInfo = false;
   final boardServerEvents = <String>[];
@@ -291,12 +295,13 @@ final class FakeSession implements ArkNativeSession {
       _ => [FakeOpener.firstId],
     };
     final max = switch (request) {
-      ArkEmergencyExitQuoteRequest(:final maxClaimFee) => maxClaimFee,
+      ArkEmergencyExitQuoteRequest(:final maxClaimFee) =>
+        maxClaimFee ?? Sats.fromInt(20),
       ArkClaimQuoteRequest(:final maxFee) => maxFee,
       _ => null,
     };
     final estimatedFee = kind == ArkOperationKind.claim ? owner.claimFee : 10;
-    return ArkQuote(
+    final quote = ArkQuote(
       id: id,
       account: snapshot.account,
       generation: snapshot.revision,
@@ -320,11 +325,13 @@ final class FakeSession implements ArkNativeSession {
       validUntil: now.add(const Duration(minutes: 2)),
       maxClaimFee: max,
       feeRate: switch (request) {
-        ArkEmergencyExitQuoteRequest(:final feeRate) => feeRate,
-        ArkExitProgressQuoteRequest(:final feeRate) => feeRate,
+        ArkEmergencyExitQuoteRequest(:final feeRate) => feeRate ?? FeeRate(2),
+        ArkExitProgressQuoteRequest(:final feeRate) => feeRate ?? FeeRate(2),
         _ => null,
       },
     );
+    owner.afterEstimate?.call();
+    return quote;
   });
   @override
   Future<ArkOperation> execute(ArkQuote quote, String operationId) =>
@@ -389,6 +396,9 @@ final class FakeSession implements ArkNativeSession {
         return 'd' * 64;
       });
   @override
+  Future<DateTime> nextRoundStart() =>
+      stages.run('next-round', () async => DateTime.utc(2026, 11, 19, 12));
+  @override
   Future<ArkReceiveDestination> receive(ArkReceiveRequest request) =>
       stages.run(
         'receive',
@@ -418,6 +428,9 @@ final class FakeSession implements ArkNativeSession {
 final class FakeVerifier implements ArkTransactionVerifierPort {
   bool finalised = false;
   bool wrongInputs = false;
+
+  /// The VTXOs a verified claim spends, 10,000 sats each.
+  List<String> claimInputs = [FakeOpener.firstId];
   int fee = 10;
   @override
   Future<Result<ArkBoardPsbtFacts, ArkWalletFailure>> inspectBoardPsbt({
@@ -447,17 +460,18 @@ final class FakeVerifier implements ArkTransactionVerifierPort {
       txid: 'd' * 64,
       psbtTxid: 'd' * 64,
       inputs: [
-        ArkTransactionInput(
-          outpoint: wrongInputs ? FakeOpener.secondId : FakeOpener.firstId,
-          amount: Sats.fromInt(10000),
-          finalWitness: true,
-        ),
+        for (final id in wrongInputs ? [FakeOpener.secondId] : claimInputs)
+          ArkTransactionInput(
+            outpoint: id,
+            amount: Sats.fromInt(10000),
+            finalWitness: true,
+          ),
       ],
       outputs: [
         ArkTransactionOutput(
           scriptPubkey: 'script',
           address: 'destination',
-          amount: Sats.fromInt(10000 - fee),
+          amount: Sats.fromInt(10000 * claimInputs.length - fee),
         ),
       ],
       fee: Sats.fromInt(fee),

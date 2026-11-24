@@ -58,6 +58,8 @@ final class _Wallet implements bark.Wallet {
   }
 
   @override
+  Future<int> nextRoundStartTime() async => 1795089600;
+  @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw StateError('Unexpected native call');
 }
@@ -168,4 +170,10 @@ void main() {
       },
     );
   }
+  test('next round start is the server time in unix seconds, as UTC', () async {
+    expect(
+      await session(_Wallet(1000)).nextRoundStart(),
+      DateTime.utc(2026, 11, 19, 12),
+    );
+  });
 }

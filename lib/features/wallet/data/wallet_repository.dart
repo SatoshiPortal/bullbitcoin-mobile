@@ -413,14 +413,16 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   }) async {
     try {
       return Ok(
-        await LeaseDiagnostics.from(
-          LeaseSource.walletList,
-          () => _readWallets(
-            environment: environment,
-            onlyDefaults: onlyDefaults,
-            onlyBitcoin: onlyBitcoin,
-            onlyLiquid: onlyLiquid,
-            sync: sync,
+        walletDisplayOrder(
+          await LeaseDiagnostics.from(
+            LeaseSource.walletList,
+            () => _readWallets(
+              environment: environment,
+              onlyDefaults: onlyDefaults,
+              onlyBitcoin: onlyBitcoin,
+              onlyLiquid: onlyLiquid,
+              sync: sync,
+            ),
           ),
         ),
       );
@@ -666,4 +668,22 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
 
 final class UnsupportedWalletScriptException implements Exception {
   const UnsupportedWalletScriptException();
+}
+
+/// The order wallets are listed in: the default Bitcoin wallet (Secure
+/// Bitcoin) first, the default Liquid wallet (Instant payments) second, then
+/// every other wallet in the order the store returned it. Stable, so imported
+/// wallets keep their relative order.
+List<Wallet> walletDisplayOrder(Iterable<Wallet> wallets) {
+  int rank(Wallet wallet) => switch (wallet) {
+    _ when wallet.isDefault && !wallet.isLiquid => 0,
+    _ when wallet.isDefault && wallet.isLiquid => 1,
+    _ => 2,
+  };
+  final indexed = wallets.toList().indexed.toList()
+    ..sort((a, b) {
+      final byRank = rank(a.$2).compareTo(rank(b.$2));
+      return byRank != 0 ? byRank : a.$1.compareTo(b.$1);
+    });
+  return [for (final (_, wallet) in indexed) wallet];
 }
