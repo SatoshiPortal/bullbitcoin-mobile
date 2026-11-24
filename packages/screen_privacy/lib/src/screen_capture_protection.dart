@@ -26,6 +26,10 @@ class ScreenCaptureProtection {
   /// the setting is ever unavailable — a fail-safe default for key material.
   bool get enabledByUser => _enabledByUser;
 
+  /// Whether a protected screen (recovery phrase, seed view) is mounted right
+  /// now, whatever the user preference. In-app captures must not run then.
+  bool get protectedScreenMounted => _activeCount > 0;
+
   set enabledByUser(bool value) {
     if (_enabledByUser == value) return;
     _enabledByUser = value;
