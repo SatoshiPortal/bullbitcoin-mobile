@@ -42,7 +42,7 @@ import 'package:silent/src/domain/usecases/is_sp_set_up_now_usecase.dart';
 import 'package:silent/src/domain/usecases/load_sp_backend_config_usecase.dart';
 import 'package:silent/src/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:silent/src/domain/usecases/prepare_sp_payment_usecase.dart';
-import 'package:silent/src/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:silent/src/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:silent/src/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:silent/src/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -378,14 +378,14 @@ abstract final class SilentGraph {
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
       ),
     );
-    locator.registerFactory<RecreateSpWalletUsecase>(
-      () => RecreateSpWalletUsecase(
-        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
-        getSpSecretUsecase: locator<GetSpSecretUsecase>(),
-        repository: locator<SpAccountRepository>(),
+    locator.registerFactory<UpdateSpBackendConfigUsecase>(
+      () => UpdateSpBackendConfigUsecase(
+        gate: locator<GetSpFeatureGateUsecase>(),
+        account: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
-        configRepository: locator<SpBackendConfigRepository>(),
-        ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+        configs: locator<SpBackendConfigRepository>(),
+        ensureSession: locator<EnsureSpSessionUsecase>(),
+        isScanning: locator<IsSpScanningUsecase>(),
         guard: locator<SpSessionGuard>(),
       ),
     );
@@ -465,7 +465,7 @@ abstract final class SilentGraph {
     );
     locator.registerFactory<SpSettingsCubit>(
       () => SpSettingsCubit(
-        recreateSpWalletUsecase: locator<RecreateSpWalletUsecase>(),
+        updateSpBackendConfigUsecase: locator<UpdateSpBackendConfigUsecase>(),
         watchNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
         testSpBackendUsecase: locator<TestSpBackendUsecase>(),
         loadSpBackendConfigUsecase: locator<LoadSpBackendConfigUsecase>(),

@@ -149,6 +149,7 @@ class CreateSpWalletUsecase {
         electrumUrl: config.electrumUrl,
         fetchConcurrencyFactor: config.fetchConcurrencyFactor,
         matchConcurrencyFactor: config.matchConcurrencyFactor,
+        minScanAmountSat: config.minScanAmountSat,
       );
       if (created case Err(:final failure)) {
         // Roll the config back so a failed first-time setup leaves no persisted

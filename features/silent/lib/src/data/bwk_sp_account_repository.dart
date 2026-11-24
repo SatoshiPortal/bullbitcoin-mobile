@@ -194,12 +194,16 @@ class BwkSpAccountRepository
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) async {
     // Single-owner guard: the adapter holds exactly one live SpAccount, so a
     // create over an existing session would leak the old Rust notif thread,
     // electrum socket and sqlite handle. Callers dispose first; hitting this
     // means a teardown+create race slipped past EnsureSpSessionUsecase.
-    if (_closing || hasSession || _pendingOpen != null) {
+    if (_closing ||
+        hasSession ||
+        _pendingOpen != null ||
+        _pendingDispose != null) {
       return const Err(
         SilentSessionBusy('Silent account already open, opening or closing'),
       );
@@ -212,6 +216,7 @@ class BwkSpAccountRepository
       electrumUrl: electrumUrl,
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
+      minScanAmountSat: minScanAmountSat,
     );
     _pendingOpen = pending;
     try {
@@ -228,6 +233,7 @@ class BwkSpAccountRepository
     required String electrumUrl,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    required int minScanAmountSat,
   }) async {
     // The account is opened inside package:secrets, which hands the words to
     // bwk; this layer never holds them. Failures still return fixed text.
@@ -259,6 +265,7 @@ class BwkSpAccountRepository
         dataDir: dataDir,
         fetchConcurrencyFactor: fetchConcurrencyFactor,
         matchConcurrencyFactor: matchConcurrencyFactor,
+        minScanAmountSat: minScanAmountSat,
         headerCheckpoint: checkpoint == null
             ? null
             : SpHeaderCheckpointMapper.toFfi(checkpoint),
@@ -327,7 +334,7 @@ class BwkSpAccountRepository
       _guard(() => SpBalanceMapper.toDomain(_ffi.unifiedBalance()));
 
   @override
-  bool get isScanningCached => _scanning;
+  bool get isScanningCached => _scanning || _scanLaunch != null;
 
   @override
   Future<Result<List<SpPayment>, SilentFailure>> history() =>
@@ -823,6 +830,7 @@ class BwkSpAccountRepository
 
   @override
   Future<Result<void, SilentFailure>> dispose() async {
+    await _pendingOpen;
     if (!hasSession) return const Ok(null);
     final pending = _pendingDispose;
     if (pending != null) {

@@ -36,6 +36,7 @@ abstract interface class SpAccountRepository {
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   });
 
   /// Tear down the live session: cancel the notification stream, join the Rust

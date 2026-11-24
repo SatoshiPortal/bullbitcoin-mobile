@@ -42,6 +42,7 @@ class BwkSpAccountDatasource {
     required String dataDir,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
     switch (await secret.silentPayments.account(
@@ -50,7 +51,7 @@ class BwkSpAccountDatasource {
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       dataDir: dataDir,
-      dustLimit: BigInt.from(SpConfig.dustLimitSat),
+      dustLimit: BigInt.from(minScanAmountSat),
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
       headerCheckpoint: headerCheckpoint,
