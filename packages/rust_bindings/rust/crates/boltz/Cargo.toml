@@ -28,6 +28,7 @@ hex = "0.4"
 bip85_extended = "1.1.0"
 zeroize = "1"
 reqwest = { version = "0.12", features = ["json"] }
+lnurl-rs = { version = "0.9.0", default-features = false }
 
 [features]
 bull_sdk = []

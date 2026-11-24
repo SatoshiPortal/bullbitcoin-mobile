@@ -58,6 +58,8 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/send/domain/lnurl_pay_limits_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_lnurl_pay_limits_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
@@ -100,6 +102,9 @@ class _MockDetectBitcoinStringUsecase extends Mock
 class _MockPreferences extends Mock implements Preferences {}
 
 class _MockSend extends Mock implements Send {}
+
+class _MockLnurlPayLimitsRepository extends Mock
+    implements LnurlPayLimitsRepository {}
 
 class _MockFees extends Mock implements Fees {}
 
@@ -264,6 +269,7 @@ class _TestSendCubit extends SendCubit {
     required super.createSendCrossChainSwapUsecase,
     required super.getSendCrossChainQuoteUsecase,
     required super.resolveLightningAddressUsecase,
+    required super.loadLnurlPayLimitsUsecase,
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
     required super.sendWithPayjoinUsecase,
@@ -395,6 +401,9 @@ void main() {
       createSendCrossChainSwapUsecase: _MockCreateSendCrossChainSwapUsecase(),
       getSendCrossChainQuoteUsecase: _MockGetSendCrossChainQuoteUsecase(),
       resolveLightningAddressUsecase: _MockResolveLightningAddressUsecase(),
+      loadLnurlPayLimitsUsecase: LoadLnurlPayLimitsUsecase(
+        _MockLnurlPayLimitsRepository(),
+      ),
       updateSendSwapPayinUsecase: _MockUpdateSendSwapPayinUsecase(),
       watchSendSwapUsecase: _MockWatchSendSwapUsecase(),
       sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),

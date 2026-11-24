@@ -26,6 +26,21 @@ final class SendInvoiceAmountRequiredFailure extends SendFailure {
   const SendInvoiceAmountRequiredFailure([super.logMessage]);
 }
 
+final class SendLnurlLimitsUnavailableFailure extends SendFailure {
+  const SendLnurlLimitsUnavailableFailure();
+}
+
+final class SendLnurlNoPayableAmountFailure extends SendFailure {
+  const SendLnurlNoPayableAmountFailure();
+}
+
+final class SendLnurlAmountOutOfBoundsFailure extends SendFailure {
+  final int minimumSat;
+  final int maximumSat;
+
+  const SendLnurlAmountOutOfBoundsFailure(this.minimumSat, this.maximumSat);
+}
+
 final class SendHardwareWalletFailure extends SendFailure {
   const SendHardwareWalletFailure([super.logMessage]);
 }

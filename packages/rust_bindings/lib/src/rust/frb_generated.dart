@@ -103,7 +103,7 @@ class BullSdk extends BaseEntrypoint<BullSdkApi, BullSdkApiImpl, BullSdkWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 1273377703;
+  int get rustContentHash => -1238775167;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -1028,6 +1028,10 @@ abstract class BullSdkApi extends BaseApi {
   Future<String> boltzApiLnurlLnurlFetchInvoice({
     required Lnurl that,
     required BigInt msats,
+  });
+
+  Future<LnurlPayBounds> boltzApiLnurlLnurlFetchPayLimits({
+    required Lnurl that,
   });
 
   Future<BigInt> boltzApiLnurlLnurlGetVoucherMaxAmount({required Lnurl that});
@@ -8036,6 +8040,36 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
       );
 
   @override
+  Future<LnurlPayBounds> boltzApiLnurlLnurlFetchPayLimits({
+    required Lnurl that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 = cst_encode_box_autoadd_lnurl(that);
+          return wire.wire__boltz__api__lnurl__lnurl_fetch_pay_limits(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_lnurl_pay_bounds,
+          decodeErrorData: dco_decode_boltz_error,
+        ),
+        constMeta: kBoltzApiLnurlLnurlFetchPayLimitsConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kBoltzApiLnurlLnurlFetchPayLimitsConstMeta =>
+      const TaskConstMeta(
+        debugName: "lnurl_fetch_pay_limits",
+        argNames: ["that"],
+      );
+
+  @override
   Future<BigInt> boltzApiLnurlLnurlGetVoucherMaxAmount({required Lnurl that}) {
     return handler.executeNormal(
       NormalTask(
@@ -10214,6 +10248,18 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   }
 
   @protected
+  LnurlPayBounds dco_decode_lnurl_pay_bounds(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return LnurlPayBounds(
+      minSendableMsat: dco_decode_u_64(arr[0]),
+      maxSendableMsat: dco_decode_u_64(arr[1]),
+    );
+  }
+
+  @protected
   LwkError dco_decode_lwk_error(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -12376,6 +12422,17 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_value = sse_decode_String(deserializer);
     return Lnurl(value: var_value);
+  }
+
+  @protected
+  LnurlPayBounds sse_decode_lnurl_pay_bounds(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_minSendableMsat = sse_decode_u_64(deserializer);
+    var var_maxSendableMsat = sse_decode_u_64(deserializer);
+    return LnurlPayBounds(
+      minSendableMsat: var_minSendableMsat,
+      maxSendableMsat: var_maxSendableMsat,
+    );
   }
 
   @protected
@@ -14979,6 +15036,16 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   void sse_encode_lnurl(Lnurl self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.value, serializer);
+  }
+
+  @protected
+  void sse_encode_lnurl_pay_bounds(
+    LnurlPayBounds self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_64(self.minSendableMsat, serializer);
+    sse_encode_u_64(self.maxSendableMsat, serializer);
   }
 
   @protected

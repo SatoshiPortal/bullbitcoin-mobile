@@ -43,6 +43,8 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quo
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_lnurl_pay_limits_usecase.dart';
+import 'package:bb_mobile/features/send/data/boltz_lnurl_pay_limits_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
@@ -297,6 +299,9 @@ abstract final class LegacySendFlow {
         getSendCrossChainQuoteUsecase: locator<GetSendCrossChainQuoteUsecase>(),
         resolveLightningAddressUsecase:
             locator<ResolveLightningAddressUsecase>(),
+        loadLnurlPayLimitsUsecase: const LoadLnurlPayLimitsUsecase(
+          BoltzLnurlPayLimitsRepository(),
+        ),
         updateSendSwapPayinUsecase: locator<UpdateSendSwapPayinUsecase>(),
         watchSendSwapUsecase: locator<WatchSendSwapUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),

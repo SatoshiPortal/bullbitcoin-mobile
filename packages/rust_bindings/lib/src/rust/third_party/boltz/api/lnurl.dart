@@ -8,7 +8,8 @@ import 'error.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `fmt`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `PayLimitsResponse`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `eq`, `fmt`, `fmt`
 
 /// LNURL utilities for working with Lightning Network URLs
 class Lnurl {
@@ -19,6 +20,10 @@ class Lnurl {
   /// LNURL helper to get an invoice from an lnurl string
   Future<String> fetchInvoice({required BigInt msats}) => BullSdk.instance.api
       .boltzApiLnurlLnurlFetchInvoice(that: this, msats: msats);
+
+  /// Read only the recipient's LNURL-pay amount limits.
+  Future<LnurlPayBounds> fetchPayLimits() =>
+      BullSdk.instance.api.boltzApiLnurlLnurlFetchPayLimits(that: this);
 
   /// LNURL helper to get an lnurl-w voucher amount
   Future<BigInt> getVoucherMaxAmount() =>
@@ -46,4 +51,25 @@ class Lnurl {
       other is Lnurl &&
           runtimeType == other.runtimeType &&
           value == other.value;
+}
+
+class LnurlPayBounds {
+  final BigInt minSendableMsat;
+  final BigInt maxSendableMsat;
+
+  const LnurlPayBounds({
+    required this.minSendableMsat,
+    required this.maxSendableMsat,
+  });
+
+  @override
+  int get hashCode => minSendableMsat.hashCode ^ maxSendableMsat.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LnurlPayBounds &&
+          runtimeType == other.runtimeType &&
+          minSendableMsat == other.minSendableMsat &&
+          maxSendableMsat == other.maxSendableMsat;
 }

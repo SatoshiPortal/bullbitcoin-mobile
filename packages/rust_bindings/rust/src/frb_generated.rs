@@ -46,7 +46,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1273377703;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1238775167;
 
 // Section: executor
 
@@ -6257,6 +6257,31 @@ fn wire__boltz__api__lnurl__lnurl_fetch_invoice_impl(
         },
     )
 }
+fn wire__boltz__api__lnurl__lnurl_fetch_pay_limits_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<boltz::api::lnurl::Lnurl>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "lnurl_fetch_pay_limits",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
+                    (move || async move {
+                        let output_ok =
+                            boltz::api::lnurl::Lnurl::fetch_pay_limits(&api_that).await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__boltz__api__lnurl__lnurl_get_voucher_max_amount_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     that: impl CstDecode<boltz::api::lnurl::Lnurl>,
@@ -7387,6 +7412,11 @@ const _: fn() = || {
     {
         let Lnurl = None::<boltz::api::lnurl::Lnurl>.unwrap();
         let _: String = Lnurl.value;
+    }
+    {
+        let LnurlPayBounds = None::<boltz::api::lnurl::LnurlPayBounds>.unwrap();
+        let _: u64 = LnurlPayBounds.min_sendable_msat;
+        let _: u64 = LnurlPayBounds.max_sendable_msat;
     }
     {
         let LwkError = None::<lwk::api::error::LwkError>.unwrap();
@@ -9059,6 +9089,18 @@ impl SseDecode for boltz::api::lnurl::Lnurl {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_value = <String>::sse_decode(deserializer);
         return boltz::api::lnurl::Lnurl { value: var_value };
+    }
+}
+
+impl SseDecode for boltz::api::lnurl::LnurlPayBounds {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_minSendableMsat = <u64>::sse_decode(deserializer);
+        let mut var_maxSendableMsat = <u64>::sse_decode(deserializer);
+        return boltz::api::lnurl::LnurlPayBounds {
+            min_sendable_msat: var_minSendableMsat,
+            max_sendable_msat: var_maxSendableMsat,
+        };
     }
 }
 
@@ -11242,6 +11284,27 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<boltz::api::lnurl::Lnurl>>
     for boltz::api::lnurl::Lnurl
 {
     fn into_into_dart(self) -> FrbWrapper<boltz::api::lnurl::Lnurl> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<boltz::api::lnurl::LnurlPayBounds> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.min_sendable_msat.into_into_dart().into_dart(),
+            self.0.max_sendable_msat.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<boltz::api::lnurl::LnurlPayBounds>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<boltz::api::lnurl::LnurlPayBounds>>
+    for boltz::api::lnurl::LnurlPayBounds
+{
+    fn into_into_dart(self) -> FrbWrapper<boltz::api::lnurl::LnurlPayBounds> {
         self.into()
     }
 }
@@ -13580,6 +13643,14 @@ impl SseEncode for boltz::api::lnurl::Lnurl {
     }
 }
 
+impl SseEncode for boltz::api::lnurl::LnurlPayBounds {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u64>::sse_encode(self.min_sendable_msat, serializer);
+        <u64>::sse_encode(self.max_sendable_msat, serializer);
+    }
+}
+
 impl SseEncode for lwk::api::error::LwkError {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -15634,6 +15705,15 @@ mod io {
             }
         }
     }
+    impl CstDecode<boltz::api::lnurl::LnurlPayBounds> for wire_cst_lnurl_pay_bounds {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> boltz::api::lnurl::LnurlPayBounds {
+            boltz::api::lnurl::LnurlPayBounds {
+                min_sendable_msat: self.min_sendable_msat.cst_decode(),
+                max_sendable_msat: self.max_sendable_msat.cst_decode(),
+            }
+        }
+    }
     impl CstDecode<lwk::api::error::LwkError> for wire_cst_lwk_error {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> lwk::api::error::LwkError {
@@ -16609,6 +16689,19 @@ mod io {
         }
     }
     impl Default for wire_cst_lnurl {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_lnurl_pay_bounds {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                min_sendable_msat: Default::default(),
+                max_sendable_msat: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_lnurl_pay_bounds {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
@@ -19323,6 +19416,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_fetch_pay_limits(
+        port_: i64,
+        that: *mut wire_cst_lnurl,
+    ) {
+        wire__boltz__api__lnurl__lnurl_fetch_pay_limits_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_get_voucher_max_amount(
         port_: i64,
         that: *mut wire_cst_lnurl,
@@ -20755,6 +20856,12 @@ mod io {
     #[derive(Clone, Copy)]
     pub struct wire_cst_lnurl {
         value: *mut wire_cst_list_prim_u_8_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_lnurl_pay_bounds {
+        min_sendable_msat: u64,
+        max_sendable_msat: u64,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
