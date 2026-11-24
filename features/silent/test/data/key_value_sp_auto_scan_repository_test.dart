@@ -112,6 +112,24 @@ void main() {
       expect(await repo.warmUp(), isA<Err<void, SilentFailure>>());
     });
 
+    test('warmUp reads the saved choice once the keystore unlocks', () async {
+      // The first tick after a cold start can run before the device is
+      // unlocked. The read fails, the optimistic default stands, and the next
+      // tick picks the stored opt-out up instead of keeping "enabled".
+      final storage = FakeSecureStoragePlatform(
+        entries: {_storageKey: 'false'},
+        locked: true,
+      );
+      final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
+
+      expect(await repo.warmUp(), isA<Err<void, SilentFailure>>());
+      expect(repo.isEnabledNow, isTrue);
+
+      storage.locked = false;
+      expect(await repo.warmUp(), isA<Ok<void, SilentFailure>>());
+      expect(repo.isEnabledNow, isFalse);
+    });
+
     test(
       'save propagates a locked keystore after applying the choice',
       () async {

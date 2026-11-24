@@ -441,25 +441,28 @@ void main() {
   });
 
   group('scanOnce and the scanning flag', () {
-    test('native Busy does not stick the flag on a scan we did not start', () async {
-      final repo = makeRepo(
-        ffi: _FakeFfiDatasource(
-          scanOnceError: const SpError.scannerAlreadyRunning(),
-        ),
-      );
+    test(
+      'native Busy does not stick the flag on a scan we did not start',
+      () async {
+        final repo = makeRepo(
+          ffi: _FakeFfiDatasource(
+            scanOnceError: const SpError.scannerAlreadyRunning(),
+          ),
+        );
 
-      final result = await repo.scanOnce();
+        final result = await repo.scanOnce();
 
-      expect(
-        (result as Err<void, SilentFailure>).failure,
-        isA<SilentScanBusy>(),
-      );
-      expect(
-        repo.isScanningCached,
-        isFalse,
-        reason: 'no scan of ours is running, so the flag must come back down',
-      );
-    });
+        expect(
+          (result as Err<void, SilentFailure>).failure,
+          isA<SilentScanBusy>(),
+        );
+        expect(
+          repo.isScanningCached,
+          isFalse,
+          reason: 'no scan of ours is running, so the flag must come back down',
+        );
+      },
+    );
 
     test('a second launch is refused without reaching the FFI', () async {
       final ffi = _FakeFfiDatasource();
@@ -540,7 +543,8 @@ void main() {
       ));
       final (repo, _) = await open(files);
 
-      final snapshot = (repo.snapshot() as Ok<SilentWallet, SilentFailure>).value;
+      final snapshot =
+          (repo.snapshot() as Ok<SilentWallet, SilentFailure>).value;
 
       expect(snapshot.hasPendingScan, isTrue);
       expect(snapshot.isPendingScanPaused, isFalse);
@@ -556,7 +560,8 @@ void main() {
       final (repo, _) = await open(files);
 
       expect(marker.existsSync(), isFalse);
-      final snapshot = (repo.snapshot() as Ok<SilentWallet, SilentFailure>).value;
+      final snapshot =
+          (repo.snapshot() as Ok<SilentWallet, SilentFailure>).value;
       expect(snapshot.hasPendingScan, isFalse);
     });
 
@@ -564,7 +569,10 @@ void main() {
       final notifications = StreamController<SpNotification>();
       addTearDown(notifications.close);
       final files = _PendingScanFiles();
-      final (repo, ffi) = await open(files, notifications: notifications.stream);
+      final (repo, ffi) = await open(
+        files,
+        notifications: notifications.stream,
+      );
       expect(
         await repo.scanOnce(startHeight: 900000),
         isA<Ok<void, SilentFailure>>(),
@@ -603,28 +611,31 @@ void main() {
       ));
     });
 
-    test('a stop that cannot persist the pause leaves the scan running', () async {
-      final files = _PendingScanFiles();
-      final (repo, ffi) = await open(files);
-      expect(
-        await repo.scanOnce(startHeight: 975000),
-        isA<Ok<void, SilentFailure>>(),
-      );
-      files.beforeWrite = (pending) async {
-        if (pending?.isPaused == true) {
-          throw const FileSystemException('disk full');
-        }
-      };
+    test(
+      'a stop that cannot persist the pause leaves the scan running',
+      () async {
+        final files = _PendingScanFiles();
+        final (repo, ffi) = await open(files);
+        expect(
+          await repo.scanOnce(startHeight: 975000),
+          isA<Ok<void, SilentFailure>>(),
+        );
+        files.beforeWrite = (pending) async {
+          if (pending?.isPaused == true) {
+            throw const FileSystemException('disk full');
+          }
+        };
 
-      expect(await repo.stopScan(), isA<Err<void, SilentFailure>>());
+        expect(await repo.stopScan(), isA<Err<void, SilentFailure>>());
 
-      expect(ffi.stopCalls, 0);
-      expect(repo.isScanningCached, isTrue);
-      expect(await files.readPendingScan(tempDir.path), (
-        startHeight: 975000,
-        isPaused: false,
-      ));
-    });
+        expect(ffi.stopCalls, 0);
+        expect(repo.isScanningCached, isTrue);
+        expect(await files.readPendingScan(tempDir.path), (
+          startHeight: 975000,
+          isPaused: false,
+        ));
+      },
+    );
 
     test('a completed scan drops the marker', () async {
       final notifications = StreamController<SpNotification>();
@@ -640,7 +651,8 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(await files.readPendingScan(tempDir.path), isNull);
-      final snapshot = (repo.snapshot() as Ok<SilentWallet, SilentFailure>).value;
+      final snapshot =
+          (repo.snapshot() as Ok<SilentWallet, SilentFailure>).value;
       expect(snapshot.hasPendingScan, isFalse);
     });
 
@@ -648,7 +660,10 @@ void main() {
       final notifications = StreamController<SpNotification>();
       addTearDown(notifications.close);
       final files = _PendingScanFiles();
-      final (repo, ffi) = await open(files, notifications: notifications.stream);
+      final (repo, ffi) = await open(
+        files,
+        notifications: notifications.stream,
+      );
       expect(
         await repo.scanOnce(startHeight: 975000),
         isA<Ok<void, SilentFailure>>(),
@@ -663,6 +678,105 @@ void main() {
       expect(await repo.clearScanState(), isA<Ok<void, SilentFailure>>());
       expect(ffi.clearCalls, 1);
       expect(await files.readPendingScan(tempDir.path), isNull);
+    });
+  });
+
+  group('automatic scan admission', () {
+    Future<(BwkSpAccountRepository, _OpeningDatasource)> open(
+      SpAccountFilesDatasource files, {
+      Stream<SpNotification> notifications = const Stream.empty(),
+    }) async {
+      accountDirOf().createSync(recursive: true);
+      final ffi = _OpeningDatasource(notifications: notifications)
+        ..releaseOpen.complete();
+      final repo = makeRepo(ffi: ffi, files: files);
+      expect(await createOn(repo), isA<Ok<void, SilentFailure>>());
+      addTearDown(repo.dispose);
+      return (repo, ffi);
+    }
+
+    test('an unchanged decision launches and leaves no marker', () async {
+      final files = _PendingScanFiles();
+      final (repo, ffi) = await open(files);
+
+      final result = await repo.scanOnce(
+        automatic: (revision: repo.scanRevision),
+      );
+
+      expect(result, isA<Ok<void, SilentFailure>>());
+      expect(ffi.scanStarts, [null]);
+      expect(
+        await files.readPendingScan(tempDir.path),
+        isNull,
+        reason: 'an automatic scan never creates a resume marker',
+      );
+    });
+
+    test('an automatic resume adopts the marker it found', () async {
+      final files = _PendingScanFiles();
+      accountDirOf().createSync(recursive: true);
+      await files.writePendingScan(tempDir.path, (
+        startHeight: 975000,
+        isPaused: false,
+      ));
+      final (repo, ffi) = await open(files);
+
+      expect(
+        await repo.scanOnce(automatic: (revision: repo.scanRevision)),
+        isA<Ok<void, SilentFailure>>(),
+      );
+
+      expect(ffi.scanStarts, [975000]);
+      expect(await files.readPendingScan(tempDir.path), (
+        startHeight: 975000,
+        isPaused: false,
+      ));
+    });
+
+    test('a paused marker refuses an automatic launch', () async {
+      final files = _PendingScanFiles();
+      accountDirOf().createSync(recursive: true);
+      await files.writePendingScan(tempDir.path, (
+        startHeight: 975000,
+        isPaused: true,
+      ));
+      final (repo, ffi) = await open(files);
+
+      final result = await repo.scanOnce(
+        automatic: (revision: repo.scanRevision),
+      );
+
+      expect(result, isA<Ok<void, SilentFailure>>());
+      expect(ffi.scanStarts, isEmpty);
+    });
+
+    test('a decision made before a stop is refused', () async {
+      final files = _PendingScanFiles();
+      final (repo, ffi) = await open(files);
+      final revision = repo.scanRevision;
+      expect(await repo.stopScan(), isA<Ok<void, SilentFailure>>());
+
+      final result = await repo.scanOnce(automatic: (revision: revision));
+
+      expect(result, isA<Ok<void, SilentFailure>>());
+      expect(ffi.scanStarts, isEmpty);
+      expect(
+        repo.scanRevision,
+        isNot(revision),
+        reason: 'the stop moved the state the decision belonged to',
+      );
+    });
+
+    test('a decision made before a clear is refused', () async {
+      final files = _PendingScanFiles();
+      final (repo, ffi) = await open(files);
+      final revision = repo.scanRevision;
+      expect(await repo.clearScanState(), isA<Ok<void, SilentFailure>>());
+
+      final result = await repo.scanOnce(automatic: (revision: revision));
+
+      expect(result, isA<Ok<void, SilentFailure>>());
+      expect(ffi.scanStarts, isEmpty);
     });
   });
 

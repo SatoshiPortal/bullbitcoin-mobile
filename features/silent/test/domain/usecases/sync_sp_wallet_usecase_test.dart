@@ -22,6 +22,7 @@ void main() {
   late _MockGetSpWalletUsecase getWallet;
   late SyncSpWalletUsecase usecase;
   late FakeSpAutoScanRepository autoScanRepo;
+  late bool isForeground;
 
   SyncSpWalletUsecase build() => SyncSpWalletUsecase(
     repository: repo,
@@ -32,11 +33,22 @@ void main() {
       repository: repo,
     ),
     getSpAutoScanUsecase: GetSpAutoScanUsecase(repository: autoScanRepo),
+    isForeground: () => isForeground,
   );
 
-  void walletAt(int? lastScannedHeight) {
+  void walletAt(
+    int? lastScannedHeight, {
+    bool hasPendingScan = false,
+    bool isPendingScanPaused = false,
+  }) {
     when(() => getWallet.execute()).thenAnswer(
-      (_) async => Ok(spWallet(lastScannedHeight: lastScannedHeight)),
+      (_) async => Ok(
+        spWallet(
+          lastScannedHeight: lastScannedHeight,
+          hasPendingScan: hasPendingScan,
+          isPendingScanPaused: isPendingScanPaused,
+        ),
+      ),
     );
   }
 
@@ -45,6 +57,7 @@ void main() {
     repo.chainTipValue = tip;
     getWallet = _MockGetSpWalletUsecase();
     autoScanRepo = FakeSpAutoScanRepository();
+    isForeground = true;
     // Default: a wallet a few blocks behind, i.e. one a tick would scan.
     walletAt(tip - 10);
     usecase = build();
@@ -67,6 +80,100 @@ void main() {
 
     test('scans at exactly the threshold', () async {
       walletAt(tip - spAutoScanMaxBlocksBehind);
+
+      await usecase.execute();
+
+      expect(repo.scanOnceCount, 1);
+    });
+  });
+
+  group('SyncSpWalletUsecase resumes a pending scan', () {
+    test('resumes a pending scan the policy would decline', () async {
+      // Far behind the tip: `SpScanPolicy` would leave this to the user, but
+      // the wallet already had a scan in flight, so it continues.
+      walletAt(tip - spAutoScanMaxBlocksBehind - 1, hasPendingScan: true);
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Ok<void, SilentFailure>>());
+      expect(repo.scanOnceCount, 1);
+    });
+
+    test('resumes a pending scan with no cursor yet', () async {
+      walletAt(null, hasPendingScan: true);
+
+      await usecase.execute();
+
+      expect(repo.scanOnceCount, 1);
+    });
+
+    test('never resumes a pending scan the user stopped', () async {
+      walletAt(tip - 10, hasPendingScan: true, isPendingScanPaused: true);
+
+      await usecase.execute();
+
+      expect(repo.scanOnceCount, 0);
+    });
+
+    test('honours the automatic scanning setting', () async {
+      autoScanRepo.save(isEnabled: false);
+      walletAt(tip - 10, hasPendingScan: true);
+
+      await usecase.execute();
+
+      expect(repo.scanOnceCount, 0);
+    });
+  });
+
+  group('SyncSpWalletUsecase resume-only retries', () {
+    test('resumes a pending scan without consulting the policy', () async {
+      walletAt(tip, hasPendingScan: true);
+
+      await usecase.execute(resumeOnly: true);
+
+      expect(repo.scanOnceCount, 1);
+    });
+
+    test('never starts a fresh scan from the policy', () async {
+      walletAt(tip - 10);
+
+      await usecase.execute(resumeOnly: true);
+
+      expect(repo.scanOnceCount, 0);
+    });
+  });
+
+  group('SyncSpWalletUsecase automatic admission', () {
+    test('a decision whose revision moved on is refused', () async {
+      // A full tick reads the revision, then the session is recycled before
+      // the repository sees the launch: the state that decision belonged to is
+      // gone, so it must not scan.
+      walletAt(tip - 10);
+      repo.beforeScanOnce = () => repo.scanRevisionValue++;
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Ok<void, SilentFailure>>());
+      expect(repo.scanOnceCount, 0);
+      expect(repo.automaticRefusals, 1);
+    });
+  });
+
+  group('SyncSpWalletUsecase only runs in the foreground', () {
+    test('does not even read the wallet in the background', () async {
+      isForeground = false;
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Ok<void, SilentFailure>>());
+      verifyNever(() => getWallet.execute());
+      expect(repo.scanOnceCount, 0);
+    });
+
+    test('scans again once the app is back in front', () async {
+      isForeground = false;
+      await usecase.execute();
+      isForeground = true;
 
       await usecase.execute();
 
@@ -170,6 +277,24 @@ void main() {
       expect(results.first, isA<Ok<void, SilentFailure>>());
       expect(results.last, isA<Ok<void, SilentFailure>>());
       verify(() => getWallet.execute()).called(1);
+      expect(repo.scanOnceCount, 1);
+    });
+
+    test('a full tick behind a resume-only one still gets its turn', () async {
+      final gate = Completer<void>();
+      when(() => getWallet.execute()).thenAnswer((_) async {
+        await gate.future;
+        return Ok(spWallet(lastScannedHeight: tip - 10));
+      });
+
+      final retry = usecase.execute(resumeOnly: true);
+      final tick = usecase.execute();
+      gate.complete();
+      await Future.wait([retry, tick]);
+
+      // The retry found nothing to resume, and the queued tick still judged
+      // the policy instead of being dropped.
+      expect(repo.automaticRefusals, 0);
       expect(repo.scanOnceCount, 1);
     });
 

@@ -284,8 +284,35 @@ class FakeSpAccountRepository
     return const Ok(null);
   }
 
+  /// Revision reported for [scanRevision]. Bump it to model a session recycle
+  /// or a scan-state change between a caller's decision and its launch.
+  int scanRevisionValue = 0;
+
+  /// Admissions refused because the state moved on since they were decided.
+  int automaticRefusals = 0;
+
+  /// Runs at the top of [scanOnce], before the admission check: models a
+  /// session recycle or a scan-state change landing between the caller's
+  /// decision and its launch.
+  void Function()? beforeScanOnce;
+
   @override
-  Future<Result<void, SilentFailure>> scanOnce({int? startHeight}) async {
+  int get scanRevision => scanRevisionValue;
+
+  @override
+  Future<Result<void, SilentFailure>> scanOnce({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  }) async {
+    beforeScanOnce?.call();
+    // Same admission the live repository applies, so a test that moves the
+    // state must see the scan refused rather than merely unrecorded.
+    if (automatic != null &&
+        (automatic.revision != scanRevisionValue ||
+            _wallet.isPendingScanPaused)) {
+      automaticRefusals++;
+      return const Ok<void, SilentFailure>(null);
+    }
     scanOnceCount++;
     lastScanStartHeight = startHeight;
     return const Ok<void, SilentFailure>(null);
