@@ -5,3 +5,4 @@ library;
 
 export 'src/funding/funding_instructions.dart';
 export 'src/funding/funding_rail.dart';
+export 'src/funding/funding_request.dart';

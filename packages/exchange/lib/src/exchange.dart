@@ -8,7 +8,7 @@ import 'package:preferences/preferences.dart';
 
 import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_exchange_recipient_repository.dart';
-import 'data/bbx_api_funding_repository.dart';
+import 'data/bbx_api_funding_rails.dart';
 import 'data/bbx_api_kyc_repository.dart';
 import 'data/bbx_api_limit_order_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
@@ -343,18 +343,21 @@ final class Exchange {
     );
     final fundingReturnUrl =
         paymentReturnUrl ?? Uri.parse('https://app.bullbitcoin.com');
-    Future<Result<T, ExchangeFailure>> fund<T>(
-      Future<Result<T, ExchangeFailure>> Function(BbxApiFundingRepository) call,
-    ) => withClient(
-      (client) => call(
-        BbxApiFundingRepository(
-          api: client,
-          paymentReturnUrl: fundingReturnUrl,
+    Future<ExchangeRead<T>> fundRead<T>(
+      ExchangeSession session,
+      Future<ExchangeRead<T>> Function(BbxApiFundingRails) call,
+    ) async => switch (await withClient<ExchangeRead<T>>(
+      (client) async => Ok(
+        await call(
+          BbxApiFundingRails(client, paymentReturnUrl: fundingReturnUrl),
         ),
       ),
-      credentialReadFailure: () =>
-          const ExchangeUnexpectedFailure('Exchange credential unavailable'),
-    );
+      environment: session.environment,
+      completionCheck: _CompletionCheck.read,
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => readOfFailure<T>(failure),
+    };
     ExchangeNotificationService? notificationService;
     bool closed = false;
     ExchangeNotificationService service() {
@@ -601,15 +604,27 @@ final class Exchange {
         ),
       ),
       ExchangeFundingImpl(
-        get: (method) => fund(
-          (repository) => repository.getFundingDetails(fundingMethod: method),
-        ),
-        list: (jurisdiction) => fund(
-          (repository) =>
-              repository.listInstitutions(jurisdiction: jurisdiction),
-        ),
-        consent: () =>
-            fund((repository) => repository.registerResponsibilityConsent()),
+        account: (session) => fundRead(session, (rails) => rails.account()),
+        instructions: (session, request) =>
+            fundRead(session, (rails) => rails.instructions(request)),
+        institutions: (session, jurisdiction) =>
+            fundRead(session, (rails) => rails.institutions(jurisdiction)),
+        consent: (session) async =>
+            switch (await withClient<ExchangeWrite<void>>(
+              (client) async => Ok(
+                await BbxApiFundingRails(
+                  client,
+                  paymentReturnUrl: fundingReturnUrl,
+                ).consent(),
+              ),
+              environment: session.environment,
+              completionCheck: _CompletionCheck.write,
+            )) {
+              Ok(:final value) => value,
+              Err(:final failure) => writeNotRun<void>(failure),
+            },
+        consentOnAccount: (session) =>
+            fundRead(session, (rails) => rails.consentOnAccount()),
       ),
       ExchangeVirtualIbansImpl(
         find: (environment) => withClient(
@@ -1280,9 +1295,14 @@ Exchange exchangeForTesting({
       ),
   funding ??
       ExchangeFundingImpl(
-        get: (_) => throw StateError('Unexpected funding details request'),
-        list: (_) => throw StateError('Unexpected funding institution lookup'),
-        consent: () => throw StateError('Unexpected funding consent'),
+        account: (_) => throw StateError('Unexpected funding account read'),
+        instructions: (_, _) =>
+            throw StateError('Unexpected funding instructions request'),
+        institutions: (_, _) =>
+            throw StateError('Unexpected funding institution lookup'),
+        consent: (_) => throw StateError('Unexpected funding consent'),
+        consentOnAccount: (_) =>
+            throw StateError('Unexpected funding consent re-read'),
       ),
   virtualIbans ??
       ExchangeVirtualIbansImpl(

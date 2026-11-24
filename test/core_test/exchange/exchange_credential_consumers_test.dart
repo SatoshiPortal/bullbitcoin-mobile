@@ -11,6 +11,12 @@ import 'package:primitives/primitives.dart';
 
 import '../../features/exchange/data/bbx_api_test_http.dart';
 
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.testnet,
+  epoch: 0,
+  sessionId: 'session',
+);
+
 class _NoNetwork implements HttpClientAdapter {
   var sends = 0;
 
@@ -189,11 +195,11 @@ void main() {
       final recipients = BbxApiRecipientsRepository(api: api);
       final limits = user.limitOrders;
       expect(
-        await funding.listInstitutions(jurisdiction: Jurisdiction.canada),
-        isA<Err>().having(
-          (r) => r.failure,
+        await funding.institutions(_session, Jurisdiction.canada),
+        isA<ReadSessionRejected<List<FundingInstitution>>>().having(
+          (r) => r.why,
           'funding',
-          isA<ExchangeNotAuthenticatedFailure>(),
+          ExchangeSessionRejection.signedOut,
         ),
       );
       expect(
@@ -214,11 +220,11 @@ void main() {
       );
       credential = const Err(ExchangeCredentialReadFailure());
       expect(
-        await funding.listInstitutions(jurisdiction: Jurisdiction.canada),
-        isA<Err>().having(
-          (r) => r.failure,
+        await funding.institutions(_session, Jurisdiction.canada),
+        isA<ReadSessionRejected<List<FundingInstitution>>>().having(
+          (r) => r.why,
           'funding unavailable',
-          isA<ExchangeUnexpectedFailure>(),
+          ExchangeSessionRejection.credentialUnavailable,
         ),
       );
       expect(

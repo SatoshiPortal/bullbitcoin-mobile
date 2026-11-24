@@ -30,11 +30,17 @@ void main() {
     );
 
     expect(
-      await exchange.funding.registerResponsibilityConsent(),
-      isA<Err<void, ExchangeFailure>>().having(
-        (result) => result.failure,
-        'failure',
-        isA<ExchangeUnsupportedNetworkFailure>(),
+      await exchange.funding.consent(
+        const ExchangeSession(
+          environment: ExchangeEnvironment.testnet,
+          epoch: 0,
+          sessionId: 'session',
+        ),
+      ),
+      isA<WriteNotSent<void>>().having(
+        (result) => result.reason,
+        'reason',
+        ExchangeNotSentReason.unreachable,
       ),
     );
   });

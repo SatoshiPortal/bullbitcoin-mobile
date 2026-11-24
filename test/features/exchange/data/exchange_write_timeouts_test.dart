@@ -62,9 +62,20 @@ void main() {
           recipientId: 'fixture-recipient',
           isTestnet: isTestnet,
         ),
-        exchange.funding.registerResponsibilityConsent(),
       ]);
       expect(results, everyElement(isA<Err<Object?, Failure>>()));
+      expect(
+        await exchange.funding.consent(
+          ExchangeSession(
+            environment: environment == Environment.testnet
+                ? ExchangeEnvironment.testnet
+                : ExchangeEnvironment.mainnet,
+            epoch: 0,
+            sessionId: 'session',
+          ),
+        ),
+        isA<WriteOutcomeUnknown<void>>(),
+      );
 
       final selected = adapters.remove(environment);
       expect(
