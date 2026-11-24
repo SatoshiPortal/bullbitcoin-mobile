@@ -60,9 +60,7 @@ void main() {
     // separate cleanup, not something to smuggle into this test.
     const purchaseRoutes =
         'features/bull_exchange/lib/src/exchange_purchase_routes.dart';
-    const payMount = 'features/bull_exchange/lib/src/pay/mount_pay.dart';
     const owners = {
-      'PlacePayOrderUsecase': payMount,
       'ConfirmBuyOrderUsecase': purchaseRoutes,
       'RefreshBuyOrderUsecase': purchaseRoutes,
       'AccelerateBuyOrderUsecase': purchaseRoutes,

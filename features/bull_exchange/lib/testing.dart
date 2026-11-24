@@ -16,13 +16,9 @@ import 'src/default_wallets/presentation/default_wallets_machine.dart';
 export 'src/default_wallets/presentation/default_wallets_bloc.dart'
     show DefaultWalletsBloc;
 export 'src/default_wallets/presentation/default_wallets_machine.dart';
-export 'src/pay/domain/get_pay_order_usecase.dart' show GetPayOrderUsecase;
-export 'src/pay/domain/pay_failure.dart';
-export 'src/pay/presentation/pay_bloc.dart';
-export 'src/pay/ui/screens/pay_receive_payment_screen.dart'
-    show PayReceivePaymentScreen;
-export 'src/pay/ui/screens/pay_send_payment_screen.dart'
-    show PaySendPaymentScreen;
+export 'src/pay/presentation/pay_flow.dart';
+export 'src/pay/presentation/pay_flow_bloc.dart';
+export 'src/pay/ui/pay_flow_shell.dart' show payPagesFor;
 export 'src/payin/exchange_payin_ui.dart' show ExchangePayinUi;
 export 'src/payin/payin_account.dart' show PayinAccount;
 export 'src/payin/payin_wallets.dart' show PayinWallets;
