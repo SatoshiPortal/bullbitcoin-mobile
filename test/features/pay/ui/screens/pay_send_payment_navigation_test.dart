@@ -60,10 +60,19 @@ void main() {
     );
     final state = PayState.payment(
       userSummary: summary,
-      selectedRecipient: const RecipientViewModel(
-        id: 'recipient',
-        type: RecipientType.interacEmailCad,
-        email: 'recipient@example.com',
+      selectedRecipient: RecipientViewModel(
+        Recipient.create(
+          recipientId: 'recipient',
+          userId: 'user',
+          userNbr: 1,
+          isArchived: false,
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+          details: InteracEmailCadDetails.create(
+            email: 'recipient@example.com',
+            name: 'recipient@example.com',
+          ),
+        ),
       ),
       amount: const FiatAmount(100),
       payOrder: order,

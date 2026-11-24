@@ -141,9 +141,21 @@ const _userSummary = UserSummary(
   autoBuy: UserAutoBuy(isActive: false, addresses: UserAutoBuyAddresses()),
 );
 
-const _recipient = RecipientViewModel(
-  id: 'recipient-1',
-  type: RecipientType.bankTransferCad,
+final _recipient = RecipientViewModel(
+  Recipient.create(
+    recipientId: 'recipient-1',
+    userId: 'user',
+    userNbr: 1,
+    isArchived: false,
+    createdAt: DateTime.utc(2026),
+    updatedAt: DateTime.utc(2026),
+    details: BankTransferCadDetails.create(
+      institutionNumber: '001',
+      transitNumber: '12345',
+      accountNumber: '9876',
+      name: 'Payee',
+    ),
+  ),
 );
 
 class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}

@@ -31,10 +31,19 @@ const _summary = UserSummary(
   autoBuy: UserAutoBuy(isActive: false, addresses: UserAutoBuyAddresses()),
 );
 
-const _recipient = RecipientViewModel(
-  id: 'test-recipient',
-  type: RecipientType.interacEmailCad,
-  email: 'test@example.com',
+final _recipient = RecipientViewModel(
+  Recipient.create(
+    recipientId: 'test-recipient',
+    userId: 'user',
+    userNbr: 1,
+    isArchived: false,
+    createdAt: DateTime.utc(2026),
+    updatedAt: DateTime.utc(2026),
+    details: InteracEmailCadDetails.create(
+      email: 'test@example.com',
+      name: 'test@example.com',
+    ),
+  ),
 );
 
 void _stubOrder(Order order) {

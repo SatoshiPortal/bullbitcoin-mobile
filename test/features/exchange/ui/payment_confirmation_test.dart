@@ -52,16 +52,25 @@ void main() {
           ),
         );
         final recipient = RecipientViewModel(
-          id: 'test-recipient',
-          type: locale.languageCode == 'fr'
-              ? RecipientType.bankTransferCad
-              : RecipientType.interacEmailCad,
-          email: 'test@example.com',
-          firstname: 'Test',
-          lastname: 'Recipient',
-          institutionNumber: '001',
-          transitNumber: '00001',
-          accountNumber: '0000001',
+          Recipient.create(
+            recipientId: 'test-recipient',
+            userId: 'user',
+            userNbr: 1,
+            isArchived: false,
+            createdAt: DateTime.utc(2026),
+            updatedAt: DateTime.utc(2026),
+            details: locale.languageCode == 'fr'
+                ? BankTransferCadDetails.create(
+                    institutionNumber: '001',
+                    transitNumber: '00001',
+                    accountNumber: '0000001',
+                    name: 'Test Recipient',
+                  )
+                : InteracEmailCadDetails.create(
+                    email: 'test@example.com',
+                    name: 'Test Recipient',
+                  ),
+          ),
         );
         final sellInput = SellWalletSelectionState(
           userSummary: summary,

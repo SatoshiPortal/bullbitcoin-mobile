@@ -12,7 +12,6 @@ import 'package:bull_exchange/src/recipients/domain/usecases/get_confidential_se
 import 'package:bull_exchange/src/recipients/domain/entities/account_owner_name.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/cad_biller_view_model.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipient_view_model_mapper.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
@@ -330,12 +329,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         .toList();
   }
 
-  // No try/catch: toViewModel() is an exhaustive switch over the sealed
-  //  RecipientDetails that only copies fields, so it cannot throw. Tolerance
-  //  for rows this build cannot read belongs at the boundary, and already
-  //  lives in the repository, which skips elements that fail to parse from JSON.
   List<RecipientViewModel> _toViewModels(List<Recipient> recipients) =>
-      recipients.map((recipient) => recipient.toViewModel()).toList();
+      recipients.map(RecipientViewModel.new).toList();
 
   Future<void> _onAdded(
     RecipientsAdded event,
@@ -357,7 +352,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
           '${value.recipient.recipientId}',
         );
         final hookFailure = await _runSelectionHook(
-          value.recipient.toViewModel(),
+          RecipientViewModel(value.recipient),
           isNew: true,
         );
         if (hookFailure != null) {

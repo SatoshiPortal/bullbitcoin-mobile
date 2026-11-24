@@ -3,6 +3,7 @@ import 'package:bull_exchange/src/pay/domain/pay_failure.dart';
 import 'package:fees/fees.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/recipients/presentation/payout_rail_l10n.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_bloc.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_failure_l10n.dart';
@@ -27,32 +28,6 @@ import 'package:bull_ui/bull_ui.dart'
 
 class PaySendPaymentScreen extends StatelessWidget {
   const PaySendPaymentScreen({super.key});
-
-  String _formatSinpePhoneNumber(String? phoneNumber) {
-    if (phoneNumber == null || phoneNumber.isEmpty) return 'N/A';
-
-    // Remove any existing formatting
-    final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-
-    // Add +506 prefix
-    final String formattedNumber = '+506$cleanNumber';
-
-    // Add dashes every 4 digits after the prefix
-    if (cleanNumber.length >= 4) {
-      const String prefix = '+506';
-      final String number = cleanNumber;
-      final StringBuffer formatted = StringBuffer(prefix);
-
-      for (int i = 0; i < number.length; i += 4) {
-        final int end = (i + 4 < number.length) ? i + 4 : number.length;
-        formatted.write('-${number.substring(i, end)}');
-      }
-
-      return formatted.toString();
-    }
-
-    return formattedNumber;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +175,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                         ),
                       BullDetailsTableItem(
                         label: context.loc.payRecipientType,
-                        displayValue: recipient?.type.label(context),
+                        displayValue: recipient?.rail.label(context),
                       ),
                       BullDetailsTableItem(
                         label: context.loc.payRecipientName,
@@ -208,9 +183,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                       ),
                       BullDetailsTableItem(
                         label: context.loc.payRecipientDetails,
-                        displayValue: recipient != null
-                            ? _getRecipientInfoValue(recipient)
-                            : null,
+                        displayValue: recipient?.accountRows.firstOrNull?.value,
                       ),
                       const _Divider(),
                       BullDetailsTableItem(
@@ -307,39 +280,6 @@ class PaySendPaymentScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String? _getRecipientInfoValue(RecipientViewModel recipient) {
-    switch (recipient.type) {
-      case RecipientType.bankAccountArgentina:
-      case RecipientType.pseColombia:
-        return recipient.bankAccount;
-      case RecipientType.nequiColombia:
-        return recipient.phoneNumber;
-      case RecipientType.interacEmailCad:
-        return recipient.email;
-      case RecipientType.billPaymentCad:
-        return recipient.payeeName ??
-            recipient.payeeCode ??
-            recipient.payeeAccountNumber;
-      case RecipientType.bankTransferCad:
-        return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return recipient.iban;
-      case RecipientType.speiClabeMxn:
-        return recipient.clabe;
-      case RecipientType.speiSmsMxn:
-        return recipient.phoneNumber;
-      case RecipientType.speiCardMxn:
-        return recipient.debitcard;
-      case RecipientType.sinpeIbanUsd:
-        return recipient.iban;
-      case RecipientType.sinpeIbanCrc:
-        return recipient.iban;
-      case RecipientType.sinpeMovilCrc:
-        return _formatSinpePhoneNumber(recipient.phoneNumber);
-    }
   }
 }
 

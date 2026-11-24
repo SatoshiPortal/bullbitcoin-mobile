@@ -21,7 +21,90 @@ final class RecipientSelection {
     this.debitcard,
     this.bankAccount,
     this.isVirtualPayeeActive = false,
+    this.accountRows = const [],
   });
+
+  /// [recipient] as flows receive it: its rail's name and account rows, and
+  /// the fields the flows still read until they take a ready recipient.
+  factory RecipientSelection.of(Recipient recipient) {
+    final onRail = recipient.onRail;
+    final base = RecipientSelection(
+      id: recipient.recipientId,
+      type: onRail.rail.type,
+      displayName: onRail.displayName,
+      accountRows: onRail.accountRows,
+    );
+    return switch (recipient.details) {
+      final InteracEmailCadDetails d => base._with(
+        email: d.email,
+        securityQuestion: d.securityQuestion,
+        securityAnswer: d.securityAnswer,
+      ),
+      final BillPaymentCadDetails d => base._with(
+        payeeName: d.payeeName,
+        payeeCode: d.payeeCode,
+        payeeAccountNumber: d.payeeAccountNumber,
+      ),
+      final BankTransferCadDetails d => base._with(
+        institutionNumber: d.institutionNumber,
+        transitNumber: d.transitNumber,
+        accountNumber: d.accountNumber,
+      ),
+      final SepaEurDetails d => base._with(
+        iban: d.iban,
+        isVirtualPayeeActive: d.isVirtualPayeeActive,
+      ),
+      final SpeiClabeMxnDetails d => base._with(clabe: d.clabe),
+      final SpeiSmsMxnDetails d => base._with(phoneNumber: d.phone),
+      final SpeiCardMxnDetails d => base._with(debitcard: d.debitcard),
+      final SinpeIbanUsdDetails d => base._with(iban: d.iban),
+      final SinpeIbanCrcDetails d => base._with(iban: d.iban),
+      final SinpeMovilCrcDetails d => base._with(phoneNumber: d.phoneNumber),
+      final BankAccountArgentinaDetails d => base._with(
+        bankAccount: d.claveUniform,
+      ),
+      final PseColombiaDetails d => base._with(bankAccount: d.bankAccount),
+      final NequiColombiaDetails d => base._with(phoneNumber: d.phoneNumber),
+    };
+  }
+
+  RecipientSelection _with({
+    String? email,
+    String? securityQuestion,
+    String? securityAnswer,
+    String? payeeName,
+    String? payeeCode,
+    String? payeeAccountNumber,
+    String? institutionNumber,
+    String? transitNumber,
+    String? accountNumber,
+    String? iban,
+    String? clabe,
+    String? phoneNumber,
+    String? debitcard,
+    String? bankAccount,
+    bool isVirtualPayeeActive = false,
+  }) => RecipientSelection(
+    id: id,
+    type: type,
+    displayName: displayName,
+    email: email,
+    securityQuestion: securityQuestion,
+    securityAnswer: securityAnswer,
+    payeeName: payeeName,
+    payeeCode: payeeCode,
+    payeeAccountNumber: payeeAccountNumber,
+    institutionNumber: institutionNumber,
+    transitNumber: transitNumber,
+    accountNumber: accountNumber,
+    iban: iban,
+    clabe: clabe,
+    phoneNumber: phoneNumber,
+    debitcard: debitcard,
+    bankAccount: bankAccount,
+    isVirtualPayeeActive: isVirtualPayeeActive,
+    accountRows: accountRows,
+  );
 
   final String id;
   final RecipientType type;
@@ -41,6 +124,11 @@ final class RecipientSelection {
   final String? debitcard;
   final String? bankAccount;
   final bool isVirtualPayeeActive;
+
+  /// The account values its rail shows, in order.
+  final List<AccountRow> accountRows;
+
+  PayoutRail get rail => PayoutRails.of(type);
 
   bool get requiresInteracSecurityDetails =>
       type == RecipientType.interacEmailCad;
@@ -71,6 +159,7 @@ final class RecipientSelection {
     phoneNumber: phoneNumber,
     debitcard: debitcard,
     bankAccount: bankAccount,
+    accountRows: accountRows,
   );
 
   RecipientSelection asVirtualPayeeActive() => RecipientSelection(
@@ -92,6 +181,7 @@ final class RecipientSelection {
     debitcard: debitcard,
     bankAccount: bankAccount,
     isVirtualPayeeActive: true,
+    accountRows: accountRows,
   );
 
   @override

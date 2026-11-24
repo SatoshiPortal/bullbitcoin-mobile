@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart'
 import 'package:bull_exchange/src/pay/presentation/pay_failure_l10n.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/recipients/presentation/payout_rail_l10n.dart';
 
 import 'package:bull_exchange/src/pay/presentation/pay_bloc.dart';
 import 'package:bull_exchange/src/pay/ui/widgets/pay_qr_bottom_sheet.dart';
@@ -27,32 +28,6 @@ import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
   const PayReceivePaymentScreen({super.key});
-
-  String _formatSinpePhoneNumber(String? phoneNumber) {
-    if (phoneNumber == null || phoneNumber.isEmpty) return 'N/A';
-
-    // Remove any existing formatting
-    final String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-
-    // Add +506 prefix
-    final String formattedNumber = '+506$cleanNumber';
-
-    // Add dashes every 4 digits after the prefix
-    if (cleanNumber.length >= 4) {
-      const String prefix = '+506';
-      final String number = cleanNumber;
-      final StringBuffer formatted = StringBuffer(prefix);
-
-      for (int i = 0; i < number.length; i += 4) {
-        final int end = (i + 4 < number.length) ? i + 4 : number.length;
-        formatted.write('-${number.substring(i, end)}');
-      }
-
-      return formatted.toString();
-    }
-
-    return formattedNumber;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,39 +136,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
               _buildDetailRow(
                 context,
                 context.loc.payRecipientType,
-                switch (recipient.type) {
-                  // CANADA types
-                  RecipientType.interacEmailCad =>
-                    context.loc.recipientsTypeInteracEmail,
-                  RecipientType.billPaymentCad =>
-                    context.loc.recipientsTypeBillPayment,
-                  RecipientType.bankTransferCad =>
-                    context.loc.recipientsTypeBankTransfer,
-                  // EUROPE types
-                  RecipientType.sepaEur => context.loc.recipientsTypeSepa,
-                  RecipientType.confidentialSepaEur =>
-                    context.loc.recipientsTypeConfidentialSepa,
-                  // MEXICO types
-                  RecipientType.speiClabeMxn =>
-                    context.loc.recipientsTypeSpeiClabe,
-                  RecipientType.speiSmsMxn => context.loc.recipientsTypeSpeiSms,
-                  RecipientType.speiCardMxn =>
-                    context.loc.recipientsTypeSpeiCard,
-                  // COSTA RICA types
-                  RecipientType.sinpeIbanUsd =>
-                    context.loc.recipientsTypeSinpeIbanUsd,
-                  RecipientType.sinpeIbanCrc =>
-                    context.loc.recipientsTypeSinpeIbanCrc,
-                  RecipientType.sinpeMovilCrc =>
-                    context.loc.recipientsTypeSinpeMovil,
-                  // ARGENTINA types
-                  RecipientType.bankAccountArgentina =>
-                    context.loc.recipientsTypeBankAccountAr,
-                  RecipientType.pseColombia =>
-                    context.loc.recipientsTypeBankAccountCo,
-                  RecipientType.nequiColombia =>
-                    context.loc.recipientsTypeNequi,
-                },
+                recipient.rail.label(context),
               ),
               const Gap(8),
               _buildDetailRow(
@@ -204,8 +147,11 @@ class PayReceivePaymentScreen extends StatelessWidget {
               const Gap(8),
               _buildDetailRow(
                 context,
-                _getRecipientInfoLabel(context, recipient),
-                _getRecipientInfoValue(recipient) ??
+                switch (recipient.accountRows) {
+                  [final row, ...] => row.field.label(context),
+                  [] => context.loc.recipientsInfoAccount,
+                },
+                recipient.accountRows.firstOrNull?.value ??
                     context.loc.payNoDetailsAvailable,
               ),
               const Gap(8),
@@ -355,73 +301,5 @@ class PayReceivePaymentScreen extends StatelessWidget {
             copiedMessage: context.loc.copiedToClipboard,
           )
         : context.read<ExchangePayinUi>().addressViewer(context, fullText);
-  }
-
-  String _getRecipientInfoLabel(
-    BuildContext context,
-    RecipientViewModel recipient,
-  ) {
-    switch (recipient.type) {
-      case RecipientType.interacEmailCad:
-        return context.loc.recipientsInfoEmail;
-      case RecipientType.billPaymentCad:
-        return context.loc.recipientsInfoPayee;
-      case RecipientType.bankTransferCad:
-        return context.loc.recipientsInfoAccount;
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return context.loc.recipientsFieldIban;
-      case RecipientType.speiClabeMxn:
-        return context.loc.recipientsFieldClabe;
-      case RecipientType.speiSmsMxn:
-        return context.loc.recipientsInfoPhone;
-      case RecipientType.speiCardMxn:
-        return context.loc.recipientsInfoCard;
-      case RecipientType.sinpeIbanUsd:
-        return context.loc.recipientsFieldIban;
-      case RecipientType.sinpeIbanCrc:
-        return context.loc.recipientsFieldIban;
-      case RecipientType.sinpeMovilCrc:
-        return context.loc.recipientsInfoPhone;
-      case RecipientType.bankAccountArgentina:
-        return context.loc.recipientsInfoAccount;
-      case RecipientType.pseColombia:
-        return context.loc.recipientsInfoAccount;
-      case RecipientType.nequiColombia:
-        return context.loc.recipientsFieldPhoneNumber;
-    }
-  }
-
-  String? _getRecipientInfoValue(RecipientViewModel recipient) {
-    switch (recipient.type) {
-      case RecipientType.bankAccountArgentina:
-      case RecipientType.pseColombia:
-        return recipient.bankAccount;
-      case RecipientType.nequiColombia:
-        return recipient.phoneNumber;
-      case RecipientType.interacEmailCad:
-        return recipient.email;
-      case RecipientType.billPaymentCad:
-        return recipient.payeeName ??
-            recipient.payeeCode ??
-            recipient.payeeAccountNumber;
-      case RecipientType.bankTransferCad:
-        return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return recipient.iban;
-      case RecipientType.speiClabeMxn:
-        return recipient.clabe;
-      case RecipientType.speiSmsMxn:
-        return recipient.phoneNumber;
-      case RecipientType.speiCardMxn:
-        return recipient.debitcard;
-      case RecipientType.sinpeIbanUsd:
-        return recipient.iban;
-      case RecipientType.sinpeIbanCrc:
-        return recipient.iban;
-      case RecipientType.sinpeMovilCrc:
-        return _formatSinpePhoneNumber(recipient.phoneNumber);
-    }
   }
 }

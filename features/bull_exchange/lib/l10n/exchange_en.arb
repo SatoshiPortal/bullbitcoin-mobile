@@ -2214,34 +2214,6 @@
   "@withdrawConfirmAmount": {
     "description": "Field label for withdrawal amount"
   },
-  "withdrawConfirmEmail": "Email",
-  "@withdrawConfirmEmail": {
-    "description": "Field label for email (Interac)"
-  },
-  "withdrawConfirmPayee": "Payee",
-  "@withdrawConfirmPayee": {
-    "description": "Field label for payee (Bill Payment)"
-  },
-  "withdrawConfirmAccount": "Account",
-  "@withdrawConfirmAccount": {
-    "description": "Field label for bank account"
-  },
-  "withdrawConfirmIban": "IBAN",
-  "@withdrawConfirmIban": {
-    "description": "Field label for IBAN"
-  },
-  "withdrawConfirmClabe": "CLABE",
-  "@withdrawConfirmClabe": {
-    "description": "Field label for CLABE (Mexico)"
-  },
-  "withdrawConfirmPhone": "Phone",
-  "@withdrawConfirmPhone": {
-    "description": "Field label for phone number"
-  },
-  "withdrawConfirmCard": "Card",
-  "@withdrawConfirmCard": {
-    "description": "Field label for debit card"
-  },
   "withdrawConfirmButton": "Confirm withdrawal",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"

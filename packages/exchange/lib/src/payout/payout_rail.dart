@@ -378,6 +378,16 @@ final class SinpeIbanCrcRail extends PayoutRail<SinpeIbanCrcDetails> {
       _rows([(AccountField.iban, details.iban)]);
 }
 
+/// A Costa Rican number as `+506-8888-1234`.
+String _costaRicaPhone(String phone) {
+  final digits = phone.replaceAll(RegExp(r'[^\d]'), '');
+  final groups = [
+    for (var i = 0; i < digits.length; i += 4)
+      digits.substring(i, i + 4 < digits.length ? i + 4 : digits.length),
+  ];
+  return ['+506', ...groups].join('-');
+}
+
 final class SinpeMovilRail extends PayoutRail<SinpeMovilCrcDetails> {
   const SinpeMovilRail._();
 
@@ -396,7 +406,7 @@ final class SinpeMovilRail extends PayoutRail<SinpeMovilCrcDetails> {
 
   @override
   List<AccountRow> accountRows(SinpeMovilCrcDetails details) =>
-      _rows([(AccountField.phone, details.phoneNumber)]);
+      _rows([(AccountField.phone, _costaRicaPhone(details.phoneNumber))]);
 }
 
 final class ArsBankTransferRail

@@ -154,10 +154,19 @@ void main() {
     dca: UserDca(isActive: false),
     autoBuy: UserAutoBuy(isActive: false, addresses: UserAutoBuyAddresses()),
   );
-  const recipient = RecipientViewModel(
-    id: 'recipient-1',
-    type: RecipientType.interacEmailCad,
-    email: 'payee@example.com',
+  final recipient = RecipientViewModel(
+    Recipient.create(
+      recipientId: 'recipient-1',
+      userId: 'user',
+      userNbr: 1,
+      isArchived: false,
+      createdAt: DateTime.utc(2026),
+      updatedAt: DateTime.utc(2026),
+      details: InteracEmailCadDetails.create(
+        email: 'payee@example.com',
+        name: 'Payee',
+      ),
+    ),
   );
 
   // Tiers far enough apart that the rate handed to the PSBT build identifies

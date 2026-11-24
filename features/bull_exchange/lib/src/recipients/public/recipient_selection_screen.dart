@@ -100,26 +100,6 @@ class _RecipientSelectionScreenState extends State<RecipientSelectionScreen> {
     );
   }
 
-  RecipientSelection _toSelection(RecipientViewModel recipient) {
-    return RecipientSelection(
-      id: recipient.id,
-      type: recipient.type,
-      displayName: recipient.displayName,
-      email: recipient.email,
-      securityQuestion: recipient.securityQuestion,
-      securityAnswer: recipient.securityAnswer,
-      payeeName: recipient.payeeName,
-      payeeCode: recipient.payeeCode,
-      payeeAccountNumber: recipient.payeeAccountNumber,
-      institutionNumber: recipient.institutionNumber,
-      transitNumber: recipient.transitNumber,
-      accountNumber: recipient.accountNumber,
-      iban: recipient.iban,
-      clabe: recipient.clabe,
-      phoneNumber: recipient.phoneNumber,
-      debitcard: recipient.debitcard,
-      bankAccount: recipient.bankAccount,
-      isVirtualPayeeActive: recipient.isVirtualPayeeActive,
-    );
-  }
+  RecipientSelection _toSelection(RecipientViewModel recipient) =>
+      RecipientSelection.of(recipient.recipient);
 }

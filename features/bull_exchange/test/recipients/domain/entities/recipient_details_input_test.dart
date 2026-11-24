@@ -89,20 +89,14 @@ void main() {
     });
 
     test('display name falls back to label then identifier', () {
-      const labeled = RecipientViewModel(
-        id: 'recipient-1',
-        type: RecipientType.sinpeMovilCrc,
+      final labeled = SinpeMovilCrcDetails.create(
         label: 'Family',
         phoneNumber: '8888-8888',
       );
-      const unlabeled = RecipientViewModel(
-        id: 'recipient-2',
-        type: RecipientType.sinpeMovilCrc,
-        phoneNumber: '8888-8888',
-      );
+      final unlabeled = SinpeMovilCrcDetails.create(phoneNumber: '8888-8888');
 
-      expect(labeled.displayName, 'Family');
-      expect(unlabeled.displayName, '8888-8888');
+      expect(labeled.onRail.displayName, 'Family');
+      expect(unlabeled.onRail.displayName, '8888-8888');
     });
   });
 }

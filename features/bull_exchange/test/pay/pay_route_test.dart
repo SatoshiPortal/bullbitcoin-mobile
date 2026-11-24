@@ -29,9 +29,19 @@ const _summary = UserSummary(
   autoBuy: UserAutoBuy(isActive: false, addresses: UserAutoBuyAddresses()),
 );
 
-const _recipient = RecipientViewModel(
-  id: 'pay-recipient',
-  type: RecipientType.interacEmailCad,
+final _recipient = RecipientViewModel(
+  Recipient.create(
+    recipientId: 'pay-recipient',
+    userId: 'user',
+    userNbr: 1,
+    isArchived: false,
+    createdAt: DateTime.utc(2026),
+    updatedAt: DateTime.utc(2026),
+    details: InteracEmailCadDetails.create(
+      email: 'pay@example.com',
+      name: 'Pay',
+    ),
+  ),
 );
 
 void main() {
@@ -59,7 +69,7 @@ void main() {
       expect(entry.read<PayBloc>(), same(bloc));
 
       states.add(
-        const PayState.amountInput(
+        PayState.amountInput(
           selectedRecipient: _recipient,
           userSummary: _summary,
         ),

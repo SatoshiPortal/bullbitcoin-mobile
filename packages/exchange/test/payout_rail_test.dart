@@ -90,7 +90,7 @@ final _cases = <(RecipientDetails, PayoutRail, String?, List<AccountRow>)>[
     SinpeMovilCrcDetails.create(phoneNumber: '8888', label: 'Mom'),
     PayoutRails.sinpeMovil,
     'Mom',
-    [const AccountRow(AccountField.phone, '8888')],
+    [const AccountRow(AccountField.phone, '+506-8888')],
   ),
   (
     BankAccountArgentinaDetails.create(claveUniform: '0170', name: 'Juan'),
@@ -227,8 +227,11 @@ void main() {
   });
 
   test('a SINPE recipient without owner name falls back to its label', () {
-    final movil = SinpeMovilCrcDetails.create(phoneNumber: '8888');
-    expect(movil.onRail.displayName, '8888');
+    final movil = SinpeMovilCrcDetails.create(phoneNumber: '8888 1234');
+    expect(movil.onRail.displayName, '8888 1234');
+    expect(movil.onRail.accountRows, [
+      const AccountRow(AccountField.phone, '+506-8888-1234'),
+    ]);
     final iban = SinpeIbanCrcDetails.create(iban: 'CR02', label: 'Rent');
     expect(iban.onRail.displayName, 'Rent');
   });

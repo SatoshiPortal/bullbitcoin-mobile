@@ -75,8 +75,10 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                   ),
                   const _Divider(),
                   _DetailRow(
-                    title: _getRecipientInfoLabel(context, recipient),
-                    value: _getRecipientInfoValue(recipient),
+                    title:
+                        recipient?.accountDetail(context).label ??
+                        context.loc.withdrawConfirmBankAccount,
+                    value: recipient?.accountDetail(context).value,
                   ),
                   const _Divider(),
                   _DetailRow(
@@ -115,79 +117,6 @@ class WithdrawConfirmationScreen extends StatelessWidget {
       },
       child: screen,
     );
-  }
-
-  String _getRecipientInfoLabel(
-    BuildContext context,
-    RecipientSelection? recipient,
-  ) {
-    if (recipient == null) return context.loc.withdrawConfirmBankAccount;
-
-    switch (recipient.type) {
-      case RecipientType.interacEmailCad:
-        return context.loc.withdrawConfirmEmail;
-      case RecipientType.billPaymentCad:
-        return context.loc.withdrawConfirmPayee;
-      case RecipientType.bankTransferCad:
-        return context.loc.withdrawConfirmAccount;
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return context.loc.withdrawConfirmIban;
-      case RecipientType.speiClabeMxn:
-        return context.loc.withdrawConfirmClabe;
-      case RecipientType.speiSmsMxn:
-        return context.loc.withdrawConfirmPhone;
-      case RecipientType.speiCardMxn:
-        return context.loc.withdrawConfirmCard;
-      case RecipientType.sinpeIbanUsd:
-        return context.loc.withdrawConfirmIban;
-      case RecipientType.sinpeIbanCrc:
-        return context.loc.withdrawConfirmIban;
-      case RecipientType.sinpeMovilCrc:
-        return context.loc.withdrawConfirmPhone;
-      case RecipientType.bankAccountArgentina:
-        return context.loc.withdrawConfirmAccount;
-      case RecipientType.pseColombia:
-        return context.loc.withdrawConfirmBankAccount;
-      case RecipientType.nequiColombia:
-        return context.loc.withdrawConfirmPhone;
-    }
-  }
-
-  String? _getRecipientInfoValue(RecipientSelection? recipient) {
-    if (recipient == null) return null;
-
-    switch (recipient.type) {
-      case RecipientType.interacEmailCad:
-        return recipient.email;
-      case RecipientType.billPaymentCad:
-        return recipient.payeeName ??
-            recipient.payeeCode ??
-            recipient.payeeAccountNumber;
-      case RecipientType.bankTransferCad:
-        return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return recipient.iban;
-      case RecipientType.speiClabeMxn:
-        return recipient.clabe;
-      case RecipientType.speiSmsMxn:
-        return recipient.phoneNumber;
-      case RecipientType.speiCardMxn:
-        return recipient.debitcard;
-      case RecipientType.sinpeIbanUsd:
-        return recipient.iban;
-      case RecipientType.sinpeIbanCrc:
-        return recipient.iban;
-      case RecipientType.sinpeMovilCrc:
-        return recipient.phoneNumber;
-      case RecipientType.bankAccountArgentina:
-        return null; // TODO: Implement
-      case RecipientType.pseColombia:
-        return recipient.bankAccount;
-      case RecipientType.nequiColombia:
-        return recipient.phoneNumber;
-    }
   }
 }
 
