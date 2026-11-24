@@ -301,7 +301,7 @@ Refs are taken from the manifests. Cargo patches are source redirects, not addit
 | `Dart: bb_mobile / bolt11_decoder (runtime)` | `https://github.com/fusion44/dart_bolt11_decoder` | `f5deec21fb0ac2ee507de1f683344b03f8cc92a3` | — |
 | `Dart: bb_mobile / ur (runtime)` | `https://github.com/bukata-sa/bc-ur-dart.git` | `5738f70d0ec3d50977ac3dd01fed62939600238b` | — |
 | `Dart: bull_recoverbull / recoverbull (runtime)` | `https://github.com/SatoshiPortal/recoverbull-client-dart.git` | `293b0d709f6c7775180f775c6a5fe99a39f175ce` | — |
-| `Dart: rust_bindings / bdk_dart (runtime)` | `https://github.com/SatoshiPortal/bdk-dart` | `9ba4d5001620a8a840f3b33de17a667c08629b98` | — |
+| `Dart: rust_bindings / bdk_dart (runtime)` | `https://github.com/SatoshiPortal/bdk-dart` | `5dc0c9a0f46a5c7356a523035f8bb0b43b2bba26` | — |
 | `Dart: secrets / recoverbull (runtime)` | `https://github.com/SatoshiPortal/recoverbull-client-dart.git` | `293b0d709f6c7775180f775c6a5fe99a39f175ce` | — |
 | `Dart: signers / ledger_bitcoin (runtime)` | `https://github.com/SatoshiPortal/ledger-flutter-plus-plugins` | `d71f36e95a763491adab95fc1f5abf86f532ac4e` | `packages/ledger-bitcoin` |
 | `Dart: signers / ur (runtime)` | `https://github.com/bukata-sa/bc-ur-dart.git` | `5738f70d0ec3d50977ac3dd01fed62939600238b` | — |
