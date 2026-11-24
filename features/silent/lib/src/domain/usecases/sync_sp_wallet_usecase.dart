@@ -64,28 +64,37 @@ class SyncSpWalletUsecase {
     }
 
     // Ok(null) when the feature gate is closed or the wallet is not set up.
-    final SilentWallet wallet;
     switch (await _getSpWalletUsecase.execute()) {
       case Err(:final failure):
         return Err(failure);
-      case Ok(value: final w):
-        if (w == null) return const Ok(null);
-        wallet = w;
+      case Ok(value: null):
+        return const Ok(null);
+      case Ok():
+        break;
     }
 
-    // The decision is judged against this revision; the repository rechecks it
-    // at launch, so a stop, clear, or session recycle in between wins.
-    final admission = (revision: _repository.scanRevision);
-    // The wallet and the preference reads may yield to the lifecycle.
-    if (!await _getSpAutoScanUsecase.read() || !_isForeground()) {
+    if (!await _getSpAutoScanUsecase.read() ||
+        !_isForeground() ||
+        _isSpScanningUsecase.execute() ||
+        !_repository.hasSession ||
+        _repository.teardownInProgress) {
       return const Ok(null);
     }
+    // Read the snapshot and its revision together, without yielding to Clear,
+    // Stop or session replacement. The scan port rechecks this revision.
+    final admission = (revision: _repository.scanRevision);
+    final SilentWallet wallet;
+    switch (_repository.snapshot()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        wallet = value;
+    }
+    if (wallet.isPendingScanPaused) return const Ok(null);
     if (wallet.hasPendingScan) {
-      // A pending scan the user stopped is theirs to restart, not ours.
-      if (wallet.isPendingScanPaused) return const Ok(null);
       return _scanSpWalletUsecase.execute(automatic: admission);
     }
-    if (resumeOnly) return const Ok(null);
+    if (resumeOnly && !_repository.canRetryAutomaticScan) return const Ok(null);
 
     final policy = SpScanPolicy(
       lastScannedHeight: wallet.lastScannedHeight,

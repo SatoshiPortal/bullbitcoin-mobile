@@ -60,7 +60,13 @@ class BwkSpAccountRepository
   // this same instance.
   final SpAccountFilesDatasource _files;
 
-  BwkSpAccountRepository({required this._ffi, required this._files});
+  final bool Function()? _allowAutomaticScan;
+
+  BwkSpAccountRepository({
+    required this._ffi,
+    required this._files,
+    this._allowAutomaticScan,
+  });
 
   // Notification stream plumbing (single-take Rust receiver -> mapped
   // broadcast of domain notifications).
@@ -105,6 +111,9 @@ class BwkSpAccountRepository
   // dispose, and every scan-state notification. See
   // SpAccountRepository.scanRevision.
   int _scanRevision = 0;
+  bool _markerUnreadable = false;
+  bool _automaticScanActive = false;
+  bool _retryAutomaticScan = false;
   // Set around an electrum restart, which holds the same lock across a
   // blocking connect.
   bool _restarting = false;
@@ -246,6 +255,9 @@ class BwkSpAccountRepository
     _resetNotificationState();
     _scanning = false;
     _pendingScan = null;
+    _markerUnreadable = false;
+    _automaticScanActive = false;
+    _retryAutomaticScan = false;
     _sessionDataDir = null;
     _clearReadCaches();
     // Clear any lingering advisory locks. On mobile (single process) a present
@@ -386,12 +398,13 @@ class BwkSpAccountRepository
     }
   }
 
-  // The whole automatic admission check lives here, not in a callback the
-  // caller hands over: the decision must be judged against the state this
-  // repository holds right now.
+  // Recheck session state and live foreground/opt-in after the final await.
   bool _canLaunchAutomatic(SpAutomaticScanAdmission? automatic) =>
       automatic == null ||
-      (automatic.revision == _scanRevision && _pendingScan?.isPaused != true);
+      (automatic.revision == _scanRevision &&
+          !_markerUnreadable &&
+          _pendingScan?.isPaused != true &&
+          (_allowAutomaticScan?.call() ?? true));
 
   Future<Result<void, SilentFailure>> _launchScan(
     int? startHeight,
@@ -401,7 +414,8 @@ class BwkSpAccountRepository
     // found and leaves it in place, so a process death mid-resume still leaves
     // the same thing to resume next time.
     final manual = automatic == null;
-    final previous = _pendingScan;
+    ({int? startHeight, bool isPaused})? previous;
+    var changedMarker = false;
     try {
       // A queued marker write has to land before this scan rewrites it.
       await _pendingScanWrite;
@@ -409,6 +423,7 @@ class BwkSpAccountRepository
       if (teardownInProgress || _pendingDispose != null) {
         return const Err(SilentSessionBusy('SP session is closing'));
       }
+      previous = _pendingScan;
       // Resume from the marker's height when the caller did not pick one, and
       // only if the cursor has not already passed it: bwk resumes from its own
       // cursor, so a lower explicit start would redo work.
@@ -421,24 +436,27 @@ class BwkSpAccountRepository
           ? selectedHeight
           : null;
       final pending = (startHeight: selectedHeight, isPaused: false);
-      if (manual && pending != previous) await _savePendingScan(pending);
+      changedMarker = manual && pending != previous;
+      if (changedMarker) await _savePendingScan(pending);
       // Saving the marker yields to lifecycle changes and teardown.
       if (teardownInProgress || _pendingDispose != null) {
-        if (manual && pending != previous) await _savePendingScan(previous);
+        if (changedMarker) await _savePendingScan(previous);
         return const Err(SilentSessionBusy('SP session is closing'));
       }
       if (!_canLaunchAutomatic(automatic)) {
-        if (manual && pending != previous) await _savePendingScan(previous);
+        if (changedMarker) await _savePendingScan(previous);
         return const Ok(null);
       }
       _scanning = true;
+      _automaticScanActive = !manual;
       await _ffi.scanOnce(startHeight: effectiveStart);
       return const Ok(null);
     } catch (e) {
       _scanning = false;
+      _automaticScanActive = false;
       // The scan did not start, so the marker must not claim it did: restore
       // the one this launch replaced (or drop the one it wrote).
-      if (manual) await _savePendingScan(previous);
+      if (changedMarker) await _savePendingScan(previous);
       return Err(_mapFfiError(e));
     }
   }
@@ -480,10 +498,18 @@ class BwkSpAccountRepository
   Future<Result<void, SilentFailure>> stopScan() => _controlScan(() async {
     await _scanLaunch;
     await _pendingScanWrite;
-    // Pause the marker before the teardown starts, so a restart does not
-    // resume a scan the user stopped.
-    if (_pendingScan case final pending? when !pending.isPaused) {
-      await _setPendingScan((startHeight: pending.startHeight, isPaused: true));
+    _retryAutomaticScan = false;
+    _automaticScanActive = false;
+    final previous = _pendingScan;
+    final paused = (startHeight: previous?.startHeight, isPaused: true);
+    // Keep the in-memory pause even if persisting it fails. The native stop
+    // must still run, and the caller is told the pause may not survive.
+    _pendingScan = paused;
+    try {
+      await _setPendingScan(paused);
+    } on Exception {
+      await _ffi.stopScan();
+      return const Err(SilentUnexpected('SP scan pause could not be saved'));
     }
     await _ffi.stopScan();
     return const Ok(null);
@@ -495,8 +521,17 @@ class BwkSpAccountRepository
       return Future.value(const Err(SilentScanBusy('SP scan is running')));
     }
     return _controlScan(() async {
+      final previous = _pendingScan;
+      // Invalidate the persisted authorization before clearing the native
+      // cursor: a process death between the two must not resume a fresh scan.
       await _setPendingScan(null);
-      return _guard(_ffi.clearScanState);
+      final result = _guard(_ffi.clearScanState);
+      if (result case Ok()) {
+        _retryAutomaticScan = false;
+      } else if (previous != null) {
+        await _savePendingScan(previous);
+      }
+      return result;
     });
   }
 
@@ -510,11 +545,13 @@ class BwkSpAccountRepository
       _pendingScan = null;
       try {
         await _files.writePendingScan(dataDir, null);
-      } catch (_) {
+      } on Exception {
+        _markerUnreadable = true;
         log.warning('SP could not delete corrupt pending scan');
       }
     } on Exception {
       _pendingScan = null;
+      _markerUnreadable = true;
       log.warning('SP could not read pending scan');
     }
   }
@@ -527,6 +564,7 @@ class BwkSpAccountRepository
     final write = _pendingScanWrite.then((_) async {
       if (dataDir != null) await _files.writePendingScan(dataDir, pending);
       _pendingScan = pending;
+      _markerUnreadable = false;
     });
     _pendingScanWrite = write.catchError((Object _) {});
     return write;
@@ -689,6 +727,9 @@ class BwkSpAccountRepository
   int get scanRevision => _scanRevision;
 
   @override
+  bool get canRetryAutomaticScan => _retryAutomaticScan;
+
+  @override
   Future<Result<int, SilentFailure>> currentBlockHeight() =>
       _guardAsync(_ffi.blockHeight);
 
@@ -789,7 +830,16 @@ class BwkSpAccountRepository
     if (n.scanRunningAfter != null) _scanRevision++;
     // A completed scan reached its target: the resume marker is stale. Stop
     // keeps it, flipped to paused, so the gap it left is still known.
-    if (n is dom.SpScanCompleted && _pendingScan != null) {
+    if (n is dom.SpScanFailed && _automaticScanActive) {
+      _retryAutomaticScan = true;
+    }
+    if (n is dom.SpScanCompleted || n is dom.SpScanStopped) {
+      _retryAutomaticScan = false;
+    }
+    if (n.scanRunningAfter == false) _automaticScanActive = false;
+    if (n is dom.SpScanCompleted &&
+        _pendingScan != null &&
+        _pendingScan?.isPaused != true) {
       _pendingScan = null;
       unawaited(_savePendingScan(null));
     }
@@ -880,6 +930,9 @@ class BwkSpAccountRepository
     await _pendingScanWrite;
     _sessionDataDir = null;
     _pendingScan = null;
+    _markerUnreadable = false;
+    _automaticScanActive = false;
+    _retryAutomaticScan = false;
     // Only reached on a clean dispose: a timed-out dispose throws above, so a
     // session that stays live keeps its state.
     _scanning = false;

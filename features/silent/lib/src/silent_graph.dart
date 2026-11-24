@@ -151,6 +151,8 @@ abstract final class SilentGraph {
       () => BwkSpAccountRepository(
         ffi: locator<BwkSpAccountDatasource>(),
         files: locator<SpAccountFilesDatasource>(),
+        allowAutomaticScan: () =>
+            _isForegroundNow() && locator<SpAutoScanRepository>().isEnabledNow,
       ),
     );
     locator.registerLazySingleton<SpAccountRepository>(

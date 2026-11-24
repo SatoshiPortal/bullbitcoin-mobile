@@ -101,6 +101,10 @@ abstract interface class SpAccountRepository {
   /// longer the one in front of it.
   int get scanRevision;
 
+  /// A failed automatic scan in this session may be retried without granting
+  /// automatic resumption across account reopen or process restart.
+  bool get canRetryAutomaticScan;
+
   /// Latest block available from the live session's Blindbit server. Async: the
   /// tip is read over HTTP, not from the account's electrum cursor, which lags
   /// the Blindbit server the scan follows.

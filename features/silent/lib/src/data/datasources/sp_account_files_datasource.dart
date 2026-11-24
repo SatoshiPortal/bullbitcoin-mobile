@@ -33,13 +33,11 @@ class SpAccountFilesDatasource {
     String dataDir,
   ) async {
     final file = _pendingScanFile(dataDir);
-    if (!await file.exists()) return null;
     final String raw;
     try {
       raw = await file.readAsString();
-    } on FileSystemException {
-      // Deleted between the check and the read (a stop, a clear, or a
-      // completion landing in the same window): there is nothing to resume.
+    } on PathNotFoundException {
+      // Only a missing file is evidence that there is nothing to resume.
       return null;
     }
     final data = jsonDecode(raw);
