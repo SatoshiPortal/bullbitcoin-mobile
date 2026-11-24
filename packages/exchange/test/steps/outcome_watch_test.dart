@@ -181,7 +181,7 @@ void main() {
     final next = transitionOutcomeWatch(
       _policy,
       plain,
-      const WatchReceiptOpened(),
+      const WatchReceiptOpened<_Order>(),
     );
     expect(identical(next.state, plain), isTrue);
   });
@@ -190,17 +190,17 @@ void main() {
     final paused = transitionOutcomeWatch(
       _policy,
       _watching,
-      const WatchVisibilityChanged(visible: false),
+      const WatchVisibilityChanged<_Order>(visible: false),
     ).state;
     final resumed = transitionOutcomeWatch(
       _policy,
       paused,
-      const WatchVisibilityChanged(visible: true),
+      const WatchVisibilityChanged<_Order>(visible: true),
     ).state;
     final late = transitionOutcomeWatch(
       _policy,
       resumed,
-      const WatchPolled('o1', 1, ReadGot(_done)),
+      const WatchPolled<_Order>('o1', 1, ReadGot(_done)),
     );
     expect(identical(late.state, resumed), isTrue);
   });
@@ -242,7 +242,9 @@ void main() {
       ],
       ..._events.skip(8),
     ];
-    while (frontier.isNotEmpty) {
+    // Pause/resume issues a new ticket each time, so the state space has no
+    // end: walk a bounded number of rounds.
+    for (var round = 0; round < 8 && frontier.isNotEmpty; round++) {
       final next = <_S>[];
       for (final state in frontier) {
         for (final event in events) {
