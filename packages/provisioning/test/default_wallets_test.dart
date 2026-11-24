@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:preferences/preferences.dart'
     show ActiveEnvironmentReader, Environment, PreferencesFailure;
 
-import 'package/primitives/primitives.dart';
+import 'package:primitives/primitives.dart';
 
 import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart';

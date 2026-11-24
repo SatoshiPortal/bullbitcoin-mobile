@@ -110,8 +110,8 @@ void main() {
         (state) => state.isDeleting,
         'isDeleting',
         isTrue,
-        reason: 'the screen must show the deletion as running',
       ),
+      reason: 'the screen must show the deletion as running',
     );
     gate.complete(const Ok(null));
     await pending;

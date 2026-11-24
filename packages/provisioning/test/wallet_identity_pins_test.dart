@@ -214,11 +214,33 @@ void main() {
         entry.value.xpubFingerprint,
       );
 
+      final BitcoinNetwork bitcoin;
+      switch (network) {
+        case BitcoinNetwork():
+          bitcoin = network;
+        case LiquidNetwork():
+          // Liquid accounts are only created as the default BIP84 account;
+          // other script types keep their derivation pins above.
+          if (scriptType != ScriptType.bip84) return;
+          final created = await accounts.createDefault(secret, network);
+          expect(created, isA<Ok<String, WalletProvisioningFailure>>());
+          final row = switch (await fixture.inventory.findWallet(
+            registeredId,
+          )) {
+            Ok(:final value) => value,
+            Err(:final failure) => fail('findWallet: $failure'),
+          };
+          expect(row?.id, registeredId);
+          expect(row?.masterFingerprint, fingerprint);
+          expect(row?.secretFingerprint, fingerprint);
+          expect(row?.signer, 'local');
+          return;
+      }
       final import = accounts.importMnemonic(
         parent: secret.id,
         secrets: secrets,
         admission: admission,
-        network: network,
+        network: bitcoin,
         scriptType: scriptType,
         label: null,
       );

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:flutter_test/flutter_test.dart';
@@ -121,24 +123,53 @@ final class InventoryFixture {
     String? unresolvedNetwork,
     String? internalDescriptor,
   }) async {
-    final metadata = await WalletMetadataService.deriveFromSecret(
-      secret: secret,
-      network: network,
+    final shared = network.shared;
+    final xpub = switch (await secret.derive.xpub(
+      network: shared,
       scriptType: ScriptType.bip84,
-      isDefault: false,
-    );
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('xpub: ${failure.runtimeType}'),
+    };
+    final ({String external, String internal}) descriptors;
+    switch (shared) {
+      case BitcoinNetwork():
+        descriptors = switch (await secret.derive.descriptors.bitcoin(
+          network: shared,
+          scriptType: ScriptType.bip84,
+        )) {
+          Ok(:final value) => (
+            external: value.external,
+            internal: value.internal,
+          ),
+          Err(:final failure) => fail('descriptors: ${failure.runtimeType}'),
+        };
+      case LiquidNetwork():
+        final descriptor = switch (await secret.derive.descriptors.liquid(
+          network: shared,
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('descriptor: ${failure.runtimeType}'),
+        };
+        descriptors = (external: descriptor, internal: descriptor);
+    }
     final registered = await inventory.registerWallet(
       RegisteredWallet(
-        id: unresolvedNetwork == null ? metadata.id : 'invalid origin',
+        id: unresolvedNetwork == null
+            ? WalletMetadataService.encodeId(
+                fingerprint: secret.id.hex,
+                network: network,
+                scriptType: ScriptType.bip84,
+              )
+            : 'invalid origin',
         secretFingerprint: secret.id.hex,
-        masterFingerprint: metadata.masterFingerprint,
+        masterFingerprint: secret.id.hex,
         signer: 'local',
-        network: unresolvedNetwork ?? metadata.networkCode,
-        xpub: metadata.xpub,
-        externalDescriptor: metadata.externalPublicDescriptor,
-        internalDescriptor:
-            internalDescriptor ?? metadata.internalPublicDescriptor,
-        label: metadata.label,
+        network: unresolvedNetwork ?? WalletNetworkCodec.encode(network),
+        xpub: xpub,
+        externalDescriptor: descriptors.external,
+        internalDescriptor: internalDescriptor ?? descriptors.internal,
+        label: null,
         birthday: null,
         isDefault: false,
       ),

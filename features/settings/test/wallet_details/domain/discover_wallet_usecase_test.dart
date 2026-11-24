@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package/primitives/primitives.dart';
+import 'package:primitives/primitives.dart';
 
 import 'package:settings/src/wallet_details/domain/discover_wallet_usecase.dart';
 import 'package:settings/src/wallet_details/domain/wallet_details_failure.dart';

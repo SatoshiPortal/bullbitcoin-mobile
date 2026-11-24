@@ -483,10 +483,7 @@ void main() {
       catalog: TestWalletCatalog(metadata),
       reserved: _Reserved(),
       inputReservations: _NoInputReservations(),
-      deleteCatalogEntry: (key) async {
-        await metadata.delete(key.id);
-        return const Ok(null);
-      },
+      deleteCatalogEntry: (_) async => const Ok(null),
       sync: ElectrumSync(
         connections: _Offline(),
         documentsDirectory: () async => directory.path,
