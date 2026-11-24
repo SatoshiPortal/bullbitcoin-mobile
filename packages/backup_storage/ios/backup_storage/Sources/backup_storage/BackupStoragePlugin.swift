@@ -273,7 +273,7 @@ public final class BackupStoragePlugin: NSObject, FlutterPlugin, UIDocumentPicke
         return try outcome.get()
     }
 
-    private func respond(_ result: FlutterResult, operation: () throws -> Any?) {
+    private func respond(_ result: @escaping FlutterResult, operation: () throws -> Any?) {
         let response: Any?
         do {
             response = try operation()
