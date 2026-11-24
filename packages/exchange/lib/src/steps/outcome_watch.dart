@@ -17,7 +17,9 @@ final class OutcomePolicy<O> {
   /// Polls before the watch times out.
   final int maxPolls;
 
-  /// Wall time before the watch times out, paused or not.
+  /// Wall time before the watch times out. It keeps running while the watch
+  /// is paused: it stands for the order's real deadline, which doesn't wait
+  /// for the screen. A return after it shows TimedOut with Retry.
   final Duration maxDuration;
 
   /// Failed reads in a row before the outcome is unreadable.
@@ -67,7 +69,8 @@ final class WatchWatching<O> extends OutcomeWatchState<O> {
   String toString() => 'WatchWatching($order, $polls, $unreadable, #$ticket)';
 }
 
-/// The screen is not visible: no poll runs. The deadline keeps running.
+/// The screen is not visible: no poll runs. The deadline keeps running (it
+/// is the order's real deadline, see [OutcomePolicy.maxDuration]).
 final class WatchPaused<O> extends OutcomeWatchState<O> {
   final O order;
   final int polls;

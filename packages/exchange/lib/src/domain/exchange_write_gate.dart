@@ -105,8 +105,9 @@ bool journalEntryHoldsGate(UnknownWriteKind kind) => switch (kind) {
 /// entries are not in the open set; an open entry older than
 /// [UnknownWrite.maxAge] no longer holds the gate (reconcile closes it).
 ///
-/// The account is the session's environment (one key per environment). The
-/// in-flight mark is taken before the journal is read, so two writes started
+/// Keyed by `session.environment`: one exchange account per environment.
+/// Signing into another account of the same environment while a write is in
+/// flight keeps the gate held until that write returns. The in-flight mark is taken before the journal is read, so two writes started
 /// in the same frame can't both pass.
 final class ExchangeWriteGate {
   final UnknownWriteJournal? _journal;
