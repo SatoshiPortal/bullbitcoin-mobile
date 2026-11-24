@@ -58,6 +58,7 @@ flowchart TD
   pkg_coins --> pkg_address_view
   pkg_coins --> pkg_bitcoin_price
   pkg_network --> pkg_bull_recoverbull
+  pkg_network --> pkg_silent
   pkg_onboarding --> pkg_bull_recoverbull
   pkg_onboarding --> pkg_mnemonic_entry
   pkg_onboarding --> pkg_network

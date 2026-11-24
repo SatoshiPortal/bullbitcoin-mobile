@@ -614,6 +614,7 @@ class AppLocator {
     locator.registerSingleton(
       NetworkFeature.mount(
         services: locator,
+        silent: locator<Silent>(),
         preferences: locator<Preferences>(),
         inventory: inventory,
         readBackup: (id) => locator<RecoverBullWalletBackups>().read(id),

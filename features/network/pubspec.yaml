@@ -38,6 +38,7 @@ dependencies:
   preferences:
   primitives:
   secrets:
+  silent:
   url_launcher: ^6.3.2
 
 dev_dependencies:
