@@ -127,16 +127,6 @@ rust-bindings-codegen:
 onion-codegen:
 	@bash packages/onion/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
 
-# Table-owner package paths in dependency order. Add an owner here when its
-# tables leave the app; its modular outputs must exist before the composer runs.
-DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
-BUILD_RUNNER_MEMBERS := features/backups features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view features/receive
-BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import features/startup features/coins features/settings features/onboarding features/send
-
-.PHONY: drift-owners-build
-drift-owners-build:
-	@set -e; for owner in $(DRIFT_OWNER_PACKAGES); do (cd "$$owner" && fvm dart run build_runner build --force-jit); done
-
 # One build over every workspace member: build_runner resolves cross-package inputs (Drift owners before their composer, a member's types before its dependents) from the package graph, in a single process whose cache lives in the root .dart_tool/build.
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
@@ -150,13 +140,10 @@ btc-map-build-runner:
 recoverbull-build-runner:
 	@(cd features/recoverbull && fvm dart run build_runner build --force-jit)
 
-# Watches the same canonical members as build-runner, one process each. A shared
-# host cannot afford ~35 idle watchers, so pass MEMBER=<path> to watch exactly
-# one member: `make build-runner-watch MEMBER=features/coins`.
+# One workspace watcher by default, like build-runner. MEMBER=<path> watches that member alone, for example `make build-runner-watch MEMBER=features/coins`.
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@if [ -z "$(MEMBER)" ]; then $(MAKE) drift-owners-build; fi
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; for member in $(if $(MEMBER),$(MEMBER),$(DRIFT_OWNER_PACKAGES) . $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_MEMBERS))); do (cd "$$member" && fvm dart run build_runner watch --force-jit) & done; wait'
+	@cd "$(if $(MEMBER),$(MEMBER),.)" && fvm dart run build_runner watch $(if $(MEMBER),,--workspace) --force-jit
 
 translations:
 	@echo "🌐 Generating translations files"
