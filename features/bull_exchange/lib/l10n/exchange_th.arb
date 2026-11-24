@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "กรอกคำถามความปลอดภัย (10-40 ตัวอักษร)",
   "recipientsFieldSecurityAnswer": "คำตอบความปลอดภัย",
   "recipientsFieldSecurityAnswerHint": "กรอกคำตอบความปลอดภัย",
-  "recipientsValidationSecurityQuestionMin": "คำถามความปลอดภัยต้องมีอย่างน้อย 10 ตัวอักษร",
   "recipientsCharCounter": "{count}/40 ตัวอักษร",
   "recipientsFieldInstitutionCode": "รหัสสถาบัน",
   "recipientsFieldInstitutionCodeHint": "กรอกรหัสสถาบัน",

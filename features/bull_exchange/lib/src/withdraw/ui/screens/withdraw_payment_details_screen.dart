@@ -1,4 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/recipients/presentation/interac_answer_problem_l10n.dart';
+import 'package:exchange/exchange.dart' show InteracSecurityAnswer;
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -15,8 +17,6 @@ class WithdrawPaymentDetailsScreen extends StatefulWidget {
 
 class _WithdrawPaymentDetailsScreenState
     extends State<WithdrawPaymentDetailsScreen> {
-  static final _answerPattern = RegExp(r'^[a-zA-ZÀ-ž0-9\-]*$');
-
   late final TextEditingController _questionController;
   late final TextEditingController _answerController;
   final FocusNode _questionFocusNode = FocusNode();
@@ -76,24 +76,11 @@ class _WithdrawPaymentDetailsScreenState
     );
   }
 
-  String? _validateQuestion(String value) {
-    if (value.isEmpty) return context.loc.recipientsValidationFieldRequired;
-    if (value.length < 3 || value.length > 40) {
-      return context.loc.withdrawInteracSecurityQuestionLengthError;
-    }
-    return null;
-  }
+  String? _validateQuestion(String value) =>
+      InteracSecurityAnswer.questionProblem(value)?.toTranslated(context);
 
-  String? _validateAnswer(String value) {
-    if (value.isEmpty) return context.loc.recipientsValidationFieldRequired;
-    if (value.length < 3 || value.length > 40) {
-      return context.loc.withdrawInteracSecurityAnswerLengthError;
-    }
-    if (!_answerPattern.hasMatch(value)) {
-      return context.loc.withdrawInteracSecurityAnswerFormatError;
-    }
-    return null;
-  }
+  String? _validateAnswer(String value) =>
+      InteracSecurityAnswer.answerProblem(value)?.toTranslated(context);
 
   @override
   Widget build(BuildContext context) {

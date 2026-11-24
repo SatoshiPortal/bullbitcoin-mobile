@@ -1901,10 +1901,6 @@
   "@recipientsFieldSecurityAnswerHint": {
     "description": "Hint text for the security answer field."
   },
-  "recipientsValidationSecurityQuestionMin": "Security question must be at least 10 characters",
-  "@recipientsValidationSecurityQuestionMin": {
-    "description": "Validation error shown when the security question is shorter than 10 characters."
-  },
   "recipientsCharCounter": "{count}/40 characters",
   "@recipientsCharCounter": {
     "description": "Character counter displayed below the security question field.",

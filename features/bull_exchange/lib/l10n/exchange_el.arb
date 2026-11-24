@@ -422,7 +422,6 @@
   "recipientsFieldSecurityQuestionHint": "Εισαγάγετε την ερώτηση ασφαλείας (10-40 χαρακτήρες)",
   "recipientsFieldSecurityAnswer": "Απάντηση ασφαλείας",
   "recipientsFieldSecurityAnswerHint": "Εισαγάγετε την απάντηση ασφαλείας",
-  "recipientsValidationSecurityQuestionMin": "Η ερώτηση ασφαλείας πρέπει να έχει τουλάχιστον 10 χαρακτήρες",
   "recipientsCharCounter": "{count}/40 χαρακτήρες",
   "recipientsFieldInstitutionCode": "Κωδικός ιδρύματος",
   "recipientsFieldInstitutionCodeHint": "Εισαγάγετε τον κωδικό του ιδρύματος",

@@ -458,7 +458,6 @@
   "recipientsFieldSecurityQuestionHint": "Ingrese la pregunta de seguridad (10-40 caracteres)",
   "recipientsFieldSecurityAnswer": "Respuesta de seguridad",
   "recipientsFieldSecurityAnswerHint": "Ingrese la respuesta de seguridad",
-  "recipientsValidationSecurityQuestionMin": "La pregunta de seguridad debe tener al menos 10 caracteres",
   "recipientsCharCounter": "{count}/40 caracteres",
   "recipientsFieldInstitutionCode": "Código de la institución",
   "recipientsFieldInstitutionCodeHint": "Ingrese el código de la institución",

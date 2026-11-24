@@ -3,6 +3,8 @@ import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart'
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
+import 'package:bull_exchange/src/recipients/presentation/interac_answer_problem_l10n.dart';
+import 'package:exchange/exchange.dart' show InteracSecurityAnswer;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -125,15 +127,8 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             textInputAction: .next,
             onFieldSubmitted: (_) => _securityAnswerFocusNode.requestFocus(),
             inputFormatters: [LengthLimitingTextInputFormatter(40)],
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) {
-                return context.loc.recipientsValidationFieldRequired;
-              }
-              if (v.trim().length < 10) {
-                return context.loc.recipientsValidationSecurityQuestionMin;
-              }
-              return null;
-            },
+            validator: (v) =>
+                InteracSecurityAnswer.questionProblem(v)?.toTranslated(context),
             onChanged: (value) {
               setState(() {
                 _securityQuestion = value;
@@ -146,7 +141,11 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
               child: Text(
                 context.loc.recipientsCharCounter(_securityQuestion.length),
                 style: context.bullType.caption.copyWith(
-                  color: _securityQuestion.length < 10
+                  color:
+                      InteracSecurityAnswer.questionProblem(
+                            _securityQuestion,
+                          ) !=
+                          null
                       ? context.appColors.error
                       : context.appColors.onSurface.withValues(alpha: 0.6),
                 ),
@@ -159,9 +158,8 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             focusNode: _securityAnswerFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
+            validator: (v) =>
+                InteracSecurityAnswer.answerProblem(v)?.toTranslated(context),
             onChanged: (value) {
               setState(() {
                 _securityAnswer = value;

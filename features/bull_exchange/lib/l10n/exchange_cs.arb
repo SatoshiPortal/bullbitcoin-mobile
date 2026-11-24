@@ -422,7 +422,6 @@
   "recipientsFieldSecurityQuestionHint": "Zadejte bezpečnostní otázku (10-40 znaků)",
   "recipientsFieldSecurityAnswer": "Bezpečnostní odpověď",
   "recipientsFieldSecurityAnswerHint": "Zadejte bezpečnostní odpověď",
-  "recipientsValidationSecurityQuestionMin": "Bezpečnostní otázka musí mít alespoň 10 znaků",
   "recipientsCharCounter": "{count}/40 znaků",
   "recipientsFieldInstitutionCode": "Kód instituce",
   "recipientsFieldInstitutionCodeHint": "Zadejte kód instituce",

@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "Nhập câu hỏi bảo mật (10-40 ký tự)",
   "recipientsFieldSecurityAnswer": "Câu trả lời bảo mật",
   "recipientsFieldSecurityAnswerHint": "Nhập câu trả lời bảo mật",
-  "recipientsValidationSecurityQuestionMin": "Câu hỏi bảo mật phải có ít nhất 10 ký tự",
   "recipientsCharCounter": "{count}/40 ký tự",
   "recipientsFieldInstitutionCode": "Mã tổ chức",
   "recipientsFieldInstitutionCodeHint": "Nhập mã tổ chức",

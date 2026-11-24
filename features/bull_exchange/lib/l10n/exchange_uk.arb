@@ -422,7 +422,6 @@
   "recipientsFieldSecurityQuestionHint": "Введіть контрольне запитання (10-40 символів)",
   "recipientsFieldSecurityAnswer": "Відповідь на контрольне запитання",
   "recipientsFieldSecurityAnswerHint": "Введіть відповідь на контрольне запитання",
-  "recipientsValidationSecurityQuestionMin": "Контрольне запитання повинно містити щонайменше 10 символів",
   "recipientsCharCounter": "{count}/40 символів",
   "recipientsFieldInstitutionCode": "Код установи",
   "recipientsFieldInstitutionCodeHint": "Введіть код установи",

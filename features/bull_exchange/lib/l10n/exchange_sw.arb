@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "Weka swali la usalama (herufi 10-40)",
   "recipientsFieldSecurityAnswer": "Jibu la Usalama",
   "recipientsFieldSecurityAnswerHint": "Weka jibu la usalama",
-  "recipientsValidationSecurityQuestionMin": "Swali la usalama lazima liwe na angalau herufi 10",
   "recipientsCharCounter": "herufi {count}/40",
   "recipientsFieldInstitutionCode": "Msimbo wa Taasisi",
   "recipientsFieldInstitutionCodeHint": "Weka msimbo wa taasisi",

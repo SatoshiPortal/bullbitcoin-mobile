@@ -422,7 +422,6 @@
   "recipientsFieldSecurityQuestionHint": "Syötä turvakysymys (10-40 merkkiä)",
   "recipientsFieldSecurityAnswer": "Turvavastaus",
   "recipientsFieldSecurityAnswerHint": "Syötä turvavastaus",
-  "recipientsValidationSecurityQuestionMin": "Turvakysymyksen on oltava vähintään 10 merkkiä",
   "recipientsCharCounter": "{count}/40 merkkiä",
   "recipientsFieldInstitutionCode": "Laitoksen koodi",
   "recipientsFieldInstitutionCodeHint": "Syötä laitoksen koodi",

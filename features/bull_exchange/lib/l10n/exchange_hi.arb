@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "सुरक्षा प्रश्न दर्ज करें (10-40 वर्ण)",
   "recipientsFieldSecurityAnswer": "सुरक्षा उत्तर",
   "recipientsFieldSecurityAnswerHint": "सुरक्षा उत्तर दर्ज करें",
-  "recipientsValidationSecurityQuestionMin": "सुरक्षा प्रश्न कम से कम 10 वर्णों का होना चाहिए",
   "recipientsCharCounter": "{count}/40 वर्ण",
   "recipientsFieldInstitutionCode": "संस्था कोड",
   "recipientsFieldInstitutionCodeHint": "संस्था कोड दर्ज करें",

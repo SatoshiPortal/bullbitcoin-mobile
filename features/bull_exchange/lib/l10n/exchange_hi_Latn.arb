@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "Security question enter karein (10-40 characters)",
   "recipientsFieldSecurityAnswer": "Security Answer",
   "recipientsFieldSecurityAnswerHint": "Security answer enter karein",
-  "recipientsValidationSecurityQuestionMin": "Security question kam se kam 10 characters ka hona chahiye",
   "recipientsCharCounter": "{count}/40 characters",
   "recipientsFieldInstitutionCode": "Institution Code",
   "recipientsFieldInstitutionCodeHint": "Institution code enter karein",

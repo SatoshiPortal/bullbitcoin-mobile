@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "Güvenlik sorusunu girin (10-40 karakter)",
   "recipientsFieldSecurityAnswer": "Güvenlik Cevabı",
   "recipientsFieldSecurityAnswerHint": "Güvenlik cevabını girin",
-  "recipientsValidationSecurityQuestionMin": "Güvenlik sorusu en az 10 karakter olmalıdır",
   "recipientsCharCounter": "{count}/40 karakter",
   "recipientsFieldInstitutionCode": "Kurum Kodu",
   "recipientsFieldInstitutionCodeHint": "Kurum kodunu girin",

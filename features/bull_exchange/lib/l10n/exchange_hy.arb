@@ -451,7 +451,6 @@
   "recipientsFieldOwnerNameSinpeHint": "Սեփականատիրոջ անունը կհայտնվի այստեղ",
   "recipientsValidationSinpeOwner": "Խնդրում ենք հաստատել հեռախոսահամարը",
   "recipientsFieldEmailAddress": "Էլ. փոստի հասցե",
-  "recipientsValidationSecurityQuestionMin": "Անվտանգության հարցը պետք է պարունակի առնվազն 10 նիշ",
   "recipientsFieldCorporateAccount": "Կորպորատիվ հաշիվ",
   "recipientsFieldBillerNameHint": "Փնտրեք և ընտրեք վճարառու",
   "recipientsValidationBillerSearchMin": "Մուտքագրեք 3 կամ ավելի նիշ որոնման համար",

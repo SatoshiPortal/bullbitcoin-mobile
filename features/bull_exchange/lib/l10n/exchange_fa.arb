@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "پرسش امنیتی را وارد کنید (۱۰ تا ۴۰ کاراکتر)",
   "recipientsFieldSecurityAnswer": "پاسخ امنیتی",
   "recipientsFieldSecurityAnswerHint": "پاسخ امنیتی را وارد کنید",
-  "recipientsValidationSecurityQuestionMin": "پرسش امنیتی باید حداقل ۱۰ کاراکتر باشد",
   "recipientsCharCounter": "{count}/۴۰ کاراکتر",
   "recipientsFieldInstitutionCode": "کد مؤسسه",
   "recipientsFieldInstitutionCodeHint": "کد مؤسسه را وارد کنید",

@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "输入安全问题（10-40 个字符）",
   "recipientsFieldSecurityAnswer": "安全答案",
   "recipientsFieldSecurityAnswerHint": "输入安全答案",
-  "recipientsValidationSecurityQuestionMin": "安全问题至少需要 10 个字符",
   "recipientsCharCounter": "{count}/40 个字符",
   "recipientsFieldInstitutionCode": "机构代码",
   "recipientsFieldInstitutionCodeHint": "输入机构代码",

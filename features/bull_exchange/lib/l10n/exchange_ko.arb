@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "보안 질문을 입력하세요 (10~40자)",
   "recipientsFieldSecurityAnswer": "보안 답변",
   "recipientsFieldSecurityAnswerHint": "보안 답변을 입력하세요",
-  "recipientsValidationSecurityQuestionMin": "보안 질문은 최소 10자 이상이어야 합니다",
   "recipientsCharCounter": "{count}/40자",
   "recipientsFieldInstitutionCode": "기관 코드",
   "recipientsFieldInstitutionCodeHint": "기관 코드를 입력하세요",

@@ -422,7 +422,6 @@
   "recipientsFieldSecurityQuestionHint": "Sicherheitsfrage eingeben (10–40 Zeichen).",
   "recipientsFieldSecurityAnswer": "Sicherheitsantwort",
   "recipientsFieldSecurityAnswerHint": "Sicherheitsantwort eingeben",
-  "recipientsValidationSecurityQuestionMin": "Die Sicherheitsfrage muss mindestens 10 Zeichen lang sein",
   "recipientsCharCounter": "{count}/40 Zeichen",
   "recipientsFieldInstitutionCode": "Institutscode",
   "recipientsFieldInstitutionCodeHint": "Institutscode eingeben",

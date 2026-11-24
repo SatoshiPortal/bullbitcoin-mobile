@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "সুৰক্ষা প্ৰশ্ন দিয়ক (10-40 আখৰ)",
   "recipientsFieldSecurityAnswer": "সুৰক্ষা উত্তৰ",
   "recipientsFieldSecurityAnswerHint": "সুৰক্ষা উত্তৰ দিয়ক",
-  "recipientsValidationSecurityQuestionMin": "সুৰক্ষা প্ৰশ্ন কমেও 10 আখৰৰ হ'ব লাগিব",
   "recipientsCharCounter": "{count}/40 আখৰ",
   "recipientsFieldInstitutionCode": "প্ৰতিষ্ঠানৰ কোড",
   "recipientsFieldInstitutionCodeHint": "প্ৰতিষ্ঠানৰ কোড দিয়ক",

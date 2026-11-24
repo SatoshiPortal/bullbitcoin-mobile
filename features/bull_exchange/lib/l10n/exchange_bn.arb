@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "নিরাপত্তা প্রশ্ন লিখুন (10-40 অক্ষর)",
   "recipientsFieldSecurityAnswer": "নিরাপত্তা উত্তর",
   "recipientsFieldSecurityAnswerHint": "নিরাপত্তা উত্তর লিখুন",
-  "recipientsValidationSecurityQuestionMin": "নিরাপত্তা প্রশ্ন কমপক্ষে 10 অক্ষরের হতে হবে",
   "recipientsCharCounter": "{count}/40 অক্ষর",
   "recipientsFieldInstitutionCode": "প্রতিষ্ঠান কোড",
   "recipientsFieldInstitutionCodeHint": "প্রতিষ্ঠান কোড লিখুন",

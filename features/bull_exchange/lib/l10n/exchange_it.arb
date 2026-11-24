@@ -422,7 +422,6 @@
   "recipientsFieldSecurityQuestionHint": "Inserisci la domanda di sicurezza (10-40 caratteri)",
   "recipientsFieldSecurityAnswer": "Risposta di sicurezza",
   "recipientsFieldSecurityAnswerHint": "Inserisci la risposta di sicurezza",
-  "recipientsValidationSecurityQuestionMin": "La domanda di sicurezza deve avere almeno 10 caratteri",
   "recipientsCharCounter": "{count}/40 caratteri",
   "recipientsFieldInstitutionCode": "Codice dell'istituto",
   "recipientsFieldInstitutionCodeHint": "Inserisci il codice dell'istituto",

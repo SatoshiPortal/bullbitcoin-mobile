@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "შეიყვანეთ უსაფრთხოების კითხვა (10-40 სიმბოლო)",
   "recipientsFieldSecurityAnswer": "უსაფრთხოების პასუხი",
   "recipientsFieldSecurityAnswerHint": "შეიყვანეთ უსაფრთხოების პასუხი",
-  "recipientsValidationSecurityQuestionMin": "უსაფრთხოების კითხვა უნდა შეიცავდეს მინიმუმ 10 სიმბოლოს",
   "recipientsCharCounter": "{count}/40 სიმბოლო",
   "recipientsFieldInstitutionCode": "დაწესებულების კოდი",
   "recipientsFieldInstitutionCodeHint": "შეიყვანეთ დაწესებულების კოდი",

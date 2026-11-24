@@ -421,7 +421,6 @@
   "recipientsFieldSecurityQuestionHint": "Въведете контролния въпрос (10-40 знака)",
   "recipientsFieldSecurityAnswer": "Контролен отговор",
   "recipientsFieldSecurityAnswerHint": "Въведете контролния отговор",
-  "recipientsValidationSecurityQuestionMin": "Контролният въпрос трябва да съдържа поне 10 знака",
   "recipientsCharCounter": "{count}/40 знака",
   "recipientsFieldInstitutionCode": "Код на институцията",
   "recipientsFieldInstitutionCodeHint": "Въведете кода на институцията",

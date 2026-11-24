@@ -432,7 +432,6 @@
   "recipientsFieldSecurityQuestionHint": "أدخل سؤال الأمان (10-40 حرفًا)",
   "recipientsFieldSecurityAnswer": "إجابة الأمان",
   "recipientsFieldSecurityAnswerHint": "أدخل إجابة الأمان",
-  "recipientsValidationSecurityQuestionMin": "يجب أن يتكون سؤال الأمان من 10 أحرف على الأقل",
   "recipientsCharCounter": "{count}/40 حرفًا",
   "recipientsFieldInstitutionCode": "رمز المؤسسة",
   "recipientsFieldInstitutionCodeHint": "أدخل رمز المؤسسة",
