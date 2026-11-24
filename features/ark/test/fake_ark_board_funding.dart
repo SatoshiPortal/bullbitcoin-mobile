@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:primitives/primitives.dart';
@@ -16,6 +18,9 @@ final class FakeArkBoardFunding implements ArkBoardFundingPort {
   final calls = <String>[];
   final arguments = <Object>[];
 
+  /// When set, prepare and confirm wait for it, to observe the busy screen.
+  Completer<void>? gate;
+
   @override
   Future<Result<ArkBoardPreparation, ArkFailure>> prepare(
     ArkAccountConfig config,
@@ -23,6 +28,7 @@ final class FakeArkBoardFunding implements ArkBoardFundingPort {
   ) async {
     calls.add('prepare');
     arguments.add((config, amount));
+    await gate?.future;
     return prepared;
   }
 
@@ -44,6 +50,7 @@ final class FakeArkBoardFunding implements ArkBoardFundingPort {
   ) async {
     calls.add('confirm');
     arguments.add((account, operationId, reviewBinding));
+    await gate?.future;
     return confirmed;
   }
 }

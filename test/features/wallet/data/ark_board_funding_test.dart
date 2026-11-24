@@ -473,6 +473,39 @@ void main() {
     );
   }
   test(
+    'resuming a signed Board never signs again, and waits when checks fail',
+    () async {
+      final data = await review();
+      sourceOk(
+        await fixture.store.admitBoardSigning(
+          expected: data.$1,
+          admittedRevision: fundingStamp,
+        ),
+      );
+      sourceOk(
+        await fixture.store.recordSigned('operation', structuralFinalWitness()),
+      );
+      sourceOk(
+        await fixture.store.advanceBoardDelivery(
+          'operation',
+          expectedPhase: 'signing',
+          nextPhase: 'signed',
+        ),
+      );
+      final result = await actor.deliverSigned(account, 'operation');
+      // Whatever the checks answer here, the stored signature is the only
+      // one: the keystore is never read again.
+      expect(keystore.reads, 0);
+      if (result is Err) {
+        // Refused: nothing moved, the Board waits for the next check.
+        expect(
+          sourceOk(await fixture.store.readBoardReview('operation')).phase,
+          'signed',
+        );
+      }
+    },
+  );
+  test(
     'an expired original review refuses before any provider or signer stage',
     () async {
       final data = await review(

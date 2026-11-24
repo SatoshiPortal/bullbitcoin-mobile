@@ -1,9 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:bull_ark/ark_wallet_setup.dart';
+import 'package:bb_mobile/features/wallet/data/ark_source_wallet_name.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bull_ark/ark_ui_setup.dart'
+    show ArkDefaultSourceWallet, ArkNamedSourceWallet;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
+
+import 'ark_funding_test_fixture.dart' show fundingMetadata;
 
 void main() {
   final stamp = WalletRevision(
@@ -97,16 +103,47 @@ void main() {
       isNull,
     );
   });
-  test(
-    'a frozen or protocol-protected local output refuses an available amount',
-    () {
-      expect(read(frozen: true), isNull);
-      // Matching outpoints stay protected even if metadata names another scope.
-      expect(read(held: [reservation()]), isNull);
+  test('a frozen or Board-held output comes off the available amount', () {
+    // The only coin is protected: nothing is left for a new Board.
+    expect(read(amount: 2000, frozen: true), Sats.zero);
+    // Matching outpoints stay protected even if metadata names another scope.
+    expect(read(amount: 2000, held: [reservation()]), Sats.zero);
+    // The rest of the wallet stays available.
+    expect(read(amount: 5000, held: [reservation()]), Sats.fromInt(3000));
+    expect(
+      read(held: [reservation(outpoint: (txId: 'unrelated', vout: 1))]),
+      Sats.fromInt(1234),
+    );
+  });
+
+  group('source wallet name', () {
+    test('a missing wallet has no name', () {
+      expect(arkSourceWalletName(null), isNull);
+    });
+    test('the default wallet uses the app default name', () {
       expect(
-        read(held: [reservation(outpoint: (txId: 'unrelated', vout: 1))]),
-        Sats.fromInt(1234),
+        arkSourceWalletName(fundingMetadata),
+        isA<ArkDefaultSourceWallet>(),
       );
-    },
-  );
+    });
+    test('another wallet uses its label, else its origin', () {
+      final labelled = fundingMetadata.copyWith(
+        isDefault: false,
+        label: 'My savings',
+      );
+      expect(
+        arkSourceWalletName(labelled),
+        isA<ArkNamedSourceWallet>().having((n) => n.name, 'name', 'My savings'),
+      );
+      final unlabelled = fundingMetadata.copyWith(isDefault: false, label: ' ');
+      expect(
+        arkSourceWalletName(unlabelled),
+        isA<ArkNamedSourceWallet>().having(
+          (n) => n.name,
+          'name',
+          unlabelled.origin,
+        ),
+      );
+    });
+  });
 }
