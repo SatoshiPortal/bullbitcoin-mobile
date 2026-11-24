@@ -3996,5 +3996,9 @@
   "fundExchangeSessionEnded": "Your exchange session ended. Sign in again to fund your account.",
   "@fundExchangeSessionEnded": {
     "description": "Shown when the exchange session the fund flow opened with ended (signed out, switched environment or rejected by the server)"
+  },
+  "exchangePlatformNotAllowedError": "The exchange can't be turned on on this device.",
+  "@exchangePlatformNotAllowedError": {
+    "description": "Shown when platform policy does not allow turning the exchange on"
   }
 }

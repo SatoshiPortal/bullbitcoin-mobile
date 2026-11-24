@@ -4794,20 +4794,8 @@
   "@sendErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched. Blocking: the send cannot be built without them, so the message tells the user what to do rather than showing a generic error."
   },
-  "exchangeErrorSigningOut": "You could not be fully signed out. Please try again.",
-  "@exchangeErrorSigningOut": {
-    "description": "exchange user-facing failure message (#1895)."
-  },
   "exchangeErrorSavingPreferences": "Your preferences could not be saved. Please try again.",
   "@exchangeErrorSavingPreferences": {
-    "description": "exchange user-facing failure message (#1895)."
-  },
-  "exchangeErrorLoadingAnnouncements": "Announcements could not be loaded.",
-  "@exchangeErrorLoadingAnnouncements": {
-    "description": "exchange user-facing failure message (#1895)."
-  },
-  "exchangeErrorRequestingAccountDeletion": "Your account deletion request could not be sent. Please try again.",
-  "@exchangeErrorRequestingAccountDeletion": {
     "description": "exchange user-facing failure message (#1895)."
   },
   "recipientsErrorNetwork": "Check your internet connection and try again.",
@@ -5105,10 +5093,6 @@
   "exchangeAccessSignIn": "Sign in or create an account",
   "@exchangeAccessSignIn": {
     "description": "Optional exchange access or wallet quick action setting."
-  },
-  "exchangePlatformNotAllowedError": "The exchange can't be turned on on this device.",
-  "@exchangePlatformNotAllowedError": {
-    "description": "Shown when platform policy does not allow turning the exchange on"
   },
   "walletDiscoveryButton": "Scan for missing transactions",
   "@walletDiscoveryButton": {
