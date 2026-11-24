@@ -1,7 +1,12 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/recipients/presentation/payout_rail_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDetailsTableItem;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAsyncStatus,
+        BullAsyncStatusState,
+        BullDetailsTableItem,
+        BullTypographyX;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
@@ -68,3 +73,37 @@ bool payjoinOffered(Order order, PayinSource source) =>
       PayinFromAppWallet(rail: BtcNetwork.bitcoin) => true,
       PayinFromAppWallet() || PayinFromExternal() => false,
     };
+
+/// Under a sell or pay "payment received" headline: [balanceNote] (what
+/// happens to the fiat) and how the payin went out when a payjoin was
+/// offered (in progress, via payjoin, via a regular send).
+Widget? payinDoneMessage(
+  BuildContext context,
+  Order order, {
+  required String? balanceNote,
+}) {
+  final payjoin = switch (order.payjoinOutcome) {
+    OrderPayjoinOutcome.inProgress => BullAsyncStatusState.inProgress,
+    OrderPayjoinOutcome.succeeded => BullAsyncStatusState.succeeded,
+    OrderPayjoinOutcome.plainSend => BullAsyncStatusState.fallback,
+    OrderPayjoinOutcome.none || OrderPayjoinOutcome.abandoned => null,
+  };
+  if (balanceNote == null && payjoin == null) return null;
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      if (balanceNote != null) Text(balanceNote, textAlign: TextAlign.center),
+      if (balanceNote != null && payjoin != null) const SizedBox(height: 10),
+      if (payjoin != null)
+        BullAsyncStatus(
+          state: payjoin,
+          inProgressLabel: context.loc.payjoinInProgress,
+          succeededLabel: context.loc.payjoinViaPayjoin,
+          fallbackLabel: context.loc.payjoinViaRegularSend,
+          inProgressColor: context.appColors.secondary,
+          successColor: context.appColors.success,
+          textStyle: context.bullType.body,
+        ),
+    ],
+  );
+}

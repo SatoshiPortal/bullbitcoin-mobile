@@ -15,6 +15,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 
 import '../sell_fixtures.dart';
 
@@ -207,5 +208,15 @@ void main() {
   testWidgets('done says the payment was received', (tester) async {
     final labels = await _pump(tester, sellDoneState);
     expect(find.text(labels.exchangePayinReceived), findsOneWidget);
+    expect(
+      find.text(
+        labels.sellYouSold(
+          FormatAmount.btc(0.0002),
+          FormatAmount.fiat(10, 'CAD'),
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text(labels.sellBalanceWillBeCredited), findsOneWidget);
   });
 }

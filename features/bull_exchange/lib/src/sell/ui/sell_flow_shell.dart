@@ -471,6 +471,17 @@ List<Page<void>> sellPagesFor(
             title: context.loc.sellTitle,
             headline: context.loc.exchangePayinReceived,
             onClose: () => onEvent(const SellDonePressed()),
+            amountLine: context.loc.sellYouSold(
+              FormatAmount.btc(order.payinAmount),
+              FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
+            ),
+            message: payinDoneMessage(
+              context,
+              order,
+              balanceNote: order.isBalancePayout
+                  ? context.loc.sellBalanceWillBeCredited
+                  : null,
+            ),
             actions: [
               BullButton.secondary(
                 label: context.loc.sellViewDetailsButton,

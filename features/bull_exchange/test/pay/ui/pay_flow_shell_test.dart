@@ -125,6 +125,16 @@ void main() {
     );
     await _pump(tester, payDoneState);
     expect(find.text(labels.exchangePayinReceived), findsOneWidget);
+    final done = payDoneState.order as FiatPaymentOrder;
+    expect(
+      find.text(
+        labels.payPaymentInProgressDescriptionDetails(
+          done.payoutAmountToDisplay,
+          done.recipientToDisplay ?? labels.payNotAvailable,
+        ),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a stalled receipt watch offers Check again', (tester) async {

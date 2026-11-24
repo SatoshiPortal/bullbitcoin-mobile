@@ -442,6 +442,18 @@ List<Page<void>> payPagesFor(
             title: context.loc.payTitle,
             headline: context.loc.exchangePayinReceived,
             onClose: () => onEvent(const PayDonePressed()),
+            message: payinDoneMessage(
+              context,
+              order,
+              balanceNote: order is FiatPaymentOrder
+                  ? (order.isPayinCompleted
+                        ? context.loc.payPaymentPayinConfirmedDescriptionDetails
+                        : context.loc.payPaymentInProgressDescriptionDetails)(
+                      order.payoutAmountToDisplay,
+                      order.recipientToDisplay ?? context.loc.payNotAvailable,
+                    )
+                  : null,
+            ),
             actions: [
               BullButton.secondary(
                 label: context.loc.payViewDetails,
