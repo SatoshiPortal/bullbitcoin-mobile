@@ -12,6 +12,7 @@ import 'package:silent/src/domain/silent_failure.dart';
 import 'package:rust_bindings/bwk.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:silent/src/domain/sp_config.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secret, SecretFailure;
 
@@ -141,6 +142,7 @@ class _OpeningDatasource extends _FakeFfiDatasource {
     required String dataDir,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
     entered.complete();

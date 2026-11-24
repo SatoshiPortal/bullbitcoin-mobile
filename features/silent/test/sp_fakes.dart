@@ -182,6 +182,7 @@ class FakeSpAccountRepository
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) async {
     if (createShouldFail) {
       return const Err(SilentUnexpected('SP account create failed'));
@@ -479,6 +480,10 @@ class FakeSpBackendProbe implements SpBackendProbePort {
   /// tests that never take the regtest branch want.
   Result<SpBackendDefaults, SilentFailure>? regtestDefaults;
   int fetchRegtestDefaultsCalls = 0;
+
+  @override
+  Future<Result<void, SilentFailure>> blindbitTip(String url) async =>
+      const Ok(null);
 
   @override
   Future<Result<void, SilentFailure>> testBackend(
