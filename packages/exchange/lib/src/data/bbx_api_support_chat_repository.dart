@@ -138,7 +138,7 @@ final class BbxApiSupportChatRepository {
         return onFailure('Exchange credential unavailable');
       default:
         log.warning(
-          'Failed to $operation support chat data',
+          'Failed to $operation support chat data${failure.requestIdLabel}',
           error: failure.runtimeType,
         );
         return onFailure('$operation failed: ${failure.runtimeType}');

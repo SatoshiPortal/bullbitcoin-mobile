@@ -197,18 +197,26 @@ BbxFailure _withOrigin(
   BbxMissingCredentialFailure() => const BbxMissingCredentialFailure(),
   BbxCredentialUnavailableFailure() => const BbxCredentialUnavailableFailure(),
   BbxHttpFailure(:final status) => BbxHttpFailure(status, origin: origin),
-  BbxRpcFailure(:final code, :final message, :final apiCode) => BbxRpcFailure(
-    code: code,
-    message: message,
-    apiCode: apiCode,
-    origin: origin,
-  ),
+  BbxRpcFailure(
+    :final code,
+    :final message,
+    :final apiCode,
+    :final requestId,
+  ) =>
+    BbxRpcFailure(
+      code: code,
+      message: message,
+      apiCode: apiCode,
+      requestId: requestId,
+      origin: origin,
+    ),
   BbxOrderLimitFailure(
     :final bound,
     :final amount,
     :final currency,
     :final code,
     :final apiCode,
+    :final requestId,
   ) =>
     BbxOrderLimitFailure(
       bound: bound,
@@ -216,12 +224,18 @@ BbxFailure _withOrigin(
       currency: currency,
       code: code,
       apiCode: apiCode,
+      requestId: requestId,
       origin: origin,
     ),
-  BbxConfidentialSepaInactiveFailure(:final code, :final apiCode) =>
+  BbxConfidentialSepaInactiveFailure(
+    :final code,
+    :final apiCode,
+    :final requestId,
+  ) =>
     BbxConfidentialSepaInactiveFailure(
       code: code,
       apiCode: apiCode,
+      requestId: requestId,
       origin: origin,
     ),
   BbxTimeoutFailure(:final kind) => BbxTimeoutFailure(kind, origin: origin),

@@ -19,6 +19,7 @@ BbxFailure orderRejection(Object error) {
     return BbxConfidentialSepaInactiveFailure(
       code: rpc.code,
       apiCode: rpc.apiCode,
+      requestId: rpc.requestId,
     );
   }
 
@@ -46,6 +47,7 @@ BbxFailure orderRejection(Object error) {
           currency: min.currency,
           code: rpc.code,
           apiCode: rpc.apiCode,
+          requestId: rpc.requestId,
         );
       case 'LESS_THAN_OR_EQUAL':
         final max = limits.reduce((a, b) => a.amount >= b.amount ? a : b);
@@ -55,6 +57,7 @@ BbxFailure orderRejection(Object error) {
           currency: max.currency,
           code: rpc.code,
           apiCode: rpc.apiCode,
+          requestId: rpc.requestId,
         );
     }
   }

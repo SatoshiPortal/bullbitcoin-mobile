@@ -808,6 +808,7 @@ void main() {
                   'apiError': {
                     'code': 'ERR_ORD_PO404',
                     'message': 'Account details must stay out',
+                    'requestId': '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0',
                   },
                 },
               },
@@ -828,6 +829,7 @@ void main() {
       final logs = (await capture.logger.readLogs()).join('\n');
       expect(logs, contains('apiCode: ERR_ORD_PO404'));
       expect(logs, contains('rpcCode: -32603'));
+      expect(logs, contains('requestId=60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0'));
       expect(logs, isNot(contains('Account details')));
     });
 
