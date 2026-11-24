@@ -234,6 +234,41 @@ void main() {
     expect(storage.objects[objectById('2')], orderedEquals(envelopeFor(1)));
   }
 
+  test('restore discovery never moves the configured destination', () async {
+    await enable();
+    await run();
+    expect(storage.created, 1);
+    final configured = objectById('1');
+
+    storage.discoveryAccountId = 'b';
+    storage.accounts['b'] = {
+      StoredObject(
+        id: 'from-b',
+        name: 'bull-data-fromb.bip138',
+        size: envelopeFor(0).length,
+        createdAt: DateTime.utc(2026, 1, 2),
+        durability: Durability.durable,
+      ): envelopeFor(
+        0,
+      ),
+    };
+
+    final discovered = await repository().discover(storage.destination);
+
+    expect(
+      discovered.fold((backups) => backups.single.storedAt, (_) => null),
+      DateTime.utc(2026, 1, 2),
+    );
+    expect(storage.accountId, 'a', reason: 'browsing is not a configuration');
+    expect(storage.interactiveAuthorizations, 1);
+    expect(storage.discoveries, 1);
+
+    await run();
+    expect(storage.accounts['b'], hasLength(1));
+    expect(storage.objects.keys, [configured]);
+    expect(storage.created, 1);
+  });
+
   test(
     'a persistently damaged pending upload is retired and replaced',
     () async {
