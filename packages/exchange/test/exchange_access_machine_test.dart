@@ -212,7 +212,9 @@ void main() {
   });
 
   test('every state is reachable from resolving', () {
-    final reached = <Type>{_resolving.runtimeType};
+    // Walk states, not types: SignedIn(_candidate) is found before
+    // SignedIn(_current), and only the latter has the rejected epoch.
+    final seen = <ExchangeAccess>{_resolving};
     var frontier = <ExchangeAccess>[_resolving];
     final events = [
       for (final (event, _) in _table) event,
@@ -223,12 +225,15 @@ void main() {
       for (final state in frontier) {
         for (final event in events) {
           final target = transitionAccess(state, event);
-          if (reached.add(target.runtimeType)) next.add(target);
+          if (seen.add(target)) next.add(target);
         }
       }
       frontier = next;
     }
-    expect(reached, {for (final state in _states) state.runtimeType});
+    expect(
+      {for (final state in seen) state.runtimeType},
+      {for (final state in _states) state.runtimeType},
+    );
   });
 
   test('a sign-in is accepted only while the exchange is enabled', () {
