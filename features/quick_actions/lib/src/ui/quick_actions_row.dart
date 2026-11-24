@@ -13,6 +13,7 @@ class QuickActionsRow extends StatefulWidget {
     required this.onCustomize,
     this.exchangePrompt,
     this.onActivateExchange,
+    this.unreadSupportMessages = 0,
   });
 
   final QuickActionsCubit cubit;
@@ -22,6 +23,9 @@ class QuickActionsRow extends StatefulWidget {
   /// Shows the exchange activation prompt in the More sheet while true.
   final ExchangePromptCubit? exchangePrompt;
   final VoidCallback? onActivateExchange;
+
+  /// Shown on the support action, or on More while support sits behind it.
+  final int unreadSupportMessages;
 
   @override
   State<QuickActionsRow> createState() => _QuickActionsRowState();
@@ -77,6 +81,9 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
           disabled:
               loading ||
               (action == QuickAction.toggleAmounts && amounts?.isReady != true),
+          badgeCount: action == QuickAction.support
+              ? widget.unreadSupportMessages
+              : 0,
           onPressed: () => widget.onAction(action),
           onLongPress: widget.onCustomize,
         ),
@@ -86,6 +93,9 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
           icon: BullIcons.moreHoriz,
           outlined: true,
           disabled: loading,
+          badgeCount: layout.more.contains(QuickAction.support)
+              ? widget.unreadSupportMessages
+              : 0,
           onPressed: _showMore,
           onLongPress: widget.onCustomize,
         ),
@@ -99,6 +109,7 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
       child: _MoreSheet(
         cubit: widget.cubit,
         exchangePrompt: widget.exchangePrompt,
+        unreadSupportMessages: widget.unreadSupportMessages,
       ),
     );
     if (!mounted || result == null) return;
@@ -133,10 +144,15 @@ class _MoreChoice {
 
 /// The sheet owns its Navigator context, so closing it cannot pop WalletHome.
 class _MoreSheet extends StatelessWidget {
-  const _MoreSheet({required this.cubit, this.exchangePrompt});
+  const _MoreSheet({
+    required this.cubit,
+    this.exchangePrompt,
+    this.unreadSupportMessages = 0,
+  });
 
   final QuickActionsCubit cubit;
   final ExchangePromptCubit? exchangePrompt;
+  final int unreadSupportMessages;
 
   @override
   Widget build(
@@ -205,6 +221,9 @@ class _MoreSheet extends StatelessWidget {
                         disabled:
                             action == QuickAction.toggleAmounts &&
                             amounts?.isReady != true,
+                        badgeCount: action == QuickAction.support
+                            ? unreadSupportMessages
+                            : 0,
                         onPressed: () =>
                             Navigator.pop(context, _MoreChoice.action(action)),
                         onLongPress: () =>

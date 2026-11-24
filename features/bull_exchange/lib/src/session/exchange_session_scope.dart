@@ -56,6 +56,10 @@ class ExchangeSessionScope extends StatelessWidget {
   static Future<void> refresh(BuildContext context) =>
       context.read<ExchangeCubit>().fetchUserSummary();
 
+  static int watchUnreadSupportMessages(BuildContext context) => context.select(
+    (ExchangeCubit cubit) => cubit.state.unreadSupportMessages,
+  );
+
   static Future<void> markSupportMessagesRead(BuildContext context) =>
       context.read<ExchangeCubit>().markSupportMessagesRead();
 

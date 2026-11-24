@@ -14,6 +14,7 @@ import 'package:bull_exchange/bull_exchange.dart'
     show
         BuyRoute,
         ExchangeHomeAction,
+        ExchangeSessionScope,
         ExchangeTradingGuard,
         PayRoute,
         SellRoute;
@@ -257,6 +258,8 @@ class AppRouter {
                 context.pushNamed(SettingsRoute.quickActions.name),
             exchangePrompt: locator<ExchangePromptCubit>(),
             onActivateExchange: _activateExchange,
+            watchUnreadSupportMessages:
+                ExchangeSessionScope.watchUnreadSupportMessages,
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
             announcements: () => _announcements.carousel(),
           ),
