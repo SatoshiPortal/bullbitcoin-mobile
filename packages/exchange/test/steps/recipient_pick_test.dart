@@ -252,12 +252,12 @@ void main() {
       test('$state + ${event.runtimeType} #$index', () {
         final next = _step(state, event);
         final expected = _table[state]![index];
-        if (expected == null) {
-          expect(identical(next.state, state), isTrue, reason: '$next');
-          expect(next.effects, isEmpty);
-        } else if (index == 12 && state == _creating) {
+        if (index == 12 && state == _creating) {
           // The save sends new details: checked below.
           expect(next.state, isA<RecipientPickSaving>());
+        } else if (expected == null) {
+          expect(identical(next.state, state), isTrue, reason: '$next');
+          expect(next.effects, isEmpty);
         } else {
           expect(next, expected);
         }
@@ -368,7 +368,10 @@ void main() {
     while (frontier.isNotEmpty) {
       final next = <RecipientPickState>[];
       for (final state in frontier) {
+        // The first state reached of each type is explored, so the Interac
+        // form (which _input fills) comes before the SEPA one.
         for (final event in [
+          const RecipientPickNewPressed(PayoutRails.interacEmail),
           ..._events,
           for (var a = 1; a < 5; a++) ...[
             RecipientPickPageLoaded(a, ListPage([_ann, _theirs], next: 2)),
