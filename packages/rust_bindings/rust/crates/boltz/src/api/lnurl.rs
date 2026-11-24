@@ -137,3 +137,67 @@ impl Lnurl {
         .await?)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn encoded(url: &str) -> String {
+        LnUrl::from_url(url.to_owned()).encode()
+    }
+
+    #[test]
+    fn endpoint_matches_invoice_recipient_normalization() {
+        let url = "https://example.com/Pay/Case?token=AbC";
+        assert_eq!(pay_endpoint(&encoded(url)).unwrap().as_str(), url);
+        assert_eq!(
+            pay_endpoint(&encoded(url).to_uppercase()).unwrap().as_str(),
+            url
+        );
+        assert_eq!(
+            pay_endpoint("Alice@example.com").unwrap().as_str(),
+            "https://example.com/.well-known/lnurlp/alice"
+        );
+    }
+
+    #[test]
+    fn endpoint_rejects_insecure_credentials_and_onion() {
+        for url in [
+            "http://example.com/pay",
+            "https://user@example.com/pay",
+            "https://user:pass@example.com/pay",
+            "https://service.onion/pay",
+            "https://service.onion./pay",
+        ] {
+            assert!(pay_endpoint(&encoded(url)).is_err());
+        }
+        assert_eq!(
+            pay_endpoint("alice@service.onion").unwrap_err().kind,
+            "onion_unsupported"
+        );
+    }
+
+    #[test]
+    fn parses_only_valid_pay_bounds() {
+        let valid = br#"{"tag":"payRequest","minSendable":1001,"maxSendable":5000,"callback":"ignored","metadata":"ignored"}"#;
+        assert_eq!(
+            parse_pay_bounds(valid).unwrap(),
+            LnurlPayBounds {
+                min_sendable_msat: 1001,
+                max_sendable_msat: 5000
+            }
+        );
+        for invalid in [
+            r#"{"tag":"withdrawRequest","minSendable":1,"maxSendable":2}"#,
+            r#"{"tag":"payRequest","minSendable":0,"maxSendable":2}"#,
+            r#"{"tag":"payRequest","minSendable":3,"maxSendable":2}"#,
+            r#"{"tag":"payRequest","minSendable":-1,"maxSendable":2}"#,
+            r#"{"tag":"payRequest","minSendable":1.5,"maxSendable":2}"#,
+            r#"{"tag":"payRequest","minSendable":1}"#,
+            r#"{"tag":"payRequest","minSendable":1,"maxSendable":2,"status":"ERROR","reason":"secret"}"#,
+        ] {
+            let error = parse_pay_bounds(invalid.as_bytes()).unwrap_err();
+            assert!(!error.message.contains("secret"));
+        }
+    }
+}
