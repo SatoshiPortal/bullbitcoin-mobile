@@ -25,6 +25,7 @@ import 'package:silent/src/domain/ports/sp_recipient_address_validator_port.dart
 import 'package:silent/src/domain/repositories/sp_account_repository.dart';
 import 'package:silent/src/domain/sp_session_guard.dart';
 import 'package:silent/src/domain/usecases/check_sp_wallet_setup_usecase.dart';
+import 'package:silent/src/domain/usecases/check_sp_server_status_usecase.dart';
 import 'package:silent/src/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:silent/src/domain/usecases/create_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/ensure_sp_session_usecase.dart';
@@ -413,6 +414,12 @@ abstract final class SilentGraph {
   static void _registerCapability(GetIt locator) {
     locator.registerLazySingleton<SilentCapability>(
       () => SilentCapability(
+        checkSpServerStatusUsecase: CheckSpServerStatusUsecase(
+          config: locator<SpBackendConfigRepository>(),
+          setup: locator<CheckSpWalletSetupUsecase>(),
+          gate: locator<GetSpFeatureGateUsecase>(),
+          probe: locator<SpBackendProbePort>(),
+        ),
         getSpWalletUsecase: locator<GetSpWalletUsecase>(),
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         checkSpWalletSetupUsecase: locator<CheckSpWalletSetupUsecase>(),

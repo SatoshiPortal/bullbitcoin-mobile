@@ -19,6 +19,11 @@ import 'package:silent/src/domain/usecases/watch_sp_updates_usecase.dart';
 import 'package:silent/src/domain/entities/sp_update.dart';
 import 'package:silent/src/domain/entities/sp_wallet.dart';
 import 'package:silent/src/domain/silent_failure.dart';
+import 'package:silent/src/domain/silent_server_status.dart';
+import 'package:silent/src/domain/usecases/check_sp_server_status_usecase.dart';
+
+export 'package:silent/src/domain/silent_server_status.dart'
+    show SilentServerStatus;
 
 // Part of the SP public surface: cross-feature consumers get these pure value
 // objects (and the feature's failure family) via the facade, so they never
@@ -64,6 +69,9 @@ export 'package:silent/src/domain/silent_failure.dart'
         SilentUnexpected;
 
 abstract interface class Silent {
+  Future<Result<SilentServerStatus, SilentFailure>> checkServerStatus(
+    BitcoinNetwork network,
+  );
   Future<Result<bool, SilentFailure>> isFeatureEnabled();
   Future<Result<bool, SilentFailure>> isSetUp();
   bool get isScanning;
@@ -88,6 +96,7 @@ abstract interface class Silent {
 }
 
 final class SilentCapability implements Silent {
+  final CheckSpServerStatusUsecase _checkSpServerStatusUsecase;
   final GetSpWalletUsecase _getSpWalletUsecase;
   final IsSpScanningUsecase _isSpScanningUsecase;
   final CheckSpWalletSetupUsecase _checkSpWalletSetupUsecase;
@@ -103,6 +112,7 @@ final class SilentCapability implements Silent {
   final SendSpPaymentUsecase _sendSpPaymentUsecase;
 
   SilentCapability({
+    required this._checkSpServerStatusUsecase,
     required this._getSpWalletUsecase,
     required this._isSpScanningUsecase,
     required this._checkSpWalletSetupUsecase,
@@ -117,6 +127,11 @@ final class SilentCapability implements Silent {
     required this._prepareSpPaymentUsecase,
     required this._sendSpPaymentUsecase,
   });
+
+  @override
+  Future<Result<SilentServerStatus, SilentFailure>> checkServerStatus(
+    BitcoinNetwork network,
+  ) => _checkSpServerStatusUsecase.execute(network);
 
   /// Whether the SP feature is enabled (superuser + dev mode gate). Cross-feature
   /// consumers (the wallet) read the gate through here instead of the settings.
