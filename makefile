@@ -137,10 +137,10 @@ BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import features/startup 
 drift-owners-build:
 	@set -e; for owner in $(DRIFT_OWNER_PACKAGES); do (cd "$$owner" && fvm dart run build_runner build --force-jit); done
 
-build-runner: drift-owners-build
+# One build over every workspace member: build_runner resolves cross-package inputs (Drift owners before their composer, a member's types before its dependents) from the package graph, in a single process whose cache lives in the root .dart_tool/build.
+build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit
-	@set -e; for member in $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_MEMBERS)); do (cd "$$member" && fvm dart run build_runner build --force-jit); done
+	@fvm dart run build_runner build --workspace --force-jit
 
 .PHONY: btc-map-build-runner
 btc-map-build-runner:
