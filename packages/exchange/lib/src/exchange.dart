@@ -201,6 +201,12 @@ final class Exchange {
   /// authoritative snapshot of the current session; its epoch must change when
   /// the environment or access changes, even if the same key is later reused.
   /// The credential is never published by an Exchange operation.
+  ///
+  /// TODO(exchange): the app opens the exchange without [unknownWrites]: the
+  /// journal is inactive until the storage cutover mounts the exchange
+  /// database at runtime (`DriftUnknownWriteJournal` over its
+  /// `ExchangeDatabase`). Without it nothing is journaled, reconciling is a
+  /// no-op and [writeGate] only tracks writes in flight.
   static Exchange open({
     required Uri mainnetEndpoint,
     required Uri testnetEndpoint,

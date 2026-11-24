@@ -70,6 +70,11 @@ abstract final class BullExchangeServices {
         readKey: ({required isTestnet}) =>
             credentials.readActiveApiKey(isTestnet: isTestnet),
       ),
+      // TODO(exchange): pass `unknownWrites:
+      // DriftUnknownWriteJournal(<exchange store>.database)` once the
+      // storage cutover mounts the exchange database at runtime. Until
+      // then no unknown write is journaled, sign-in reconciles nothing and
+      // the write gate only tracks writes in flight.
     );
     return exchange;
   }
