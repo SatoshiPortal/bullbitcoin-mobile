@@ -111,21 +111,25 @@ void main() {
     });
   }
 
-  test('signed out access does not read the account or expire', () async {
-    when(() => access.current)
-        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
-    expect(
-      (await usecase.execute(_testSession) as Err).failure,
-      isA<ExchangeNotAuthenticatedFailure>(),
-    );
-    verifyZeroInteractions(mainnet);
-    verifyNever(
-      () => expire.execute(
-        epoch: any(named: 'epoch'),
-        isTestnet: any(named: 'isTestnet'),
-      ),
-    );
-  });
+  test(
+    'after a sign-out the session is stale: no account read, no expiry',
+    () async {
+      when(
+        () => access.current,
+      ).thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
+      expect(
+        (await usecase.execute(_testSession) as Err).failure,
+        isA<ExchangeOperationStaleFailure>(),
+      );
+      verifyZeroInteractions(mainnet);
+      verifyNever(
+        () => expire.execute(
+          epoch: any(named: 'epoch'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      );
+    },
+  );
 
   test('a session that is not current is refused without a read', () async {
     epoch = 2;
