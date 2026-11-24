@@ -34,12 +34,18 @@ class SpAccountFilesDatasource {
   ) async {
     final file = _pendingScanFile(dataDir);
     if (!await file.exists()) return null;
-    final data = jsonDecode(await file.readAsString());
+    final String raw;
+    try {
+      raw = await file.readAsString();
+    } on FileSystemException {
+      // Deleted between the check and the read (a stop, a clear, or a
+      // completion landing in the same window): there is nothing to resume.
+      return null;
+    }
+    final data = jsonDecode(raw);
     if (data
-        case {
-          'startHeight': final int? height,
-          'isPaused': final bool paused,
-        } when height == null || height >= 0) {
+        case {'startHeight': final int? height, 'isPaused': final bool paused}
+        when height == null || height >= 0) {
       return (startHeight: height, isPaused: paused);
     }
     throw const FormatException('Invalid pending Silent Payments scan');
