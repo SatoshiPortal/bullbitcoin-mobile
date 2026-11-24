@@ -1,7 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_exchange/testing.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter/services.dart'
@@ -91,9 +91,9 @@ Future<void> _pump(
     theme: AppTheme.themeData(theme),
     localizationsDelegates: const [
       bullUiLocalizationsDelegate,
-      ...appLocalizationsDelegates,
+      ...ExchangeLocalizations.localizationsDelegates,
     ],
-    supportedLocales: AppLocalizations.supportedLocales,
+    supportedLocales: ExchangeLocalizations.supportedLocales,
     home: Scaffold(body: Center(child: content)),
   );
   await tester.pumpWidget(app);
