@@ -1287,6 +1287,14 @@
   "@exchangeBitcoinWalletsDeleteFailed": {
     "description": "Error shown when a default wallet address cannot be deleted"
   },
+  "exchangeSettingsWriteBusy": "Another exchange request is still running. Try again in a moment.",
+  "@exchangeSettingsWriteBusy": {
+    "description": "Exchange settings: a preference save was refused because another exchange write runs or is unsettled"
+  },
+  "exchangeSettingsSignedOut": "You are no longer signed in to the exchange. Sign in again to change these settings.",
+  "@exchangeSettingsSignedOut": {
+    "description": "Exchange settings: the session ended or expired; a retry can't help (SET-3)"
+  },
   "exchangeBitcoinWalletsBusy": "Another exchange request is still running. Try again in a moment.",
   "@exchangeBitcoinWalletsBusy": {
     "description": "Default wallets: a save or delete was refused because another exchange write runs or is unsettled"

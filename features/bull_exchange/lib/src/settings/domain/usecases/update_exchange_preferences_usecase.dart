@@ -36,7 +36,7 @@ class UpdateExchangePreferencesUsecase {
         ExchangeNetworkFailure() => ExchangeSettingsNetworkFailure(
           failure.logMessage,
         ),
-        ExchangeNotAuthenticatedFailure() =>
+        ExchangeNotAuthenticatedFailure() || ExchangeSessionRejectedFailure() =>
           ExchangeSettingsNotAuthenticatedFailure(failure.logMessage),
         _ => ExchangeSettingsPreferencesSaveFailure(failure.logMessage),
       },

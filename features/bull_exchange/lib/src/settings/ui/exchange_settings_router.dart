@@ -14,7 +14,7 @@ import '../domain/usecases/get_secure_file_upload_status_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
 import '../presentation/account_info_cubit.dart';
-import '../presentation/exchange_preferences_cubit.dart';
+import '../presentation/exchange_preferences_bloc.dart';
 import '../presentation/secure_file_upload_bloc.dart';
 import '../presentation/statistics_cubit.dart';
 import 'exchange_access_settings_route.dart';
@@ -130,14 +130,19 @@ class ExchangeSettingsRouter {
       name: ExchangeSettingsRoute.preferences.name,
       path: ExchangeSettingsRoute.preferences.path,
       builder: (context, state) => BlocProvider(
-        create: (_) => ExchangePreferencesCubit(
-          getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
-            exchange: config.exchange(),
-          ),
-          updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
-            save: config.savePreferences,
-          ),
-        ),
+        create: (_) {
+          final exchange = config.exchange();
+          return ExchangePreferencesBloc(
+            getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
+              exchange: exchange,
+            ),
+            updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
+              save: config.savePreferences,
+            ),
+            writeGate: exchange.writeGate,
+            session: exchange.currentSession,
+          );
+        },
         child: ExchangePreferencesScreen(refreshSession: config.refreshSession),
       ),
     ),

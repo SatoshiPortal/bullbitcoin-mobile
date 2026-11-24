@@ -2,8 +2,8 @@ import 'package:exchange/exchange.dart';
 
 import '../../../exchange_l10n.dart';
 import '../../domain/entities/exchange_preferences.dart';
-import '../../presentation/exchange_preferences_cubit.dart';
-import '../../presentation/exchange_preferences_state.dart';
+import '../../presentation/exchange_preferences_bloc.dart';
+import '../../presentation/exchange_preferences_machine.dart';
 import '../../presentation/exchange_settings_failure_l10n.dart';
 
 import 'package:bull_ui/bull_ui.dart';
@@ -23,18 +23,14 @@ class ExchangePreferencesScreen extends StatefulWidget {
 
 class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
   @override
-  void initState() {
-    super.initState();
-    context.read<ExchangePreferencesCubit>().loadPreferences();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final state = context.watch<ExchangePreferencesCubit>().state;
+    final state = context.watch<ExchangePreferencesBloc>().state;
 
-    return BlocListener<ExchangePreferencesCubit, ExchangePreferencesState>(
+    return BlocListener<ExchangePreferencesBloc, PreferencesState>(
+      // Only a write whose values are all on screen is reported as saved
+      // (SET-2).
       listenWhen: (previous, current) =>
-          previous.isSaving && !current.isSaving && current.saveFailure == null,
+          previous is! PreferencesSaved && current is PreferencesSaved,
       listener: (context, state) {
         BullSnackBar.show(
           context,
@@ -54,7 +50,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
         body: Column(
           children: [
             BullFadingLinearProgress(
-              trigger: state.isLoading,
+              trigger: state is PreferencesLoading,
               backgroundColor: context.bull.surface,
               foregroundColor: context.bull.primary,
             ),
@@ -65,32 +61,54 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
     );
   }
 
-  Widget _buildContent(BuildContext context, ExchangePreferencesState state) {
-    final preferences = state.preferences;
-
-    if (state.isLoading && preferences == null) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildContent(BuildContext context, PreferencesState state) {
+    final bloc = context.read<ExchangePreferencesBloc>();
+    final preferences = shownPreferences(state);
+    final failure = switch (state) {
+      PreferencesSaveFailed(:final failure) => failure,
+      PreferencesLoading() ||
+      PreferencesLoadFailed() ||
+      PreferencesSignedOut() ||
+      PreferencesEditing() ||
+      PreferencesSaving() ||
+      PreferencesSaved() => null,
+    };
 
     if (preferences == null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            BullText(
-              state.loadFailure?.toTranslated(context) ??
-                  context.loc.exchangeAccountInfoLoadErrorMessage,
+      return switch (state) {
+        PreferencesLoadFailed(:final failure) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              BullText(
+                failure.toTranslated(context),
+                style: context.bullType.body.copyWith(
+                  color: context.bull.error,
+                ),
+              ),
+              const Gap(BullSpacing.md),
+              BullButton.secondary(
+                label: context.loc.retry,
+                onPressed: () => bloc.add(const PreferencesRetryPressed()),
+              ),
+            ],
+          ),
+        ),
+        PreferencesSignedOut() => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(BullSpacing.md),
+            child: BullText(
+              context.loc.exchangeSettingsSignedOut,
               style: context.bullType.body.copyWith(color: context.bull.error),
             ),
-            const Gap(BullSpacing.md),
-            BullButton.secondary(
-              label: context.loc.retry,
-              onPressed: () =>
-                  context.read<ExchangePreferencesCubit>().loadPreferences(),
-            ),
-          ],
+          ),
         ),
-      );
+        PreferencesLoading() ||
+        PreferencesEditing() ||
+        PreferencesSaving() ||
+        PreferencesSaved() ||
+        PreferencesSaveFailed() => const SizedBox.shrink(),
+      };
     }
 
     final hasUnsetValues = !preferences.isComplete;
@@ -107,7 +125,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               preferences.language,
               ExchangeLanguage.values.map((lang) => lang.code).toList(),
               ExchangeLanguage.values.map((lang) => lang.displayName).toList(),
-              context.read<ExchangePreferencesCubit>().updateLanguage,
+              (code) => bloc.add(PreferencesLanguageChosen(code)),
             ),
             const Gap(BullSpacing.lg),
             _buildDropdownField(
@@ -116,7 +134,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               preferences.currency,
               FiatCurrency.values.map((currency) => currency.code).toList(),
               FiatCurrency.values.map((currency) => currency.code).toList(),
-              context.read<ExchangePreferencesCubit>().updateCurrency,
+              (code) => bloc.add(PreferencesCurrencyChosen(code)),
             ),
             const Gap(BullSpacing.xl),
             _EmailNotificationsToggle(preferences: preferences),
@@ -130,13 +148,12 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               ),
               const Gap(BullSpacing.md),
             ],
-            if (state.saveFailure != null) ...[
+            if (failure != null) ...[
               BullInfoCard(
-                description: state.saveFailure!.toTranslated(context),
+                description: failure.toTranslated(context),
                 tagColor: context.bull.error,
                 bgColor: context.bull.errorContainer,
-                onTap: () =>
-                    context.read<ExchangePreferencesCubit>().savePreferences(),
+                onTap: () => bloc.add(const PreferencesSavePressed()),
               ),
               const Gap(BullSpacing.md),
             ],
@@ -144,11 +161,9 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               width: double.infinity,
               child: BullButton.primary(
                 label: context.loc.exchangeAppSettingsSaveButton,
-                onPressed: (state.isSaving || hasUnsetValues)
+                onPressed: (state is PreferencesSaving || hasUnsetValues)
                     ? null
-                    : () => context
-                          .read<ExchangePreferencesCubit>()
-                          .savePreferences(),
+                    : () => bloc.add(const PreferencesSavePressed()),
               ),
             ),
           ],
@@ -235,11 +250,9 @@ class _EmailNotificationsToggle extends StatelessWidget {
           ),
           BullSwitch(
             value: preferences.emailNotificationsEnabled,
-            onChanged: (value) {
-              context.read<ExchangePreferencesCubit>().updateEmailNotifications(
-                value,
-              );
-            },
+            onChanged: (value) => context.read<ExchangePreferencesBloc>().add(
+              PreferencesEmailToggled(value),
+            ),
           ),
         ],
       ),
