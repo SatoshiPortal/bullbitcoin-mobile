@@ -117,7 +117,11 @@ class UpdateSpBackendConfigUsecase {
             return Err(failure);
           }
           final result = await _saveAndReopen(config);
-          if (result case Err()) await _restore(previous);
+          if (result case Err()) {
+            if (!await _restore(previous)) {
+              return const Err(SilentBackendRollbackFailed());
+            }
+          }
           return result;
         } finally {
           _account.endTeardown();
@@ -142,11 +146,11 @@ class UpdateSpBackendConfigUsecase {
     }
   }
 
-  Future<void> _restore(SpBackendConfig previous) async {
+  Future<bool> _restore(SpBackendConfig previous) async {
     try {
       if (await _account.dispose() case Err()) {
         log.warning('SP backend rollback could not close the new session');
-        return;
+        return false;
       }
       final unchanged = switch (await _configs.fetchOrNull()) {
         Ok(:final value) => value == previous,
@@ -155,14 +159,23 @@ class UpdateSpBackendConfigUsecase {
       if (!unchanged) {
         if (await _configs.save(previous) case Err()) {
           log.warning('SP backend rollback could not restore configuration');
-          return;
+          return false;
         }
       }
-      if (await _ensureSession.execute(allowDuringTeardown: true) case Err()) {
-        log.warning('SP backend rollback could not reopen the old session');
+      if (await _gate.check(network: previous.network, config: previous)
+          case Ok(value: true)) {
+        switch (await _ensureSession.execute(allowDuringTeardown: true)) {
+          case Ok(value: _?):
+            return true;
+          case _:
+            log.warning('SP backend rollback could not reopen the old session');
+            return false;
+        }
       }
+      return false;
     } on Exception {
       log.warning('SP backend rollback failed');
+      return false;
     }
   }
 }

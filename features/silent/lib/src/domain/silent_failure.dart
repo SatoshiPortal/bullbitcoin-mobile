@@ -65,6 +65,12 @@ final class SilentSetupCleanupFailed extends SilentFailure {
   const SilentSetupCleanupFailed([super.logMessage]);
 }
 
+/// A backend update failed and the previous configuration or session could
+/// not be restored.
+final class SilentBackendRollbackFailed extends SilentFailure {
+  const SilentBackendRollbackFailed() : super('SP backend rollback failed');
+}
+
 /// Send input: the amount must be greater than zero.
 final class SilentAmountBelowMinimum extends SilentFailure {
   const SilentAmountBelowMinimum([super.logMessage]);

@@ -575,6 +575,7 @@
   },
   "silentSaveBackendConfigContent": "The wallet will reconnect using the selected servers. Scan progress and receive addresses are kept.",
   "silentMinScanAmount": "Minimum scan amount",
+  "silentFailureBackendRollbackFailed": "Could not restore the previous wallet connection. Check the saved server settings before trying again.",
   "silentMinScanAmountValue": "{amount} sats",
   "@silentMinScanAmountValue": {
     "placeholders": {

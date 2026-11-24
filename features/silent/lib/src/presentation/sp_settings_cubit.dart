@@ -11,6 +11,7 @@ import 'package:silent/src/domain/entities/sp_backend_config.dart';
 import 'package:silent/src/domain/entities/sp_notif_log.dart';
 import 'package:silent/src/presentation/sp_backend_form.dart';
 import 'package:silent/src/presentation/sp_backend_form_mixin.dart';
+import 'package:silent/src/presentation/sp_connection_status.dart';
 import 'package:silent/src/presentation/sp_settings_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -155,6 +156,44 @@ class SpSettingsCubit extends Cubit<SpSettingsState>
           ),
         );
       case Err(:final failure):
+        if (failure is SilentBackendRollbackFailed) {
+          final stored = await _loadSpBackendConfigUsecase.execute();
+          if (isClosed) return;
+          if (stored case Ok(value: final config?)) {
+            emit(
+              state.copyWith(
+                isSaving: false,
+                minScanAmountSat: config.minScanAmountSat,
+                form: state.form.copyWith(
+                  network: config.network,
+                  blindbitUrl: config.blindbitUrl,
+                  electrumUrl: config.electrumUrl,
+                  fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+                  matchConcurrencyFactor: config.matchConcurrencyFactor,
+                  blindbitStatus: SpConnectionStatus.untested,
+                  electrumStatus: SpConnectionStatus.untested,
+                  blindbitStatusError: null,
+                  electrumStatusError: null,
+                  error: failure,
+                ),
+              ),
+            );
+            return;
+          }
+          emit(
+            state.copyWith(
+              isSaving: false,
+              form: state.form.copyWith(
+                blindbitStatus: SpConnectionStatus.untested,
+                electrumStatus: SpConnectionStatus.untested,
+                blindbitStatusError: null,
+                electrumStatusError: null,
+                error: failure,
+              ),
+            ),
+          );
+          return;
+        }
         emit(
           state.copyWith(
             isSaving: false,

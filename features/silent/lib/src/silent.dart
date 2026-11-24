@@ -61,6 +61,7 @@ export 'package:silent/src/domain/silent_failure.dart'
         SilentConfigInvalid,
         SilentUnsupportedNetwork,
         SilentSetupCleanupFailed,
+        SilentBackendRollbackFailed,
         SilentAmountBelowMinimum,
         SilentAmountExceedsBalance,
         SilentAddressNetworkMismatch,
