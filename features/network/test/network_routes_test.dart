@@ -1,3 +1,4 @@
+import 'package:silent/silent.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:fees/fees.dart';
@@ -37,6 +38,8 @@ class _EmbeddedTor extends Mock implements EmbeddedTor {}
 class _MockFees extends Mock implements Fees {}
 
 class _Inventory extends Mock implements WalletInventory {}
+
+class _Silent extends Mock implements Silent {}
 
 void main() {
   testWidgets('mounted settings routes use the supplied services', (
@@ -86,6 +89,7 @@ void main() {
         .thenAnswer((_) async => const Ok(Environment.testnet));
     services.registerSingleton<Fees>(_MockFees());
     final feature = NetworkFeature.mount(
+      silent: _Silent(),
       services: services,
       preferences: preferences,
       inventory: _Inventory(),

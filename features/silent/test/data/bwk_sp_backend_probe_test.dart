@@ -5,6 +5,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 void main() {
+  test('tip probe uses only the configured tip endpoint', () async {
+    String? requested;
+    final probe = BwkSpBackendProbe(
+      tip: ({required url}) async {
+        requested = url;
+        return 123;
+      },
+      testBlindbit: ({required url}) async => fail('scan probe called'),
+    );
+    expect(
+      await probe.blindbitTip('https://configured.example'),
+      isA<Ok<void, SilentFailure>>(),
+    );
+    expect(requested, 'https://configured.example');
+  });
+
+  test('tip failure does not expose the URL or foreign error', () async {
+    final probe = BwkSpBackendProbe(
+      tip: ({required url}) async => throw Exception('private detail $url'),
+    );
+    final result = await probe.blindbitTip('https://private.example');
+    final failure = (result as Err<void, SilentFailure>).failure;
+    expect(failure, isA<SilentBackendUnreachable>());
+    expect(failure.logMessage, isNot(contains('private')));
+  });
+
   group('BwkSpBackendProbe.testBackend', () {
     BwkSpBackendProbe build({
       Future<void> Function({required String url})? testBlindbit,
