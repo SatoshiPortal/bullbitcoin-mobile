@@ -79,10 +79,11 @@ void main() {
     List<SpNotifLogLine> seed = const [],
     Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
+    _MockSpBackendConfigRepository? repository,
   }) {
     when(() => logUsecase.execute())
         .thenReturn((log: seed, updates: logController.stream));
-    final configRepo = _MockSpBackendConfigRepository();
+    final configRepo = repository ?? _MockSpBackendConfigRepository();
     final probe = _MockSpBackendProbe();
     when(
       () => configRepo.fetch(),
@@ -311,6 +312,48 @@ void main() {
         expect(cubit.state.error, isA<SilentUnexpected>());
         expect(cubit.state.isSaving, isFalse);
         expect(cubit.state.saved, isFalse);
+        await cubit.close();
+      },
+    );
+
+    test(
+      'rollback failure reloads the persisted config without probing',
+      () async {
+        final repository = _MockSpBackendConfigRepository();
+        var probes = 0;
+        final cubit = build(
+          repository: repository,
+          testBlindbit: ({required url}) async {
+            probes++;
+          },
+          testElectrum: ({required url}) async {
+            probes++;
+          },
+        );
+        stubRecreate(failure: const SilentBackendRollbackFailed());
+        await cubit.setNetwork(BitcoinNetwork.regtest);
+        await cubit.testBlindbit();
+        await cubit.testElectrum();
+        final persisted = SpBackendConfig(
+          network: BitcoinNetwork.regtest,
+          blindbitUrl: 'http://persisted.example',
+          electrumUrl: 'tcp://persisted.example:50001',
+          fetchConcurrencyFactor: 3,
+          matchConcurrencyFactor: 4,
+          minScanAmountSat: 42,
+        );
+        when(() => repository.fetch()).thenAnswer((_) async => Ok(persisted));
+
+        await cubit.saveBackendConfig();
+
+        expect(cubit.state.error, isA<SilentBackendRollbackFailed>());
+        expect(cubit.state.blindbitUrl, persisted.blindbitUrl);
+        expect(cubit.state.electrumUrl, persisted.electrumUrl);
+        expect(cubit.state.fetchConcurrencyFactor, 3);
+        expect(cubit.state.matchConcurrencyFactor, 4);
+        expect(cubit.state.minScanAmountSat, 42);
+        expect(cubit.state.canSave, isFalse);
+        expect(probes, 2);
         await cubit.close();
       },
     );

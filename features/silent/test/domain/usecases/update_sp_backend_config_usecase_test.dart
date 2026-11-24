@@ -21,6 +21,7 @@ void main() {
   late MockSpAccountRepository account;
   late FakeSpBackendConfigRepository configs;
   late _Session session;
+  late FakeSpFeatureGateUsecase gate;
   late UpdateSpBackendConfigUsecase update;
 
   setUp(() async {
@@ -28,8 +29,9 @@ void main() {
     configs = FakeSpBackendConfigRepository();
     await configs.save(previous);
     session = _Session();
+    gate = FakeSpFeatureGateUsecase();
     update = UpdateSpBackendConfigUsecase(
-      gate: FakeSpFeatureGateUsecase(),
+      gate: gate,
       account: account,
       files: account,
       configs: configs,
@@ -106,6 +108,67 @@ void main() {
     verify(() => session.execute(allowDuringTeardown: true)).called(1);
     verifyNever(account.deleteAccountDir);
   });
+
+  test('reports rollback failure when restoring the config fails', () async {
+    when(() => session.execute(allowDuringTeardown: true))
+        .thenAnswer((_) async {
+          configs.saveShouldFail = true;
+          return const Err(SilentUnexpected('open failed'));
+        });
+
+    final result = await change();
+
+    expect(
+      result,
+      isA<Err<bool, SilentFailure>>().having(
+        (r) => r.failure.runtimeType.toString(),
+        'failure type',
+        'SilentBackendRollbackFailed',
+      ),
+    );
+    expect(
+      (await configs.fetch()).fold((c) => c?.blindbitUrl, (_) => null),
+      newUrl,
+    );
+  });
+
+  test('does not reopen the old session when the gate closes', () async {
+    when(() => session.execute(allowDuringTeardown: true))
+        .thenAnswer((_) async {
+          gate.allowed = false;
+          return const Err(SilentUnsupportedNetwork());
+        });
+
+    final result = await change();
+
+    expect(
+      result,
+      isA<Err<bool, SilentFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<SilentBackendRollbackFailed>(),
+      ),
+    );
+    expect((await configs.fetch()).fold((c) => c, (_) => null), previous);
+    verify(() => session.execute(allowDuringTeardown: true)).called(1);
+  });
+
+  test(
+    'reports rollback failure if the previous session cannot reopen',
+    () async {
+      when(() => session.execute(allowDuringTeardown: true))
+          .thenAnswer((_) async => const Ok(null));
+
+      expect(
+        await change(),
+        isA<Err<bool, SilentFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<SilentBackendRollbackFailed>(),
+        ),
+      );
+    },
+  );
 
   test('refuses to reconfigure a running scan', () async {
     when(() => account.isScanningCached).thenReturn(true);
