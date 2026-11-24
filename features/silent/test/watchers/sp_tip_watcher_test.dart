@@ -10,6 +10,7 @@ import 'package:silent/src/domain/usecases/watch_sp_notification_log_usecase.dar
 import 'package:silent/src/watchers/sp_tip_watcher.dart';
 import 'package:silent/src/domain/usecases/sync_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/watch_sp_updates_usecase.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -53,7 +54,6 @@ void main() {
       foregroundChanges: foreground.stream,
       initiallyForeground: true,
     );
-    watcher.start();
   });
 
   tearDown(() async {
@@ -68,19 +68,24 @@ void main() {
     await Future<void>.delayed(Duration.zero);
   }
 
-  // Direct add: a testWidgets body runs under fake time, where awaiting a
-  // delayed future would need a pump the helper cannot perform.
+  // Direct add: the retry tests drive the clock themselves through
+  // `fakeAsync`, so the helper must not await anything.
   void pushNotification(SpNotification notification) => notificationLog.add(
     SpNotifLogLine(time: DateTime.now(), notification: notification),
   );
 
+  // `start()` runs inside the test body on purpose: a subscription created in
+  // `setUp` lives in the real zone, and the retry timers would then ignore the
+  // fake clock the `fakeAsync` cases advance.
   test('a tip landing re-runs the sync', () async {
+    watcher.start();
     await emit(const SilentChainTipChanged(900000));
 
     verify(() => syncUsecase.execute()).called(1);
   });
 
   test('the same tip repeated syncs only once', () async {
+    watcher.start();
     await emit(const SilentChainTipChanged(900000));
     await emit(const SilentChainTipChanged(900000));
 
@@ -88,6 +93,7 @@ void main() {
   });
 
   test('a new block syncs again', () async {
+    watcher.start();
     await emit(const SilentChainTipChanged(900000));
     await emit(const SilentChainTipChanged(900001));
 
@@ -95,6 +101,7 @@ void main() {
   });
 
   test('other updates never sync', () async {
+    watcher.start();
     await emit(const SilentSetupChanged());
     await emit(SilentBalanceChanged(Sats.fromInt(1000)));
 
@@ -102,6 +109,7 @@ void main() {
   });
 
   test('a sync failure is swallowed, the watcher stays alive', () async {
+    watcher.start();
     when(() => syncUsecase.execute()).thenAnswer(
       (_) async => const Err<void, SilentFailure>(SilentUnexpected('boom')),
     );
@@ -113,6 +121,7 @@ void main() {
   });
 
   test('a tip landing in the background never syncs', () async {
+    watcher.start();
     foreground.add(false);
     await Future<void>.delayed(Duration.zero);
 
@@ -122,6 +131,7 @@ void main() {
   });
 
   test('dispose stops further syncs', () async {
+    watcher.start();
     await watcher.dispose();
 
     updates.add(const SilentChainTipChanged(900000));
@@ -130,71 +140,117 @@ void main() {
     verifyNever(() => syncUsecase.execute());
   });
 
-  testWidgets('a failed scan is retried, with a growing delay', (tester) async {
-    when(() => syncUsecase.execute(resumeOnly: true)).thenAnswer(
-      (_) async =>
-          const Err<void, SilentFailure>(SilentBackendUnreachable('twice')),
-    );
+  // The retry tests run under `fakeAsync` rather than `testWidgets`: they need
+  // the clock to advance past real timers, and the zone their listeners are
+  // created in has to be the one that owns them.
+  //
+  // The retries are counted by the stub rather than by `verify`: mocktail
+  // consumes a matched call once verified, which would make each later count
+  // read as zero.
+  late int retries;
 
-    pushNotification(const SpScanFailed(SilentUnexpected('boom')));
-    await tester.pump();
-    verifyNever(() => syncUsecase.execute(resumeOnly: true));
+  void setUpRetries({SilentFailure? failsWith}) {
+    retries = 0;
+    when(() => syncUsecase.execute(resumeOnly: true)).thenAnswer((_) async {
+      retries++;
+      if (failsWith == null) return const Ok<void, SilentFailure>(null);
+      return Err<void, SilentFailure>(failsWith);
+    });
+  }
 
-    await tester.pump(const Duration(seconds: 2));
-    verify(() => syncUsecase.execute(resumeOnly: true)).called(1);
+  test('a failed scan is retried, with a growing delay', () {
+    fakeAsync((async) {
+      setUpRetries(failsWith: const SilentBackendUnreachable('down'));
 
-    await tester.pump(const Duration(seconds: 4));
-    verify(() => syncUsecase.execute(resumeOnly: true)).called(2);
+      watcher.start();
+      pushNotification(const SpScanFailed(SilentUnexpected('boom')));
+      async.flushMicrotasks();
+      expect(retries, 0);
 
-    await tester.pump(const Duration(seconds: 8));
-    verify(() => syncUsecase.execute(resumeOnly: true)).called(3);
+      async.elapse(const Duration(seconds: 1, milliseconds: 999));
+      expect(retries, 0);
+      async.elapse(const Duration(milliseconds: 1));
+      expect(retries, 1);
 
-    // Three attempts is the budget: a wallet whose server stays down waits
-    // for the next tip or foreground instead of polling forever.
-    await tester.pump(const Duration(minutes: 5));
-    verifyNever(() => syncUsecase.execute(resumeOnly: true));
+      async.elapse(const Duration(seconds: 4));
+      expect(retries, 2);
+
+      async.elapse(const Duration(seconds: 8));
+      expect(retries, 3);
+
+      // Three attempts is the budget: a wallet whose server stays down waits
+      // for the next tip or foreground instead of polling forever.
+      async.elapse(const Duration(minutes: 5));
+      expect(retries, 3);
+    });
   });
 
-  testWidgets('a failed scan in the background waits for the foreground', (
-    tester,
-  ) async {
-    foreground.add(false);
-    await tester.pump();
+  test('a failed scan in the background waits for the foreground', () {
+    fakeAsync((async) {
+      setUpRetries();
 
-    pushNotification(const SpScanFailed(SilentUnexpected('boom')));
-    await tester.pump(const Duration(seconds: 8));
-    verifyNever(() => syncUsecase.execute(resumeOnly: true));
+      watcher.start();
+      foreground.add(false);
+      async.flushMicrotasks();
 
-    foreground.add(true);
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 2));
+      pushNotification(const SpScanFailed(SilentUnexpected('boom')));
+      async.elapse(const Duration(seconds: 8));
+      expect(retries, 0);
 
-    verify(() => syncUsecase.execute(resumeOnly: true)).called(1);
+      foreground.add(true);
+      async.flushMicrotasks();
+      async.elapse(const Duration(seconds: 2));
+
+      expect(retries, 1);
+    });
   });
 
-  testWidgets('a completed scan cancels the pending retry', (tester) async {
-    pushNotification(const SpScanFailed(SilentUnexpected('boom')));
-    await tester.pump();
+  test('a completed scan cancels the pending retry', () {
+    fakeAsync((async) {
+      setUpRetries();
 
-    pushNotification(const SpScanCompleted());
-    await tester.pump(const Duration(seconds: 30));
+      watcher.start();
+      pushNotification(const SpScanFailed(SilentUnexpected('boom')));
+      async.flushMicrotasks();
 
-    verifyNever(() => syncUsecase.execute(resumeOnly: true));
+      pushNotification(const SpScanCompleted());
+      async.elapse(const Duration(seconds: 30));
+
+      expect(retries, 0);
+    });
   });
 
-  testWidgets('returning to the foreground schedules one retry', (
-    tester,
-  ) async {
-    foreground.add(false);
-    await tester.pump();
-    foreground.add(true);
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 2));
+  test('a stopped scan cancels the pending retry', () {
+    fakeAsync((async) {
+      setUpRetries();
 
-    verify(() => syncUsecase.execute(resumeOnly: true)).called(1);
+      watcher.start();
+      pushNotification(const SpScanFailed(SilentUnexpected('boom')));
+      async.flushMicrotasks();
 
-    // The retry succeeded, so nothing further is queued.
-    await tester.pump(const Duration(minutes: 1));
-    verifyNever(() => syncUsecase.execute(resumeOnly: true));
+      pushNotification(const SpScanStopped());
+      async.elapse(const Duration(seconds: 30));
+
+      expect(retries, 0);
+    });
+  });
+
+  test('returning to the foreground schedules one retry', () {
+    fakeAsync((async) {
+      setUpRetries();
+
+      watcher.start();
+      foreground.add(false);
+      async.flushMicrotasks();
+      foreground.add(true);
+      async.flushMicrotasks();
+      async.elapse(const Duration(seconds: 2));
+
+      expect(retries, 1);
+
+      // The retry succeeded, so nothing further is queued.
+      async.elapse(const Duration(minutes: 1));
+      expect(retries, 1);
+    });
   });
 }
