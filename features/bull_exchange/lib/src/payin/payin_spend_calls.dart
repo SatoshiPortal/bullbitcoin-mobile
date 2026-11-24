@@ -28,10 +28,10 @@ typedef PayinWalletServices = ({
 /// Liquid's network minimum relay fee (0.1 sat/vByte = 25 sat/kwu).
 const _liquidFeeRate = RelativeFee(25);
 
-/// The payin calls of [session] over the wallet [services]. The on-chain fee
-/// is the network's fastest estimate and RBF stays on (the flow has no fee
-/// picker yet); a payin goes through payjoin when the order published a
-/// payjoin URI, the account's payjoin setting allows it and enough of the
+/// The payin calls of [session] over the wallet [services]. An on-chain
+/// payin is built as its [PayinSpendOptions] say (the fee, replace-by-fee
+/// and coins picked on the review); it goes through payjoin when the user
+/// kept payjoin on, the order published a payjoin URI and enough of the
 /// order's window is left for a negotiation to finish.
 PayinCalls payinCallsOf(
   Exchange exchange,
@@ -61,13 +61,8 @@ PayinCalls payinCallsOf(
     String address,
     int amountSat,
   ) async {
-    final NetworkFee fee;
-    switch (await services.fees.estimate(bitcoin)) {
-      case Ok(:final value):
-        fee = value.fastest;
-      case Err():
-        return const PayinBuildFailed(PayinBuildProblem.unexpected);
-    }
+    final options = effect.spend.options;
+    final fee = networkFeeOf(options.fee);
     final PreparedBitcoinSpend prepared;
     switch (await services.spend.prepareBitcoin(
       walletId: effect.walletId,
@@ -78,6 +73,8 @@ PayinCalls payinCallsOf(
         ),
       ],
       networkFee: fee,
+      selectedInputs: options.coins.isEmpty ? null : options.coins,
+      replaceByFee: options.replaceByFee,
     )) {
       case Ok(:final value):
         prepared = value;
@@ -89,11 +86,7 @@ PayinCalls payinCallsOf(
     final window = bip21 == null || deadline == null
         ? null
         : PayjoinSessionWindow.forOrderDeadline(deadline, now: clock.now());
-    final payjoinAllowed = switch (await services.payjoinPolicy.load()) {
-      Ok(:final value) => value.sellEnabled,
-      Err() => false,
-    };
-    if (bip21 != null && window != null && payjoinAllowed) {
+    if (bip21 != null && window != null && options.payjoin) {
       final String txid;
       try {
         txid = (await BitcoinTx.fromPsbt(prepared.unsignedPsbt)).txid;
@@ -337,3 +330,16 @@ List<int> _hexBytes(String hex) => [
   for (var i = 0; i + 1 < hex.length; i += 2)
     int.parse(hex.substring(i, i + 2), radix: 16),
 ];
+
+/// The wallet fee of a payin's chosen [fee].
+NetworkFee networkFeeOf(PayinFee fee) => switch (fee) {
+  PayinFeeRate(:final satPerKwu) => NetworkFee.relativeSatPerKwu(satPerKwu),
+  PayinFeeAbsolute(:final sats) => NetworkFee.absolute(sats),
+  PayinFeeNetworkMinimum() => NetworkFeeRelayPolicy.minRelay,
+};
+
+/// The payin fee of a wallet [fee].
+PayinFee payinFeeOf(NetworkFee fee) => switch (fee) {
+  RelativeFee(:final satPerKwu) => PayinFeeRate(satPerKwu),
+  AbsoluteFee(:final sats) => PayinFeeAbsolute(sats),
+};
