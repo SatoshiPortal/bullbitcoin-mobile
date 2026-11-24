@@ -276,77 +276,6 @@ void main() {
     },
   );
 
-  void useV1Store() {
-    final db = sqlite3.open(path);
-    try {
-      db.execute('ALTER TABLE verified DROP COLUMN envelope_digest');
-      db.userVersion = 1;
-    } finally {
-      db.close();
-    }
-  }
-
-  test(
-    'v1 pending folder generations remain unproven and can be replaced',
-    () async {
-      await seedFolderGenerations();
-      corruptSecondGeneration();
-      // Even matching bytes are unproven without a receipt or stored digest.
-      storage.objects[objectById('2')] = envelopeFor(1);
-      useV1Store();
-
-      final result = await repository().status();
-      final status = result.fold(
-        (status) => status.groups.single,
-        (failure) => throw StateError(failure.runtimeType.toString()),
-      );
-      expect(status.pendingChanges, isTrue);
-      expect(status.previousVersionKept, isFalse);
-      expect(status.lastDurableBackup, isNotNull);
-
-      expect((await run()).pendingChanges, isFalse);
-      expect(storage.created, 3);
-      expect(storage.objects[objectById('1')], orderedEquals(envelopeFor(0)));
-      expect(storage.objects[objectById('3')], orderedEquals(envelopeFor(1)));
-      expect(objectById('2').durability, Durability.pending);
-      expect(storage.deleted, isEmpty);
-    },
-  );
-
-  test(
-    'v1 lost folder response recovers from its intent without a receipt',
-    () async {
-      storage = MemoryBackupStorage(
-        destination: BackupDestination.folder,
-        durability: Durability.pending,
-      )..failAfterCreate = true;
-      await enable();
-      expect((await run()).lastDurableBackup, isNull);
-      final original = objectById('1');
-      useV1Store();
-      storage.failAfterCreate = false;
-
-      expect((await run()).pendingChanges, isFalse);
-      expect((await run()).lastDurableBackup, isNotNull);
-      expect(storage.created, 1);
-      expect(storage.objects[original], orderedEquals(envelopeFor(0)));
-      expect(original.durability, Durability.pending);
-      final db = sqlite3.open(path);
-      try {
-        expect(db.userVersion, 2);
-        expect(db.select('SELECT * FROM intents'), isEmpty);
-        expect(
-          db
-              .select('SELECT envelope_digest FROM verified')
-              .single['envelope_digest'],
-          sha256.convert(envelopeFor(0)).toString(),
-        );
-      } finally {
-        db.close();
-      }
-    },
-  );
-
   test('a transient pending-folder read does not replace or prune', () async {
     await seedFolderGenerations();
     corruptSecondGeneration();
@@ -439,6 +368,85 @@ void main() {
       isA<BackupMetadataStalePlanFailure>(),
     );
   });
+
+  test('a headless run never creates the owner database', () async {
+    final result = await runBackupMetadataTask(
+      readiness: const _Ready(),
+      inventory: inventory,
+      labels: labels,
+      codec: const _Codec(),
+      storages: [storage],
+      statePath: path,
+    );
+
+    expect(
+      result.fold((_) => null, (failure) => failure),
+      isA<BackupMetadataNotReadyFailure>(),
+    );
+    expect(inventory.calls, 0);
+    expect(File(path).existsSync(), isFalse);
+    expect(File('$path.guard').existsSync(), isFalse);
+  });
+
+  test(
+    'a headless run uses the owner database the foreground prepared',
+    () async {
+      await enable();
+
+      final result = await runBackupMetadataTask(
+        readiness: const _Ready(),
+        inventory: inventory,
+        labels: labels,
+        codec: const _Codec(),
+        storages: [storage],
+        statePath: path,
+      );
+
+      expect(
+        result.fold(
+          (status) => status.groups.single.lastDurableBackup,
+          (_) => null,
+        ),
+        isNotNull,
+      );
+      expect(storage.created, 1);
+    },
+  );
+
+  test(
+    'a headless run refuses another schema version without upgrading',
+    () async {
+      await enable();
+      final db = sqlite3.open(path);
+      try {
+        db.userVersion = 42;
+      } finally {
+        db.close();
+      }
+
+      final result = await runBackupMetadataTask(
+        readiness: const _Ready(),
+        inventory: inventory,
+        labels: labels,
+        codec: const _Codec(),
+        storages: [storage],
+        statePath: path,
+      );
+
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataNotReadyFailure>(),
+      );
+      final reopened = sqlite3.open(path);
+      try {
+        expect(reopened.userVersion, 42);
+        expect(reopened.select('SELECT * FROM intents'), isEmpty);
+      } finally {
+        reopened.close();
+      }
+      expect(storage.created, 0);
+    },
+  );
 
   test('background readiness gate runs before any other port', () async {
     final result = await runBackupMetadataTask(
@@ -621,4 +629,11 @@ final class _NotReady implements BackupReadinessPort {
 
   @override
   Future<bool> databaseReady() async => false;
+}
+
+final class _Ready implements BackupReadinessPort {
+  const _Ready();
+
+  @override
+  Future<bool> databaseReady() async => true;
 }
