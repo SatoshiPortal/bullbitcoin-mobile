@@ -28,6 +28,14 @@ final class BbxApiLimitOrderRepository {
         orders.map(_toLimitOrder).where((order) => order.isOpen).toList(),
   );
 
+  /// The most recent page of limit orders, every status (newest first).
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent() => _guard(
+    'list the recent limit orders',
+    ExchangeLimitOrderProblem.load,
+    (api) => api.orderTriggers.listLimitOrders(),
+    (orders) => orders.map(_toLimitOrder).toList(),
+  );
+
   Future<Result<LimitOrder, ExchangeFailure>> get(String id) => _guard(
     'read the limit order',
     ExchangeLimitOrderProblem.load,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
@@ -151,6 +152,50 @@ void main() {
       () async => 'sent',
     );
     expect((answer as GateAdmitted<String>).result, 'sent');
+  });
+
+  group('entry age', () {
+    final recordedAt = DateTime.utc(2026, 11, 24, 8);
+
+    Future<GatedWrite<String>> runAt(
+      InMemoryUnknownWriteJournal journal,
+      Duration after,
+    ) => withClock(
+      Clock.fixed(recordedAt.add(after)),
+      () =>
+          ExchangeWriteGate(journal: journal)
+              .run(_main, FinancialWriteKind.payin, () async => 'paid'),
+    );
+
+    Future<InMemoryUnknownWriteJournal> journalWithEntry() async {
+      final journal = InMemoryUnknownWriteJournal();
+      await withClock(
+        Clock.fixed(recordedAt),
+        () => _record(journal, UnknownWriteKind.buyConfirm),
+      );
+      return journal;
+    }
+
+    test('an open entry up to maxAge holds the gate', () async {
+      final answer = await runAt(await journalWithEntry(), UnknownWrite.maxAge);
+      expect(answer, isA<GateRefused<String>>());
+    });
+
+    test('an open entry older than maxAge no longer holds it', () async {
+      final answer = await runAt(
+        await journalWithEntry(),
+        UnknownWrite.maxAge + const Duration(seconds: 1),
+      );
+      expect((answer as GateAdmitted<String>).result, 'paid');
+    });
+
+    test('a settled entry never holds it, whatever its age', () async {
+      final journal = await journalWithEntry();
+      final entry = journal.entries.single.$1;
+      await journal.settle(entry.id, UnknownWriteSettlement.expired);
+      final answer = await runAt(journal, Duration.zero);
+      expect((answer as GateAdmitted<String>).result, 'paid');
+    });
   });
 
   test('an unknown recipient create does not hold the gate', () async {

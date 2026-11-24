@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -100,7 +101,9 @@ bool journalEntryHoldsGate(UnknownWriteKind kind) => switch (kind) {
 
 /// One financial write at a time per account. A second write while one is in
 /// flight, or while the journal holds an unsettled one, is refused, never
-/// queued: the flow shows the refusal and the user decides again.
+/// queued: the flow shows the refusal and the user decides again. Settled
+/// entries are not in the open set; an open entry older than
+/// [UnknownWrite.maxAge] no longer holds the gate (reconcile closes it).
 ///
 /// The account is the session's environment (one key per environment). The
 /// in-flight mark is taken before the journal is read, so two writes started
@@ -134,7 +137,8 @@ final class ExchangeWriteGate {
             return GateRefused(const WriteGateJournalUnreadable());
           case Ok(:final value):
             for (final entry in value) {
-              if (journalEntryHoldsGate(entry.kind)) {
+              if (journalEntryHoldsGate(entry.kind) &&
+                  !entry.isOverAge(clock.now())) {
                 return GateRefused(WriteGateUnsettled(entry));
               }
             }

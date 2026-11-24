@@ -281,6 +281,28 @@ void main() {
       expect(orders.single.isActive, isFalse);
     });
 
+    test('listRecent keeps every status of the page', () async {
+      final orders = _valueOf(
+        await repository(
+          FakeBbxHttp(
+            body: {
+              'result': {
+                'elements': [
+                  _order,
+                  {..._order, 'limitOrderId': 'lo-2', 'status': 'EXECUTED'},
+                  {..._order, 'limitOrderId': 'lo-3', 'status': 'EXPIRED'},
+                  {..._order, 'limitOrderId': 'lo-4', 'status': 'CANCELLED'},
+                ],
+              },
+            },
+          ),
+        ).listRecent(),
+      );
+
+      expect(orders.map((o) => o.id), ['lo-1', 'lo-2', 'lo-3', 'lo-4']);
+      expect(orders[1].status, LimitOrderStatus.executed);
+    });
+
     test('cancelAll keeps every returned order', () async {
       final orders = _valueOf(
         await repository(

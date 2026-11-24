@@ -10,6 +10,10 @@ import 'exchange_failure.dart';
 abstract interface class ExchangeLimitOrders {
   @useResult
   Future<Result<List<LimitOrder>, ExchangeFailure>> listActive();
+
+  /// The most recent limit orders in every status, newest first.
+  @useResult
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent();
   @useResult
   Future<Result<LimitOrder, ExchangeFailure>> get(String id);
   @useResult
@@ -24,6 +28,8 @@ abstract interface class ExchangeLimitOrders {
 
 final class ExchangeLimitOrdersImpl implements ExchangeLimitOrders {
   final Future<Result<List<LimitOrder>, ExchangeFailure>> Function() _list;
+  final Future<Result<List<LimitOrder>, ExchangeFailure>> Function()
+  _listRecent;
   final Future<Result<LimitOrder, ExchangeFailure>> Function(String) _get;
   final Future<Result<LimitOrder, ExchangeFailure>> Function(LimitOrderDraft)
   _create;
@@ -33,6 +39,7 @@ final class ExchangeLimitOrdersImpl implements ExchangeLimitOrders {
 
   const ExchangeLimitOrdersImpl({
     required this._list,
+    required this._listRecent,
     required this._get,
     required this._create,
     required this._cancel,
@@ -42,6 +49,9 @@ final class ExchangeLimitOrdersImpl implements ExchangeLimitOrders {
 
   @override
   Future<Result<List<LimitOrder>, ExchangeFailure>> listActive() => _list();
+  @override
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent() =>
+      _listRecent();
   @override
   Future<Result<LimitOrder, ExchangeFailure>> get(String id) => _get(id);
   @override

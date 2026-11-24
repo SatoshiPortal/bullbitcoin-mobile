@@ -544,6 +544,10 @@ final class Exchange {
           ExchangeLimitOrderProblem.load,
           (repository) => repository.listActive(),
         ),
+        listRecent: () => limitOrder(
+          ExchangeLimitOrderProblem.load,
+          (repository) => repository.listRecent(),
+        ),
         get: (id) => limitOrder(
           ExchangeLimitOrderProblem.load,
           (repository) => repository.get(id),
@@ -993,7 +997,7 @@ final class Exchange {
           journal: journal,
           orders: _orders,
           getUserSummary: (environment) => _getUserSummary(environment),
-          listOpenLimitOrders: limitOrders.listActive,
+          listRecentLimitOrders: limitOrders.listRecent,
           getDefaultWallets: _defaultWallets.get,
           recipients: recipients,
         ).execute(value.environment);
@@ -1224,6 +1228,7 @@ Exchange exchangeForTesting({
   limitOrders ??
       ExchangeLimitOrdersImpl(
         list: () => throw StateError('Unexpected limit order listing'),
+        listRecent: () => throw StateError('Unexpected limit order listing'),
         get: (_) => throw StateError('Unexpected limit order read'),
         create: (_) => throw StateError('Unexpected limit order create'),
         cancel: (_) => throw StateError('Unexpected limit order cancel'),

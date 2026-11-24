@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/src/recipients/domain/recipient_identity.dart';
 import 'package:exchange/src/session/reconcile_unknown_writes_usecase.dart';
@@ -36,6 +37,7 @@ LimitOrder _limitOrder({
   String currencyCode = 'CAD',
   double limitPrice = 90000,
   double fiatAmount = 100,
+  LimitOrderStatus status = LimitOrderStatus.active,
 }) => LimitOrder(
   id: 'lo-1',
   number: '1',
@@ -43,7 +45,7 @@ LimitOrder _limitOrder({
   currencyCode: currencyCode,
   limitPrice: limitPrice,
   estimatedBtcAmount: 0.001,
-  status: LimitOrderStatus.active,
+  status: status,
   createdAt: DateTime.utc(2026, 11, 23),
   expiresAt: DateTime.utc(2026, 12, 23),
   address: address,
@@ -153,14 +155,40 @@ void main() {
       );
     });
 
-    test('a sent payout, a terminal payout or an ended order settle it', () {
+    test('a sent or completed payout finishes it: applied', () {
       for (final order in [
         _order(bitcoinTransactionId: 'a' * 64),
         _order(payoutStatus: OrderPayoutStatus.completed),
+        _order(
+          orderStatus: OrderStatus.completed,
+          payoutStatus: OrderPayoutStatus.completed,
+        ),
+      ]) {
+        expect(accelerateSettlement(order), UnknownWriteSettlement.applied);
+      }
+    });
+
+    test('an order or payout that ended without a payout settles it', () {
+      for (final order in [
         _order(orderStatus: OrderStatus.canceled),
+        _order(orderStatus: OrderStatus.failed),
+        _order(payoutStatus: OrderPayoutStatus.canceled),
+        _order(payoutStatus: OrderPayoutStatus.failed),
       ]) {
         expect(accelerateSettlement(order), UnknownWriteSettlement.orderEnded);
       }
+    });
+
+    test('an unknown status stays open', () {
+      expect(
+        accelerateSettlement(
+          _order(
+            orderStatus: OrderStatus.unknown,
+            payoutStatus: OrderPayoutStatus.unknown,
+          ),
+        ),
+        isNull,
+      );
     });
   });
 
@@ -200,14 +228,17 @@ void main() {
       'address': 'bc1qlimit',
     };
 
-    test('a matching open order is applied', () {
-      expect(
-        limitOrderSettlement(request, [_limitOrder()]),
-        UnknownWriteSettlement.applied,
-      );
+    test('a matching order in any status is applied', () {
+      for (final status in LimitOrderStatus.values) {
+        expect(
+          limitOrderSettlement(request, [_limitOrder(status: status)]),
+          UnknownWriteSettlement.applied,
+          reason: '$status',
+        );
+      }
     });
 
-    test('no match stays open: the order may have executed already', () {
+    test('no match in the recent page stays open', () {
       for (final orders in [
         <LimitOrder>[],
         [_limitOrder(address: 'bc1qother')],
@@ -397,7 +428,7 @@ void main() {
       orders: (_) => orders,
       getUserSummary: (_) async =>
           summary ?? const Err(ExchangeNetworkFailure()),
-      listOpenLimitOrders: () async =>
+      listRecentLimitOrders: () async =>
           limitOrders ?? const Err(ExchangeNetworkFailure()),
       getDefaultWallets: () async =>
           defaultWallets ?? const Err(ExchangeNetworkFailure()),
@@ -469,6 +500,60 @@ void main() {
 
       expect(orders.reads, isEmpty);
       expect(journal.entries.single.$2, isNull);
+    });
+
+    group('maximum age', () {
+      final recordedAt = DateTime.utc(2026, 11, 24, 8);
+
+      Future<void> recordAt(String orderId) => withClock(
+        Clock.fixed(recordedAt),
+        () => record(UnknownWriteKind.buyConfirm, orderId: orderId),
+      );
+
+      Future<UnknownWriteReconciliation> reconcileAfter(
+        Duration after,
+        _Orders orders,
+      ) => withClock(Clock.fixed(recordedAt.add(after)), () async {
+        final result = await reconcile(orders)
+            .execute(ExchangeEnvironment.testnet);
+        return (result
+                as Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>)
+            .value;
+      });
+
+      final over = UnknownWrite.maxAge + const Duration(minutes: 1);
+
+      test('an undecided entry within maxAge stays open', () async {
+        await recordAt('unreadable');
+        final result = await reconcileAfter(UnknownWrite.maxAge, _Orders({}));
+        expect(result, const UnknownWriteReconciliation(settled: 0, open: 1));
+        expect(journal.entries.single.$2, isNull);
+      });
+
+      test('an undecided entry past maxAge is closed as expired', () async {
+        await recordAt('unreadable');
+        await recordAt('odd');
+        final result = await reconcileAfter(
+          over,
+          _Orders({'odd': Ok(_order(orderStatus: OrderStatus.unknown))}),
+        );
+        expect(result, const UnknownWriteReconciliation(settled: 2, open: 0));
+        expect(
+          [for (final (_, settlement) in journal.entries) settlement],
+          [UnknownWriteSettlement.expired, UnknownWriteSettlement.expired],
+        );
+      });
+
+      test('a re-read that decides wins over the age', () async {
+        await recordAt('confirmed');
+        final _ = await reconcileAfter(
+          over,
+          _Orders({
+            'confirmed': Ok(_order(orderStatus: OrderStatus.completed)),
+          }),
+        );
+        expect(journal.entries.single.$2, UnknownWriteSettlement.applied);
+      });
     });
 
     test('a DCA entry is settled from the user summary', () async {

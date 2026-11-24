@@ -1,3 +1,5 @@
+import 'package:bull_logger/bull_logger.dart';
+import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -39,7 +41,8 @@ final class UnknownWriteReconciliation {
 
 /// Settles the open journal entries of an environment by re-reading what
 /// each write would have changed. It never sends a write again. An entry
-/// stays open when the re-read fails or can't tell.
+/// stays open when the re-read fails or can't tell, until it is older than
+/// [UnknownWrite.maxAge]: then it is closed as expired and logged.
 final class ReconcileUnknownWritesUsecase {
   final UnknownWriteJournal _journal;
   final ExchangeOrders Function(ExchangeEnvironment) _orders;
@@ -48,7 +51,7 @@ final class ReconcileUnknownWritesUsecase {
   )
   _getUserSummary;
   final Future<Result<List<LimitOrder>, ExchangeFailure>> Function()
-  _listOpenLimitOrders;
+  _listRecentLimitOrders;
   final Future<Result<DefaultWallets, ExchangeFailure>> Function()
   _getDefaultWallets;
   final ExchangeRecipients _recipients;
@@ -60,15 +63,17 @@ final class ReconcileUnknownWritesUsecase {
       ExchangeEnvironment,
     )
     getUserSummary,
+
+    /// The account's most recent limit orders in every status.
     required Future<Result<List<LimitOrder>, ExchangeFailure>> Function()
-    listOpenLimitOrders,
+    listRecentLimitOrders,
     required Future<Result<DefaultWallets, ExchangeFailure>> Function()
     getDefaultWallets,
     required ExchangeRecipients recipients,
   }) : _journal = journal,
        _orders = orders,
        _getUserSummary = getUserSummary,
-       _listOpenLimitOrders = listOpenLimitOrders,
+       _listRecentLimitOrders = listRecentLimitOrders,
        _getDefaultWallets = getDefaultWallets,
        _recipients = recipients;
 
@@ -90,7 +95,14 @@ final class ReconcileUnknownWritesUsecase {
     var settled = 0;
     var open = 0;
     for (final entry in entries) {
-      final settlement = await _settlementOf(entry, environment);
+      var settlement = await _settlementOf(entry, environment);
+      if (settlement == null && entry.isOverAge(clock.now())) {
+        settlement = UnknownWriteSettlement.expired;
+        log.warning(
+          'Closing a ${entry.kind.wire} journal entry no re-read settled '
+          'within ${UnknownWrite.maxAge.inHours} h; its outcome stays unknown',
+        );
+      }
       if (settlement == null) {
         open++;
         continue;
@@ -134,7 +146,7 @@ final class ReconcileUnknownWritesUsecase {
           Err() => null,
         };
       case UnknownWriteKind.limitOrderCreate:
-        return switch (await _listOpenLimitOrders()) {
+        return switch (await _listRecentLimitOrders()) {
           Ok(:final value) => limitOrderSettlement(entry.request, value),
           Err() => null,
         };
@@ -196,15 +208,21 @@ UnknownWriteSettlement? confirmSettlement(Order order) =>
       OrderStatus.unknown => null,
     };
 
-/// Whether an accelerate took effect can't be read back; it stops mattering
-/// once the payout is sent or the order ended. Until then the entry stays
-/// open, so a second accelerate is never offered as if the first was lost.
-UnknownWriteSettlement? accelerateSettlement(Order order) =>
-    order.orderStatus.isTerminal ||
-        order.payoutStatus.isTerminal ||
-        order.transactionId != null
-    ? UnknownWriteSettlement.orderEnded
-    : null;
+/// Whether an accelerate took effect can't be read back. It is finished once
+/// the payout went out (a txid or a completed payout: applied), and stops
+/// mattering once the order or the payout ended without that (orderEnded).
+/// Until then the entry stays open, so a second accelerate is never offered
+/// as if the first was lost.
+UnknownWriteSettlement? accelerateSettlement(Order order) {
+  if (order.transactionId != null ||
+      order.payoutStatus == OrderPayoutStatus.completed) {
+    return UnknownWriteSettlement.applied;
+  }
+  if (order.orderStatus.isTerminal || order.payoutStatus.isTerminal) {
+    return UnknownWriteSettlement.orderEnded;
+  }
+  return null;
+}
 
 /// The account has one recurring buy: active with the address sent means it
 /// was created; inactive, or active with another address, means not.
@@ -215,17 +233,18 @@ UnknownWriteSettlement dcaSettlement(
     ? UnknownWriteSettlement.applied
     : UnknownWriteSettlement.notApplied;
 
-/// An open limit order with the same address, currency, price and amount
-/// means the create took effect. No match can't tell: the order may already
-/// have executed or expired, so the entry stays open.
+/// A limit order in any status (active, executed, expired, cancelled,
+/// failed) with the same address, currency, price and amount means the
+/// create took effect. [orders] is the most recent page; no match there can't
+/// tell, so the entry stays open (until [UnknownWrite.maxAge]).
 UnknownWriteSettlement? limitOrderSettlement(
   Map<String, String> request,
-  List<LimitOrder> openOrders,
+  List<LimitOrder> orders,
 ) {
   final price = double.tryParse(request['limitPrice'] ?? '');
   final amount = double.tryParse(request['fiatAmount'] ?? '');
   if (price == null || amount == null) return null;
-  final matches = openOrders.any(
+  final matches = orders.any(
     (order) =>
         order.address == request['address'] &&
         order.currencyCode == request['currency'] &&

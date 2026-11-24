@@ -38,7 +38,11 @@ enum UnknownWriteSettlement {
   notApplied('not_applied'),
 
   /// The order ended, so the write no longer matters.
-  orderEnded('order_ended');
+  orderEnded('order_ended'),
+
+  /// No re-read settled it within [UnknownWrite.maxAge]; closed and logged so
+  /// it stops holding the write gate. Whether it took effect stays unknown.
+  expired('expired');
 
   final String wire;
 
@@ -85,6 +89,13 @@ final class UnknownWrite {
     this.sessionEpoch,
     this.orderId,
   });
+
+  /// How long an entry may stay open. Past it the next reconcile closes it as
+  /// [UnknownWriteSettlement.expired] when its re-read still can't decide, and
+  /// the write gate no longer waits for it.
+  static const maxAge = Duration(hours: 24);
+
+  bool isOverAge(DateTime now) => now.difference(recordedAt) > maxAge;
 }
 
 /// The journal could not be read or written.
