@@ -203,6 +203,25 @@ void main() {
       expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
       _expectSanitized(failure);
     });
+
+    for (final failure in const <ExchangeFailure>[
+      ExchangeNotAuthenticatedFailure(),
+      ExchangeSessionRejectedFailure(),
+    ]) {
+      test('${failure.runtimeType} is signed out, not a retryable error '
+          '(SET-3)', () async {
+        final core = _MockGetUserSummary();
+        when(core.execute).thenAnswer((_) async => Err(failure));
+
+        final result = await GetAccountInfoUsecase(exchange: _withSummary(core))
+            .execute();
+
+        expect(
+          (result as Err).failure,
+          isA<ExchangeSettingsNotAuthenticatedFailure>(),
+        );
+      });
+    }
   });
 
   group('GetExchangePreferencesUsecase', () {
