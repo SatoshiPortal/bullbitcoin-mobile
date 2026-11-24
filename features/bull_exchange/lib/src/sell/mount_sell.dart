@@ -1,3 +1,4 @@
+import 'package:bull_exchange/src/payin/payin_spend_calls.dart';
 import 'package:bull_exchange/src/payin/exchange_payin_host.dart';
 import 'package:bull_exchange/src/sell/presentation/sell_flow_bloc.dart';
 import 'package:bull_exchange/src/sell/ui/sell_flow_shell.dart';
@@ -19,6 +20,7 @@ GoRoute mountSell(ExchangePayinHost host) => GoRoute(
         payjoinSender: host.payjoinSender(),
         payjoinSessions: host.payjoinSessions(),
         labels: host.labels(),
+        coins: walletCoinsOf(host.inventory(), host.native()),
       );
       return SellFlowBloc(
         calls: (session) => sellFlowCallsOf(exchange, session, wallets),
