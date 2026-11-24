@@ -29,6 +29,7 @@ class PlacePayOrderUsecase {
     required OrderAmount orderAmount,
     required WalletKey? walletKey,
     required String recipientId,
+    required PayoutRail rail,
     required BtcNetwork network,
     String? paymentDescription,
     bool usePayjoin = false,
@@ -85,6 +86,7 @@ class PlacePayOrderUsecase {
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
+        paymentProcessor: rail.paymentProcessor,
         usePayjoin: resolvedUsePayjoin,
       )) {
         case Ok(:final value):

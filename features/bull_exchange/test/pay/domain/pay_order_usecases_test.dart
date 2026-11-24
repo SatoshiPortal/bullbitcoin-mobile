@@ -74,6 +74,7 @@ void main() {
     walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
     orderAmount: const FiatAmount(100),
     recipientId: 'recipient-1',
+    rail: PayoutRails.interacEmail,
     network: BtcNetwork.bitcoin,
   );
 
@@ -85,6 +86,7 @@ void main() {
         walletKey: WalletKey(id: 'wallet-1', network: LiquidNetwork.mainnet),
         orderAmount: const FiatAmount(100),
         recipientId: 'recipient-1',
+        rail: PayoutRails.interacEmail,
         network: BtcNetwork.bitcoin,
       );
 
@@ -184,6 +186,7 @@ void main() {
         walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
         orderAmount: const FiatAmount(100),
         recipientId: 'recipient-1',
+        rail: PayoutRails.interacEmail,
         network: BtcNetwork.bitcoin,
         usePayjoin: true,
       );

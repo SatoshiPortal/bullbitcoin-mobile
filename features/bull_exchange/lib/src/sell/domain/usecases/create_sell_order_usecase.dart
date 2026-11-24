@@ -100,12 +100,7 @@ class CreateSellOrderUsecase {
           orderAmount: orderAmount,
           recipientId: recipient.id,
           network: network,
-          paymentProcessor: switch (recipient.type) {
-            RecipientType.confidentialSepaEur =>
-              SepaPaymentProcessor.confidential,
-            RecipientType.sepaEur => SepaPaymentProcessor.regular,
-            _ => null,
-          },
+          paymentProcessor: recipient.rail.paymentProcessor,
           usePayjoin: resolvedUsePayjoin,
         );
       }

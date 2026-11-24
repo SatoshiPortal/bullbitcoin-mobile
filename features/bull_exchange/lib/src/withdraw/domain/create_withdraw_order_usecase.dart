@@ -72,12 +72,7 @@ class CreateWithdrawOrderUsecase {
       switch (await repo.placeWithdrawalOrder(
         fiatAmount: fiatAmount,
         recipientId: recipientId,
-        paymentProcessor: switch (recipientType) {
-          RecipientType.sepaEur => SepaPaymentProcessor.regular,
-          RecipientType.confidentialSepaEur =>
-            SepaPaymentProcessor.confidential,
-          _ => null,
-        },
+        paymentProcessor: recipientType?.rail.paymentProcessor,
         securityQuestion: interacSecurityDetails?.securityQuestion,
         securityAnswer: interacSecurityDetails?.securityAnswer,
       )) {

@@ -333,6 +333,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       walletKey: event.wallet.key,
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
+      rail: walletSelectionState.selectedRecipient.rail,
       network: event.wallet.btcNetwork,
       paymentDescription: walletSelectionState.paymentDescription,
       usePayjoin:
@@ -436,6 +437,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       walletKey: null,
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
+      rail: walletSelectionState.selectedRecipient.rail,
       network: event.network,
       paymentDescription: walletSelectionState.paymentDescription,
     )) {
