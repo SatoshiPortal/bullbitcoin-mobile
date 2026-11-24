@@ -11,6 +11,8 @@ import 'domain/ports/backup_readiness_port.dart';
 import 'domain/repositories/backup_metadata_codec.dart';
 import 'domain/usecases/run_backup_usecase.dart';
 
+/// Headless entry point. It never creates, initializes or migrates the owner
+/// database: the foreground prepares it, and this run defers otherwise.
 Future<Result<BackupRunStatus, BackupMetadataFailure>> runBackupMetadataTask({
   required BackupReadinessPort readiness,
   required BackupInventoryPort inventory,
@@ -23,7 +25,7 @@ Future<Result<BackupRunStatus, BackupMetadataFailure>> runBackupMetadataTask({
     return const Err(BackupMetadataNotReadyFailure());
   }
   final repository = BackupMetadataRepositoryImpl(
-    store: BackupMetadataStore(path: statePath),
+    store: BackupMetadataStore(path: statePath, background: true),
     inventory: inventory,
     labels: labels,
     codec: codec,

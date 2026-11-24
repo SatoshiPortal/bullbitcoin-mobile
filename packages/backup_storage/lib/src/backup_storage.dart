@@ -10,13 +10,28 @@ enum BackupDestination { googleDrive, iCloud, folder }
 abstract interface class BackupStorage {
   BackupDestination get destination;
 
+  /// Opens the configured destination grant.
+  ///
+  /// Interactive authorization replaces the configured grant and releases the
+  /// previous one, so only an explicit configuration action may request it.
   @useResult
   Future<Result<StorageSession, BackupStorageFailure>> authorize({
     required bool interactive,
   });
+
+  /// Opens a temporary view of a destination to find restore files.
+  ///
+  /// It may ask the user to choose a location, but it never persists that
+  /// choice and never replaces or releases the configured grant. It is exposed
+  /// as read-only; close it with [StorageReadSession.close].
+  @useResult
+  Future<Result<StorageReadSession, BackupStorageFailure>>
+  authorizeForDiscovery();
 }
 
-abstract interface class StorageSession {
+/// Reads one destination. A discovery view is temporary; a [StorageSession]
+/// also writes through the same base capability.
+abstract interface class StorageReadSession {
   StorageAccount get account;
 
   /// Exhausts all pages. Prefix matching is literal, not a backend query.
@@ -32,6 +47,13 @@ abstract interface class StorageSession {
     required int maxBytes,
   });
 
+  /// Releases this view. It never revokes the configured grant: a discovery
+  /// view drops only the temporary authorization it obtained, and a full
+  /// session releases local resources with [StorageSession.dispose].
+  Future<void> close();
+}
+
+abstract interface class StorageSession implements StorageReadSession {
   @useResult
   Future<Result<StoredObject, BackupStorageFailure>> create({
     required String name,

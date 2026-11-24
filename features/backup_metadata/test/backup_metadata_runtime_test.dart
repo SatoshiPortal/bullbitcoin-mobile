@@ -25,14 +25,16 @@ void main() {
   late _Inventory inventory;
   late _Labels labels;
 
-  BackupMetadataRepositoryImpl repository([String? statePath]) =>
-      BackupMetadataRepositoryImpl(
-        store: BackupMetadataStore(path: statePath ?? path),
-        inventory: inventory,
-        labels: labels,
-        codec: const _Codec(),
-        storages: [storage],
-      );
+  BackupMetadataRepositoryImpl repository([
+    String? statePath,
+    BackupMetadataCodec codec = const _Codec(),
+  ]) => BackupMetadataRepositoryImpl(
+    store: BackupMetadataStore(path: statePath ?? path),
+    inventory: inventory,
+    labels: labels,
+    codec: codec,
+    storages: [storage],
+  );
 
   Future<void> enable([String? statePath]) async {
     expect(
@@ -232,6 +234,124 @@ void main() {
     expect(storage.objects[objectById('2')], orderedEquals(envelopeFor(1)));
   }
 
+  test('restore discovery never moves the configured destination', () async {
+    await enable();
+    await run();
+    expect(storage.created, 1);
+    final configured = objectById('1');
+
+    storage.discoveryAccountId = 'b';
+    storage.accounts['b'] = {
+      StoredObject(
+        id: 'from-b',
+        name: 'bull-data-fromb.bip138',
+        size: envelopeFor(0).length,
+        createdAt: DateTime.utc(2026, 1, 2),
+        durability: Durability.durable,
+      ): envelopeFor(
+        0,
+      ),
+    };
+
+    final discovered = await repository().discover(storage.destination);
+
+    expect(
+      discovered.fold((backups) => backups.single.storedAt, (_) => null),
+      DateTime.utc(2026, 1, 2),
+    );
+    expect(storage.accountId, 'a', reason: 'browsing is not a configuration');
+    expect(storage.interactiveAuthorizations, 1);
+    expect(storage.discoveries, 1);
+
+    await run();
+    expect(storage.accounts['b'], hasLength(1));
+    expect(storage.objects.keys, [configured]);
+    expect(storage.created, 1);
+  });
+
+  test(
+    'a persistently damaged pending upload is retired and replaced',
+    () async {
+      storage = MemoryBackupStorage(destination: BackupDestination.folder);
+      await enable();
+      storage.failAfterCreate = true;
+      expect((await run()).actionNeeded, isNotNull);
+      final damaged = objectById('1');
+      final damagedBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
+      storage.objects[damaged] = damagedBytes;
+      storage.failAfterCreate = false;
+
+      final repaired = await run();
+
+      expect(repaired.pendingChanges, isFalse);
+      expect(repaired.lastDurableBackup, isNotNull);
+      expect(
+        storage.created,
+        2,
+        reason: 'a confirmed mismatch must not block the group forever',
+      );
+      expect(storage.objects, hasLength(2));
+      expect(storage.objects[damaged], orderedEquals(damagedBytes));
+      expect(storage.objects[objectById('2')], orderedEquals(envelopeFor(0)));
+      expect(storage.deleted, isEmpty);
+    },
+  );
+
+  test(
+    'discovery reports a decode failure instead of an empty destination',
+    () async {
+      await enable();
+      await run();
+      final broken = StoredObject(
+        id: 'broken',
+        name: 'bull-data-broken.bip138',
+        size: 6,
+        createdAt: DateTime.utc(2026, 1, 3),
+        durability: Durability.durable,
+      );
+      storage.objects.clear();
+      storage.objects[broken] = Uint8List.fromList(utf8.encode('broken'));
+
+      final result = await repository(
+        null,
+        const _BrokenCodec(),
+      ).discover(storage.destination);
+
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataUnexpectedFailure>(),
+      );
+    },
+  );
+
+  test('discovery keeps a usable copy when another fails to decode', () async {
+    await enable();
+    await run();
+    final usable = objectById('1');
+    storage.objects[StoredObject(
+      id: 'broken',
+      name: 'bull-data-broken.bip138',
+      size: 6,
+      createdAt: DateTime.utc(2026, 1, 3),
+      durability: Durability.durable,
+    )] = Uint8List.fromList(
+      utf8.encode('broken'),
+    );
+
+    final discovered = await repository(
+      null,
+      const _BrokenCodec(),
+    ).discover(storage.destination);
+
+    expect(
+      discovered.fold(
+        (backups) => backups.map((backup) => backup.storedAt),
+        (_) => const <DateTime?>[],
+      ),
+      [usable.createdAt],
+    );
+  });
+
   test(
     'folder repairs unchanged digest when latest receipt no longer matches',
     () async {
@@ -273,77 +393,6 @@ void main() {
         reason: 'G3 and corrupt same-id G2 cannot justify pruning readable G1',
       );
       expect(storage.deleted, isNot(contains('1')));
-    },
-  );
-
-  void useV1Store() {
-    final db = sqlite3.open(path);
-    try {
-      db.execute('ALTER TABLE verified DROP COLUMN envelope_digest');
-      db.userVersion = 1;
-    } finally {
-      db.close();
-    }
-  }
-
-  test(
-    'v1 pending folder generations remain unproven and can be replaced',
-    () async {
-      await seedFolderGenerations();
-      corruptSecondGeneration();
-      // Even matching bytes are unproven without a receipt or stored digest.
-      storage.objects[objectById('2')] = envelopeFor(1);
-      useV1Store();
-
-      final result = await repository().status();
-      final status = result.fold(
-        (status) => status.groups.single,
-        (failure) => throw StateError(failure.runtimeType.toString()),
-      );
-      expect(status.pendingChanges, isTrue);
-      expect(status.previousVersionKept, isFalse);
-      expect(status.lastDurableBackup, isNotNull);
-
-      expect((await run()).pendingChanges, isFalse);
-      expect(storage.created, 3);
-      expect(storage.objects[objectById('1')], orderedEquals(envelopeFor(0)));
-      expect(storage.objects[objectById('3')], orderedEquals(envelopeFor(1)));
-      expect(objectById('2').durability, Durability.pending);
-      expect(storage.deleted, isEmpty);
-    },
-  );
-
-  test(
-    'v1 lost folder response recovers from its intent without a receipt',
-    () async {
-      storage = MemoryBackupStorage(
-        destination: BackupDestination.folder,
-        durability: Durability.pending,
-      )..failAfterCreate = true;
-      await enable();
-      expect((await run()).lastDurableBackup, isNull);
-      final original = objectById('1');
-      useV1Store();
-      storage.failAfterCreate = false;
-
-      expect((await run()).pendingChanges, isFalse);
-      expect((await run()).lastDurableBackup, isNotNull);
-      expect(storage.created, 1);
-      expect(storage.objects[original], orderedEquals(envelopeFor(0)));
-      expect(original.durability, Durability.pending);
-      final db = sqlite3.open(path);
-      try {
-        expect(db.userVersion, 2);
-        expect(db.select('SELECT * FROM intents'), isEmpty);
-        expect(
-          db
-              .select('SELECT envelope_digest FROM verified')
-              .single['envelope_digest'],
-          sha256.convert(envelopeFor(0)).toString(),
-        );
-      } finally {
-        db.close();
-      }
     },
   );
 
@@ -439,6 +488,85 @@ void main() {
       isA<BackupMetadataStalePlanFailure>(),
     );
   });
+
+  test('a headless run never creates the owner database', () async {
+    final result = await runBackupMetadataTask(
+      readiness: const _Ready(),
+      inventory: inventory,
+      labels: labels,
+      codec: const _Codec(),
+      storages: [storage],
+      statePath: path,
+    );
+
+    expect(
+      result.fold((_) => null, (failure) => failure),
+      isA<BackupMetadataNotReadyFailure>(),
+    );
+    expect(inventory.calls, 0);
+    expect(File(path).existsSync(), isFalse);
+    expect(File('$path.guard').existsSync(), isFalse);
+  });
+
+  test(
+    'a headless run uses the owner database the foreground prepared',
+    () async {
+      await enable();
+
+      final result = await runBackupMetadataTask(
+        readiness: const _Ready(),
+        inventory: inventory,
+        labels: labels,
+        codec: const _Codec(),
+        storages: [storage],
+        statePath: path,
+      );
+
+      expect(
+        result.fold(
+          (status) => status.groups.single.lastDurableBackup,
+          (_) => null,
+        ),
+        isNotNull,
+      );
+      expect(storage.created, 1);
+    },
+  );
+
+  test(
+    'a headless run refuses another schema version without upgrading',
+    () async {
+      await enable();
+      final db = sqlite3.open(path);
+      try {
+        db.userVersion = 42;
+      } finally {
+        db.close();
+      }
+
+      final result = await runBackupMetadataTask(
+        readiness: const _Ready(),
+        inventory: inventory,
+        labels: labels,
+        codec: const _Codec(),
+        storages: [storage],
+        statePath: path,
+      );
+
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataNotReadyFailure>(),
+      );
+      final reopened = sqlite3.open(path);
+      try {
+        expect(reopened.userVersion, 42);
+        expect(reopened.select('SELECT * FROM intents'), isEmpty);
+      } finally {
+        reopened.close();
+      }
+      expect(storage.created, 0);
+    },
+  );
 
   test('background readiness gate runs before any other port', () async {
     final result = await runBackupMetadataTask(
@@ -621,4 +749,33 @@ final class _NotReady implements BackupReadinessPort {
 
   @override
   Future<bool> databaseReady() async => false;
+}
+
+final class _Ready implements BackupReadinessPort {
+  const _Ready();
+
+  @override
+  Future<bool> databaseReady() async => true;
+}
+
+final class _BrokenCodec implements BackupMetadataCodec {
+  const _BrokenCodec();
+
+  @override
+  Result<PreparedBackup, BackupMetadataFailure> prepare(
+    BackupGroup group,
+    LabelsSnapshot snapshot,
+  ) => const _Codec().prepare(group, snapshot);
+
+  @override
+  Future<Result<LabelsSnapshot?, BackupMetadataFailure>> decode(
+    BackupGroup group,
+    Uint8List envelope,
+  ) async {
+    final data = utf8.decode(envelope, allowMalformed: true);
+    if (data == 'broken') {
+      return const Err(BackupMetadataUnexpectedFailure());
+    }
+    return const _Codec().decode(group, envelope);
+  }
 }

@@ -9,8 +9,16 @@ final class MemoryBackupStorage implements BackupStorage {
   final Set<String> unavailableReads = {};
   final Durability durability;
 
+  /// Account the configured grant currently resolves to.
   String accountId = 'a';
+
+  /// Account the user would pick in a discovery dialog. An interactive
+  /// authorization adopts it; a discovery view reads it and leaves
+  /// [accountId] alone.
+  String discoveryAccountId = 'a';
   int created = 0;
+  int interactiveAuthorizations = 0;
+  int discoveries = 0;
   bool failAfterCreate = false;
   bool corruptRead = false;
 
@@ -28,7 +36,26 @@ final class MemoryBackupStorage implements BackupStorage {
   @override
   Future<Result<StorageSession, BackupStorageFailure>> authorize({
     required bool interactive,
-  }) async => Ok(_Session(this, accountId, objects));
+  }) async {
+    if (interactive) {
+      interactiveAuthorizations++;
+      accountId = discoveryAccountId;
+    }
+    return Ok(_Session(this, accountId, objects));
+  }
+
+  @override
+  Future<Result<StorageReadSession, BackupStorageFailure>>
+  authorizeForDiscovery() async {
+    discoveries++;
+    return Ok(
+      _Session(
+        this,
+        discoveryAccountId,
+        accounts.putIfAbsent(discoveryAccountId, () => {}),
+      ),
+    );
+  }
 }
 
 final class _Session implements StorageSession {
@@ -93,6 +120,11 @@ final class _Session implements StorageSession {
   @override
   Future<Result<void, BackupStorageFailure>> disconnect() async =>
       const Ok(null);
+
+  @override
+  Future<void> close() async {
+    dispose();
+  }
 
   @override
   void dispose() {}

@@ -45,6 +45,14 @@ final class GoogleDriveBackupStorage implements BackupStorage {
       if (!acquired) drive.dispose();
     }
   }
+
+  /// Signs in to read another account's app folder. The sign-in owner is
+  /// shared, so this never revokes a grant and never rewrites the backup
+  /// selection: a different account only takes effect through an explicit
+  /// configuration.
+  @override
+  Future<Result<StorageReadSession, BackupStorageFailure>>
+  authorizeForDiscovery() => authorize(interactive: true);
 }
 
 final class _DriveSession implements StorageSession {
@@ -137,6 +145,11 @@ final class _DriveSession implements StorageSession {
     } finally {
       dispose();
     }
+  }
+
+  @override
+  Future<void> close() async {
+    dispose();
   }
 
   @override

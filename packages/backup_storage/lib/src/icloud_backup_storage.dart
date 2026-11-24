@@ -71,6 +71,16 @@ final class ICloudBackupStorage implements BackupStorage {
     );
   });
 
+  /// Reads the container without advancing the connection revision: a
+  /// disconnected container stays disconnected, and a connected one keeps its
+  /// grant.
+  @override
+  Future<Result<StorageReadSession, BackupStorageFailure>>
+  authorizeForDiscovery() => _run((remaining) async {
+    final accountId = await _invoke<String>('authorize', remaining);
+    return _ICloudDiscoverySession(this, StorageAccount(id: accountId));
+  });
+
   Future<T> _invoke<T>(
     String method,
     Duration Function() remaining, [
@@ -150,38 +160,18 @@ final class ICloudBackupStorage implements BackupStorage {
   }
 }
 
-final class _ICloudStorageSession implements StorageSession {
+/// Reads one iCloud container. A full session also enforces the persisted
+/// connection revision; a discovery view holds no persisted grant.
+abstract base class _ICloudView implements StorageReadSession {
   final ICloudBackupStorage _storage;
-  final int _revision;
-  bool _disposed = false;
-
   @override
   final StorageAccount account;
 
-  _ICloudStorageSession(this._storage, this.account, this._revision);
-
-  Future<void> _checkGrant() async {
-    if (_disposed ||
-        await _storage._connections.readRevision(_storage.containerId) !=
-            _revision ||
-        _disposed) {
-      throw const _AuthorizationRequired();
-    }
-  }
+  _ICloudView(this._storage, this.account);
 
   Future<Result<T, BackupStorageFailure>> _operate<T>(
     Future<T> Function(Duration Function()) action,
-  ) => _storage._run((remaining) async {
-    await _checkGrant();
-    try {
-      final result = await action(remaining);
-      await _checkGrant();
-      return result;
-    } on PlatformException catch (error) {
-      if (error.code == 'authorizationRequired') dispose();
-      rethrow;
-    }
-  });
+  );
 
   Future<T> _invoke<T>(
     String method,
@@ -218,6 +208,46 @@ final class _ICloudStorageSession implements StorageSession {
     });
     if (bytes.length > maxBytes) throw PlatformException(code: 'tooLarge');
     return bytes;
+  });
+
+  String _objectName(StoredObject object) {
+    if (object.id != object.name ||
+        !ICloudBackupStorage._isBackupName(object.id)) {
+      throw PlatformException(code: 'notFound');
+    }
+    return object.id;
+  }
+}
+
+final class _ICloudStorageSession extends _ICloudView
+    implements StorageSession {
+  final int _revision;
+  bool _disposed = false;
+
+  _ICloudStorageSession(super._storage, super.account, this._revision);
+
+  Future<void> _checkGrant() async {
+    if (_disposed ||
+        await _storage._connections.readRevision(_storage.containerId) !=
+            _revision ||
+        _disposed) {
+      throw const _AuthorizationRequired();
+    }
+  }
+
+  @override
+  Future<Result<T, BackupStorageFailure>> _operate<T>(
+    Future<T> Function(Duration Function()) action,
+  ) => _storage._run((remaining) async {
+    await _checkGrant();
+    try {
+      final result = await action(remaining);
+      await _checkGrant();
+      return result;
+    } on PlatformException catch (error) {
+      if (error.code == 'authorizationRequired') dispose();
+      rethrow;
+    }
   });
 
   @override
@@ -260,15 +290,35 @@ final class _ICloudStorageSession implements StorageSession {
       });
 
   @override
-  void dispose() => _disposed = true;
-
-  String _objectName(StoredObject object) {
-    if (object.id != object.name ||
-        !ICloudBackupStorage._isBackupName(object.id)) {
-      throw PlatformException(code: 'notFound');
-    }
-    return object.id;
+  Future<void> close() async {
+    dispose();
   }
+
+  @override
+  void dispose() => _disposed = true;
+}
+
+final class _ICloudDiscoverySession extends _ICloudView {
+  bool _disposed = false;
+
+  _ICloudDiscoverySession(super._storage, super.account);
+
+  @override
+  Future<Result<T, BackupStorageFailure>> _operate<T>(
+    Future<T> Function(Duration Function()) action,
+  ) => _storage._run((remaining) async {
+    if (_disposed) throw const _AuthorizationRequired();
+    final result = await action(remaining);
+    if (_disposed) throw const _AuthorizationRequired();
+    return result;
+  });
+
+  @override
+  Future<void> close() async {
+    dispose();
+  }
+
+  void dispose() => _disposed = true;
 }
 
 final class _AuthorizationRequired implements Exception {

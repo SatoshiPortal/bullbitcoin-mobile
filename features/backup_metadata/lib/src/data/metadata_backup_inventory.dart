@@ -1,17 +1,19 @@
 import 'package:primitives/primitives.dart';
 import 'package:secrets/metadata_backup.dart' as secrets;
 import 'package:secrets/secrets.dart' show SecretFailure;
-import 'package:sqlite3/sqlite3.dart';
 
 import '../domain/backup_metadata_failure.dart';
 import '../domain/entities/backup_inventory.dart';
 import '../domain/ports/backup_inventory_port.dart';
+import 'backup_metadata_store.dart';
 
 final class MetadataBackupInventory implements BackupInventoryPort {
   final Future<Result<List<secrets.MetadataBackupWallet>, SecretFailure>>
   Function()
   _wallets;
-  final String _groupIdsPath;
+
+  /// The owner database that keeps each group's installation-stable id.
+  final BackupMetadataStore _store;
   final Future<bool> Function() _hasSilentPaymentsWallet;
   final String _defaultBitcoinWalletLabel;
   final String _unnamedWalletLabel;
@@ -19,12 +21,12 @@ final class MetadataBackupInventory implements BackupInventoryPort {
 
   MetadataBackupInventory({
     required this._wallets,
-    required this._groupIdsPath,
+    required String statePath,
     required this._hasSilentPaymentsWallet,
     required this._defaultBitcoinWalletLabel,
     required this._unnamedWalletLabel,
     required this._backupVerified,
-  });
+  }) : _store = BackupMetadataStore(path: statePath);
 
   @override
   Future<Result<BackupInventory, BackupMetadataFailure>> read() async {
@@ -87,9 +89,15 @@ final class MetadataBackupInventory implements BackupInventoryPort {
         }
         final (reference, environment) = entry.key;
         final label = primary.label;
+        final groupId = await _store.groupId(reference.hex, environment.name);
+        if (groupId == null) {
+          // The foreground owner database has not been prepared yet; never
+          // create a second, unowned file for the identity mapping.
+          return const Err(BackupMetadataNotReadyFailure());
+        }
         inventory.add(
           BackupGroup(
-            id: _groupId(reference, environment),
+            id: groupId,
             displayName: primary.isDefault
                 ? _defaultBitcoinWalletLabel
                 : label == null || label.trim().isEmpty
@@ -108,34 +116,6 @@ final class MetadataBackupInventory implements BackupInventoryPort {
       return Ok(BackupInventory(groups: inventory, unsupported: unsupported));
     } on Exception {
       return const Err(BackupMetadataUnexpectedFailure());
-    }
-  }
-
-  String _groupId(Fingerprint reference, NetworkEnv environment) {
-    final store = sqlite3.open(_groupIdsPath);
-    try {
-      store.execute('PRAGMA busy_timeout = 3000');
-      store.execute('''
-        CREATE TABLE IF NOT EXISTS group_ids (
-          secret_ref TEXT NOT NULL,
-          environment TEXT NOT NULL,
-          group_id TEXT NOT NULL UNIQUE,
-          PRIMARY KEY (secret_ref, environment)
-        )
-      ''');
-      final key = [reference.hex, environment.name];
-      store.execute('''
-        INSERT INTO group_ids (secret_ref, environment, group_id)
-        VALUES (?, ?, lower(hex(randomblob(16))))
-        ON CONFLICT (secret_ref, environment) DO NOTHING
-      ''', key);
-      return store.select('''
-        SELECT group_id FROM group_ids
-        WHERE secret_ref = ? AND environment = ?
-      ''', key).single['group_id']
-          as String;
-    } finally {
-      store.close();
     }
   }
 }

@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:backup_metadata/backup_metadata.dart';
 import 'package:backup_metadata/setup.dart';
+import 'package:backup_metadata/src/data/backup_metadata_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/metadata_backup.dart' show MetadataBackupWallet;
 import 'package:secrets/secrets.dart' show FetchSecretFailure, SecretFailure;
+import 'package:sqlite3/sqlite3.dart';
 
 void main() {
   test(
@@ -46,12 +48,16 @@ void main() {
         ),
         MetadataBackupWallet(id: 'unsupported'),
       ];
+      final statePath = '${directory.path}/metadata.sqlite';
+      // The foreground prepares the owner database; the inventory only reads
+      // the group ids it holds.
+      await BackupMetadataStore(path: statePath).locked((_) async {});
       var failReads = false;
       MetadataBackupInventory open() => MetadataBackupInventory(
         wallets: () async => failReads
             ? const Err(FetchSecretFailure())
             : Ok<List<MetadataBackupWallet>, SecretFailure>(wallets),
-        groupIdsPath: '${directory.path}/group-ids.sqlite',
+        statePath: statePath,
         hasSilentPaymentsWallet: () async => true,
         defaultBitcoinWalletLabel: 'Default Bitcoin',
         unnamedWalletLabel: 'Unnamed wallet',
@@ -85,6 +91,37 @@ void main() {
       expect(
         reopened.groups.map((group) => group.id),
         value.groups.map((group) => group.id),
+      );
+
+      final owner = sqlite3.open(statePath);
+      try {
+        expect(owner.select('SELECT group_id FROM group_ids'), hasLength(2));
+        expect(owner.select('SELECT * FROM selection'), hasLength(1));
+      } finally {
+        owner.close();
+      }
+      expect(
+        directory.listSync().map((entry) => entry.path.split('/').last),
+        isNot(contains('group-ids.sqlite')),
+      );
+
+      final unprepared = await MetadataBackupInventory(
+        wallets: () async =>
+            Ok<List<MetadataBackupWallet>, SecretFailure>(wallets),
+        statePath: '${directory.path}/missing.sqlite',
+        hasSilentPaymentsWallet: () async => true,
+        defaultBitcoinWalletLabel: 'Default Bitcoin',
+        unnamedWalletLabel: 'Unnamed wallet',
+        backupVerified: (reference, network) async => true,
+      ).read();
+      expect(
+        unprepared.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataNotReadyFailure>(),
+      );
+      expect(
+        File('${directory.path}/missing.sqlite').existsSync(),
+        isFalse,
+        reason: 'an unprepared owner database is never created by a read',
       );
 
       failReads = true;
