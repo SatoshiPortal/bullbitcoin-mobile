@@ -42,7 +42,9 @@ There is no SP-specific make target. `make checks` is the local entry point: it 
 
 `make unit-test` picks up the Silent Payments suite under `features/silent/test/` along with the rest of the workspace. To run only this suite, run `fvm flutter test` from `features/silent`.
 
-Scanning resumes on its own during a sync tick, but only through `SyncSpWalletUsecase`, and only when `spScanTrigger` says so: a wallet with no cursor yet, or one more than about a month behind the tip, stays on the manual path until the user acts.
+Automatic scanning runs only in the foreground through `SyncSpWalletUsecase`. It can resume a manual scan that previously started and was not paused with Stop. Other wallets still follow `SpScanPolicy`: a wallet with no cursor or one more than about a month behind the tip needs a manual start. WorkManager does not start Silent Payments scans.
+
+Changing backends reconnects the existing account in place. Service Status only checks the configured Blindbit tip for an admitted Silent Payments wallet; the setup and settings checks also sample the scan data endpoints. Existing configurations without a minimum scan amount retain 600 sats. New configurations default to 1,000 sats, and lowering the amount does not automatically rescan earlier blocks.
 
 That confinement is enforced by the type system rather than by a grep. `scanOnce` lives alone on `SpScanPort`, and the feature graph hands that port to `ScanSpWalletUsecase` and nothing else, so no other class can reach the Rust scan without a visible change to the composition root. `silent_graph_scan_policy_test.dart` covers the behaviour on top of that: it boots the real feature graph with only the outbound ports faked and counts every `scanOnce` that reaches the boundary.
 
