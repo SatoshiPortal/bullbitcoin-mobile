@@ -4,6 +4,7 @@
 library;
 
 export 'src/steps/amount_entry.dart';
+export 'src/steps/consent_gate.dart';
 export 'src/steps/context_load.dart';
 export 'src/steps/kyc_gate.dart';
 export 'src/steps/order_quote.dart';
