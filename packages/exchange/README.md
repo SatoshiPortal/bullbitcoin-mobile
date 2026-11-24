@@ -4,7 +4,7 @@
 
 Account reads, preferences, announcements, order statistics and KYC uploads use the same environment-bound capability and return typed failures. The account read distinguishes a server rejection from absent or unreadable credentials; the historical summary read preserves its missing-account semantics. File selection and validation stay with Exchange Settings.
 
-Every exchange call runs on one client with the 30 s connect, send and receive timeouts, checked against the session before each request and disposed when the operation ends. Uploads (KYC documents, support messages with attachments) have no send timeout and report progress; their connect and receive timeouts still apply.
+Every exchange call runs on one client with the 30 s connect, send and receive timeouts, checked against the session before each request and disposed when the operation ends. Uploads (KYC documents, support messages with attachments) have no send timeout and report progress; their connect and receive timeouts still apply. Virtual IBAN creation and SEPA virtual payee activation wait up to 8 minutes for the answer (the server polls Fiat Republic before it replies); their connect and send timeouts stay at 30 s.
 
 `Exchange.notifications` publishes decoded notification events and typed recoverable socket failures for the active environment. Failures do not close the stream or include raw frames. Session management owns when to connect and disconnect. `Exchange.close()` releases the socket and its subscriptions; obsolete connect and reconnect attempts do not reopen it.
 

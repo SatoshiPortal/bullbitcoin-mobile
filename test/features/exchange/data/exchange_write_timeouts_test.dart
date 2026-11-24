@@ -1,7 +1,7 @@
 import 'package:preferences/preferences.dart' show Environment;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxTimeouts;
+import 'package:bbx_api/bbx_api.dart' show BbxTimeouts, RecipientsApi;
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -94,10 +94,19 @@ void main() {
               .having(
                 (options) => options.receiveTimeout,
                 'receive',
-                const Duration(seconds: 30),
+                isNotNull,
               ),
         ),
       );
+      for (final request in selected!.requests) {
+        final method = (request.data as Map)['method'];
+        expect(request.receiveTimeout, switch (method) {
+          // The server answers these only after polling Fiat Republic.
+          'createMyRecipient' ||
+          'activateSepaVirtualPayee' => RecipientsApi.virtualIbanReceiveTimeout,
+          _ => const Duration(seconds: 30),
+        }, reason: '$method');
+      }
       for (final adapter in adapters.values) {
         expect(adapter.requests, isEmpty);
       }

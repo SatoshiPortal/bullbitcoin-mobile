@@ -690,6 +690,54 @@ void main() {
     expect(payee.virtualPayeeStatus, 'PENDING');
   });
 
+  group('virtual IBAN timeouts', () {
+    late FakeHttp timed;
+
+    RecipientsApi timedApi(Object? body) {
+      timed = FakeHttp(body: body);
+      return bbx(timed, timeouts: BbxTimeouts.standard).recipients;
+    }
+
+    void expectLongReceive() {
+      final request = timed.requests.single;
+      expect(request.receiveTimeout, RecipientsApi.virtualIbanReceiveTimeout);
+      expect(request.receiveTimeout, greaterThan(const Duration(minutes: 6)));
+      expect(request.connectTimeout, const Duration(seconds: 30));
+      expect(request.sendTimeout, const Duration(seconds: 30));
+    }
+
+    test('createVirtualIban waits longer for the answer', () async {
+      valueOf(
+        await timedApi({
+          'result': {'element': <String, Object?>{}},
+        }).createVirtualIban(),
+      );
+
+      expectLongReceive();
+    });
+
+    test('activateSepaVirtualPayee waits longer for the answer', () async {
+      valueOf(
+        await timedApi({
+          'result': {
+            'element': {'recipientId': 'r-1'},
+          },
+        }).activateSepaVirtualPayee('r-1'),
+      );
+
+      expectLongReceive();
+    });
+
+    test('findVirtualIban keeps the client timeouts', () async {
+      valueOf(await timedApi({'result': null}).findVirtualIban());
+
+      final request = timed.requests.single;
+      expect(request.receiveTimeout, const Duration(seconds: 30));
+      expect(request.connectTimeout, const Duration(seconds: 30));
+      expect(request.sendTimeout, const Duration(seconds: 30));
+    });
+  });
+
   group('listSepaVirtualPayees', () {
     test('lists the SEPA recipients of a page with version 2', () async {
       answer({

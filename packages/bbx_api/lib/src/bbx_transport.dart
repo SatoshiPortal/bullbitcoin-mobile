@@ -70,6 +70,9 @@ final class BbxTransport {
   /// A non-null [onUploadProgress] makes the call an upload: sending its body
   /// has no time limit, and [onUploadProgress] reports the bytes sent. The
   /// connect and receive timeouts still apply.
+  ///
+  /// A non-null [receiveTimeout] replaces the client's receive timeout for
+  /// this request only, for a method the server is known to answer slowly.
   Future<Result<T, BbxFailure>> request<T>(
     String endpoint,
     String method, {
@@ -78,6 +81,7 @@ final class BbxTransport {
     Map<String, Object?>? headers,
     BbxFailure Function(Object error) rejection = bbxRpcFailure,
     BbxProgress? onUploadProgress,
+    Duration? receiveTimeout,
     required T Function(Object? result) read,
   }) async {
     final credential = await _credential();
@@ -88,6 +92,7 @@ final class BbxTransport {
         {'jsonrpc': '2.0', 'id': id, 'method': method, 'params': params},
         headers: {'X-API-Key': value, ...?headers},
         onUploadProgress: onUploadProgress,
+        receiveTimeout: receiveTimeout,
         read: (body) => Ok(read(_resultOf(body, rejection))),
       ),
     };
@@ -107,6 +112,7 @@ final class BbxTransport {
     String id = '0',
     Map<String, Object?>? headers,
     BbxFailure Function(Object error) rejection = bbxRpcFailure,
+    Duration? receiveTimeout,
     required T Function(Object? result) read,
   }) async {
     final result = await request(
@@ -116,6 +122,7 @@ final class BbxTransport {
       id: id,
       headers: headers,
       rejection: rejection,
+      receiveTimeout: receiveTimeout,
       read: read,
     );
     return switch (result) {
@@ -184,6 +191,7 @@ final class BbxTransport {
     required Result<T, BbxFailure> Function(Object? body) read,
     String? contentType,
     BbxProgress? onUploadProgress,
+    Duration? receiveTimeout,
   }) async {
     final Response<Object?> response;
     try {
@@ -194,6 +202,7 @@ final class BbxTransport {
           headers: headers,
           contentType: contentType,
           sendTimeout: onUploadProgress == null ? null : uploadSendTimeout,
+          receiveTimeout: receiveTimeout,
         ),
         onSendProgress: onUploadProgress,
       );

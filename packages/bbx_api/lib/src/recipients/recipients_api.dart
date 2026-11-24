@@ -22,6 +22,16 @@ final class RecipientsApi {
   static const endpoint = '/ak/api-recipients';
   static const _v2 = {'x-api-version': '2.0.0'};
 
+  /// How long [createVirtualIban] and [activateSepaVirtualPayee] wait for the
+  /// answer. Both answer only after the server has polled Fiat Republic: the
+  /// create waits for the end user to become active, the activation for the
+  /// end user and then the virtual account, each poll bounded by the server's
+  /// `FIAT_REPUBLIC_POLLING_TIMEOUT` (3 minutes by default). A 30-second limit
+  /// would cut off a request the server is still working on. The wait stays
+  /// bounded so the screen always gets an answer; connect and send keep the
+  /// client's timeouts.
+  static const virtualIbanReceiveTimeout = Duration(minutes: 8);
+
   final BbxTransport _transport;
 
   @internal
@@ -253,6 +263,7 @@ final class RecipientsApi {
         params: {
           'element': {'recipientType': 'FR_VIRTUAL_ACCOUNT', 'isOwner': true},
         },
+        receiveTimeout: virtualIbanReceiveTimeout,
         read: (result) => parseVirtualIban(_element(result)),
       );
 
@@ -265,6 +276,7 @@ final class RecipientsApi {
     'activateSepaVirtualPayee',
     params: {'recipientId': recipientId},
     headers: _v2,
+    receiveTimeout: virtualIbanReceiveTimeout,
     read: (result) => parseSepaVirtualPayee(_element(result)),
   );
 
