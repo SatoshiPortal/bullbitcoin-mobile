@@ -7,5 +7,6 @@ export 'src/steps/amount_entry.dart';
 export 'src/steps/context_load.dart';
 export 'src/steps/order_quote.dart';
 export 'src/steps/pick.dart';
+export 'src/steps/server_confirm.dart';
 export 'src/steps/session_gate.dart';
 export 'src/steps/step_next.dart';
