@@ -1,8 +1,6 @@
-import 'package:ark/ark.dart';
 import 'package:bull_ark/src/domain/ark_display_data_port.dart';
 import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
 import 'package:bull_ark/src/ui/ark_exit_request_screen.dart';
-import 'package:bull_ark/src/ui/ark_information_screen.dart';
 import 'package:bull_ark/src/ui/ark_payment_screen.dart';
 import 'package:bull_ark/src/ui/ark_vtxos_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -58,18 +56,11 @@ void main() {
               observedSpendable: Sats.fromInt(1234),
               onReconcile: () {},
             ),
-            ArkInformationScreen(
-              config: config(),
-              snapshot: ArkSnapshot(
-                account: account(),
-                revision: 1,
-                observedAt: DateTime.utc(2026, 11, 18),
-                stale: false,
-                confirmedReserve: Sats.fromInt(1234),
-                reserveAddress: 'bcrt1qpublicreservefixture',
-              ),
+            ArkVtxosScreen(
+              snapshot: vtxos.view(),
+              renewalThresholdBlocks: 1008,
+              onRenew: (_) async => false,
             ),
-            ArkVtxosScreen(snapshot: vtxos.view(), onRenew: (_) {}),
             exits.Harness(exits.view()).screen,
             ArkExitRequestScreen(
               snapshot: request.inventory(),

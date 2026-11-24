@@ -8,9 +8,11 @@ import 'package:bull_ark/src/domain/repositories/ark_preferences_repository.dart
 import 'package:bull_ark/src/domain/usecases/load_ark_settings_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/enable_ark_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/set_ark_enabled_usecase.dart';
+import 'package:bull_ark/src/domain/usecases/read_ark_next_round_usecase.dart';
+import 'package:bull_ark/src/presentation/ark_next_round_cubit.dart';
 import 'package:bull_ark/src/presentation/ark_settings_cubit.dart';
 import 'package:bull_ark/src/ui/ark_settings_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -73,6 +75,10 @@ class Client extends FakeArkClient {
 }
 
 class Fixture {
+  Fixture() {
+    // The page closes its next-round helper; tests stand in for the page.
+    addTearDown(() => rounds.close());
+  }
   final selection = Selection();
   final preferences = Preferences();
   final client = Client()..snapshot = Ok(snapshot(account()));
@@ -82,42 +88,120 @@ class Fixture {
     EnableArkUsecase(repository, preferences, Provisioner()),
     SetArkEnabledUsecase(repository, preferences),
   );
-  Widget app({ValueChanged<ArkAccountConfig>? opened}) => MaterialApp(
-    theme: ThemeData(extensions: testBullExtensions),
-    home: ArkSettingsScreen(cubit: cubit, onOpenAccount: opened ?? (_) {}),
+  final opened = <String>[];
+  DateTime clock = DateTime.utc(2026, 11, 19, 12);
+  late final rounds = ArkNextRoundCubit(
+    ReadArkNextRoundUsecase(repository),
+    now: () => clock,
   );
+  Widget app() => MaterialApp(
+    theme: ThemeData(extensions: testBullExtensions),
+    home: ArkSettingsScreen(
+      cubit: cubit,
+      onOpenAccount: (_) => opened.add('account'),
+      onInfo: () => opened.add('info'),
+      onVtxos: () => opened.add('vtxos'),
+      onBoard: () => opened.add('board'),
+      onExits: () => opened.add('exits'),
+      nextRound: rounds,
+    ),
+  );
+
+  /// Wallet lifecycle calls, without the settings card's next-round reads.
+  List<String> get walletCalls =>
+      client.calls.where((c) => c != 'next-round').toList();
+  int get roundRequests => client.calls.where((c) => c == 'next-round').length;
 }
 
 void main() {
   testWidgets(
-    'same-account changed provider cannot reuse prior disclosure consent',
+    'turning Ark on asks consent to the providers shown and then creates',
     (tester) async {
       final f = Fixture();
       addTearDown(f.cubit.close);
       await tester.pumpWidget(f.app());
       await tester.pumpAndSettle();
-      await tester.ensureVisible(
-        find.text('I understand the direct connection'),
-      );
-      await tester.tap(find.text('I understand the direct connection'));
-      await tester.pump();
-      expect(
-        tester
-            .widget<BullButton>(find.widgetWithText(BullButton, 'Enable Ark'))
-            .disabled,
-        false,
-      );
-      f.selection.current = config(ark: 'https://changed.example');
-      await f.cubit.load();
+      expect(find.text('Ark is off'), findsOneWidget);
+      await tester.tap(find.byType(BullSwitch));
       await tester.pumpAndSettle();
-      expect(find.text('https://changed.example'), findsOneWidget);
-      expect(
-        tester
-            .widget<BullButton>(find.widgetWithText(BullButton, 'Enable Ark'))
-            .disabled,
-        true,
-      );
-      expect(f.client.calls, isEmpty);
+      expect(find.byKey(const ValueKey('ark-consent')), findsOneWidget);
+      expect(find.textContaining('https://ark.example'), findsOneWidget);
+      expect(find.textContaining('https://chain.example'), findsOneWidget);
+      expect(find.textContaining('https://fallback.example'), findsOneWidget);
+      expect(f.walletCalls, isEmpty);
+      await tester.tap(find.text('I understand'));
+      await tester.pumpAndSettle();
+      expect(f.walletCalls, ['create']);
+      expect(f.cubit.state.settings?.enabled, true);
+      expect(find.text('Next round'), findsOneWidget);
+      expect(find.text('Board to Ark'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+  testWidgets('cancelling the consent dialog keeps Ark off', (tester) async {
+    final f = Fixture();
+    addTearDown(f.cubit.close);
+    await tester.pumpWidget(f.app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(BullSwitch));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(f.walletCalls, isEmpty);
+    expect(f.preferences.writes, isEmpty);
+    expect(tester.widget<BullSwitch>(find.byType(BullSwitch)).value, false);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets(
+    'a provider change while the consent dialog is open cannot reuse that consent',
+    (tester) async {
+      for (final next in [
+        config(ark: 'https://changed.example'),
+        config(chain: 'https://changed-chain.example'),
+        config(fallback: null),
+        config(threshold: 144),
+        config(
+          id: ArkAccountId(
+            parent: Fingerprint('44556677'),
+            network: BitcoinNetwork.regtest,
+            serverIdentity: 'other-server',
+          ),
+        ),
+      ]) {
+        final f = Fixture();
+        await tester.pumpWidget(f.app());
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(BullSwitch));
+        await tester.pumpAndSettle();
+        f.selection.current = next;
+        await f.cubit.load();
+        await tester.tap(find.text('I understand'));
+        await tester.pumpAndSettle();
+        expect(f.walletCalls, isEmpty);
+        expect(f.preferences.writes, isEmpty);
+        await tester.pumpWidget(const SizedBox.shrink());
+        await f.cubit.close();
+      }
+    },
+  );
+  testWidgets(
+    'while off, every Ark row is hidden and only the switch remains',
+    (tester) async {
+      final f = Fixture();
+      addTearDown(f.cubit.close);
+      await tester.pumpWidget(f.app());
+      await tester.pumpAndSettle();
+      for (final label in [
+        'Ark wallet',
+        'Ark info',
+        'VTXOs',
+        'Board to Ark',
+        'Emergency exit',
+      ]) {
+        expect(find.text(label), findsNothing);
+      }
+      expect(find.byType(BullSwitch), findsOneWidget);
+      expect(f.opened, isEmpty);
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
@@ -134,13 +218,13 @@ void main() {
       f.client.pending = Completer<Result<ArkSnapshot, ArkWalletFailure>>();
       final enabling = f.cubit.enable(privacyDisclosureAccepted: true);
       await Future<void>.delayed(Duration.zero);
-      expect(f.client.calls, ['create']);
+      expect(f.walletCalls, ['create']);
       try {
         old.complete(Ok(config(ark: 'https://stale.example')));
         await reading;
         expect(f.cubit.state.busy, true);
         await f.cubit.enable(privacyDisclosureAccepted: true);
-        expect(f.client.calls, ['create']);
+        expect(f.walletCalls, ['create']);
       } finally {
         f.client.pending?.complete(Ok(snapshot(account())));
         await enabling;
@@ -179,7 +263,7 @@ void main() {
     await f.cubit.load();
     await f.cubit.enable(privacyDisclosureAccepted: true);
     expect(f.cubit.state.failure, isA<ArkNetworkUnavailableFailure>());
-    expect(f.client.calls, isEmpty);
+    expect(f.walletCalls, isEmpty);
     expect(f.preferences.writes, isEmpty);
     f.selection.current = config();
     f.preferences.enabled = true;
@@ -187,7 +271,7 @@ void main() {
     await f.cubit.disable();
     expect(f.preferences.writes, [(account(), false)]);
     expect(f.cubit.state.settings?.enabled, false);
-    expect(f.client.calls, isEmpty);
+    expect(f.walletCalls, isEmpty);
   });
   testWidgets(
     'explicit retry after create and preference error retains the same config',
@@ -199,89 +283,39 @@ void main() {
       await tester.pumpAndSettle();
       final captured = f.selection.current;
       await f.cubit.enable(privacyDisclosureAccepted: true);
-      expect(f.client.calls, ['create']);
+      expect(f.walletCalls, ['create']);
       expect(f.cubit.state.failure, isA<ArkFeatureStorageFailure>());
       await tester.pumpAndSettle();
       expect(find.text('Ark is unavailable. Try again.'), findsOneWidget);
-      expect(find.textContaining('Ark is off for new payments.'), findsNothing);
       expect(identical(f.cubit.state.settings?.config, captured), true);
       f.preferences.failEnable = false;
       await f.cubit.enable(privacyDisclosureAccepted: true);
-      expect(f.client.calls, ['create', 'create']);
+      expect(f.walletCalls, ['create', 'create']);
       expect(f.client.arguments.every((arg) => identical(arg, captured)), true);
       expect(f.cubit.state.settings?.enabled, true);
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
   testWidgets(
-    'full config changes reset consent and a stale callback cannot grant it',
-    (tester) async {
-      final f = Fixture();
-      addTearDown(f.cubit.close);
-      await tester.pumpWidget(f.app());
-      await tester.pumpAndSettle();
-      final enable = find.widgetWithText(BullButton, 'Enable Ark');
-      expect(
-        tester.getTopLeft(find.text('https://ark.example')).dy,
-        lessThan(tester.getTopLeft(enable).dy),
-      );
-      expect(
-        find.textContaining('Ark connects directly without Tor.'),
-        findsOneWidget,
-      );
-      for (final next in [
-        config(chain: 'https://changed-chain.example'),
-        config(fallback: null),
-        config(threshold: 144),
-        config(
-          id: ArkAccountId(
-            parent: Fingerprint('44556677'),
-            network: BitcoinNetwork.regtest,
-            serverIdentity: 'other-server',
-          ),
-        ),
-      ]) {
-        await tester.ensureVisible(
-          find.text('I understand the direct connection'),
-        );
-        await tester.tap(find.text('I understand the direct connection'));
-        await tester.pump();
-        final staleButton = tester.widget<BullButton>(enable);
-        expect(staleButton.disabled, false);
-        f.selection.current = next;
-        await f.cubit.load();
-        staleButton.onPressed();
-        await tester.pumpAndSettle();
-        expect(tester.widget<BullButton>(enable).disabled, true);
-        expect(f.client.calls, isEmpty);
-      }
-      await tester.pumpWidget(const SizedBox.shrink());
-    },
-  );
-  testWidgets(
-    'pending creation disables consent and controls; closing does not cancel admitted effects',
+    'pending creation disables the switch; closing does not cancel admitted effects',
     (tester) async {
       final f = Fixture();
       final held = Completer<Result<ArkSnapshot, ArkWalletFailure>>();
       f.client.pending = held;
       await tester.pumpWidget(f.app());
       await tester.pumpAndSettle();
-      final consent = find.widgetWithText(
-        BullButton,
-        'I understand the direct connection',
+      await tester.tap(find.byType(BullSwitch));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('I understand'));
+      await tester.pump();
+      await tester.pump();
+      expect(
+        tester.widget<BullSwitch>(find.byType(BullSwitch)).onChanged,
+        isNull,
       );
-      final enable = find.widgetWithText(BullButton, 'Enable Ark');
-      await tester.ensureVisible(consent);
-      await tester.tap(consent);
-      await tester.pump();
-      await tester.ensureVisible(enable);
-      await tester.tap(enable);
-      await tester.pump();
-      expect(tester.widget<BullButton>(consent).disabled, true);
-      expect(tester.widget<BullButton>(enable).disabled, true);
       await f.cubit.load();
       await f.cubit.disable();
-      expect(f.client.calls, ['create']);
+      expect(f.walletCalls, ['create']);
       expect(f.preferences.writes, isEmpty);
       await tester.pumpWidget(const SizedBox.shrink());
       expect(f.cubit.isClosed, false);
@@ -289,11 +323,11 @@ void main() {
       held.complete(Ok(snapshot(account())));
       await tester.pump();
       expect(f.preferences.writes, [(account(), true)]);
-      expect(f.client.calls, ['create']);
+      expect(f.walletCalls, ['create']);
     },
   );
   testWidgets(
-    'replacement detaches old read and details callback uses current config without owning Cubit',
+    'replacement detaches the old read; consent shows the current providers',
     (tester) async {
       final first = Fixture(), second = Fixture();
       addTearDown(first.cubit.close);
@@ -301,20 +335,21 @@ void main() {
       final old = Completer<Result<ArkAccountConfig, ArkFailure>>();
       first.selection.pending.add(old.future);
       second.selection.current = config(ark: 'https://new-visible.example');
-      ArkAccountConfig? opened;
       await tester.pumpWidget(first.app());
       await tester.pump();
-      await tester.pumpWidget(second.app(opened: (config) => opened = config));
+      await tester.pumpWidget(second.app());
       await tester.pumpAndSettle();
       old.complete(Ok(config()));
       await tester.pumpAndSettle();
-      expect(find.text('https://new-visible.example'), findsOneWidget);
-      expect(find.text('https://ark.example'), findsNothing);
-      final details = find.widgetWithText(BullButton, 'Ark');
-      await tester.ensureVisible(details);
-      await tester.tap(details);
-      await tester.pump();
-      expect(identical(opened, second.selection.current), true);
+      await tester.tap(find.byType(BullSwitch));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('https://new-visible.example'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('https://ark.example'), findsNothing);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
       expect(first.client.calls, isEmpty);
       expect(second.client.calls, isEmpty);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -322,4 +357,96 @@ void main() {
       expect(second.cubit.isClosed, false);
     },
   );
+
+  group('next round', () {
+    testWidgets('while on, counts down to the server start time', (
+      tester,
+    ) async {
+      final f = Fixture();
+      f.preferences.enabled = true;
+      f.client.nextRoundStart = Ok(f.clock.add(const Duration(seconds: 290)));
+      addTearDown(f.cubit.close);
+      await tester.pumpWidget(f.app());
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('in 5 min.'), findsOneWidget);
+      expect(f.roundRequests, 1);
+      f.clock = f.clock.add(const Duration(seconds: 250));
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('in 40 sec.'), findsOneWidget);
+      f.clock = f.clock.add(const Duration(seconds: 40));
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('Now'), findsOneWidget);
+      // The countdown is local: only the start of the round triggers a new
+      // server request, not each tick.
+      expect(f.roundRequests, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('asks again once the scheduled round has started', (
+      tester,
+    ) async {
+      final f = Fixture();
+      f.preferences.enabled = true;
+      f.client.nextRoundStart = Ok(f.clock.add(const Duration(minutes: 2)));
+      addTearDown(f.cubit.close);
+      await tester.pumpWidget(f.app());
+      await tester.pump();
+      await tester.pump();
+      expect(f.roundRequests, 1);
+      f.clock = f.clock.add(const Duration(minutes: 2));
+      f.client.nextRoundStart = Ok(f.clock.add(const Duration(minutes: 10)));
+      await tester.pump(const Duration(minutes: 2));
+      await tester.pump();
+      expect(f.roundRequests, 2);
+      expect(find.text('in 10 min.'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('while off, never asks the server', (tester) async {
+      final f = Fixture();
+      addTearDown(f.cubit.close);
+      await tester.pumpWidget(f.app());
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(minutes: 5));
+      expect(f.roundRequests, 0);
+      expect(find.text('Next round'), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('an unreachable server shows Unavailable and retries', (
+      tester,
+    ) async {
+      final f = Fixture();
+      f.preferences.enabled = true;
+      addTearDown(f.cubit.close);
+      await tester.pumpWidget(f.app());
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Unavailable'), findsOneWidget);
+      expect(f.roundRequests, 1);
+      f.client.nextRoundStart = Ok(f.clock.add(const Duration(minutes: 3)));
+      await tester.pump(f.rounds.retryAfter);
+      await tester.pump();
+      expect(f.roundRequests, 2);
+      expect(find.text('in 3 min.'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('turning Ark off stops asking the server', (tester) async {
+      final f = Fixture();
+      f.preferences.enabled = true;
+      addTearDown(f.cubit.close);
+      await tester.pumpWidget(f.app());
+      await tester.pump();
+      await tester.pump();
+      expect(f.roundRequests, 1);
+      await f.cubit.disable();
+      await tester.pump();
+      expect(f.rounds.state, isA<ArkNextRoundIdle>());
+      await tester.pump(const Duration(minutes: 5));
+      expect(f.roundRequests, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  });
 }

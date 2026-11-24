@@ -29,6 +29,7 @@ final class ArkCubit extends Cubit<ArkViewState> {
   final SynchronizeArkUsecase _synchronize;
   final ArkAccountId account;
   bool _refreshing = false;
+  bool _again = false, _againRenews = false;
   bool _reading = false;
   int _epoch = 0;
   ArkCubit(this._read, this._synchronize, {required this.account})
@@ -47,7 +48,14 @@ final class ArkCubit extends Cubit<ArkViewState> {
   }
 
   Future<void> refresh({bool renew = false}) async {
-    if (_refreshing || isClosed) return;
+    if (isClosed) return;
+    if (_refreshing) {
+      // A refresh already under way may have read the account before the
+      // change this caller expects; run once more after it.
+      _again = true;
+      _againRenews = _againRenews || renew;
+      return;
+    }
     _refreshing = true;
     final epoch = ++_epoch;
     try {
@@ -58,6 +66,12 @@ final class ArkCubit extends Cubit<ArkViewState> {
       if (epoch == _epoch) _publish(result);
     } finally {
       _refreshing = false;
+    }
+    if (_again && !isClosed) {
+      final renews = _againRenews;
+      _again = false;
+      _againRenews = false;
+      await refresh(renew: renews);
     }
   }
 

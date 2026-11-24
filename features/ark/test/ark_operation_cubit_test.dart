@@ -64,6 +64,19 @@ class EffectThenFailureClient extends FakeArkClient {
     }
     return Err(failure);
   }
+
+  /// Like the real client, its record of an attempt is readable.
+  @override
+  Future<Result<ArkSnapshot, ArkWalletFailure>> read(
+    ArkAccountId account,
+  ) async => Ok(
+    ArkSnapshot(
+      account: account,
+      revision: 1,
+      observedAt: DateTime.utc(2026),
+      operations: journal.values.toList(),
+    ),
+  );
 }
 
 class FailingPreferences implements ArkPreferencesRepository {
@@ -93,6 +106,7 @@ ArkOperationCubit controller(
       repository,
       settings,
       now: () => DateTime.utc(2026),
+      wait: (_) async {},
     ),
     operationId ?? () => 'operation-1',
     account: account(),
@@ -142,7 +156,16 @@ void main() {
         await cubit.load();
         await cubit.confirm();
         expect(client.journal.keys, ['operation-1']);
-        expect(client.calls, ['quote', 'submit']);
+        // Busy is waited out under the same id before it counts as unknown.
+        expect(client.calls, [
+          'quote',
+          ...List.filled(
+            failure is ArkWriterBusyFailure
+                ? ConfirmArkOperationUsecase.busyRetries + 1
+                : 1,
+            'submit',
+          ),
+        ]);
         expect(nextId, 1);
         expect(
           cubit.state,
@@ -155,6 +178,34 @@ void main() {
       },
     );
   }
+
+  test(
+    'a refusal that left no attempt says why, not an unknown outcome',
+    () async {
+      final client = FakeArkClient()
+        ..quoted = Ok(quote(account()))
+        ..submitted = const Err(ArkStaleQuoteFailure())
+        ..snapshot = Ok(
+          ArkSnapshot(
+            account: account(),
+            revision: 1,
+            observedAt: DateTime.utc(2026),
+          ),
+        );
+      final cubit = controller(client);
+      addTearDown(cubit.close);
+      await cubit.load();
+      await cubit.confirm();
+      expect(
+        cubit.state,
+        isA<ArkOperationFailed>().having(
+          (state) => state.failure,
+          'failure',
+          isA<ArkReviewExpiredFailure>(),
+        ),
+      );
+    },
+  );
 
   test(
     'a preferences storage failure before submit permits a fresh review',

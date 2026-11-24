@@ -21,7 +21,16 @@ class ArkUnavailableScreen extends StatelessWidget {
                     ? () => Navigator.pop(context)
                     : null,
               ),
-              BullInfoBar(message: l10n.nativeUnavailable),
+              Expanded(
+                child: Center(
+                  child: BullText(
+                    l10n.nativeUnavailable,
+                    role: BullTextRole.body,
+                    color: context.bull.error,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

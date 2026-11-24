@@ -32,6 +32,24 @@ final class ArkPaymentInsufficientFundsFailure extends ArkFailure {
   const ArkPaymentInsufficientFundsFailure();
 }
 
+/// An emergency exit is waiting for its fee: the on-chain reserve lacks
+/// [missing], with [incoming] already received but not yet confirmed.
+final class ArkExitAwaitingFeesFailure extends ArkFailure {
+  final Sats missing;
+  final Sats incoming;
+  const ArkExitAwaitingFeesFailure({
+    required this.missing,
+    required this.incoming,
+  });
+}
+
+/// An emergency exit cannot start: its fees are not in the reserve, and
+/// Secure Bitcoin cannot send at least [amount] to cover them.
+final class ArkExitFeesUnfundedFailure extends ArkFailure {
+  final Sats amount;
+  const ArkExitFeesUnfundedFailure(this.amount);
+}
+
 final class ArkBoardBelowMinimumFailure extends ArkFailure {
   final Sats minimum;
   const ArkBoardBelowMinimumFailure(this.minimum);
