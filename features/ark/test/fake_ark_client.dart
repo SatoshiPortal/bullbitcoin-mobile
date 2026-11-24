@@ -10,7 +10,30 @@ class FakeArkClient implements ArkClient {
   late Result<ArkQuote, ArkWalletFailure> quoted;
   late Result<ArkOperation, ArkWalletFailure> submitted;
   late Result<ArkReceiveDestination, ArkWalletFailure> destination;
+  Result<DateTime, ArkWalletFailure> nextRoundStart = const Err(
+    ArkUnavailableFailure(),
+  );
   Stream<Result<ArkSnapshot, ArkWalletFailure>> changes = const Stream.empty();
+  Result<List<ArkOperation>, ArkWalletFailure> claimed = const Ok([]);
+  Result<ArkOperation?, ArkWalletFailure> progressed = const Ok(null);
+  @override
+  Future<Result<ArkOperation?, ArkWalletFailure>> progressStartedExits(
+    ArkAccountId account,
+  ) async {
+    calls.add('progressStartedExits');
+    arguments.add(account);
+    return progressed;
+  }
+
+  @override
+  Future<Result<List<ArkOperation>, ArkWalletFailure>> claimAuthorized(
+    ArkAccountId account,
+  ) async {
+    calls.add('claimAuthorized');
+    arguments.add(account);
+    return claimed;
+  }
+
   @override
   Future<Result<ArkSnapshot, ArkWalletFailure>> create(
     ArkAccountConfig config,
@@ -73,6 +96,15 @@ class FakeArkClient implements ArkClient {
     calls.add('receive');
     arguments.add((account, request));
     return destination;
+  }
+
+  @override
+  Future<Result<DateTime, ArkWalletFailure>> nextRound(
+    ArkAccountId account,
+  ) async {
+    calls.add('next-round');
+    arguments.add(account);
+    return nextRoundStart;
   }
 
   @override
