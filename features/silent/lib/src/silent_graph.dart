@@ -247,6 +247,9 @@ abstract final class SilentGraph {
       () => SpTipWatcher(
         watchSpUpdatesUsecase: locator<WatchSpUpdatesUsecase>(),
         syncSpWalletUsecase: locator<SyncSpWalletUsecase>(),
+        watchSpNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
+        foregroundChanges: _foregroundChanges(),
+        initiallyForeground: _isForegroundNow(),
       ),
     );
     locator.registerLazySingleton<SpElectrumReconnectWatcher>(
