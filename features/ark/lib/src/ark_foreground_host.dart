@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:ark/ark.dart' show ArkSnapshot;
 
+import 'ark_app_services.dart';
 import 'ark_foreground_runtime.dart';
 import 'ui/ark_payment_scanner.dart';
 
@@ -20,6 +21,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Every route path the Ark feature composes; the host serves these only.
 const arkHostPaths = [
@@ -34,7 +36,6 @@ const arkHostPaths = [
   '/ark/unavailable',
   '/ark/claim-recovery',
   '/ark/board',
-  '/ark/exit-progress',
   '/ark/exit-request',
 ];
 
@@ -49,6 +50,9 @@ final class ArkForegroundHost {
   final bool _initialize;
   final ArkPreferencesRepository? _preferences;
   final ArkScanner? _scanner;
+
+  /// What only the app can give Ark, passed to each runtime it opens.
+  final ArkAppServices _services;
   final BackgroundTaskDispatcher? dispatcher;
   final ArkBoardFundingBinding Function() _boardFunding;
   final WalletInventory _inventory;
@@ -60,6 +64,26 @@ final class ArkForegroundHost {
   int _generation = 0;
   bool _closed = false;
 
+  final _homeChanges = StreamController<void>.broadcast();
+  StreamSubscription<Object?>? _watching;
+
+  /// Fires when what home shows may have changed: a runtime opened or went
+  /// away, or the open account published a new observation. Home reads
+  /// [homeObservation] again then, instead of waiting for a navigation.
+  Stream<void> get homeChanges => _homeChanges.stream;
+
+  void _homeChanged() {
+    if (!_homeChanges.isClosed) _homeChanges.add(null);
+  }
+
+  void _watch(ArkForegroundRuntime? runtime) {
+    unawaited(_watching?.cancel());
+    _watching = runtime?.feature.facade
+        .watch(runtime.account)
+        .listen((_) => _homeChanged());
+    _homeChanged();
+  }
+
   ArkForegroundHost(
     this._locator, {
     required Uri arkUrl,
@@ -70,6 +94,7 @@ final class ArkForegroundHost {
     this._preferences,
     this._scanner,
     this.dispatcher,
+    this._services = const ArkAppServices(),
   }) : _ark = arkUrl,
        _esplora = primaryEsploraUrl,
        _initialize = initializeNew;
@@ -89,6 +114,7 @@ final class ArkForegroundHost {
     ArkPreferencesRepository? preferences,
     BackgroundTaskDispatcher? dispatcher,
     ArkScanner? scanner,
+    ArkAppServices services = const ArkAppServices(),
   }) async {
     final host = ArkForegroundHost(
       locator,
@@ -97,6 +123,7 @@ final class ArkForegroundHost {
       initializeNew: initializeNew,
       preferences: preferences,
       scanner: scanner ?? scanArkPayment,
+      services: services,
       boardFunding: boardFunding,
       inventory: inventory,
     );
@@ -183,11 +210,40 @@ final class ArkForegroundHost {
     if (!await runtime.isCurrent() || !live()) return null;
     final result = await runtime.feature.facade.read(runtime.account);
     if (!live() || !await runtime.isCurrent() || !live()) return null;
+    // An out-of-date observation of this account is still its balance, as
+    // other wallets show theirs while they sync; the card marks it so.
     return switch (result) {
-      Ok(:final value) when value.account == runtime.account && !value.stale =>
-        value,
+      Ok(:final value) when value.account == runtime.account => value,
       _ => null,
     };
+  }
+
+  static const _homeBalanceKey = 'ark_home_balance';
+
+  /// The balance home last showed for [scope], to show while Ark opens
+  /// instead of nothing; null when home never showed one.
+  Future<Sats?> lastHomeBalance(String scope) async {
+    try {
+      final stored = await SharedPreferencesAsync().getString(
+        '$_homeBalanceKey:$scope',
+      );
+      final value = stored == null ? null : BigInt.tryParse(stored);
+      return value == null || value.isNegative ? null : Sats(value);
+    } on Exception {
+      return null;
+    }
+  }
+
+  /// Remembers what home shows for [scope], for the next cold start.
+  Future<void> rememberHomeBalance(String scope, Sats balance) async {
+    try {
+      await SharedPreferencesAsync().setString(
+        '$_homeBalanceKey:$scope',
+        balance.value.toString(),
+      );
+    } on Exception {
+      // Only a faster first paint is lost.
+    }
   }
 
   /// Synchronously retires the current runtime and its mounted pages.
@@ -198,6 +254,7 @@ final class ArkForegroundHost {
     ++_generation;
     final runtime = _runtime;
     _runtime = null;
+    _watch(null);
     if (runtime != null) _retire(runtime);
   }
 
@@ -268,6 +325,7 @@ final class ArkForegroundHost {
       preferences: _preferences,
       dispatcher: dispatcher,
       scanner: _scanner,
+      services: _services,
     );
     if (opened case Ok(:final value)) {
       if (_closed || generation != _generation) {
@@ -275,6 +333,7 @@ final class ArkForegroundHost {
         return const Err(ArkServiceUnavailableFailure());
       }
       _runtime = value;
+      _watch(value);
     }
     return opened;
   }
@@ -297,6 +356,9 @@ final class ArkForegroundHost {
     }
     final runtime = _runtime;
     _runtime = null;
+    await _watching?.cancel();
+    _watching = null;
+    await _homeChanges.close();
     if (runtime != null) _retire(runtime);
     final failure = await _drain();
     if (failure != null) Error.throwWithStackTrace(failure.$1, failure.$2);

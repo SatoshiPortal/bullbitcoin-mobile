@@ -1,4 +1,5 @@
 import 'package:bull_ark/src/ui/ark_exit_request_screen.dart';
+import 'package:bull_ark/src/ui/ark_exit_start_sheet.dart';
 
 import 'ark_exit_request_screen_test.dart' as exit_input;
 
@@ -13,20 +14,26 @@ import 'package:bloc/bloc.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:bull_ark/src/domain/repositories/ark_account_registry_repository.dart';
+import 'package:bull_ark/src/presentation/ark_next_round_cubit.dart';
 import 'package:bull_ark/src/presentation/ark_cubit.dart';
-import 'package:bull_ark/src/presentation/ark_operation_cubit.dart';
 import 'package:bull_ark/src/presentation/ark_payment_cubit.dart';
 import 'package:bull_ark/src/presentation/ark_receive_cubit.dart';
 import 'package:bull_ark/src/ui/ark_account_screen.dart';
 import 'package:bull_ark/src/ui/ark_settings_screen.dart';
 import 'package:bull_ark/src/ui/ark_payment_screen.dart';
 import 'package:bull_ark/src/ui/ark_receive_screen.dart';
+import 'package:bull_ark/src/ui/ark_renew_sheet.dart';
 import 'package:bull_ark/src/ui/ark_operation_review_screen.dart';
 import 'package:bull_ark/src/ui/ark_snapshot_page.dart';
 import 'package:bull_ark/src/ui/ark_unavailable_screen.dart';
 import 'package:bull_ark/ark_ui.dart' show ArkPaymentEntry, ArkAccountEntry;
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullBorderedTile, BullAmountScope, BullAmountSnapshot;
+    show
+        BullButton,
+        BullAmountScope,
+        BullAmountSnapshot,
+        BullSettingsEntryItem,
+        BullSwitch;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -69,6 +76,17 @@ class Client extends account_test.Client {
     arguments.add((account, request));
     return reply.future;
   }
+
+  /// Next-round reads are kept apart from wallet lifecycle [calls]: the
+  /// settings card asks for them on its own schedule while Ark is on.
+  final rounds = <ArkAccountId>[];
+  @override
+  Future<Result<DateTime, ArkWalletFailure>> nextRound(
+    ArkAccountId account,
+  ) async {
+    rounds.add(account);
+    return nextRoundStart;
+  }
 }
 
 ArkSnapshot observation() => ArkSnapshot(
@@ -92,16 +110,27 @@ ArkSnapshot observation() => ArkSnapshot(
 
 class Owners extends BlocObserver {
   final created = <BlocBase<Object?>>[], closed = <BlocBase<Object?>>[];
+
+  /// The settings page's next-round helper, tracked apart from page owners.
+  final rounds = <ArkNextRoundCubit>[], closedRounds = <ArkNextRoundCubit>[];
   BlocBase<Object?>? failClose;
   @override
   void onCreate(BlocBase<Object?> bloc) {
     super.onCreate(bloc);
+    if (bloc is ArkNextRoundCubit) {
+      rounds.add(bloc);
+      return;
+    }
     created.add(bloc);
   }
 
   @override
   void onClose(BlocBase<Object?> bloc) {
     super.onClose(bloc);
+    if (bloc is ArkNextRoundCubit) {
+      closedRounds.add(bloc);
+      return;
+    }
     closed.add(bloc);
     if (identical(bloc, failClose)) throw Exception('scripted cleanup failure');
   }
@@ -228,12 +257,18 @@ Future<void> frame(WidgetTester tester) async {
 
 BullButton button(WidgetTester tester, String label) =>
     tester.widget<BullButton>(find.widgetWithText(BullButton, label));
+void openAccount(WidgetTester tester) => tester
+    .widget<BullSettingsEntryItem>(
+      find.widgetWithText(BullSettingsEntryItem, 'Ark wallet'),
+    )
+    .onTap
+    ?.call();
 T page<T extends Widget>(WidgetTester tester) =>
     tester.widget<T>(find.byType(T));
 Future<void> accountPage(WidgetTester tester, Rig r) async {
   await tester.pumpWidget(r.app());
   await frame(tester);
-  button(tester, 'Ark').onPressed();
+  openAccount(tester);
   await frame(tester);
 }
 
@@ -299,32 +334,51 @@ void main() {
           confirmedReserveExposure: Sats.fromInt(10000),
         ),
       );
-      await accountPage(tester, r);
-      page<ArkAccountScreen>(tester).onExits();
+      // Emergency exit lives in Ark settings, not on the wallet screen.
+      await tester.pumpWidget(r.app());
+      await frame(tester);
+      page<ArkSettingsScreen>(tester).onExits?.call();
       await frame(tester);
       button(tester, 'Start emergency exit').onPressed();
       await frame(tester);
       expect(find.byType(ArkExitRequestScreen), findsOneWidget);
-      expect(
-        r.client.calls.where((call) => call == 'quote' || call == 'submit'),
-        isEmpty,
-      );
-      await exit_input.fill(tester);
-      exit_input.review(tester).onPressed();
-      await frame(tester);
-      expect(find.byType(ArkOperationReviewScreen), findsOneWidget);
-      final operation = page<ArkOperationReviewScreen>(tester).cubit;
-      expect(operation.request, isA<ArkEmergencyExitQuoteRequest>());
-      final request = operation.request as ArkEmergencyExitQuoteRequest;
+      // The choose screen prices the exit itself; nothing is submitted.
+      await tester.pumpAndSettle();
+      final estimate = r.client.arguments
+          .whereType<(ArkAccountId, ArkQuoteRequest)>()
+          .map((call) => call.$2)
+          .whereType<ArkEmergencyExitQuoteRequest>()
+          .single;
+      expect(estimate.ids, ['selected']);
+      expect(estimate.destination, isNull);
+      expect(estimate.feeRate, isNull);
+      expect(r.client.calls.where((call) => call == 'submit'), isEmpty);
+      await exit_input.openSheet(tester);
+      expect(find.byType(ArkExitStartSheet), findsOneWidget);
+      // This host offers no Secure Bitcoin address: the user types one.
+      await exit_input.edit(tester, 'Bitcoin address', 'bcrt1-return');
+      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pumpAndSettle();
+      final request = r.client.arguments
+          .whereType<(ArkAccountId, ArkQuoteRequest)>()
+          .map((call) => call.$2)
+          .whereType<ArkEmergencyExitQuoteRequest>()
+          .last;
       expect(request.ids, ['selected']);
       expect(request.destination, 'bcrt1-return');
-      expect(request.maxClaimFee, Sats.fromInt(500));
-      expect(r.client.calls.where((call) => call == 'quote'), hasLength(1));
       expect(r.client.calls.where((call) => call == 'submit'), isEmpty);
-      button(tester, 'Confirm').onPressed();
+      await exit_input.hold(tester);
       await frame(tester);
       expect(r.client.calls.where((call) => call == 'submit'), hasLength(1));
-      expect(operation.state, isA<ArkOperationUncertain>());
+      // An unknown outcome closes the form, and the exits list refreshes.
+      expect(find.byType(ArkExitStartSheet), findsNothing);
+      expect(find.byType(ArkExitRequestScreen), findsNothing);
+      await tester.pumpAndSettle();
+      expect(r.client.calls.skipWhile((call) => call != 'submit'), [
+        'submit',
+        'sync',
+      ]);
+      await tester.pump(const Duration(seconds: 10));
     },
   );
   testWidgets(
@@ -491,7 +545,7 @@ void main() {
       ); // The old Ready must not retarget the new same-config Ready.
       expect(r.router.routeInformationProvider.value.uri.path, '/ark');
       expect(owners.created, hasLength(1));
-      button(tester, 'Ark').onPressed();
+      openAccount(tester);
       await frame(tester);
       final account = page<ArkAccountScreen>(tester);
       final oldVtxos = account.onVtxos;
@@ -531,81 +585,127 @@ void main() {
       await frame(tester);
       final protective = page<ArkAccountScreen>(tester);
       expect(protective.enabled, false);
-      button(tester, 'VTXOs').onPressed();
+      protective.onVtxos();
       await frame(tester);
-      expect(find.text('Review renewal'), findsOneWidget);
+      expect(find.text('Total in Ark'), findsOneWidget);
       expect(r.client.calls.where((c) => c != 'read'), isEmpty);
     },
   );
+  ArkQuote renewalOf(String id) => ArkQuote(
+    id: 'renewal-quote',
+    account: account(),
+    generation: 2,
+    chainSource: Uri.parse('http://localhost:3000'),
+    configGeneration: 1,
+    kind: ArkOperationKind.renewal,
+    amount: Sats.fromInt(1000),
+    fee: Sats.fromInt(100),
+    net: Sats.fromInt(900),
+    selectedIds: [id],
+    observedTip: 100,
+    validUntil: DateTime.utc(2030),
+  );
+  BullButton sheetButton(WidgetTester tester, String label) =>
+      tester.widget<BullButton>(
+        find.descendant(
+          of: find.byType(ArkRenewSheet),
+          matching: find.widgetWithText(BullButton, label),
+        ),
+      );
+  Future<void> openDetails(WidgetTester tester, Rig r) async {
+    await accountPage(tester, r);
+    page<ArkAccountScreen>(tester).onVtxos();
+    await frame(tester);
+    tester
+        .widget<GestureDetector>(find.byKey(const ValueKey('vtxo-details-v')))
+        .onTap
+        ?.call();
+    await frame(tester);
+  }
+
   testWidgets(
-    'explicit Renew loads once BEFORE passive A; rebuild and consumed entry never reset unknown',
+    'Renew prices again before confirming; an unknown outcome closes it and refreshes',
     (tester) async {
       final r = Rig();
-      await accountPage(tester, r);
-      button(tester, 'VTXOs').onPressed();
-      await frame(tester);
+      await openDetails(tester, r);
       expect(r.client.calls.where((c) => c == 'quote'), isEmpty);
-      tester
-          .widget<BullBorderedTile>(find.byType(BullBorderedTile))
-          .onTap
-          ?.call();
-      await frame(tester);
       final quote = Completer<Result<ArkQuote, ArkWalletFailure>>();
       r.client.quoteReply = quote;
-      r.client.beforeQuote = () =>
-          expect(find.byType(ArkOperationReviewScreen), findsNothing);
-      button(tester, 'Review renewal').onPressed();
-      await frame(tester);
-      expect(r.client.calls.where((c) => c == 'quote'), hasLength(1));
-      final screen = page<ArkOperationReviewScreen>(tester);
-      final cubit = screen.cubit;
-      final entry = GoRouterState.of(
-        tester.element(find.byType(ArkOperationReviewScreen)),
-      ).extra;
-      quote.complete(Ok(reviewed(account())));
-      await frame(tester);
-      button(tester, 'Confirm').onPressed();
-      await frame(tester);
-      expect(cubit.state, isA<ArkOperationUncertain>());
-      final unknown = cubit.state;
-      final before = r._mark('/ark/review');
-      final count = r.count('/ark/review');
-      r.rebuildInstalledRoutes();
-      await frame(tester);
-      r._expectRebuilt('/ark/review', before, count);
-      expect(
-        identical(page<ArkOperationReviewScreen>(tester).cubit, cubit),
-        true,
-      );
-      expect(identical(cubit.state, unknown), true);
-      r.router.pop();
-      await frame(tester);
-      expect(cubit.isClosed, true);
-      unawaited(r.router.push<void>('/ark/review', extra: entry));
-      await frame(tester);
+      button(tester, 'Renew').onPressed();
+      await tester.pump();
+      expect(find.byType(ArkRenewSheet), findsOneWidget);
       expect(find.byType(ArkOperationReviewScreen), findsNothing);
+      expect(sheetButton(tester, 'Renew').disabled, true);
+      quote.complete(Ok(renewalOf('v')));
+      await frame(tester);
       expect(r.client.calls.where((c) => c == 'quote'), hasLength(1));
+      expect(find.text('Renew fee'), findsOneWidget);
+      final syncs = r.client.calls.where((c) => c == 'sync').length;
+      sheetButton(tester, 'Renew').onPressed();
+      await frame(tester);
+      expect(find.byType(ArkRenewSheet), findsNothing);
+      expect(find.textContaining('Outcome unknown'), findsOneWidget);
       expect(r.client.calls.where((c) => c == 'submit'), hasLength(1));
+      // Once to show the fee, once more right before confirming.
+      expect(r.client.calls.where((c) => c == 'quote'), hasLength(2));
+      expect(
+        r.client.calls.where((c) => c == 'sync').length,
+        greaterThan(syncs),
+      );
+      // Let the snackbar's own timer finish.
+      await tester.pump(const Duration(seconds: 10));
+      await frame(tester);
     },
   );
+  testWidgets('Cancel on the renew sheet returns to the VTXO details', (
+    tester,
+  ) async {
+    final r = Rig();
+    await openDetails(tester, r);
+    final quote = Completer<Result<ArkQuote, ArkWalletFailure>>();
+    r.client.quoteReply = quote;
+    button(tester, 'Renew').onPressed();
+    await tester.pump();
+    quote.complete(Ok(renewalOf('v')));
+    await frame(tester);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(ArkRenewSheet),
+        matching: find.text('Cancel'),
+      ),
+    );
+    await frame(tester);
+    expect(find.byType(ArkRenewSheet), findsNothing);
+    expect(find.text('VTXO details'), findsOneWidget);
+    expect(r.client.calls.where((c) => c == 'submit'), isEmpty);
+  });
+  testWidgets('a quote for other VTXOs can never be renewed from the sheet', (
+    tester,
+  ) async {
+    final r = Rig();
+    await openDetails(tester, r);
+    final quote = Completer<Result<ArkQuote, ArkWalletFailure>>();
+    r.client.quoteReply = quote;
+    button(tester, 'Renew').onPressed();
+    await tester.pump();
+    quote.complete(Ok(renewalOf('other')));
+    await frame(tester);
+    expect(find.text('Renew fee'), findsNothing);
+    expect(sheetButton(tester, 'Renew').disabled, true);
+    sheetButton(tester, 'Renew').onPressed();
+    await frame(tester);
+    expect(r.client.calls.where((c) => c == 'submit'), isEmpty);
+  });
   testWidgets(
-    'old Review intent never requotes after host invalidates and replaces config/client',
+    'host invalidation closes the renew sheet and its quote is never confirmed',
     (tester) async {
       final r = Rig();
-      await accountPage(tester, r);
-      button(tester, 'VTXOs').onPressed();
-      await frame(tester);
-      tester
-          .widget<BullBorderedTile>(find.byType(BullBorderedTile))
-          .onTap
-          ?.call();
-      await frame(tester);
+      await openDetails(tester, r);
       final reply = Completer<Result<ArkQuote, ArkWalletFailure>>();
       r.client.quoteReply = reply;
-      button(tester, 'Review renewal').onPressed();
-      await frame(tester);
-      final owner = page<ArkOperationReviewScreen>(tester).cubit;
-      final pending = owner.state;
+      button(tester, 'Renew').onPressed();
+      await tester.pump();
+      final owner = page<ArkRenewSheet>(tester).cubit;
       r.feature.invalidate();
       expect(owner.isClosed, true);
       final captured = config(chain: 'https://new-chain.example');
@@ -614,25 +714,12 @@ void main() {
       final next = r.make(captured, native);
       r.routing.value = RoutingConfig(routes: r.routes(next));
       await frame(tester);
-      reply.complete(Ok(reviewed(account())));
+      expect(find.byType(ArkRenewSheet), findsNothing);
+      reply.complete(Ok(renewalOf('v')));
       await frame(tester);
-      final before = r._mark('/ark/review');
-      final count = r.count('/ark/review');
-      expect(
-        identical(
-          before.source,
-          next.routes
-              .singleWhere((route) => route.path == '/ark/review')
-              .builder,
-        ),
-        true,
-      );
-      r.rebuildInstalledRoutes();
-      await frame(tester);
-      r._expectRebuilt('/ark/review', before, count);
-      expect(identical(owner.state, pending), true);
-      expect(find.byType(ArkOperationReviewScreen), findsNothing);
+      expect(find.byType(ArkRenewSheet), findsNothing);
       expect(r.client.calls.where((c) => c == 'quote'), hasLength(1));
+      expect(r.client.calls.where((c) => c == 'submit'), isEmpty);
       expect(native.calls, isEmpty);
     },
   );
@@ -701,7 +788,7 @@ void main() {
       await tester.pumpWidget(r.app());
       await frame(tester);
       final settings = page<ArkSettingsScreen>(tester).cubit;
-      button(tester, 'Ark').onPressed();
+      openAccount(tester);
       await frame(tester);
       final account = page<ArkAccountScreen>(tester).cubit;
       owners.failClose = settings;
@@ -716,15 +803,19 @@ void main() {
     },
   );
   testWidgets(
-    'Board uses its required host while claim and absent Share stay unavailable',
+    'Board uses its required host while claim stays unavailable and Receive has no Share',
     (tester) async {
       final r = Rig();
-      await accountPage(tester, r);
-      button(tester, 'Board to Ark').onPressed();
+      // Board lives in Ark settings, not on the wallet screen.
+      await tester.pumpWidget(r.app());
+      await frame(tester);
+      page<ArkSettingsScreen>(tester).onBoard?.call();
       await frame(tester);
       expect(find.byType(ArkBoardAmountScreen), findsOneWidget);
       expect(r.boardFunding.calls, isEmpty);
       r.router.pop();
+      await frame(tester);
+      openAccount(tester);
       await frame(tester);
       button(tester, 'Receive').onPressed();
       await frame(tester);
@@ -738,14 +829,17 @@ void main() {
         ),
       );
       await frame(tester);
-      expect(button(tester, 'Share').disabled, true);
+      // No Share action on Receive: the address is copied from its tile.
+      expect(find.widgetWithText(BullButton, 'Share'), findsNothing);
       r.router.go('/ark/vtxos', extra: account());
       await frame(tester);
       expect(find.byType(ArkUnavailableScreen), findsOneWidget);
       r.router.go('/ark/claim-recovery', extra: Object());
       await frame(tester);
       expect(find.byType(ArkUnavailableScreen), findsOneWidget);
-      expect(r.client.calls, ['read']);
+      // Board's minimum and the account each read the stored snapshot;
+      // opening Receive asks for its Ark address once.
+      expect(r.client.calls, ['read', 'read', 'receive']);
     },
   );
   testWidgets(
@@ -763,7 +857,7 @@ void main() {
       );
       await tester.pumpWidget(display(a));
       await frame(tester);
-      final retry = button(tester, 'Retry').onPressed;
+      final retry = button(tester, 'Try again').onPressed;
       a.emit(
         ArkObserved(
           ArkSnapshot(
@@ -819,24 +913,29 @@ void main() {
       await tester.pumpWidget(r.app());
       await frame(tester);
       expect(r.client.calls, isEmpty);
-      final disabledEnable = button(tester, 'Enable Ark');
-      expect(disabledEnable.disabled, true);
-      disabledEnable.onPressed();
+      await tester.tap(find.byType(BullSwitch));
       await frame(tester);
       expect(r.client.calls, isEmpty);
-      button(tester, 'I understand the direct connection').onPressed();
-      await frame(tester);
-      final enable = button(tester, 'Enable Ark').onPressed;
-      enable();
-      enable();
+      await tester.tap(find.text('I understand'));
       await frame(tester);
       expect(r.client.calls, ['create']);
       expect(r.preferences.enabled, true);
-      button(tester, 'Ark').onPressed();
+      openAccount(tester);
       await frame(tester);
       expect(find.byType(ArkAccountScreen), findsOneWidget);
-      expect(find.text('1234'), findsOneWidget);
+      expect(find.text('1,234 sats'), findsOneWidget);
       expect(r.client.calls, ['create', 'read']);
+      expect(r.client.rounds, [account()]);
     },
   );
+  testWidgets('leaving settings closes its next-round helper', (tester) async {
+    final r = Rig();
+    await tester.pumpWidget(r.app());
+    await frame(tester);
+    expect(owners.rounds, hasLength(1));
+    expect(owners.closedRounds, isEmpty);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await frame(tester);
+    expect(owners.closedRounds, owners.rounds);
+  });
 }
