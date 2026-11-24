@@ -108,7 +108,7 @@ void main() {
     final events = <LimitFlowEvent>[];
     final labels = await _pump(tester, _destination, events);
     expect(find.text(limitBitcoinAddress), findsOneWidget);
-    expect(_buttonWidget(tester, labels.continueButton).onPressed, isNull);
+    expect(_buttonWidget(tester, labels.continueButton).disabled, isTrue);
     await tester.tap(find.text(limitBitcoinAddress));
     expect(
       events.single,
@@ -123,7 +123,7 @@ void main() {
   testWidgets('the review offers Confirm only on a live check', (tester) async {
     final events = <LimitFlowEvent>[];
     var labels = await _pump(tester, _review, events);
-    expect(_buttonWidget(tester, labels.limitOrdersConfirm).onPressed, isNull);
+    expect(_buttonWidget(tester, labels.limitOrdersConfirm).disabled, isTrue);
     labels = await _pump(tester, _live, events);
     expect(find.text(limitBitcoinAddress), findsOneWidget);
     await tester.tap(_button(labels.limitOrdersConfirm));
@@ -136,7 +136,7 @@ void main() {
     ]);
     final labels = await _pump(tester, above, []);
     expect(find.text(labels.limitOrderInvalidTargetError), findsOneWidget);
-    expect(_buttonWidget(tester, labels.limitOrdersConfirm).onPressed, isNull);
+    expect(_buttonWidget(tester, labels.limitOrdersConfirm).disabled, isTrue);
   });
 
   testWidgets('a create being checked offers no write and no Back', (

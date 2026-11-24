@@ -87,6 +87,8 @@ void main() {
 
   Future<void> toReview() => send(const [
     LimitContinuePressed(),
+    LimitPriceTyped(80000),
+    LimitContinuePressed(),
     LimitDestinationChanged(
       PickChose(
         DestinationOptionDefaultWallet(BtcNetwork.bitcoin, limitBitcoinAddress),
