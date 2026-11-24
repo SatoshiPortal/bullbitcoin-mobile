@@ -6,6 +6,8 @@ import '../domain/entities/sepa_payment_processor.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/entities/recipient_details.dart';
 import '../recipients/domain/entities/recipient_type.dart';
+import '../steps/requirements_step.dart';
+import 'order_payout_params.dart';
 import 'payout_requirement.dart';
 
 /// Why a recipient is paid: the rail decides per purpose which extra steps
@@ -94,6 +96,15 @@ sealed class PayoutRail<D extends RecipientDetails> {
   /// rail, in the order the payout step asks for it. Empty for most rails.
   List<PayoutRequirement> requirements(D details, PayoutPurpose purpose) =>
       const [];
+
+  /// What an order that pays [ready] sends about the payout. Takes a
+  /// [ReadyRecipient], so an order can't be built for a recipient whose
+  /// requirements aren't met.
+  OrderPayoutParams orderParams(ReadyRecipient ready) => OrderPayoutParams(
+    recipientId: ready.chosen.recipient.recipientId,
+    paymentProcessor: paymentProcessor,
+    interacAnswer: ready.interac?.answer,
+  );
 
   /// The same account on the rail the user can fall back to when a
   /// requirement of this one can't be met (Confidential SEPA → SEPA), or
