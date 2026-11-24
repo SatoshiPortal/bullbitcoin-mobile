@@ -87,7 +87,7 @@ final class BullExchangeFeature {
   final GoRoute? limitOrderCreate;
   final List<RouteBase> buyRoutes;
   final GoRoute? dcaRoute;
-  final ShellRoute? sellRoute;
+  final GoRoute? sellRoute;
   final ShellRoute? payRoute;
 
   const BullExchangeFeature._(

@@ -26,21 +26,9 @@ export 'src/pay/ui/screens/pay_send_payment_screen.dart'
 export 'src/payin/exchange_payin_ui.dart' show ExchangePayinUi;
 export 'src/payin/payin_account.dart' show PayinAccount;
 export 'src/payin/payin_wallets.dart' show PayinWallets;
-export 'src/sell/domain/sell_failure.dart';
-export 'src/sell/domain/sell_payin_source.dart' show SellPayinSource;
-export 'src/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart'
-    show GetSellConfidentialSepaAvailabilityUsecase;
-export 'src/sell/domain/usecases/load_sell_context_usecase.dart'
-    show LoadSellContextUsecase;
-export 'src/sell/presentation/sell_bloc.dart';
-export 'src/sell/presentation/sell_payout_cubit.dart' show SellPayoutCubit;
-export 'src/sell/ui/screens/sell_payout_method_screen.dart'
-    show SellPayoutMethodScreen;
-export 'src/sell/ui/screens/sell_receive_payment_screen.dart'
-    show SellReceivePaymentScreen;
-export 'src/sell/ui/screens/sell_send_payment_screen.dart'
-    show SellSendPaymentScreen;
-export 'src/sell/ui/sell_router.dart' show SellRouter;
+export 'src/sell/presentation/sell_flow.dart';
+export 'src/sell/presentation/sell_flow_bloc.dart';
+export 'src/sell/ui/sell_flow_shell.dart' show sellPagesFor;
 export 'src/ui/screens/exchange_landing_screen.dart' show ExchangeLandingScreen;
 export 'src/auth/exchange_auth_host.dart' show exchangeAuthHost;
 export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthScreen;

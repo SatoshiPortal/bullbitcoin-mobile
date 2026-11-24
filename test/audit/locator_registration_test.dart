@@ -61,10 +61,8 @@ void main() {
     const purchaseRoutes =
         'features/bull_exchange/lib/src/exchange_purchase_routes.dart';
     const payMount = 'features/bull_exchange/lib/src/pay/mount_pay.dart';
-    const sellMount = 'features/bull_exchange/lib/src/sell/mount_sell.dart';
     const owners = {
       'PlacePayOrderUsecase': payMount,
-      'RefreshSellOrderUsecase': sellMount,
       'ConfirmBuyOrderUsecase': purchaseRoutes,
       'RefreshBuyOrderUsecase': purchaseRoutes,
       'AccelerateBuyOrderUsecase': purchaseRoutes,

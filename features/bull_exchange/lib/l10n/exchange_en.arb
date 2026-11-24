@@ -4172,5 +4172,21 @@
   "exchangePayinExternalWaiting": "Waiting for your payment…",
   "@exchangePayinExternalWaiting": {
     "description": "Payin from an external wallet: the order watch is running"
+  },
+  "exchangePayinRefusedByExchange": "The exchange did not accept this payment. Contact support with the order number.",
+  "@exchangePayinRefusedByExchange": {
+    "description": "Payin: the exchange refused the payin, or the order ended or moved its deposit after it went out; shows the reference and Leave"
+  },
+  "exchangePayinOrderEnded": "This order ended before your payment was sent. Nothing was sent.",
+  "@exchangePayinOrderEnded": {
+    "description": "Payin: the order ended before anything was sent"
+  },
+  "exchangePayinDepositRefused": "This order can't be paid from this wallet. Nothing was sent.",
+  "@exchangePayinDepositRefused": {
+    "description": "Payin: the order has no deposit on the source's rail (or moved it) before anything was sent"
+  },
+  "exchangePayinReceived": "The exchange received your payment",
+  "@exchangePayinReceived": {
+    "description": "Sell/pay done: the exchange saw the payin (not 'order completed')"
   }
 }
