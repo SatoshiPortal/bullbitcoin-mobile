@@ -266,16 +266,32 @@ UnknownWriteSettlement? orderCreateSettlement(
 ) {
   final sent = OrderCreateJournalRequest.fromRequest(entry.request);
   if (sent == null) return null;
-  final from = entry.recordedAt.subtract(orderCreateWindow);
-  final until = entry.recordedAt.add(const Duration(minutes: 1));
-  final matches = orders.any(
-    (order) =>
-        order.orderType == sent.type &&
+  return findCreatedOrder(sent, entry.recordedAt, orders) == null
+      ? null
+      : UnknownWriteSettlement.applied;
+}
+
+/// The order a create of [sent] at [sentAt] made, among [orders]: the same
+/// rule reconcile settles a journaled create by, for a flow re-reading its
+/// own create after an unknown outcome. Null can't tell absence from a read
+/// that doesn't hold it; the caller keeps the create unverified, never sends
+/// it again.
+Order? findCreatedOrder(
+  OrderCreateJournalRequest sent,
+  DateTime sentAt,
+  List<Order> orders,
+) {
+  final from = sentAt.subtract(orderCreateWindow);
+  final until = sentAt.add(const Duration(minutes: 1));
+  for (final order in orders) {
+    if (order.orderType == sent.type &&
         !order.createdAt.isBefore(from) &&
         !order.createdAt.isAfter(until) &&
-        _orderAmountMatches(order, sent),
-  );
-  return matches ? UnknownWriteSettlement.applied : null;
+        _orderAmountMatches(order, sent)) {
+      return order;
+    }
+  }
+  return null;
 }
 
 /// A fiat amount matches the side counted in the currency sent (either side

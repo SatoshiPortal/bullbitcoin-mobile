@@ -439,6 +439,22 @@ void main() {
       );
       expect(orderCreateSettlement(entryFor(sell), [created()]), isNull);
     });
+
+    test('findCreatedOrder returns the matching order, for a flow re-read', () {
+      final match = created();
+      final entry = entryFor(sent);
+      expect(
+        findCreatedOrder(sent, entry.recordedAt, [
+          created(payinAmount: 101),
+          match,
+        ]),
+        same(match),
+      );
+      expect(
+        findCreatedOrder(sent, entry.recordedAt, [created(payinAmount: 101)]),
+        isNull,
+      );
+    });
   });
 
   group('DCA settlement', () {
