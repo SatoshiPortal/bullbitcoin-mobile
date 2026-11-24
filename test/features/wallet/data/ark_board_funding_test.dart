@@ -299,6 +299,44 @@ void main() {
       verifyZeroInteractions(client);
     },
   );
+  test(
+    'a failed source sync refuses reconcile and leaves the operation pending',
+    () async {
+      await fixture.reserve('operation', account: account.canonical);
+      syncSource = (_) async => const Err(SyncBusyFailure());
+      when(() => metadata.readWallet(fundingWalletId))
+          .thenAnswer((_) async => Ok(registration()));
+      final source = WalletKey(
+        id: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+      );
+      when(() => catalog.find(source))
+          .thenAnswer((_) async => const Err(SyncStorageFailure()));
+      when(catalog.list).thenAnswer((_) async => const Ok([]));
+      final before = sourceOk(await fixture.store.readBinding('operation'));
+      expect(
+        await actor.reconcileSource('operation'),
+        isA<Err<void, ArkFailure>>().having(
+          (result) => result.failure,
+          'retryable source failure',
+          isA<ArkOperationBusyFailure>(),
+        ),
+      );
+      // A source that could not be refreshed is never read: the journal keeps
+      // its pending operation for the next reconcile instead.
+      verifyNever(() => catalog.find(source));
+      expect(
+        sourceOk(await fixture.store.pendingForAccount(account.canonical)),
+        'operation',
+      );
+      final after = sourceOk(await fixture.store.readBinding('operation'));
+      expect(
+        (after.unsignedTxid, after.context),
+        (before.unsignedTxid, before.context),
+      );
+      expect(keystore.reads, 0);
+    },
+  );
   test('an unresolved original account operation returns its identity, no reprepare', () async {
     await fixture.reserve('original', account: account.canonical);
     final result = await actor.prepare(config(account), Sats.fromInt(20000));

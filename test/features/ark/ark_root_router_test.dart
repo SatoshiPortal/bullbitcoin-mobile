@@ -207,8 +207,7 @@ void main() {
       );
       locator.registerSingleton(
         CoinsFeature.mount<String>(
-          resolveWalletKey: (_) async =>
-              throw StateError('Unexpected coins wallet lookup'),
+          inventory: inventoryFixture.inventory,
           loadWallet: (_) async =>
               throw StateError('Unexpected coins wallet read'),
           foreground: () async => throw StateError('Unexpected coins sync'),

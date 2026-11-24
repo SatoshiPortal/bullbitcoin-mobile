@@ -5,7 +5,7 @@ import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/recognize_ark_address_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/send_ark_cubit.dart';
 import 'package:bull_ark/bull_ark.dart'
-    show ArkFacade, ArkFailure, ArkFeatureStorageFailure;
+    show ArkAccountsFacade, ArkFacade, ArkFailure, ArkFeatureStorageFailure;
 import 'package:bull_ark/ark_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -33,6 +33,9 @@ class Fixture {
     registry: registry,
     provisioning: Provisioning(),
   );
+  late final ArkAccountsFacade accounts = ArkAccountsFacade(
+    facade.listEnabledAccounts,
+  );
 }
 
 const mainnetAddress =
@@ -56,8 +59,8 @@ void main() {
     'ordinary BIP21 paste does not consult Ark or alter its send path',
     () async {
       final fixture = Fixture();
-      final facade = fixture.facade;
-      final result = await RecognizeArkAddressUsecase(facade).execute(
+      final accounts = fixture.accounts;
+      final result = await RecognizeArkAddressUsecase(accounts).execute(
         input: 'bitcoin:bc1qexample?amount=0.01',
         network: BitcoinNetwork.regtest,
         restricted: false,
@@ -77,11 +80,11 @@ void main() {
   );
   test('Ark paste consults only public local account inventory', () async {
     final fixture = Fixture();
-    final facade = fixture.facade;
+    final accounts = fixture.accounts;
     when(() => fixture.registry.list()).thenAnswer((_) async => Ok([config]));
     when(() => fixture.preferences.isEnabled(account))
         .thenAnswer((_) async => const Ok(true));
-    final result = await RecognizeArkAddressUsecase(facade).execute(
+    final result = await RecognizeArkAddressUsecase(accounts).execute(
       input: ' $address ',
       network: BitcoinNetwork.regtest,
       restricted: false,
@@ -97,9 +100,9 @@ void main() {
   });
   test('coin selection sweep and multi recipient restrictions refuse before inventory', () async {
     final fixture = Fixture();
-    final facade = fixture.facade;
+    final accounts = fixture.accounts;
     expect(
-      await RecognizeArkAddressUsecase(facade).execute(
+      await RecognizeArkAddressUsecase(accounts).execute(
         input: address,
         network: BitcoinNetwork.regtest,
         restricted: true,
@@ -111,9 +114,9 @@ void main() {
   });
   test('off or missing integration is an explicit unavailable route', () async {
     final fixture = Fixture();
-    final facade = fixture.facade;
+    final accounts = fixture.accounts;
     when(() => fixture.registry.list()).thenAnswer((_) async => const Ok([]));
-    for (final configured in <ArkFacade?>[facade, null]) {
+    for (final configured in <ArkAccountsFacade?>[accounts, null]) {
       expect(
         await RecognizeArkAddressUsecase(configured).execute(
           input: address,
@@ -130,11 +133,11 @@ void main() {
   });
   test('paste never requests quote read receive or submit', () async {
     final fixture = Fixture();
-    final facade = fixture.facade;
+    final accounts = fixture.accounts;
     when(() => fixture.registry.list())
         .thenAnswer((_) async => const Err(ArkFeatureStorageFailure()));
     expect(
-      await RecognizeArkAddressUsecase(facade).execute(
+      await RecognizeArkAddressUsecase(accounts).execute(
         input: address,
         network: LiquidNetwork.regtest,
         restricted: false,
@@ -148,10 +151,10 @@ void main() {
     'late local account response cannot revive an older pasted recipient',
     () async {
       final fixture = Fixture();
-      final facade = fixture.facade;
+      final accounts = fixture.accounts;
       final pending = Completer<Result<List<ArkAccountConfig>, ArkFailure>>();
       when(() => fixture.registry.list()).thenAnswer((_) => pending.future);
-      final cubit = SendArkCubit(RecognizeArkAddressUsecase(facade));
+      final cubit = SendArkCubit(RecognizeArkAddressUsecase(accounts));
       when(() => fixture.preferences.isEnabled(account))
           .thenAnswer((_) async => const Ok(true));
       final first = cubit.resolve(
@@ -180,7 +183,7 @@ void main() {
   );
   test('mainnet Ark paste is recognized but gated before inventory or native access', () async {
     final fixture = Fixture();
-    final usecase = RecognizeArkAddressUsecase(fixture.facade);
+    final usecase = RecognizeArkAddressUsecase(fixture.accounts);
     expect(usecase.recognizes(mainnetAddress, BitcoinNetwork.mainnet), true);
     expect(
       await usecase.execute(

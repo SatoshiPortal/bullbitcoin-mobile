@@ -72,7 +72,6 @@ class BullBitcoinWalletApp extends StatefulWidget {
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
   late final tor.TorLifecycleController _torLifecycleController;
-  // final router = AppRouter.router;
 
   @override
   void initState() {

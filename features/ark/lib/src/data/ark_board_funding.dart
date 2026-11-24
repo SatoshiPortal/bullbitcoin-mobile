@@ -465,7 +465,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           );
       final metadata = await _eligible(key.id, expected: binding);
       _require(metadata.secretFingerprint == parent);
-      await _refreshSource(metadata);
+      _sync(await _refreshSource(metadata));
       final handle = _sync(
         await _runtime.wallet(
           sync.WalletKey(id: metadata.id, network: metadata.network),
@@ -598,14 +598,19 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     return operation;
   }
 
-  /// Best-effort refresh: the native revision checks that follow decide.
-  Future<void> _refreshSource(WalletRegistration metadata) async {
+  /// The native revision checks that follow a prepare decide on a stale source.
+  /// A reconcile must not read the journal from a source it could not refresh,
+  /// so it surfaces the refresh failure through [_sync] instead.
+  Future<Result<void, sync.SyncFailure>> _refreshSource(
+    WalletRegistration metadata,
+  ) async {
     final refreshed = await _sourceSync(
       sync.WalletKey(id: metadata.id, network: metadata.network),
     );
     if (refreshed case Err(:final failure)) {
       log.warning('Ark Board source sync failed: ${failure.runtimeType}');
     }
+    return refreshed;
   }
 
   Future<WalletRegistration> _eligible(

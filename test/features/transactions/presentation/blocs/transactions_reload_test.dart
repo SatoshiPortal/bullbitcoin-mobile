@@ -92,7 +92,10 @@ void main() {
           WalletKey(id: wallet.id, network: wallet.network.shared),
       classifyFailure: (failure) =>
           (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
-      getWallets: wallets.execute,
+      getWallets: ({onlyBitcoin, onlyLiquid}) async => (await wallets.execute(
+        onlyBitcoin: onlyBitcoin,
+        onlyLiquid: onlyLiquid,
+      )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
       syncWallet: sync.sync,
     );
     final facade = walletHistoryEvents(

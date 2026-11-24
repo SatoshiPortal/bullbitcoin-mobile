@@ -452,7 +452,11 @@ void main() {
               WalletKey(id: wallet.id, network: wallet.network.shared),
           classifyFailure: (failure) =>
               (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
-          getWallets: getWallets.execute,
+          getWallets: ({onlyBitcoin, onlyLiquid}) async =>
+              (await getWallets.execute(
+                onlyBitcoin: onlyBitcoin,
+                onlyLiquid: onlyLiquid,
+              )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
           syncWallet: single.sync,
         );
         final bloc = WalletBloc(
@@ -563,7 +567,11 @@ void main() {
             WalletKey(id: wallet.id, network: wallet.network.shared),
         classifyFailure: (failure) =>
             (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
-        getWallets: getWallets.execute,
+        getWallets: ({onlyBitcoin, onlyLiquid}) async =>
+            (await getWallets.execute(
+              onlyBitcoin: onlyBitcoin,
+              onlyLiquid: onlyLiquid,
+            )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
         syncWallet: single.sync,
       );
       final bloc = WalletBloc(

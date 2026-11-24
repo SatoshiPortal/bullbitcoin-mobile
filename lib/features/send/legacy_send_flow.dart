@@ -1,7 +1,7 @@
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 
-import 'package:bull_ark/bull_ark.dart' show ArkFacade;
+import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
 import 'presentation/send_ark_cubit.dart';
@@ -238,8 +238,8 @@ abstract final class LegacySendFlow {
   static void _registerBlocs(GetIt locator) {
     locator.registerFactory<SendArkCubit>(
       () => SendArkCubit(
-        locator.isRegistered<ArkFacade>()
-            ? RecognizeArkAddressUsecase(locator<ArkFacade>())
+        locator.isRegistered<ArkAccountsFacade>()
+            ? RecognizeArkAddressUsecase(locator<ArkAccountsFacade>())
             : null,
       ),
     );

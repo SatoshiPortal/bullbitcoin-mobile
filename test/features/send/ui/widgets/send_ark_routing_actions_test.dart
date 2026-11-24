@@ -60,7 +60,7 @@ void main() {
     when(() => send.state).thenAnswer((_) => state);
     when(() => send.stream).thenAnswer((_) => changes.stream);
     when(() => send.isSpMode).thenReturn(false);
-    ark = SendArkCubit(RecognizeArkAddressUsecase(fixture.facade));
+    ark = SendArkCubit(RecognizeArkAddressUsecase(fixture.accounts));
   });
   tearDown(() async {
     await ark.close();
