@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_electrum_cache.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -187,7 +188,11 @@ class BdkFacade {
   ) async {
     final dbPath = await _getDbPath(walletIdHex);
     final persister = bdk.Persister.newSqlite(path: dbPath);
-    bdkWallet.persist(persister: persister);
+    try {
+      bdkWallet.persist(persister: persister);
+    } finally {
+      persister.dispose();
+    }
   }
 
   static Future<String> _getDbPath(String walletIdHex) async {
@@ -196,12 +201,24 @@ class BdkFacade {
     return '${dir.path}/${'${walletIdHex}_bdk_dart'}';
   }
 
+  static Future<BdkElectrumCache?> openElectrumCache(String walletIdHex) async {
+    try {
+      return BdkElectrumCache.open(await _getDbPath(walletIdHex));
+    } on Exception {
+      return null;
+    }
+  }
+
   static Future<void> delete(WalletModel walletModel) async {
     final dbPath = await _getDbPath(walletModel.hexId);
     final dbFile = File(dbPath);
 
-    if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);
+    if (!await dbFile.exists()) {
+      BdkElectrumCache.delete(dbPath);
+      throw WalletError.notFound(walletModel.id);
+    }
 
     await dbFile.delete();
+    BdkElectrumCache.delete(dbPath);
   }
 }
