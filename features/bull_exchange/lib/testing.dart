@@ -2,13 +2,9 @@
 library;
 
 import 'package:exchange/exchange.dart';
-import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart';
 
-import 'src/autobuy/domain/autobuy_failure.dart';
-import 'src/autobuy/domain/autobuy_status.dart';
-import 'src/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
-import 'src/autobuy/domain/usecases/set_autobuy_usecase.dart';
+import 'src/autobuy/presentation/autobuy_bloc.dart';
+import 'src/autobuy/presentation/autobuy_flow.dart';
 import 'src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'src/default_wallets/presentation/default_wallets_bloc.dart';
 import 'src/default_wallets/presentation/default_wallets_machine.dart';
@@ -74,14 +70,11 @@ export 'src/exchange_payout_wallets.dart' show ExchangePayoutWallets;
 export 'src/limit_orders/domain/entities/limit_order_amount_limits.dart';
 export 'src/ui/exchange_route_guard.dart';
 
-Future<Result<AutoBuyStatus, AutoBuyFailure>> autoBuyStatusForTesting(
+/// The AutoBuy flow's account load for [session].
+Future<ExchangeRead<AutoBuyContext>> autoBuyContextForTesting(
   Exchange exchange,
-) => GetAutoBuyStatusUsecase(exchange).execute();
-
-Future<Result<void, AutoBuyFailure>> disableAutoBuyForTesting(
-  Exchange exchange,
-  Preferences preferences,
-) => SetAutoBuyUsecase(preferences, exchange).execute(enabled: false);
+  ExchangeSession session,
+) => autoBuyCallsOf(exchange, session).loadContext();
 
 Future<DefaultWalletsEvent> defaultWalletsEffectForTesting(
   DefaultWalletsEffect effect, {

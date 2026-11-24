@@ -174,7 +174,6 @@ class ExchangeHomeScreen extends StatelessWidget {
                     const Gap(12),
                     ExchangeAutoBuyCard(
                       exchange: exchange,
-                      preferences: preferences,
                       isActive: autoBuy.isActive,
                       isRestricted: isFundingRestricted,
                       onStatusChanged: refreshAccount,

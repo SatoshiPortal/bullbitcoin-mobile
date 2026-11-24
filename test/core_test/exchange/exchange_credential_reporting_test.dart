@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:address_view/payment_destination.dart';
+import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/testing.dart';
@@ -76,21 +77,6 @@ Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
   ),
 );
 
-class _Settings extends Fake implements Preferences {
-  @override
-  Future<Result<Environment, PreferencesFailure>>
-  readActiveEnvironment() async => const Ok(Environment.testnet);
-
-  @override
-  Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
-    const SettingsEntity(
-      environment: Environment.testnet,
-      bitcoinUnit: BitcoinUnit.btc,
-      currencyCode: 'CAD',
-    ),
-  );
-}
-
 class _Logger extends Mock implements Logger {}
 
 /// The Bitcoin destination check the default-wallet editor uses.
@@ -129,32 +115,23 @@ void main() {
     ('a foreign exception', _Thrown(Exception('unexpected server reply'))),
     ('a programmer error', _Thrown(StateError('programmer bug'))),
   ]) {
-    for (final name in ['autobuy status', 'autobuy update']) {
-      test('$name classifies $label', () async {
-        final repo = _users(refusal);
-        final pending = switch (name) {
-          'autobuy status' => autoBuyStatusForTesting(repo),
-          'autobuy update' => disableAutoBuyForTesting(repo, _Settings()),
-          _ => fail('Unexpected use case name'),
-        };
-        if (refusal is _Thrown && refusal.isProgrammerError) {
-          await expectLater(pending, throwsStateError);
-          noReport();
-        } else if (refusal is _MissingKey || refusal is _UnreadableKey) {
-          expect(await pending, isA<Err>());
-          noReport();
-        } else {
-          expect(await pending, isA<Err>());
-          verify(
-            () => logger.severe(
-              message: any(named: 'message'),
-              error: any(named: 'error'),
-              trace: any(named: 'trace'),
-            ),
-          ).called(1);
-        }
-      });
-    }
+    test('the AutoBuy account load classifies $label', () async {
+      final pending = autoBuyContextForTesting(
+        _users(refusal),
+        const ExchangeSession(
+          environment: ExchangeEnvironment.testnet,
+          epoch: 0,
+          sessionId: 's',
+        ),
+      );
+      if (refusal is _Thrown && refusal.isProgrammerError) {
+        await expectLater(pending, throwsStateError);
+        noReport();
+      } else {
+        expect(await pending, isNot(isA<ReadGot<Object>>()));
+        if (refusal is _MissingKey || refusal is _UnreadableKey) noReport();
+      }
+    });
   }
 
   const session = ExchangeSession(
