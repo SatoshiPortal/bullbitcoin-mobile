@@ -1,15 +1,31 @@
+import 'dart:convert';
+
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow.dart';
 import 'package:bull_exchange/src/withdraw/ui/screens/withdraw_amount_page.dart';
 import 'package:bull_exchange/src/withdraw/ui/screens/withdraw_review_page.dart';
 import 'package:bull_exchange/src/withdraw/ui/withdraw_flow_shell.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../withdraw_fixtures.dart';
+
+/// The review's brand image, served from memory (a 1x1 PNG).
+final class _Assets extends CachingAssetBundle {
+  static final _pixel = base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  );
+
+  @override
+  Future<ByteData> load(String key) async => key == 'AssetManifest.bin'
+      ? const StandardMessageCodec().encodeMessage(<String, Object>{})!
+      : ByteData.sublistView(_pixel);
+}
 
 Future<ExchangeLocalizations> _pump(
   WidgetTester tester,
@@ -18,24 +34,31 @@ Future<ExchangeLocalizations> _pump(
   List<String>? opened,
 }) async {
   await tester.pumpWidget(
-    MaterialApp(
-      theme: ThemeData(extensions: testBullExtensions),
-      localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
-      supportedLocales: ExchangeLocalizations.supportedLocales,
-      home: Navigator(
-        pages: withdrawPagesFor(
-          state,
-          brandAsset: 'assets/none.png',
-          onEvent: (event) => events?.add(event),
-          openOrder: (id) => opened?.add(id),
+    DefaultAssetBundle(
+      bundle: _Assets(),
+      child: MaterialApp(
+        theme: ThemeData(extensions: testBullExtensions),
+        localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+        supportedLocales: ExchangeLocalizations.supportedLocales,
+        home: Navigator(
+          pages: withdrawPagesFor(
+            state,
+            brandAsset: 'assets/none.png',
+            onEvent: (event) => events?.add(event),
+            openOrder: (id) => opened?.add(id),
+          ),
+          onDidRemovePage: (_) {},
         ),
-        onDidRemovePage: (_) {},
       ),
     ),
   );
   await tester.pump();
   return ExchangeLocalizations.of(tester.element(find.byType(Navigator).last));
 }
+
+/// The button, not the page title of the same text ("Confirm withdrawal").
+Finder _button(String label) =>
+    find.descendant(of: find.byType(BullButton), matching: find.text(label));
 
 WithdrawConfirming _confirming(WithdrawConfirmState confirm) {
   final review = withdrawReviewState as WithdrawReview;
@@ -57,13 +80,10 @@ void main() {
     expect(find.byType(WithdrawAmountPage), findsOneWidget);
     await tester.enterText(find.byType(TextFormField), '12');
     await tester.tap(find.text(labels.withdrawAmountContinue));
-    expect(
-      events.map((e) => (e as WithdrawAmountChanged).event),
-      [
-        isA<AmountTyped>().having((e) => e.text, 'text', '12'),
-        isA<AmountContinuePressed>(),
-      ],
-    );
+    expect(events.map((e) => (e as WithdrawAmountChanged).event), [
+      isA<AmountTyped>().having((e) => e.text, 'text', '12'),
+      isA<AmountContinuePressed>(),
+    ]);
   });
 
   testWidgets('review offers Confirm; confirming shows no live Confirm', (
@@ -72,7 +92,7 @@ void main() {
     final events = <WithdrawFlowEvent>[];
     final labels = await _pump(tester, withdrawReviewState, events: events);
     expect(find.byType(WithdrawReviewPage), findsOneWidget);
-    await tester.tap(find.text(labels.withdrawConfirmButton));
+    await tester.tap(_button(labels.withdrawConfirmButton));
     expect(events.single, isA<WithdrawConfirmPressed>());
 
     events.clear();
@@ -82,7 +102,7 @@ void main() {
       _confirming(ConfirmConfirming(review.target, 1)),
       events: events,
     );
-    await tester.tap(find.text(labels.withdrawConfirmButton));
+    await tester.tap(_button(labels.withdrawConfirmButton));
     expect(events, isEmpty);
   });
 
@@ -101,7 +121,7 @@ void main() {
       ),
     );
     expect(find.text(labels.withdrawConfirmCheckAgainButton), findsOneWidget);
-    expect(find.text(labels.withdrawConfirmButton), findsNothing);
+    expect(_button(labels.withdrawConfirmButton), findsNothing);
   });
 
   testWidgets('done opens the order', (tester) async {

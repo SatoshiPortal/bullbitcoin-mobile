@@ -136,6 +136,7 @@ void main() {
   });
 
   test('without a session nothing runs', () async {
+    final before = [...calls.sessions];
     final none = WithdrawFlowBloc(
       calls: calls.of,
       session: null,
@@ -144,6 +145,7 @@ void main() {
     addTearDown(none.close);
     await _settle();
     expect(none.state, isA<WithdrawSessionEnded>());
-    expect(calls.sessions, isEmpty);
+    // Only the setUp's bloc bound calls to a session.
+    expect(calls.sessions, before);
   });
 }
