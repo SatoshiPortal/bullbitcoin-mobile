@@ -27,9 +27,13 @@ typedef SupportChatEffects = ({
   buildLogs,
   Future<Result<void, ExchangeSupportChatFailure>> Function(String attachmentId)
   openAttachment,
+
+  /// Tells the owner of the unread count that the user saw every message.
+  void Function() newestShown,
 });
 
-Future<SupportChatEvent> runSupportChatEffect(
+/// Runs [effect]; its answer, if it has one, is the next event.
+Future<SupportChatEvent?> runSupportChatEffect(
   SupportChatEffect effect,
   SupportChatEffects effects,
 ) async => switch (effect) {
@@ -37,6 +41,7 @@ Future<SupportChatEvent> runSupportChatEffect(
     ticket,
     await effects.fetchPage(page),
   ),
+  ChatNewestShown() => _told(effects.newestShown),
   ChatPickImages() => ChatAttachmentsPicked(await effects.pickImages()),
   ChatBuildLogs() => ChatLogsBuilt(await effects.buildLogs()),
   ChatSend(:final localId, :final text, :final attachments) => ChatSendAnswered(
@@ -48,6 +53,12 @@ Future<SupportChatEvent> runSupportChatEffect(
     await effects.openAttachment(attachmentId),
   ),
 };
+
+/// An effect with no answer.
+SupportChatEvent? _told(void Function() tell) {
+  tell();
+  return null;
+}
 
 /// Shell of [transitionSupportChat]. Effect results arriving after close are
 /// dropped (CHAT-1).
@@ -92,7 +103,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     for (final effect in effects) {
       unawaited(
         runSupportChatEffect(effect, _effects).then((event) {
-          if (!isClosed) add(event);
+          if (event != null && !isClosed) add(event);
         }),
       );
     }

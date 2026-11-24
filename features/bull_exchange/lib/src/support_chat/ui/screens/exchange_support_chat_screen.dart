@@ -69,6 +69,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
             pickImages: pick.execute,
             buildLogs: logs.execute,
             openAttachment: open.execute,
+            newestShown: onMessagesRead,
           ),
           notifications: exchange.notifications,
           draft: initialMessage,
@@ -95,15 +96,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
           backgroundColor: context.appColors.background,
         ),
         backgroundColor: context.appColors.background,
-        body: BlocListener<ExchangeSupportChatCubit, ExchangeSupportChatState>(
-          listenWhen: (previous, current) =>
-              previous.loadingMessages &&
-              !current.loadingMessages &&
-              current.failure == null &&
-              current.currentPage == 1,
-          listener: (_, _) => onMessagesRead(),
-          child: const _ChatBody(),
-        ),
+        body: const _ChatBody(),
       ),
     );
   }

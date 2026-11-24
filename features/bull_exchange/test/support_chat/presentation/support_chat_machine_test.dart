@@ -358,6 +358,46 @@ void main() {
       );
     });
 
+    test('the newest page on screen tells that every message was seen', () {
+      expect(
+        transitionSupportChat(_states[0], ChatPageLoaded(1, Ok([_m1]))).effects,
+        const [ChatNewestShown()],
+      );
+      expect(
+        transitionSupportChat(
+          _states[0],
+          const ChatPageLoaded(1, Err(_loadFailure)),
+        ).effects,
+        isEmpty,
+      );
+      final refreshing = transitionSupportChat(
+        _states[2],
+        const ChatPushed(),
+      ).state;
+      expect(
+        transitionSupportChat(
+          refreshing,
+          ChatPageLoaded(4, Ok([_m2, _m1])),
+        ).effects,
+        const [ChatNewestShown()],
+      );
+      expect(
+        transitionSupportChat(
+          refreshing,
+          const ChatPageLoaded(4, Err(_loadFailure)),
+        ).effects,
+        isNot(contains(const ChatNewestShown())),
+      );
+      expect(
+        transitionSupportChat(
+          _states[5],
+          ChatPageLoaded(3, Ok([_m2, _m1])),
+        ).effects,
+        isEmpty,
+        reason: 'an older page is not the newest one',
+      );
+    });
+
     test('send, pick, logs and open start their effect', () {
       expect(
         transitionSupportChat(_states[13], const ChatSendPressed()).effects,
@@ -517,6 +557,7 @@ List<SupportChatEvent> _answers(SupportChatEffect effect) => switch (effect) {
     ),
     ChatPageLoaded(ticket, const Err(_loadFailure)),
   ],
+  ChatNewestShown() => [],
   ChatPickImages() => [
     const ChatAttachmentsPicked(Ok([_att])),
   ],

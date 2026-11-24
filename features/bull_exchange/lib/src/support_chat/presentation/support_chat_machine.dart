@@ -452,6 +452,17 @@ final class ChatFetchPage extends SupportChatEffect {
   int get hashCode => Object.hash(ChatFetchPage, ticket, page);
 }
 
+/// The newest page is on screen: the user has seen every message.
+final class ChatNewestShown extends SupportChatEffect {
+  const ChatNewestShown();
+
+  @override
+  bool operator ==(Object other) => other is ChatNewestShown;
+
+  @override
+  int get hashCode => (ChatNewestShown).hashCode;
+}
+
 final class ChatPickImages extends SupportChatEffect {
   const ChatPickImages();
 
@@ -521,19 +532,22 @@ SupportChatNext transitionSupportChat(
 ) => switch ((state.thread, event)) {
   (final ChatThreadLoading loading, ChatPageLoaded loaded)
       when loaded.ticket == loading.ticket =>
-    StepNext(switch (loaded.result) {
-      Ok(:final value) => _withThread(
-        state,
-        ChatThreadLoaded(
-          const [],
-          nextPage: value.length < supportChatPageSize ? null : 2,
+    switch (loaded.result) {
+      Ok(:final value) => StepNext(
+        _withThread(
+          state,
+          ChatThreadLoaded(
+            const [],
+            nextPage: value.length < supportChatPageSize ? null : 2,
+          ),
+          value,
         ),
-        value,
+        const [ChatNewestShown()],
       ),
-      Err(:final failure) => state.copyWith(
-        thread: ChatThreadLoadFailed(failure),
+      Err(:final failure) => StepNext(
+        state.copyWith(thread: ChatThreadLoadFailed(failure)),
       ),
-    }),
+    },
   (final ChatThreadLoaded thread, ChatPageLoaded loaded) => _pageLoaded(
     state,
     thread,
@@ -771,9 +785,9 @@ SupportChatNext _pageLoaded(
           thread.copyWith(refresh: const ChatRefreshIdle()),
           value,
         );
-        return again
-            ? _refresh(merged, merged.thread as ChatThreadLoaded)
-            : StepNext(merged);
+        if (!again) return StepNext(merged, const [ChatNewestShown()]);
+        final next = _refresh(merged, merged.thread as ChatThreadLoaded);
+        return StepNext(next.state, [const ChatNewestShown(), ...next.effects]);
       case Err(:final failure):
         final idle = state.copyWith(
           thread: thread.copyWith(refresh: const ChatRefreshIdle()),
