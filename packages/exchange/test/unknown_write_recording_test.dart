@@ -492,4 +492,35 @@ void main() {
       },
     );
   });
+
+  group('order create', () {
+    const session = ExchangeSession(
+      environment: ExchangeEnvironment.mainnet,
+      epoch: 4,
+      sessionId: 's',
+    );
+    const request = OrderCreateJournalRequest(
+      type: OrderType.sell,
+      amount: BitcoinAmount(0.002),
+      currency: FiatCurrency.eur,
+    );
+
+    test('an unknown create is journaled with what was sent', () async {
+      final journal = InMemoryUnknownWriteJournal();
+
+      await exchangeForTesting(unknownWrites: journal)
+          .journalUnknownOrderCreate(session, request);
+
+      final entry = journal.entries.single.$1;
+      expect(entry.kind, UnknownWriteKind.orderCreate);
+      expect(entry.environment, ExchangeEnvironment.mainnet);
+      expect(entry.sessionEpoch, 4);
+      expect(entry.orderId, isNull);
+      expect(entry.request, request.toRequest());
+    });
+
+    test('without a journal nothing happens', () async {
+      await exchangeForTesting().journalUnknownOrderCreate(session, request);
+    });
+  });
 }

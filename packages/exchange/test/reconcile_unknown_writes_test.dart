@@ -12,21 +12,24 @@ Order _order({
   OrderStatus orderStatus = OrderStatus.awaitingConfirmation,
   OrderPayoutStatus payoutStatus = OrderPayoutStatus.notStarted,
   String? bitcoinTransactionId,
+  double payinAmount = 100,
+  double payoutAmount = 0.001,
+  DateTime? createdAt,
 }) => Order.buy(
   orderId: orderId,
   orderType: OrderType.buy,
   message: OrderMessage(code: '', message: ''),
   orderNumber: 1,
-  payinAmount: 100,
+  payinAmount: payinAmount,
   payinCurrency: 'CAD',
-  payoutAmount: 0.001,
+  payoutAmount: payoutAmount,
   payoutCurrency: 'BTC',
   payinMethod: OrderPaymentMethod.cadBalance,
   payoutMethod: OrderPaymentMethod.bitcoin,
   orderStatus: orderStatus,
   payinStatus: OrderPayinStatus.completed,
   payoutStatus: payoutStatus,
-  createdAt: DateTime.utc(2026, 11, 23),
+  createdAt: createdAt ?? DateTime.utc(2026, 11, 23),
   bitcoinAddress: 'tb1qbuy',
   bitcoinTransactionId: bitcoinTransactionId,
   isTestnet: true,
@@ -53,9 +56,21 @@ LimitOrder _limitOrder({
 
 final class _Orders extends Fake implements ExchangeOrders {
   final Map<String, Result<Order, ExchangeFailure>> answers;
+  final Result<List<Order>, ExchangeFailure> recent;
   final reads = <String>[];
+  final listedTypes = <OrderType?>[];
 
-  _Orders(this.answers);
+  _Orders(this.answers, {this.recent = const Err(ExchangeNetworkFailure())});
+
+  @override
+  Future<Result<List<Order>, ExchangeFailure>> getOrders({
+    int? limit,
+    int? offset,
+    OrderType? type,
+  }) async {
+    listedTypes.add(type);
+    return recent;
+  }
 
   @override
   Future<Result<Order, ExchangeFailure>> getOrder(String orderId) async {
@@ -189,6 +204,120 @@ void main() {
         ),
         isNull,
       );
+    });
+  });
+
+  group('order create settlement', () {
+    final recordedAt = DateTime.utc(2026, 11, 24, 8);
+    const sent = OrderCreateJournalRequest(
+      type: OrderType.buy,
+      amount: FiatAmount(100),
+      currency: FiatCurrency.cad,
+    );
+
+    UnknownWrite entryFor(OrderCreateJournalRequest request) => UnknownWrite(
+      id: 'e-1',
+      kind: UnknownWriteKind.orderCreate,
+      environment: ExchangeEnvironment.testnet,
+      request: request.toRequest(),
+      recordedAt: recordedAt,
+    );
+
+    Order created({
+      Duration before = const Duration(minutes: 1),
+      double payinAmount = 100,
+      double payoutAmount = 0.001,
+    }) => _order(
+      createdAt: recordedAt.subtract(before),
+      payinAmount: payinAmount,
+      payoutAmount: payoutAmount,
+    );
+
+    test('the request survives the journal', () {
+      final read = OrderCreateJournalRequest.fromRequest(
+        const OrderCreateJournalRequest(
+          type: OrderType.fiatPayment,
+          amount: BitcoinAmount(0.0005),
+          recipientId: 'r-1',
+        ).toRequest(),
+      )!;
+      expect(read.type, OrderType.fiatPayment);
+      expect(read.amount, isA<BitcoinAmount>());
+      expect(read.amount.amount, 0.0005);
+      expect(read.currency, isNull);
+      expect(read.recipientId, 'r-1');
+      expect(sent.toRequest(), {
+        'orderType': 'buy',
+        'amount': '100.0',
+        'amountKind': 'fiat',
+        'currency': 'CAD',
+      });
+    });
+
+    test('a request it did not write reads as null', () {
+      for (final request in <Map<String, String>>[
+        {},
+        {'orderType': 'buy', 'amount': 'x', 'amountKind': 'fiat'},
+        {'orderType': 'other', 'amount': '1', 'amountKind': 'fiat'},
+        {'orderType': 'buy', 'amount': '1', 'amountKind': 'other'},
+        {
+          'orderType': 'buy',
+          'amount': '1',
+          'amountKind': 'fiat',
+          'currency': 'XYZ',
+        },
+      ]) {
+        expect(OrderCreateJournalRequest.fromRequest(request), isNull);
+      }
+    });
+
+    test('an order of the type and amount sent, created in the window, '
+        'is applied', () {
+      for (final order in [
+        created(),
+        created(before: orderCreateWindow),
+        created(before: const Duration(seconds: -30)),
+      ]) {
+        expect(
+          orderCreateSettlement(entryFor(sent), [order]),
+          UnknownWriteSettlement.applied,
+        );
+      }
+    });
+
+    test('a bitcoin amount matches to the sat', () {
+      const bitcoin = OrderCreateJournalRequest(
+        type: OrderType.buy,
+        amount: BitcoinAmount(0.001),
+        currency: FiatCurrency.cad,
+      );
+      expect(
+        orderCreateSettlement(entryFor(bitcoin), [created()]),
+        UnknownWriteSettlement.applied,
+      );
+      expect(
+        orderCreateSettlement(entryFor(bitcoin), [
+          created(payoutAmount: 0.00100001),
+        ]),
+        isNull,
+      );
+    });
+
+    test('no match stays open', () {
+      for (final orders in [
+        <Order>[],
+        [created(payinAmount: 101)],
+        [created(before: orderCreateWindow + const Duration(seconds: 1))],
+        [created(before: const Duration(minutes: -2))],
+      ]) {
+        expect(orderCreateSettlement(entryFor(sent), orders), isNull);
+      }
+      const sell = OrderCreateJournalRequest(
+        type: OrderType.sell,
+        amount: FiatAmount(100),
+        currency: FiatCurrency.cad,
+      );
+      expect(orderCreateSettlement(entryFor(sell), [created()]), isNull);
     });
   });
 
@@ -668,6 +797,55 @@ void main() {
           .execute(ExchangeEnvironment.testnet);
 
       expect(journal.entries.single.$2, isNull);
+    });
+
+    group('order create entry', () {
+      final recordedAt = DateTime.utc(2026, 11, 24, 8);
+      const sent = OrderCreateJournalRequest(
+        type: OrderType.buy,
+        amount: FiatAmount(100),
+        currency: FiatCurrency.cad,
+      );
+
+      Future<void> recordCreate() => withClock(
+        Clock.fixed(recordedAt),
+        () => record(UnknownWriteKind.orderCreate, request: sent.toRequest()),
+      );
+
+      Future<void> reconcileWith(_Orders orders) => withClock(
+        Clock.fixed(recordedAt.add(const Duration(minutes: 5))),
+        () async {
+          final _ = await reconcile(orders)
+              .execute(ExchangeEnvironment.testnet);
+        },
+      );
+
+      test('is settled from the recent orders of its type', () async {
+        await recordCreate();
+        final orders = _Orders(
+          const {},
+          recent: Ok([
+            _order(createdAt: recordedAt.subtract(const Duration(minutes: 1))),
+          ]),
+        );
+
+        await reconcileWith(orders);
+
+        expect(orders.listedTypes, [OrderType.buy]);
+        expect(orders.reads, isEmpty);
+        expect(journal.entries.single.$2, UnknownWriteSettlement.applied);
+      });
+
+      test('stays open when the orders can\'t be read or none match', () async {
+        await recordCreate();
+        for (final orders in [
+          _Orders(const {}),
+          _Orders(const {}, recent: const Ok([])),
+        ]) {
+          await reconcileWith(orders);
+          expect(journal.entries.single.$2, isNull);
+        }
+      });
     });
 
     test('nothing is ever sent: only reads are used', () async {

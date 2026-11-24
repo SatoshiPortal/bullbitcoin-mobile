@@ -210,24 +210,28 @@ void main() {
     expect(answer, isA<GateAdmitted<String>>());
   });
 
-  test('every journaled kind but recipient create holds the gate', () {
-    expect(
-      {
-        for (final kind in UnknownWriteKind.values)
-          kind: journalEntryHoldsGate(kind),
-      },
-      {
-        UnknownWriteKind.buyConfirm: true,
-        UnknownWriteKind.withdrawConfirm: true,
-        UnknownWriteKind.accelerate: true,
-        UnknownWriteKind.dcaCreate: true,
-        UnknownWriteKind.limitOrderCreate: true,
-        UnknownWriteKind.defaultWalletSave: true,
-        UnknownWriteKind.recipientCreate: false,
-        UnknownWriteKind.preferencesSave: true,
-      },
-    );
-  });
+  test(
+    'every journaled kind but recipient and order create holds the gate',
+    () {
+      expect(
+        {
+          for (final kind in UnknownWriteKind.values)
+            kind: journalEntryHoldsGate(kind),
+        },
+        {
+          UnknownWriteKind.buyConfirm: true,
+          UnknownWriteKind.withdrawConfirm: true,
+          UnknownWriteKind.accelerate: true,
+          UnknownWriteKind.dcaCreate: true,
+          UnknownWriteKind.limitOrderCreate: true,
+          UnknownWriteKind.defaultWalletSave: true,
+          UnknownWriteKind.recipientCreate: false,
+          UnknownWriteKind.preferencesSave: true,
+          UnknownWriteKind.orderCreate: false,
+        },
+      );
+    },
+  );
 
   test('an unreadable journal refuses the write', () async {
     final gate = ExchangeWriteGate(journal: _BrokenJournal());

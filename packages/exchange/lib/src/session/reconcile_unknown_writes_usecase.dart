@@ -11,6 +11,7 @@ import '../domain/entities/user_summary.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/exchange_orders.dart';
+import '../domain/order_create_journal.dart';
 import '../domain/unknown_write_journal.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/recipient_identity.dart';
@@ -136,7 +137,8 @@ final class ReconcileUnknownWritesUsecase {
             UnknownWriteKind.limitOrderCreate ||
             UnknownWriteKind.defaultWalletSave ||
             UnknownWriteKind.recipientCreate ||
-            UnknownWriteKind.preferencesSave => confirmSettlement(order),
+            UnknownWriteKind.preferencesSave ||
+            UnknownWriteKind.orderCreate => confirmSettlement(order),
           },
           Err() => null,
         };
@@ -162,6 +164,13 @@ final class ReconcileUnknownWritesUsecase {
       case UnknownWriteKind.preferencesSave:
         return switch (await _getUserSummary(environment)) {
           Ok(:final value) => preferencesSettlement(entry.request, value),
+          Err() => null,
+        };
+      case UnknownWriteKind.orderCreate:
+        final sent = OrderCreateJournalRequest.fromRequest(entry.request);
+        if (sent == null) return null;
+        return switch (await _orders(environment).getOrders(type: sent.type)) {
+          Ok(:final value) => orderCreateSettlement(entry, value),
           Err() => null,
         };
     }
@@ -222,6 +231,55 @@ UnknownWriteSettlement? accelerateSettlement(Order order) {
     return UnknownWriteSettlement.orderEnded;
   }
   return null;
+}
+
+/// How long before its journal entry was recorded a created order may be
+/// dated: the create may have waited out its timeouts before it was
+/// journaled.
+const orderCreateWindow = Duration(minutes: 10);
+
+/// An order of the type sent, created within [orderCreateWindow] before the
+/// entry was recorded (or up to a minute after, for clock skew), with the
+/// amount sent, means the create took effect. No match can't tell: the read
+/// may not hold the order, or skipped it as malformed. The entry then stays
+/// open until [UnknownWrite.maxAge]; an order create never holds the write
+/// gate meanwhile.
+UnknownWriteSettlement? orderCreateSettlement(
+  UnknownWrite entry,
+  List<Order> orders,
+) {
+  final sent = OrderCreateJournalRequest.fromRequest(entry.request);
+  if (sent == null) return null;
+  final from = entry.recordedAt.subtract(orderCreateWindow);
+  final until = entry.recordedAt.add(const Duration(minutes: 1));
+  final matches = orders.any(
+    (order) =>
+        order.orderType == sent.type &&
+        !order.createdAt.isBefore(from) &&
+        !order.createdAt.isAfter(until) &&
+        _orderAmountMatches(order, sent),
+  );
+  return matches ? UnknownWriteSettlement.applied : null;
+}
+
+/// A fiat amount matches the side counted in the currency sent (either side
+/// when none was sent) to the cent; a bitcoin amount either side to the sat.
+bool _orderAmountMatches(Order order, OrderCreateJournalRequest sent) {
+  switch (sent.amount) {
+    case FiatAmount(:final amount):
+      final currency = sent.currency?.code;
+      return [
+        if (currency == null || order.payinCurrency == currency)
+          order.payinAmount,
+        if (currency == null || order.payoutCurrency == currency)
+          order.payoutAmount,
+      ].any((value) => (value - amount).abs() < 0.005);
+    case BitcoinAmount(:final amount):
+      return [
+        order.payinAmount,
+        order.payoutAmount,
+      ].any((value) => (value - amount).abs() < 0.000000005);
+  }
 }
 
 /// The account has one recurring buy: active with the address sent means it

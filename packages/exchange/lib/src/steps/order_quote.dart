@@ -473,20 +473,27 @@ typedef OrderStepNext<R, O> =
 OrderStepNext<R, O> orderCreateStart<R, O>(R request) =>
     StepNext(OrderCreating<R, O>(request, 1), [OrderSendCreate(request, 1)]);
 
-/// Runs [OrderSendCreate] through [gate] for [session]'s account.
+/// Runs [OrderSendCreate] through [gate] for [session]'s account. An unknown
+/// outcome is handed to [journalUnknown] (`Exchange.journalUnknownOrderCreate`)
+/// before the answer moves the step to Verifying, so reconcile can still
+/// find the order if the flow is left.
 Future<OrderCreateAnswered<R, O>> runOrderCreate<R, O>({
   required ExchangeWriteGate gate,
   required ExchangeSession session,
   required OrderSendCreate<R> effect,
   required Future<ExchangeWrite<O>> Function(R request) create,
-}) async => OrderCreateAnswered(
-  effect.attempt,
-  await gate.run(
+  required Future<void> Function(R request) journalUnknown,
+}) async {
+  final answer = await gate.run(
     session,
     FinancialWriteKind.orderCreate,
     () => create(effect.request),
-  ),
-);
+  );
+  if (answer case GateAdmitted(result: WriteOutcomeUnknown())) {
+    await journalUnknown(effect.request);
+  }
+  return OrderCreateAnswered(effect.attempt, answer);
+}
 
 OrderStepNext<R, O> _held<R, O>(OrderPolicy<O> policy, O order) {
   final quoted = QuotedOrder(policy.idOf(order), order);

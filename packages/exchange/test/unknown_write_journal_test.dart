@@ -135,6 +135,7 @@ void main() {
         UnknownWriteKind.defaultWalletSave: 'default_wallet_save',
         UnknownWriteKind.recipientCreate: 'recipient_create',
         UnknownWriteKind.preferencesSave: 'preferences_save',
+        UnknownWriteKind.orderCreate: 'order_create',
       },
     );
     for (final kind in UnknownWriteKind.values) {

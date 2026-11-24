@@ -45,6 +45,7 @@ import 'domain/exchange_limit_orders.dart';
 import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
 import 'domain/exchange_write_gate.dart';
+import 'domain/order_create_journal.dart';
 import 'domain/unknown_write_journal.dart';
 import 'setup/exchange_access_lifecycle.dart';
 import 'recipients/exchange_recipients.dart';
@@ -938,6 +939,25 @@ final class Exchange {
       ),
     );
     return result;
+  }
+
+  /// Records an order create of [session] whose outcome is unknown
+  /// (`runOrderCreate`'s `journalUnknown`), so reconcile can match it against
+  /// the recent orders. Nothing happens without a journal.
+  Future<void> journalUnknownOrderCreate(
+    ExchangeSession session,
+    OrderCreateJournalRequest request,
+  ) async {
+    final journal = _unknownWrites;
+    if (journal == null) return;
+    await UnknownWriteRecorder(journal).record(
+      UnknownWriteDraft(
+        kind: UnknownWriteKind.orderCreate,
+        environment: session.environment,
+        sessionEpoch: session.epoch,
+        request: request.toRequest(),
+      ),
+    );
   }
 
   Future<int?> _epochOf(ExchangeEnvironment environment) async =>

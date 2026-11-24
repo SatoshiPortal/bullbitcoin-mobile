@@ -41,6 +41,7 @@ export 'src/domain/exchange_virtual_ibans.dart' show ExchangeVirtualIbans;
 export 'src/domain/exchange_orders.dart' show ExchangeOrders;
 export 'src/domain/order_deadline_scheduler.dart';
 export 'src/domain/unknown_write_journal.dart';
+export 'src/domain/order_create_journal.dart';
 export 'src/domain/exchange_write_gate.dart';
 export 'src/session/reconcile_unknown_writes_usecase.dart'
     show UnknownWriteReconciliation;

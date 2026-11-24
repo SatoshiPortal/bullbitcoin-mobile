@@ -14,7 +14,10 @@ enum UnknownWriteKind {
   limitOrderCreate('limit_order_create'),
   defaultWalletSave('default_wallet_save'),
   recipientCreate('recipient_create'),
-  preferencesSave('preferences_save');
+  preferencesSave('preferences_save'),
+
+  /// A buy, sell, pay or withdraw order create (`OrderCreateJournalRequest`).
+  orderCreate('order_create');
 
   /// The stored value; never renamed.
   final String wire;

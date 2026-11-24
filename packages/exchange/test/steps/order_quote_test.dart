@@ -285,6 +285,7 @@ void main() {
           expect(request, _req);
           return const WriteDone(_o1);
         },
+        journalUnknown: (_) async => fail('nothing to journal'),
       );
       expect(seen, FinancialWriteKind.orderCreate);
       expect(answered.attempt, 3);
@@ -317,6 +318,7 @@ void main() {
             sent = true;
             return const WriteDone(_o1);
           },
+          journalUnknown: (_) async => fail('nothing to journal'),
         );
         expect(sent, isFalse);
         expect(
@@ -333,5 +335,40 @@ void main() {
         await running;
       },
     );
+
+    test('an unknown outcome is journaled before the answer', () async {
+      final journaled = <String>[];
+      final answered = await runOrderCreate<String, _Order>(
+        gate: ExchangeWriteGate(),
+        session: session,
+        effect: const OrderSendCreate(_req, 1),
+        create: (_) async => const WriteOutcomeUnknown('timeout'),
+        journalUnknown: (request) async => journaled.add(request),
+      );
+      expect(journaled, [_req]);
+      expect(
+        transitionOrderStep(_policy, _creating, answered),
+        const _Next(OrderVerifying(_req, 1), [OrderFindCreated(_req, 1)]),
+      );
+    });
+
+    for (final write in <ExchangeWrite<_Order>>[
+      const WriteDone(_o1),
+      const WriteRefused(_refusal),
+      const WriteNotSent(ExchangeNotSentReason.unreachable),
+      const WriteSessionRejected(),
+    ]) {
+      test('$write is not journaled', () async {
+        var journaled = false;
+        final _ = await runOrderCreate<String, _Order>(
+          gate: ExchangeWriteGate(),
+          session: session,
+          effect: const OrderSendCreate(_req, 1),
+          create: (_) async => write,
+          journalUnknown: (_) async => journaled = true,
+        );
+        expect(journaled, isFalse);
+      });
+    }
   });
 }

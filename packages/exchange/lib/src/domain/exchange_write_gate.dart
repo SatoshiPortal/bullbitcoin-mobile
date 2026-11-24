@@ -86,8 +86,9 @@ final class GateRefused<T> extends GatedWrite<T> {
   const GateRefused(this.refusal);
 }
 
-/// Whether an open journal entry of [kind] holds the gate. Recipient creates
-/// are journaled but move no money, so they don't.
+/// Whether an open journal entry of [kind] holds the gate. Recipient and
+/// order creates are journaled but move no money (an order still needs its
+/// confirm or payin, each gated), so they don't.
 bool journalEntryHoldsGate(UnknownWriteKind kind) => switch (kind) {
   UnknownWriteKind.buyConfirm ||
   UnknownWriteKind.withdrawConfirm ||
@@ -96,7 +97,7 @@ bool journalEntryHoldsGate(UnknownWriteKind kind) => switch (kind) {
   UnknownWriteKind.limitOrderCreate ||
   UnknownWriteKind.defaultWalletSave ||
   UnknownWriteKind.preferencesSave => true,
-  UnknownWriteKind.recipientCreate => false,
+  UnknownWriteKind.recipientCreate || UnknownWriteKind.orderCreate => false,
 };
 
 /// One financial write at a time per account. A second write while one is in
