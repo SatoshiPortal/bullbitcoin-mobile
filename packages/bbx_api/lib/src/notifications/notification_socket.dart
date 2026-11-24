@@ -85,6 +85,7 @@ class BbxNotificationSocket {
   Object? _attempt;
   StreamSubscription<dynamic>? _subscription;
   Timer? _retryTimer;
+  _Handshake? _handshake;
   bool _disposed = false;
   bool _hasConnectionFailure = false;
   bool _isConnected = false;
@@ -169,18 +170,34 @@ class BbxNotificationSocket {
         pingInterval: pingInterval,
       );
       _channel = channel;
+      ({Object? error})? endedEarly;
       _subscription = channel.stream.listen(
         (message) {
           if (identical(_attempt, attempt)) _handleMessage(message);
         },
+        // Until the handshake ends, connect alone decides the attempt's
+        // outcome (a refused handshake also errors and closes the stream); an
+        // end seen meanwhile is handled once the handshake succeeded.
         onError: (Object error) {
-          if (identical(_attempt, attempt)) _handleError(error);
+          if (!identical(_attempt, attempt)) return;
+          if (_isConnecting) {
+            endedEarly ??= (error: error);
+          } else {
+            _handleError(error);
+          }
         },
         onDone: () {
-          if (identical(_attempt, attempt)) _handleDisconnect();
+          if (!identical(_attempt, attempt)) return;
+          if (_isConnecting) {
+            endedEarly ??= (error: null);
+          } else {
+            _handleDisconnect();
+          }
         },
       );
-      await channel.ready.timeout(handshakeTimeout);
+      final handshake = _Handshake(channel.ready, handshakeTimeout);
+      _handshake = handshake;
+      await handshake.done;
       if (!identical(_attempt, attempt)) {
         return const Ok(null);
       }
@@ -189,6 +206,13 @@ class BbxNotificationSocket {
       _hasConnectionFailure = false;
       _failuresInARow = 0;
       _log(BbxNotificationLogLevel.fine, 'WebSocket connected successfully');
+      switch (endedEarly) {
+        case (error: final Object error):
+          _handleError(error);
+        case (error: null):
+          _handleDisconnect();
+        case null:
+      }
       return const Ok(null);
     } catch (error) {
       if (error is Error) {
@@ -314,6 +338,8 @@ class BbxNotificationSocket {
   }
 
   void _closeChannel() {
+    _handshake?.abandon();
+    _handshake = null;
     final subscription = _subscription;
     _subscription = null;
     if (subscription != null) unawaited(subscription.cancel());
@@ -381,5 +407,34 @@ class BbxNotificationSocket {
     _disposed = true;
     disconnect();
     unawaited(_eventController.close());
+  }
+}
+
+/// One handshake wait, ended by the channel, by [BbxNotificationSocket.
+/// handshakeTimeout] or by [abandon], whichever comes first. Owning the timer
+/// (instead of `Future.timeout`) lets a disconnect stop it, so no timer
+/// outlives the attempt.
+class _Handshake {
+  final _completer = Completer<void>();
+  late final Timer _timer;
+
+  _Handshake(Future<void> ready, Duration timeout) {
+    _timer = Timer(timeout, () => _fail(TimeoutException(null, timeout)));
+    ready.then((_) => _end(), onError: _fail);
+  }
+
+  Future<void> get done => _completer.future;
+
+  /// Ends the wait without an error; the caller sees its attempt is stale.
+  void abandon() => _end();
+
+  void _end() {
+    _timer.cancel();
+    if (!_completer.isCompleted) _completer.complete();
+  }
+
+  void _fail(Object error, [StackTrace? stackTrace]) {
+    _timer.cancel();
+    if (!_completer.isCompleted) _completer.completeError(error, stackTrace);
   }
 }

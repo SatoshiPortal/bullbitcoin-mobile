@@ -356,6 +356,24 @@ void main() {
     });
   });
 
+  test('a disconnect during the handshake ends connect at once and leaves '
+      'no timer', () {
+    fakeAsync((time) {
+      connector.onConnect = (_) {};
+      final s = socket();
+      final results = <Result<void, BbxFailure>>[];
+      unawaited(s.connect().then(results.add));
+      time.elapse(const Duration(seconds: 1));
+      s.disconnect();
+      time.flushMicrotasks();
+      expect(results.single, isA<Ok<void, BbxFailure>>());
+      expect(time.nonPeriodicTimerCount, 0);
+      time.elapse(const Duration(minutes: 1));
+      expect(connector.handshakes, hasLength(1));
+      s.dispose();
+    });
+  });
+
   test('failures in a row back off up to 5 minutes; a connection resets '
       'it', () {
     fakeAsync((time) {
