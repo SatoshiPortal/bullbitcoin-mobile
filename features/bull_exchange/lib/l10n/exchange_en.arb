@@ -1399,14 +1399,6 @@
   "@autoBuyInfoMessage": {
     "description": "Explanation on the AutoBuy confirmation screen"
   },
-  "autoBuyAccountUnavailableError": "Your Bull Bitcoin account is not available. Try again later.",
-  "@autoBuyAccountUnavailableError": {
-    "description": "Error shown when AutoBuy cannot load the exchange account"
-  },
-  "autoBuyWalletRequiredError": "Add at least one default Bitcoin, Lightning, or Liquid address.",
-  "@autoBuyWalletRequiredError": {
-    "description": "Error shown when AutoBuy is enabled without a default wallet"
-  },
   "autoBuyUpdateError": "Auto-buy could not be updated. Try again later.",
   "@autoBuyUpdateError": {
     "description": "Error shown when enabling or disabling AutoBuy fails"
@@ -2290,10 +2282,6 @@
   "@withdrawConfirmCheckAgainButton": {
     "description": "Button on the withdrawal confirmation that re-reads the order after a confirmation whose outcome is unknown."
   },
-  "exchangeOrderActionOutcomeUnknownError": "We could not tell whether this went through. Check the order before you try again.",
-  "@exchangeOrderActionOutcomeUnknownError": {
-    "description": "Shown when confirming or accelerating an exchange order failed after the request may have reached the server, and the order could not tell whether it worked. The action is not offered again."
-  },
   "limitOrdersTitle": "Limit orders",
   "@limitOrdersTitle": {
     "description": "Title for the Limit Orders feature"
@@ -2443,10 +2431,6 @@
   "@limitOrderCreationError": {
     "description": "Shown when a Limit Order cannot be created"
   },
-  "limitOrderCreationOutcomeUnknownError": "We could not tell whether your limit order was created. Check your limit orders before you try again.",
-  "@limitOrderCreationOutcomeUnknownError": {
-    "description": "Shown on the limit order confirmation when the create request failed after it may have reached the server, so the limit order may exist. Confirm is not offered again."
-  },
   "exchangeSettingsLogOutTitle": "Log Out",
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"
@@ -2522,10 +2506,6 @@
   "buyBitcoinAddressHint": "BC1QYL7J673H…6Y6ALV70M0",
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
-  },
-  "buyConfirmPurchase": "Confirm purchase",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
   },
   "buyYouBought": "You bought {amount} with {fiatAmount}",
   "@buyYouBought": {
@@ -2816,14 +2796,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "buyInputMinAmountError": "You should buy at least",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "You can't buy more than",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC ID Verification Pending",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -2892,22 +2864,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "buyUnauthenticatedError": "You are not authenticated. Please log in to continue.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "You are trying to buy below the minimum amount.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "You are trying to buy above the maximum amount.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
-  "@buyUnexpectedError": {
-    "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
-  },
   "buyPayoutAddressUnavailable": "Couldn't get a receive address from this wallet. Pick it again or choose another wallet.",
   "@buyPayoutAddressUnavailable": {
     "description": "Under the buy payout wallet dropdown when the picked app wallet gave no receive address; the wallet stays selected and nothing was ordered"
@@ -2919,22 +2875,6 @@
   "buyPayoutStillPending": "Your payout is still on its way. You can follow it in the order details.",
   "@buyPayoutStillPending": {
     "description": "On the buy success page when the payout could not be read for a while or is taking longer than expected; the order is confirmed"
-  },
-  "dcaAccountUnavailableError": "Could not load your account. Check your connection, make sure you are logged in, and try again.",
-  "@dcaAccountUnavailableError": {
-    "description": "Shown when the exchange account summary cannot be loaded, so DCA setup cannot start. Deliberately covers three causes the boundary cannot tell apart: not logged in, no connection, and a backend error."
-  },
-  "dcaLightningAddressRequiredError": "Enter a Lightning address to receive your purchases.",
-  "@dcaLightningAddressRequiredError": {
-    "description": "Shown when Lightning was chosen as the DCA payout network but no lightning address was provided."
-  },
-  "dcaOrderCreationError": "The recurring buy could not be created. Please try again later.",
-  "@dcaOrderCreationError": {
-    "description": "Shown when the exchange rejects creating the recurring buy order."
-  },
-  "dcaCreationOutcomeUnknownError": "We could not tell whether your recurring buy was created. Check your recurring buys before you try again.",
-  "@dcaCreationOutcomeUnknownError": {
-    "description": "Shown on the DCA confirmation when the create request failed after it may have reached the server, so the recurring buy may exist. Confirm is not offered again."
   },
   "dcaUseDefaultBitcoinWallet": "Use my default Bitcoin wallet",
   "@dcaUseDefaultBitcoinWallet": {
@@ -2967,10 +2907,6 @@
   "dcaConfirmPayoutAddress": "Receiving address",
   "@dcaConfirmPayoutAddress": {
     "description": "Recurring buy confirmation row: the Bitcoin or Liquid address every purchase is sent to."
-  },
-  "dcaDestinationAddressRequiredError": "Choose your default wallet or enter an address to receive your purchases.",
-  "@dcaDestinationAddressRequiredError": {
-    "description": "Shown when Bitcoin or Liquid was chosen as the recurring buy payout but no address was given."
   },
   "payjoinInProgress": "Payjoin in progress",
   "@payjoinInProgress": {
@@ -3559,10 +3495,6 @@
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
   "@limitOrderInvalidTargetError": {
     "description": "Shown for an invalid Limit Order target price"
-  },
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
-  "@limitOrderInvalidAmountError": {
-    "description": "Shown for an invalid Limit Order fiat amount"
   },
   "limitOrdersYourWalletsTitle": "Your wallets",
   "@limitOrdersYourWalletsTitle": {

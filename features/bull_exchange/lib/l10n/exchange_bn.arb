@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "স্বয়ংক্রিয় ক্রয় শুরু করুন",
   "autoBuyConfirmTitle": "স্বয়ংক্রিয় ক্রয় নিশ্চিত করুন",
   "autoBuyInfoMessage": "আপনার অ্যাকাউন্টে যোগ করা যেকোনো পরিমাণ বর্তমান বিনিময় হারে Bitcoin-এ রূপান্তরিত হয়ে আপনার ওয়ালেটে পাঠানো হবে।",
-  "autoBuyAccountUnavailableError": "আপনার Bull Bitcoin অ্যাকাউন্ট উপলব্ধ নয়। পরে আবার চেষ্টা করুন।",
-  "autoBuyWalletRequiredError": "অন্তত একটি ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকানা যোগ করুন।",
   "autoBuyUpdateError": "স্বয়ংক্রিয় ক্রয় আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।",
   "exchangeAuthLoginFailedMessage": "একটি ত্রুটি ঘটেছে, অনুগ্রহ করে পুনরায় লগইন করার চেষ্টা করুন",
   "exchangeAuthLoginFailedOkButton": "ঠিক আছে",
@@ -589,14 +587,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "আপনি সর্বাধিক পরিমাণের উপরে ক্রয় করার চেষ্টা করছেন।",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "আপনি ন্যূনতম পরিমাণের নিচে ক্রয় করার চেষ্টা করছেন।",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "পেআউট ওয়ালেট",
   "buyPayoutMethodLiquid": "Liquid-এ L-BTC",
   "buyPayoutMethodBitcoin": "Bitcoin চেইনে BTC",
@@ -629,7 +619,6 @@
       }
     }
   },
-  "buyUnexpectedError": "আপনার অর্ডার এই মুহূর্তে তৈরি করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "dcaConfirmPaymentMethod": "পেমেন্ট পদ্ধতি",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -801,14 +790,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "ক্রয় নিশ্চিত করুন",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "আপনি এত বেশি ক্রয় করতে পারবেন না",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "নেটওয়ার্ক ফি হার",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -932,14 +913,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "কমপক্ষে কিনুন",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "আমার ডিফল্ট লাইটনিং ঠিকানা ব্যবহার করুন।",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -964,9 +937,6 @@
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
   },
-  "dcaAccountUnavailableError": "আপনার অ্যাকাউন্ট লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করুন, আপনি লগ ইন করেছেন কিনা নিশ্চিত করুন এবং আবার চেষ্টা করুন।",
-  "dcaLightningAddressRequiredError": "আপনার কেনাকাটা পেতে একটি Lightning ঠিকানা লিখুন।",
-  "dcaOrderCreationError": "পুনরাবৃত্ত কেনা তৈরি করা যায়নি। পরে আবার চেষ্টা করুন।",
   "sellAdvancedOptions": "উন্নত বিকল্পসমূহ",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1325,7 +1295,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "পর্যাপ্ত ব্যালেন্স নেই",
   "limitOrdersInsufficientBalanceMessage": "এই অর্ডার তৈরি করতে আপনার পর্যাপ্ত ব্যালান্স নেই",
   "limitOrdersFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
@@ -1429,10 +1398,7 @@
   "recipientsReturnHome": "হোমে ফিরে যান",
   "withdrawConfirmOutcomeUnknownError": "আপনার উত্তোলন সম্পন্ন হয়েছে কি না আমরা নিশ্চিত করতে পারিনি। নতুন উত্তোলন শুরু করার আগে আবার যাচাই করুন।",
   "withdrawConfirmCheckAgainButton": "আবার যাচাই করুন",
-  "exchangeOrderActionOutcomeUnknownError": "এটি সম্পন্ন হয়েছে কি না আমরা বুঝতে পারিনি। আবার চেষ্টা করার আগে অর্ডারটি যাচাই করুন।",
   "limitOrderStatusUnknown": "অবস্থা অজানা",
-  "limitOrderCreationOutcomeUnknownError": "আপনার লিমিট অর্ডার তৈরি হয়েছে কি না আমরা বুঝতে পারিনি। আবার চেষ্টা করার আগে আপনার লিমিট অর্ডারগুলো যাচাই করুন।",
-  "dcaCreationOutcomeUnknownError": "আপনার পুনরাবৃত্ত ক্রয় তৈরি হয়েছে কি না আমরা বুঝতে পারিনি। আবার চেষ্টা করার আগে আপনার পুনরাবৃত্ত ক্রয়গুলো যাচাই করুন।",
   "dcaUseDefaultBitcoinWallet": "আমার ডিফল্ট Bitcoin ওয়ালেট ব্যবহার করুন",
   "dcaUseDefaultLiquidWallet": "আমার ডিফল্ট Liquid ওয়ালেট ব্যবহার করুন",
   "dcaNoDefaultBitcoinWallet": "আপনার Bull Bitcoin অ্যাকাউন্টে কোনো ডিফল্ট Bitcoin ওয়ালেট নেই। একটি সেট করুন, অথবা নিচে একটি Bitcoin ঠিকানা লিখুন।",
@@ -1441,7 +1407,6 @@
   "dcaEnterBitcoinAddressLabel": "Bitcoin ঠিকানা লিখুন",
   "dcaEnterLiquidAddressLabel": "Liquid ঠিকানা লিখুন",
   "dcaConfirmPayoutAddress": "গ্রহণের ঠিকানা",
-  "dcaDestinationAddressRequiredError": "আপনার ক্রয় গ্রহণ করতে ডিফল্ট ওয়ালেট বেছে নিন বা একটি ঠিকানা লিখুন।",
   "exchangePaymentOutcomeUnknownChecking": "আপনার পেমেন্ট পাঠানো হয়েছে কি না যাচাই করা হচ্ছে…",
   "walletSpendAwaitingObservation": "এই ওয়ালেটটি সিঙ্ক হয়ে নেটওয়ার্কে এর আগের পেমেন্টগুলো না দেখা পর্যন্ত খরচ করা যাবে না। ওয়ালেট রিফ্রেশ করুন বা \"হারানো লেনদেন স্ক্যান করুন\" ব্যবহার করুন, তারপর আবার চেষ্টা করুন।",
   "sendPayjoinSpendPaused": "এই Payjoin পেমেন্টটি বিরতিতে আছে, কারণ ওয়ালেট নিরাপদে এগোতে পারছে না। এর ইনপুটগুলো সংরক্ষিত থাকবে। ওয়ালেট রিফ্রেশ করুন বা \"হারানো লেনদেন স্ক্যান করুন\" ব্যবহার করুন, তারপর প্রস্তাবটি বৈধ থাকা অবস্থায় আবার চেষ্টা করুন। মেয়াদ শেষ হয়ে গেলে, আর কিছু করার আগে লেনদেন-এ পেমেন্টটি যাচাই করুন।",
@@ -1493,5 +1458,10 @@
   "exchangePayinOrderEnded": "আপনার পেমেন্ট পাঠানোর আগেই এই অর্ডারটি শেষ হয়ে গেছে। কিছুই পাঠানো হয়নি।",
   "exchangePayinDepositRefused": "এই ওয়ালেট থেকে এই অর্ডারের পেমেন্ট করা যাবে না। কিছুই পাঠানো হয়নি।",
   "exchangePayinReceived": "এক্সচেঞ্জ আপনার পেমেন্ট পেয়েছে",
-  "exchangePayinCoinsUnavailable": "আপনার ওয়ালেটের কয়েন লোড করা যায়নি। আবার চেষ্টা করুন।"
+  "exchangePayinCoinsUnavailable": "আপনার ওয়ালেটের কয়েন লোড করা যায়নি। আবার চেষ্টা করুন।",
+  "buyPayoutAddressUnavailable": "এই ওয়ালেট থেকে রিসিভ ঠিকানা পাওয়া যায়নি। এটি আবার বেছে নিন বা অন্য ওয়ালেট বেছে নিন।",
+  "buyPayoutFailed": "এক্সচেঞ্জ এই পেমেন্ট সম্পূর্ণ করতে পারেনি। অর্ডারের বিবরণ খুলুন বা সাপোর্টে যোগাযোগ করুন।",
+  "buyPayoutStillPending": "আপনার পেমেন্ট এখনও পথে আছে। অর্ডারের বিবরণে এটি দেখতে পারবেন।",
+  "limitOrdersOverBalanceWarning": "এটি আপনার উপলব্ধ ব্যালেন্সের চেয়ে বেশি। অর্ডার কার্যকর হলে তখন ব্যালেন্সে যা থাকবে তা দিয়েই কেনা হবে।",
+  "autoBuyAlreadyActive": "আপনার অ্যাকাউন্টে স্বয়ংক্রিয় ক্রয় ইতিমধ্যে চালু আছে।"
 }

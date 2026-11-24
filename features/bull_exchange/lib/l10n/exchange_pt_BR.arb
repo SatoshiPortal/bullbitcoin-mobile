@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Comece com a compra automática",
   "autoBuyConfirmTitle": "Confirmar compra automática",
   "autoBuyInfoMessage": "Qualquer valor adicionado à sua conta será convertido em Bitcoin pela taxa de câmbio atual e enviado para a sua carteira.",
-  "autoBuyAccountUnavailableError": "Sua conta Bull Bitcoin não está disponível. Tente novamente mais tarde.",
-  "autoBuyWalletRequiredError": "Adicione pelo menos um endereço padrão de Bitcoin, Lightning ou Liquid.",
   "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
   "exchangeAuthLoginFailedMessage": "Um erro ocorreu, tente fazer login novamente.",
   "exchangeAuthLoginFailedOkButton": "ESTÁ BEM",
@@ -776,10 +774,6 @@
   "@buyConfirmTitle": {
     "description": "AppBar title for buy confirmation screen"
   },
-  "buyConfirmPurchase": "Confirme a compra",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
   "dcaConfirmFrequencyDaily": "Todos os dias",
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
@@ -803,10 +797,6 @@
   "buyThatWasFast": "Foi rápido, não foi?",
   "@buyThatWasFast": {
     "description": "Additional success message for accelerated transaction"
-  },
-  "buyInputMaxAmountError": "Você não pode comprar mais do que",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
   },
   "buyConfirmYouPay": "Você paga",
   "@buyConfirmYouPay": {
@@ -876,10 +866,6 @@
   "dcaConfirmFrequencyWeekly": "Toda semana",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
-  },
-  "buyInputMinAmountError": "Você deve comprar pelo menos",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
   },
   "buyEnterBitcoinAddress": "Digite o endereço bitcoin",
   "@buyEnterBitcoinAddress": {
@@ -951,22 +937,6 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
-  "buyBelowMinAmountError": "Você está tentando comprar abaixo da quantidade mínima.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
-  "dcaAccountUnavailableError": "Não foi possível carregar sua conta. Verifique sua conexão, veja se você está conectado e tente novamente.",
-  "dcaLightningAddressRequiredError": "Insira um endereço Lightning para receber suas compras.",
-  "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde.",
   "paySinpeBeneficiario": "Beneficiário",
   "@paySinpeBeneficiario": {
     "description": "Label for beneficiary in SINPE details"
@@ -1322,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Balança insuficiente",
   "limitOrdersInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "limitOrdersFundAccount": "Fina sua conta",
@@ -1426,10 +1395,7 @@
   "recipientsReturnHome": "Voltar ao início",
   "withdrawConfirmOutcomeUnknownError": "Não conseguimos confirmar se seu saque foi concluído. Verifique novamente antes de iniciar um novo saque.",
   "withdrawConfirmCheckAgainButton": "Verificar novamente",
-  "exchangeOrderActionOutcomeUnknownError": "Não conseguimos saber se a operação foi concluída. Confira a ordem antes de tentar novamente.",
   "limitOrderStatusUnknown": "Status desconhecido",
-  "limitOrderCreationOutcomeUnknownError": "Não conseguimos saber se sua ordem limitada foi criada. Confira suas ordens limitadas antes de tentar novamente.",
-  "dcaCreationOutcomeUnknownError": "Não conseguimos saber se sua compra recorrente foi criada. Confira suas compras recorrentes antes de tentar novamente.",
   "dcaUseDefaultBitcoinWallet": "Usar minha carteira Bitcoin padrão",
   "dcaUseDefaultLiquidWallet": "Usar minha carteira Liquid padrão",
   "dcaNoDefaultBitcoinWallet": "Você não tem uma carteira Bitcoin padrão na sua conta Bull Bitcoin. Defina uma ou digite um endereço Bitcoin abaixo.",
@@ -1438,7 +1404,6 @@
   "dcaEnterBitcoinAddressLabel": "Digite o endereço Bitcoin",
   "dcaEnterLiquidAddressLabel": "Digite o endereço Liquid",
   "dcaConfirmPayoutAddress": "Endereço de recebimento",
-  "dcaDestinationAddressRequiredError": "Escolha sua carteira padrão ou digite um endereço para receber suas compras.",
   "exchangePaymentOutcomeUnknownChecking": "Verificando se seu pagamento foi enviado…",
   "walletSpendAwaitingObservation": "Não é possível gastar até que esta carteira esteja sincronizada e tenha visto seus pagamentos anteriores na rede. Atualize a carteira ou use \"Buscar transações ausentes\" e tente novamente.",
   "sendPayjoinSpendPaused": "Este pagamento Payjoin está pausado porque a carteira não pode continuar com segurança. Suas entradas continuam reservadas. Atualize a carteira ou use \"Buscar transações ausentes\" e tente esta proposta novamente enquanto ela ainda for válida. Se tiver expirado, confira o pagamento em Transações antes de fazer qualquer outra coisa.",
@@ -1490,5 +1455,10 @@
   "exchangePayinOrderEnded": "Esta ordem terminou antes do envio do seu pagamento. Nada foi enviado.",
   "exchangePayinDepositRefused": "Esta ordem não pode ser paga com esta carteira. Nada foi enviado.",
   "exchangePayinReceived": "A exchange recebeu seu pagamento",
-  "exchangePayinCoinsUnavailable": "Não foi possível carregar as moedas da sua carteira. Tente novamente."
+  "exchangePayinCoinsUnavailable": "Não foi possível carregar as moedas da sua carteira. Tente novamente.",
+  "buyPayoutAddressUnavailable": "Não foi possível obter um endereço de recebimento desta carteira. Selecione-a de novo ou escolha outra carteira.",
+  "buyPayoutFailed": "A exchange não conseguiu concluir este pagamento. Abra os detalhes da ordem ou fale com o suporte.",
+  "buyPayoutStillPending": "Seu pagamento ainda está a caminho. Você pode acompanhá-lo nos detalhes da ordem.",
+  "limitOrdersOverBalanceWarning": "Isso é mais do que seu saldo disponível. Quando a ordem for executada, ela compra com o que estiver no seu saldo naquele momento.",
+  "autoBuyAlreadyActive": "A compra automática já está ativa na sua conta."
 }

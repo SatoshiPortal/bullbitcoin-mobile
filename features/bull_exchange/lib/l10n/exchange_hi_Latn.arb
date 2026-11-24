@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Auto-buy ke saath shuru karein",
   "autoBuyConfirmTitle": "Auto-Buy Confirm Karein",
   "autoBuyInfoMessage": "Aapke account mein jodi gayi koi bhi raashi maujooda exchange rate par Bitcoin mein badal kar aapke wallet mein bhej di jayegi.",
-  "autoBuyAccountUnavailableError": "Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.",
-  "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
   "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
   "exchangeAuthLoginFailedTitle": "Login Fail Hua",
   "exchangeAuthLoginFailedMessage": "Koi error aaya, please dobara login karne ki koshish karo.",
@@ -587,10 +585,6 @@
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
-  },
-  "buyConfirmPurchase": "Khareedari confirm karo",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
   },
   "buyYouBought": "Aapne {fiatAmount} mein {amount} kharida",
   "@buyYouBought": {
@@ -884,14 +878,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "buyInputMinAmountError": "Aapko kam se kam itna kharidna chahiye",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "Aap itne se zyada nahi kharid sakte",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC ID Verification Baaki Hai",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -951,22 +937,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "buyUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "Aap minimum amount se kam kharidne ki koshish kar rahe hain.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "Aap maximum amount se zyada kharidne ki koshish kar rahe hain.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.",
-  "dcaAccountUnavailableError": "Aapka account load nahi ho saka. Apna connection jaanchein, sunishchit karein ki aap logged in hain aur phir se koshish karein.",
-  "dcaLightningAddressRequiredError": "Apni khareedari paane ke liye ek Lightning address daalein.",
-  "dcaOrderCreationError": "Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein.",
   "sellTitle": "Bitcoin Becho",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
@@ -1325,7 +1295,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Insufficient balance",
   "limitOrdersInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
   "limitOrdersFundAccount": "Apna account fund karo",
@@ -1429,10 +1398,7 @@
   "recipientsReturnHome": "Home par lautein",
   "withdrawConfirmOutcomeUnknownError": "Hum confirm nahi kar sake ki aapki withdrawal hui ya nahi. Nayi withdrawal shuru karne se pehle dobara check karein.",
   "withdrawConfirmCheckAgainButton": "Dobara check karein",
-  "exchangeOrderActionOutcomeUnknownError": "Hum pata nahi laga sake ki yeh poora hua ya nahi. Dobara try karne se pehle order check karein.",
   "limitOrderStatusUnknown": "Sthiti agyaat",
-  "limitOrderCreationOutcomeUnknownError": "Hum pata nahi laga sake ki aapka limit order bana ya nahi. Dobara try karne se pehle apne limit orders check karein.",
-  "dcaCreationOutcomeUnknownError": "Hum pata nahi laga sake ki aapka recurring buy bana ya nahi. Dobara try karne se pehle apne recurring buys check karein.",
   "dcaUseDefaultBitcoinWallet": "Mera default Bitcoin wallet use karein",
   "dcaUseDefaultLiquidWallet": "Mera default Liquid wallet use karein",
   "dcaNoDefaultBitcoinWallet": "Aapke Bull Bitcoin account mein koi default Bitcoin wallet nahi hai. Ek set karein, ya neeche Bitcoin address enter karein.",
@@ -1441,7 +1407,6 @@
   "dcaEnterBitcoinAddressLabel": "Bitcoin address enter karein",
   "dcaEnterLiquidAddressLabel": "Liquid address enter karein",
   "dcaConfirmPayoutAddress": "Receive karne ka address",
-  "dcaDestinationAddressRequiredError": "Apni kharidari receive karne ke liye apna default wallet chunein ya ek address enter karein.",
   "exchangePaymentOutcomeUnknownChecking": "Check kar rahe hain ki aapka payment bheja gaya ya nahi…",
   "walletSpendAwaitingObservation": "Jab tak yeh wallet sync hokar network par apne pichhle payments nahi dekh leta, tab tak spending available nahi hai. Wallet refresh karein ya \"Scan for missing transactions\" use karein, phir dobara try karein.",
   "sendPayjoinSpendPaused": "Yeh Payjoin payment rok diya gaya hai kyunki wallet surakshit roop se aage nahi badh sakta. Iske inputs reserved rahenge. Wallet refresh karein ya \"Scan for missing transactions\" use karein, phir jab tak yeh proposal valid hai, ise dobara try karein. Agar yeh expire ho gaya hai, toh aage kuch bhi karne se pehle Transactions mein payment check karein.",
@@ -1493,5 +1458,10 @@
   "exchangePayinOrderEnded": "Aapka payment bhejne se pehle yeh order khatam ho gaya. Kuch nahi bheja gaya.",
   "exchangePayinDepositRefused": "Is order ka payment is wallet se nahi ho sakta. Kuch nahi bheja gaya.",
   "exchangePayinReceived": "Exchange ko aapka payment mil gaya",
-  "exchangePayinCoinsUnavailable": "Aapke wallet ke coins load nahi ho sake. Phir se koshish kariye."
+  "exchangePayinCoinsUnavailable": "Aapke wallet ke coins load nahi ho sake. Phir se koshish kariye.",
+  "buyPayoutAddressUnavailable": "Is wallet se receive address nahi mil saka. Ise phir se chunein ya koi doosra wallet chunein.",
+  "buyPayoutFailed": "Exchange yeh payout poora nahi kar saka. Order details kholein ya support se sampark karein.",
+  "buyPayoutStillPending": "Aapka payout abhi raaste mein hai. Aap ise order details mein dekh sakte hain.",
+  "limitOrdersOverBalanceWarning": "Yeh aapke available balance se zyada hai. Order execute hone par us waqt balance mein jitna hoga, utne se kharida jayega.",
+  "autoBuyAlreadyActive": "Aapke account par Auto Buy pehle se active hai."
 }

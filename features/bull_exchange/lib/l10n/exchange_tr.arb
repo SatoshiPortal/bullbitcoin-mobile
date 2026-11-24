@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Otomatik alıma başlayın",
   "autoBuyConfirmTitle": "Otomatik Alımı Onayla",
   "autoBuyInfoMessage": "Hesabınıza eklenen her tutar güncel döviz kuruyla Bitcoin'e dönüştürülür ve cüzdanınıza gönderilir.",
-  "autoBuyAccountUnavailableError": "Bull Bitcoin hesabınız kullanılamıyor. Daha sonra tekrar deneyin.",
-  "autoBuyWalletRequiredError": "En az bir varsayılan Bitcoin, Lightning veya Liquid adresi ekleyin.",
   "autoBuyUpdateError": "Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.",
   "exchangeAuthLoginFailedMessage": "Bir hata oluştu, lütfen tekrar giriş yapmaya çalışın.",
   "exchangeAuthLoginFailedOkButton": "TAMAM TAMAM",
@@ -589,14 +587,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "Maksimum miktarın üzerinde satın almaya çalışıyorsunuz.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "Minimum miktarın altında satın almaya çalışıyorsunuz.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "Ödeme cüzdanı",
   "buyPayoutMethodLiquid": "Liquid üzerinde L-BTC",
   "buyPayoutMethodBitcoin": "Bitcoin zincirinde BTC",
@@ -629,7 +619,6 @@
       }
     }
   },
-  "buyUnexpectedError": "Siparişiniz şu anda oluşturulamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.",
   "dcaConfirmPaymentMethod": "Ödeme yöntemi",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -801,14 +790,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "Satın almayı onaylayın",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "Daha fazla satın alamazsınız",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "Ağ ücreti oranı oranı",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -932,14 +913,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "En azından satın almalısınız",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "Varsayılan Lightning adresimi kullanın.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -964,9 +937,6 @@
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
   },
-  "dcaAccountUnavailableError": "Hesabınız yüklenemedi. Bağlantınızı kontrol edin, giriş yaptığınızdan emin olun ve tekrar deneyin.",
-  "dcaLightningAddressRequiredError": "Satın alımlarınızı almak için bir Lightning adresi girin.",
-  "dcaOrderCreationError": "Yinelenen alım oluşturulamadı. Lütfen daha sonra tekrar deneyin.",
   "sellAdvancedOptions": "Gelişmiş seçenekler",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1322,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Yeterli bakiye",
   "limitOrdersInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
   "limitOrdersFundAccount": "Hesabınızı finanse edin",
@@ -1426,10 +1395,7 @@
   "recipientsReturnHome": "Ana sayfaya dön",
   "withdrawConfirmOutcomeUnknownError": "Para çekme işleminizin gerçekleşip gerçekleşmediğini doğrulayamadık. Yeni bir para çekme başlatmadan önce tekrar kontrol edin.",
   "withdrawConfirmCheckAgainButton": "Tekrar kontrol et",
-  "exchangeOrderActionOutcomeUnknownError": "Bu işlemin gerçekleşip gerçekleşmediğini anlayamadık. Tekrar denemeden önce emri kontrol edin.",
   "limitOrderStatusUnknown": "Durum bilinmiyor",
-  "limitOrderCreationOutcomeUnknownError": "Limit emrinizin oluşturulup oluşturulmadığını anlayamadık. Tekrar denemeden önce limit emirlerinizi kontrol edin.",
-  "dcaCreationOutcomeUnknownError": "Yinelenen alımınızın oluşturulup oluşturulmadığını anlayamadık. Tekrar denemeden önce yinelenen alımlarınızı kontrol edin.",
   "dcaUseDefaultBitcoinWallet": "Varsayılan Bitcoin cüzdanımı kullan",
   "dcaUseDefaultLiquidWallet": "Varsayılan Liquid cüzdanımı kullan",
   "dcaNoDefaultBitcoinWallet": "Bull Bitcoin hesabınızda varsayılan Bitcoin cüzdanı yok. Bir tane ayarlayın veya aşağıya bir Bitcoin adresi girin.",
@@ -1438,7 +1404,6 @@
   "dcaEnterBitcoinAddressLabel": "Bitcoin adresi girin",
   "dcaEnterLiquidAddressLabel": "Liquid adresi girin",
   "dcaConfirmPayoutAddress": "Alıcı adres",
-  "dcaDestinationAddressRequiredError": "Alımlarınızı almak için varsayılan cüzdanınızı seçin veya bir adres girin.",
   "exchangePaymentOutcomeUnknownChecking": "Ödemenizin gönderilip gönderilmediği kontrol ediliyor…",
   "walletSpendAwaitingObservation": "Bu cüzdan senkronize olup önceki ödemelerini ağda görene kadar harcama yapılamaz. Cüzdanı yenileyin veya \"Eksik işlemleri tara\" özelliğini kullanın, ardından tekrar deneyin.",
   "sendPayjoinSpendPaused": "Cüzdan güvenli şekilde devam edemediği için bu Payjoin ödemesi duraklatıldı. Girdileri ayrılmış olarak kalır. Cüzdanı yenileyin veya \"Eksik işlemleri tara\" özelliğini kullanın, ardından bu teklif hâlâ geçerliyken tekrar deneyin. Süresi dolduysa, başka bir işlem yapmadan önce ödemeyi İşlemler bölümünden kontrol edin.",
@@ -1490,5 +1455,10 @@
   "exchangePayinOrderEnded": "Bu emir, ödemeniz gönderilmeden önce sona erdi. Hiçbir şey gönderilmedi.",
   "exchangePayinDepositRefused": "Bu emir bu cüzdandan ödenemez. Hiçbir şey gönderilmedi.",
   "exchangePayinReceived": "Borsa ödemenizi aldı",
-  "exchangePayinCoinsUnavailable": "Cüzdanınızdaki paralar yüklenemedi. Tekrar deneyin."
+  "exchangePayinCoinsUnavailable": "Cüzdanınızdaki paralar yüklenemedi. Tekrar deneyin.",
+  "buyPayoutAddressUnavailable": "Bu cüzdandan alım adresi alınamadı. Yeniden seçin veya başka bir cüzdan seçin.",
+  "buyPayoutFailed": "Borsa bu ödemeyi tamamlayamadı. Emir ayrıntılarını açın veya destekle iletişime geçin.",
+  "buyPayoutStillPending": "Ödemeniz hâlâ yolda. Emir ayrıntılarından takip edebilirsiniz.",
+  "limitOrdersOverBalanceWarning": "Bu, kullanılabilir bakiyenizden fazla. Emir gerçekleştiğinde, o anda bakiyenizde ne varsa onunla alım yapar.",
+  "autoBuyAlreadyActive": "Otomatik Alım hesabınızda zaten etkin."
 }

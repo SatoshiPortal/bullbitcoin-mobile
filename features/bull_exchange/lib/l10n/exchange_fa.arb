@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "خرید خودکار را شروع کنید",
   "autoBuyConfirmTitle": "تأیید خرید خودکار",
   "autoBuyInfoMessage": "هر مبلغی که به حساب شما اضافه شود با نرخ ارز فعلی به Bitcoin تبدیل و به کیف پول شما ارسال می‌شود.",
-  "autoBuyAccountUnavailableError": "حساب Bull Bitcoin شما در دسترس نیست. بعداً دوباره تلاش کنید.",
-  "autoBuyWalletRequiredError": "حداقل یک آدرس پیش‌فرض Bitcoin، Lightning یا Liquid اضافه کنید.",
   "autoBuyUpdateError": "به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید.",
   "exchangeAuthLoginFailedTitle": "ورود شکست خورده",
   "exchangeAuthLoginFailedMessage": "یک خطا رخ داد، لطفا دوباره وارد شوید.",
@@ -561,19 +559,6 @@
   "deleteAccountSuccessTitle": "درخواست حذف حساب ثبت شد",
   "deleteAccountSuccessDescription": "درخواست حذف حساب شما ثبت شده است. ظرف ۵ روز کاری پردازش خواهد شد.",
   "deleteAccountSuccessClose": "Close",
-  "buyUnauthenticatedError": "شما معتبر نیستید. لطفا برای ادامه وارد شوید.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "شما در حال تلاش برای خرید زیر حداقل مقدار هستید.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "شما سعی می کنید بیش از حداکثر مقدار خرید کنید.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "سفارش شما در حال حاضر ایجاد نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "buyPayoutWillBeSentIn": "پرداخت شما در داخل ارسال خواهد شد ",
   "@buyPayoutWillBeSentIn": {
     "description": "Text before countdown timer for payout"
@@ -805,14 +790,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "تایید خرید",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "نمی توانید بیشتر از چیزی خرید کنید",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "نرخ هزینه شبکه",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -936,10 +913,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyInputMinAmountError": "حداقل باید خرید کنید",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "از آدرس پیش فرض رعد و برق استفاده کنید.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -964,9 +937,6 @@
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
   },
-  "dcaAccountUnavailableError": "بارگیری حساب شما امکان‌پذیر نبود. اتصال خود را بررسی کنید، مطمئن شوید وارد شده‌اید و دوباره تلاش کنید.",
-  "dcaLightningAddressRequiredError": "برای دریافت خریدهای خود یک آدرس Lightning وارد کنید.",
-  "dcaOrderCreationError": "ایجاد خرید تکرارشونده امکان‌پذیر نبود. لطفاً بعداً دوباره تلاش کنید.",
   "sellViewDetailsButton": "مشاهده جزئیات",
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
@@ -1322,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "عدم تعادل",
   "limitOrdersInsufficientBalanceMessage": "شما تعادل کافی برای ایجاد این دستور ندارید.",
   "limitOrdersFundAccount": "بودجه حساب شما",
@@ -1426,10 +1395,7 @@
   "recipientsReturnHome": "بازگشت به خانه",
   "withdrawConfirmOutcomeUnknownError": "نتوانستیم تأیید کنیم که برداشت شما انجام شده است یا نه. پیش از شروع برداشت جدید، دوباره بررسی کنید.",
   "withdrawConfirmCheckAgainButton": "بررسی دوباره",
-  "exchangeOrderActionOutcomeUnknownError": "نتوانستیم بفهمیم این کار انجام شد یا نه. پیش از تلاش دوباره، سفارش را بررسی کنید.",
   "limitOrderStatusUnknown": "وضعیت نامشخص",
-  "limitOrderCreationOutcomeUnknownError": "نتوانستیم بفهمیم سفارش محدود شما ایجاد شد یا نه. پیش از تلاش دوباره، سفارش‌های محدود خود را بررسی کنید.",
-  "dcaCreationOutcomeUnknownError": "نتوانستیم بفهمیم خرید دوره‌ای شما ایجاد شد یا نه. پیش از تلاش دوباره، خریدهای دوره‌ای خود را بررسی کنید.",
   "dcaUseDefaultBitcoinWallet": "استفاده از کیف پول Bitcoin پیش‌فرض من",
   "dcaUseDefaultLiquidWallet": "استفاده از کیف پول Liquid پیش‌فرض من",
   "dcaNoDefaultBitcoinWallet": "در حساب Bull Bitcoin خود کیف پول Bitcoin پیش‌فرض ندارید. یکی تنظیم کنید یا یک آدرس Bitcoin در پایین وارد کنید.",
@@ -1438,7 +1404,6 @@
   "dcaEnterBitcoinAddressLabel": "آدرس Bitcoin را وارد کنید",
   "dcaEnterLiquidAddressLabel": "آدرس Liquid را وارد کنید",
   "dcaConfirmPayoutAddress": "آدرس دریافت",
-  "dcaDestinationAddressRequiredError": "کیف پول پیش‌فرض خود را انتخاب کنید یا آدرسی برای دریافت خریدهایتان وارد کنید.",
   "exchangePaymentOutcomeUnknownChecking": "در حال بررسی ارسال پرداخت شما…",
   "walletSpendAwaitingObservation": "تا زمانی که این کیف پول همگام‌سازی نشود و پرداخت‌های قبلی خود را در شبکه نبیند، خرج کردن در دسترس نیست. کیف پول را تازه‌سازی کنید یا از «اسکن تراکنش‌های گم‌شده» استفاده کنید، سپس دوباره تلاش کنید.",
   "sendPayjoinSpendPaused": "این پرداخت Payjoin متوقف شده است، زیرا کیف پول نمی‌تواند با اطمینان ادامه دهد. ورودی‌های آن همچنان رزرو هستند. کیف پول را تازه‌سازی کنید یا از «اسکن تراکنش‌های گم‌شده» استفاده کنید، سپس تا وقتی این پیشنهاد معتبر است آن را دوباره امتحان کنید. اگر منقضی شده است، پیش از هر اقدام دیگری پرداخت را در تراکنش‌ها بررسی کنید.",
@@ -1490,5 +1455,10 @@
   "exchangePayinOrderEnded": "این سفارش پیش از ارسال پرداخت شما به پایان رسید. چیزی ارسال نشد.",
   "exchangePayinDepositRefused": "این سفارش را نمی‌توان از این کیف پول پرداخت کرد. چیزی ارسال نشد.",
   "exchangePayinReceived": "صرافی پرداخت شما را دریافت کرد",
-  "exchangePayinCoinsUnavailable": "سکه‌های کیف پول شما بارگیری نشد. دوباره تلاش کنید."
+  "exchangePayinCoinsUnavailable": "سکه‌های کیف پول شما بارگیری نشد. دوباره تلاش کنید.",
+  "buyPayoutAddressUnavailable": "دریافت آدرس از این کیف پول ممکن نشد. دوباره آن را انتخاب کنید یا کیف پول دیگری انتخاب کنید.",
+  "buyPayoutFailed": "صرافی نتوانست این پرداخت را کامل کند. جزئیات سفارش را باز کنید یا با پشتیبانی تماس بگیرید.",
+  "buyPayoutStillPending": "پرداخت شما هنوز در راه است. می‌توانید آن را در جزئیات سفارش دنبال کنید.",
+  "limitOrdersOverBalanceWarning": "این مبلغ بیشتر از موجودی در دسترس شماست. وقتی سفارش اجرا شود، با موجودی همان لحظه خرید می‌کند.",
+  "autoBuyAlreadyActive": "خرید خودکار از قبل در حساب شما فعال است."
 }

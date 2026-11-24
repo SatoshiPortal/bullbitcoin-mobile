@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Ξεκινήστε με την αυτόματη αγορά",
   "autoBuyConfirmTitle": "Επιβεβαίωση αυτόματης αγοράς",
   "autoBuyInfoMessage": "Κάθε ποσό που προστίθεται στον λογαριασμό σας θα μετατρέπεται σε Bitcoin με την τρέχουσα συναλλαγματική ισοτιμία και θα αποστέλλεται στο πορτοφόλι σας.",
-  "autoBuyAccountUnavailableError": "Ο λογαριασμός σας Bull Bitcoin δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
-  "autoBuyWalletRequiredError": "Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.",
   "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.",
   "exchangeAuthLoginFailedMessage": "Ένα λάθος συνέβη, παρακαλώ προσπαθήστε να συνδεθείτε ξανά.",
   "exchangeAuthLoginFailedOkButton": "ΕΝΤΆΞΕΙ",
@@ -585,14 +583,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "Προσπαθείτε να αγοράσετε πάνω από το μέγιστο ποσό.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "Προσπαθείτε να αγοράσετε κάτω από το ελάχιστο ποσό.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "Πορτοφόλι πληρωμής",
   "buyPayoutMethodLiquid": "L-BTC στο Liquid",
   "buyPayoutMethodBitcoin": "BTC στην αλυσίδα Bitcoin",
@@ -616,7 +606,6 @@
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
   },
-  "buyUnexpectedError": "Η εντολή σας δεν μπόρεσε να δημιουργηθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "dcaConfirmPaymentMethod": "Μέθοδος πληρωμής",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -754,14 +743,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "Επιβεβαίωση αγοράς",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "Δεν μπορείς να αγοράσεις περισσότερα από",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "Φόρος χρέωσης δικτύου",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -869,14 +850,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "Θα πρέπει να αγοράσετε τουλάχιστον",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "Χρησιμοποιήστε την προεπιλεγμένη διεύθυνση Lightning μου.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -964,9 +937,6 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
-  "dcaAccountUnavailableError": "Δεν ήταν δυνατή η φόρτωση του λογαριασμού σας. Ελέγξτε τη σύνδεσή σας, βεβαιωθείτε ότι έχετε συνδεθεί και δοκιμάστε ξανά.",
-  "dcaLightningAddressRequiredError": "Εισαγάγετε μια διεύθυνση Lightning για να λαμβάνετε τις αγορές σας.",
-  "dcaOrderCreationError": "Δεν ήταν δυνατή η δημιουργία της επαναλαμβανόμενης αγοράς. Δοκιμάστε ξανά αργότερα.",
   "sellAdvancedOptions": "Προχωρημένες επιλογές",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1322,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Ανεπαρκή ισορροπία",
   "limitOrdersInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
   "limitOrdersFundAccount": "Χρηματοδότηση του λογαριασμού σας",
@@ -1426,10 +1395,7 @@
   "recipientsReturnHome": "Επιστροφή στην αρχική",
   "withdrawConfirmOutcomeUnknownError": "Δεν ήταν δυνατό να επιβεβαιωθεί αν η ανάληψή σας ολοκληρώθηκε. Ελέγξτε ξανά πριν ξεκινήσετε νέα ανάληψη.",
   "withdrawConfirmCheckAgainButton": "Έλεγχος ξανά",
-  "exchangeOrderActionOutcomeUnknownError": "Δεν ήταν δυνατό να διαπιστωθεί αν αυτό ολοκληρώθηκε. Ελέγξτε την εντολή πριν δοκιμάσετε ξανά.",
   "limitOrderStatusUnknown": "Άγνωστη κατάσταση",
-  "limitOrderCreationOutcomeUnknownError": "Δεν ήταν δυνατό να διαπιστωθεί αν δημιουργήθηκε η οριακή εντολή σας. Ελέγξτε τις οριακές εντολές σας πριν δοκιμάσετε ξανά.",
-  "dcaCreationOutcomeUnknownError": "Δεν ήταν δυνατό να διαπιστωθεί αν δημιουργήθηκε η επαναλαμβανόμενη αγορά σας. Ελέγξτε τις επαναλαμβανόμενες αγορές σας πριν δοκιμάσετε ξανά.",
   "dcaUseDefaultBitcoinWallet": "Χρήση του προεπιλεγμένου πορτοφολιού Bitcoin μου",
   "dcaUseDefaultLiquidWallet": "Χρήση του προεπιλεγμένου πορτοφολιού Liquid μου",
   "dcaNoDefaultBitcoinWallet": "Δεν έχετε προεπιλεγμένο πορτοφόλι Bitcoin στον λογαριασμό σας Bull Bitcoin. Ορίστε ένα ή εισαγάγετε μια διεύθυνση Bitcoin παρακάτω.",
@@ -1438,7 +1404,6 @@
   "dcaEnterBitcoinAddressLabel": "Εισαγάγετε διεύθυνση Bitcoin",
   "dcaEnterLiquidAddressLabel": "Εισαγάγετε διεύθυνση Liquid",
   "dcaConfirmPayoutAddress": "Διεύθυνση λήψης",
-  "dcaDestinationAddressRequiredError": "Επιλέξτε το προεπιλεγμένο πορτοφόλι σας ή εισαγάγετε μια διεύθυνση για να λαμβάνετε τις αγορές σας.",
   "exchangePaymentOutcomeUnknownChecking": "Ελέγχουμε αν στάλθηκε η πληρωμή σας…",
   "walletSpendAwaitingObservation": "Οι δαπάνες δεν είναι διαθέσιμες μέχρι να συγχρονιστεί αυτό το πορτοφόλι και να δει τις προηγούμενες πληρωμές του στο δίκτυο. Ανανεώστε το πορτοφόλι ή χρησιμοποιήστε τη Σάρωση για συναλλαγές που λείπουν και δοκιμάστε ξανά.",
   "sendPayjoinSpendPaused": "Αυτή η πληρωμή Payjoin έχει τεθεί σε παύση επειδή το πορτοφόλι δεν μπορεί να συνεχίσει με ασφάλεια. Οι είσοδοί της παραμένουν δεσμευμένες. Ανανεώστε το πορτοφόλι ή χρησιμοποιήστε τη Σάρωση για συναλλαγές που λείπουν και επαναλάβετε αυτή την πρόταση όσο είναι ακόμη έγκυρη. Αν έχει λήξει, ελέγξτε την πληρωμή στις Συναλλαγές πριν κάνετε οτιδήποτε άλλο.",
@@ -1490,5 +1455,10 @@
   "exchangePayinOrderEnded": "Αυτή η εντολή έληξε πριν σταλεί η πληρωμή σας. Δεν στάλθηκε τίποτα.",
   "exchangePayinDepositRefused": "Αυτή η εντολή δεν μπορεί να πληρωθεί από αυτό το πορτοφόλι. Δεν στάλθηκε τίποτα.",
   "exchangePayinReceived": "Το ανταλλακτήριο έλαβε την πληρωμή σας",
-  "exchangePayinCoinsUnavailable": "Δεν ήταν δυνατή η φόρτωση των νομισμάτων του πορτοφολιού σας. Δοκιμάστε ξανά."
+  "exchangePayinCoinsUnavailable": "Δεν ήταν δυνατή η φόρτωση των νομισμάτων του πορτοφολιού σας. Δοκιμάστε ξανά.",
+  "buyPayoutAddressUnavailable": "Δεν ήταν δυνατή η λήψη διεύθυνσης παραλαβής από αυτό το πορτοφόλι. Επιλέξτε το ξανά ή επιλέξτε άλλο πορτοφόλι.",
+  "buyPayoutFailed": "Το ανταλλακτήριο δεν μπόρεσε να ολοκληρώσει αυτή την πληρωμή. Ανοίξτε τις λεπτομέρειες της εντολής ή επικοινωνήστε με την υποστήριξη.",
+  "buyPayoutStillPending": "Η πληρωμή σας είναι ακόμα καθ' οδόν. Μπορείτε να την παρακολουθήσετε στις λεπτομέρειες της εντολής.",
+  "limitOrdersOverBalanceWarning": "Αυτό υπερβαίνει το διαθέσιμο υπόλοιπό σας. Όταν εκτελεστεί η εντολή, αγοράζει με ό,τι υπάρχει τότε στο υπόλοιπό σας.",
+  "autoBuyAlreadyActive": "Η αυτόματη αγορά είναι ήδη ενεργή στον λογαριασμό σας."
 }

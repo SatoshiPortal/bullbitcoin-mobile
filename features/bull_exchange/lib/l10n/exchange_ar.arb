@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "ابدأ مع الشراء التلقائي",
   "autoBuyConfirmTitle": "تأكيد الشراء التلقائي",
   "autoBuyInfoMessage": "سيتم تحويل أي مبلغ يُضاف إلى حسابك إلى Bitcoin بسعر الصرف الحالي وإرساله إلى محفظتك.",
-  "autoBuyAccountUnavailableError": "حسابك في Bull Bitcoin غير متاح. حاول مرة أخرى لاحقًا.",
-  "autoBuyWalletRequiredError": "أضف عنوانًا افتراضيًا واحدًا على الأقل لـ Bitcoin أو Lightning أو Liquid.",
   "autoBuyUpdateError": "تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.",
   "exchangeAuthLoginFailedMessage": "وقع خطأ، من فضلك حاول الدخول مرة أخرى.",
   "exchangeAuthLoginFailedOkButton": "حسنا",
@@ -589,14 +587,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "أنت تحاول شراء أعلى من المبلغ الأقصى.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "أنت تحاول شراء أقل من المبلغ الأدنى.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "محفظة الدفع",
   "buyPayoutMethodLiquid": "L-BTC على Liquid",
   "buyPayoutMethodBitcoin": "BTC على سلسلة بيتكوين",
@@ -629,7 +619,6 @@
       }
     }
   },
-  "buyUnexpectedError": "لم نتمكن من إنشاء طلبك في الوقت الحالي. يُرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "dcaConfirmPaymentMethod": "طريقة الدفع",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -801,14 +790,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "الشراء",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "لا يمكنك شراء أكثر من",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "معدل رسوم الشبكة",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -932,14 +913,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "يجب أن تشتري على الأقل",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "استخدم عنوان البرق.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -964,9 +937,6 @@
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
   },
-  "dcaAccountUnavailableError": "تعذر تحميل حسابك. تحقق من اتصالك، وتأكد من تسجيل الدخول، ثم حاول مرة أخرى.",
-  "dcaLightningAddressRequiredError": "أدخل عنوان Lightning لاستلام مشترياتك.",
-  "dcaOrderCreationError": "تعذر إنشاء الشراء المتكرر. يُرجى المحاولة لاحقًا.",
   "sellAdvancedOptions": "الخيارات المتقدمة",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1322,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "الرصيد غير الكافي",
   "limitOrdersInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
   "limitOrdersFundAccount": "صندوق حسابك",
@@ -1426,10 +1395,7 @@
   "recipientsReturnHome": "العودة إلى الرئيسية",
   "withdrawConfirmOutcomeUnknownError": "لم نتمكن من التأكد مما إذا كانت عملية السحب قد تمت. تحقّق مرة أخرى قبل بدء عملية سحب جديدة.",
   "withdrawConfirmCheckAgainButton": "تحقّق مرة أخرى",
-  "exchangeOrderActionOutcomeUnknownError": "لم نتمكن من معرفة ما إذا كانت العملية قد تمت. تحقّق من الطلب قبل المحاولة مرة أخرى.",
   "limitOrderStatusUnknown": "الحالة غير معروفة",
-  "limitOrderCreationOutcomeUnknownError": "لم نتمكن من معرفة ما إذا كان الأمر المحدد قد أُنشئ. تحقّق من أوامرك المحددة قبل المحاولة مرة أخرى.",
-  "dcaCreationOutcomeUnknownError": "لم نتمكن من معرفة ما إذا كان الشراء المتكرر قد أُنشئ. تحقّق من عمليات الشراء المتكررة قبل المحاولة مرة أخرى.",
   "dcaUseDefaultBitcoinWallet": "استخدام محفظة Bitcoin الافتراضية",
   "dcaUseDefaultLiquidWallet": "استخدام محفظة Liquid الافتراضية",
   "dcaNoDefaultBitcoinWallet": "ليس لديك محفظة Bitcoin افتراضية في حسابك على Bull Bitcoin. عيّن واحدة، أو أدخل عنوان Bitcoin أدناه.",
@@ -1438,7 +1404,6 @@
   "dcaEnterBitcoinAddressLabel": "أدخل عنوان Bitcoin",
   "dcaEnterLiquidAddressLabel": "أدخل عنوان Liquid",
   "dcaConfirmPayoutAddress": "عنوان الاستلام",
-  "dcaDestinationAddressRequiredError": "اختر محفظتك الافتراضية أو أدخل عنوانًا لاستلام مشترياتك.",
   "exchangePaymentOutcomeUnknownChecking": "جارٍ التحقق مما إذا كانت دفعتك قد أُرسلت…",
   "walletSpendAwaitingObservation": "الإنفاق غير متاح حتى تتم مزامنة هذه المحفظة وترى دفعاتها السابقة على الشبكة. حدّث المحفظة أو استخدم «البحث عن المعاملات المفقودة»، ثم حاول مرة أخرى.",
   "sendPayjoinSpendPaused": "دفعة Payjoin هذه متوقفة مؤقتًا لأن المحفظة لا تستطيع المتابعة بأمان. تظل مدخلاتها محجوزة. حدّث المحفظة أو استخدم «البحث عن المعاملات المفقودة»، ثم أعد محاولة هذا العرض ما دام صالحًا. إذا انتهت صلاحيته، فتحقّق من الدفعة في المعاملات قبل اتخاذ أي إجراء آخر.",
@@ -1490,5 +1455,10 @@
   "exchangePayinOrderEnded": "انتهى هذا الطلب قبل إرسال دفعتك. لم يُرسَل أي شيء.",
   "exchangePayinDepositRefused": "لا يمكن دفع هذا الطلب من هذه المحفظة. لم يُرسَل أي شيء.",
   "exchangePayinReceived": "استلمت المنصة دفعتك",
-  "exchangePayinCoinsUnavailable": "تعذّر تحميل عملات محفظتك. حاول مرة أخرى."
+  "exchangePayinCoinsUnavailable": "تعذّر تحميل عملات محفظتك. حاول مرة أخرى.",
+  "buyPayoutAddressUnavailable": "تعذّر الحصول على عنوان استلام من هذه المحفظة. اخترها مرة أخرى أو اختر محفظة أخرى.",
+  "buyPayoutFailed": "لم تتمكن المنصة من إتمام هذا الدفع. افتح تفاصيل الطلب أو تواصل مع الدعم.",
+  "buyPayoutStillPending": "دفعتك لا تزال في الطريق. يمكنك متابعتها في تفاصيل الطلب.",
+  "limitOrdersOverBalanceWarning": "هذا أكثر من رصيدك المتاح. عند تنفيذ الطلب، سيتم الشراء بما يكون في رصيدك حينها.",
+  "autoBuyAlreadyActive": "الشراء التلقائي مفعّل بالفعل في حسابك."
 }

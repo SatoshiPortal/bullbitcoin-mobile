@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Почніть з автоматичної купівлі",
   "autoBuyConfirmTitle": "Підтвердити автоматичну купівлю",
   "autoBuyInfoMessage": "Будь-яка сума, додана на ваш рахунок, буде конвертована в Bitcoin за поточним обмінним курсом і надіслана на ваш гаманець.",
-  "autoBuyAccountUnavailableError": "Ваш рахунок Bull Bitcoin недоступний. Спробуйте пізніше.",
-  "autoBuyWalletRequiredError": "Додайте щонайменше одну адресу Bitcoin, Lightning або Liquid за замовчуванням.",
   "autoBuyUpdateError": "Не вдалося оновити автоматичну купівлю. Спробуйте пізніше.",
   "exchangeAuthLoginFailedMessage": "Помилкові помилки, будь ласка, спробуйте увійти знову.",
   "exchangeAuthLoginFailedOkButton": "ЗАРЕЄСТРУВАТИСЯ",
@@ -578,7 +576,6 @@
   "buyConfirmExpress": "Підтвердити експрес",
   "buyBitcoinSent": "Bitcoin відправлений!",
   "buyThatWasFast": "Це було швидко, це не так?",
-  "buyConfirmPurchase": "Підтвердити покупку",
   "buyYouBought": "Ви придбали {amount} за {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
@@ -596,8 +593,6 @@
   "globalDefaultLiquidWalletLabel": "Миттєві платежі",
   "dcaConfirmContinue": "Продовжити",
   "buyInputTitle": "Bitcoin у USD",
-  "buyInputMinAmountError": "Ви повинні придбати принаймні",
-  "buyInputMaxAmountError": "Ви не можете придбати більше",
   "buyInputKycPending": "Перевірка ID KYC",
   "buyInputKycMessage": "Ви повинні завершити перевірку ID першим",
   "buyInputCompleteKyc": "Повний KYC",
@@ -616,8 +611,6 @@
   "buyConfirmAwaitingConfirmation": "Підтвердження ",
   "dcaChooseWalletTitle": "Виберіть гаманець Bitcoin",
   "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
-  "buyAboveMaxAmountError": "Ви намагаєтеся придбати над максимальною кількістю.",
-  "buyBelowMinAmountError": "Ви намагаєтеся придбати нижче мінімальної суми.",
   "dcaConfirmNetworkLiquid": "Рідина",
   "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
   "dcaWalletSelectionContinueButton": "Продовжити",
@@ -630,7 +623,6 @@
       }
     }
   },
-  "buyUnexpectedError": "Не вдалося створити ваше замовлення. Спробуйте ще раз або зверніться до підтримки.",
   "dcaConfirmPaymentMethod": "Спосіб оплати",
   "dcaNetworkValidationError": "Виберіть мережу",
   "dcaWalletTypeBitcoin": "Біткін (BTC)",
@@ -692,7 +684,6 @@
   "dcaConfirmFrequencyHourly": "Час",
   "dcaConfirmLightningAddress": "Адреса блискавки",
   "dcaConfirmFrequencyMonthly": "Місяць",
-  "buyUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
   "dcaUseDefaultLightningAddress": "Використовуйте свою адресу за замовчуванням.",
   "dcaConfirmOrderTypeValue": "Закупівля",
   "dcaWalletTypeLiquid": "Рідина (LBTC)",
@@ -700,9 +691,6 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "dcaAccountUnavailableError": "Не вдалося завантажити ваш обліковий запис. Перевірте з'єднання, переконайтеся, що ви ввійшли, і спробуйте ще раз.",
-  "dcaLightningAddressRequiredError": "Введіть Lightning-адресу для отримання ваших покупок.",
-  "dcaOrderCreationError": "Не вдалося створити регулярну покупку. Спробуйте пізніше.",
   "sellTitle": "Bitcoin у USD",
   "sellWhichWalletQuestion": "Який гаманець ви хочете продати?",
   "sellFromAnotherWallet": "Продаж з іншого Bitcoin гаманець",
@@ -829,7 +817,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Недостатній баланс",
   "limitOrdersInsufficientBalanceMessage": "Ви не маєте достатнього балансу для створення цього замовлення.",
   "limitOrdersFundAccount": "Оберіть Ваш рахунок",
@@ -894,10 +881,7 @@
   "recipientsReturnHome": "На головну",
   "withdrawConfirmOutcomeUnknownError": "Не вдалося підтвердити, чи пройшло ваше виведення. Перевірте ще раз, перш ніж починати нове виведення.",
   "withdrawConfirmCheckAgainButton": "Перевірити ще раз",
-  "exchangeOrderActionOutcomeUnknownError": "Не вдалося визначити, чи пройшла операція. Перевірте замовлення, перш ніж повторювати спробу.",
   "limitOrderStatusUnknown": "Статус невідомий",
-  "limitOrderCreationOutcomeUnknownError": "Не вдалося визначити, чи створено ваш лімітний ордер. Перевірте лімітні ордери, перш ніж повторювати спробу.",
-  "dcaCreationOutcomeUnknownError": "Не вдалося визначити, чи створено вашу регулярну покупку. Перевірте регулярні покупки, перш ніж повторювати спробу.",
   "dcaUseDefaultBitcoinWallet": "Використовувати мій Bitcoin-гаманець за замовчуванням",
   "dcaUseDefaultLiquidWallet": "Використовувати мій Liquid-гаманець за замовчуванням",
   "dcaNoDefaultBitcoinWallet": "У вашому обліковому записі Bull Bitcoin немає Bitcoin-гаманця за замовчуванням. Задайте його або введіть Bitcoin-адресу нижче.",
@@ -906,7 +890,6 @@
   "dcaEnterBitcoinAddressLabel": "Введіть Bitcoin-адресу",
   "dcaEnterLiquidAddressLabel": "Введіть Liquid-адресу",
   "dcaConfirmPayoutAddress": "Адреса отримання",
-  "dcaDestinationAddressRequiredError": "Виберіть гаманець за замовчуванням або введіть адресу для отримання покупок.",
   "exchangePaymentOutcomeUnknownChecking": "Перевіряємо, чи надіслано ваш платіж…",
   "walletSpendAwaitingObservation": "Витрати недоступні, доки цей гаманець не синхронізовано і він не побачив свої попередні платежі в мережі. Оновіть гаманець або скористайтеся «Пошуком пропущених транзакцій», потім повторіть спробу.",
   "sendPayjoinSpendPaused": "Цей платіж Payjoin призупинено, бо гаманець не може безпечно продовжити. Його входи залишаються зарезервованими. Оновіть гаманець або скористайтеся «Пошуком пропущених транзакцій», потім повторіть цю пропозицію, поки вона ще дійсна. Якщо термін її дії минув, перевірте платіж у розділі «Транзакції», перш ніж щось робити далі.",
@@ -958,5 +941,10 @@
   "exchangePayinOrderEnded": "Це замовлення завершилося до надсилання вашого платежу. Нічого не надіслано.",
   "exchangePayinDepositRefused": "Це замовлення не можна оплатити з цього гаманця. Нічого не надіслано.",
   "exchangePayinReceived": "Біржа отримала ваш платіж",
-  "exchangePayinCoinsUnavailable": "Не вдалося завантажити монети вашого гаманця. Спробуйте ще раз."
+  "exchangePayinCoinsUnavailable": "Не вдалося завантажити монети вашого гаманця. Спробуйте ще раз.",
+  "buyPayoutAddressUnavailable": "Не вдалося отримати адресу для отримання з цього гаманця. Виберіть його ще раз або інший гаманець.",
+  "buyPayoutFailed": "Біржа не змогла завершити цю виплату. Відкрийте деталі замовлення або зверніться до підтримки.",
+  "buyPayoutStillPending": "Ваша виплата ще в дорозі. Відстежити її можна в деталях замовлення.",
+  "limitOrdersOverBalanceWarning": "Це більше за ваш доступний баланс. Коли замовлення виконається, купівля відбудеться на ту суму, що буде на балансі тоді.",
+  "autoBuyAlreadyActive": "Автоматична купівля вже активна у вашому акаунті."
 }

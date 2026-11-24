@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "เริ่มต้นใช้การซื้ออัตโนมัติ",
   "autoBuyConfirmTitle": "ยืนยันการซื้ออัตโนมัติ",
   "autoBuyInfoMessage": "จำนวนเงินใดก็ตามที่เพิ่มเข้าบัญชีของคุณจะถูกแปลงเป็น Bitcoin ตามอัตราแลกเปลี่ยนปัจจุบันและส่งไปยังกระเป๋าเงินของคุณ",
-  "autoBuyAccountUnavailableError": "บัญชี Bull Bitcoin ของคุณไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง",
-  "autoBuyWalletRequiredError": "เพิ่มที่อยู่เริ่มต้นของ Bitcoin, Lightning หรือ Liquid อย่างน้อยหนึ่งรายการ",
   "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง",
   "exchangeAuthLoginFailedMessage": "ข้อผิดพลาดเกิดขึ้นโปรดลองบล็อกในอีกครั้ง.",
   "exchangeAuthLoginFailedOkButton": "ตกลง",
@@ -589,14 +587,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "คุณพยายามที่จะซื้อข้างต้น.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "คุณพยายามที่จะซื้อขั้นต่ํา.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "กระเป๋าเงินรับการจ่าย",
   "buyPayoutMethodLiquid": "L-BTC บน Liquid",
   "buyPayoutMethodBitcoin": "BTC บนเชน Bitcoin",
@@ -629,7 +619,6 @@
       }
     }
   },
-  "buyUnexpectedError": "ไม่สามารถสร้างคำสั่งซื้อของคุณได้ในขณะนี้ กรุณาลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "dcaConfirmPaymentMethod": "วิธีการชําระเงิน",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -801,14 +790,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "ยืนยัน",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "คุณสามารถซื้อมากกว่า",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "ค่าธรรมเนียมเครือข่าย",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -932,14 +913,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "คุณควรซื้ออย่างน้อย",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "ใช้ช่องหมุนของฉัน.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -964,9 +937,6 @@
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
   },
-  "dcaAccountUnavailableError": "ไม่สามารถโหลดบัญชีของคุณได้ ตรวจสอบการเชื่อมต่อและการเข้าสู่ระบบของคุณ แล้วลองอีกครั้ง",
-  "dcaLightningAddressRequiredError": "ป้อนที่อยู่ Lightning เพื่อรับการซื้อของคุณ",
-  "dcaOrderCreationError": "ไม่สามารถสร้างการซื้อแบบประจำได้ โปรดลองอีกครั้งภายหลัง",
   "sellAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1322,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "สมดุล",
   "limitOrdersInsufficientBalanceMessage": "คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.",
   "limitOrdersFundAccount": "บัญชีบัญชีของคุณ",
@@ -1426,10 +1395,7 @@
   "recipientsReturnHome": "กลับหน้าหลัก",
   "withdrawConfirmOutcomeUnknownError": "เราไม่สามารถยืนยันได้ว่าการถอนเงินของคุณสำเร็จหรือไม่ โปรดตรวจสอบอีกครั้งก่อนเริ่มการถอนเงินใหม่",
   "withdrawConfirmCheckAgainButton": "ตรวจสอบอีกครั้ง",
-  "exchangeOrderActionOutcomeUnknownError": "เราไม่ทราบว่าการดำเนินการนี้สำเร็จหรือไม่ โปรดตรวจสอบคำสั่งก่อนลองอีกครั้ง",
   "limitOrderStatusUnknown": "ไม่ทราบสถานะ",
-  "limitOrderCreationOutcomeUnknownError": "เราไม่ทราบว่าคำสั่งซื้อแบบจำกัดราคาของคุณถูกสร้างแล้วหรือไม่ โปรดตรวจสอบคำสั่งซื้อแบบจำกัดราคาก่อนลองอีกครั้ง",
-  "dcaCreationOutcomeUnknownError": "เราไม่ทราบว่าการซื้อแบบประจำของคุณถูกสร้างแล้วหรือไม่ โปรดตรวจสอบการซื้อแบบประจำก่อนลองอีกครั้ง",
   "dcaUseDefaultBitcoinWallet": "ใช้กระเป๋าเงิน Bitcoin เริ่มต้นของฉัน",
   "dcaUseDefaultLiquidWallet": "ใช้กระเป๋าเงิน Liquid เริ่มต้นของฉัน",
   "dcaNoDefaultBitcoinWallet": "บัญชี Bull Bitcoin ของคุณไม่มีกระเป๋าเงิน Bitcoin เริ่มต้น โปรดตั้งค่า หรือป้อนที่อยู่ Bitcoin ด้านล่าง",
@@ -1438,7 +1404,6 @@
   "dcaEnterBitcoinAddressLabel": "ป้อนที่อยู่ Bitcoin",
   "dcaEnterLiquidAddressLabel": "ป้อนที่อยู่ Liquid",
   "dcaConfirmPayoutAddress": "ที่อยู่รับเงิน",
-  "dcaDestinationAddressRequiredError": "เลือกกระเป๋าเงินเริ่มต้นหรือป้อนที่อยู่เพื่อรับรายการซื้อของคุณ",
   "exchangePaymentOutcomeUnknownChecking": "กำลังตรวจสอบว่าการชำระเงินของคุณถูกส่งแล้วหรือไม่…",
   "walletSpendAwaitingObservation": "ไม่สามารถใช้จ่ายได้จนกว่ากระเป๋าเงินนี้จะซิงค์และเห็นการชำระเงินก่อนหน้าบนเครือข่าย โปรดรีเฟรชกระเป๋าเงินหรือใช้ สแกนหาธุรกรรมที่หายไป แล้วลองอีกครั้ง",
   "sendPayjoinSpendPaused": "การชำระเงิน Payjoin นี้ถูกหยุดชั่วคราวเนื่องจากกระเป๋าเงินไม่สามารถดำเนินการต่อได้อย่างปลอดภัย อินพุตยังคงถูกจองไว้ โปรดรีเฟรชกระเป๋าเงินหรือใช้ สแกนหาธุรกรรมที่หายไป แล้วลองข้อเสนอนี้อีกครั้งขณะที่ยังใช้ได้ หากหมดอายุแล้ว โปรดตรวจสอบการชำระเงินในธุรกรรมก่อนดำเนินการใด ๆ เพิ่มเติม",
@@ -1490,5 +1455,10 @@
   "exchangePayinOrderEnded": "คำสั่งนี้สิ้นสุดก่อนที่จะส่งการชำระเงินของคุณ ไม่มีสิ่งใดถูกส่ง",
   "exchangePayinDepositRefused": "ไม่สามารถชำระคำสั่งนี้จากกระเป๋าเงินนี้ได้ ไม่มีสิ่งใดถูกส่ง",
   "exchangePayinReceived": "แพลตฟอร์มซื้อขายได้รับการชำระเงินของคุณแล้ว",
-  "exchangePayinCoinsUnavailable": "ไม่สามารถโหลดเหรียญในกระเป๋าเงินของคุณได้ ลองอีกครั้ง"
+  "exchangePayinCoinsUnavailable": "ไม่สามารถโหลดเหรียญในกระเป๋าเงินของคุณได้ ลองอีกครั้ง",
+  "buyPayoutAddressUnavailable": "ไม่สามารถรับที่อยู่สำหรับรับจากกระเป๋านี้ได้ เลือกอีกครั้งหรือเลือกกระเป๋าอื่น",
+  "buyPayoutFailed": "ตลาดแลกเปลี่ยนไม่สามารถดำเนินการจ่ายเงินนี้ให้เสร็จได้ เปิดรายละเอียดคำสั่งหรือติดต่อฝ่ายสนับสนุน",
+  "buyPayoutStillPending": "การจ่ายเงินของคุณยังอยู่ระหว่างทาง คุณติดตามได้ในรายละเอียดคำสั่ง",
+  "limitOrdersOverBalanceWarning": "จำนวนนี้มากกว่ายอดคงเหลือที่ใช้ได้ของคุณ เมื่อคำสั่งทำงาน จะซื้อด้วยยอดที่มีในขณะนั้น",
+  "autoBuyAlreadyActive": "ซื้ออัตโนมัติเปิดใช้งานในบัญชีของคุณอยู่แล้ว"
 }

@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "স্বয়ংক্ৰিয় ক্ৰয় আৰম্ভ কৰক",
   "autoBuyConfirmTitle": "স্বয়ংক্ৰিয় ক্ৰয় নিশ্চিত কৰক",
   "autoBuyInfoMessage": "আপোনাৰ একাউণ্টত যোগ কৰা যিকোনো পৰিমাণ বৰ্তমানৰ বিনিময় হাৰত Bitcoin-লৈ ৰূপান্তৰ কৰি আপোনাৰ ৱালেটলৈ পঠিওৱা হ'ব।",
-  "autoBuyAccountUnavailableError": "আপোনাৰ Bull Bitcoin একাউণ্ট উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।",
-  "autoBuyWalletRequiredError": "অন্ততঃ এটা ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকনা যোগ কৰক।",
   "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
   "exchangeAuthLoginFailedTitle": "লগইন বিফল হৈছে",
   "exchangeAuthLoginFailedMessage": "এটা ত্ৰুটি ঘটিছে, অনুগ্ৰহ কৰি পুনৰ লগইন কৰক।",
@@ -567,7 +565,6 @@
   "buySelectWallet": "Wallet বাছক",
   "buyEnterBitcoinAddress": "Bitcoin ঠিকনা দিয়ক",
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
-  "buyConfirmPurchase": "কেনাকাটা নিশ্চিত কৰক",
   "buyYouBought": "আপুনি {fiatAmount}ৰ বিনিময়ত {amount} কিনিলে",
   "@buyYouBought": {
     "placeholders": {
@@ -808,14 +805,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "buyInputMinAmountError": "আপুনি কমেও ক্ৰয় কৰিব লাগে",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "আপুনি ইতকৈ বেছি ক্ৰয় কৰিব নোৱাৰে",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC পৰিচয় যাচাইকৰণ বাকী আছে",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -875,22 +864,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "buyUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম কিনিবলৈ চেষ্টা কৰিছে।",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি কিনিবলৈ চেষ্টা কৰিছে।",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
-  "dcaAccountUnavailableError": "আপোনাৰ একাউণ্ট ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰক, আপুনি লগ ইন কৰা আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "dcaLightningAddressRequiredError": "আপোনাৰ ক্ৰয়সমূহ লাভ কৰিবলৈ এটা Lightning ঠিকনা দিয়ক।",
-  "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
   "sellTitle": "Bitcoin বিক্ৰী কৰক",
   "sellWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা বিক্ৰী কৰিব বিচাৰে?",
   "sellFromAnotherWallet": "আন Bitcoin wallet-ৰ পৰা বিক্ৰী কৰক",
@@ -1051,7 +1024,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
   "limitOrdersInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
   "limitOrdersFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
@@ -1155,10 +1127,7 @@
   "recipientsReturnHome": "হোমলৈ উভতি যাওক",
   "withdrawConfirmOutcomeUnknownError": "আপোনাৰ উঠোৱা সম্পন্ন হ'ল নে নাই আমি নিশ্চিত কৰিব নোৱাৰিলোঁ। নতুন উঠোৱা আৰম্ভ কৰাৰ আগতে পুনৰ পৰীক্ষা কৰক।",
   "withdrawConfirmCheckAgainButton": "পুনৰ পৰীক্ষা কৰক",
-  "exchangeOrderActionOutcomeUnknownError": "এইটো সম্পন্ন হ'ল নে নাই আমি জানিব নোৱাৰিলোঁ। পুনৰ চেষ্টা কৰাৰ আগতে অৰ্ডাৰটো পৰীক্ষা কৰক।",
   "limitOrderStatusUnknown": "স্থিতি অজ্ঞাত",
-  "limitOrderCreationOutcomeUnknownError": "আপোনাৰ limit অৰ্ডাৰটো সৃষ্টি হ'ল নে নাই আমি জানিব নোৱাৰিলোঁ। পুনৰ চেষ্টা কৰাৰ আগতে আপোনাৰ limit অৰ্ডাৰসমূহ পৰীক্ষা কৰক।",
-  "dcaCreationOutcomeUnknownError": "আপোনাৰ নিয়মিত ক্ৰয়টো সৃষ্টি হ'ল নে নাই আমি জানিব নোৱাৰিলোঁ। পুনৰ চেষ্টা কৰাৰ আগতে আপোনাৰ নিয়মিত ক্ৰয়সমূহ পৰীক্ষা কৰক।",
   "dcaUseDefaultBitcoinWallet": "মোৰ ডিফল্ট Bitcoin ৱালেট ব্যৱহাৰ কৰক",
   "dcaUseDefaultLiquidWallet": "মোৰ ডিফল্ট Liquid ৱালেট ব্যৱহাৰ কৰক",
   "dcaNoDefaultBitcoinWallet": "আপোনাৰ Bull Bitcoin একাউণ্টত কোনো ডিফল্ট Bitcoin ৱালেট নাই। এটা ছেট কৰক, নহ'লে তলত এটা Bitcoin ঠিকনা দিয়ক।",
@@ -1167,7 +1136,6 @@
   "dcaEnterBitcoinAddressLabel": "Bitcoin ঠিকনা দিয়ক",
   "dcaEnterLiquidAddressLabel": "Liquid ঠিকনা দিয়ক",
   "dcaConfirmPayoutAddress": "গ্ৰহণ কৰা ঠিকনা",
-  "dcaDestinationAddressRequiredError": "আপোনাৰ ক্ৰয় গ্ৰহণ কৰিবলৈ ডিফল্ট ৱালেট বাছনি কৰক বা এটা ঠিকনা দিয়ক।",
   "exchangePaymentOutcomeUnknownChecking": "আপোনাৰ পৰিশোধ পঠোৱা হ'ল নে নাই পৰীক্ষা কৰি থকা হৈছে…",
   "walletSpendAwaitingObservation": "এই ৱালেটটো ছিংক হৈ নেটৱৰ্কত ইয়াৰ আগৰ পৰিশোধসমূহ নেদেখালৈকে খৰচ কৰিব নোৱাৰি। ৱালেটটো ৰিফ্ৰেছ কৰক বা \"হেৰোৱা লেনদেন স্কেন কৰক\" ব্যৱহাৰ কৰক, তাৰ পিছত পুনৰ চেষ্টা কৰক।",
   "sendPayjoinSpendPaused": "ৱালেটে সুৰক্ষিতভাৱে আগবাঢ়িব নোৱাৰাৰ বাবে এই Payjoin পৰিশোধটো ৰখোৱা হৈছে। ইয়াৰ ইনপুটসমূহ সংৰক্ষিত হৈ থাকিব। ৱালেটটো ৰিফ্ৰেছ কৰক বা \"হেৰোৱা লেনদেন স্কেন কৰক\" ব্যৱহাৰ কৰক, তাৰ পিছত প্ৰস্তাৱটো বৈধ হৈ থাকোঁতেই পুনৰ চেষ্টা কৰক। যদি ইয়াৰ ম্যাদ উকলিছে, তেন্তে আন একো কৰাৰ আগতে লেনদেনসমূহত পৰিশোধটো পৰীক্ষা কৰক।",
@@ -1219,5 +1187,10 @@
   "exchangePayinOrderEnded": "আপোনাৰ পৰিশোধ পঠোৱাৰ আগতেই এই অৰ্ডাৰটো শেষ হ'ল। একো পঠোৱা হোৱা নাই।",
   "exchangePayinDepositRefused": "এই ৱালেটৰ পৰা এই অৰ্ডাৰৰ পৰিশোধ কৰিব নোৱাৰি। একো পঠোৱা হোৱা নাই।",
   "exchangePayinReceived": "Exchange-এ আপোনাৰ পৰিশোধ পালে",
-  "exchangePayinCoinsUnavailable": "আপোনাৰ ৱালেটৰ coin লোড কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰক।"
+  "exchangePayinCoinsUnavailable": "আপোনাৰ ৱালেটৰ coin লোড কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰক।",
+  "buyPayoutAddressUnavailable": "এই ৱালেটৰ পৰা ৰিচিভ ঠিকনা পোৱা নগ'ল। ইয়াক আকৌ বাছক বা আন এটা ৱালেট বাছক।",
+  "buyPayoutFailed": "এক্সচেঞ্জে এই পেমেণ্ট সম্পূৰ্ণ কৰিব নোৱাৰিলে। অৰ্ডাৰৰ বিৱৰণ খোলক বা চাপোৰ্টৰ সৈতে যোগাযোগ কৰক।",
+  "buyPayoutStillPending": "আপোনাৰ পেমেণ্ট এতিয়াও আহি আছে। অৰ্ডাৰৰ বিৱৰণত ইয়াক চাব পাৰিব।",
+  "limitOrdersOverBalanceWarning": "এইটো আপোনাৰ উপলব্ধ বেলেঞ্চতকৈ বেছি। অৰ্ডাৰ সম্পন্ন হোৱাৰ সময়ত বেলেঞ্চত যিমান থাকিব, সিমানেৰেই কিনা হ'ব।",
+  "autoBuyAlreadyActive": "আপোনাৰ একাউণ্টত স্বয়ংক্ৰিয় ক্ৰয় ইতিমধ্যে সক্ৰিয় হৈ আছে।"
 }

@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Začněte s automatickým nákupem",
   "autoBuyConfirmTitle": "Potvrdit automatický nákup",
   "autoBuyInfoMessage": "Jakákoli částka přidaná na váš účet bude převedena na Bitcoin aktuálním směnným kurzem a odeslána do vaší peněženky.",
-  "autoBuyAccountUnavailableError": "Váš účet Bull Bitcoin není dostupný. Zkuste to prosím později.",
-  "autoBuyWalletRequiredError": "Přidejte alespoň jednu výchozí adresu Bitcoin, Lightning nebo Liquid.",
   "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
   "exchangeAuthLoginFailedMessage": "Chyba nastala, zkuste se znovu přihlásit.",
   "exchangeAuthLoginFailedOkButton": "ČEŠTINA",
@@ -589,14 +587,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "Snažte se koupit nad maximálním množstvím.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "Pokuste se koupit pod minimálním množstvím.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "Peněženka pro výplatu",
   "buyPayoutMethodLiquid": "L-BTC na Liquid",
   "buyPayoutMethodBitcoin": "BTC na blockchainu Bitcoin",
@@ -625,7 +615,6 @@
       }
     }
   },
-  "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "dcaConfirmPaymentMethod": "Způsob platby",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -793,14 +782,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "Potvrzení nákupu",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "Není možné koupit více než",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "Síťový poplatek",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -916,14 +897,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "Měli byste si koupit alespoň",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "Používejte výchozí adresu blesku.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -964,9 +937,6 @@
   "@dcaConfirmContinue": {
     "description": "Continue button on DCA confirmation"
   },
-  "dcaAccountUnavailableError": "Váš účet se nepodařilo načíst. Zkontrolujte připojení, ujistěte se, že jste přihlášeni, a zkuste to znovu.",
-  "dcaLightningAddressRequiredError": "Zadejte Lightning adresu pro příjem vašich nákupů.",
-  "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později.",
   "sellAdvancedOptions": "Pokročilé možnosti",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1322,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Nedostatečná rovnováha",
   "limitOrdersInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
   "limitOrdersFundAccount": "Fond vašeho účtu",
@@ -1426,10 +1395,7 @@
   "recipientsReturnHome": "Zpět na úvod",
   "withdrawConfirmOutcomeUnknownError": "Nepodařilo se potvrdit, zda byl váš výběr proveden. Než zahájíte nový výběr, zkontrolujte to znovu.",
   "withdrawConfirmCheckAgainButton": "Zkontrolovat znovu",
-  "exchangeOrderActionOutcomeUnknownError": "Nepodařilo se zjistit, zda akce proběhla. Než to zkusíte znovu, zkontrolujte objednávku.",
   "limitOrderStatusUnknown": "Stav neznámý",
-  "limitOrderCreationOutcomeUnknownError": "Nepodařilo se zjistit, zda byl váš limitní příkaz vytvořen. Než to zkusíte znovu, zkontrolujte své limitní příkazy.",
-  "dcaCreationOutcomeUnknownError": "Nepodařilo se zjistit, zda byl váš opakovaný nákup vytvořen. Než to zkusíte znovu, zkontrolujte své opakované nákupy.",
   "dcaUseDefaultBitcoinWallet": "Použít mou výchozí Bitcoin peněženku",
   "dcaUseDefaultLiquidWallet": "Použít mou výchozí Liquid peněženku",
   "dcaNoDefaultBitcoinWallet": "Ve svém účtu Bull Bitcoin nemáte výchozí Bitcoin peněženku. Nastavte ji nebo níže zadejte Bitcoin adresu.",
@@ -1438,7 +1404,6 @@
   "dcaEnterBitcoinAddressLabel": "Zadejte Bitcoin adresu",
   "dcaEnterLiquidAddressLabel": "Zadejte Liquid adresu",
   "dcaConfirmPayoutAddress": "Adresa pro příjem",
-  "dcaDestinationAddressRequiredError": "Vyberte výchozí peněženku nebo zadejte adresu, na kterou chcete přijímat své nákupy.",
   "exchangePaymentOutcomeUnknownChecking": "Ověřujeme, zda byla vaše platba odeslána…",
   "walletSpendAwaitingObservation": "Utrácení není dostupné, dokud tato peněženka není synchronizovaná a nevidí v síti své předchozí platby. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a zkuste to znovu.",
   "sendPayjoinSpendPaused": "Tato platba Payjoin je pozastavena, protože peněženka nemůže bezpečně pokračovat. Její vstupy zůstávají rezervované. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a poté tento návrh zopakujte, dokud je platný. Pokud vypršel, zkontrolujte platbu v Transakcích, než uděláte cokoli dalšího.",
@@ -1490,5 +1455,10 @@
   "exchangePayinOrderEnded": "Tato objednávka skončila dříve, než byla vaše platba odeslána. Nic nebylo odesláno.",
   "exchangePayinDepositRefused": "Tuto objednávku nelze zaplatit z této peněženky. Nic nebylo odesláno.",
   "exchangePayinReceived": "Burza přijala vaši platbu",
-  "exchangePayinCoinsUnavailable": "Mince vaší peněženky se nepodařilo načíst. Zkuste to znovu."
+  "exchangePayinCoinsUnavailable": "Mince vaší peněženky se nepodařilo načíst. Zkuste to znovu.",
+  "buyPayoutAddressUnavailable": "Z této peněženky se nepodařilo získat adresu pro příjem. Vyberte ji znovu nebo zvolte jinou peněženku.",
+  "buyPayoutFailed": "Burza tuto výplatu nemohla dokončit. Otevřete detail objednávky nebo kontaktujte podporu.",
+  "buyPayoutStillPending": "Vaše výplata je stále na cestě. Můžete ji sledovat v detailu objednávky.",
+  "limitOrdersOverBalanceWarning": "To je více než váš dostupný zůstatek. Až se objednávka provede, nakoupí za to, co v té chvíli na zůstatku bude.",
+  "autoBuyAlreadyActive": "Automatický nákup už je na vašem účtu aktivní."
 }
