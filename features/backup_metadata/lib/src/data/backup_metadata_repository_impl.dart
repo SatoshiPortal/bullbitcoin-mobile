@@ -414,6 +414,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
           );
         });
       final discovered = <DiscoveredBackup>[];
+      BackupMetadataFailure? decodeFailure;
       for (final object in objects) {
         if ((object.size ?? 0) > backupMetadataMaxBytes) continue;
         final result = await session.read(
@@ -430,17 +431,28 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         if (bytes.length > backupMetadataMaxBytes) continue;
         for (final group in inventory.groups) {
           final decoded = await _codec.decode(group, bytes);
-          if (decoded case Ok(value: final backup?)) {
-            discovered.add(
-              DiscoveredBackup(
-                group: group,
-                destination: destination,
-                storedAt: object.createdAt ?? object.modifiedAt,
-                snapshot: backup,
-              ),
-            );
+          switch (decoded) {
+            case Ok(value: final backup?):
+              discovered.add(
+                DiscoveredBackup(
+                  group: group,
+                  destination: destination,
+                  storedAt: object.createdAt ?? object.modifiedAt,
+                  snapshot: backup,
+                ),
+              );
+            case Ok():
+              // This copy did not authenticate for this group.
+              break;
+            case Err(:final failure):
+              decodeFailure ??= failure;
           }
         }
+      }
+      if (discovered.isEmpty && decodeFailure != null) {
+        // Nothing usable was found and at least one copy failed to decode:
+        // reporting an empty destination would hide a damaged backup.
+        throw _OperationFailure(decodeFailure, BackupActionReason.unexpected);
       }
       return List<DiscoveredBackup>.unmodifiable(discovered);
     } finally {
