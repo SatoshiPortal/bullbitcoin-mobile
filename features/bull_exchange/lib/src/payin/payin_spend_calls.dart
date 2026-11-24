@@ -208,13 +208,16 @@ PayinCalls payinCallsOf(
       case Err(:final failure):
         // The engine persists the session before posting it: a stored,
         // ongoing session of this wallet and amount is this payin in flight.
-        switch (await services.payjoinSessions.byId(payin.bip21)) {
-          case Ok(value: final PayjoinSenderSession kept)
-              when kept.isOngoing &&
+        switch (await services.payjoinSessions.byTransactionId(built.txid)) {
+          case Ok(:final value):
+            for (final kept in value) {
+              if (kept is PayjoinSenderSession &&
+                  kept.isOngoing &&
                   kept.walletId == built.walletId &&
-                  kept.amountSat == payin.amountSat:
-            return PayinHandedToPayjoin(kept.id, kept.originalTxId);
-          case Ok():
+                  kept.amountSat == payin.amountSat) {
+                return PayinHandedToPayjoin(kept.id, kept.originalTxId);
+              }
+            }
             return failure is PayjoinSenderKeptFailure
                 ? PayinBroadcastOutcomeUnknown(built.txid)
                 : const PayinBroadcastRefused(PayinRefusal.payjoinNotStarted);
