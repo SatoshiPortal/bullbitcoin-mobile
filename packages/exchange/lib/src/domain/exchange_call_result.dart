@@ -54,6 +54,10 @@ enum ExchangeSessionRejection {
 
   /// The stored API key could not be read.
   credentialUnavailable,
+
+  /// The session the read was started for ended before it was answered
+  /// (sign-out, another sign-in, or an environment switch).
+  sessionChanged,
 }
 
 /// The result of a write (create, confirm, accelerate, save).

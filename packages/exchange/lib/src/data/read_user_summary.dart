@@ -39,6 +39,8 @@ Result<UserSummary, ExchangeFailure> userSummaryResult(
   ),
   ReadSessionRejected(why: ExchangeSessionRejection.credentialUnavailable) =>
     Err(credentialUnavailable()),
+  ReadSessionRejected(why: ExchangeSessionRejection.sessionChanged) =>
+    const Err(ExchangeOperationStaleFailure()),
   ReadUnreachable(isNetwork: true, :final reason) => Err(
     ExchangeNetworkFailure('getUserSummary unreachable: $reason'),
   ),

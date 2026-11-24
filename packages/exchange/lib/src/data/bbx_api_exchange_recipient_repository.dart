@@ -80,19 +80,22 @@ final class BbxApiExchangeRecipientRepository {
     (recipient) => _toDefaultWallet(recipient, walletType),
   );
 
-  Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
+  /// Unsets the default flag of [recipientId]. Like a save, an answer lost
+  /// after sending is [WriteOutcomeUnknown]: re-read before unsetting again.
+  Future<ExchangeWrite<void>> deleteDefaultWallet({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
-  }) async {
-    final result = await _api.recipients.updateMyRecipient(
+  }) => exchangeWrite<bbx.MyRecipient, void>(
+    'deleteDefaultWallet',
+    () => _api.recipients.updateMyRecipient(
       recipientId: recipientId,
       recipientType: BtcNetworkWire.recipientType(walletType),
       address: address,
       isDefault: false,
-    );
-    return result.map((_) {}).mapErr(_mapFailure);
-  }
+    ),
+    (_) {},
+  );
 
   static ExchangeFailure _mapFailure(bbx.BbxFailure failure) =>
       switch (failure) {

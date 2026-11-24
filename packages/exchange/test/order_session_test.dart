@@ -311,7 +311,7 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'synthetic-address',
         );
-        expect(result, isA<Ok<void, ExchangeFailure>>());
+        expect(result, isA<WriteDone<void>>());
         expect(endpoints.single.host, startsWith(environment.name));
       },
     );

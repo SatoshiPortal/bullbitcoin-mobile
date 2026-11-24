@@ -283,7 +283,7 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
-        _failure<void>(isA<ExchangeUnexpectedFailure>()),
+        isA<WriteRefused<void>>(),
       );
     });
 
@@ -334,6 +334,17 @@ void main() {
             http,
           ).saveDefaultWallet(walletType: BtcNetwork.bitcoin, address: 'bc1q'),
           isA<WriteOutcomeUnknown<DefaultWallet>>(),
+        );
+      });
+
+      test('$name on an unset is an unknown outcome', () async {
+        expect(
+          await _repository(http).deleteDefaultWallet(
+            recipientId: 'btc',
+            walletType: BtcNetwork.bitcoin,
+            address: 'bc1q',
+          ),
+          isA<WriteOutcomeUnknown<void>>(),
         );
       });
     }

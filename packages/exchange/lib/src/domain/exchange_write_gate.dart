@@ -18,6 +18,7 @@ enum FinancialWriteKind {
   limitOrderCancel,
   withdrawal,
   defaultWalletSave,
+  defaultWalletUnset,
   preferenceWrite,
 }
 

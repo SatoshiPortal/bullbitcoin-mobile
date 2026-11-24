@@ -77,7 +77,7 @@ typedef _DefaultWalletOperations = ({
     String? existingRecipientId,
   })
   save,
-  Future<Result<void, ExchangeFailure>> Function({
+  Future<ExchangeWrite<void>> Function({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
@@ -471,16 +471,24 @@ final class Exchange {
               Err(:final failure) => writeNotRun(failure),
             },
         delete:
-            ({required recipientId, required walletType, required address}) =>
-                withClient(
-                  (client) => BbxApiExchangeRecipientRepository(api: client)
-                      .deleteDefaultWallet(
-                        recipientId: recipientId,
-                        walletType: walletType,
-                        address: address,
-                      ),
-                  completionCheck: _CompletionCheck.write,
-                ),
+            ({
+              required recipientId,
+              required walletType,
+              required address,
+            }) async => switch (await withClient<ExchangeWrite<void>>(
+              (client) async => Ok(
+                await BbxApiExchangeRecipientRepository(api: client)
+                    .deleteDefaultWallet(
+                      recipientId: recipientId,
+                      walletType: walletType,
+                      address: address,
+                    ),
+              ),
+              completionCheck: _CompletionCheck.write,
+            )) {
+              Ok(:final value) => value,
+              Err(:final failure) => writeNotRun(failure),
+            },
       ),
       (environment) => BbxApiOrderRepository(
         isTestnet: environment == ExchangeEnvironment.testnet,
@@ -1097,8 +1105,10 @@ final class Exchange {
     return write;
   }
 
+  /// [WriteOutcomeUnknown] means the default flag may be unset: re-read the
+  /// default wallets before unsetting again.
   @useResult
-  Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
+  Future<ExchangeWrite<void>> deleteDefaultWallet({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
@@ -1106,6 +1116,63 @@ final class Exchange {
     recipientId: recipientId,
     walletType: walletType,
     address: address,
+  );
+
+  /// The default wallets of [session]'s account. A read for a session that
+  /// is no longer the current one is never sent
+  /// ([ExchangeSessionRejection.sessionChanged]).
+  @useResult
+  Future<ExchangeRead<DefaultWallets>> readDefaultWallets(
+    ExchangeSession session,
+  ) async {
+    if (_access?.session != session) {
+      return const ReadSessionRejected(ExchangeSessionRejection.sessionChanged);
+    }
+    return switch (await _defaultWallets.get()) {
+      Ok(:final value) => ReadGot(value),
+      Err(:final failure) => readNotRun(failure),
+    };
+  }
+
+  /// Saves a default wallet of [session]'s account through [writeGate]
+  /// ([FinancialWriteKind.defaultWalletSave]), so it never runs next to
+  /// another financial write of that account or over an unsettled one.
+  @useResult
+  Future<GatedWrite<ExchangeWrite<DefaultWallet>>> saveSessionDefaultWallet(
+    ExchangeSession session, {
+    required BtcNetwork walletType,
+    required String address,
+    String? existingRecipientId,
+  }) => writeGate.run(
+    session,
+    FinancialWriteKind.defaultWalletSave,
+    () async => _access?.session != session
+        ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+        : await saveDefaultWallet(
+            walletType: walletType,
+            address: address,
+            existingRecipientId: existingRecipientId,
+          ),
+  );
+
+  /// Unsets a default wallet of [session]'s account through [writeGate]
+  /// ([FinancialWriteKind.defaultWalletUnset]).
+  @useResult
+  Future<GatedWrite<ExchangeWrite<void>>> unsetSessionDefaultWallet(
+    ExchangeSession session, {
+    required String recipientId,
+    required BtcNetwork walletType,
+    required String address,
+  }) => writeGate.run(
+    session,
+    FinancialWriteKind.defaultWalletUnset,
+    () async => _access?.session != session
+        ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+        : await deleteDefaultWallet(
+            recipientId: recipientId,
+            walletType: walletType,
+            address: address,
+          ),
   );
 
   @useResult
@@ -1206,7 +1273,7 @@ Exchange exchangeForTesting({
     String? existingRecipientId,
   })?
   saveDefaultWallet,
-  Future<Result<void, ExchangeFailure>> Function({
+  Future<ExchangeWrite<void>> Function({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,

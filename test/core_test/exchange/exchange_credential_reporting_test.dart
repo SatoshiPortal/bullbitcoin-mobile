@@ -226,7 +226,7 @@ void main() {
               required recipientId,
               required walletType,
               required address,
-            }) async => Err(failure),
+            }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
           ),
         );
         addTearDown(cubit.close);

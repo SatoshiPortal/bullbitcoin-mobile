@@ -95,6 +95,28 @@ ExchangeWrite<T> writeNotRun<T>(ExchangeFailure failure) => switch (failure) {
   _ => const WriteNotSent(ExchangeNotSentReason.unreachable),
 };
 
+/// The read result of a read that ended in [failure] before or around the
+/// call (the session checks, or a repository that still answers with
+/// [ExchangeFailure]): never a value, never an empty one.
+ExchangeRead<T> readNotRun<T>(ExchangeFailure failure) => switch (failure) {
+  ExchangeNotAuthenticatedFailure() => const ReadSessionRejected(
+    ExchangeSessionRejection.signedOut,
+  ),
+  ExchangeCredentialReadFailure() || ExchangeApiKeyStorageFailure() =>
+    const ReadSessionRejected(ExchangeSessionRejection.credentialUnavailable),
+  ExchangeSessionRejectedFailure() => const ReadSessionRejected(
+    ExchangeSessionRejection.server,
+  ),
+  ExchangeOperationStaleFailure() => const ReadSessionRejected(
+    ExchangeSessionRejection.sessionChanged,
+  ),
+  ExchangeNetworkFailure() => ReadUnreachable(
+    failure.runtimeType.toString(),
+    isNetwork: true,
+  ),
+  _ => ReadUnreachable(failure.runtimeType.toString(), isNetwork: false),
+};
+
 /// Classifies the answer of the read [call] into one [ExchangeRead], and
 /// maps a reply with [map]. A `null` reply is [ReadMissing]; a reply that
 /// can't be read or mapped is [ReadMalformed].
