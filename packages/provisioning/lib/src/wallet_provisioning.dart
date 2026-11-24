@@ -270,7 +270,14 @@ final class _WalletProvisioning implements WalletProvisioning {
     if (!_supported(network, scriptType)) {
       return const Err(WalletProvisioningUnsupportedFailure());
     }
-    return _provision(account);
+    final provisioned = await _provision(account);
+    // An operational refusal stays reconstructible from an exported log, as a
+    // fixed code: the imported key material, descriptors and any foreign error
+    // text never reach the log.
+    if (provisioned case Err(failure: WalletProvisioningStorageFailure())) {
+      log.warning('Watch-only import refused reason=storage');
+    }
+    return provisioned;
   }
 
   Future<Result<bool, WalletProvisioningFailure>> _hasDefault(
