@@ -1,20 +1,28 @@
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/recoverbull_wallet_adapter.dart';
+import 'package:bull_recoverbull/setup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:secrets/secrets.dart' show Secrets;
+import 'package:secrets/secrets.dart' show Secret, Secrets, WalletInventory;
 import 'package:secrets/testing.dart';
 
 class _Settings extends Mock implements DeveloperEnvironmentReader {}
 
-class _Wallets extends Mock implements WalletRepository {}
+class _Wallets extends Mock implements WalletInventory {}
 
-class _Create extends Mock implements CreateDefaultWalletsUsecase {}
+class _Create {
+  int calls = 0;
+
+  Future<Result<VaultContext, RecoverBullFailure>> call(
+    Secret secret,
+    BitcoinNetwork network,
+  ) async {
+    calls++;
+    throw StateError('Unexpected provisioning');
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +48,7 @@ void main() {
         wallets,
         settings,
         Secrets(scratchDirectory: () async => scratch.path),
-        create,
+        create.call,
       );
       final result = await adapter.restoreDefaults(
         VaultContext(
@@ -55,9 +63,43 @@ void main() {
         reason: 'Reject unsupported networks before custody access',
       );
       verifyZeroInteractions(wallets);
-      verifyZeroInteractions(create);
+      expect(create.calls, 0);
     },
   );
+  test('an incomplete inventory never certifies a default account', () async {
+    final storage = FakeSecureStoragePlatform()..install();
+    final settings = _Settings();
+    when(settings.readDeveloperEnvironment).thenAnswer(
+      (_) async => Ok((
+        environment: Environment.mainnet,
+        isSuperuser: null,
+        isDevModeEnabled: null,
+      )),
+    );
+    final wallets = _Wallets();
+    when(() => wallets.walletsForNetwork(BitcoinNetwork.mainnet)).thenAnswer(
+      (_) async => Ok(walletSelectionForTesting([], isComplete: false)),
+    );
+    final adapter = RecoverBullWalletAdapter(
+      wallets,
+      settings,
+      Secrets(
+        scratchDirectory: () async => throw StateError('Unexpected access'),
+      ),
+      _Create().call,
+    );
+
+    expect(
+      await adapter.currentDefault(),
+      isA<Err<VaultContext?, RecoverBullFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<VaultStorageFailure>(),
+      ),
+    );
+    expect(storage.reads, 0);
+  });
+
   for (final production in [Environment.mainnet, Environment.testnet]) {
     for (final startsOnRegtest in [false, true]) {
       final initial = startsOnRegtest ? Environment.regtest : production;
@@ -85,7 +127,7 @@ void main() {
             wallets,
             settings,
             Secrets(scratchDirectory: () async => scratch.path),
-            create,
+            create.call,
           );
           final captured = VaultContext(
             fingerprint: Fingerprint('73c5da0a'),
@@ -102,7 +144,7 @@ void main() {
           );
           expect(storage.reads, 0);
           verifyZeroInteractions(wallets);
-          verifyZeroInteractions(create);
+          expect(create.calls, 0);
         },
       );
     }
@@ -127,7 +169,7 @@ void main() {
         _Wallets(),
         settings,
         Secrets(scratchDirectory: () async => scratch.path),
-        create,
+        create.call,
       );
       final result = await adapter.restoreDefaults(
         VaultContext(
@@ -149,7 +191,7 @@ void main() {
           reason: 'Authorization is required before custody lookup',
         );
       }
-      verifyZeroInteractions(create);
+      expect(create.calls, 0);
     });
   }
 }

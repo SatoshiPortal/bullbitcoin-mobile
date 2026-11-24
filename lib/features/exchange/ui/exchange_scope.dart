@@ -1,5 +1,4 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';

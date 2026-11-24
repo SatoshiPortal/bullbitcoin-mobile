@@ -1,0 +1,61 @@
+{
+  "@@locale": "es",
+  "onboardingRecover": "Recuperar",
+  "errorSharingLogsMessage": "Error al compartir registros: {error}",
+  "@errorSharingLogsMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appStartupErrorTitle": "Error de inicio",
+  "appStartupErrorMessage": "La aplicación no pudo iniciarse. Intenta cerrarla completamente y reiniciarla. Si el error persiste, contacta con soporte y comparte tus registros.",
+  "appStartupContactSupportButton": "Contactar Soporte",
+  "coreScreensPageNotFound": "Página no encontrada",
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "deleteLogsTitle": "Eliminar registros",
+  "logsDeletedMessage": "Registros eliminados",
+  "appInitErrorTitle": "La aplicación no pudo iniciarse",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Compartir registros",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Usa tu copia de seguridad",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Gracias a tu copia de seguridad, tus fondos están a salvo.\nPrimero intenta reiniciar la app; si sigue fallando, reinstálala y recupera con tu copia de seguridad.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "¿Sin copia de seguridad?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "No elimines la aplicación.\nContacta con nuestro equipo de soporte para intentar un rescate.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contactar con soporte",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostrar detalles del error",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Contacta con soporte en app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Exportar",
+  "logsExportedMessage": "Registros exportados correctamente",
+  "logsExportFailedMessage": "Error al exportar los registros",
+  "appStartupMissingSecretMessage": "Este dispositivo ya no guarda la frase de recuperación de tu billetera. Vuelve a introducirla para recuperar tu billetera.",
+  "appStartupRestoreSecretButton": "Introducir mi frase de recuperación",
+  "appStartupRestoreMismatch": "Esta frase de recuperación pertenece a otra billetera. Introduce la frase de la billetera de este dispositivo."
+}

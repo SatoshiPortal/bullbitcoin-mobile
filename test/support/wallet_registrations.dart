@@ -26,11 +26,6 @@ final class MemoryWalletRegistrations implements WalletRegistrations {
   Future<void> delete(String id) async => rows.remove(id);
 
   @override
-  Future<void> recordBackup(WalletMetadataModel metadata) async {
-    rows[metadata.id] = metadata;
-  }
-
-  @override
   Future<void> recordSyncTime(String id, DateTime time) async {
     final metadata = rows[id];
     if (metadata != null) rows[id] = metadata.copyWith(syncedAt: time);

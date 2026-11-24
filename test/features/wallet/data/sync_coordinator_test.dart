@@ -1,8 +1,10 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show SyncReason, SyncBusyFailure, SyncConnectionFailure;
-import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 
 import 'dart:async';
@@ -11,12 +13,10 @@ import 'dart:io';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,7 +26,7 @@ class _MockReadWallet extends Mock implements ReadWalletUsecase {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
-class _MockSyncWallet extends Mock implements SyncWalletUsecase {}
+class _MockSyncWallet extends Mock implements WalletRepository {}
 
 class _Wallet extends Mock implements Wallet {}
 
@@ -56,7 +56,7 @@ final class _Reporter implements LoggerReporter {
 
 void main() {
   registerFallbackValue(SyncReason.auto);
-  // SyncCoordinator's constructor reads WidgetsBinding.instance and attaches
+  // SyncCoordinator<Wallet, WalletFailure>'s constructor reads WidgetsBinding.instance and attaches
   // an AppLifecycleListener, so the binding must exist.
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -64,7 +64,7 @@ void main() {
   late _MockGetWallets getWallets;
   late _MockSyncWallet syncWallet;
   late _MockSyncSwaps syncSwaps;
-  late SyncCoordinator coordinator;
+  late SyncCoordinator<Wallet, WalletFailure> coordinator;
   late Future<void> Function() spCallback;
   var revisionReads = 0;
   var network = NetworkEnv.mainnet;
@@ -78,11 +78,15 @@ void main() {
     spCallback = () async {};
     revisionReads = 0;
     network = NetworkEnv.mainnet;
-    coordinator = SyncCoordinator(
-      readWalletUsecase: readWallet,
+    coordinator = SyncCoordinator<Wallet, WalletFailure>(
+      walletKey: (wallet) =>
+          WalletKey(id: wallet.id, network: wallet.network.shared),
+      classifyFailure: (failure) =>
+          (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+      readWallet: readWallet.execute,
       readNetwork: () async => network,
-      getWalletsUsecase: getWallets,
-      syncWalletUsecase: syncWallet,
+      getWallets: getWallets.execute,
+      syncWallet: syncWallet.sync,
       syncSwaps: syncSwaps.call,
       // Deferred so a test can swap the behaviour after construction, the way
       // the composition root's lazy closure resolves the facade at call time.
@@ -193,7 +197,7 @@ void main() {
     when(() => getWallets.execute(onlyBitcoin: true))
         .thenAnswer((_) async => Ok([wallet]));
     when(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         wallet,
         discover: any(named: 'discover'),
         reason: any(named: 'reason'),
@@ -201,11 +205,11 @@ void main() {
     ).thenAnswer((_) async {});
     await coordinator.sync(only: {SyncKind.bitcoin});
     verify(
-      () => syncWallet.execute(wallet, discover: true, reason: SyncReason.auto),
+      () => syncWallet.sync(wallet, discover: true, reason: SyncReason.auto),
     ).called(1);
     await coordinator.sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user);
     verify(
-      () => syncWallet.execute(wallet, discover: true, reason: SyncReason.pull),
+      () => syncWallet.sync(wallet, discover: true, reason: SyncReason.pull),
     ).called(1);
   });
 
@@ -215,11 +219,8 @@ void main() {
     when(() => getWallets.execute(onlyBitcoin: true))
         .thenAnswer((_) async => Ok([wallet]));
     when(
-      () => syncWallet.execute(
-        wallet,
-        discover: true,
-        reason: any(named: 'reason'),
-      ),
+      () =>
+          syncWallet.sync(wallet, discover: true, reason: any(named: 'reason')),
     ).thenAnswer((_) => gate.future);
     final routine = coordinator.sync(only: {SyncKind.bitcoin});
     await pumpEventQueue();
@@ -232,14 +233,11 @@ void main() {
     gate.complete();
     await Future.wait([routine, pull]);
     verify(
-      () => syncWallet.execute(
-        wallet,
-        discover: true,
-        reason: any(named: 'reason'),
-      ),
+      () =>
+          syncWallet.sync(wallet, discover: true, reason: any(named: 'reason')),
     ).called(1);
     verifyNever(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         wallet,
         discover: false,
         reason: any(named: 'reason'),
@@ -272,7 +270,7 @@ void main() {
     when(() => getWallets.execute(onlyBitcoin: true))
         .thenAnswer((_) async => Ok([a]));
     when(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: false,
         allowInitialScan: any(named: 'allowInitialScan'),
@@ -280,7 +278,7 @@ void main() {
       ),
     ).thenAnswer((_) async {});
     when(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: true,
         allowInitialScan: true,
@@ -293,7 +291,7 @@ void main() {
     await coordinator.pollWallet('a', isActive: () => true);
     // The first global pass discovers and keeps bootstrap.
     verify(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: true,
         allowInitialScan: true,
@@ -302,7 +300,7 @@ void main() {
     ).called(1);
     // Both Receive ticks stay on revealed scripts and reject bootstrap.
     verify(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: false,
         allowInitialScan: false,
@@ -310,7 +308,7 @@ void main() {
       ),
     ).called(2);
     verifyNever(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         b,
         discover: any(named: 'discover'),
         allowInitialScan: any(named: 'allowInitialScan'),
@@ -318,7 +316,7 @@ void main() {
       ),
     );
     when(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: false,
         allowInitialScan: any(named: 'allowInitialScan'),
@@ -350,7 +348,7 @@ void main() {
           .thenAnswer((_) async => Ok([a]));
       final held = Completer<void>();
       when(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           a,
           discover: true,
           allowInitialScan: any(named: 'allowInitialScan'),
@@ -358,7 +356,7 @@ void main() {
         ),
       ).thenAnswer((_) => held.future);
       when(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           liquid,
           discover: false,
           allowInitialScan: any(named: 'allowInitialScan'),
@@ -380,7 +378,7 @@ void main() {
           .pollWallet('liquid', isActive: () => true)
           .then((_) => joinedEnded = true);
       verifyNever(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           liquid,
           discover: false,
           allowInitialScan: any(named: 'allowInitialScan'),
@@ -396,7 +394,7 @@ void main() {
       expect(runningEnded, isTrue);
       expect(joinedEnded, isTrue);
       verify(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           a,
           discover: true,
           allowInitialScan: any(named: 'allowInitialScan'),
@@ -404,7 +402,7 @@ void main() {
         ),
       ).called(1);
       verify(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           liquid,
           discover: false,
           allowInitialScan: any(named: 'allowInitialScan'),
@@ -413,7 +411,7 @@ void main() {
       ).called(1);
       await coordinator.pollWallet('liquid', isActive: () => true);
       verify(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           liquid,
           discover: false,
           allowInitialScan: any(named: 'allowInitialScan'),
@@ -444,7 +442,7 @@ void main() {
     when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
     final held = Completer<void>();
     when(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: false,
         allowInitialScan: any(named: 'allowInitialScan'),
@@ -460,7 +458,7 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(joinedEnded, isFalse);
     verify(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: false,
         allowInitialScan: any(named: 'allowInitialScan'),
@@ -473,7 +471,7 @@ void main() {
     network = NetworkEnv.testnet;
     await coordinator.pollWallet('a', isActive: () => true);
     verifyNever(
-      () => syncWallet.execute(
+      () => syncWallet.sync(
         a,
         discover: false,
         allowInitialScan: any(named: 'allowInitialScan'),
@@ -496,7 +494,7 @@ void main() {
       when(() => getWallets.execute(onlyBitcoin: true))
           .thenAnswer((_) async => Ok([wallet]));
       when(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           wallet,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
@@ -527,7 +525,7 @@ void main() {
       when(() => getWallets.execute(onlyBitcoin: true))
           .thenAnswer((_) async => Ok([wallet]));
       when(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           wallet,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
@@ -549,11 +547,7 @@ void main() {
       expect(lines, contains('outcome=busy wallets=1 category=busy'));
       expect(lines, isNot(contains('outcome=settled')));
       when(
-        () => syncWallet.execute(
-          wallet,
-          discover: false,
-          reason: SyncReason.auto,
-        ),
+        () => syncWallet.sync(wallet, discover: false, reason: SyncReason.auto),
       ).thenAnswer((_) async {});
       await coordinator.sync(only: {SyncKind.bitcoin});
       verify(() => getWallets.execute(onlyBitcoin: true)).called(2);
@@ -574,12 +568,10 @@ void main() {
         when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, b]));
         when(() => getWallets.execute(onlyBitcoin: true))
             .thenAnswer((_) async => Ok([a]));
+        when(() => syncWallet.sync(a, discover: true, reason: SyncReason.auto))
+            .thenAnswer((_) => routineGate.future);
         when(
-          () => syncWallet.execute(a, discover: true, reason: SyncReason.auto),
-        ).thenAnswer((_) => routineGate.future);
-        when(
-          () =>
-              syncWallet.execute(a, discover: true, reason: SyncReason.manual),
+          () => syncWallet.sync(a, discover: true, reason: SyncReason.manual),
         ).thenAnswer((_) => manualGate.future);
         final routine = coordinator.sync(only: {SyncKind.bitcoin});
         final settledRoutine = failRoutine
@@ -594,8 +586,7 @@ void main() {
         final duplicate = coordinator.discoverWallet('a');
         await pumpEventQueue();
         verifyNever(
-          () =>
-              syncWallet.execute(a, discover: true, reason: SyncReason.manual),
+          () => syncWallet.sync(a, discover: true, reason: SyncReason.manual),
         );
         if (failRoutine) {
           routineGate.completeError(Exception('routine'));
@@ -608,11 +599,10 @@ void main() {
         expect(activity, [true]);
         expect(coordinator.isSyncPassActive, isTrue);
         verify(
-          () =>
-              syncWallet.execute(a, discover: true, reason: SyncReason.manual),
+          () => syncWallet.sync(a, discover: true, reason: SyncReason.manual),
         ).called(1);
         verifyNever(
-          () => syncWallet.execute(
+          () => syncWallet.sync(
             b,
             discover: any(named: 'discover'),
             reason: any(named: 'reason'),
@@ -635,7 +625,7 @@ void main() {
       when(() => getWallets.execute(onlyLiquid: true))
           .thenAnswer((_) async => Ok([wallet]));
       when(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           wallet,
           discover: false,
           reason: any(named: 'reason'),
@@ -647,21 +637,14 @@ void main() {
       );
       await coordinator.sync(only: {SyncKind.liquid});
       verify(
-        () => syncWallet.execute(
-          wallet,
-          discover: false,
-          reason: SyncReason.manual,
-        ),
+        () =>
+            syncWallet.sync(wallet, discover: false, reason: SyncReason.manual),
       ).called(1);
       verify(
-        () => syncWallet.execute(
-          wallet,
-          discover: false,
-          reason: SyncReason.auto,
-        ),
+        () => syncWallet.sync(wallet, discover: false, reason: SyncReason.auto),
       ).called(1);
       verifyNever(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           wallet,
           discover: true,
           reason: any(named: 'reason'),
@@ -697,7 +680,7 @@ void main() {
         ),
       );
       verifyNever(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           a,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
@@ -719,9 +702,8 @@ void main() {
       });
       final a = manualWallet('private-wallet-id');
       when(() => getWallets.execute()).thenAnswer((_) async => Ok([a]));
-      when(
-        () => syncWallet.execute(a, discover: true, reason: SyncReason.manual),
-      ).thenThrow(Exception('sync'));
+      when(() => syncWallet.sync(a, discover: true, reason: SyncReason.manual))
+          .thenThrow(Exception('sync'));
       expect(
         await coordinator.discoverWallet(a.id),
         isA<Err<void, WalletDiscoveryFailure>>().having(
@@ -731,7 +713,7 @@ void main() {
         ),
       );
       verify(
-        () => syncWallet.execute(a, discover: true, reason: SyncReason.manual),
+        () => syncWallet.sync(a, discover: true, reason: SyncReason.manual),
       ).called(1);
       final lines = await log.readLogs();
       expect(
@@ -1051,18 +1033,12 @@ void main() {
         when(() => getWallets.execute(onlyLiquid: true))
             .thenAnswer((_) async => Ok([liquid]));
         when(
-          () => syncWallet.execute(
-            bitcoin,
-            discover: true,
-            reason: SyncReason.auto,
-          ),
+          () =>
+              syncWallet.sync(bitcoin, discover: true, reason: SyncReason.auto),
         ).thenAnswer((_) => gate.future);
         when(
-          () => syncWallet.execute(
-            liquid,
-            discover: false,
-            reason: SyncReason.pull,
-          ),
+          () =>
+              syncWallet.sync(liquid, discover: false, reason: SyncReason.pull),
         ).thenAnswer((_) async {});
         final auto = coordinator.sync(
           only: {SyncKind.bitcoin, SyncKind.liquid},
@@ -1076,18 +1052,12 @@ void main() {
         gate.complete();
         await Future.wait([auto, pull]);
         verify(
-          () => syncWallet.execute(
-            bitcoin,
-            discover: true,
-            reason: SyncReason.auto,
-          ),
+          () =>
+              syncWallet.sync(bitcoin, discover: true, reason: SyncReason.auto),
         ).called(1);
         verify(
-          () => syncWallet.execute(
-            liquid,
-            discover: false,
-            reason: SyncReason.pull,
-          ),
+          () =>
+              syncWallet.sync(liquid, discover: false, reason: SyncReason.pull),
         ).called(1);
         final rows = (await log.readLogs())
             .where((row) => row.contains('Sync pass finished'))
@@ -1139,18 +1109,22 @@ void main() {
       clock = DateTime.utc(2026, 11, 12, 14);
       calls = [];
       failDiscovery = false;
-      coordinator = SyncCoordinator(
-        readWalletUsecase: readWallet,
+      coordinator = SyncCoordinator<Wallet, WalletFailure>(
+        walletKey: (wallet) =>
+            WalletKey(id: wallet.id, network: wallet.network.shared),
+        classifyFailure: (failure) =>
+            (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+        readWallet: readWallet.execute,
         readNetwork: () async => network,
-        getWalletsUsecase: getWallets,
-        syncWalletUsecase: syncWallet,
+        getWallets: getWallets.execute,
+        syncWallet: syncWallet.sync,
         now: () => clock,
       );
       wallet = _Wallet();
       when(() => getWallets.execute(onlyBitcoin: true))
           .thenAnswer((_) async => Ok([wallet]));
       when(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           wallet,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
@@ -1191,7 +1165,7 @@ void main() {
         clock = clock.add(const Duration(seconds: 3));
         final gate = Completer<void>();
         when(
-          () => syncWallet.execute(
+          () => syncWallet.sync(
             wallet,
             discover: false,
             reason: any(named: 'reason'),
@@ -1280,7 +1254,7 @@ void main() {
       when(() => getWallets.execute(onlyLiquid: true))
           .thenAnswer((_) async => Ok([liquid]));
       when(
-        () => syncWallet.execute(
+        () => syncWallet.sync(
           liquid,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
@@ -1288,11 +1262,7 @@ void main() {
       ).thenAnswer((_) async {});
       await coordinator.sync(only: {SyncKind.liquid});
       verify(
-        () => syncWallet.execute(
-          liquid,
-          discover: false,
-          reason: SyncReason.auto,
-        ),
+        () => syncWallet.sync(liquid, discover: false, reason: SyncReason.auto),
       ).called(1);
     });
   });

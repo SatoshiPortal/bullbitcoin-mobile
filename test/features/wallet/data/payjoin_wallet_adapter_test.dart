@@ -1,17 +1,13 @@
 import 'package:ark/funding.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart' show BitcoinSpendStatus;
+import 'package:transactions/testing.dart';
 
-class _Values extends Mock implements SyncWalletValuesDatasource {}
-
-class _Metadata extends Mock implements WalletRegistrations {}
+class _Metadata extends Mock implements WalletInventory {}
 
 void main() {
   late _Metadata metadata;
@@ -22,7 +18,6 @@ void main() {
         Secrets(scratchDirectory: () async => '/tmp'),
         (_) async => throw StateError('no wallet handle expected'),
         (_) async => status(++checks),
-        _Values(),
         metadata,
         const ArkFundingSigningGuard(authority: null),
       );
@@ -35,7 +30,9 @@ void main() {
   setUp(() {
     checks = 0;
     metadata = _Metadata();
-    when(() => metadata.fetch(any())).thenAnswer((_) async => null);
+    when(
+      () => metadata.readWallet(any()),
+    ).thenAnswer((_) async => const Err(WalletRegistrationNotFoundFailure()));
   });
 
   test('brief contention does not pause a proposal', () async {
@@ -45,7 +42,7 @@ void main() {
     // Admitted: the adapter went on to read the wallet.
     await expectLater(utxos(wallet), throwsStateError);
     expect(checks, 3);
-    verify(() => metadata.fetch('wallet')).called(1);
+    verify(() => metadata.readWallet('wallet')).called(1);
   });
 
   test('lasting contention pauses after a bounded wait', () async {
@@ -61,7 +58,7 @@ void main() {
       ),
     );
     expect(checks, 5);
-    verifyNever(() => metadata.fetch(any()));
+    verifyNever(() => metadata.readWallet(any()));
   });
 
   test('an unobserved payment pauses without retrying', () async {

@@ -13,4 +13,18 @@ final class WalletHistoryEvents {
     required this.watchSyncFinished,
     required this.isSyncPassActive,
   });
+
+  factory WalletHistoryEvents.foreground({
+    required Stream<WalletRevisionState> revisions,
+    required Stream<SyncFinished> finished,
+    required Stream<bool> Function() watchSyncPassActivity,
+    required bool Function() isSyncPassActive,
+  }) => WalletHistoryEvents(
+    watchRevisions: ({walletId}) => revisions.where(
+      (revision) => walletId == null || revision.stamp.key.id == walletId,
+    ),
+    watchSyncPassActivity: watchSyncPassActivity,
+    watchSyncFinished: () => finished.map((_) {}),
+    isSyncPassActive: isSyncPassActive,
+  );
 }

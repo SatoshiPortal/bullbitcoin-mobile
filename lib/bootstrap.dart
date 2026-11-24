@@ -3,12 +3,10 @@ import 'package:primitives/primitives.dart' show Err;
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
-    show AppInitErrorScreen;
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:startup/startup.dart' show AppInitErrorScreen;
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show paymentNotificationChannelId;
+import 'package:notifications/payment_store.dart' show PaymentNotifications;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
@@ -26,7 +24,7 @@ Future<void> startApp() async {
         WidgetsFlutterBinding.ensureInitialized();
         final wizard = WizardFeature.mount();
         final startup = await wizard.runIfNeeded(
-          notificationChannelId: paymentNotificationChannelId,
+          notificationChannelId: PaymentNotifications.channelId,
           branding: WizardBranding(
             headerLogo: AssetImage(Assets.logos.bbLogoSmall.path),
             welcomeLogo: AssetImage(Assets.logos.bbLogoWhite.path),
@@ -102,8 +100,13 @@ Future<void> _retryStorage(LegacyImportFailure failure) async {
 void _showInitError(Object error, {VoidCallback? onRetry}) {
   runApp(
     BullSupportScope(
-      onContactSupport: SupportFacade.contactSupport,
-      child: AppInitErrorScreen(error: error, onRetry: onRetry),
+      onContactSupport: Support.contactSupport,
+      child: AppInitErrorScreen(
+        error: error,
+        onRetry: onRetry,
+        onMachineTranslationSelected: TranslationWarningBottomSheet.show,
+        extraLocalizations: const [SettingsLocalizations.delegate],
+      ),
     ),
   );
   _refreshDiagnosticContextAfterFirstFrame();

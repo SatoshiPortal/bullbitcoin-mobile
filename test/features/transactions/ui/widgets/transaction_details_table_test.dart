@@ -3,8 +3,8 @@ import '../../support/transaction_ui_actions.dart';
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/testing.dart';
+import 'package:settings/settings.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:transactions/testing.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -77,7 +77,7 @@ void main() {
             BlocProvider<TransactionDetailsCubit>.value(value: detailsCubit),
             BlocProvider<SettingsCubit>.value(value: settingsCubit),
           ],
-          child: SettingsFacade.amountScope(
+          child: Settings.amountScope(
             navigatorKey: navigatorKey,
             child: Scaffold(
               body: TransactionDetailsTable(actions: transactionUiActions),

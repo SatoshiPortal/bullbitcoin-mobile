@@ -46,7 +46,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 787595051;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 547985556;
 
 // Section: executor
 
@@ -3620,6 +3620,82 @@ fn wire__lwk__api__types__address_validate_impl(
         },
     )
 }
+fn wire__dart_bip138__api__bip138_decrypt_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    bytes: impl CstDecode<Vec<u8>>,
+    candidate_public_descriptors: impl CstDecode<Vec<String>>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "bip138_decrypt",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_bytes = bytes.cst_decode();
+            let api_candidate_public_descriptors = candidate_public_descriptors.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, FrbWrapper<dart_bip138::api::Bip138Error>>((move || {
+                    let output_ok = dart_bip138::api::bip138_decrypt(
+                        api_bytes,
+                        api_candidate_public_descriptors,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
+            }
+        },
+    )
+}
+fn wire__dart_bip138__api__bip138_encrypt_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    public_descriptors: impl CstDecode<Vec<String>>,
+    items: impl CstDecode<Vec<dart_bip138::api::Bip138Item>>,
+    padded: impl CstDecode<bool>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "bip138_encrypt",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_public_descriptors = public_descriptors.cst_decode();
+            let api_items = items.cst_decode();
+            let api_padded = padded.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, FrbWrapper<dart_bip138::api::Bip138Error>>((move || {
+                    let output_ok = dart_bip138::api::bip138_encrypt(
+                        api_public_descriptors,
+                        api_items,
+                        api_padded,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
+            }
+        },
+    )
+}
+fn wire__dart_bip138__api__bip138_excluded_keys_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    public_descriptors: impl CstDecode<Vec<String>>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "bip138_excluded_keys",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_public_descriptors = public_descriptors.cst_decode();
+            move |context| {
+                transform_result_dco::<_, _, FrbWrapper<dart_bip138::api::Bip138Error>>((move || {
+                    let output_ok = dart_bip138::api::bip138_excluded_keys(api_public_descriptors)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
+            }
+        },
+    )
+}
 fn wire__lwk__api__blockchain__blockchain_broadcast_signed_pset_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     network: impl CstDecode<lwk::api::types::LiquidNetwork>,
@@ -7108,6 +7184,20 @@ const _: fn() = || {
         let _: String = Balance.asset_id;
         let _: i64 = Balance.value;
     }
+    match None::<dart_bip138::api::Bip138ContentType>.unwrap() {
+        dart_bip138::api::Bip138ContentType::Bip { number } => {
+            let _: u16 = number;
+        }
+        dart_bip138::api::Bip138ContentType::Vendor { tag } => {
+            let _: Vec<u8> = tag;
+        }
+        dart_bip138::api::Bip138ContentType::Text => {}
+    }
+    {
+        let Bip138Item = None::<dart_bip138::api::Bip138Item>.unwrap();
+        let _: dart_bip138::api::Bip138ContentType = Bip138Item.content_type;
+        let _: Vec<u8> = Bip138Item.bytes;
+    }
     {
         let Blockchain = None::<lwk::api::blockchain::Blockchain>.unwrap();
     }
@@ -7531,6 +7621,32 @@ const _: fn() = || {
 
 // Section: dart2rust
 
+impl CstDecode<dart_bip138::api::Bip138Error> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> dart_bip138::api::Bip138Error {
+        match self {
+            0 => dart_bip138::api::Bip138Error::TooLarge,
+            1 => dart_bip138::api::Bip138Error::InvalidDescriptor,
+            2 => dart_bip138::api::Bip138Error::NoEligibleKeys,
+            3 => dart_bip138::api::Bip138Error::DescriptorMismatch,
+            4 => dart_bip138::api::Bip138Error::Malformed,
+            5 => dart_bip138::api::Bip138Error::Unsupported,
+            6 => dart_bip138::api::Bip138Error::Encryption,
+            _ => unreachable!("Invalid variant for Bip138Error: {}", self),
+        }
+    }
+}
+impl CstDecode<dart_bip138::api::Bip138ExcludedKey> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> dart_bip138::api::Bip138ExcludedKey {
+        match self {
+            0 => dart_bip138::api::Bip138ExcludedKey::DisallowedExpression,
+            1 => dart_bip138::api::Bip138ExcludedKey::Nums,
+            2 => dart_bip138::api::Bip138ExcludedKey::ExposedRoot,
+            _ => unreachable!("Invalid variant for Bip138ExcludedKey: {}", self),
+        }
+    }
+}
 impl CstDecode<bitbox::api::BitBoxKeychain> for i32 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> bitbox::api::BitBoxKeychain {
@@ -7769,6 +7885,12 @@ impl CstDecode<boltz::api::types::SwapType> for i32 {
             2 => boltz::api::types::SwapType::Chain,
             _ => unreachable!("Invalid variant for SwapType: {}", self),
         }
+    }
+}
+impl CstDecode<u16> for u16 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> u16 {
+        self
     }
 }
 impl CstDecode<u32> for u32 {
@@ -8026,6 +8148,71 @@ impl SseDecode for lwk::api::types::Balance {
         return lwk::api::types::Balance {
             asset_id: var_assetId,
             value: var_value,
+        };
+    }
+}
+
+impl SseDecode for dart_bip138::api::Bip138ContentType {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                let mut var_number = <u16>::sse_decode(deserializer);
+                return dart_bip138::api::Bip138ContentType::Bip { number: var_number };
+            }
+            1 => {
+                let mut var_tag = <Vec<u8>>::sse_decode(deserializer);
+                return dart_bip138::api::Bip138ContentType::Vendor { tag: var_tag };
+            }
+            2 => {
+                return dart_bip138::api::Bip138ContentType::Text;
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseDecode for dart_bip138::api::Bip138Error {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => dart_bip138::api::Bip138Error::TooLarge,
+            1 => dart_bip138::api::Bip138Error::InvalidDescriptor,
+            2 => dart_bip138::api::Bip138Error::NoEligibleKeys,
+            3 => dart_bip138::api::Bip138Error::DescriptorMismatch,
+            4 => dart_bip138::api::Bip138Error::Malformed,
+            5 => dart_bip138::api::Bip138Error::Unsupported,
+            6 => dart_bip138::api::Bip138Error::Encryption,
+            _ => unreachable!("Invalid variant for Bip138Error: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for dart_bip138::api::Bip138ExcludedKey {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => dart_bip138::api::Bip138ExcludedKey::DisallowedExpression,
+            1 => dart_bip138::api::Bip138ExcludedKey::Nums,
+            2 => dart_bip138::api::Bip138ExcludedKey::ExposedRoot,
+            _ => unreachable!("Invalid variant for Bip138ExcludedKey: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for dart_bip138::api::Bip138Item {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_contentType = <dart_bip138::api::Bip138ContentType>::sse_decode(deserializer);
+        let mut var_bytes = <Vec<u8>>::sse_decode(deserializer);
+        return dart_bip138::api::Bip138Item {
+            content_type: var_contentType,
+            bytes: var_bytes,
         };
     }
 }
@@ -8514,6 +8701,32 @@ impl SseDecode for Vec<lwk::api::types::Balance> {
         let mut ans_ = Vec::with_capacity(len_ as usize);
         for idx_ in 0..len_ {
             ans_.push(<lwk::api::types::Balance>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<dart_bip138::api::Bip138ExcludedKey> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<dart_bip138::api::Bip138ExcludedKey>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<dart_bip138::api::Bip138Item> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<dart_bip138::api::Bip138Item>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -9009,6 +9222,19 @@ impl SseDecode for Option<u8> {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
             return Some(<u8>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<Vec<dart_bip138::api::Bip138Item>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<Vec<dart_bip138::api::Bip138Item>>::sse_decode(
+                deserializer,
+            ));
         } else {
             return None;
         }
@@ -9973,6 +10199,13 @@ impl SseDecode for dart_bwk::api::types::TxSimulation {
     }
 }
 
+impl SseDecode for u16 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u16::<NativeEndian>().unwrap()
+    }
+}
+
 impl SseDecode for u32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -10281,6 +10514,103 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<lwk::api::types::Balance>>
     for lwk::api::types::Balance
 {
     fn into_into_dart(self) -> FrbWrapper<lwk::api::types::Balance> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<dart_bip138::api::Bip138ContentType> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self.0 {
+            dart_bip138::api::Bip138ContentType::Bip { number } => {
+                [0.into_dart(), number.into_into_dart().into_dart()].into_dart()
+            }
+            dart_bip138::api::Bip138ContentType::Vendor { tag } => {
+                [1.into_dart(), tag.into_into_dart().into_dart()].into_dart()
+            }
+            dart_bip138::api::Bip138ContentType::Text => [2.into_dart()].into_dart(),
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<dart_bip138::api::Bip138ContentType>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<dart_bip138::api::Bip138ContentType>>
+    for dart_bip138::api::Bip138ContentType
+{
+    fn into_into_dart(self) -> FrbWrapper<dart_bip138::api::Bip138ContentType> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<dart_bip138::api::Bip138Error> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self.0 {
+            dart_bip138::api::Bip138Error::TooLarge => 0.into_dart(),
+            dart_bip138::api::Bip138Error::InvalidDescriptor => 1.into_dart(),
+            dart_bip138::api::Bip138Error::NoEligibleKeys => 2.into_dart(),
+            dart_bip138::api::Bip138Error::DescriptorMismatch => 3.into_dart(),
+            dart_bip138::api::Bip138Error::Malformed => 4.into_dart(),
+            dart_bip138::api::Bip138Error::Unsupported => 5.into_dart(),
+            dart_bip138::api::Bip138Error::Encryption => 6.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<dart_bip138::api::Bip138Error>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<dart_bip138::api::Bip138Error>>
+    for dart_bip138::api::Bip138Error
+{
+    fn into_into_dart(self) -> FrbWrapper<dart_bip138::api::Bip138Error> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<dart_bip138::api::Bip138ExcludedKey> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self.0 {
+            dart_bip138::api::Bip138ExcludedKey::DisallowedExpression => 0.into_dart(),
+            dart_bip138::api::Bip138ExcludedKey::Nums => 1.into_dart(),
+            dart_bip138::api::Bip138ExcludedKey::ExposedRoot => 2.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<dart_bip138::api::Bip138ExcludedKey>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<dart_bip138::api::Bip138ExcludedKey>>
+    for dart_bip138::api::Bip138ExcludedKey
+{
+    fn into_into_dart(self) -> FrbWrapper<dart_bip138::api::Bip138ExcludedKey> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<dart_bip138::api::Bip138Item> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.content_type.into_into_dart().into_dart(),
+            self.0.bytes.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for FrbWrapper<dart_bip138::api::Bip138Item>
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<dart_bip138::api::Bip138Item>>
+    for dart_bip138::api::Bip138Item
+{
+    fn into_into_dart(self) -> FrbWrapper<dart_bip138::api::Bip138Item> {
         self.into()
     }
 }
@@ -12505,6 +12835,74 @@ impl SseEncode for lwk::api::types::Balance {
     }
 }
 
+impl SseEncode for dart_bip138::api::Bip138ContentType {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            dart_bip138::api::Bip138ContentType::Bip { number } => {
+                <i32>::sse_encode(0, serializer);
+                <u16>::sse_encode(number, serializer);
+            }
+            dart_bip138::api::Bip138ContentType::Vendor { tag } => {
+                <i32>::sse_encode(1, serializer);
+                <Vec<u8>>::sse_encode(tag, serializer);
+            }
+            dart_bip138::api::Bip138ContentType::Text => {
+                <i32>::sse_encode(2, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseEncode for dart_bip138::api::Bip138Error {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                dart_bip138::api::Bip138Error::TooLarge => 0,
+                dart_bip138::api::Bip138Error::InvalidDescriptor => 1,
+                dart_bip138::api::Bip138Error::NoEligibleKeys => 2,
+                dart_bip138::api::Bip138Error::DescriptorMismatch => 3,
+                dart_bip138::api::Bip138Error::Malformed => 4,
+                dart_bip138::api::Bip138Error::Unsupported => 5,
+                dart_bip138::api::Bip138Error::Encryption => 6,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for dart_bip138::api::Bip138ExcludedKey {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                dart_bip138::api::Bip138ExcludedKey::DisallowedExpression => 0,
+                dart_bip138::api::Bip138ExcludedKey::Nums => 1,
+                dart_bip138::api::Bip138ExcludedKey::ExposedRoot => 2,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for dart_bip138::api::Bip138Item {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <dart_bip138::api::Bip138ContentType>::sse_encode(self.content_type, serializer);
+        <Vec<u8>>::sse_encode(self.bytes, serializer);
+    }
+}
+
 impl SseEncode for bitbox::api::BitBoxKeychain {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -12889,6 +13287,26 @@ impl SseEncode for Vec<lwk::api::types::Balance> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <lwk::api::types::Balance>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<dart_bip138::api::Bip138ExcludedKey> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <dart_bip138::api::Bip138ExcludedKey>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<dart_bip138::api::Bip138Item> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <dart_bip138::api::Bip138Item>::sse_encode(item, serializer);
         }
     }
 }
@@ -13298,6 +13716,16 @@ impl SseEncode for Option<u8> {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <u8>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<Vec<dart_bip138::api::Bip138Item>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <Vec<dart_bip138::api::Bip138Item>>::sse_encode(value, serializer);
         }
     }
 }
@@ -14038,6 +14466,13 @@ impl SseEncode for dart_bwk::api::types::TxSimulation {
     }
 }
 
+impl SseEncode for u16 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u16::<NativeEndian>(self).unwrap();
+    }
+}
+
 impl SseEncode for u32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -14411,6 +14846,36 @@ mod io {
             lwk::api::types::Balance {
                 asset_id: self.asset_id.cst_decode(),
                 value: self.value.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<dart_bip138::api::Bip138ContentType> for wire_cst_bip_138_content_type {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> dart_bip138::api::Bip138ContentType {
+            match self.tag {
+                0 => {
+                    let ans = unsafe { self.kind.Bip };
+                    dart_bip138::api::Bip138ContentType::Bip {
+                        number: ans.number.cst_decode(),
+                    }
+                }
+                1 => {
+                    let ans = unsafe { self.kind.Vendor };
+                    dart_bip138::api::Bip138ContentType::Vendor {
+                        tag: ans.tag.cst_decode(),
+                    }
+                }
+                2 => dart_bip138::api::Bip138ContentType::Text,
+                _ => unreachable!(),
+            }
+        }
+    }
+    impl CstDecode<dart_bip138::api::Bip138Item> for wire_cst_bip_138_item {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> dart_bip138::api::Bip138Item {
+            dart_bip138::api::Bip138Item {
+                content_type: self.content_type.cst_decode(),
+                bytes: self.bytes.cst_decode(),
             }
         }
     }
@@ -14855,6 +15320,28 @@ mod io {
     impl CstDecode<Vec<lwk::api::types::Balance>> for *mut wire_cst_list_balance {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> Vec<lwk::api::types::Balance> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<dart_bip138::api::Bip138ExcludedKey>>
+        for *mut wire_cst_list_bip_138_excluded_key
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<dart_bip138::api::Bip138ExcludedKey> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<dart_bip138::api::Bip138Item>> for *mut wire_cst_list_bip_138_item {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<dart_bip138::api::Bip138Item> {
             let vec = unsafe {
                 let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
                 flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
@@ -15771,6 +16258,32 @@ mod io {
         }
     }
     impl Default for wire_cst_balance {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_bip_138_content_type {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                tag: -1,
+                kind: Bip138ContentTypeKind { nil__: () },
+            }
+        }
+    }
+    impl Default for wire_cst_bip_138_content_type {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_bip_138_item {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                content_type: Default::default(),
+                bytes: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_bip_138_item {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
@@ -17651,6 +18164,33 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bip138__api__bip138_decrypt(
+        port_: i64,
+        bytes: *mut wire_cst_list_prim_u_8_loose,
+        candidate_public_descriptors: *mut wire_cst_list_String,
+    ) {
+        wire__dart_bip138__api__bip138_decrypt_impl(port_, bytes, candidate_public_descriptors)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bip138__api__bip138_encrypt(
+        port_: i64,
+        public_descriptors: *mut wire_cst_list_String,
+        items: *mut wire_cst_list_bip_138_item,
+        padded: bool,
+    ) {
+        wire__dart_bip138__api__bip138_encrypt_impl(port_, public_descriptors, items, padded)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bip138__api__bip138_excluded_keys(
+        port_: i64,
+        public_descriptors: *mut wire_cst_list_String,
+    ) {
+        wire__dart_bip138__api__bip138_excluded_keys_impl(port_, public_descriptors)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__blockchain__blockchain_broadcast_signed_pset(
         port_: i64,
         network: i32,
@@ -19454,6 +19994,31 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_bip_138_excluded_key(
+        len: i32,
+    ) -> *mut wire_cst_list_bip_138_excluded_key {
+        let wrap = wire_cst_list_bip_138_excluded_key {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(Default::default(), len),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_bip_138_item(
+        len: i32,
+    ) -> *mut wire_cst_list_bip_138_item {
+        let wrap = wire_cst_list_bip_138_item {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_bip_138_item>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_rust_bindings_cst_new_list_btc_ln_swap(
         len: i32,
     ) -> *mut wire_cst_list_btc_ln_swap {
@@ -19780,6 +20345,35 @@ mod io {
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_bip_138_content_type {
+        tag: i32,
+        kind: Bip138ContentTypeKind,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub union Bip138ContentTypeKind {
+        Bip: wire_cst_Bip138ContentType_Bip,
+        Vendor: wire_cst_Bip138ContentType_Vendor,
+        nil__: (),
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_Bip138ContentType_Bip {
+        number: u16,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_Bip138ContentType_Vendor {
+        tag: *mut wire_cst_list_prim_u_8_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_bip_138_item {
+        content_type: wire_cst_bip_138_content_type,
+        bytes: *mut wire_cst_list_prim_u_8_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_blockchain {}
     #[repr(C)]
     #[derive(Clone, Copy)]
@@ -19947,6 +20541,18 @@ mod io {
     #[derive(Clone, Copy)]
     pub struct wire_cst_list_balance {
         ptr: *mut wire_cst_balance,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_bip_138_excluded_key {
+        ptr: *mut i32,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_bip_138_item {
+        ptr: *mut wire_cst_bip_138_item,
         len: i32,
     }
     #[repr(C)]

@@ -99,7 +99,8 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         );
       }
 
-      final WalletAddress destination;
+      // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+      WalletAddress destination;
       switch (await _getReceiveAddress.receiveAddress(
         walletId: recipientWallet.id,
       )) {
@@ -110,7 +111,8 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
             AutoswapExecutionFailure('Receive address unavailable'),
           );
       }
-      final WalletAddress fallback;
+      // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+      WalletAddress fallback;
       switch (await _getReceiveAddress.receiveAddress(
         walletId: liquidWallet.id,
       )) {

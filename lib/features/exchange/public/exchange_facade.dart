@@ -20,8 +20,6 @@ export '../ui/exchange_scope.dart'
     show ExchangeAccessBuilder, ExchangeScope, ExchangeSessionBuilder;
 export 'exchange_account.dart' show ExchangeAccount;
 
-export '../ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
-
 class ExchangeFacade {
   const ExchangeFacade({
     required this._loadWebPreferences,

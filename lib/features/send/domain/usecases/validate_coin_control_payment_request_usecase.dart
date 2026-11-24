@@ -2,7 +2,7 @@ import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 
 class ValidateCoinControlPaymentRequestUsecase {
   Result<void, SendFailure> execute({

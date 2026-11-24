@@ -10,10 +10,12 @@ import 'package:transactions/setup.dart';
 
 import '../transactions/support/transaction_ui_actions.dart';
 
+import 'package:coins/setup.dart' show CoinsFeature;
 import 'package:fees/fees.dart';
 import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
 import 'package:wallet_import/wallet_import.dart';
+import 'package:onboarding/setup.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
@@ -38,7 +40,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:receive/setup.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/secrets.dart' hide Language;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
@@ -168,10 +170,8 @@ void main() {
         NetworkFeature.mount(
           services: networkServices,
           preferences: _UnusedPreferences(),
-          bindings: (
-            readDefaultNetwork: () async => const Ok(null),
-            isTorRequired: () async => const Ok(false),
-          ),
+          inventory: inventoryFixture.inventory,
+          readBackup: (_) async => const Ok(null),
         ),
       );
       locator.registerSingleton(
@@ -203,6 +203,25 @@ void main() {
           environment: preferences,
           amountDisplay: preferences,
           display: preferences,
+        ),
+      );
+      locator.registerSingleton(
+        CoinsFeature.mount<String>(
+          resolveWalletKey: (_) async =>
+              throw StateError('Unexpected coins wallet lookup'),
+          loadWallet: (_) async =>
+              throw StateError('Unexpected coins wallet read'),
+          foreground: () async => throw StateError('Unexpected coins sync'),
+          labels: _UnusedLabels(),
+          preferences: preferences,
+          poll: (_) async {},
+          watchRevisions: (_) => const Stream.empty(),
+          watchStartedSyncs: (_) => const Stream.empty(),
+          watchFinishedSyncs: (_) => const Stream.empty(),
+          walletId: (id) => id,
+          missingWalletRedirect: '/wallet-home',
+          onSend: (_, _, _) async {},
+          onSweep: (_, _, _) async {},
         ),
       );
       final secrets = Secrets(scratchDirectory: () async => directory.path);
@@ -312,6 +331,25 @@ void main() {
           orderSwapUnderReview: (_) => const SizedBox(),
         ),
       );
+      const unusedImage = AssetImage('unused.png');
+      locator.registerSingleton(
+        OnboardingFeature.mount(
+          createWallet: () => throw StateError('Unexpected wallet creation'),
+          recoverWallet: ({
+            required mnemonicWords,
+            required language,
+            required passphrase,
+          }) => throw StateError('Unexpected wallet recovery'),
+          walletImport: locator<ImportFeature>(),
+          onWalletReady: (_) {},
+          languageOf: (_) => Language.unitedStatesEnglish,
+          changeLanguage: (_, _) {},
+          logo: const SizedBox.shrink(),
+          background: unusedImage,
+          encryptedBackupIcon: unusedImage,
+          physicalBackupIcon: unusedImage,
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -338,7 +376,9 @@ void main() {
         await locator.unregister<ActiveEnvironmentReader>();
         await locator.unregister<SwapFeature>();
         await locator.unregister<ImportFeature>();
+        await locator.unregister<OnboardingFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<CoinsFeature>();
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
         await locator.unregister<ReceiveFeature>();

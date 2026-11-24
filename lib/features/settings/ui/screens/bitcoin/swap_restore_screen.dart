@@ -3,7 +3,7 @@ import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:settings/settings.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

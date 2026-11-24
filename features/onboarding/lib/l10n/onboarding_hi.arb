@@ -1,0 +1,79 @@
+{
+  "@@locale": "hi",
+  "onboardingRecoverYourWallet": "अपना वॉलेट पुनर्प्राप्त करें",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "onboardingEncryptedVaultDescription": "अपने PIN का उपयोग करके क्लाउड के माध्यम से अपना बैकअप पुनर्प्राप्त करें।",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingSplashDescription": "संप्रभु स्व-संरक्षण Bitcoin वॉलेट और केवल Bitcoin एक्सचेंज सेवा।",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingEncryptedVault": "एन्क्रिप्टेड वॉल्ट",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingCreateNewWallet": "नया वॉलेट बनाएं",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "onboardingPhysicalBackupDescription": "12 शब्दों के माध्यम से अपना वॉलेट पुनर्प्राप्त करें।",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "settingsLanguageTitle": "भाषा",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "retry": "पुनः प्रयास करें",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "पुनर्प्राप्त करें",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "अपने पैसे के मालिक बनें",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingRecoverWallet": "वॉलेट पुनर्प्राप्त करें",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "onboardingPhysicalBackup": "भौतिक बैकअप",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "onboardingRecoverWalletButton": "वॉलेट पुनर्प्राप्त करें",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "continueButton": "जारी",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "torSettingsTitle": "Tor सेटिंग्स",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "walletSetupErrorTryAgain": "आपका वॉलेट सेटअप करते समय कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+  "onboardingAdvancedOptionsTitle": "उन्नत विकल्प",
+  "onboardingAdvancedOptionsDescription": "अपना वॉलेट बनाने या रिकवर करने से पहले उन्नत सेटिंग्स कॉन्फ़िगर करें",
+  "onboardingAdvancedOptionsCustomElectrum": "कस्टम Electrum सर्वर",
+  "onboardingAdvancedOptionsCustomMempool": "कस्टम Mempool सर्वर",
+  "onboardingAdvancedOptionsCustomRecoverbull": "कस्टम Recoverbull सर्वर",
+  "onboardingAdvancedOptionsFooter": "आप इन सेटिंग्स को बाद में App Settings में बदल सकते हैं",
+  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।"
+}

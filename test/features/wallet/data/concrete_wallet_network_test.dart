@@ -57,7 +57,6 @@ void main() {
           .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
         walletRegistrations: metadata,
-        wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize: (
           _, {
@@ -93,7 +92,6 @@ void main() {
         when(metadata.fetchAll).thenAnswer((_) async => [row]);
         final repository = WalletRepository(
           walletRegistrations: metadata,
-          wallet: (_) async => throw StateError('no native access expected'),
           walletValuesDatasource: values,
           synchronize: (
             _, {

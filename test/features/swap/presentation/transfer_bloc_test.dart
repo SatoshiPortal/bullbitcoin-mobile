@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart'
     as legacy
     show Network;
@@ -20,7 +20,6 @@ import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
@@ -584,7 +583,6 @@ void main() {
         );
         var broadcasts = 0;
         final wallet = WalletFacade(
-          const Stream.empty(),
           broadcastSpend:
               (
                 id,
@@ -605,7 +603,7 @@ void main() {
         bloc = buildBloc(
           bitcoinBroadcast: BroadcastBitcoinTransactionUsecase(
             bitcoinBlockchainRepository: blockchain,
-            walletUtxoRepository: EmptyFrozenOutpoints(),
+            coins: EmptyFrozenOutpoints(),
             settingsRepository: settings,
             wallet: wallet,
           ),

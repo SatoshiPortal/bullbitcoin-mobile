@@ -1,30 +1,17 @@
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
+import 'package:onboarding/onboarding.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
-import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' show hex;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Ok, ScriptType;
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:primitives/primitives.dart' as p;
 import 'package:secrets/secrets.dart' as s;
 import 'package:secrets/testing.dart';
+import 'package:provisioning/provisioning.dart';
 
-class _Settings extends Mock implements Preferences {}
-
-class _Wallets extends Mock implements WalletRepository {}
-
-class _Wallet extends Mock implements Wallet {}
-
-class _Create extends Mock implements CreateOnboardingWalletUsecase {}
+class _Inventory extends Mock implements s.WalletInventory {}
 
 class _Verification extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
@@ -39,91 +26,70 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late s.Secrets secrets;
   late List<s.Secret> created;
-  late OnboardingBloc bloc;
+  late RecoverOnboardingWalletUsecase usecase;
 
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
     secrets = s.Secrets(scratchDirectory: () async => '/tmp');
-    // mocktail needs a real handle as the fallback of `any()`; then forget it.
-    final fallback = await secrets.import(
-      words: [...List.filled(11, 'abandon'), 'about'],
-      language: bip39.Language.english,
-    );
-    registerFallbackValue((fallback as Ok<s.Secret, s.SecretFailure>).value);
-    storage.entries.clear();
-    registerFallbackValue(Network.bitcoinMainnet);
-    registerFallbackValue(ScriptType.bip84);
-    final settings = _Settings();
-    when(settings.readActiveEnvironment)
-        .thenAnswer((_) async => Ok(Environment.mainnet));
-    when(settings.fetch).thenAnswer(
-      (_) async => Ok(
-        const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+    final inventory = _Inventory();
+    final registrations = <s.WalletRegistration>[];
+    registerFallbackValue(p.BitcoinNetwork.mainnet);
+    registerFallbackValue(<s.WalletRegistration>[]);
+    when(() => inventory.walletsForNetwork(any())).thenAnswer((
+      invocation,
+    ) async {
+      final network = invocation.positionalArguments.single as p.Network;
+      return Ok(
+        walletSelectionForTesting(
+          registrations.where((wallet) => wallet.network == network).toList(),
         ),
-      ),
-    );
-    final wallets = _Wallets();
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
-    ).thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
-    created = [];
-    when(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: any(named: 'network'),
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).thenAnswer((invocation) async {
-      created.add(invocation.namedArguments[#secret] as s.Secret);
-      return _Wallet();
+      );
     });
-    final verification = _Verification();
-    when(verification.execute).thenAnswer((_) async {});
-    bloc = OnboardingBloc(
-      createOnboardingWalletUsecase: _Create(),
-      recoverOnboardingWalletUsecase: RecoverOnboardingWalletUsecase(
-        defaultWallets: DefaultWalletsFacade(
-          CreateDefaultWalletsUsecase(
-            secrets: secrets,
-            settingsRepository: settings,
-            walletRepository: wallets,
+    when(() => inventory.readWallet(any())).thenAnswer((invocation) async {
+      final id = invocation.positionalArguments.single as String;
+      return Ok(registrations.singleWhere((wallet) => wallet.id == id));
+    });
+    created = [];
+    final provisioning = DefaultWalletProvisioning(
+      secrets: secrets,
+      inventory: inventory,
+      environment: () async => p.NetworkEnv.mainnet,
+      resume: () async {},
+      create: (secret, network, birthday) async {
+        created.add(secret);
+        final id = network.toString();
+        registrations.add(
+          walletRegistrationForTesting(
+            id: id,
+            network: network,
+            isDefault: true,
+            signer: s.WalletSigner.local,
+            masterFingerprint: secret.id,
+            secretFingerprint: secret.id,
           ),
-        ),
-        completePhysicalBackupVerificationUsecase: verification,
-      ),
+        );
+        return id;
+      },
+    );
+    final verification = _Verification();
+    when(() => verification.execute(any())).thenAnswer((_) async {});
+    usecase = RecoverOnboardingWalletUsecase(
+      defaultWallets: provisioning,
+      completePhysicalBackupVerificationUsecase: verification,
     );
   });
 
-  tearDown(() => bloc.close());
-
-  Future<OnboardingState> recover(
+  Future<p.Result<void, OnboardingFailure>> recover(
     List<String> words,
     bip39.Language language,
-  ) async {
-    bloc.add(
-      OnboardingRecoverWalletClicked(
-        mnemonic: (label: '', passphrase: '', words: words, language: language),
-      ),
-    );
-    return bloc.stream.firstWhere(
-      (state) => state.onboardingStepStatus != OnboardingStepStatus.loading,
-    );
-  }
+  ) => usecase.execute(mnemonicWords: words, language: language);
 
   test(
     'a French phrase restores the default wallets from its BIP39 seed',
     () async {
       final state = await recover(_french.words, bip39.Language.french);
 
-      expect(state.onboardingStepStatus, OnboardingStepStatus.success);
+      expect(state, isA<Ok<void, OnboardingFailure>>());
       expect(created, hasLength(2));
       final secret = created.first;
       expect(created.last.id, secret.id);
@@ -161,7 +127,11 @@ void main() {
 
     final state = await recover(_french.words, bip39.Language.english);
 
-    expect(state.failure, isA<OnboardingWalletSetupFailure>());
+    expect(state, isA<p.Err<void, OnboardingFailure>>());
+    expect(
+      (state as p.Err<void, OnboardingFailure>).failure,
+      isA<OnboardingWalletSetupFailure>(),
+    );
     expect(created, isEmpty);
     expect(storage.entries, isEmpty);
   });
@@ -181,7 +151,11 @@ void main() {
 
       final state = await recover(words, bip39.Language.french);
 
-      expect(state.failure, isA<OnboardingWalletSetupFailure>());
+      expect(state, isA<p.Err<void, OnboardingFailure>>());
+      expect(
+        (state as p.Err<void, OnboardingFailure>).failure,
+        isA<OnboardingWalletSetupFailure>(),
+      );
       expect(created, isEmpty);
       expect(storage.entries, isEmpty);
     },

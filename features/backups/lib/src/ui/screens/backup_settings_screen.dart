@@ -18,8 +18,15 @@ import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatelessWidget {
   final VoidCallback onExportTransactions;
+  final VoidCallback? onOpenAutomaticBackup;
+  final String? Function(BuildContext)? automaticBackupStatus;
 
-  const BackupSettingsScreen({super.key, required this.onExportTransactions});
+  const BackupSettingsScreen({
+    super.key,
+    required this.onExportTransactions,
+    this.onOpenAutomaticBackup,
+    this.automaticBackupStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +59,14 @@ class BackupSettingsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
+                      _BackupSectionHeader(
+                        title: context.loc.backupSettingsMoneySection,
+                      ),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _BackupTestStatusWidget(),
                       ),
-                      const Gap(40),
+                      const Gap(16),
                       BullSettingsEntryItem(
                         icon: Icons.save_as,
                         iconColor: context.bull.primary,
@@ -78,6 +88,19 @@ class BackupSettingsScreen extends StatelessWidget {
                       ),
                       if (state.lastEncryptedBackup != null)
                         const _ViewVaultKeyButton(),
+                      const Gap(16),
+                      _BackupSectionHeader(
+                        title: context.loc.backupSettingsDataSection,
+                      ),
+                      if (onOpenAutomaticBackup case final open?)
+                        BullSettingsEntryItem(
+                          icon: Icons.cloud_upload,
+                          title: context.loc.backupSettingsAutomaticBackup,
+                          subtitle:
+                              automaticBackupStatus?.call(context) ??
+                              context.loc.coreScreensUnknown,
+                          onTap: open,
+                        ),
                       BullSettingsEntryItem(
                         icon: Icons.sell,
                         title: context.loc.backupSettingsLabelsButton,
@@ -98,6 +121,24 @@ class BackupSettingsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _BackupSectionHeader extends StatelessWidget {
+  final String title;
+
+  const _BackupSectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    header: true,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Text(
+        title,
+        style: context.bullType.label.copyWith(color: context.bull.textMuted),
+      ),
+    ),
+  );
 }
 
 class _ViewVaultKeyButton extends StatelessWidget {

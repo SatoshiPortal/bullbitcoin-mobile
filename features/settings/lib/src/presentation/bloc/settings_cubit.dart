@@ -1,0 +1,495 @@
+import 'package:settings/src/domain/usecases/load_settings_usecase.dart';
+
+import 'dart:async';
+
+import 'package:settings/src/domain/usecases/set_amount_input_mode_usecase.dart';
+
+import 'package:preferences/preferences.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:screen_privacy/screen_privacy.dart';
+import 'package:settings/src/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
+import 'package:settings/src/domain/settings_failure.dart';
+import 'package:settings/src/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
+import 'package:settings/src/domain/usecases/set_bitcoin_unit_usecase.dart';
+import 'package:settings/src/domain/usecases/set_error_reporting_usecase.dart';
+import 'package:settings/src/domain/usecases/set_currency_usecase.dart';
+import 'package:settings/src/domain/usecases/set_environment_usecase.dart';
+import 'package:settings/src/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:settings/src/domain/usecases/set_is_dev_mode_usecase.dart';
+import 'package:settings/src/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
+import 'package:settings/src/domain/usecases/set_is_superuser_usecase.dart';
+import 'package:settings/src/domain/usecases/set_language_usecase.dart';
+import 'package:settings/src/domain/usecases/set_payjoin_enabled_usecase.dart';
+import 'package:settings/src/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
+import 'package:settings/src/domain/usecases/set_payjoin_min_amount_usecase.dart';
+import 'package:settings/src/domain/usecases/set_screen_capture_protection_usecase.dart';
+import 'package:settings/src/domain/usecases/set_theme_mode_usecase.dart';
+import 'package:settings/src/domain/usecases/sync_exchange_currency_usecase.dart';
+import 'package:settings/src/domain/usecases/watch_payjoin_policy_usecase.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Ok, Result, Sats;
+
+part 'settings_cubit.freezed.dart';
+part 'settings_state.dart';
+
+class SettingsCubit extends Cubit<SettingsState> {
+  SettingsCubit({
+    required this._loadPreferencesUsecase,
+    required this._setEnvironmentUsecase,
+    required this._setBitcoinUnitUsecase,
+    required this._setAmountInputModeUsecase,
+    required this._setLanguageUsecase,
+    required this._setCurrencyUsecase,
+    required this._syncExchangeCurrencyUsecase,
+    required this._setHideAmountsUsecase,
+    required this._setIsSuperuserUsecase,
+    required this._setIsDevModeUsecase,
+    required this._setThemeModeUsecase,
+    required this._revokeSpWalletUsecase,
+    required this._checkSpWalletSetupUsecase,
+    required this._setErrorReportingUsecase,
+    required this._setScreenCaptureProtectionUsecase,
+    required this._setExchangeTestnetBasicAuthUsecase,
+    required this._setPayjoinEnabledUsecase,
+    required this._watchPayjoinPolicyUsecase,
+    required this._setPayjoinMinAmountUsecase,
+    required this._setPayjoinExpireAfterSecUsecase,
+  }) : super(const SettingsState()) {
+    _payjoinPolicySubscription = _watchPayjoinPolicyUsecase.execute().listen((
+      policy,
+    ) {
+      if (isClosed || state.payjoinPolicy == policy) return;
+      emit(state.copyWith(payjoinPolicy: policy));
+    });
+  }
+
+  final SetEnvironmentUsecase _setEnvironmentUsecase;
+  final LoadSettingsUsecase _loadPreferencesUsecase;
+  final SetBitcoinUnitUsecase _setBitcoinUnitUsecase;
+  final SetAmountInputModeUsecase _setAmountInputModeUsecase;
+  final SetLanguageUsecase _setLanguageUsecase;
+  final SetCurrencyUsecase _setCurrencyUsecase;
+  final SyncExchangeCurrencyUsecase _syncExchangeCurrencyUsecase;
+  final SetHideAmountsUsecase _setHideAmountsUsecase;
+  final SetIsSuperuserUsecase _setIsSuperuserUsecase;
+  final SetThemeModeUsecase _setThemeModeUsecase;
+  final SetIsDevModeUsecase _setIsDevModeUsecase;
+  final RevokeSpWalletForSettingsUsecase _revokeSpWalletUsecase;
+  final CheckSpWalletSetupForSettingsUsecase _checkSpWalletSetupUsecase;
+  final SetErrorReportingUsecase _setErrorReportingUsecase;
+  final SetScreenCaptureProtectionUsecase _setScreenCaptureProtectionUsecase;
+  final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
+  final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
+  final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
+  final SetPayjoinMinAmountUsecase _setPayjoinMinAmountUsecase;
+  final SetPayjoinExpireAfterSecUsecase _setPayjoinExpireAfterSecUsecase;
+  late final StreamSubscription<PayjoinPolicy> _payjoinPolicySubscription;
+
+  @override
+  Future<void> close() async {
+    await _payjoinPolicySubscription.cancel();
+    return super.close();
+  }
+
+  void clearFailure() {
+    emit(state.copyWith(failure: null));
+  }
+
+  Future<void> init() async {
+    final (result, appInfo) = await (
+      _loadPreferencesUsecase.execute(),
+      PackageInfo.fromPlatform(),
+    ).wait;
+    if (isClosed) return;
+    final SettingsEntity storedSettings;
+    switch (result) {
+      case Ok(:final value):
+        storedSettings = value;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+    }
+    final appVersion = '${appInfo.version}+${appInfo.buildNumber}';
+
+    // Mirror the persisted preference into the process-wide capture controller
+    // so protected screens honour the user's choice from the first frame.
+    ScreenCaptureProtection.instance.enabledByUser =
+        storedSettings.screenCaptureProtectionEnabled;
+
+    emit(
+      state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
+    );
+    await checkSpWalletSetup();
+  }
+
+  /// Refresh whether the SP wallet is set up (read through the facade). Called
+  /// on init, after a dev-mode toggle, and when the wallet-settings screen is
+  /// (re)entered so its SP entry reflects the current state.
+  Future<void> checkSpWalletSetup() async {
+    switch (await _checkSpWalletSetupUsecase.execute()) {
+      case Ok(:final value):
+        emit(state.copyWith(isSpWalletSetup: value));
+      case Err(:final failure):
+        // Leave the current value alone: a failed read is not "not set up".
+        log.warning(
+          'SettingsCubit.checkSpWalletSetup failed: ${failure.logMessage}',
+        );
+    }
+  }
+
+  Future<void> toggleTestnetMode(bool active) =>
+      selectNetwork(active ? Environment.testnet : Environment.mainnet);
+
+  /// Returns true when the switch changes a runtime family captured at
+  /// launch, so the app must restart before it is used again.
+  Future<bool> selectNetwork(Environment environment) async {
+    final settings = state.storedSettings;
+    final previous = settings?.environment;
+    final result = await _setEnvironmentUsecase.execute(environment);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return false;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
+          environment: environment,
+        ),
+      ),
+    );
+    return previous != null &&
+        environment.requiresRestartWhenSwitchedFrom(previous);
+  }
+
+  Future<Result<void, SettingsFailure>> setBitcoinUnit(BitcoinUnit unit) async {
+    log.config(
+      'Bitcoin unit changed to: ${unit.name} was ${state.bitcoinUnit?.name}',
+    );
+    final result = await _setBitcoinUnitUsecase.execute(unit);
+    if (result is Ok<void, SettingsFailure> && !isClosed) {
+      emit(
+        state.copyWith(
+          storedSettings: state.storedSettings?.copyWith(bitcoinUnit: unit),
+        ),
+      );
+    }
+    return result;
+  }
+
+  Future<Result<void, SettingsFailure>> setStartAmountsInFiat(bool fiat) async {
+    final result = await _setAmountInputModeUsecase.execute(fiat: fiat);
+    if (!isClosed) {
+      switch (result) {
+        case Ok():
+          emit(
+            state.copyWith(
+              storedSettings: state.storedSettings?.copyWith(
+                startAmountsInFiat: fiat,
+              ),
+            ),
+          );
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+      }
+    }
+    return result;
+  }
+
+  Future<void> toggleSatsUnit(bool active) async {
+    final result = await setBitcoinUnit(
+      active ? BitcoinUnit.sats : BitcoinUnit.btc,
+    );
+    if (result case Err(:final failure)) {
+      if (!isClosed) emit(state.copyWith(failure: failure));
+    }
+  }
+
+  Future<void> changeLanguage(Language language) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Language changed to: ${language.label} was ${settings?.language?.label}',
+    );
+    final result = await _setLanguageUsecase.execute(language);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(language: language),
+      ),
+    );
+  }
+
+  Future<void> changeCurrency(String currencyCode) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Currency changed to: $currencyCode was ${settings?.currencyCode}',
+    );
+    final result = await _setCurrencyUsecase.execute(currencyCode);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
+          currencyCode: currencyCode,
+        ),
+      ),
+    );
+
+    final syncResult = await _syncExchangeCurrencyUsecase.execute(currencyCode);
+    if (isClosed) return;
+    if (syncResult case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+    }
+  }
+
+  Future<void> toggleHideAmounts(bool hide) async {
+    final settings = state.storedSettings;
+    log.config('Hide amounts toggled: $hide was ${settings?.hideAmounts}');
+    final result = await _setHideAmountsUsecase.execute(hide);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(hideAmounts: hide),
+      ),
+    );
+  }
+
+  Future<void> toggleSuperuserMode(bool active) async {
+    final settings = state.storedSettings;
+    log.config('Superuser mode toggled: $active was ${settings?.isSuperuser}');
+    final result = await _setIsSuperuserUsecase.execute(active);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(isSuperuser: active),
+      ),
+    );
+  }
+
+  Future<void> changeThemeMode(AppThemeMode themeMode) async {
+    final settings = state.storedSettings;
+    log.info(
+      'Theme mode changed to: ${themeMode.name} + currentThemeMode: ${settings?.themeMode.name}',
+    );
+    final result = await _setThemeModeUsecase.execute(themeMode);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(themeMode: themeMode),
+      ),
+    );
+  }
+
+  Future<void> toggleDevMode(bool isEnabled) async {
+    final settings = state.storedSettings;
+
+    if (state.revokeSpFailed) {
+      emit(state.copyWith(revokeSpFailed: false));
+    }
+
+    // If disabling dev mode, revoke the SP wallet first
+    if (!isEnabled && settings?.isDevModeEnabled == true) {
+      // The revoke use case disposes the live session, deletes the wallet, and
+      // emits SilentSetupChanged; the WalletBloc observes that and refreshes itself,
+      // so settings never drives the wallet for SP.
+      if (await _revokeSpWalletUsecase.execute() case Err()) {
+        // The SP owner reports the failure; this only records the refused change.
+        log.fine('Developer mode unchanged reason=revoke');
+        emit(state.copyWith(revokeSpFailed: true));
+        return;
+      }
+    }
+
+    final result = await _setIsDevModeUsecase.execute(isEnabled);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      // The revoke above may already have dropped the SP wallet, so the setup
+      // flag is re-read even though the dev-mode write itself failed.
+      await checkSpWalletSetup();
+      return;
+    }
+
+    final currentSettings = state.storedSettings;
+    emit(
+      state.copyWith(
+        storedSettings: currentSettings?.copyWith(
+          isDevModeEnabled: isEnabled,
+          environment: isEnabled
+              ? currentSettings.environment
+              : Environment.mainnet,
+        ),
+        revokeSpFailed: false,
+      ),
+    );
+    // A revoke (on toggle-off) drops the SP wallet, so re-read the setup flag.
+    await checkSpWalletSetup();
+  }
+
+  Future<void> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async {
+    final trimmedUsername = username?.trim();
+    final trimmedPassword = password?.trim();
+    final user = (trimmedUsername?.isEmpty ?? true) ? null : trimmedUsername;
+    final pass = (trimmedPassword?.isEmpty ?? true) ? null : trimmedPassword;
+    final result = await _setExchangeTestnetBasicAuthUsecase.execute(
+      username: user,
+      password: pass,
+    );
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
+          exchangeTestnetBasicAuthUsername: user,
+          exchangeTestnetBasicAuthPassword: pass,
+        ),
+      ),
+    );
+  }
+
+  Future<void> toggleErrorReporting(bool enabled) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Error reporting toggled: $enabled was ${settings?.isErrorReportingEnabled}',
+    );
+    final result = await _setErrorReportingUsecase.execute(enabled);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
+          isErrorReportingEnabled: enabled,
+        ),
+      ),
+    );
+  }
+
+  Future<void> toggleScreenCaptureProtection(bool enabled) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Screen capture protection toggled: $enabled was '
+      '${settings?.screenCaptureProtectionEnabled}',
+    );
+    final result = await _setScreenCaptureProtectionUsecase.execute(enabled);
+    if (result case Err(:final failure)) {
+      // `init` mirrors the persisted value into this flag, so it must never
+      // get ahead of storage: a write that failed leaves the old value in
+      // place, and the switch snaps back to match.
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    // Apply immediately: this flips FLAG_SECURE on any protected screen that
+    // is currently mounted, and clears it if the user just opted out.
+    ScreenCaptureProtection.instance.enabledByUser = enabled;
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
+          screenCaptureProtectionEnabled: enabled,
+        ),
+      ),
+    );
+  }
+
+  Future<Result<bool, SettingsFailure>> togglePayjoinEnabled(
+    PayjoinAction action,
+    bool enabled, {
+    required Future<bool> Function() requestConsent,
+  }) async {
+    log.config(
+      'Payjoin ${action.name} toggled: $enabled was '
+      '${state.isPayjoinEnabled(action)}',
+    );
+    final result = await _setPayjoinEnabledUsecase.execute(
+      action,
+      enabled,
+      requestConsent: requestConsent,
+    );
+    return result.fold((updated) {
+      final policy = state.payjoinPolicy;
+      if (policy != null && policy.allows(action) != updated) {
+        emit(
+          state.copyWith(
+            payjoinPolicy: policy.withAction(action, enabled: updated),
+          ),
+        );
+      }
+      return Ok(updated);
+    }, (failure) => Err(failure));
+  }
+
+  /// Throws [ArgumentError] via the usecase if [amountSat] is out of policy.
+  Future<void> setPayjoinMinAmount(int amountSat) async {
+    log.config(
+      'Payjoin min amount set to: $amountSat was '
+      '${state.payjoinMinAmountSat}',
+    );
+    final result = await _setPayjoinMinAmountUsecase.execute(amountSat);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        payjoinPolicy: state.payjoinPolicy?.copyWith(
+          minimumAmount: Sats.fromInt(amountSat),
+        ),
+      ),
+    );
+  }
+
+  /// See [setPayjoinMinAmount]'s doc comment — same bounds-enforcement shape.
+  Future<void> setPayjoinExpireAfterSec(int expireAfterSec) async {
+    log.config(
+      'Payjoin expiry set to: $expireAfterSec was '
+      '${state.payjoinExpireAfterSec}',
+    );
+    final result = await _setPayjoinExpireAfterSecUsecase.execute(
+      expireAfterSec,
+    );
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        payjoinPolicy: state.payjoinPolicy?.copyWith(
+          sessionLifetime: Duration(seconds: expireAfterSec),
+        ),
+      ),
+    );
+  }
+}

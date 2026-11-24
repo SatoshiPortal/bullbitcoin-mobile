@@ -12,8 +12,6 @@ void main() {
       showWebsiteOnly: (_) => false,
       unavailableRedirectPath: '/wallet',
       brandAssetPath: 'unused',
-      copy: (_) => fail('unexpected landing'),
-      onSignIn: (_) {},
       onExit: (_) {},
       withdrawal: (
         exchange: () => fail('withdrawal must not load while signed out'),

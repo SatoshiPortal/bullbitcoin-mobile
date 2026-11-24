@@ -3,8 +3,7 @@ import 'package:preferences/testing.dart';
 import 'dart:io';
 
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
+import 'package:settings/testing.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
     show recoverBullDefaultServerUrl;
 import 'package:drift/native.dart';

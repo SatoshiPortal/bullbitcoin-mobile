@@ -46,3 +46,23 @@ class GetSpSecretUsecase {
     }
   }
 }
+
+/// Resolve the local Bitcoin default from the currently authorized view.
+ReadSilentFingerprint readSilentDefaultFromInventory(
+  WalletInventory inventory,
+) => (network) async {
+  if (network != BitcoinNetwork.mainnet && network != BitcoinNetwork.testnet) {
+    return const Ok(null);
+  }
+  return switch (await inventory.walletsForNetwork(network)) {
+    Ok(value: final selection) when selection.isComplete =>
+      switch (selection.defaults.firstOrNull) {
+        null => const Ok(null),
+        WalletRegistration(masterFingerprint: final Fingerprint fingerprint) =>
+          Ok(fingerprint),
+        _ => const Err(UnreadableWalletFailure()),
+      },
+    Ok() => const Err(UnreadableWalletFailure()),
+    Err(:final failure) => Err(failure),
+  };
+};

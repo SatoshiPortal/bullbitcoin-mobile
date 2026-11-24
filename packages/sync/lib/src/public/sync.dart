@@ -287,6 +287,29 @@ final class Wallet {
     );
   }
 
+  /// Reads exact ownership, retrying briefly while the writer is busy.
+  @useResult
+  Future<Result<OwnershipIndex, SyncFailure>> readExactOwnership() =>
+      _retryBusyRead(ownership);
+
+  /// Reads exact unspent coins, retrying briefly while the writer is busy.
+  @useResult
+  Future<Result<CoinList, SyncFailure>> readExactUnspent() =>
+      _retryBusyRead(unspent);
+
+  static Future<Result<T, SyncFailure>> _retryBusyRead<T>(
+    Future<Result<T, SyncFailure>> Function() query,
+  ) async {
+    for (var attempt = 1; ; attempt++) {
+      final result = await query();
+      if (result case Err(failure: SyncBusyFailure()) when attempt < 5) {
+        await Future<void>.delayed(Duration(milliseconds: 250 * attempt));
+        continue;
+      }
+      return result;
+    }
+  }
+
   /// Refuses a handle a delete or a re-import has ended.
   Future<Result<void, SyncFailure>> _current() async =>
       switch (await _projections.generation(key)) {

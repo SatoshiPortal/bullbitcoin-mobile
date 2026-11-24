@@ -1,6 +1,7 @@
+import 'package:bull_payjoin/setup.dart';
+
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/wallet/data/payjoin_codec_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart'

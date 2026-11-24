@@ -124,7 +124,9 @@ Wallet
 |       `-- outpoint(outpoint) -> Observed<WalletValue<Ownership>>
 |-- load() -> WalletRevision
 |-- ownership() -> OwnershipIndex
-`-- unspent() -> CoinList
+|-- unspent() -> CoinList
+|-- readExactOwnership() -> OwnershipIndex
+`-- readExactUnspent() -> CoinList
 ```
 
 ```text

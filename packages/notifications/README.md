@@ -11,7 +11,7 @@ Local notifications for the app: a durable store of observed events and of the a
 - `outbox`: pending or claimed aggregates only, deleted once delivered.
 - `platform_ids`: a counter allocated with each aggregate in the same transaction. An ID is never reused, so a notification still on screen is never replaced; exhaustion is refused.
 
-An `Observation` carries one topic and event identities, never text. The package knows nothing of wallets: `lib/features/wallet/data/wallet_payment_observer.dart` maps payments to topics and events. The two transactions that matter are in `SqliteNotificationStoreRepository`:
+An `Observation` carries one topic and event identities, never text. The package knows nothing of wallets: `packages/background_tasks/lib/src/wallet_payment_observer.dart` maps payments to topics and events. The two transactions that matter are in `SqliteNotificationStoreRepository`:
 
 - `recordForeground` stores what a foreground sync saw and initializes its topic. Those events are never announced.
 - `recordBackground` ignores a topic the foreground never observed. Otherwise the events it stored for the first time become one pending aggregate, built by the caller, in the same transaction.

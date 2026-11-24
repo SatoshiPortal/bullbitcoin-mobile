@@ -88,15 +88,10 @@
   "fiatCurrencySettingsLabel": "Фіат валюта",
   "languageSettingsScreenTitle": "Українська",
   "settingsExchangeSettingsTitle": "Налаштування Exchange",
-  "settingsSecurityPinTitle": "Безпека Pin",
   "settingsCurrencyTitle": "Ціна",
   "settingsAppSettingsTitle": "Налаштування додатків",
   "settingsTermsOfServiceTitle": "Умови надання послуг",
-  "settingsAppVersionLabel": "Версія додатка: ",
-  "settingsServiceStatusTitle": "Статус на сервери",
   "settingsLanguageTitle": "Українська",
-  "settingsDevModeWarningTitle": "Режим Dev",
-  "settingsDevModeWarningMessage": "Цей режим є ризикованим. За допомогою цього ви підтверджуєте, що ви можете втратити гроші",
   "walletDetailsDeletingMessage": "Видалення гаманця ...",
   "walletDetailsWalletFingerprintLabel": "Гаманець відбитків пальців",
   "walletDetailsPubkeyLabel": "Пабке",
@@ -104,19 +99,9 @@
   "walletDetailsAddressTypeLabel": "Тип адреси",
   "walletDetailsNetworkLabel": "Мережа",
   "walletDetailsDerivationPathLabel": "Деприація шлях",
-  "walletSettingsImportWalletTitle": "Імпорт Гаманець",
-  "bitcoinSettingsBroadcastTransactionTitle": "Трансмісія",
-  "bitcoinSettingsTestnetModeTitle": "Режим тестування",
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Визначення ентропії",
   "logSettingsLogsTitle": "Логін",
   "logSettingsErrorLoadingMessage": "Журнали завантаження помилок: ",
-  "appSettingsDevModeTitle": "Режим Dev",
   "exchangeTestnetBasicAuthTitle": "Облікові дані testnet біржі",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth для веб-сторінок testnet біржі (вхід та KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Ім'я користувача",
-  "exchangeTestnetBasicAuthPasswordLabel": "Пароль",
-  "exchangeTestnetBasicAuthClearButton": "Очистити",
-  "exchangeTestnetBasicAuthSaveButton": "Зберегти",
   "currencySettingsDefaultFiatCurrencyLabel": "Валюта за замовчуванням",
   "exchangeSettingsAccountInformationTitle": "Інформація про обліковий запис",
   "exchangeSettingsReferralsTitle": "Реферали",
@@ -160,11 +145,7 @@
   "walletDeletionErrorWalletNotFound": "Гаманець ви намагаєтеся видалити не існує.",
   "addressCardIndexLabel": "Індекс: ",
   "addressCardBalanceLabel": "Баланс: ",
-  "onboardingRecoverYourWallet": "Відновити гаманець",
   "onboardingEncryptedVault": "Зашифрована сорочка",
-  "onboardingEncryptedVaultDescription": "Відновити резервну копію через хмару за допомогою PIN.",
-  "onboardingPhysicalBackup": "Фізична резервна копія",
-  "onboardingPhysicalBackupDescription": "Відновити гаманець через 12 слів.",
   "onboardingRecover": "Відновити",
   "onboardingBullBitcoin": "Bitcoin у USD",
   "sendTitle": "Відправити",
@@ -458,8 +439,6 @@
   "fundExchangeMethodBankTransferWireSubtitle": "Кращий і найнадійніший варіант для збільшення кількості (наприклад, або наступного дня)",
   "fundExchangeMethodOnlineBillPayment": "Онлайн платіж",
   "fundExchangeRegularSepaInfo": "Тільки для операцій над €20,000. Для менших операцій використовуйте варіант СПА.",
-  "settingsDevModeUnderstandButton": "Я розумію",
-  "settingsSuperuserModeDisabledMessage": "Відключений режим суперкористувача.",
   "settingsSuperuserModeUnlockedMessage": "Режим суперкористувацького розблокування!",
   "walletDetailsUnnamedWalletFallback": "Без назви Wallet",
   "addressViewAddressesTitle": "Контакти",
@@ -472,11 +451,6 @@
   "addressCardUsedLabel": "Використовується",
   "addressCardUnusedLabel": "Непристойна",
   "addressCardCopiedMessage": "Адреса копіюється на буфер",
-  "onboardingOwnYourMoney": "Власні гроші",
-  "onboardingSplashDescription": "Bitcoin у USD.",
-  "onboardingRecoverWallet": "Відновлення гаманця",
-  "onboardingRecoverWalletButton": "Відновлення гаманця",
-  "onboardingCreateNewWallet": "Створити новий гаманець",
   "sendRecipientAddressOrInvoice": "Адреса або рахунок одержувача",
   "sendPasteAddressOrInvoice": "Введіть адресу платежу або рахунок-фактуру",
   "sendContinue": "Продовжити",
@@ -859,7 +833,6 @@
   "rbfFastest": "Швидке",
   "dcaLightningAddressInvalidError": "Будь ласка, введіть дійсну адресу Lightning",
   "hwKrux": "Кошик",
-  "exchangeLandingRecommendedExchange": "Bitcoin у USD",
   "receiveConfirming": "Підтвердження... ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -1187,7 +1160,6 @@
   "payCoinjoinInProgress": "CoinJoin в прогрес ...",
   "testBackupAllWordsSelected": "Ви вибрали всі слова",
   "backupSettingsError": "Помилка",
-  "exchangeFeatureCustomerSupport": "• Чат з підтримкою клієнтів",
   "fundExchangeMethodCanadaPost": "Особистий готівковий або дебет в Канаді",
   "payInvoiceDecoded": "Войце декодовано успішно",
   "coreScreensAmountLabel": "Сума",
@@ -1311,7 +1283,6 @@
   "pinStatusCheckingDescription": "Перевірка стану PIN",
   "coreScreensConfirmButton": "Підтвердження",
   "autoswapTriggerAtBalanceInfoText": "Автообмін ініціюватиметься, коли ваш баланс перевищить цей максимальний баланс.",
-  "exchangeLandingDisclaimerNotAvailable": "Послуги обміну криптовалют не доступні в додатку Bull Bitcoin.",
   "sendCustomFeeRate": "Спеціальна ціна",
   "swapErrorAmountExceedsMaximum": "Сума перевищена максимальна сума затиску",
   "receiveInsufficientInboundLiquidity": "Недостатня вантажопідйомність",
@@ -1330,7 +1301,6 @@
   "addressViewBalance": "Посилання",
   "hwPassport": "Паспорт Фундації",
   "fundExchangeMethodRegularSepaSubtitle": "Тільки для збільшення операцій над €30,000",
-  "exchangeLandingDisclaimerLegal": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "backupWalletEncryptedVaultTitle": "Зашифрована сорочка",
   "mempoolNetworkLiquidMainnet": "Головна",
   "exchangeDcaFrequencyWeek": "тиждень",
@@ -1467,7 +1437,6 @@
   "logoutButton": "Зареєструватися",
   "payReplaceByFee": "Заміна-By-Fee (RBF)",
   "pinButtonCreate": "Створення PIN",
-  "exchangeFeatureSelfCustody": "• Купити Біткойн прямо на самоктоди",
   "payAmountTooHigh": "Сума перевищує максимальну кількість",
   "sellBankTransfer": "Банківський переказ",
   "replaceByFeeFastestTitle": "Швидке",
@@ -1545,7 +1514,6 @@
   "sendSwapInProgressBitcoin": "Ведуться ковпа. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "buySelfie": "Селфі з ID",
   "backupSettingsKeyWarningBold": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
-  "exchangeLandingConnectAccount": "Підключіть свій обліковий запис Біткойн",
   "swapTransferRefundInProgressMessage": "Під час обміну сталася помилка. Повернення коштів виконується.",
   "fundExchangeMethodCanadaPostSubtitle": "Найкращі для тих, хто віддає перевагу оплаті",
   "importColdcardMultisigPrompt": "Для багатосигових гаманців сканування дескриптора гаманця QR коду",
@@ -1680,7 +1648,6 @@
   "transactionHistoryTitle": "Історія транзакцій",
   "exportTransactionsDescription": "Експортуйте всі транзакції вашого гаманця (Bitcoin, Liquid, Lightning і свопи) як файл CSV. За бажанням відфільтруйте за діапазоном дат.",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",
-  "exchangeFeatureSellBitcoin": "• Продати Bitcoin, оплачується з Bitcoin",
   "hwSeedSigner": "НасінняСинер",
   "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
   "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
@@ -1709,7 +1676,6 @@
   },
   "leaveYourPhone": "залишити свій телефон і ",
   "sendFastFee": "Швидкий",
-  "exchangeBrandName": "БУЛ БІТКОІН",
   "dcaConfirmTitle": "Підтвердження Купити",
   "backupSettingsPhysicalBackup": "Фізичний фон",
   "importColdcardDescription": "Імпорт сканера гаманця QR-коду від вашого Coldcard Q",
@@ -1877,7 +1843,6 @@
   "swapMaxButton": "МАКС",
   "dcaConfirmFrequencyWeekly": "Щодня",
   "quickAndEasyTag": "Швидкий і простий",
-  "settingsThemeTitle": "Головна",
   "coldcardStep10": "Натисніть кнопку, щоб записати операцію на холодильнику.",
   "sendErrorAmountBelowSwapLimits": "Сума нижче лімітів закрутки",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Розгляньте поповнення Миттєвих Платежів для менших платежів.",
@@ -1930,7 +1895,6 @@
       }
     }
   },
-  "exchangeFeatureBankTransfers": "• Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "usePasswordInsteadButton": "{pinOrPassword} замість >>",
   "@usePasswordInsteadButton": {
     "placeholders": {
@@ -1971,7 +1935,6 @@
     }
   },
   "googleAppleCloudRecommendation": "Українська Хмара яблука: ",
-  "exchangeGoToWebsiteButton": "Перейти на сайт Bull Біткойн",
   "backupWalletSuccessTestButton": "Тест резервного копіювання",
   "replaceByFeeErrorFeeRateTooLow": "Ви повинні збільшити плату за принаймні 1 sat/vbyte порівняно з оригінальною угодою",
   "payPriority": "Головна",
@@ -2107,7 +2070,6 @@
   "importColdcardImporting": "Імпортування холодної картки гаманець ...",
   "exchangeDcaHideSettings": "Приховати налаштування",
   "coreScreensPageNotFound": "Не знайдено",
-  "exchangeFeatureDcaOrders": "• DCA, Обмеження замовлень та автокупе",
   "swapInfoDescription": "Обмінюйте Bitcoin між своїми гаманцями без зайвих зусиль. Тримайте кошти на гаманці миттєвих платежів лише для щоденних витрат.",
   "autoswapSaveButton": "Зберегти",
   "sendConfirmSend": "Підтвердження",
@@ -2289,7 +2251,6 @@
   },
   "swapProgressRefunded": "Кошти за обміном повернено",
   "payPaymentHistory": "Історія оплати",
-  "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій",
   "autoswapSelectWallet": "Виберіть гаманець Bitcoin",
   "autoswapRecipientWalletRequired": "Ім'я *",
   "importWatchOnlyCancel": "Зареєструватися",
@@ -2517,46 +2478,6 @@
   "sendSelfTransfer": "Переказ собі",
   "autoswapInfoConsentMessage": "Autoswap наразі увімкнено, але він не спрацює, поки ви не дасте згоду. Бажаєте залишити його увімкненим?",
   "mempoolServerStatusUnknown": "Невідомо",
-  "settingsErrorReportingTitle": "Звіт про помилки",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "Програма звітування про помилки",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescriptionP1": "Допоможіть нам поліпшити Bull Bitcoin, беручи участь у нашій програмі звітування про помилки. Це безпосередньо допомагає нам зробити Bull Bitcoin кращим для всіх.",
-  "@errorReportingProgramDescriptionP1": {
-    "description": "Intro paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP2": "Коли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми.",
-  "@errorReportingProgramDescriptionP2": {
-    "description": "Bold paragraph: anonymized error reports fact"
-  },
-  "errorReportingProgramDescriptionP3": "Ці дані допомагають нам зрозуміти, що відбувається у наших користувачів по всьому світу, та відповідно розставити пріоритети для виправлення.",
-  "@errorReportingProgramDescriptionP3": {
-    "description": "Impact paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP4": "Ми не ділимось цією інформацією з третіми сторонами.",
-  "@errorReportingProgramDescriptionP4": {
-    "description": "Privacy paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP5": "Ми використовуємо клієнт з відкритим вихідним кодом Sentry з власним самостійно розміщеним серверним сервером.",
-  "@errorReportingProgramDescriptionP5": {
-    "description": "Bold paragraph: open source verification fact"
-  },
-  "errorReportingAcceptButton": "Прийняти",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "Скасувати",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "Перезапустіть програму, щоб застосувати цю зміну",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "appInitErrorTitle": "Не вдалося запустити додаток",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -2673,7 +2594,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Щось пішло не так під час налаштування вашого гаманця. Будь ласка, спробуйте ще раз.",
   "coreScreensResolvingInputs": "Розв'язання входів транзакції...",
   "coreScreensFeeRateLabel": "Ставка комісії",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -2821,12 +2741,6 @@
   "backupCardSubtitle": "Створіть резервну копію гаманця зараз.",
   "autoswapTargetBalanceLabel": "Цільовий баланс миттєвого гаманця",
   "autoswapMaximumBalanceLabel": "Максимальний баланс миттєвого гаманця",
-  "onboardingAdvancedOptionsTitle": "Розширені параметри",
-  "onboardingAdvancedOptionsDescription": "Налаштуйте розширені параметри перед створенням або відновленням гаманця",
-  "onboardingAdvancedOptionsCustomElectrum": "Власний сервер Electrum",
-  "onboardingAdvancedOptionsCustomMempool": "Власний сервер Mempool",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Власний сервер Recoverbull",
-  "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
   "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android",
   "bitcoinPriceExchangeRateUnavailable": "Обмінний курс недоступний. Будь ласка, спробуйте пізніше.",
@@ -2846,123 +2760,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "coinsTitle": "Монети",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, one{{count} монета} few{{count} монети} many{{count} монет} other{{count} монети}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "Заморожено",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "Доступно для витрат",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "Нічого не заморожено",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "Сортування та фільтр",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "Показано {visible} з {total}",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, one{{count} невитрачений вихід} few{{count} невитрачені виходи} many{{count} невитрачених виходів} other{{count} невитрачених виходів}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "Синхронізувати",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "Очистити все",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "Сума: від більшої до меншої",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "Сума: від меншої до більшої",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "Дата: найновіші",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "Дата: найстаріші",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "Ланцюжок ключів",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "Усі",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "Отримання",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "Решта",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "Статус заморожування",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "Усі",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "Заморожені",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "Незаморожені",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "Мітки",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "Скинути",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "Застосувати",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, one{Вибрано {count}} few{Вибрано {count}} many{Вибрано {count}} other{Вибрано {count}}}",
   "@coinsSelectedCount": {
@@ -2970,128 +2770,6 @@
     "placeholders": {
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "coinsSelectAll": "Вибрати все",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "Заморозити",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "Розморозити",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "Скасувати",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, one{Заморозити {count} монету?} few{Заморозити {count} монети?} many{Заморозити {count} монет?} other{Заморозити {count} монети?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "Заморожені монети залишаються у вашому гаманці, але виключаються з витрачання, доки ви їх не розморозите.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "Заморожування цих монет залишить вас без доступного для витрат балансу.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, one{{count} монету заморожено · виключено з витрачання} few{{count} монети заморожено · виключено з витрачання} many{{count} монет заморожено · виключено з витрачання} other{{count} монети заморожено · виключено з витрачання}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, one{{count} монету розморожено} few{{count} монети розморожено} many{{count} монет розморожено} other{{count} монети розморожено}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, one{{count} підтвердження} few{{count} підтвердження} many{{count} підтверджень} other{{count} підтвердження}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "В очікуванні",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "Поки що немає монет",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "Монети зʼявляться тут, щойно ви отримаєте біткоїн.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "Немає відповідних монет",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "Очистити фільтри",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "Повторити",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "Проведіть по монеті, щоб заморозити · утримуйте, щоб вибрати",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "Не вдалося завантажити ваші монети. Потягніть, щоб оновити та спробувати знову.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "Не вдалося заморозити вибрані монети. Будь ласка, спробуйте ще раз.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "Не вдалося розморозити вибрані монети. Будь ласка, спробуйте ще раз.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "Щось пішло не так. Будь ласка, спробуйте ще раз.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "walletCoinsEntryUtxoCount": "{count, plural, one{{count} UTXO} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} заморожено",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
       }
     }
   },
@@ -3163,45 +2841,11 @@
   "dcaReceiveAddressError": "Не вдалося підготувати адресу для отримання у вашому гаманці. Спробуйте ще раз.",
   "dcaOrderCreationError": "Не вдалося створити регулярну покупку. Спробуйте пізніше.",
   "settingsPayjoinDisclaimerTitle": "Попередження про Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "Попередження про Payjoin",
-  "settingsPayjoinAdvancedTitle": "Розширені налаштування Payjoin",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Не вдалося знайти цей гаманець.",
   "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз.",
   "sendSwapExpiredTitle": "Термін заявки минув",
   "sendSwapExpiredMessage": "Термін дії цієї заявки минув до відправлення коштів. З вашого гаманця нічого не відправлено.",
-  "settingsScreenPrivacyTitle": "Конфіденційність екрана",
-  "settingsScreenPrivacyDisabledMessage": "Знімки екрана тепер дозволені на конфіденційних екранах",
-  "settingsSearchHint": "Пошук у налаштуваннях",
-  "settingsSearchNoResults": "Налаштувань не знайдено.",
-  "settingsSearchMempoolKeywords": "оглядач блоків|оцінка комісії|комісії транзакцій|mempool API",
-  "settingsSearchExchangeKeywords": "обліковий запис|акаунт біржі|торгівля|купівля та продаж",
-  "settingsSearchStartBackupKeywords": "створити резервну копію|зберегти резервну копію|зробити копію гаманця",
-  "settingsSearchRecoverbullKeywords": "зашифрована резервна копія|хмарна резервна копія|зашифроване сховище|відновлення зі сховища|Recoverbull",
-  "settingsSearchLabelsKeywords": "мітки гаманця|мітки транзакцій|BIP329|імпорт міток|експорт міток",
-  "settingsSearchTransactionHistoryKeywords": "експорт транзакцій|вивантажити транзакції|CSV|історія гаманця",
-  "settingsSearchAppSettingsKeywords": "параметри застосунку|налаштування застосунку|загальні налаштування",
-  "settingsSearchTermsOfServiceKeywords": "умови використання|юридична інформація|угода користувача|TOS",
-  "settingsSearchServicesStatusKeywords": "стан сервісів|стан системи|онлайн|збій",
-  "settingsSearchImportWalletKeywords": "додати гаманець|відновити гаманець|імпорт мнемонічної фрази|гаманець лише для перегляду|апаратний гаманець",
-  "settingsSearchBroadcastTransactionKeywords": "надіслати підписану транзакцію|опублікувати транзакцію|сира транзакція|hex транзакції|PSBT",
-  "settingsSearchPayjoinKeywords": "конфіденційність Payjoin|спільна транзакція|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "автоматичний обмін|автоматичний swap|автоматичне переказування|баланс миттєвого гаманця|Autoswap",
-  "settingsSearchElectrumKeywords": "Bitcoin-вузол|вузол Electrum|власний сервер|особистий вузол|Electrum",
-  "settingsSearchTestnetModeKeywords": "тестова мережа|Bitcoin testnet|Liquid testnet|режим тестування|Testnet",
-  "settingsSearchSeedViewerKeywords": "seed-фраза|фраза відновлення|мнемонічна фраза|слова резервної копії|показати seed",
-  "settingsSearchBip85Keywords": "детермінована ентропія|дочірні seed-фрази|похідна ентропія|BIP85",
-  "settingsSearchLanguageKeywords": "локаль|переклад|мова інтерфейсу|бажана мова",
-  "settingsSearchThemeKeywords": "вигляд|темний режим|світлий режим|системна тема",
-  "settingsSearchCurrencyKeywords": "фіатна валюта|місцева валюта|валюта за замовчуванням|валюта конвертації",
-  "settingsSearchSecurityPinKeywords": "PIN-код|код доступу|блокування застосунку|автентифікація|змінити PIN",
-  "settingsSearchLogsKeywords": "журнали налагодження|діагностичні журнали|журнали застосунку|експорт журналів",
-  "settingsSearchDevModeKeywords": "режим розробника|налаштування розробки|режим налагодження|розширене тестування",
-  "settingsSearchTestnetCredentialsKeywords": "облікові дані testnet|вхід у testnet|ім’я користувача testnet|пароль testnet|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "звіти про збої|звіти про помилки|діагностика|телеметрія|журнали помилок",
-  "settingsSearchScreenPrivacyKeywords": "знімки екрана|запис екрана|захист від захоплення екрана|конфіденційність",
-  "settingsSearchStartTyping": "Почніть вводити, щоб побачити результати.",
-  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз.",
   "sendErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
   "sendErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
@@ -3215,8 +2859,6 @@
   "walletWarningElectrumAction": "Натисніть, щоб налаштувати параметри сервера",
   "walletLoadFailedRetryHint": "Потягніть вниз, щоб оновити та спробувати ще раз",
   "settingsErrorSavingSetting": "Не вдалося зберегти це налаштування. Будь ласка, спробуйте ще раз.",
-  "settingsErrorConsentNotGiven": "Це налаштування потребує вашого підтвердження перед зміною.",
-  "settingsErrorLoadingLogs": "Не вдалося підготувати діагностичні журнали. Будь ласка, спробуйте ще раз.",
   "exchangeErrorSigningOut": "Не вдалося повністю вийти з облікового запису. Будь ласка, спробуйте ще раз.",
   "exchangeErrorSavingPreferences": "Не вдалося зберегти ваші налаштування. Будь ласка, спробуйте ще раз.",
   "exchangeErrorLoadingAnnouncements": "Не вдалося завантажити оголошення.",
@@ -3338,7 +2980,6 @@
   "fundExchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
   "exchangeErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
   "walletBalancesMayBeStale": "Не вдалося оновити баланси, вони можуть бути неактуальними.",
-  "settingsSearchTorKeywords": "Tor-проксі|Orbot|onion-маршрутизація|вбудований Tor|мережа приватності",
   "limitOrdersInsufficientBalance": "Недостатній баланс",
   "limitOrdersInsufficientBalanceMessage": "Ви не маєте достатнього балансу для створення цього замовлення.",
   "limitOrdersFundAccount": "Оберіть Ваш рахунок",
@@ -3395,20 +3036,15 @@
   "swapUnderReviewTitle": "Обмін на перевірці",
   "swapUnderReviewDescription": "Цей обмін потребує ручної перевірки. Зверніться до підтримки по допомогу. Якщо у вас немає облікового запису підтримки, достатньо його створити; KYC не потрібен.",
   "swapUnderReviewSupportMessage": "Обмін на перевірці\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Автообмін",
   "broadcastSignedTxErrorAlreadyInChain": "Ця транзакція вже в блокчейні. Транслювати більше нічого.",
   "broadcastSignedTxErrorRejected": "Мережа відхилила цю транзакцію. Можливо, її підписано не повністю, вона недійсна або конфліктує з іншим платежем.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не вдалося підтвердити, що транзакцію було трансльовано. Перевірте її в оглядачі блоків, перш ніж повторити спробу.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляцію в цій мережі не ввімкнено в поточних налаштуваннях.",
   "settingsDarkModeTitle": "Темний режим",
-  "settingsSourceCodeTitle": "Вихідний код",
   "torSettingsExternalProxyUnavailableDescription": "Bull не вдалося підключитися до налаштованого проксі SOCKS5.",
   "backgroundTasksTitle": "Фонові завдання",
   "blockedInSystemSettings": "Заблоковано в налаштуваннях системи",
-  "notificationsBlockedMessage": "Сповіщення заблоковано в налаштуваннях системи.",
   "notificationsTitle": "Сповіщення",
   "openSystemSettings": "Відкрити налаштування системи",
-  "permissionsTitle": "Дозволи",
-  "settingsSearchPermissionsKeywords": "сповіщення|фонові завдання|батарея|оповіщення",
   "sendErrorInvoiceExpiryTooShort": "Термін дії цього рахунка спливає надто скоро. Попросіть отримувача надати новий рахунок."
 }

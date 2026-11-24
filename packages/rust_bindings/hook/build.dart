@@ -11,6 +11,7 @@ const _manifests = [
   'rust/crates/bitbox/Cargo.toml',
   'rust/crates/boltz/Cargo.toml',
   'rust/crates/bwk/Cargo.toml',
+  'rust/crates/dart_bip138/Cargo.toml',
   'rust/crates/lwk/Cargo.toml',
 ];
 

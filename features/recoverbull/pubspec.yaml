@@ -20,8 +20,9 @@ dependencies:
   flutter:
     sdk: flutter
   primitives:
+  preferences:
   file_system:
-  google_drive:
+  backup_storage:
   secrets:
   legacy_storage:
   bull_logger:

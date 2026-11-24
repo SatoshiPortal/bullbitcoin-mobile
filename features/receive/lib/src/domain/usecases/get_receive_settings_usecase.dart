@@ -19,7 +19,8 @@ class GetReceiveSettingsUsecase {
     Network? selectedNetwork,
   }) async {
     try {
-      final SettingsEntity settings;
+      // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+      SettingsEntity settings;
       switch (await _getSettingsUsecase.fetch()) {
         case Ok(:final value):
           settings = value;

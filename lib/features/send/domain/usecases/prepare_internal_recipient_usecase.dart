@@ -1,18 +1,19 @@
 import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 import '../internal_recipient_policy.dart';
-import '../send_failure.dart';
+
+import 'package:send/send.dart';
 
 typedef PreparedInternalRecipient = ({Wallet wallet, String address});
 
 class PrepareInternalRecipientUsecase {
-  final WalletFacade _wallet;
+  final Receive _receive;
 
-  const PrepareInternalRecipientUsecase(this._wallet);
+  const PrepareInternalRecipientUsecase(this._receive);
 
   @useResult
   Future<Result<PreparedInternalRecipient, SendFailure>> execute({
@@ -33,7 +34,7 @@ class PrepareInternalRecipientUsecase {
         SendAddressNetworkMismatchFailure('internal recipient unavailable'),
       );
     }
-    final result = await _wallet.nextReceiveAddress(
+    final result = await _receive.nextUnusedAddress(
       walletId,
       excludedAddresses: excludedAddresses,
     );

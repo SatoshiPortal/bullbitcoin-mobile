@@ -55,12 +55,12 @@ format-check:
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
 # The only typed-in font sizes outside BullTypography.standard: the Bebas Neue brand wordmarks, sized by their splash layout and marked "Brand wordmark" at the call site.
-FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|features/wizard/lib/src/ui/widgets/welcome_step|features/bull_exchange/lib/src/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
+FONT_SIZE_ALLOWLIST := ^(features/onboarding/lib/src/ui/screens/onboarding_splash|features/wizard/lib/src/ui/widgets/welcome_step|features/bull_exchange/lib/src/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
 BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/bull_ui/lib/src/inputs/bull_mnemonic_keyboard.dart packages/bull_ui/lib/src/inputs/bull_pin_pad.dart
 
 bull-ui-check: typography-check
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
-	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" features/coins/lib/src/ui; then echo "features/coins/lib/src/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
 	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
 	@echo "🧱 text sizes (typography roles, never a typed-in font size)"
@@ -132,7 +132,7 @@ onion-codegen:
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
 BUILD_RUNNER_MEMBERS := features/backups features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view features/receive
 BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps features/address_view
-BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import
+BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import features/startup features/coins features/settings features/onboarding
 
 .PHONY: drift-owners-build
 drift-owners-build:
@@ -170,7 +170,9 @@ translations:
 	@(cd features/scanning && fvm flutter gen-l10n)
 	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
 	@(cd features/backups && fvm flutter gen-l10n)
+	@(cd features/backup_metadata && fvm flutter gen-l10n)
 	@(cd features/access && fvm flutter gen-l10n)
+	@(cd features/startup && fvm flutter gen-l10n)
 	@(cd features/bip85 && fvm flutter gen-l10n)
 	@(cd features/all_seed_view && fvm flutter gen-l10n)
 	@(cd features/silent && fvm flutter gen-l10n)
@@ -180,11 +182,14 @@ translations:
 	@(cd features/send && fvm flutter gen-l10n)
 	@(cd features/address_view && fvm flutter gen-l10n)
 	@(cd features/receive && fvm flutter gen-l10n)
+	@(cd features/coins && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)
 	@(cd features/network && fvm flutter gen-l10n)
 	@(cd features/settings && fvm flutter gen-l10n)
 	@(cd features/wizard && fvm flutter gen-l10n)
+	@(cd features/onboarding && fvm flutter gen-l10n)
+	@(cd packages/notifications && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) ark-translations

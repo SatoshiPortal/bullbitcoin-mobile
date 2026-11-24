@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/default_wallets.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -23,7 +23,7 @@ Future<void> main({bool isInitialized = false}) async {
 
   final secrets = locator<Secrets>();
   final registry = locator<Bip85Derivations>();
-  final createDefaultWalletsUsecase = locator<CreateDefaultWalletsUsecase>();
+  final createDefaultWalletsUsecase = locator<DefaultWalletProvisioning>();
 
   final mnemonic = Mnemonic.fromWords(
     words: [

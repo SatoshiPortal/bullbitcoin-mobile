@@ -1,0 +1,31 @@
+{
+  "@@locale": "it",
+  "onboardingRecoverYourWallet": "Recupera il portafoglio",
+  "onboardingEncryptedVaultDescription": "Recuperare il backup tramite cloud utilizzando il PIN.",
+  "onboardingSplashDescription": "Portafoglio Bitcoin in autocustodia ed Exchange Bitcoin-only.",
+  "onboardingEncryptedVault": "Cassaforte crittografata",
+  "onboardingCreateNewWallet": "Crea nuovo portafoglio",
+  "onboardingPhysicalBackupDescription": "Recupera il portafoglio tramite 12 parole.",
+  "settingsLanguageTitle": "Lingua",
+  "onboardingRecover": "Recupera",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "I tuoi soldi",
+  "onboardingRecoverWallet": "Recupera portafoglio",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "onboardingPhysicalBackup": "Backup fisico",
+  "onboardingRecoverWalletButton": "Recupera portafoglio",
+  "continueButton": "Continua",
+  "torSettingsTitle": "Impostazioni Tor",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "walletSetupErrorTryAgain": "Si è verificato un errore durante la configurazione del portafoglio. Riprova.",
+  "onboardingAdvancedOptionsTitle": "Opzioni avanzate",
+  "onboardingAdvancedOptionsDescription": "Configura le impostazioni avanzate prima di creare o recuperare il tuo portafoglio",
+  "onboardingAdvancedOptionsCustomElectrum": "Server Electrum personalizzato",
+  "onboardingAdvancedOptionsCustomMempool": "Server Mempool personalizzato",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Server Recoverbull personalizzato",
+  "onboardingAdvancedOptionsFooter": "Puoi modificare queste impostazioni in seguito nelle impostazioni dell'app",
+  "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova."
+}

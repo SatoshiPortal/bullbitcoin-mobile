@@ -74,7 +74,9 @@ class _ConsolidationBannerViewState extends State<_ConsolidationBannerView> {
             constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
             child: BullAlertCard(
               title: switch (widget.walletName) {
-                final name? => context.loc.consolidationRequiredTitleNamed(name),
+                final name? => context.loc.consolidationRequiredTitleNamed(
+                  name,
+                ),
                 null => context.loc.consolidationRequiredTitle,
               },
               onTap: () => context.pushNamed(

@@ -6,9 +6,6 @@ import 'package:bb_mobile/features/send/domain/usecases/load_send_display_prefer
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
     show WalletSpendBlockedException;
 
-import '../../domain/send_amount_conversion.dart';
-import '../../domain/usecases/get_send_amount_quotes_usecase.dart';
-
 import 'package:bb_mobile/features/send/domain/fixed_amount_wallet_choice_policy.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
@@ -43,9 +40,8 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount
 import 'package:primitives/primitives.dart' show ConversionConstants;
 import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:transactions/transactions.dart';
@@ -55,7 +51,6 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
@@ -83,7 +78,6 @@ import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
 import 'package:bb_mobile/features/send/domain/boltz_swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
@@ -120,7 +114,7 @@ class SendCubit extends Cubit<SendState>
     implements FeeModalActionsPort, FeeModalStatePort {
   SendCubit({
     this._prepareInternalRecipientUsecase,
-    this._getSendAmountQuotesUsecase,
+    this._readAmountQuotes,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._wallet,
     this.mode = const SendModeBitcoin(),
@@ -131,9 +125,9 @@ class SendCubit extends Cubit<SendState>
     required this._bestWalletUsecase,
     required this._detectBitcoinStringUsecase,
     required this._loadPreferencesUsecase,
-    required this._getSendExchangeRateUsecase,
+    required this._readExchangeRate,
     required this._loadNetworkFeesUsecase,
-    required this._getWalletUtxosUsecase,
+    required this._coins,
     required this._validateBitcoinSelectionUsecase,
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
@@ -237,10 +231,19 @@ class SendCubit extends Cubit<SendState>
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final LoadSendDisplayPreferencesUsecase _loadPreferencesUsecase;
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
-  final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
-  final GetSendAmountQuotesUsecase? _getSendAmountQuotesUsecase;
+  final Future<Result<double, SendFailure>> Function({String? currencyCode})
+  _readExchangeRate;
+  final Future<Result<Map<SupportedCurrency, BitcoinPrice>, SendFailure>>
+  Function()?
+  _readAmountQuotes;
   final LoadSendNetworkFeesUsecase _loadNetworkFeesUsecase;
-  final GetWalletUtxosUsecase _getWalletUtxosUsecase;
+  final Coins _coins;
+
+  Future<List<WalletUtxo>> _loadWalletCoins(String walletId) async =>
+      switch (await _coins.load(walletId: walletId)) {
+        Ok(:final value) => value,
+        Err() => throw const FormatException('Unable to load wallet coins'),
+      };
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
   final ValidateBitcoinSelectionUsecase _validateBitcoinSelectionUsecase;
@@ -2037,7 +2040,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> _loadCurrencyData() async {
     await refreshAmountQuotes();
     if (isClosed) return;
-    if (_getSendAmountQuotesUsecase != null) {
+    if (_readAmountQuotes != null) {
       _amountQuoteTimer ??= Timer.periodic(
         const Duration(minutes: 1),
         (_) => unawaited(refreshAmountQuotes()),
@@ -2053,7 +2056,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> refreshAmountQuotes() async {
-    final quotes = _getSendAmountQuotesUsecase;
+    final quotes = _readAmountQuotes;
     if (quotes == null ||
         _loadingAmountQuotes ||
         state.amountConfirmedClicked ||
@@ -2062,7 +2065,7 @@ class SendCubit extends Cubit<SendState>
     }
     _loadingAmountQuotes = true;
     try {
-      final result = await quotes.execute();
+      final result = await quotes();
       if (isClosed) return;
       switch (result) {
         case Ok(:final value):
@@ -2825,7 +2828,7 @@ class SendCubit extends Cubit<SendState>
             transactionGeneration != _transactionGeneration);
 
     try {
-      final utxos = await _getWalletUtxosUsecase.execute(walletId: wallet.id);
+      final utxos = await _loadWalletCoins(wallet.id);
       if (isStale()) return;
       // A wallet sync can change the available coins. Any cached preview
       // PSBT was built against the prior UTXO set, so drop it — otherwise
@@ -4414,9 +4417,7 @@ class SendCubit extends Cubit<SendState>
     }
     try {
       if (wallet.isLiquid) {
-        final availableUtxos = await _getWalletUtxosUsecase.execute(
-          walletId: wallet.id,
-        );
+        final availableUtxos = await _loadWalletCoins(wallet.id);
         if (isStale()) return false;
         final result = await _resolveSelectedInputsUsecase.execute(
           outpoints: requiredOutpoints,
@@ -4782,9 +4783,7 @@ class SendCubit extends Cubit<SendState>
   /// without a price, with no fiat value, so that failure is not shown; any
   /// other is.
   Future<double?> _exchangeRate({String? currencyCode}) async {
-    switch (await _getSendExchangeRateUsecase.execute(
-      currencyCode: currencyCode,
-    )) {
+    switch (await _readExchangeRate(currencyCode: currencyCode)) {
       case Ok(:final value):
         return value;
       case Err(failure: SendPriceUnavailableFailure()):

@@ -9,7 +9,7 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure;
 import 'package:sync/sync.dart' show BitcoinTx;
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
@@ -21,13 +21,13 @@ class BroadcastBitcoinTransactionUsecase {
   final BitcoinBlockchainRepository _bitcoinBlockchain;
   final Preferences _settingsRepository;
   final WalletFacade? _wallet;
-  final WalletUtxoRepository _walletUtxoRepository;
+  final Coins _coins;
 
   BroadcastBitcoinTransactionUsecase({
     required BitcoinBlockchainRepository bitcoinBlockchainRepository,
     required this._settingsRepository,
     this._wallet,
-    required this._walletUtxoRepository,
+    required this._coins,
   }) : _bitcoinBlockchain = bitcoinBlockchainRepository;
 
   Future<Network> captureNetwork() async => Network.fromEnvironment(
@@ -134,7 +134,13 @@ class BroadcastBitcoinTransactionUsecase {
     final tx = isPsbt
         ? await BitcoinTx.fromPsbt(transaction)
         : await BitcoinTx.fromBytes(hex.decode(transaction));
-    final frozen = (await _walletUtxoRepository.getAllFrozenOutpoints())
+    final frozenOutpoints = switch (await _coins.frozenOutpoints()) {
+      Ok(:final value) => value,
+      Err() => throw CategorizedBroadcastException(
+        BroadcastFailureCategory.unexpected,
+      ),
+    };
+    final frozen = frozenOutpoints
         .map((outpoint) => '${outpoint.txId}:${outpoint.vout}')
         .toSet();
     if (tx.inputs.any(

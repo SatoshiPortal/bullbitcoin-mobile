@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
+import 'package:transactions/setup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -39,7 +39,7 @@ void main() {
           openAttempts++;
           throw StateError('storage unavailable');
         });
-        PayjoinSetup.setup(locator, startRecovery: startRecovery);
+        mountPayjoin(locator, startRecovery: startRecovery);
         expect(openAttempts, 0);
         final payjoin = locator<Payjoin>();
         expect(locator<PayjoinSender>(), same(payjoin.sender));
@@ -61,7 +61,7 @@ void main() {
     locator.registerLazySingleton<Secrets>(
       () => throw StateError('storage unavailable'),
     );
-    PayjoinSetup.setup(locator, startRecovery: false);
+    mountPayjoin(locator, startRecovery: false);
 
     final result = await locator<InputReservationPort>().reservations();
 

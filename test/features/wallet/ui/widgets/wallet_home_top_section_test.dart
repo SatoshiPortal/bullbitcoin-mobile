@@ -1,9 +1,10 @@
+import 'package:bb_mobile/localizations.dart' show appLocalizationsDelegates;
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
@@ -68,7 +69,7 @@ Future<void> _pumpTopSection(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: [
-        ...AppLocalizations.localizationsDelegates,
+        ...appLocalizationsDelegates,
         BitcoinPriceLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,
         bullUiLocalizationsDelegate,

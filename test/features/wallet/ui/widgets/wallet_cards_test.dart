@@ -1,12 +1,11 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_card.dart';
+import 'package:overview/overview.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show SettingsFacade;
+import 'package:settings/testing.dart';
+import 'package:settings/settings.dart' show Settings;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
@@ -53,7 +52,7 @@ Widget _buildCards({
         BlocProvider<SettingsCubit>.value(value: settingsCubit),
         BitcoinPriceFixture.prices(),
       ],
-      child: SettingsFacade.amountScope(
+      child: Settings.amountScope(
         navigatorKey: navigatorKey,
         child: const Scaffold(body: WalletCards()),
       ),
@@ -78,7 +77,7 @@ Widget _buildCardsRouter({
             BlocProvider<SettingsCubit>.value(value: settingsCubit),
             BitcoinPriceFixture.prices(),
           ],
-          child: SettingsFacade.amountScope(
+          child: Settings.amountScope(
             navigatorKey: navigatorKey,
             child: const Scaffold(body: WalletCards()),
           ),

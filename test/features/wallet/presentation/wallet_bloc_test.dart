@@ -1,6 +1,9 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
-import 'package:sync/sync.dart' show SyncBusyFailure;
+import 'package:sync/sync.dart' show SyncBusyFailure, SyncConnectionFailure;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -11,9 +14,9 @@ import 'package:sync/sync.dart' show SyncReason;
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
@@ -110,7 +113,7 @@ WalletBloc createBloc(
   );
 }
 
-class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
+class _MockSyncWalletUsecase extends Mock implements WalletRepository {}
 
 class _ViewWalletBloc extends Mock implements WalletBloc {}
 
@@ -438,22 +441,26 @@ void main() {
             .thenAnswer((_) async => const Ok(<Wallet>[]));
         final single = _MockSyncWalletUsecase();
         when(
-          () => single.execute(
+          () => single.sync(
             _syncedWallet,
             discover: any(named: 'discover'),
             reason: any(named: 'reason'),
           ),
         ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
-        final coordinator = SyncCoordinator(
-          getWalletsUsecase: getWallets,
-          syncWalletUsecase: single,
+        final coordinator = SyncCoordinator<Wallet, WalletFailure>(
+          walletKey: (wallet) =>
+              WalletKey(id: wallet.id, network: wallet.network.shared),
+          classifyFailure: (failure) =>
+              (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+          getWallets: getWallets.execute,
+          syncWallet: single.sync,
         );
         final bloc = WalletBloc(
           readWalletUsecase: _stubbedReadWallet(),
           getWalletsUsecase: getWallets,
           checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
           watchWalletSyncEventsUsecase: _stubbedWatchers(),
-          syncWalletsUsecase: SyncWalletsUsecase(coordinator),
+          syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
           getUnconfirmedIncomingBalanceUsecase:
               _MockGetUnconfirmedIncomingBalanceUsecase(),
           deleteWalletUsecase: _MockDeleteWalletUsecase(),
@@ -541,7 +548,7 @@ void main() {
       var nativePasses = 0;
       final syncGate = Completer<void>();
       when(
-        () => single.execute(
+        () => single.sync(
           _syncedWallet,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
@@ -549,18 +556,22 @@ void main() {
       ).thenAnswer((_) async {
         nativePasses++;
         await syncGate.future;
-        throw SyncWalletException('connection');
+        throw const WalletSnapshotException(SyncConnectionFailure());
       });
-      final coordinator = SyncCoordinator(
-        getWalletsUsecase: getWallets,
-        syncWalletUsecase: single,
+      final coordinator = SyncCoordinator<Wallet, WalletFailure>(
+        walletKey: (wallet) =>
+            WalletKey(id: wallet.id, network: wallet.network.shared),
+        classifyFailure: (failure) =>
+            (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+        getWallets: getWallets.execute,
+        syncWallet: single.sync,
       );
       final bloc = WalletBloc(
         readWalletUsecase: _stubbedReadWallet(),
         getWalletsUsecase: getWallets,
         checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
         watchWalletSyncEventsUsecase: _stubbedWatchers(),
-        syncWalletsUsecase: SyncWalletsUsecase(coordinator),
+        syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
         getUnconfirmedIncomingBalanceUsecase:
             _MockGetUnconfirmedIncomingBalanceUsecase(),
         deleteWalletUsecase: _MockDeleteWalletUsecase(),

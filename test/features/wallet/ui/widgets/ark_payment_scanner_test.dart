@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/ui/widgets/ark_payment_scanner.dart';
+import 'package:bull_ark/testing.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';

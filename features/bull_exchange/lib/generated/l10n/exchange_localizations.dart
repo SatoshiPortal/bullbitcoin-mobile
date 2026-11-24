@@ -5390,6 +5390,306 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Change'**
   String get coinsKeychainChange;
+
+  /// Title of the Limit Order introduction step
+  ///
+  /// In en, this message translates to:
+  /// **'Open a limit order'**
+  String get limitOrdersIntroTitle;
+
+  /// Description of how Limit Orders work
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.'**
+  String get limitOrdersIntroDescription;
+
+  /// Limit Order introduction bullet about the target price
+  ///
+  /// In en, this message translates to:
+  /// **'Your order remains active until the target index price is reached.'**
+  String get limitOrdersIntroBulletPrice;
+
+  /// Limit Order introduction bullet about account balance
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase uses the selected fiat balance when the order executes.'**
+  String get limitOrdersIntroBulletBalance;
+
+  /// Limit Order introduction bullet about payout
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin is sent to the default wallet you select.'**
+  String get limitOrdersIntroBulletExecution;
+
+  /// Title of the Limit Order target-price step
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your target price'**
+  String get limitOrdersTargetTitle;
+
+  /// Label for the fiat balance used by a Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get limitOrdersPaymentMethod;
+
+  /// Label for the current Bitcoin index price
+  ///
+  /// In en, this message translates to:
+  /// **'Current index price'**
+  String get limitOrdersCurrentPrice;
+
+  /// Label for the Limit Order discount percentage
+  ///
+  /// In en, this message translates to:
+  /// **'Discount from current price'**
+  String get limitOrdersDiscount;
+
+  /// Title of the Limit Order fiat-amount step
+  ///
+  /// In en, this message translates to:
+  /// **'Set the amount'**
+  String get limitOrdersAmountTitle;
+
+  /// Available fiat balance
+  ///
+  /// In en, this message translates to:
+  /// **'Available: {amount}'**
+  String limitOrdersAvailableBalance(String amount);
+
+  /// Estimated bitcoin amount for a Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated bitcoin: {amount}'**
+  String limitOrdersEstimatedBitcoin(String amount);
+
+  /// Title of the Limit Order wallet-selection step
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a payout wallet'**
+  String get limitOrdersWalletTitle;
+
+  /// Explains the Limit Order payout wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin will be sent to this default wallet when the order executes.'**
+  String get limitOrdersWalletDescription;
+
+  /// Opens default-wallet settings from Limit Orders
+  ///
+  /// In en, this message translates to:
+  /// **'Manage default wallets'**
+  String get limitOrdersManageDefaultWallets;
+
+  /// Bitcoin on-chain Limit Order payout option
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin address'**
+  String get limitOrdersWalletBitcoin;
+
+  /// Lightning Limit Order payout option
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning address'**
+  String get limitOrdersWalletLightning;
+
+  /// Liquid Limit Order payout option
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid address'**
+  String get limitOrdersWalletLiquid;
+
+  /// Title of the Limit Order confirmation step
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm limit order'**
+  String get limitOrdersConfirmationTitle;
+
+  /// Fiat balance used to fund the order
+  ///
+  /// In en, this message translates to:
+  /// **'{currency} balance'**
+  String limitOrdersBalancePayment(String currency);
+
+  /// Terms and spread notice before creating a Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.'**
+  String get limitOrdersTermsNotice;
+
+  /// Creates the Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get limitOrdersConfirm;
+
+  /// Title shown after a Limit Order is created
+  ///
+  /// In en, this message translates to:
+  /// **'Limit order active'**
+  String get limitOrdersCreatedTitle;
+
+  /// Success summary after creating a Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'Your order will buy {amount} when the index price reaches {price}.'**
+  String limitOrdersCreatedMessage(String amount, String price);
+
+  /// Returns from Limit Order success to the Exchange dashboard
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Exchange'**
+  String get limitOrdersBackToExchange;
+
+  /// Shown for an invalid Limit Order target price
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a target price below the current index price.'**
+  String get limitOrderInvalidTargetError;
+
+  /// Shown for an invalid Limit Order fiat amount
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than zero and no more than your available balance.'**
+  String get limitOrderInvalidAmountError;
+
+  /// Section title for choosing an in-app wallet as the limit-order payout destination
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallets'**
+  String get limitOrdersYourWalletsTitle;
+
+  /// Label for the manual lightning-address field in the limit-order destination step
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning address'**
+  String get limitOrdersLightningAddressLabel;
+
+  /// Error shown when the entered lightning destination is not a valid lightning address
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid lightning address, not an invoice'**
+  String get limitOrdersLightningAddressError;
+
+  /// Buy-limit error when a limit order amount is below the on-chain minimum; {amount} is the minimum in BTC
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is below the on-chain minimum of {amount}'**
+  String limitOrdersAmountBelowOnchainMin(String amount);
+
+  /// Buy-limit error when a limit order amount is below the Liquid minimum; {amount} is the minimum in BTC
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is below the Liquid minimum of {amount}'**
+  String limitOrdersAmountBelowLiquidMin(String amount);
+
+  /// Buy-limit error when a limit order amount is above the Lightning maximum; {amount} is the maximum in BTC
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is above the Lightning maximum of {amount}'**
+  String limitOrdersAmountAboveLightningMax(String amount);
+
+  /// Opens the created Limit Order details from the success screen
+  ///
+  /// In en, this message translates to:
+  /// **'View order details'**
+  String get limitOrdersViewOrder;
+
+  /// Title of the info card shown when the user has no funded balance to create a limit order
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get limitOrdersInsufficientBalance;
+
+  /// Message of the info card shown when the user has no funded balance to create a limit order
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have enough balance to create this order.'**
+  String get limitOrdersInsufficientBalanceMessage;
+
+  /// Button that opens the fund exchange flow when the user has no balance to create a limit order
+  ///
+  /// In en, this message translates to:
+  /// **'Fund your account'**
+  String get limitOrdersFundAccount;
+
+  /// The Bull Bitcoin brand name displayed on exchange screens
+  ///
+  /// In en, this message translates to:
+  /// **'BULL BITCOIN'**
+  String get exchangeBrandName;
+
+  /// Subtitle text on the exchange landing screen encouraging users to connect
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your Bull Bitcoin exchange account'**
+  String get exchangeLandingConnectAccount;
+
+  /// Subtitle on landing screen v2 describing Bull Bitcoin as recommended
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Bitcoin Exchange'**
+  String get exchangeLandingRecommendedExchange;
+
+  /// Feature bullet point describing self-custody Bitcoin purchases
+  ///
+  /// In en, this message translates to:
+  /// **'• Buy Bitcoin straight to self-custody'**
+  String get exchangeFeatureSelfCustody;
+
+  /// Feature bullet point describing DCA and automated buying features
+  ///
+  /// In en, this message translates to:
+  /// **'• DCA, Limit orders and Auto-buy'**
+  String get exchangeFeatureDcaOrders;
+
+  /// Feature bullet point describing selling Bitcoin functionality
+  ///
+  /// In en, this message translates to:
+  /// **'• Sell Bitcoin, get paid with Bitcoin'**
+  String get exchangeFeatureSellBitcoin;
+
+  /// Feature bullet point describing bank transfer and bill payment features
+  ///
+  /// In en, this message translates to:
+  /// **'• Send bank transfers and pay bills'**
+  String get exchangeFeatureBankTransfers;
+
+  /// Feature bullet point describing customer support chat feature
+  ///
+  /// In en, this message translates to:
+  /// **'• Chat with customer support'**
+  String get exchangeFeatureCustomerSupport;
+
+  /// Feature bullet point describing unified transaction history feature
+  ///
+  /// In en, this message translates to:
+  /// **'• Unified transaction history'**
+  String get exchangeFeatureUnifiedHistory;
+
+  /// Legal disclaimer about exchange service availability and KYC requirements
+  ///
+  /// In en, this message translates to:
+  /// **'Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.'**
+  String get exchangeLandingDisclaimerLegal;
+
+  /// Disclaimer informing users that exchange services are not available in the mobile app
+  ///
+  /// In en, this message translates to:
+  /// **'Cryptocurrency exchange services are not available in the Bull Bitcoin mobile application.'**
+  String get exchangeLandingDisclaimerNotAvailable;
+
+  /// Button label for logging in or signing up to the exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Login Or Sign up'**
+  String get exchangeLoginButton;
+
+  /// Button label for navigating to the Bull Bitcoin exchange website
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Bull Bitcoin exchange website'**
+  String get exchangeGoToWebsiteButton;
 }
 
 class _ExchangeLocalizationsDelegate
