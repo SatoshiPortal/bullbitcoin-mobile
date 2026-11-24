@@ -660,6 +660,21 @@ void main() {
       );
     });
 
+    test(
+      'a payin handed to payjoin is journaled with the original txid',
+      () async {
+        final answered = await run(
+          ExchangeWriteGate(),
+          () async => const PayinHandedToPayjoin('pj-1', 'orig-1'),
+        );
+        expect(journaled, [('o-1', BtcNetwork.bitcoin, 'orig-1')]);
+        expect(
+          transitionPayin(_policy, _broadcasting, answered).state,
+          isA<PayinPayjoinNegotiating<String>>(),
+        );
+      },
+    );
+
     test('a send that throws counts as unknown and is journaled', () async {
       final answered = await run(
         ExchangeWriteGate(),

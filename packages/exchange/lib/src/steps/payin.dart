@@ -894,7 +894,8 @@ PayinNext<P> payinStart<P>(
 /// financial write. Right before sending it checks the order's deadline
 /// (late timers can't send a payin the exchange won't credit). A send whose
 /// outcome is unknown, or that throws (an unclassifiable error counts as
-/// unknown), is journaled by [journalUnknown] before the answer is returned.
+/// unknown), and a payin handed to a payjoin session are journaled by
+/// [journalUnknown] before the answer is returned.
 Future<PayinSendAnswered<P>> runPayinSend<P>({
   required ExchangeWriteGate gate,
   required ExchangeSession session,
@@ -919,12 +920,26 @@ Future<PayinSendAnswered<P>> runPayinSend<P>({
     } on Object {
       outcome = PayinBroadcastOutcomeUnknown(effect.built.txid);
     }
-    if (outcome case PayinBroadcastOutcomeUnknown(:final txid)) {
-      await journalUnknown(
-        effect.order.orderId,
-        effect.target.network,
-        txid ?? effect.built.txid,
-      );
+    switch (outcome) {
+      case PayinBroadcastOutcomeUnknown(:final txid):
+        await journalUnknown(
+          effect.order.orderId,
+          effect.target.network,
+          txid ?? effect.built.txid,
+        );
+      // From the handoff on the payjoin session broadcasts (the proposal or
+      // the original), not the app: like an unknown broadcast, the payin is
+      // journaled and reconcile settles it by re-reading the order.
+      case PayinHandedToPayjoin(:final originalTxid):
+        await journalUnknown(
+          effect.order.orderId,
+          effect.target.network,
+          originalTxid,
+        );
+      case PayinBroadcastAccepted() ||
+          PayinBroadcastRefused() ||
+          PayinBroadcastNotSent():
+        break;
     }
     return outcome;
   }),
