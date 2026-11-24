@@ -4,7 +4,8 @@ import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/upload_exchange_document_usecase.dart';
-import 'package:bull_exchange/src/settings/presentation/secure_file_upload_cubit.dart';
+import 'package:bull_exchange/src/settings/presentation/secure_file_upload_bloc.dart';
+import 'package:bull_exchange/src/settings/presentation/secure_file_upload_machine.dart';
 import 'package:bull_exchange/src/settings/ui/screens/secure_file_upload_screen.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
@@ -28,21 +29,24 @@ class _MockGetUploadStatus extends Mock
 class _MockUploadDocument extends Mock
     implements UploadExchangeDocumentUsecase {}
 
-Future<SecureFileUploadCubit> _pump(
+const _document = ExchangeDocumentToUpload(bytes: [1], fileName: 'doc-u-42-ID');
+
+Future<SecureUploadBloc> _pump(
   WidgetTester tester, {
   required Result<SecureFileUpload, ExchangeSettingsFailure> uploadStatus,
-  Result<UploadExchangeDocumentOutcome, ExchangeSettingsFailure>? upload,
+  Result<void, ExchangeSettingsFailure>? upload,
 }) async {
   final getUploadStatus = _MockGetUploadStatus();
   when(getUploadStatus.execute).thenAnswer((_) async => uploadStatus);
 
   final uploadUsecase = _MockUploadDocument();
   if (upload != null) {
-    when(() => uploadUsecase.execute(userId: any(named: 'userId')))
-        .thenAnswer((_) async => upload);
+    when(() => uploadUsecase.pick(userId: any(named: 'userId')))
+        .thenAnswer((_) async => const Ok(_document));
+    when(() => uploadUsecase.upload(_document)).thenAnswer((_) async => upload);
   }
 
-  final cubit = SecureFileUploadCubit(
+  final cubit = SecureUploadBloc(
     getUploadStatusUsecase: getUploadStatus,
     uploadDocumentUsecase: uploadUsecase,
   );
@@ -60,7 +64,7 @@ Future<SecureFileUploadCubit> _pump(
   addTearDown(router.dispose);
 
   await tester.pumpWidget(
-    BlocProvider<SecureFileUploadCubit>.value(
+    BlocProvider<SecureUploadBloc>.value(
       value: cubit,
       child: MaterialApp.router(
         theme: ThemeData(extensions: testBullExtensions),
@@ -115,23 +119,64 @@ void main() {
   testWidgets('an upload rejection shows our copy, not the API sentence', (
     tester,
   ) async {
-    final cubit = await _pump(
+    final bloc = await _pump(
       tester,
-      uploadStatus: const Err(
-        ExchangeSettingsUploadStatusUnavailableFailure('no upload status yet'),
-      ),
+      uploadStatus: const Ok(_secureFileUpload),
       upload: const Err(
         // The exchange's own sentence, as the use-case would carry it.
         ExchangeSettingsDocumentUploadFailure(_rawReason),
       ),
     );
 
-    await cubit.pickAndUploadFile();
+    bloc.add(const UploadPressed());
     await tester.pumpAndSettle();
 
+    expect(bloc.state, isA<UploadReady>());
     final painted = _painted(tester);
     expect(painted, isNot(contains('ERR_KYC_403')));
     expect(painted, isNot(contains('bc1qexamplerecipient')));
+  });
+
+  testWidgets('a failed status load offers Retry, never an upload (SET-1)', (
+    tester,
+  ) async {
+    final bloc = await _pump(
+      tester,
+      uploadStatus: const Err(
+        ExchangeSettingsUploadStatusUnavailableFailure('no upload status yet'),
+      ),
+    );
+
+    expect(bloc.state, isA<UploadStatusFailed>());
+    bloc.add(const UploadPressed());
+    await tester.pumpAndSettle();
+    expect(bloc.state, isA<UploadStatusFailed>());
+  });
+
+  testWidgets('every upload is confirmed, not only the first (SET-4)', (
+    tester,
+  ) async {
+    const rejected = SecureFileUpload(
+      userId: 'u-42',
+      status: KycDocumentStatus.rejected,
+    );
+    final bloc = await _pump(
+      tester,
+      uploadStatus: const Ok(rejected),
+      upload: const Ok(null),
+    );
+    var confirmations = 0;
+    final subscription = bloc.stream.listen((state) {
+      if (state is UploadDone) confirmations++;
+    });
+    addTearDown(subscription.cancel);
+
+    for (var i = 0; i < 2; i++) {
+      bloc.add(const UploadPressed());
+      await tester.pumpAndSettle();
+      expect(bloc.state, isA<UploadReady>());
+    }
+    expect(confirmations, 2);
   });
 
   testWidgets('no failure means no error banner', (tester) async {
