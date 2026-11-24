@@ -73,13 +73,13 @@ class SyncSpWalletUsecase {
         wallet = w;
     }
 
-    // Awaited, not the cached value: the first tick can run before the keystore
-    // read finished, and an automatic scan must honour a disabled setting.
-    if (!await _getSpAutoScanUsecase.read()) return const Ok(null);
-
     // The decision is judged against this revision; the repository rechecks it
     // at launch, so a stop, clear, or session recycle in between wins.
     final admission = (revision: _repository.scanRevision);
+    // The wallet and the preference reads may yield to the lifecycle.
+    if (!await _getSpAutoScanUsecase.read() || !_isForeground()) {
+      return const Ok(null);
+    }
     if (wallet.hasPendingScan) {
       // A pending scan the user stopped is theirs to restart, not ours.
       if (wallet.isPendingScanPaused) return const Ok(null);
