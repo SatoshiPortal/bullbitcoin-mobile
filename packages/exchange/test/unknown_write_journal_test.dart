@@ -145,6 +145,7 @@ void main() {
       'applied',
       'not_applied',
       'order_ended',
+      'expired',
     ]);
   });
 
