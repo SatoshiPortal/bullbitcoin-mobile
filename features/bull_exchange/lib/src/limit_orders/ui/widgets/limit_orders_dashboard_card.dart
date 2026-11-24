@@ -174,12 +174,13 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
   }
 
   Future<void> _openCreate(BuildContext context) async {
-    final changed = await context.pushNamed<bool>(
-      LimitOrdersNavigation.createName,
-    );
-    if (changed == true && context.mounted) {
-      await context.read<LimitOrdersCubit>().load();
+    final created = await LimitOrdersNavigation.openCreate(context);
+    if (created == null || !context.mounted) return;
+    // Opened from here, so a cancel there reloads this list (LIM-5).
+    if (created.openDetails) {
+      await LimitOrdersNavigation.openDetails(context, created.orderId);
     }
+    if (context.mounted) await context.read<LimitOrdersCubit>().load();
   }
 
   Future<void> _confirmCancelAll(BuildContext context) async {

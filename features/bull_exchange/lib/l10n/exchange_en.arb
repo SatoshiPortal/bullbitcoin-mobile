@@ -3878,5 +3878,9 @@
   "exchangePayinCoinsUnavailable": "Your wallet's coins could not be loaded. Try again.",
   "@exchangePayinCoinsUnavailable": {
     "description": "Coin selection on the sell or pay review: the wallet could not list its coins"
+  },
+  "limitOrdersOverBalanceWarning": "This is more than your available balance. When the order executes, it buys with what is in your balance then.",
+  "@limitOrdersOverBalanceWarning": {
+    "description": "Limit order review: the amount is over the fiat balance; nothing is reserved, so this is a warning, not a block"
   }
 }

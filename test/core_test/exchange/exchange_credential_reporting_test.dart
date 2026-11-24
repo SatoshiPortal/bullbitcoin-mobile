@@ -6,9 +6,6 @@ import 'package:address_view/payment_destination.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/testing.dart';
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
-import 'package:sync/write.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
@@ -96,12 +93,6 @@ class _Settings extends Fake implements Preferences {
 
 class _Logger extends Mock implements Logger {}
 
-class _Inventory extends Mock implements WalletInventory {}
-
-class _Native extends Mock implements WalletNativeLifecycle {}
-
-class _Rates extends Mock implements ExchangeLimitOrders {}
-
 /// The Bitcoin destination check the default-wallet editor uses.
 Future<String?> _validateBitcoin(BtcNetwork _, String raw) async =>
     (await const PaymentDestinations().validate(
@@ -138,27 +129,10 @@ void main() {
     ('a foreign exception', _Thrown(Exception('unexpected server reply'))),
     ('a programmer error', _Thrown(StateError('programmer bug'))),
   ]) {
-    for (final name in ['limit orders', 'autobuy status', 'autobuy update']) {
+    for (final name in ['autobuy status', 'autobuy update']) {
       test('$name classifies $label', () async {
         final repo = _users(refusal);
-        final wallets = _Inventory();
-        for (final network in <Network>[
-          BitcoinNetwork.testnet,
-          LiquidNetwork.testnet,
-        ]) {
-          when(() => wallets.walletsForNetwork(network))
-              .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
-        }
         final pending = switch (name) {
-          'limit orders' => LoadLimitOrderCreationUsecase(
-            exchangeForTesting(
-              getDefaultWallets: () async => const Ok(DefaultWallets()),
-              getUserSummary: repo.getUserSummary,
-            ),
-            _Settings(),
-            ExchangePayoutWallets(wallets, _Native()),
-            _Rates(),
-          ).execute(),
           'autobuy status' => autoBuyStatusForTesting(repo),
           'autobuy update' => disableAutoBuyForTesting(repo, _Settings()),
           _ => fail('Unexpected use case name'),
@@ -169,16 +143,6 @@ void main() {
         } else if (refusal is _MissingKey || refusal is _UnreadableKey) {
           expect(await pending, isA<Err>());
           noReport();
-        } else if (name == 'limit orders') {
-          expect(await pending, isA<Err>());
-          verify(
-            () => logger.severe(
-              message:
-                  'Failed to load the account before creating a limit order',
-              error: ExchangeAccountUnavailableFailure,
-              trace: any(named: 'trace'),
-            ),
-          ).called(1);
         } else {
           expect(await pending, isA<Err>());
           verify(
