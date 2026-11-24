@@ -334,6 +334,13 @@ List<Page<void>> sellPagesFor(
                     nameLabel: context.loc.sellPayoutRecipient,
                   ),
                 },
+                ?payinWalletRow(
+                  context,
+                  label: context.loc.sellPayFromWallet,
+                  source: request.source,
+                  secureBitcoinWallet: context.loc.sellSecureBitcoinWallet,
+                  instantPayments: context.loc.sellInstantPayments,
+                ),
                 SpendOptionsSection(
                   spend: spend,
                   changes: states.map(spendOf),

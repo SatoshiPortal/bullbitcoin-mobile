@@ -404,16 +404,29 @@ final class PayinFromAppWallet extends PayinSource {
   @override
   final BtcNetwork rail;
 
-  const PayinFromAppWallet(this.walletId, this.rail);
+  /// How the review names the wallet ("Pay from wallet"): its label, or for
+  /// the app's setup wallets [isDefault].
+  final String? label;
+  final bool isDefault;
+
+  const PayinFromAppWallet(
+    this.walletId,
+    this.rail, {
+    this.label,
+    this.isDefault = false,
+  });
 
   @override
   bool operator ==(Object other) =>
       other is PayinFromAppWallet &&
       other.walletId == walletId &&
-      other.rail == rail;
+      other.rail == rail &&
+      other.label == label &&
+      other.isDefault == isDefault;
 
   @override
-  int get hashCode => Object.hash(PayinFromAppWallet, walletId, rail);
+  int get hashCode =>
+      Object.hash(PayinFromAppWallet, walletId, rail, label, isDefault);
 }
 
 final class PayinFromExternal extends PayinSource {

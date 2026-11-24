@@ -42,8 +42,14 @@ class PayinSourcePage extends StatelessWidget {
             const Gap(16),
             ui.walletCards(
               context,
-              (wallet) =>
-                  onPicked(PayinFromAppWallet(wallet.id, wallet.btcNetwork)),
+              (wallet) => onPicked(
+                PayinFromAppWallet(
+                  wallet.id,
+                  wallet.btcNetwork,
+                  label: wallet.label,
+                  isDefault: wallet.isDefault,
+                ),
+              ),
             ),
             const Gap(24),
             Text(

@@ -107,3 +107,24 @@ Widget? payinDoneMessage(
     ],
   );
 }
+
+/// "Pay from wallet": the app wallet's label, or the setup wallets' names.
+Widget? payinWalletRow(
+  BuildContext context, {
+  required String label,
+  required PayinSource source,
+  required String secureBitcoinWallet,
+  required String instantPayments,
+}) => switch (source) {
+  PayinFromAppWallet(label: final name?) => BullDetailsTableItem(
+    label: label,
+    displayValue: name,
+  ),
+  PayinFromAppWallet(isDefault: true, :final rail) => BullDetailsTableItem(
+    label: label,
+    displayValue: rail == BtcNetwork.liquid
+        ? instantPayments
+        : secureBitcoinWallet,
+  ),
+  PayinFromAppWallet() || PayinFromExternal() => null,
+};

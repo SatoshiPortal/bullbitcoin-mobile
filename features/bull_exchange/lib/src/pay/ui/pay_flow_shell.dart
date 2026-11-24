@@ -305,6 +305,13 @@ List<Page<void>> payPagesFor(
                   methodLabel: context.loc.payRecipientType,
                   nameLabel: context.loc.payRecipientName,
                 ),
+                ?payinWalletRow(
+                  context,
+                  label: context.loc.payPayFromWallet,
+                  source: request.source,
+                  secureBitcoinWallet: context.loc.paySecureBitcoinWallet,
+                  instantPayments: context.loc.payInstantPayments,
+                ),
                 SpendOptionsSection(
                   spend: spend,
                   changes: states.map(spendOf),

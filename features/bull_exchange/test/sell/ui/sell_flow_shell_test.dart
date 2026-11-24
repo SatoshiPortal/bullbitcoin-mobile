@@ -128,6 +128,27 @@ void main() {
     expect(find.text(labels.sellAdvancedSettings), findsOneWidget);
   });
 
+  testWidgets('the review names the wallet the payin comes from', (
+    tester,
+  ) async {
+    final review = sellReviewState as SellOrdering;
+    final labels = await _pump(
+      tester,
+      SellOrdering(
+        review.open,
+        SellRequest(
+          review.request.amount,
+          const PayinFromAppWallet('w-1', BtcNetwork.bitcoin, label: 'Savings'),
+          review.request.payout,
+        ),
+        review.order,
+        review.spend,
+      ),
+    );
+    expect(find.text(labels.sellPayFromWallet), findsOneWidget);
+    expect(find.text('Savings'), findsOneWidget);
+  });
+
   testWidgets('Confirm waits for the fee estimates; a failure offers Retry', (
     tester,
   ) async {
