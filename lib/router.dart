@@ -28,6 +28,7 @@ import 'package:bull_exchange/bull_exchange.dart'
         BullExchangeNavigation,
         BuyRoute,
         ExchangeFailureL10n,
+        ExchangeGuardedPaths,
         ExchangeHomeAction,
         ExchangeSessionScope,
         ExchangeRouteGuard,
@@ -254,6 +255,10 @@ class AppRouter {
       navigatorKey: rootNavigatorKey,
       checkAvailability: locator<Exchange>().guardTradingEntry,
       resolveAccess: locator<Exchange>().resolveAccess,
+      // The exchange settings routes are nested under the settings hub below.
+      paths:
+          ExchangeGuardedPaths.mounted +
+          ExchangeGuardedPaths.settingsUnder(SettingsNavigation.homePath),
     ).onEnter,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the

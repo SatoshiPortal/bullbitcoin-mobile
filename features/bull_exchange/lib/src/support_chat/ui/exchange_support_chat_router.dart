@@ -20,7 +20,7 @@ class ExchangeSupportChatRouter {
     required void Function(BuildContext) onMessagesRead,
   }) => GoRoute(
     name: ExchangeSupportChatNavigation.routeName,
-    path: '/exchange/support-chat',
+    path: ExchangeSupportChatNavigation.path,
     builder: (context, state) {
       final draft = state.extra as ExchangeSupportChatDraft?;
       final fromExchange = state.uri.queryParameters['from'] == 'exchange';

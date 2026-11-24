@@ -5,60 +5,117 @@ import 'package:go_router/go_router.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import '../autobuy/autobuy_mount.dart';
+import '../buy/ui/buy_router.dart';
+import '../dca/ui/dca_router.dart';
+import '../default_wallets/ui/default_wallets_router.dart';
 import '../exchange_l10n.dart';
 import '../exchange_landing_navigation.dart';
+import '../funding/fund_exchange_router.dart';
+import '../limit_orders/limit_orders_navigation.dart';
+import '../pay/ui/pay_router.dart';
+import '../sell/ui/sell_router.dart';
+import '../settings/ui/exchange_access_settings_route.dart';
+import '../settings/ui/exchange_settings_route.dart';
+import '../support_chat/exchange_support_chat_navigation.dart';
+import '../withdraw/ui/withdraw_router.dart';
 
 /// Whether a route needs a signed-in exchange account.
 enum ExchangeRouteNeed { account, open }
 
-/// Roots of the routes that act on the account. Every route below a root is
-/// covered too.
-@visibleForTesting
-const exchangeAccountRoutes = [
-  '/buy',
-  '/sell',
-  '/pay',
-  '/withdraw',
-  '/fund-exchange',
-  '/dca',
-  '/auto-buy',
-  '/limit-orders',
-  '/exchange/kyc',
-  '/settings/exchange-security',
-  '/settings/exchange-referrals',
-  '/settings/exchange-account-info',
-  '/settings/exchange-app-settings',
-  '/settings/secure-file-upload',
-  '/settings/exchange-statistics',
-  '/settings/exchange-bitcoin-wallets',
-];
+/// The locations one [ExchangeRouteGuard] covers. Every path below an account
+/// root needs the account too; open paths match exactly.
+///
+/// The exchange names only the routes it mounts: [mounted] at their own
+/// absolute paths, and [settingsUnder] for the settings routes the host nests
+/// under a path of its own. The host composes them and adds any routes of its
+/// own that need an exchange account.
+@immutable
+final class ExchangeGuardedPaths {
+  final List<String> accountRoots;
+  final List<String> openPaths;
 
-/// Exchange routes that render the access state themselves.
-@visibleForTesting
-const exchangeOpenRoutes = [
-  BullExchangeNavigation.dashboardPath,
-  BullExchangeNavigation.landingPath,
-  BullExchangeNavigation.authPath,
-  '/exchange/support-chat',
-  // Shows its own sign-in entry and keeps sign-out reachable.
-  '/settings/exchange-settings',
-  '/settings/exchange-access',
-];
+  const ExchangeGuardedPaths({
+    this.accountRoots = const [],
+    this.openPaths = const [],
+  });
 
-bool _under(String path, String root) =>
-    path == root ||
-    path.startsWith('$root/') ||
-    // The funding methods are siblings named after their root.
-    (root == '/fund-exchange' && path.startsWith('$root-'));
+  /// The routes `BullExchangeFeature` mounts at absolute paths.
+  static final mounted = ExchangeGuardedPaths(
+    accountRoots: List.unmodifiable([
+      BuyRoute.buy.path,
+      SellRoute.sell.path,
+      PayRoute.pay.path,
+      WithdrawRoute.withdraw.path,
+      for (final route in FundExchangeRoute.values)
+        if (route.path.startsWith('/')) route.path,
+      DcaRoute.dca.path,
+      AutoBuyNavigation.path,
+      LimitOrdersNavigation.root,
+      BullExchangeNavigation.kycPath,
+    ]),
+    openPaths: const [
+      BullExchangeNavigation.dashboardPath,
+      BullExchangeNavigation.landingPath,
+      BullExchangeNavigation.authPath,
+      ExchangeSupportChatNavigation.path,
+    ],
+  );
 
-/// Null for a route outside the exchange.
-ExchangeRouteNeed? exchangeRouteNeed(String path) {
-  if (exchangeAccountRoutes.any((root) => _under(path, root))) {
-    return ExchangeRouteNeed.account;
+  /// `BullExchangeFeature.settingsRoutes` as mounted under [parentPath].
+  static ExchangeGuardedPaths settingsUnder(String parentPath) {
+    final parent = parentPath.endsWith('/')
+        ? parentPath.substring(0, parentPath.length - 1)
+        : parentPath;
+    final needs = {
+      for (final route in ExchangeSettingsRoute.values)
+        route.path: exchangeSettingsRouteNeed(route),
+      ExchangeAccessSettingsNavigation.path: ExchangeRouteNeed.open,
+      DefaultWalletsNavigation.path: ExchangeRouteNeed.account,
+    };
+    return ExchangeGuardedPaths(
+      accountRoots: List.unmodifiable([
+        for (final MapEntry(key: segment, value: need) in needs.entries)
+          if (need == ExchangeRouteNeed.account) '$parent/$segment',
+      ]),
+      openPaths: List.unmodifiable([
+        for (final MapEntry(key: segment, value: need) in needs.entries)
+          if (need == ExchangeRouteNeed.open) '$parent/$segment',
+      ]),
+    );
   }
-  if (exchangeOpenRoutes.contains(path)) return ExchangeRouteNeed.open;
-  return null;
+
+  ExchangeGuardedPaths operator +(ExchangeGuardedPaths other) =>
+      ExchangeGuardedPaths(
+        accountRoots: List.unmodifiable([
+          ...accountRoots,
+          ...other.accountRoots,
+        ]),
+        openPaths: List.unmodifiable([...openPaths, ...other.openPaths]),
+      );
+
+  /// Null for a location this guard doesn't cover.
+  ExchangeRouteNeed? needOf(String path) {
+    if (accountRoots.any((root) => path == root || path.startsWith('$root/'))) {
+      return ExchangeRouteNeed.account;
+    }
+    if (openPaths.contains(path)) return ExchangeRouteNeed.open;
+    return null;
+  }
 }
+
+/// The settings home shows its own sign-in entry and keeps sign-out
+/// reachable; every other exchange settings screen acts on the account.
+ExchangeRouteNeed exchangeSettingsRouteNeed(ExchangeSettingsRoute route) =>
+    switch (route) {
+      ExchangeSettingsRoute.home => ExchangeRouteNeed.open,
+      ExchangeSettingsRoute.security ||
+      ExchangeSettingsRoute.referrals ||
+      ExchangeSettingsRoute.accountInfo ||
+      ExchangeSettingsRoute.preferences ||
+      ExchangeSettingsRoute.secureFileUpload ||
+      ExchangeSettingsRoute.statistics => ExchangeRouteNeed.account,
+    };
 
 sealed class ExchangeRouteDecision {
   const ExchangeRouteDecision();
@@ -116,17 +173,20 @@ String exchangeSignInResuming(Uri location) => Uri(
   queryParameters: {'resume': location.toString()},
 ).toString();
 
-/// The one `onEnter` guard of every exchange route (INT-13, DW-9).
+/// The one `onEnter` guard of every exchange route (INT-13, DW-9), over the
+/// [paths] the host composed.
 class ExchangeRouteGuard {
   final GlobalKey<NavigatorState> navigatorKey;
   final Future<Result<ExchangeAvailability, ExchangeFailure>> Function()
   checkAvailability;
   final Future<Result<void, ExchangeFailure>> Function() resolveAccess;
+  final ExchangeGuardedPaths paths;
 
   const ExchangeRouteGuard({
     required this.navigatorKey,
     required this.checkAvailability,
     required this.resolveAccess,
+    required this.paths,
   });
 
   Future<OnEnterResult> onEnter(
@@ -135,7 +195,7 @@ class ExchangeRouteGuard {
     GoRouterState next,
     GoRouter router,
   ) async {
-    final need = exchangeRouteNeed(next.uri.path);
+    final need = paths.needOf(next.uri.path);
     if (need == null || need == ExchangeRouteNeed.open) return const Allow();
     final availability = switch (await checkAvailability()) {
       Ok(:final value) => value,

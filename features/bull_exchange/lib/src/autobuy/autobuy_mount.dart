@@ -21,6 +21,7 @@ typedef AutoBuyHost = ({
 
 abstract final class AutoBuyNavigation {
   static const routeName = 'autoBuy';
+  static const path = '/auto-buy';
 
   static Future<void> open(BuildContext context) =>
       context.pushNamed<void>(routeName);
@@ -28,7 +29,7 @@ abstract final class AutoBuyNavigation {
 
 GoRoute autoBuyRoute(AutoBuyHost host) => GoRoute(
   name: AutoBuyNavigation.routeName,
-  path: '/auto-buy',
+  path: AutoBuyNavigation.path,
   builder: (_, _) {
     final capability = host.exchange();
     return BlocProvider(

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -262,7 +261,7 @@ BullExchangeFeature mountBullExchange({
       ? null
       : GoRoute(
           name: BullExchangeNavigation.kycName,
-          path: 'kyc',
+          path: BullExchangeNavigation.kycSegment,
           builder: (_, _) => ExchangeKycScreen(host: kyc),
         );
   return BullExchangeFeature._(

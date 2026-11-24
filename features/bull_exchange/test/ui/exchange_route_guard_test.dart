@@ -1,4 +1,5 @@
-import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
+import 'package:bull_exchange/bull_exchange.dart'
+    show ExchangeLocalizations, ExchangeSettingsRoute;
 import 'package:bull_exchange/testing.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
@@ -52,6 +53,10 @@ const _openPaths = [
   '/settings/exchange-access',
 ];
 
+final _paths =
+    ExchangeGuardedPaths.mounted +
+    ExchangeGuardedPaths.settingsUnder('/settings');
+
 const _outsidePaths = [
   '/home',
   '/settings',
@@ -72,6 +77,7 @@ Future<GoRouter> _pumpRouter(
     navigatorKey: key,
     checkAvailability: exchange.guardTradingEntry,
     resolveAccess: exchange.resolveAccess,
+    paths: _paths,
   );
   late final GoRouter router;
   router = GoRouter(
@@ -119,22 +125,81 @@ Future<GoRouter> _pumpRouter(
 }
 
 void main() {
-  group('exchangeRouteNeed', () {
+  group('ExchangeGuardedPaths', () {
     for (final path in _accountPaths) {
       test('$path needs the account', () {
-        expect(exchangeRouteNeed(path), ExchangeRouteNeed.account);
+        expect(_paths.needOf(path), ExchangeRouteNeed.account);
       });
     }
     for (final path in _openPaths) {
       test('$path is open', () {
-        expect(exchangeRouteNeed(path), ExchangeRouteNeed.open);
+        expect(_paths.needOf(path), ExchangeRouteNeed.open);
       });
     }
     for (final path in _outsidePaths) {
       test('$path is not an exchange route', () {
-        expect(exchangeRouteNeed(path), isNull);
+        expect(_paths.needOf(path), isNull);
       });
     }
+
+    test('the mounted routes name no host path', () {
+      for (final path in [
+        ...ExchangeGuardedPaths.mounted.accountRoots,
+        ...ExchangeGuardedPaths.mounted.openPaths,
+      ]) {
+        expect(path, isNot(startsWith('/settings')));
+      }
+      for (final path in _accountPaths.where(
+        (p) => p.startsWith('/settings'),
+      )) {
+        expect(ExchangeGuardedPaths.mounted.needOf(path), isNull);
+      }
+    });
+
+    test('the settings routes follow the host mount point', () {
+      final paths = ExchangeGuardedPaths.settingsUnder('/preferences/');
+      expect(
+        paths.needOf('/preferences/exchange-security'),
+        ExchangeRouteNeed.account,
+      );
+      expect(
+        paths.needOf('/preferences/exchange-bitcoin-wallets'),
+        ExchangeRouteNeed.account,
+      );
+      expect(
+        paths.needOf('/preferences/exchange-settings'),
+        ExchangeRouteNeed.open,
+      );
+      expect(
+        paths.needOf('/preferences/exchange-access'),
+        ExchangeRouteNeed.open,
+      );
+      expect(paths.needOf('/settings/exchange-security'), isNull);
+    });
+
+    test('every exchange settings route has a need', () {
+      expect(
+        {
+          for (final route in ExchangeSettingsRoute.values)
+            route: exchangeSettingsRouteNeed(route),
+        },
+        {
+          ExchangeSettingsRoute.home: ExchangeRouteNeed.open,
+          ExchangeSettingsRoute.security: ExchangeRouteNeed.account,
+          ExchangeSettingsRoute.referrals: ExchangeRouteNeed.account,
+          ExchangeSettingsRoute.accountInfo: ExchangeRouteNeed.account,
+          ExchangeSettingsRoute.preferences: ExchangeRouteNeed.account,
+          ExchangeSettingsRoute.secureFileUpload: ExchangeRouteNeed.account,
+          ExchangeSettingsRoute.statistics: ExchangeRouteNeed.account,
+        },
+      );
+    });
+
+    test('a host route added to the composition is covered', () {
+      final paths =
+          _paths + const ExchangeGuardedPaths(accountRoots: ['/host-trade']);
+      expect(paths.needOf('/host-trade/x'), ExchangeRouteNeed.account);
+    });
   });
 
   group('decideExchangeRoute: every need x every availability', () {
@@ -179,10 +244,7 @@ void main() {
       for (final availability in ExchangeAvailability.values) {
         test('$path x ${availability.name}', () {
           expect(
-            decideExchangeRoute(
-              exchangeRouteNeed(path)!,
-              availability,
-            ).runtimeType,
+            decideExchangeRoute(_paths.needOf(path)!, availability).runtimeType,
             expected[(ExchangeRouteNeed.account, availability)],
           );
         });
@@ -192,10 +254,7 @@ void main() {
       for (final availability in ExchangeAvailability.values) {
         test('$path x ${availability.name}', () {
           expect(
-            decideExchangeRoute(
-              exchangeRouteNeed(path)!,
-              availability,
-            ).runtimeType,
+            decideExchangeRoute(_paths.needOf(path)!, availability).runtimeType,
             ExchangeRouteAllowed,
           );
         });
