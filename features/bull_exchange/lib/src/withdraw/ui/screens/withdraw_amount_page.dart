@@ -5,7 +5,12 @@ import 'package:bull_exchange/src/ui/widgets/exchange_amount_currency_dropdown.d
 import 'package:bull_exchange/src/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, BullTypographyX, Gap;
+    show
+        BullButton,
+        BullKeyboardActions,
+        BullScrollableColumn,
+        BullTypographyX,
+        Gap;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
@@ -74,65 +79,69 @@ class _WithdrawAmountPageState extends State<WithdrawAmountPage> {
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.withdrawAmountTitle)),
       body: SafeArea(
-        child: BullScrollableColumn(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Gap(40),
-            ExchangeAmountInputField(
-              amountController: _amount,
-              focusNode: _focus,
-              fiatCurrency: market.currency,
-              fiatBalance: balances
-                  .where((b) => b.currencyCode == market.currency.code)
-                  .firstOrNull,
-            ),
-            const Gap(16),
-            ExchangeAmountCurrencyDropdown(
-              currencies: [for (final market in markets) market.currency],
-              initialCurrency: market.currency,
-              selectedCurrency: market.currency,
-              balances: balances,
-              onCurrencyChanged: (currency) => widget.onEvent(
-                WithdrawAmountChanged(
-                  AmountMarketChosen(ExchangeCatalog.market(currency)),
-                ),
+        child: BullKeyboardActions(
+          doneText: context.loc.doneButton,
+          disableScroll: true,
+          child: BullScrollableColumn(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Gap(40),
+              ExchangeAmountInputField(
+                amountController: _amount,
+                focusNode: _focus,
+                fiatCurrency: market.currency,
+                fiatBalance: balances
+                    .where((b) => b.currencyCode == market.currency.code)
+                    .firstOrNull,
               ),
-            ),
-            if (problem != null) ...[
               const Gap(16),
-              Text(
-                problem.toTranslated(context, market.currency.code),
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
+              ExchangeAmountCurrencyDropdown(
+                currencies: [for (final market in markets) market.currency],
+                initialCurrency: market.currency,
+                selectedCurrency: market.currency,
+                balances: balances,
+                onCurrencyChanged: (currency) => widget.onEvent(
+                  WithdrawAmountChanged(
+                    AmountMarketChosen(ExchangeCatalog.market(currency)),
+                  ),
                 ),
               ),
-            ],
-            if (quote case RateFailed(:final problem)) ...[
-              const Gap(16),
-              Text(
-                problem.toTranslated(context),
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
+              if (problem != null) ...[
+                const Gap(16),
+                Text(
+                  problem.toTranslated(context, market.currency.code),
+                  style: context.bullType.body.copyWith(
+                    color: context.appColors.error,
+                  ),
                 ),
-              ),
-              const Gap(8),
-              BullButton.secondary(
-                label: context.loc.retry,
+              ],
+              if (quote case RateFailed(:final problem)) ...[
+                const Gap(16),
+                Text(
+                  problem.toTranslated(context),
+                  style: context.bullType.body.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+                const Gap(8),
+                BullButton.secondary(
+                  label: context.loc.retry,
+                  onPressed: () => widget.onEvent(
+                    const WithdrawAmountChanged(AmountRateRetryPressed()),
+                  ),
+                ),
+              ],
+              const Spacer(),
+              BullButton.primary(
+                label: context.loc.withdrawAmountContinue,
                 onPressed: () => widget.onEvent(
-                  const WithdrawAmountChanged(AmountRateRetryPressed()),
+                  const WithdrawAmountChanged(AmountContinuePressed()),
                 ),
               ),
+              const Gap(16),
             ],
-            const Spacer(),
-            BullButton.primary(
-              label: context.loc.withdrawAmountContinue,
-              onPressed: () => widget.onEvent(
-                const WithdrawAmountChanged(AmountContinuePressed()),
-              ),
-            ),
-            const Gap(16),
-          ],
+          ),
         ),
       ),
     );

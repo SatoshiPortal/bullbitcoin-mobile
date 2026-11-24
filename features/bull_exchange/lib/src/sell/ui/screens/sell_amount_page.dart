@@ -5,7 +5,12 @@ import 'package:bull_exchange/src/ui/amount_problem_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/exchange_amount_currency_dropdown.dart';
 import 'package:bull_exchange/src/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, BullTypographyX, Gap;
+    show
+        BullButton,
+        BullKeyboardActions,
+        BullScrollableColumn,
+        BullTypographyX,
+        Gap;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
@@ -79,76 +84,80 @@ class _SellAmountPageState extends State<SellAmountPage> {
         ),
       ),
       body: SafeArea(
-        child: BullScrollableColumn(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Gap(40),
-            ExchangeAmountInputField(
-              amountController: _amount,
-              focusNode: _focus,
-              fiatCurrency: market.currency,
-            ),
-            const Gap(8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () => widget.onEvent(
-                  const SellAmountChanged(AmountUnitToggled()),
-                ),
-                child: Text(
-                  inBitcoin
-                      ? market.currency.code
-                      : context.loc.sellBitcoinAmount,
-                ),
+        child: BullKeyboardActions(
+          doneText: context.loc.doneButton,
+          disableScroll: true,
+          child: BullScrollableColumn(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Gap(40),
+              ExchangeAmountInputField(
+                amountController: _amount,
+                focusNode: _focus,
+                fiatCurrency: market.currency,
               ),
-            ),
-            const Gap(8),
-            ExchangeAmountCurrencyDropdown(
-              currencies: [for (final market in markets) market.currency],
-              initialCurrency: market.currency,
-              selectedCurrency: market.currency,
-              balances: const [],
-              onCurrencyChanged: (currency) => widget.onEvent(
-                SellAmountChanged(
-                  AmountMarketChosen(ExchangeCatalog.market(currency)),
-                ),
-              ),
-            ),
-            if (problem != null) ...[
-              const Gap(16),
-              Text(
-                problem.toTranslated(context, market.currency.code),
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
-                ),
-              ),
-            ],
-            if (quote case RateFailed(:final problem)) ...[
-              const Gap(16),
-              Text(
-                problem.toTranslated(context),
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
+              const Gap(8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => widget.onEvent(
+                    const SellAmountChanged(AmountUnitToggled()),
+                  ),
+                  child: Text(
+                    inBitcoin
+                        ? market.currency.code
+                        : context.loc.sellBitcoinAmount,
+                  ),
                 ),
               ),
               const Gap(8),
-              BullButton.secondary(
-                label: context.loc.retry,
-                onPressed: () => widget.onEvent(
-                  const SellAmountChanged(AmountRateRetryPressed()),
+              ExchangeAmountCurrencyDropdown(
+                currencies: [for (final market in markets) market.currency],
+                initialCurrency: market.currency,
+                selectedCurrency: market.currency,
+                balances: const [],
+                onCurrencyChanged: (currency) => widget.onEvent(
+                  SellAmountChanged(
+                    AmountMarketChosen(ExchangeCatalog.market(currency)),
+                  ),
                 ),
               ),
-            ],
-            const Spacer(),
-            BullButton.primary(
-              label: context.loc.continueButton,
-              onPressed: () => widget.onEvent(
-                const SellAmountChanged(AmountContinuePressed()),
+              if (problem != null) ...[
+                const Gap(16),
+                Text(
+                  problem.toTranslated(context, market.currency.code),
+                  style: context.bullType.body.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+              ],
+              if (quote case RateFailed(:final problem)) ...[
+                const Gap(16),
+                Text(
+                  problem.toTranslated(context),
+                  style: context.bullType.body.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+                const Gap(8),
+                BullButton.secondary(
+                  label: context.loc.retry,
+                  onPressed: () => widget.onEvent(
+                    const SellAmountChanged(AmountRateRetryPressed()),
+                  ),
+                ),
+              ],
+              const Spacer(),
+              BullButton.primary(
+                label: context.loc.continueButton,
+                onPressed: () => widget.onEvent(
+                  const SellAmountChanged(AmountContinuePressed()),
+                ),
               ),
-            ),
-            const Gap(16),
-          ],
+              const Gap(16),
+            ],
+          ),
         ),
       ),
     );

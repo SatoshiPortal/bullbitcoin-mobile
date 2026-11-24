@@ -4,7 +4,12 @@ import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_exchange/src/ui/amount_problem_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, BullTypographyX, Gap;
+    show
+        BullButton,
+        BullKeyboardActions,
+        BullScrollableColumn,
+        BullTypographyX,
+        Gap;
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -57,9 +62,7 @@ class _PayAmountPageState extends State<PayAmountPage> {
 
   void _described() {
     if (_description.text == widget.editing.draft.description) return;
-    widget.onEvent(
-      PayAmountChanged(AmountDescriptionTyped(_description.text)),
-    );
+    widget.onEvent(PayAmountChanged(AmountDescriptionTyped(_description.text)));
   }
 
   @override
@@ -86,58 +89,62 @@ class _PayAmountPageState extends State<PayAmountPage> {
         ),
       ),
       body: SafeArea(
-        child: BullScrollableColumn(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Gap(40),
-            ExchangeAmountInputField(
-              amountController: _amount,
-              focusNode: _focus,
-              fiatCurrency: market.currency,
-            ),
-            const Gap(16),
-            TextField(
-              controller: _description,
-              maxLength: 140,
-              decoration: InputDecoration(
-                labelText: context.loc.payPaymentDescription,
+        child: BullKeyboardActions(
+          doneText: context.loc.doneButton,
+          disableScroll: true,
+          child: BullScrollableColumn(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Gap(40),
+              ExchangeAmountInputField(
+                amountController: _amount,
+                focusNode: _focus,
+                fiatCurrency: market.currency,
               ),
-            ),
-            if (problem != null) ...[
               const Gap(16),
-              Text(
-                problem.toTranslated(context, market.currency.code),
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
+              TextField(
+                controller: _description,
+                maxLength: 140,
+                decoration: InputDecoration(
+                  labelText: context.loc.payPaymentDescription,
                 ),
               ),
-            ],
-            if (quote case RateFailed(:final problem)) ...[
-              const Gap(16),
-              Text(
-                problem.toTranslated(context),
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
+              if (problem != null) ...[
+                const Gap(16),
+                Text(
+                  problem.toTranslated(context, market.currency.code),
+                  style: context.bullType.body.copyWith(
+                    color: context.appColors.error,
+                  ),
                 ),
-              ),
-              const Gap(8),
-              BullButton.secondary(
-                label: context.loc.retry,
+              ],
+              if (quote case RateFailed(:final problem)) ...[
+                const Gap(16),
+                Text(
+                  problem.toTranslated(context),
+                  style: context.bullType.body.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+                const Gap(8),
+                BullButton.secondary(
+                  label: context.loc.retry,
+                  onPressed: () => widget.onEvent(
+                    const PayAmountChanged(AmountRateRetryPressed()),
+                  ),
+                ),
+              ],
+              const Spacer(),
+              BullButton.primary(
+                label: context.loc.payContinue,
                 onPressed: () => widget.onEvent(
-                  const PayAmountChanged(AmountRateRetryPressed()),
+                  const PayAmountChanged(AmountContinuePressed()),
                 ),
               ),
+              const Gap(16),
             ],
-            const Spacer(),
-            BullButton.primary(
-              label: context.loc.payContinue,
-              onPressed: () => widget.onEvent(
-                const PayAmountChanged(AmountContinuePressed()),
-              ),
-            ),
-            const Gap(16),
-          ],
+          ),
         ),
       ),
     );
