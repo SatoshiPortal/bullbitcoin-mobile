@@ -2,7 +2,6 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;

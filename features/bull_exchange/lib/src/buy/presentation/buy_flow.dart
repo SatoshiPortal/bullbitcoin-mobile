@@ -903,7 +903,7 @@ BuyFlowNext _opened(BuyOpen open) {
       : transitionPick(
           buyDestinationPolicy,
           start.state,
-          PickChose(initial.option),
+          PickChose<DestinationOption, Destination>(initial.option),
         );
   return _entryOf(
     open,
@@ -1026,7 +1026,7 @@ BuyFlowNext _toOrder(
     amount: amount,
     destination: destination,
     payjoinChosen: state.payjoin,
-    payjoinWalletId: usesPayjoin ? wallet?.walletId : null,
+    payjoinWalletId: usesPayjoin ? wallet.walletId : null,
   );
   return _orderNext(
     state.open,

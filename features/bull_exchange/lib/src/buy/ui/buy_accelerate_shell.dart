@@ -6,6 +6,7 @@ import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/flow_status_page.dart';
+import 'package:exchange/steps.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
