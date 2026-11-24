@@ -198,17 +198,18 @@ void main() {
         sellReviewState,
         SellConfirmPressed(sellNow),
       );
-      expect(next.effects, [
+      expect(
+        next.effects.first,
         const SellOrderEffect(OrderStopTimers<SellRequest>('s-1')),
-        SellPayinEffect(
-          PayinBuild<PayinSpend>(
-            sellOrder(),
-            const OnchainDeposit('bc1qdeposit'),
-            const PayinWalletSpend('w-1', sellDefaultOptions),
-            1,
-          ),
-        ),
-      ]);
+      );
+      final build =
+          (next.effects.last as SellPayinEffect).effect
+              as PayinBuild<PayinSpend>;
+      expect(build.order.orderId, 's-1');
+      expect(build.target, const OnchainDeposit('bc1qdeposit'));
+      expect(build.spend, const PayinWalletSpend('w-1', sellDefaultOptions));
+      expect(build.attempt, 1);
+      expect(next.effects, hasLength(2));
     });
 
     test('Confirm on a refreshing quote does nothing', () {

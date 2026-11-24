@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow_bloc.dart';
@@ -73,33 +74,41 @@ Future<void> _settle() async {
 }
 
 void main() {
-  test('creates once, then Confirm builds the payin from the wallet', () async {
-    final calls = _Calls();
-    final bloc = PayFlowBloc(
-      calls: calls.of,
-      session: paySession,
-      accessChanges: const Stream.empty(),
-    );
-    addTearDown(bloc.close);
-    await _settle();
-    for (final event in [
-      PayRecipientPicked(payBankRecipient),
-      const PayAmountChanged(AmountTyped('10')),
-      const PayAmountChanged(AmountContinuePressed()),
-      const PaySourcePicked(payAppWallet),
-    ]) {
-      bloc.add(event);
-    }
-    await _settle();
-    expect(
-      (bloc.state as PayOrdering).order,
-      isA<OrderQuoted<PayRequest, Order>>(),
-    );
-    bloc
-      ..add(PayConfirmPressed(payNow))
-      ..add(PayConfirmPressed(payNow));
-    await _settle();
-    expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
-    expect((bloc.state as PayPaying).payin, isA<PayinSendFailed<PayinSpend>>());
-  });
+  test(
+    'creates once, then Confirm builds the payin from the wallet',
+    () => withClock(Clock.fixed(payNow), () async {
+      final calls = _Calls();
+      final bloc = PayFlowBloc(
+        calls: calls.of,
+        session: paySession,
+        accessChanges: const Stream.empty(),
+      );
+      addTearDown(bloc.close);
+      await _settle();
+      bloc.add(PayRecipientPicked(payBankRecipient));
+      // The rate is read once the recipient fixes the currency.
+      await _settle();
+      for (final event in const [
+        PayAmountChanged(AmountTyped('10')),
+        PayAmountChanged(AmountContinuePressed()),
+        PaySourcePicked(payAppWallet),
+      ]) {
+        bloc.add(event);
+      }
+      await _settle();
+      expect(
+        (bloc.state as PayOrdering).order,
+        isA<OrderQuoted<PayRequest, Order>>(),
+      );
+      bloc
+        ..add(PayConfirmPressed(payNow))
+        ..add(PayConfirmPressed(payNow));
+      await _settle();
+      expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
+      expect(
+        (bloc.state as PayPaying).payin,
+        isA<PayinSendFailed<PayinSpend>>(),
+      );
+    }),
+  );
 }

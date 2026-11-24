@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
@@ -78,39 +79,42 @@ Future<void> _settle() async {
 }
 
 void main() {
-  test('creates once, then Confirm builds the payin from the wallet', () async {
-    final calls = _Calls();
-    final bloc = SellFlowBloc(
-      calls: calls.of,
-      session: sellSession,
-      accessChanges: const Stream.empty(),
-    );
-    addTearDown(bloc.close);
-    await _settle();
-    for (final event in [
-      const SellAmountChanged(AmountTyped('10')),
-      const SellAmountChanged(AmountContinuePressed()),
-      const SellSourcePicked(sellAppWallet),
-      const SellPayoutPicked(SellPayoutChoice.balance),
-    ]) {
-      bloc.add(event);
-    }
-    await _settle();
-    expect(bloc.state, isA<SellOrdering>());
-    expect(
-      (bloc.state as SellOrdering).order,
-      isA<OrderQuoted<SellRequest, Order>>(),
-    );
-    bloc
-      ..add(SellConfirmPressed(sellNow))
-      ..add(SellConfirmPressed(sellNow));
-    await _settle();
-    expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
-    expect(
-      (bloc.state as SellPaying).payin,
-      isA<PayinSendFailed<PayinSpend>>(),
-    );
-  });
+  test(
+    'creates once, then Confirm builds the payin from the wallet',
+    () => withClock(Clock.fixed(sellNow), () async {
+      final calls = _Calls();
+      final bloc = SellFlowBloc(
+        calls: calls.of,
+        session: sellSession,
+        accessChanges: const Stream.empty(),
+      );
+      addTearDown(bloc.close);
+      await _settle();
+      for (final event in [
+        const SellAmountChanged(AmountTyped('10')),
+        const SellAmountChanged(AmountContinuePressed()),
+        const SellSourcePicked(sellAppWallet),
+        const SellPayoutPicked(SellPayoutChoice.balance),
+      ]) {
+        bloc.add(event);
+      }
+      await _settle();
+      expect(bloc.state, isA<SellOrdering>());
+      expect(
+        (bloc.state as SellOrdering).order,
+        isA<OrderQuoted<SellRequest, Order>>(),
+      );
+      bloc
+        ..add(SellConfirmPressed(sellNow))
+        ..add(SellConfirmPressed(sellNow));
+      await _settle();
+      expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
+      expect(
+        (bloc.state as SellPaying).payin,
+        isA<PayinSendFailed<PayinSpend>>(),
+      );
+    }),
+  );
 
   test('a session change ends the flow', () async {
     final access = StreamController<ExchangeAccess>();

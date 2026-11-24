@@ -6,15 +6,36 @@ import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/ui/payin_source_page.dart';
 import 'package:bull_exchange/src/payin/ui/payin_view.dart';
 import 'package:bull_exchange/src/payin/ui/quote_review_page.dart';
+import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
+import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_pick_screen.dart';
+import 'package:bull_exchange/src/recipients/recipients_scope.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../pay_fixtures.dart';
+
+class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
+    implements RecipientsBloc {}
+
+/// The recipient page under every later pay page builds a recipients list.
+RecipientsServices _recipients() {
+  final bloc = _MockRecipientsBloc();
+  when(() => bloc.state).thenReturn(
+    RecipientsState(allowedRecipientFilters: RecipientFilterCriteria()),
+  );
+  return (
+    createRecipientsBloc: (_, _) => bloc,
+    createVirtualIbanCubit: () => throw StateError('not in this test'),
+    createActivationCubit: (_) => throw StateError('not in this test'),
+  );
+}
 
 final ExchangePayinUi _ui = (
   walletCards: (context, onSelected) => const SizedBox(key: Key('wallets')),
@@ -36,6 +57,10 @@ Future<ExchangeLocalizations> _pump(
     RepositoryProvider.value(
       value: _ui,
       child: MaterialApp(
+        builder: (context, child) => RecipientsScope.withServices(
+          services: _recipients(),
+          child: child ?? const SizedBox.shrink(),
+        ),
         theme: ThemeData(extensions: testBullExtensions),
         localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
         supportedLocales: ExchangeLocalizations.supportedLocales,
@@ -109,7 +134,9 @@ void main() {
       ),
       events: events,
     );
-    await tester.tap(find.text(labels.exchangeStepCheckAgain));
+    final checkAgain = find.text(labels.exchangeStepCheckAgain);
+    await tester.ensureVisible(checkAgain);
+    await tester.tap(checkAgain);
     expect(events.single, isA<PayRetryPressed>());
   });
 }

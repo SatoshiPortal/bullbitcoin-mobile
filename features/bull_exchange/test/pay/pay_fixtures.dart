@@ -21,7 +21,7 @@ final payNow = DateTime.utc(2026, 11, 24, 11);
 
 final paySummary = UserSummary(
   userNumber: 7,
-  groups: const [],
+  groups: const ['KYC_IDENTITY_VERIFIED'],
   profile: const UserProfile(firstName: 'Ada', lastName: 'Lovelace'),
   email: 'ada@example.com',
   balances: const [],
