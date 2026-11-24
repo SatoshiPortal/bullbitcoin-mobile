@@ -7,11 +7,6 @@ import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 
-import 'dca/domain/usecases/get_dca_default_wallets_usecase.dart';
-import 'dca/domain/usecases/set_dca_usecase.dart';
-import 'dca/domain/usecases/start_dca_usecase.dart';
-import 'dca/presentation/dca_bloc.dart';
-import 'dca/ui/dca_router.dart';
 import 'exchange_payout_field.dart';
 
 typedef ExchangePurchaseHost = ({
@@ -32,24 +27,3 @@ typedef ExchangePurchaseHost = ({
   void Function(BuildContext) onClose,
   void Function(BuildContext, String) openOrder,
 });
-
-GoRoute mountDca(ExchangePurchaseHost host) => DcaRouter.route(
-  payoutField: host.payoutField,
-  createBloc: () {
-    final exchange = host.exchange();
-    final preferences = host.preferences();
-    return DcaBloc(
-      startDcaUsecase: StartDcaUsecase(
-        settingsRepository: preferences,
-        exchange: exchange,
-      ),
-      getDcaDefaultWalletsUsecase: GetDcaDefaultWalletsUsecase(
-        exchange: exchange,
-      ),
-      setDcaUsecase: SetDcaUsecase(
-        settingsRepository: preferences,
-        exchange: exchange,
-      ),
-    );
-  },
-);

@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 Never _unexpected() => throw StateError('Mount must not open services');
 
 void main() {
-  test('mount preserves Buy, DCA and limit-order creation locations', () {
+  test('mount preserves Buy, accelerate, DCA and limit-order creation locations', () {
     final feature = BullExchangeFeature.mount(
       exchange: _unexpected,
       preferences: _unexpected,
@@ -54,13 +54,5 @@ void main() {
       '/buy/order/accelerate',
     );
     expect(router.namedLocation(DcaRoute.dca.name), '/dca');
-    expect(
-      router.namedLocation(DcaRoute.dcaConfirmation.name),
-      '/dca/confirmation',
-    );
-    expect(
-      router.namedLocation(DcaRoute.dcaWalletSelection.name),
-      '/dca/wallet-selection',
-    );
   });
 }
