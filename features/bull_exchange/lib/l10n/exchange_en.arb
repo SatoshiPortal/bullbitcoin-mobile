@@ -4084,5 +4084,93 @@
   "withdrawNoFundedBalance": "You have no balance to withdraw.",
   "@withdrawNoFundedBalance": {
     "description": "Withdraw: the account has no funded fiat balance"
+  },
+  "exchangePayinNoFunds": "This wallet doesn't have enough funds for this payment and its network fee.",
+  "@exchangePayinNoFunds": {
+    "description": "Payin build: insufficient funds"
+  },
+  "exchangePayinFeeTooLow": "The network fee is below the network's minimum. Try again.",
+  "@exchangePayinFeeTooLow": {
+    "description": "Payin build: fee below relay floor"
+  },
+  "exchangePayinWalletBusy": "The wallet is busy syncing. Try again in a moment.",
+  "@exchangePayinWalletBusy": {
+    "description": "Payin: the wallet can't spend right now (busy/unavailable); nothing was sent"
+  },
+  "exchangePayinConsolidationRequired": "This wallet must consolidate its coins before it can pay this amount.",
+  "@exchangePayinConsolidationRequired": {
+    "description": "Payin build: Liquid wallet needs consolidation"
+  },
+  "exchangePayinSigningRefused": "The wallet could not sign the payment.",
+  "@exchangePayinSigningRefused": {
+    "description": "Payin build: signing refused"
+  },
+  "exchangePayinNotAuthorized": "This wallet is not authorized to send payments.",
+  "@exchangePayinNotAuthorized": {
+    "description": "Payin: developer/authorization refusal; nothing was sent"
+  },
+  "exchangePayinBuildFailed": "The payment could not be prepared. Nothing was sent.",
+  "@exchangePayinBuildFailed": {
+    "description": "Payin build failed for another reason"
+  },
+  "exchangePayinNodeRejected": "The network refused the transaction. Nothing was sent.",
+  "@exchangePayinNodeRejected": {
+    "description": "Payin send: node rejected the transaction"
+  },
+  "exchangePayinPayjoinNotStarted": "The payjoin payment could not start. Nothing was sent.",
+  "@exchangePayinPayjoinNotStarted": {
+    "description": "Payin send: payjoin session could not start and nothing is in flight"
+  },
+  "exchangePayinDeadlinePassed": "The order's payment window ended before the payment was sent. Nothing was sent.",
+  "@exchangePayinDeadlinePassed": {
+    "description": "Payin send: deadline passed right before sending"
+  },
+  "exchangePayinSending": "Sending your payment…",
+  "@exchangePayinSending": {
+    "description": "Payin: building or broadcasting"
+  },
+  "exchangePayinNotSent": "Payment not sent",
+  "@exchangePayinNotSent": {
+    "description": "Payin: the send failed and nothing left the wallet"
+  },
+  "exchangePayinPayjoinNegotiating": "Negotiating a payjoin with the exchange…",
+  "@exchangePayinPayjoinNegotiating": {
+    "description": "Payin: payjoin session negotiating"
+  },
+  "exchangePayinPayjoinPaused": "The payjoin is paused because the wallet is busy. Try again.",
+  "@exchangePayinPayjoinPaused": {
+    "description": "Payin: payjoin session paused by the wallet's spend gate"
+  },
+  "exchangePayinUnseen": "Neither the network nor the exchange shows this payment yet. You can send the same transaction again.",
+  "@exchangePayinUnseen": {
+    "description": "Payin: look-up worked and shows nothing; resend the same signed transaction"
+  },
+  "exchangePayinResend": "Send the same transaction again",
+  "@exchangePayinResend": {
+    "description": "Payin: resend the same signed bytes"
+  },
+  "exchangeStepCheckAgain": "Check again",
+  "@exchangeStepCheckAgain": {
+    "description": "Re-read whether a write or payment took effect"
+  },
+  "exchangePayinLeaveTitle": "Leave this payment?",
+  "@exchangePayinLeaveTitle": {
+    "description": "Payin from an external wallet: confirm leaving"
+  },
+  "exchangePayinLeaveMessage": "If you already paid, the exchange will still receive it. If not, the order expires at its deadline.",
+  "@exchangePayinLeaveMessage": {
+    "description": "Payin from an external wallet: leaving keeps the order; explains what happens"
+  },
+  "exchangePayinStay": "Stay",
+  "@exchangePayinStay": {
+    "description": "Payin from an external wallet: cancel leaving"
+  },
+  "exchangePayinExternalTitle": "Send exactly this amount to the address below",
+  "@exchangePayinExternalTitle": {
+    "description": "Payin from an external wallet: instruction"
+  },
+  "exchangePayinExternalWaiting": "Waiting for your payment…",
+  "@exchangePayinExternalWaiting": {
+    "description": "Payin from an external wallet: the order watch is running"
   }
 }
