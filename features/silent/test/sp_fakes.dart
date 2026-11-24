@@ -301,6 +301,11 @@ class FakeSpAccountRepository
   int get scanRevision => scanRevisionValue;
 
   @override
+  bool canRetryAutomaticScan = false;
+
+  void setScanSnapshot(SilentWallet wallet) => _wallet = wallet;
+
+  @override
   Future<Result<void, SilentFailure>> scanOnce({
     int? startHeight,
     SpAutomaticScanAdmission? automatic,

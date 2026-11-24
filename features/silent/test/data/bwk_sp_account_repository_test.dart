@@ -161,6 +161,7 @@ class _OpeningDatasource extends _FakeFfiDatasource {
 /// Lets a test hold or fail a marker write, to prove the launch/stop ordering.
 class _PendingScanFiles extends SpAccountFilesDatasource {
   Future<void> Function(({int? startHeight, bool isPaused})?)? beforeWrite;
+  void Function(({int? startHeight, bool isPaused})?)? afterWrite;
 
   @override
   Future<void> writePendingScan(
@@ -169,6 +170,7 @@ class _PendingScanFiles extends SpAccountFilesDatasource {
   ) async {
     await beforeWrite?.call(pending);
     await super.writePendingScan(dataDir, pending);
+    afterWrite?.call(pending);
   }
 }
 
@@ -614,7 +616,7 @@ void main() {
     });
 
     test(
-      'a stop that cannot persist the pause leaves the scan running',
+      'a stop still cancels natively if its pause cannot be persisted',
       () async {
         final files = _PendingScanFiles();
         final (repo, ffi) = await open(files);
@@ -630,8 +632,13 @@ void main() {
 
         expect(await repo.stopScan(), isA<Err<void, SilentFailure>>());
 
-        expect(ffi.stopCalls, 0);
-        expect(repo.isScanningCached, isTrue);
+        expect(ffi.stopCalls, 1);
+        expect(
+          (repo.snapshot() as Ok<SilentWallet, SilentFailure>)
+              .value
+              .isPendingScanPaused,
+          isTrue,
+        );
         expect(await files.readPendingScan(tempDir.path), (
           startHeight: 975000,
           isPaused: false,
@@ -649,8 +656,12 @@ void main() {
         isA<Ok<void, SilentFailure>>(),
       );
 
+      final removed = Completer<void>();
+      files.afterWrite = (pending) {
+        if (pending == null) removed.complete();
+      };
       notifications.add(const SpNotification.scanCompleted());
-      await Future<void>.delayed(Duration.zero);
+      await removed.future;
 
       expect(await files.readPendingScan(tempDir.path), isNull);
       final snapshot =
@@ -687,11 +698,16 @@ void main() {
     Future<(BwkSpAccountRepository, _OpeningDatasource)> open(
       SpAccountFilesDatasource files, {
       Stream<SpNotification> notifications = const Stream.empty(),
+      bool Function()? allowAutomaticScan,
     }) async {
       accountDirOf().createSync(recursive: true);
       final ffi = _OpeningDatasource(notifications: notifications)
         ..releaseOpen.complete();
-      final repo = makeRepo(ffi: ffi, files: files);
+      final repo = BwkSpAccountRepository(
+        ffi: ffi,
+        files: files,
+        allowAutomaticScan: allowAutomaticScan,
+      );
       expect(await createOn(repo), isA<Ok<void, SilentFailure>>());
       addTearDown(repo.dispose);
       return (repo, ffi);
@@ -713,6 +729,51 @@ void main() {
         reason: 'an automatic scan never creates a resume marker',
       );
     });
+
+    test('checks live admission again at the native launch boundary', () async {
+      var allowed = true;
+      final (repo, ffi) = await open(
+        _PendingScanFiles(),
+        allowAutomaticScan: () => allowed,
+      );
+      final launch = repo.scanOnce(automatic: (revision: repo.scanRevision));
+      allowed = false;
+      await launch;
+      expect(ffi.scanStarts, isEmpty);
+    });
+
+    test('a failed automatic scan is retryable only in its session', () async {
+      final events = StreamController<SpNotification>();
+      addTearDown(events.close);
+      final files = _PendingScanFiles();
+      final (repo, _) = await open(files, notifications: events.stream);
+      await repo.scanOnce(automatic: (revision: repo.scanRevision));
+      events.add(
+        const SpNotification.scanFailed(message: 'server unavailable'),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(repo.canRetryAutomaticScan, isTrue);
+      expect(await files.readPendingScan(tempDir.path), isNull);
+      await repo.dispose();
+      expect(repo.canRetryAutomaticScan, isFalse);
+    });
+
+    test(
+      'stopping an automatic scan blocks later launches after reopen',
+      () async {
+        final files = _PendingScanFiles();
+        final (repo, _) = await open(files);
+        await repo.scanOnce(automatic: (revision: repo.scanRevision));
+        await repo.stopScan();
+        await repo.dispose();
+        final (reopened, ffi) = await open(files);
+        expect(
+          await reopened.scanOnce(automatic: (revision: reopened.scanRevision)),
+          isA<Ok<void, SilentFailure>>(),
+        );
+        expect(ffi.scanStarts, isEmpty);
+      },
+    );
 
     test('an automatic resume adopts the marker it found', () async {
       final files = _PendingScanFiles();
@@ -751,6 +812,23 @@ void main() {
       expect(result, isA<Ok<void, SilentFailure>>());
       expect(ffi.scanStarts, isEmpty);
     });
+
+    test(
+      'an unreadable marker refuses automatic but not manual scan',
+      () async {
+        final files = _PendingScanFiles();
+        accountDirOf().createSync(recursive: true);
+        Directory('${accountDirOf().path}/${SpStorageNames.pendingScanFile}')
+            .createSync();
+        final (repo, ffi) = await open(files);
+
+        await repo.scanOnce(automatic: (revision: repo.scanRevision));
+        expect(ffi.scanStarts, isEmpty);
+
+        await repo.scanOnce(startHeight: 975000);
+        expect(ffi.scanStarts, [975000]);
+      },
+    );
 
     test('a decision made before a stop is refused', () async {
       final files = _PendingScanFiles();

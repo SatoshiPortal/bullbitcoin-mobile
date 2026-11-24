@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:silent/src/data/key_value_sp_auto_scan_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/testing.dart';
@@ -7,6 +9,22 @@ import 'package:silent/silent.dart';
 import '../sp_fakes.dart';
 
 const _storageKey = 'sp_auto_scan_enabled';
+
+class _DelayedAutoScanRead extends FakeSecureStoragePlatform {
+  final reading = Completer<void>();
+  final release = Completer<void>();
+
+  @override
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async {
+    if (key != _storageKey) return super.read(key: key, options: options);
+    reading.complete();
+    await release.future;
+    return 'true';
+  }
+}
 
 void main() {
   group('KeyValueSpAutoScanRepository', () {
@@ -73,6 +91,20 @@ void main() {
       final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
 
       await repo.save(isEnabled: false);
+
+      expect(repo.isEnabledNow, isFalse);
+      expect(storage.entries[_storageKey], 'false');
+    });
+
+    test('a stale warm-up cannot undo a newer opt-out', () async {
+      final storage = _DelayedAutoScanRead();
+      final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
+      final warmUp = repo.warmUp();
+      await storage.reading.future;
+
+      expect(await repo.save(isEnabled: false), isA<Ok<void, SilentFailure>>());
+      storage.release.complete();
+      expect(await warmUp, isA<Ok<void, SilentFailure>>());
 
       expect(repo.isEnabledNow, isFalse);
       expect(storage.entries[_storageKey], 'false');

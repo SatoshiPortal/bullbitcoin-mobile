@@ -13,9 +13,8 @@ void main() {
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync('sp_files_test_');
-    Directory(
-      '${tempDir.path}/${SpStorageNames.accountName}',
-    ).createSync(recursive: true);
+    Directory('${tempDir.path}/${SpStorageNames.accountName}')
+        .createSync(recursive: true);
     files = SpAccountFilesDatasource();
   });
 
@@ -66,6 +65,14 @@ void main() {
 
   test('no marker on disk reads as absent', () async {
     expect(await files.readPendingScan(tempDir.path), isNull);
+  });
+
+  test('an unreadable marker is not treated as absent', () async {
+    await Directory(markerFile().path).create();
+    await expectLater(
+      files.readPendingScan(tempDir.path),
+      throwsA(isA<FileSystemException>()),
+    );
   });
 
   test('writing null deletes the marker', () async {

@@ -41,15 +41,13 @@ void main() {
     bool hasPendingScan = false,
     bool isPendingScanPaused = false,
   }) {
-    when(() => getWallet.execute()).thenAnswer(
-      (_) async => Ok(
-        spWallet(
-          lastScannedHeight: lastScannedHeight,
-          hasPendingScan: hasPendingScan,
-          isPendingScanPaused: isPendingScanPaused,
-        ),
-      ),
+    final wallet = spWallet(
+      lastScannedHeight: lastScannedHeight,
+      hasPendingScan: hasPendingScan,
+      isPendingScanPaused: isPendingScanPaused,
     );
+    repo.setScanSnapshot(wallet);
+    when(() => getWallet.execute()).thenAnswer((_) async => Ok(wallet));
   }
 
   setUp(() {
@@ -126,6 +124,31 @@ void main() {
   });
 
   group('SyncSpWalletUsecase resume-only retries', () {
+    test(
+      'retries a failed automatic scan without a persistent marker',
+      () async {
+        repo.canRetryAutomaticScan = true;
+        await usecase.execute(resumeOnly: true);
+        expect(repo.scanOnceCount, 1);
+      },
+    );
+
+    test('does not retry a now-stale automatic scan', () async {
+      repo.canRetryAutomaticScan = true;
+      walletAt(tip - spAutoScanMaxBlocksBehind - 1);
+      await usecase.execute(resumeOnly: true);
+      expect(repo.scanOnceCount, 0);
+    });
+
+    test('does not use a pending snapshot captured before Clear', () async {
+      when(() => getWallet.execute()).thenAnswer((_) async {
+        repo.scanRevisionValue++;
+        repo.setScanSnapshot(spWallet());
+        return Ok(spWallet(hasPendingScan: true));
+      });
+      await usecase.execute(resumeOnly: true);
+      expect(repo.scanOnceCount, 0);
+    });
     test('resumes a pending scan without consulting the policy', () async {
       walletAt(tip, hasPendingScan: true);
 
