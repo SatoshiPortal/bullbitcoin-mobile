@@ -29,7 +29,11 @@ void main() {
   for (final invalid in [
     recipientFixture('other-owner', RecipientType.sepaEur, isOwner: false),
     recipientFixture('unknown-owner', RecipientType.sepaEur),
-    recipientFixture('wrong-type', RecipientType.interacEmailCad, isOwner: true),
+    recipientFixture(
+      'wrong-type',
+      RecipientType.interacEmailCad,
+      isOwner: true,
+    ),
   ]) {
     for (final isNew in [false, true]) {
       testWidgets(

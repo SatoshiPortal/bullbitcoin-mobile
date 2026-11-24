@@ -250,8 +250,7 @@ void main() {
       isFalse,
     );
     await tester.tap(find.text(loc.recipientsContinue));
-    verify(() => bloc.add(RecipientsEvent.selected(_recipient)))
-        .called(1);
+    verify(() => bloc.add(RecipientsEvent.selected(_recipient))).called(1);
     verifyNever(() => bloc.add(const RecipientsEvent.virtualIbanActivated()));
     verifyNever(
       () => bloc.add(
@@ -294,8 +293,7 @@ void main() {
       isFalse,
     );
     await tester.tap(find.text(loc.recipientsContinue));
-    verify(() => bloc.add(RecipientsEvent.selected(_recipient)))
-        .called(1);
+    verify(() => bloc.add(RecipientsEvent.selected(_recipient))).called(1);
   });
 
   testWidgets('search immediately clears a saved selection', (tester) async {
@@ -374,8 +372,7 @@ void main() {
       isFalse,
     );
     await tester.tap(find.text(loc.recipientsContinue));
-    verify(() => bloc.add(RecipientsEvent.selected(_recipient)))
-        .called(1);
+    verify(() => bloc.add(RecipientsEvent.selected(_recipient))).called(1);
   });
 
   testWidgets('a failed confidentiality check blocks confidential rows', (
@@ -476,8 +473,7 @@ void main() {
         isFalse,
       );
       await tester.tap(find.text(loc.recipientsContinue));
-      verify(() => bloc.add(RecipientsEvent.selected(recipient)))
-          .called(1);
+      verify(() => bloc.add(RecipientsEvent.selected(recipient))).called(1);
     },
   );
 

@@ -147,25 +147,23 @@ InteracSecurityNext interacSecurityStart(InteracSecurityRequired requirement) {
   );
 }
 
-InteracSecurityNext _continue(InteracEditing editing) =>
-    switch (InteracSecurityAnswer.create(editing.question, editing.answer)) {
-      final InteracSecurityAnswer answer => StepNext(
-        InteracAnswered(
-          InteracSecurityEvidence._(
-            answer,
-            saveAsDefault: editing.saveAsDefault,
-          ),
-        ),
-      ),
-      null => StepNext(
-        InteracEditing(
-          question: editing.question,
-          answer: editing.answer,
-          saveAsDefault: editing.saveAsDefault,
-          problem: InteracSecurityAnswer.check(editing.question, editing.answer),
-        ),
-      ),
-    };
+InteracSecurityNext _continue(
+  InteracEditing editing,
+) => switch (InteracSecurityAnswer.create(editing.question, editing.answer)) {
+  final InteracSecurityAnswer answer => StepNext(
+    InteracAnswered(
+      InteracSecurityEvidence._(answer, saveAsDefault: editing.saveAsDefault),
+    ),
+  ),
+  null => StepNext(
+    InteracEditing(
+      question: editing.question,
+      answer: editing.answer,
+      saveAsDefault: editing.saveAsDefault,
+      problem: InteracSecurityAnswer.check(editing.question, editing.answer),
+    ),
+  ),
+};
 
 InteracSecurityNext transitionInteracSecurity(
   InteracSecurityState state,
