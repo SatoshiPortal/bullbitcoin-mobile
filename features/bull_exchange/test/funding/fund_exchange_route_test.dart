@@ -14,21 +14,12 @@ void main() {
     funding: (exchange: () => fail('unexpected exchange operation')),
   );
 
-  test('Confidential SEPA stays top level and COP input stays nested', () {
-    GoRoute route(FundExchangeRoute target) => feature.fundingRoutes
-        .whereType<GoRoute>()
-        .singleWhere((route) => route.name == target.name);
-
-    final funding = route(FundExchangeRoute.fundExchange);
-    expect(funding.path, '/fund-exchange');
-    expect(
-      funding.routes.whereType<GoRoute>().single.path,
-      'cop-bank-transfer-input',
-    );
-    expect(
-      route(FundExchangeRoute.fundExchangeConfidentialSepa).path,
-      '/fund-exchange-confidential-sepa',
-    );
+  test('the fund flow is one top-level route; its steps are its pages', () {
+    final routes = feature.fundingRoutes.whereType<GoRoute>().toList();
+    expect(routes, hasLength(1));
+    expect(routes.single.name, FundExchangeRoute.fundExchange.name);
+    expect(routes.single.path, '/fund-exchange');
+    expect(routes.single.routes, isEmpty);
     expect(
       feature.routes.whereType<GoRoute>().map((route) => route.name),
       isNot(contains(FundExchangeRoute.fundExchange.name)),

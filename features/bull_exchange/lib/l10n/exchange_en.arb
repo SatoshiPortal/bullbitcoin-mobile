@@ -3952,5 +3952,17 @@
   "exchangeErrorRequestingAccountDeletion": "Your account deletion request could not be sent. Please try again.",
   "@exchangeErrorRequestingAccountDeletion": {
     "description": "exchange user-facing failure message (#1895)."
+  },
+  "fundExchangeJurisdictionHint": "Select where you send money from",
+  "@fundExchangeJurisdictionHint": {
+    "description": "Hint of the fund screen's region picker when the account currency gives no region"
+  },
+  "fundExchangeScamConsentUnverified": "We could not confirm that your consent was recorded. Check your connection and try again.",
+  "@fundExchangeScamConsentUnverified": {
+    "description": "Shown in the fund consent sheet when the consent may have been sent but re-reading the account failed; Retry reads again"
+  },
+  "fundExchangeSessionEnded": "Your exchange session ended. Sign in again to fund your account.",
+  "@fundExchangeSessionEnded": {
+    "description": "Shown when the exchange session the fund flow opened with ended (signed out, switched environment or rejected by the server)"
   }
 }
