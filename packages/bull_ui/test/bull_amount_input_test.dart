@@ -9,6 +9,57 @@ import 'package:primitives/primitives.dart';
 void main() {
   final quotedAt = DateTime.utc(2026, 11, 19, 14, 32);
 
+  testWidgets('typing across the centering threshold keeps the text client', (
+    tester,
+  ) async {
+    final canonical = TextEditingController();
+    final focus = FocusNode();
+    addTearDown(canonical.dispose);
+    addTearDown(focus.dispose);
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullAmountInput(
+          canonicalUnit: BitcoinUnit.sats,
+          bitcoinDisplayUnit: BitcoinUnit.sats,
+          amountController: canonical,
+          focusNode: focus,
+          inCard: true,
+          framed: true,
+        ),
+      ),
+    );
+    final editor = find.byType(EditableText);
+    await tester.showKeyboard(editor);
+    await tester.pump();
+    tester.testTextInput.enterText('1');
+    await tester.pump();
+    final initialState = tester.state<EditableTextState>(editor);
+
+    Row numberRow() => tester
+        .widgetList<Row>(find.ancestor(of: editor, matching: find.byType(Row)))
+        .firstWhere((row) => row.children.any((child) => child is Flexible));
+    double edgeWidth(Widget child) => child is SizedBox ? child.width ?? 0 : 0;
+
+    final before = numberRow();
+    final trailingBefore = edgeWidth(before.children.last);
+    tester.testTextInput.log.clear();
+    tester.testTextInput.enterText('12');
+    await tester.pump();
+    final after = numberRow();
+    final leadingAfter = edgeWidth(after.children.first);
+    final calls = tester.testTextInput.log.map((call) => call.method).toList();
+
+    expect(trailingBefore, greaterThan(0));
+    expect(leadingAfter, greaterThan(0));
+    expect(canonical.text, '12');
+    expect(tester.state<EditableTextState>(editor), same(initialState));
+    expect(focus.hasFocus, isTrue);
+    expect(tester.testTextInput.hasAnyClients, isTrue);
+    expect(tester.testTextInput.isVisible, isTrue);
+    expect(calls, isNot(contains('TextInput.clearClient')));
+    expect(calls, isNot(contains('TextInput.hide')));
+  });
+
   testWidgets('the empty amount editor exposes its name and unit', (
     tester,
   ) async {
