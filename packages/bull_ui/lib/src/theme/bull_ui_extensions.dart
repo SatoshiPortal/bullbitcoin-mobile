@@ -3,6 +3,7 @@ import 'package:bull_ui/src/theme/bull_loader_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
+import 'package:bull_ui/src/theme/payment_animation_palette.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Every theme extension `bull_ui` components read, for a [ThemeData] of [brightness] whose palette is [colors].
@@ -14,4 +15,11 @@ List<ThemeExtension<dynamic>> bullUiExtensions({
   BullShapes shapes = BullShapes.standard,
   BullTypography typography = BullTypography.standard,
   BullLoaderTheme loader = BullLoaderTheme.standard,
-}) => [colors, shapes, typography, BullKeypadColors.of(brightness), loader];
+}) => [
+  colors,
+  shapes,
+  typography,
+  BullKeypadColors.of(brightness),
+  loader,
+  PaymentAnimationPalette.standard,
+];

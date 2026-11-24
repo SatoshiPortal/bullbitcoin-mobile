@@ -1,5 +1,6 @@
 {
   "@@locale": "fr",
+  "paymentViewStatus": "Voir le statut",
   "amountSwitchToBtc": "Afficher ce montant en BTC",
   "amountSwitchToSats": "Afficher ce montant en sats",
   "amountChangeDefaultEverywhere": "Changer l’unité par défaut partout",

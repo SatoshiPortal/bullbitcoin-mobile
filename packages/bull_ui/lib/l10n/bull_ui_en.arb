@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
+  "paymentViewStatus": "View status",
+  "@paymentViewStatus": {
+    "description": "Opens the current status of a payment without waiting for its animation"
+  },
   "amountSwitchToBtc": "Show this amount in BTC",
   "@amountSwitchToBtc": {
     "description": "Accessible action and tooltip for switching only this Bitcoin amount to BTC without changing the global preference"
