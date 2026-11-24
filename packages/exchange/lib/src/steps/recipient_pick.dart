@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_call_result.dart';
 import '../payout/payout_rail.dart';
@@ -651,7 +650,7 @@ RecipientPickNext _submit(
     final owner => input.withOwner(owner.isOwner),
   };
   return switch (owned.tryToDomain()) {
-    Ok(value: final details) => StepNext(
+    final RecipientDetails details => StepNext(
       RecipientPickSaving(
         creating.query,
         creating.attempt + 1,
@@ -660,7 +659,7 @@ RecipientPickNext _submit(
       ),
       [RecipientPickSave(details, creating.attempt + 1)],
     ),
-    Err() => StepNext(
+    null => StepNext(
       RecipientPickCreating(
         creating.query,
         creating.attempt,

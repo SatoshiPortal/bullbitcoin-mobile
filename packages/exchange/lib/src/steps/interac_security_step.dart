@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
 
 import '../payout/payout_requirement.dart';
 import '../recipients/domain/entities/interac_security_details.dart';
@@ -150,7 +149,7 @@ InteracSecurityNext interacSecurityStart(InteracSecurityRequired requirement) {
 
 InteracSecurityNext _continue(InteracEditing editing) =>
     switch (InteracSecurityAnswer.create(editing.question, editing.answer)) {
-      Ok(value: final answer) => StepNext(
+      final InteracSecurityAnswer answer => StepNext(
         InteracAnswered(
           InteracSecurityEvidence._(
             answer,
@@ -158,12 +157,12 @@ InteracSecurityNext _continue(InteracEditing editing) =>
           ),
         ),
       ),
-      Err(failure: final problem) => StepNext(
+      null => StepNext(
         InteracEditing(
           question: editing.question,
           answer: editing.answer,
           saveAsDefault: editing.saveAsDefault,
-          problem: problem,
+          problem: InteracSecurityAnswer.check(editing.question, editing.answer),
         ),
       ),
     };

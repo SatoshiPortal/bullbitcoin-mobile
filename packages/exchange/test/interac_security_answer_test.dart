@@ -23,25 +23,13 @@ void main() {
     test('"$question" / "$answer" -> $problem', () {
       expect(InteracSecurityAnswer.check(question, answer), problem);
       final created = InteracSecurityAnswer.create(question, answer);
-      if (problem == null) {
-        expect(created, isA<Ok<InteracSecurityAnswer, InteracAnswerProblem>>());
-      } else {
-        expect(
-          created,
-          isA<Err<InteracSecurityAnswer, InteracAnswerProblem>>().having(
-            (err) => err.failure,
-            'failure',
-            problem,
-          ),
-        );
-      }
+      expect(created == null, problem != null);
     });
   }
 
   test('the answer is trimmed and never printed', () {
     final created = InteracSecurityAnswer.create(' Pet? ', ' rex ');
-    final answer =
-        (created as Ok<InteracSecurityAnswer, InteracAnswerProblem>).value;
+    final answer = created!;
     expect(answer.question, 'Pet?');
     expect(answer.answer, 'rex');
     expect(answer.toString(), isNot(contains('rex')));

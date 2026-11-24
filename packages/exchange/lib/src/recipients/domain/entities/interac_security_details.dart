@@ -117,14 +117,12 @@ final class InteracSecurityAnswer {
   static InteracAnswerProblem? check(String? question, String? answer) =>
       questionProblem(question) ?? answerProblem(answer);
 
+  /// The answer, or null when [check] finds a problem.
   @useResult
-  static Result<InteracSecurityAnswer, InteracAnswerProblem> create(
-    String? question,
-    String? answer,
-  ) => switch (check(question, answer)) {
-    null => Ok(InteracSecurityAnswer._(question!.trim(), answer!.trim())),
-    final problem => Err(problem),
-  };
+  static InteracSecurityAnswer? create(String? question, String? answer) =>
+      check(question, answer) == null
+      ? InteracSecurityAnswer._(question!.trim(), answer!.trim())
+      : null;
 
   @override
   bool operator ==(Object other) =>

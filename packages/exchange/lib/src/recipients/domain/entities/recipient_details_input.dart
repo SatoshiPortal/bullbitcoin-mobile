@@ -2,7 +2,6 @@ import 'package:exchange/src/recipients/domain/entities/recipient_details.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_type.dart';
 import 'package:exchange/src/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
 
 @immutable
 class RecipientDetailsInput {
@@ -121,15 +120,14 @@ class RecipientDetailsInput {
     documentType: documentType,
   );
 
-  /// [toDomain], with a missing or invalid field as an error instead of a
-  /// throw. The error text is for logs only.
-  Result<RecipientDetails, String> tryToDomain() {
+  /// [toDomain], or null for a missing or invalid field instead of a throw.
+  RecipientDetails? tryToDomain() {
     // toDomain throws StateError for a missing field, ArgumentError from the
     // value objects, and a TypeError on a null it asserts away.
     try {
-      return Ok(toDomain());
-    } on Object catch (e) {
-      return Err(e.runtimeType.toString());
+      return toDomain();
+    } on Object {
+      return null;
     }
   }
 
