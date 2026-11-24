@@ -44,7 +44,7 @@ dependencies:
   bdk_dart:
     git:
       url: https://github.com/SatoshiPortal/bdk-dart
-      ref: 9ba4d5001620a8a840f3b33de17a667c08629b98 # accepted hooks 2 + Electrum cache prefill
+      ref: 5dc0c9a0f46a5c7356a523035f8bb0b43b2bba26 # targeted sync and transaction observations (bdk-dart #2)
   flutter_rust_bridge_hooks: 2.13.0
 
 dev_dependencies:

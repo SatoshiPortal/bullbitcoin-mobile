@@ -1,8 +1,10 @@
 import 'package:primitives/primitives.dart';
 
 import '../../domain/public_wallet_descriptor.dart';
+import '../../domain/sync_completion.dart';
 import '../../domain/sync_failure.dart';
 import '../../domain/sync_reason.dart';
+import '../../domain/sync_transaction_target.dart';
 import '../write/sync/electrum_sync.dart';
 import 'wallet_native_runtime.dart';
 
@@ -18,6 +20,38 @@ final class ForegroundWalletSynchronization {
     bool discover = false,
     bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
+  }) async => (await _synchronize(
+    descriptor,
+    discover: discover,
+    allowInitialScan: allowInitialScan,
+    reason: reason,
+  )).map((_) {});
+
+  /// One targeted pass over [targets]: the server is asked only about the
+  /// wallet scripts those transactions touch, and the completion reports which
+  /// of them the pass proved visible.
+  ///
+  /// The pass never initializes or scans a wallet, so a wallet without an
+  /// initial scan fails with `SyncInitialScanRequiredFailure` instead of
+  /// scanning. The native refresh that follows republishes the wallet values
+  /// the pass committed, exactly like an ordinary sync.
+  Future<Result<SyncCompletion, SyncFailure>> executeTargeted(
+    PublicWalletDescriptor descriptor, {
+    required List<SyncTransactionTarget> targets,
+    SyncReason reason = SyncReason.auto,
+  }) => _synchronize(
+    descriptor,
+    allowInitialScan: false,
+    reason: reason,
+    targets: targets,
+  );
+
+  Future<Result<SyncCompletion, SyncFailure>> _synchronize(
+    PublicWalletDescriptor descriptor, {
+    bool discover = false,
+    bool allowInitialScan = true,
+    SyncReason reason = SyncReason.auto,
+    List<SyncTransactionTarget> targets = const <SyncTransactionTarget>[],
   }) async {
     final native = _native;
     if (native != null) {
@@ -30,6 +64,7 @@ final class ForegroundWalletSynchronization {
       discover: discover,
       allowInitialScan: allowInitialScan,
       reason: reason,
+      targets: targets,
     );
     if (result case Err(failure: SyncNeedsRepairFailure())
         when native != null) {
@@ -41,6 +76,7 @@ final class ForegroundWalletSynchronization {
         discover: discover,
         allowInitialScan: allowInitialScan,
         reason: reason,
+        targets: targets,
       );
     }
     if (native != null) {
@@ -48,6 +84,6 @@ final class ForegroundWalletSynchronization {
         return Err(failure);
       }
     }
-    return result.map((_) {});
+    return result;
   }
 }
