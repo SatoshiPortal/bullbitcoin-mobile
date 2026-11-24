@@ -33,9 +33,6 @@ export 'src/limit_orders/ui/widgets/limit_orders_loading_bar.dart'
 export 'src/recipients/presentation/recipient_type_l10n.dart';
 export 'src/recipients/public/recipient_filter_criteria.dart'
     show RecipientFilterCriteria;
-export 'src/recipients/public/recipient_selection.dart' show RecipientSelection;
-export 'src/recipients/public/recipient_selection_screen.dart'
-    show RecipientSelectionScreen;
 export 'src/recipients/public/recipient_view_model.dart';
 export 'src/recipients/recipients_scope.dart' show RecipientsScope;
 export 'src/recipients/ui/screens/recipients_screen.dart' show RecipientsScreen;
