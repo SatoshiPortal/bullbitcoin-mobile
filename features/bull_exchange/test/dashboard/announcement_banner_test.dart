@@ -1,19 +1,26 @@
+import 'dart:io';
+
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
-import 'package:flutter/services.dart'
-    show FontLoader, TextSelection, rootBundle;
+import 'package:flutter/services.dart' show ByteData, FontLoader, TextSelection;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
   setUpAll(() async {
-    await (FontLoader(
-      'Golos Text',
-    )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
+    // The font is an app asset, not this package's: read it from the repo.
+    await (FontLoader('Golos Text')..addFont(
+          Future.value(
+            ByteData.sublistView(
+              await File('../../assets/fonts/GolosText.ttf').readAsBytes(),
+            ),
+          ),
+        ))
+        .load();
   });
 
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
