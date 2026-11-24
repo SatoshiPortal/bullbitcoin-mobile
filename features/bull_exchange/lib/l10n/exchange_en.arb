@@ -4080,5 +4080,9 @@
   "exchangeFlowSessionEnded": "Your exchange session ended. Sign in again to continue.",
   "@exchangeFlowSessionEnded": {
     "description": "A trading flow's exchange session ended (signed out, environment switched or rejected by the server)"
+  },
+  "withdrawNoFundedBalance": "You have no balance to withdraw.",
+  "@withdrawNoFundedBalance": {
+    "description": "Withdraw: the account has no funded fiat balance"
   }
 }
