@@ -51,8 +51,8 @@ void main() {
         getMessages: ({page, pageSize}) => fail('unexpected support history'),
         getAttachment: (_) => fail('unexpected attachment'),
         sendMessage: request.send,
-        getUnreadCount: () => fail('unexpected unread count'),
-        markAllRead: () => fail('unexpected mark read'),
+        getUnreadCount: (_) => fail('unexpected unread count'),
+        markAllRead: (_) => fail('unexpected mark read'),
       ),
     );
   });

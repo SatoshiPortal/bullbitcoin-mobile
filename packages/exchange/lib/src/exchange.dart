@@ -106,8 +106,8 @@ typedef ExchangeChatOperations = ({
   sendMessage,
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(String)
   getAttachment,
-  Future<Result<int, ExchangeFailure>> Function() getUnreadCount,
-  Future<Result<void, ExchangeFailure>> Function() markAllRead,
+  Future<ExchangeRead<int>> Function(ExchangeSession) getUnreadCount,
+  Future<ExchangeWrite<void>> Function(ExchangeSession) markAllRead,
 });
 
 typedef ExchangeNotificationBindings = ({
@@ -525,20 +525,33 @@ final class Exchange {
           ).getMessageAttachment(attachmentId),
           credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
         ),
-        getUnreadCount: () => withClient(
-          (client, _) => BbxApiSupportChatRepository(
-            users: client.users,
-            commcenter: client.commcenter,
-          ).getUnreadMessageCount(),
-          credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
-        ),
-        markAllRead: () => withClient(
-          (client, _) => BbxApiSupportChatRepository(
-            users: client.users,
-            commcenter: client.commcenter,
-          ).markAllMessagesRead(),
-          credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
-        ),
+        getUnreadCount: (session) async =>
+            switch (await withClient<ExchangeRead<int>>(
+              (client) async => Ok(
+                await BbxApiSupportChatRepository(
+                  users: client.users,
+                  commcenter: client.commcenter,
+                ).readUnreadMessageCount(),
+              ),
+              environment: session.environment,
+              completionCheck: _CompletionCheck.read,
+            )) {
+              Ok(:final value) => value,
+              Err(:final failure) => readNotRun(failure),
+            },
+        markAllRead: (session) async =>
+            switch (await withClient<ExchangeWrite<void>>(
+              (client) async => Ok(
+                await BbxApiSupportChatRepository(
+                  users: client.users,
+                  commcenter: client.commcenter,
+                ).markAllMessagesRead(),
+              ),
+              environment: session.environment,
+            )) {
+              Ok(:final value) => value,
+              Err(:final failure) => writeNotRun(failure),
+            },
       ),
       (
         messages: () => service().messageStream,
@@ -833,6 +846,10 @@ final class Exchange {
 
   Stream<NotificationMessage> watchAccountChanges() =>
       _currentNotifications?.accountChanges() ?? const Stream.empty();
+
+  /// Emits whenever the server says the support chat has a new message.
+  Stream<NotificationMessage> watchSupportMessages() =>
+      _currentNotifications?.supportMessages() ?? const Stream.empty();
 
   /// Reopens the current session's socket after the app comes back; the
   /// platform may have dropped it while hidden. Nothing while signed out:
@@ -1192,14 +1209,23 @@ final class Exchange {
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
 
-  /// The number of support messages the user has not read.
+  /// How many support messages [session]'s user has not read. A read for a
+  /// session that is no longer the current one is never sent.
   @useResult
-  Future<Result<int, ExchangeFailure>> getUnreadSupportMessageCount() =>
-      _chat.getUnreadCount();
+  Future<ExchangeRead<int>> readUnreadSupportCount(
+    ExchangeSession session,
+  ) async => _access?.session != session
+      ? const ReadSessionRejected(ExchangeSessionRejection.sessionChanged)
+      : await _chat.getUnreadCount(session);
 
+  /// Marks every support message of [session]'s user as read; never sent
+  /// for a session that is no longer the current one.
   @useResult
-  Future<Result<void, ExchangeFailure>> markSupportMessagesRead() =>
-      _chat.markAllRead();
+  Future<ExchangeWrite<void>> markSupportMessagesRead(
+    ExchangeSession session,
+  ) async => _access?.session != session
+      ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+      : await _chat.markAllRead(session);
 
   /// Broadcasts messages and recoverable failures from the active socket.
   /// An [Err] does not close the stream. Failures before opening a socket
@@ -1338,9 +1364,9 @@ Exchange exchangeForTesting({
             throw StateError('Unexpected chat send'),
         getAttachment: (_) =>
             throw StateError('Unexpected chat attachment request'),
-        getUnreadCount: () =>
+        getUnreadCount: (_) =>
             throw StateError('Unexpected chat unread count request'),
-        markAllRead: () => throw StateError('Unexpected chat mark read'),
+        markAllRead: (_) => throw StateError('Unexpected chat mark read'),
       ),
   notifications ??
       (

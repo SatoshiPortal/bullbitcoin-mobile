@@ -31,4 +31,15 @@ class WatchExchangeNotificationsUsecase {
           Ok() || Err() => const [],
         },
       );
+
+  /// Emits whenever the server says the support chat has a new message.
+  Stream<NotificationMessage> supportMessages() =>
+      _exchange.notifications.expand(
+        (event) => switch (event) {
+          Ok(value: final message)
+              when message.kind == NotificationMessageKind.message =>
+            [message],
+          Ok() || Err() => const [],
+        },
+      );
 }
