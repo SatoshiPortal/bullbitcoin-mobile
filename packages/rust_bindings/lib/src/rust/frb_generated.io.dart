@@ -9774,6 +9774,28 @@ class BullSdkWire implements BaseWire {
       _wire__dart_bwk__api__sp_account__SpAccount_unified_historyPtr
           .asFunction<void Function(int, int)>();
 
+  void wire__dart_bwk__api__sp_account__blindbit_tip(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> url,
+  ) {
+    return _wire__dart_bwk__api__sp_account__blindbit_tip(port_, url);
+  }
+
+  late final _wire__dart_bwk__api__sp_account__blindbit_tipPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >('frbgen_rust_bindings_wire__dart_bwk__api__sp_account__blindbit_tip');
+  late final _wire__dart_bwk__api__sp_account__blindbit_tip =
+      _wire__dart_bwk__api__sp_account__blindbit_tipPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
   void wire__dart_bwk__api__sp_account__derive_sp_address_from_seed(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_loose> seed,
@@ -9802,6 +9824,33 @@ class BullSdkWire implements BaseWire {
       _wire__dart_bwk__api__sp_account__derive_sp_address_from_seedPtr
           .asFunction<
             void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_loose>, int)
+          >();
+
+  void wire__dart_bwk__api__sp_account__test_blindbit_scan_data(
+    int port_,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> url,
+  ) {
+    return _wire__dart_bwk__api__sp_account__test_blindbit_scan_data(
+      port_,
+      url,
+    );
+  }
+
+  late final _wire__dart_bwk__api__sp_account__test_blindbit_scan_dataPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >(
+        'frbgen_rust_bindings_wire__dart_bwk__api__sp_account__test_blindbit_scan_data',
+      );
+  late final _wire__dart_bwk__api__sp_account__test_blindbit_scan_data =
+      _wire__dart_bwk__api__sp_account__test_blindbit_scan_dataPtr
+          .asFunction<
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
           >();
 
   void wire__dart_bwk__api__sp_account__test_blindbit_url(

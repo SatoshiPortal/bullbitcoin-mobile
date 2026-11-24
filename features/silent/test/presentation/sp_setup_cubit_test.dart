@@ -42,6 +42,10 @@ class _FakeBackendProbe implements SpBackendProbePort {
   final Future<void> _regtestGate;
 
   @override
+  Future<Result<void, SilentFailure>> blindbitTip(String url) async =>
+      const Ok(null);
+
+  @override
   Future<Result<SpBackendDefaults, SilentFailure>>
   fetchRegtestDefaults() async {
     await _regtestGate;

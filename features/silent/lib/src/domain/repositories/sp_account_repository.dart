@@ -36,6 +36,7 @@ abstract interface class SpAccountRepository {
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   });
 
   /// Tear down the live session: cancel the notification stream, join the Rust
@@ -94,11 +95,21 @@ abstract interface class SpAccountRepository {
   /// Latest header-store tip seen from header progress, or null if unknown.
   int? chainTip();
 
-  /// Live chain tip read from the electrum backend. Needs a live session.
-  /// Unlike [chainTip] this does not depend on header progress, which has not
-  /// reported anything yet right after creation.
+  /// Monotonic revision of the session and scan state. An automatic scan reads
+  /// it before deciding, and the repository refuses to launch when the state
+  /// has moved on since: the decision belonged to a session or scan that is no
+  /// longer the one in front of it.
+  int get scanRevision;
+
+  /// A failed automatic scan in this session may be retried without granting
+  /// automatic resumption across account reopen or process restart.
+  bool get canRetryAutomaticScan;
+
+  /// Latest block available from the live session's Blindbit server. Async: the
+  /// tip is read over HTTP, not from the account's electrum cursor, which lags
+  /// the Blindbit server the scan follows.
   @useResult
-  Result<int, SilentFailure> currentBlockHeight();
+  Future<Result<int, SilentFailure>> currentBlockHeight();
 
   /// Earliest height a scan may start from (taproot activation on mainnet, a
   /// low value on test networks). The scan start chooser uses it as its floor.

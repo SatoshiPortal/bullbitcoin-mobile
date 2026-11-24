@@ -1,3 +1,4 @@
+import 'package:silent/silent.dart';
 import 'package:fees/fees.dart';
 import 'package:electrum/electrum.dart';
 import 'package:preferences/preferences.dart';
@@ -33,6 +34,17 @@ abstract interface class _WalletUsage {
 }
 
 class _MockTor extends Mock implements Tor {}
+
+class _Silent extends Mock implements Silent {
+  Result<SilentServerStatus, SilentFailure> result = const Ok(
+    SilentServerStatus.notApplicable,
+  );
+
+  @override
+  Future<Result<SilentServerStatus, SilentFailure>> checkServerStatus(
+    BitcoinNetwork network,
+  ) async => result;
+}
 
 class _MockExternalTor extends Mock implements ExternalTor {}
 
@@ -70,7 +82,9 @@ void main() {
     when(() => settingsRepository.readTorProxyPreferences())
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
+    final silent = _Silent()..result = const Ok(SilentServerStatus.online);
     final usecase = CheckAllServiceStatusUsecase(
+      silent: silent,
       electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -86,6 +100,7 @@ void main() {
     final status = await usecase.execute(network: NetworkEnv.mainnet);
 
     expect(status.mempool.status, ServiceStatus.unknown);
+    expect(status.silent?.status, ServiceStatus.online);
     verify(
       () => feesRepository.estimate(
         BitcoinNetwork.mainnet,
@@ -98,6 +113,15 @@ void main() {
       network: BitcoinNetwork.mainnet,
       currency: SupportedCurrency.usd,
     ));
+    silent.result = const Ok(SilentServerStatus.offline);
+    expect(
+      (await usecase.execute(network: NetworkEnv.mainnet)).silent?.status,
+      ServiceStatus.offline,
+    );
+    silent.result = const Ok(SilentServerStatus.notApplicable);
+    expect((await usecase.execute(network: NetworkEnv.mainnet)).silent, isNull);
+    silent.result = const Err(SilentUnexpected('admission unavailable'));
+    expect((await usecase.execute(network: NetworkEnv.mainnet)).silent, isNull);
   });
 
   test('an offline pricer is dated by the controlled clock', () async {
@@ -131,6 +155,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
+      silent: _Silent(),
       electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -180,6 +205,7 @@ void main() {
           .thenAnswer((_) async => _settings(useTorProxy: false));
       when(() => tor.external).thenReturn(external);
       final usecase = CheckAllServiceStatusUsecase(
+        silent: _Silent(),
         electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -233,6 +259,7 @@ void main() {
         ),
       );
       final usecase = CheckAllServiceStatusUsecase(
+        silent: _Silent(),
         electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -282,6 +309,7 @@ void main() {
         ),
       );
       final usecase = CheckAllServiceStatusUsecase(
+        silent: _Silent(),
         electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -328,6 +356,7 @@ void main() {
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
 
       final usecase = CheckAllServiceStatusUsecase(
+        silent: _Silent(),
         electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -388,6 +417,7 @@ void main() {
 
     final updates = <AllServicesStatus>[];
     final usecase = CheckAllServiceStatusUsecase(
+      silent: _Silent(),
       electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -427,6 +457,7 @@ void main() {
     when(preferences.readTorProxyPreferences)
         .thenAnswer((_) async => _settings(useTorProxy: false));
     final usecase = CheckAllServiceStatusUsecase(
+      silent: _Silent(),
       electrumServers: electrum,
       getIndexPrice: _FakeIndexPriceReader(fiatAmount: 70000).call,
       payjoinPolicy: payjoinPolicy,
@@ -467,6 +498,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
+      silent: _Silent(),
       electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -505,6 +537,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
+      silent: _Silent(),
       electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,

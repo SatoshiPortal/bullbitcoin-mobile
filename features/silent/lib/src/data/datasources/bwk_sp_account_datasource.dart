@@ -13,6 +13,11 @@ import 'package:rust_bindings/bwk.dart';
 class BwkSpAccountDatasource {
   SpAccount? _account;
 
+  // The Blindbit server this session was opened against. The live account
+  // cannot report it back, and the chain tip is read over HTTP rather than
+  // through the account's electrum cursor.
+  String? _blindbitUrl;
+
   // Confirmed FFI simulations pinned for the live session, keyed by draft id.
   // The simulation must round-trip UNCHANGED from preparePsbt into finalize, so
   // it stays here (never crosses the domain boundary) and is cleared on
@@ -37,6 +42,7 @@ class BwkSpAccountDatasource {
     required String dataDir,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
     switch (await secret.silentPayments.account(
@@ -45,13 +51,14 @@ class BwkSpAccountDatasource {
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       dataDir: dataDir,
-      dustLimit: BigInt.from(SpConfig.dustLimitSat),
+      dustLimit: BigInt.from(minScanAmountSat),
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
       headerCheckpoint: headerCheckpoint,
     )) {
       case Ok(:final value):
         _account = value;
+        _blindbitUrl = blindbitUrl;
         return const Ok(null);
       case Err(:final failure):
         return Err(failure);
@@ -65,6 +72,7 @@ class BwkSpAccountDatasource {
     await account.dispose();
     await account.release();
     _account = null;
+    _blindbitUrl = null;
     _simulations.clear();
   }
 
@@ -80,8 +88,6 @@ class BwkSpAccountDatasource {
   String spAddress() => _live.spAddress();
 
   SpBalanceView unifiedBalance() => _live.unifiedBalance();
-
-  bool isScanning() => _live.isScanning();
 
   int? lastScannedHeight() => _live.lastScannedHeight();
 
@@ -104,7 +110,16 @@ class BwkSpAccountDatasource {
 
   SpNetwork network() => _live.network();
 
-  int blockHeight() => _live.blockHeight();
+  /// Latest block the session's Blindbit server has indexed, read over HTTP.
+  /// The account's own cursor is the electrum tip, which lags the Blindbit
+  /// server the scan actually follows.
+  Future<int> blockHeight() {
+    final url = _blindbitUrl;
+    if (url == null) {
+      throw StateError('SpAccountDatasource: no live SP session');
+    }
+    return blindbitTip(url: url);
+  }
 
   /// Simulate the spend and pin the simulation for the live session. The id is
   /// the handle the draft carries back into [finalizeAndSignToHex].

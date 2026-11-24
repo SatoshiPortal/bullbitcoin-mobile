@@ -51,6 +51,7 @@ import 'package:spend/testing.dart' show FakeSpend;
 import '../../support/inventory_fixture.dart';
 
 import 'package:silent/setup.dart';
+import 'package:silent/silent.dart' show Silent;
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 class PricePreferences extends Mock
@@ -66,6 +67,8 @@ class ElectrumServers extends Mock implements ElectrumServersPort {}
 class Exchange extends Mock implements ExchangeFacade {}
 
 class SilentPreferences extends Mock implements Preferences {}
+
+class _Silent extends Mock implements Silent {}
 
 class Wallets extends Mock implements RecoverBullWalletPort {}
 
@@ -169,6 +172,7 @@ void main() {
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
+          silent: _Silent(),
           preferences: _UnusedPreferences(),
           inventory: inventoryFixture.inventory,
           readBackup: (_) async => const Ok(null),

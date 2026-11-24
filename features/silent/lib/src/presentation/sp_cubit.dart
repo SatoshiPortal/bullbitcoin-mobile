@@ -12,6 +12,7 @@ import 'package:silent/src/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:silent/src/domain/usecases/stop_sp_scan_usecase.dart';
 import 'package:silent/src/watchers/sp_notifications_watcher.dart';
 import 'package:silent/src/domain/usecases/get_sp_auto_scan_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_scan_server_tip_usecase.dart';
 import 'package:silent/src/domain/usecases/set_sp_auto_scan_usecase.dart';
 import 'package:silent/src/domain/entities/sp_notification.dart';
 import 'package:silent/src/domain/sp_blindbit_lag.dart';
@@ -26,6 +27,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// layer behind the `SpAccountRepository` port.
 class SpCubit extends Cubit<SpState> {
   final LoadSpWalletDataUsecase _loadSpWalletDataUsecase;
+  final GetSpScanServerTipUsecase _getScanServerTip;
   final RestampSpPaymentTimesUsecase _restampSpPaymentTimesUsecase;
   final SpNotificationsWatcher _spNotificationsWatcher;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
@@ -44,6 +46,8 @@ class SpCubit extends Cubit<SpState> {
   // spawned its background thread, so a double-tap in that window would slip
   // past the state check. This flag closes it at tap time.
   bool _scanInFlight = false;
+  bool _stopRequested = false;
+  int? _scanStartToRetry;
 
   // The retry policy (attempts + backoff) lives in the watcher; the cubit only
   // reflects the outcome as a status.
@@ -51,6 +55,7 @@ class SpCubit extends Cubit<SpState> {
 
   SpCubit({
     required this._loadSpWalletDataUsecase,
+    required this._getScanServerTip,
     required this._restampSpPaymentTimesUsecase,
     required this._spNotificationsWatcher,
     required this._scanSpWalletUsecase,
@@ -62,6 +67,9 @@ class SpCubit extends Cubit<SpState> {
     required this._headerRetryWatcher,
     required this._getSpAutoScanUsecase,
   }) : super(const SpState());
+
+  Future<int?> scanServerTip() async =>
+      (await _getScanServerTip.execute()).fold((tip) => tip, (_) => null);
 
   Future<void> load() async {
     if (isClosed) return;
@@ -78,6 +86,7 @@ class SpCubit extends Cubit<SpState> {
             history: value.history,
             coins: value.coins,
             lastScannedHeight: value.wallet.lastScannedHeight,
+            hasPendingScan: value.wallet.hasPendingScan,
             isScanning: value.wallet.isScanning,
             network: value.network,
             chainTip: value.chainTip,
@@ -210,11 +219,16 @@ class SpCubit extends Cubit<SpState> {
 
   /// [to] is the Blindbit tip the scan runs up to.
   void _onScanStarted(int from, int to) {
+    // Once BWK starts the scan, the repository's pending start and the native
+    // checkpoint own resumption. An explicit retry height is only for a launch
+    // that failed before BWK started.
+    _scanStartToRetry = null;
     _etaEstimator.reset();
     final chainTip = state.chainTip;
     emit(
       state.copyWith(
         isScanning: true,
+        error: null,
         scanPhase: SpScanPhase.receive,
         scanStartTime: DateTime.now(),
         scanEtaSecs: null,
@@ -268,6 +282,7 @@ class SpCubit extends Cubit<SpState> {
     emit(
       state.copyWith(
         isScanning: false,
+        hasPendingScan: false,
         scanLastDurationSecs: start == null
             ? null
             : DateTime.now().difference(start).inSeconds,
@@ -404,6 +419,7 @@ class SpCubit extends Cubit<SpState> {
             history: value.history,
             coins: value.coins,
             lastScannedHeight: value.wallet.lastScannedHeight,
+            hasPendingScan: value.wallet.hasPendingScan,
             chainTip: value.chainTip,
           ),
         );
@@ -425,6 +441,7 @@ class SpCubit extends Cubit<SpState> {
     // one-shot scan concurrently. Mirrors the send flow's isBroadcasting guard.
     if (_scanInFlight || state.isScanning) return;
     _scanInFlight = true;
+    _scanStartToRetry = startHeight;
     try {
       if (isClosed) return;
       emit(
@@ -455,15 +472,26 @@ class SpCubit extends Cubit<SpState> {
       // Only this call (which passed the guard) started the scan, so only this
       // call clears the flag.
       _scanInFlight = false;
+      if (_stopRequested) {
+        _stopRequested = false;
+        if (!isClosed && state.isScanning) await stopScan();
+      }
     }
   }
 
+  Future<void> retryScan() => scan(startHeight: _scanStartToRetry);
+
   Future<void> stopScan() async {
+    if (_scanInFlight) {
+      _stopRequested = true;
+      return;
+    }
     // Returns after flipping the cancel flag; the scan tears down
     // asynchronously and emits ScanStopped/ScanCompleted, at which point
     // `_onNotification` clears `state.isScanning`.
     if (await _stopSpScanUsecase.execute() case Err(:final failure)) {
       log.warning('SpCubit.stopScan: ${failure.logMessage}');
+      if (!isClosed) emit(state.copyWith(error: failure));
     }
   }
 
@@ -477,6 +505,7 @@ class SpCubit extends Cubit<SpState> {
           state.copyWith(
             error: null,
             lastScannedHeight: null,
+            hasPendingScan: false,
             scanPhase: null,
             scanStartTime: null,
             scanEtaSecs: null,

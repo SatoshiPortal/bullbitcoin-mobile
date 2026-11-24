@@ -72,6 +72,8 @@ SilentWallet spWallet({
   Sats? confirmedSat,
   Sats? totalUnifiedSat,
   bool isScanning = false,
+  bool hasPendingScan = false,
+  bool isPendingScanPaused = false,
   int? lastScannedHeight,
 }) {
   final balance = SilentBalance(
@@ -85,6 +87,8 @@ SilentWallet spWallet({
       #spAddress: spAddress,
       #balance: balance,
       #isScanning: isScanning,
+      #hasPendingScan: hasPendingScan,
+      #isPendingScanPaused: isPendingScanPaused,
       #lastScannedHeight: lastScannedHeight,
     }) as SilentWallet;
   } on NoSuchMethodError {
@@ -147,6 +151,10 @@ class FakeSpAccountRepository
   /// Model a live tip read that fails (no session, dead FFI).
   bool currentBlockHeightShouldFail = false;
 
+  /// When set, [currentBlockHeight] returns this future instead, so a test can
+  /// hold the read open (timeout and cancellation cases).
+  Future<Result<int, SilentFailure>>? currentBlockHeightOverride;
+
   /// How many times a live session was created (setup / reconstruct).
   int createCount = 0;
 
@@ -174,6 +182,7 @@ class FakeSpAccountRepository
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) async {
     if (createShouldFail) {
       return const Err(SilentUnexpected('SP account create failed'));
@@ -276,8 +285,40 @@ class FakeSpAccountRepository
     return const Ok(null);
   }
 
+  /// Revision reported for [scanRevision]. Bump it to model a session recycle
+  /// or a scan-state change between a caller's decision and its launch.
+  int scanRevisionValue = 0;
+
+  /// Admissions refused because the state moved on since they were decided.
+  int automaticRefusals = 0;
+
+  /// Runs at the top of [scanOnce], before the admission check: models a
+  /// session recycle or a scan-state change landing between the caller's
+  /// decision and its launch.
+  void Function()? beforeScanOnce;
+
   @override
-  Future<Result<void, SilentFailure>> scanOnce({int? startHeight}) async {
+  int get scanRevision => scanRevisionValue;
+
+  @override
+  bool canRetryAutomaticScan = false;
+
+  void setScanSnapshot(SilentWallet wallet) => _wallet = wallet;
+
+  @override
+  Future<Result<void, SilentFailure>> scanOnce({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  }) async {
+    beforeScanOnce?.call();
+    // Same admission the live repository applies, so a test that moves the
+    // state must see the scan refused rather than merely unrecorded.
+    if (automatic != null &&
+        (automatic.revision != scanRevisionValue ||
+            _wallet.isPendingScanPaused)) {
+      automaticRefusals++;
+      return const Ok<void, SilentFailure>(null);
+    }
     scanOnceCount++;
     lastScanStartHeight = startHeight;
     return const Ok<void, SilentFailure>(null);
@@ -288,11 +329,7 @@ class FakeSpAccountRepository
 
   @override
   Future<Result<void, SilentFailure>> clearScanState() async {
-    _wallet = SilentWallet(
-      spAddress: _wallet.spAddress,
-      balance: _wallet.balance,
-      isScanning: _wallet.isScanning,
-    );
+    _wallet = _withWallet(hasPendingScan: false, isPendingScanPaused: false);
     return const Ok<void, SilentFailure>(null);
   }
 
@@ -308,14 +345,25 @@ class FakeSpAccountRepository
   /// Replace the snapshot the port reports, for the scan policy tests.
   void setWalletForTest(SilentWallet wallet) => _wallet = wallet;
 
+  // Keeps every field this helper does not override: a test that flips the
+  // scanning flag must not silently drop the pending-scan marker.
+  SilentWallet _withWallet({
+    bool? isScanning,
+    bool? hasPendingScan,
+    bool? isPendingScanPaused,
+  }) => SilentWallet(
+    network: _wallet.network,
+    spAddress: _wallet.spAddress,
+    balance: _wallet.balance,
+    isScanning: isScanning ?? _wallet.isScanning,
+    hasPendingScan: hasPendingScan ?? _wallet.hasPendingScan,
+    isPendingScanPaused: isPendingScanPaused ?? _wallet.isPendingScanPaused,
+    lastScannedHeight: _wallet.lastScannedHeight,
+  );
+
   /// Model a scan already in flight, which owns the session.
   void setScanningForTest(bool isScanning) {
-    _wallet = SilentWallet(
-      spAddress: _wallet.spAddress,
-      balance: _wallet.balance,
-      isScanning: isScanning,
-      lastScannedHeight: _wallet.lastScannedHeight,
-    );
+    _wallet = _withWallet(isScanning: isScanning);
   }
 
   @override
@@ -346,7 +394,9 @@ class FakeSpAccountRepository
   int? chainTip() => chainTipValue;
 
   @override
-  Result<int, SilentFailure> currentBlockHeight() {
+  Future<Result<int, SilentFailure>> currentBlockHeight() async {
+    final override = currentBlockHeightOverride;
+    if (override != null) return override;
     if (currentBlockHeightShouldFail) {
       return const Err(SilentUnexpected('no live session'));
     }
@@ -435,6 +485,10 @@ class FakeSpBackendProbe implements SpBackendProbePort {
   /// tests that never take the regtest branch want.
   Result<SpBackendDefaults, SilentFailure>? regtestDefaults;
   int fetchRegtestDefaultsCalls = 0;
+
+  @override
+  Future<Result<void, SilentFailure>> blindbitTip(String url) async =>
+      const Ok(null);
 
   @override
   Future<Result<void, SilentFailure>> testBackend(

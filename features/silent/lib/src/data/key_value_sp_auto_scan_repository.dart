@@ -9,6 +9,11 @@ class KeyValueSpAutoScanRepository implements SpAutoScanRepository {
   // Enabled until storage or the user says otherwise, so a read before warmUp
   // never has to guess.
   bool _isEnabled = true;
+  // An explicit opt-out takes effect for the rest of this session even if
+  // the keystore fails to save it. Only a newer, explicit opt-in may undo it.
+  bool _sessionOptOut = false;
+  int _writeRevision = 0;
+  Future<void> _pendingWrite = Future.value();
 
   KeyValueSpAutoScanRepository({required this._storage});
 
@@ -17,19 +22,34 @@ class KeyValueSpAutoScanRepository implements SpAutoScanRepository {
 
   @override
   Future<Result<void, SilentFailure>> warmUp() async {
+    final revision = _writeRevision;
+    await _pendingWrite;
+    if (revision != _writeRevision || _sessionOptOut) return const Ok(null);
     switch (await _storage.readAutoScan()) {
       case Err():
         return const Err(SilentUnexpected('Silent auto-scan read failed'));
       case Ok(value: final stored):
-        _isEnabled = stored == null || stored.isEmpty || stored == 'true';
+        if (revision == _writeRevision) {
+          _isEnabled = stored == null || stored.isEmpty || stored == 'true';
+        }
         return const Ok(null);
     }
   }
 
   @override
-  Future<Result<void, SilentFailure>> save({required bool isEnabled}) async {
+  Future<Result<void, SilentFailure>> save({required bool isEnabled}) {
+    _writeRevision++;
+    _sessionOptOut = !isEnabled;
     _isEnabled = isEnabled;
-    return (await _storage.writeAutoScan('$isEnabled'))
-        .mapErr((_) => const SilentUnexpected('Silent auto-scan write failed'));
+    final write = _pendingWrite.then((_) async {
+      return (await _storage.writeAutoScan(
+        '$isEnabled',
+      )).mapErr((_) => const SilentUnexpected('Silent auto-scan write failed'));
+    });
+    _pendingWrite = write.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
+    return write;
   }
 }

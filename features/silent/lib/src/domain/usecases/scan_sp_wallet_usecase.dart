@@ -22,11 +22,18 @@ class ScanSpWalletUsecase {
 
   /// `startHeight` overrides where the scan begins (null resumes from the last
   /// scanned position); used by the first-scan start chooser.
+  ///
+  /// [automatic] marks a scan the app decided on its own. Its admission is
+  /// rechecked in the repository against the state at launch, and an automatic
+  /// scan that is refused returns `Ok(null)` rather than a failure.
   @useResult
-  Future<Result<void, SilentFailure>> execute({int? startHeight}) async {
+  Future<Result<void, SilentFailure>> execute({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  }) async {
     if (!await _getSpFeatureGateUsecase.execute()) {
       return const Err(SilentUnsupportedNetwork());
     }
-    return _repository.scanOnce(startHeight: startHeight);
+    return _repository.scanOnce(startHeight: startHeight, automatic: automatic);
   }
 }

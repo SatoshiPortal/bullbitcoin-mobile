@@ -80,13 +80,16 @@ void main() {
   });
 
   testWidgets('shows manual scan callout on SP tab', (tester) async {
+    await cubit.setAutoScanEnabled(isEnabled: false);
     await cubit.load();
     await tester.pumpWidget(_buildPage(cubit));
     await tester.pump();
 
     expect(find.text('Manual scan required'), findsOneWidget);
     expect(
-      find.text('This address is reusable. Funds arrive after you tap Scan.'),
+      find.text(
+        'This address is reusable. Incoming payments appear after they confirm and are scanned.',
+      ),
       findsOneWidget,
     );
   });

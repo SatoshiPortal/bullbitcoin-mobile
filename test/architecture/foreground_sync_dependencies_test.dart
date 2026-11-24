@@ -33,7 +33,7 @@ const _allowedTargets = <String, String>{
   'bull_exchange': 'bitcoin_price coins fees',
   'coins': 'address_view bitcoin_price',
   'exchange': 'address_view bull_exchange overview transactions wallet',
-  'network': 'recoverbull',
+  'network': 'recoverbull silent',
   'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
   'overview': 'bitcoin_price quick_actions silent swap',
   'receive': 'address_view label_editor signers transactions',

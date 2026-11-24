@@ -19,6 +19,34 @@ void main() {
     isScanning: isScanning,
   );
 
+  group('scan freshness', () {
+    test('does not claim to be caught up after header validation fails', () {
+      for (final status in [
+        SpHeaderValidationStatus.reconnecting,
+        SpHeaderValidationStatus.failed,
+        SpHeaderValidationStatus.invalidChain,
+      ]) {
+        final state = SpState(
+          lastScannedHeight: tip,
+          chainTip: tip,
+          headerValidationStatus: status,
+        );
+        expect(state.isChainTipReliable, isFalse);
+        expect(state.isCaughtUp, isFalse);
+      }
+    });
+
+    test('resume start does not precede the supported floor', () {
+      const state = SpState(lastScannedHeight: 10, minBirthdayHeight: 20);
+      expect(state.nextScanStart, 20);
+    });
+
+    test('a cursor at the reliable tip is caught up', () {
+      const state = SpState(lastScannedHeight: tip, chainTip: tip);
+      expect(state.isCaughtUp, isTrue);
+    });
+  });
+
   group('SpState.needsScanNudge', () {
     test('behind with auto scanning off asks the user', () {
       expect(stateWith().needsScanNudge, isTrue);

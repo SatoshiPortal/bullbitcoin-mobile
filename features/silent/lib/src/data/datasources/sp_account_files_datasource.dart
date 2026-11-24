@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:silent/src/data/sp_storage_names.dart';
@@ -23,6 +24,58 @@ class SpAccountFilesDatasource {
     final appDocsDir = await getApplicationDocumentsDirectory();
     return appDocsDir.path;
   }
+
+  /// The pending-scan marker, or null when there is none.
+  ///
+  /// Throws [FormatException] when the file exists but does not hold this
+  /// version's shape: the caller owns the decision to delete it.
+  Future<({int? startHeight, bool isPaused})?> readPendingScan(
+    String dataDir,
+  ) async {
+    final file = _pendingScanFile(dataDir);
+    final String raw;
+    try {
+      raw = await file.readAsString();
+    } on PathNotFoundException {
+      // Only a missing file is evidence that there is nothing to resume.
+      return null;
+    }
+    final data = jsonDecode(raw);
+    if (data
+        case {'startHeight': final int? height, 'isPaused': final bool paused}
+        when height == null || height >= 0) {
+      return (startHeight: height, isPaused: paused);
+    }
+    throw const FormatException('Invalid pending Silent Payments scan');
+  }
+
+  /// Replace the pending-scan marker, or delete it when [pending] is null.
+  ///
+  /// Written to a sibling temp file and renamed, so a process death mid-write
+  /// leaves either the previous marker or the new one, never a truncated file.
+  Future<void> writePendingScan(
+    String dataDir,
+    ({int? startHeight, bool isPaused})? pending,
+  ) async {
+    final file = _pendingScanFile(dataDir);
+    if (pending == null) {
+      if (await file.exists()) await file.delete();
+      return;
+    }
+    final temporary = File('${file.path}.tmp');
+    await temporary.writeAsString(
+      jsonEncode({
+        'startHeight': pending.startHeight,
+        'isPaused': pending.isPaused,
+      }),
+      flush: true,
+    );
+    await temporary.rename(file.path);
+  }
+
+  File _pendingScanFile(String dataDir) => File(
+    '$dataDir/${SpStorageNames.accountName}/${SpStorageNames.pendingScanFile}',
+  );
 
   Future<bool> accountDirExists() async => (await _accountDir()).exists();
 

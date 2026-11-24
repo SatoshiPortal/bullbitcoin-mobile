@@ -16,6 +16,7 @@ import 'package:silent/src/presentation/sp_cubit.dart';
 import 'package:silent/src/silent.dart';
 import 'package:silent/src/silent_graph.dart';
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -47,6 +48,12 @@ void main() {
   late SpCubit cubit;
 
   setUp(() {
+    // The scan path treats anything but `resumed` as background, and the test
+    // binding starts with no lifecycle state at all: without this every
+    // automatic tick below would be a no-op for the wrong reason.
+    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+      AppLifecycleState.resumed,
+    );
     fakeRepo = FakeSpAccountRepository(networkValue: BitcoinNetwork.mainnet);
     locator = GetIt.asNewInstance();
     locator.allowReassignment = true;
@@ -208,6 +215,37 @@ void main() {
     test('scans exactly once when the wallet is close to the tip', () {
       fakeAsync((async) {
         fakeRepo.setWalletForTest(spWallet(lastScannedHeight: 899990));
+        fakeRepo.chainTipValue = 900000;
+
+        syncTick(async);
+
+        expect(fakeRepo.scanOnceCount, 1);
+      });
+    });
+
+    test('never scans while the app is in the background', () {
+      fakeAsync((async) {
+        fakeRepo.setWalletForTest(spWallet(lastScannedHeight: 899990));
+        fakeRepo.chainTipValue = 900000;
+        TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+          AppLifecycleState.paused,
+        );
+        addTearDown(
+          () => TestWidgetsFlutterBinding.instance
+              .handleAppLifecycleStateChanged(AppLifecycleState.resumed),
+        );
+
+        syncTick(async);
+
+        expect(fakeRepo.scanOnceCount, 0);
+      });
+    });
+
+    test('resumes a pending scan even when the cursor looks far behind', () {
+      fakeAsync((async) {
+        fakeRepo.setWalletForTest(
+          spWallet(lastScannedHeight: 800000, hasPendingScan: true),
+        );
         fakeRepo.chainTipValue = 900000;
 
         syncTick(async);
