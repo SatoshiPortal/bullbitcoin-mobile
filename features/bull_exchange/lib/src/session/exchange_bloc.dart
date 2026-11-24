@@ -77,7 +77,8 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
         if (refresh is Refreshing && before?.refresh is! Refreshing) {
           unawaited(_loadSummary(session));
         }
-        if (announcements is AnnouncementsLoading && before == null) {
+        if (announcements is AnnouncementsLoading &&
+            before?.announcements is! AnnouncementsLoading) {
           unawaited(_loadAnnouncements(session));
         }
         if (dcaStop is DcaStopping && before?.dcaStop is! DcaStopping) {

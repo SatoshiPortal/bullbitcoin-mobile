@@ -61,6 +61,9 @@ final _refreshFailed = _loaded(refresh: const RefreshFailed(_failure));
 final _pendingBanner = _loaded(announcements: const AnnouncementsLoading());
 final _stopping = _loaded(dcaStop: const DcaStopping());
 final _stopFailed = _loaded(dcaStop: const DcaStopFailed(_failure));
+final _bannerUnavailable = _loaded(
+  announcements: const AnnouncementsUnavailable(_failure),
+);
 
 /// One state of each shape the table distinguishes.
 final _states = <String, ExchangeState>{
@@ -73,6 +76,7 @@ final _states = <String, ExchangeState>{
   'Loaded banner pending': _pendingBanner,
   'Loaded stopping DCA': _stopping,
   'Loaded DCA stop failed': _stopFailed,
+  'Loaded banner unavailable': _bannerUnavailable,
 };
 
 /// Per event, the next state from each entry of [_states], in order.
@@ -89,21 +93,22 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'signed in, another session (B1, B3)': (
     const ExchangeAccessChanged(ExchangeAccessSignedIn(_b)),
-    List.filled(9, const ExchangeLoading(_b)),
+    List.filled(10, const ExchangeLoading(_b)),
   ),
   'signed out': (
     const ExchangeAccessChanged(
       ExchangeAccessSignedOut(ExchangeEnvironment.mainnet),
     ),
-    List.filled(9, _signedOut),
+    List.filled(10, _signedOut),
   ),
   'expiring': (
     const ExchangeAccessChanged(ExchangeAccessExpiring(_a)),
-    List.filled(9, _signedOut),
+    List.filled(10, _signedOut),
   ),
   'refresh requested (B10)': (
     const ExchangeRefreshRequested(),
@@ -123,6 +128,10 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
         dcaStop: const DcaStopFailed(_failure),
         refresh: const Refreshing(),
       ),
+      _loaded(
+        announcements: const AnnouncementsLoading(),
+        refresh: const Refreshing(),
+      ),
     ],
   ),
   'summary of this session': (
@@ -137,6 +146,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'summary of another session': (
@@ -151,6 +161,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'summary failure of this session': (
@@ -167,6 +178,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'summary failure of another session': (
@@ -181,6 +193,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'announcements of this session': (
@@ -195,6 +208,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _loaded(announcements: AnnouncementsShown([_announcement])),
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'announcements of another session': (
@@ -209,6 +223,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'announcements failure of this session': (
@@ -223,6 +238,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _loaded(announcements: const AnnouncementsUnavailable(_failure)),
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'announcements failure of another session': (
@@ -237,6 +253,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'stop DCA requested (B17 stopDca)': (
@@ -257,6 +274,10 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       ),
       _stopping,
       _stopping,
+      _loaded(
+        announcements: const AnnouncementsUnavailable(_failure),
+        dcaStop: const DcaStopping(),
+      ),
     ],
   ),
   'DCA stopped for this session': (
@@ -271,6 +292,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _refreshing,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'DCA stopped for another session': (
@@ -285,6 +307,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'DCA stop failed for this session': (
@@ -301,6 +324,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
         dcaStop: const DcaStopFailed(ExchangeAccountUnavailableFailure()),
       ),
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
   'DCA stop failed for another session': (
@@ -315,6 +339,7 @@ final _table = <String, (ExchangeEvent, List<ExchangeState>)>{
       _pendingBanner,
       _stopping,
       _stopFailed,
+      _bannerUnavailable,
     ],
   ),
 };
@@ -372,6 +397,10 @@ void main() {
       Refreshing,
       RefreshFailed,
     });
+    expect(
+      seen.whereType<ExchangeLoaded>().map((s) => s.announcements.runtimeType),
+      {AnnouncementsLoading, AnnouncementsShown, AnnouncementsUnavailable},
+    );
     expect(seen.whereType<ExchangeLoaded>().map((s) => s.dcaStop.runtimeType), {
       DcaStopIdle,
       DcaStopping,

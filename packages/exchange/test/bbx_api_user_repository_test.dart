@@ -375,10 +375,10 @@ void main() {
       expect(announcements.single.updatedAt, DateTime.utc(2026, 11, 20, 10));
     });
 
-    test('no stored key is an empty list, not a failure', () async {
+    test('no stored key is a failure, never an empty banner', () async {
       expect(
-        _valueOf(await _signedOut(FakeBbxHttp()).listAnnouncements()),
-        isEmpty,
+        _failureOf(await _signedOut(FakeBbxHttp()).listAnnouncements()),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
     });
 

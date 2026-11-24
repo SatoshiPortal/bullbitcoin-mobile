@@ -34,8 +34,24 @@ ExchangeState transitionExchange(ExchangeState state, ExchangeEvent event) =>
         ExchangeLoading(session),
       (ExchangeLoaded(refresh: Refreshing()), ExchangeRefreshRequested()) =>
         state,
+      // A banner that failed to load is read again with the refresh; one
+      // that loaded stays until the next load.
       (
-        ExchangeLoaded(refresh: RefreshIdle() || RefreshFailed()),
+        ExchangeLoaded(
+          refresh: RefreshIdle() || RefreshFailed(),
+          announcements: AnnouncementsUnavailable(),
+        ),
+        ExchangeRefreshRequested(),
+      ) =>
+        (state as ExchangeLoaded).copyWith(
+          refresh: const Refreshing(),
+          announcements: const AnnouncementsLoading(),
+        ),
+      (
+        ExchangeLoaded(
+          refresh: RefreshIdle() || RefreshFailed(),
+          announcements: AnnouncementsLoading() || AnnouncementsShown(),
+        ),
         ExchangeRefreshRequested(),
       ) =>
         (state as ExchangeLoaded).copyWith(refresh: const Refreshing()),
@@ -83,7 +99,7 @@ ExchangeState transitionExchange(ExchangeState state, ExchangeEvent event) =>
       ) =>
         state,
 
-      // Announcements, once per load.
+      // Announcements, once per load (and again after a failure).
       (
         ExchangeLoaded(:final session, announcements: AnnouncementsLoading()),
         ExchangeAnnouncementsLoaded(session: final from, :final items),

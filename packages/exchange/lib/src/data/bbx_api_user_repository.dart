@@ -97,7 +97,6 @@ final class BbxApiUserRepository {
               updatedAt: a.updatedAt,
             ),
         ]),
-        Err(failure: bbx.BbxMissingCredentialFailure()) => const Ok([]),
         Err(:final failure) => Err(
           _failureFrom(
             failure,
