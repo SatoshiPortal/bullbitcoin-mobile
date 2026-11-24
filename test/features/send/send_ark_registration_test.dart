@@ -58,18 +58,21 @@ void main() {
     );
   });
 
-  test('without a mounted Ark host a pasted Ark address stays unavailable', () async {
-    LegacySendFlow.mount(locator);
+  test(
+    'without a mounted Ark host a pasted Ark address stays unavailable',
+    () async {
+      LegacySendFlow.mount(locator);
 
-    final cubit = await pasteArkAddress();
+      final cubit = await pasteArkAddress();
 
-    expect(
-      cubit.state,
-      isA<SendArkUnavailable>().having(
-        (state) => state.failure,
-        'reason',
-        isA<SendArkRouteUnavailableFailure>(),
-      ),
-    );
-  });
+      expect(
+        cubit.state,
+        isA<SendArkUnavailable>().having(
+          (state) => state.failure,
+          'reason',
+          isA<SendArkRouteUnavailableFailure>(),
+        ),
+      );
+    },
+  );
 }

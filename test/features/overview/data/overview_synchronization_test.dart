@@ -25,7 +25,9 @@ final class _Catalog implements WalletCatalogPort {
   final Map<String, PublicWalletDescriptor> descriptors;
 
   @override
-  Future<Result<PublicWalletDescriptor, SyncFailure>> find(WalletKey key) async {
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
+    WalletKey key,
+  ) async {
     final descriptor = descriptors[key.id];
     return descriptor == null
         ? const Err(SyncNotFoundFailure())
@@ -65,15 +67,16 @@ void main() {
       catalog: () => _Catalog({
         for (final id in ['btc-1', 'btc-2']) id: _descriptor(id),
       }),
-      synchronize: (
-        descriptor, {
-        discover = false,
-        allowInitialScan = true,
-        reason = SyncReason.auto,
-      }) async {
-        synced.add(descriptor.key.id);
-        return const Ok(null);
-      },
+      synchronize:
+          (
+            descriptor, {
+            discover = false,
+            allowInitialScan = true,
+            reason = SyncReason.auto,
+          }) async {
+            synced.add(descriptor.key.id);
+            return const Ok(null);
+          },
       refreshRevisions: () async => const Ok(null),
       swaps: () => _Swaps(),
       silent: () => _Sp(),
@@ -117,26 +120,29 @@ void main() {
     expect(synced, ['btc-1', 'btc-2']);
   });
 
-  test('an incompletely read selection syncs its readable wallets and fails', () async {
-    stubBitcoin(
-      Ok(
-        walletSelectionForTesting([
-          walletRegistrationForTesting(
-            id: 'btc-1',
-            network: BitcoinNetwork.mainnet,
-          ),
-        ], isComplete: false),
-      ),
-    );
+  test(
+    'an incompletely read selection syncs its readable wallets and fails',
+    () async {
+      stubBitcoin(
+        Ok(
+          walletSelectionForTesting([
+            walletRegistrationForTesting(
+              id: 'btc-1',
+              network: BitcoinNetwork.mainnet,
+            ),
+          ], isComplete: false),
+        ),
+      );
 
-    final failure = await failureOf(
-      foreground.coordinator.sync(only: {SyncKind.bitcoin}),
-    );
+      final failure = await failureOf(
+        foreground.coordinator.sync(only: {SyncKind.bitcoin}),
+      );
 
-    expect(failure, isA<SyncStorageFailure>());
-    // The readable wallet is still synced: only the pass fails.
-    expect(synced, ['btc-1']);
-  });
+      expect(failure, isA<SyncStorageFailure>());
+      // The readable wallet is still synced: only the pass fails.
+      expect(synced, ['btc-1']);
+    },
+  );
 
   test('a failed incomplete pass is not throttled', () async {
     stubBitcoin(
@@ -158,16 +164,19 @@ void main() {
     expect(synced, ['btc-1', 'btc-1']);
   });
 
-  test('an unreadable selection fails as a storage read, never as empty', () async {
-    stubBitcoin(const Err(UnreadableWalletFailure()));
+  test(
+    'an unreadable selection fails as a storage read, never as empty',
+    () async {
+      stubBitcoin(const Err(UnreadableWalletFailure()));
 
-    final failure = await failureOf(
-      foreground.coordinator.sync(only: {SyncKind.bitcoin}),
-    );
+      final failure = await failureOf(
+        foreground.coordinator.sync(only: {SyncKind.bitcoin}),
+      );
 
-    expect(failure, isA<SyncStorageFailure>());
-    expect(synced, isEmpty);
-  });
+      expect(failure, isA<SyncStorageFailure>());
+      expect(synced, isEmpty);
+    },
+  );
 
   test('a complete, empty selection reports no wallets', () async {
     stubBitcoin(Ok(walletSelectionForTesting([])));
