@@ -13,6 +13,7 @@ import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
+import 'package:secrets/secrets.dart' show WalletInventory;
 import 'package:send/testing.dart';
 import 'package:labels/labels.dart';
 import 'package:spend/spend.dart';
@@ -34,6 +35,8 @@ class _MockLabels extends Mock implements Labels {}
 
 class _MockDisplayPreferences extends Mock
     implements AmountDisplayPreferencesReader {}
+
+class _MockInventory extends Mock implements WalletInventory {}
 
 class _VerifyingSpend extends FakeSpend {
   @override
@@ -80,8 +83,7 @@ void main() {
         coins:
             coins ??
             CoinsFeature.mount<String>(
-              resolveWalletKey: (_) async =>
-                  throw StateError('Unexpected wallet lookup'),
+              inventory: _MockInventory(),
               labels: _MockLabels(),
               loadWallet: (_) async => throw StateError('Unexpected coin read'),
               foreground: () async => Ok(sync),

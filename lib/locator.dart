@@ -107,11 +107,8 @@ import 'package:sync/sync.dart'
         Sync,
         Wallet,
         SyncFailure,
-        SyncNotFoundFailure,
         SyncStorageFailure,
         WalletConnectionPort,
-        WalletKey,
-        WalletSnapshotException,
         WalletCatalogPort;
 
 final GetIt locator = GetIt.instance;
@@ -535,14 +532,7 @@ class AppLocator {
     );
     locator.registerLazySingleton(
       () => CoinsFeature.mount<app_wallet.Wallet>(
-        resolveWalletKey: (id) async => switch (await inventory.readWallet(
-          id,
-        )) {
-          Ok(:final value) => WalletKey(id: value.id, network: value.network),
-          Err(failure: WalletRegistrationNotFoundFailure()) =>
-            throw const WalletSnapshotException(SyncNotFoundFailure()),
-          Err() => throw const WalletSnapshotException(SyncStorageFailure()),
-        },
+        inventory: inventory,
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
         foreground: locator<WalletNativeRuntime>().foreground,
         labels: locator<Labels>(),

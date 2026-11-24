@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:labels/labels.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show WalletInventory;
 import 'package:sync/sync.dart';
 
 import '../coins.dart';
@@ -24,7 +25,7 @@ final class CoinsFeature {
   const CoinsFeature._(this.coins, this.route);
 
   static CoinsFeature mount<T extends Object>({
-    required Future<WalletKey> Function(String) resolveWalletKey,
+    required WalletInventory inventory,
     required Future<Result<Wallet, SyncFailure>> Function(WalletKey) loadWallet,
     required Future<Result<Sync, SyncFailure>> Function() foreground,
     required Labels labels,
@@ -39,7 +40,7 @@ final class CoinsFeature {
     required OpenSelectedCoinsFlow<T> onSweep,
   }) {
     final repository = WalletUtxoRepositoryImpl(
-      resolveWalletKey: resolveWalletKey,
+      inventory: inventory,
       loadWallet: loadWallet,
       foreground: foreground,
       labelsFacade: labels,

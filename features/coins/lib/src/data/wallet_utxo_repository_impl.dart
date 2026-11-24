@@ -1,5 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:coins/src/domain/coins_failure.dart';
+import 'package:secrets/secrets.dart'
+    show WalletInventory, WalletRegistrationNotFoundFailure;
 import 'package:sync/sync.dart';
 import 'package:coins/src/data/mappers/wallet_utxo_mapper.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Outpoint, Result;
@@ -8,17 +10,29 @@ import 'package:coins/src/domain/repositories/wallet_utxo_repository.dart';
 import 'package:labels/labels.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
-  final Future<WalletKey> Function(String) _resolveWalletKey;
+  final WalletInventory _inventory;
   final Labels _labelsFacade;
   final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
   final Future<Result<Sync, SyncFailure>> Function() _foreground;
 
   WalletUtxoRepositoryImpl({
-    required this._resolveWalletKey,
+    required this._inventory,
     required this._labelsFacade,
     required this._loadWallet,
     required this._foreground,
   });
+
+  /// The stored wallet's key, with the storage failure mapped to the sync
+  /// vocabulary this repository speaks. The lookup lives here, not in the
+  /// composition root: a missing registration and a failed read are distinct
+  /// and both are coins storage boundaries.
+  Future<WalletKey> _walletKey(String walletId) async =>
+      switch (await _inventory.readWallet(walletId)) {
+        Ok(:final value) => WalletKey(id: value.id, network: value.network),
+        Err(failure: WalletRegistrationNotFoundFailure()) =>
+          throw const WalletSnapshotException(SyncNotFoundFailure()),
+        Err() => throw const WalletSnapshotException(SyncStorageFailure()),
+      };
 
   static T _value<T>(Result<T, SyncFailure> result) => switch (result) {
     Ok(:final value) => value,
@@ -52,7 +66,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   );
 
   Future<List<WalletUtxo>> _getWalletUtxos(String walletId) async {
-    final key = await _resolveWalletKey(walletId);
+    final key = await _walletKey(walletId);
     final wallet = _value(await _loadWallet(key));
     // An unavailable freeze policy must never publish apparently spendable coins.
     final coins = _value(wallet.coins.now.latest);
@@ -98,7 +112,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     required List<Outpoint> outpoints,
   }) => _read(
     () async {
-      final key = await _resolveWalletKey(walletId);
+      final key = await _walletKey(walletId);
       final sync = _value(await _foreground());
       final wallet = _value(await sync.wallet(key));
       for (final outpoint in outpoints) {
