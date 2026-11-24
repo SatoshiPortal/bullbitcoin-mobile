@@ -47,7 +47,10 @@ void main() {
         ),
       );
 
-      expect(await open.execute('att-1'), isA<Ok<void, Object>>());
+      expect(
+        await open.execute('att-1'),
+        isA<Ok<void, ExchangeSupportChatFailure>>(),
+      );
 
       final escaped = File('${tempDir.parent.path}/outside_the_sandbox.txt');
       addTearDown(() {
@@ -74,7 +77,10 @@ void main() {
           ),
         );
 
-        await open.execute('att-2');
+        expect(
+          await open.execute('att-2'),
+          isA<Ok<void, ExchangeSupportChatFailure>>(),
+        );
 
         expect(File('${tempDir.path}/receipt.pdf').existsSync(), isTrue);
       },

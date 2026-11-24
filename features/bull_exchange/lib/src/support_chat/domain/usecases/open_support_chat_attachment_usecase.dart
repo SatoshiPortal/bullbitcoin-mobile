@@ -13,16 +13,15 @@ import 'get_support_chat_message_attachment_usecase.dart';
 /// Downloads one attachment into the temp directory and opens the share
 /// sheet for it.
 class OpenSupportChatAttachmentUsecase {
-  final GetSupportChatMessageAttachmentUsecase _getAttachment;
+  final GetSupportChatMessageAttachmentUsecase getAttachment;
   final Future<Directory> Function() _temporaryDirectory;
   final Future<void> Function(String path, String subject) _share;
 
   OpenSupportChatAttachmentUsecase({
-    required GetSupportChatMessageAttachmentUsecase getAttachment,
+    required this.getAttachment,
     Future<Directory> Function()? temporaryDirectory,
     Future<void> Function(String path, String subject)? share,
-  }) : _getAttachment = getAttachment,
-       _temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory,
+  }) : _temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory,
        _share = share ?? _shareFile;
 
   static Future<void> _shareFile(String path, String subject) async {
@@ -35,7 +34,7 @@ class OpenSupportChatAttachmentUsecase {
   Future<Result<void, ExchangeSupportChatFailure>> execute(
     String attachmentId,
   ) async {
-    switch (await _getAttachment.execute(attachmentId)) {
+    switch (await getAttachment.execute(attachmentId)) {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
