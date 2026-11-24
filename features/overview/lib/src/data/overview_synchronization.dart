@@ -47,6 +47,10 @@ final class OverviewSynchronization {
         getWallets: ({onlyBitcoin, onlyLiquid}) async {
           final active = await activeNetwork();
           final keys = <WalletKey>[];
+          // A selection read only in part still surfaces its readable wallets:
+          // they are synced, then the pass fails so the throttle does not hide
+          // the rows that could not be read.
+          var incomplete = false;
           for (final network in <Network>[
             if (onlyLiquid != true)
               ...BitcoinNetwork.values.where(
@@ -63,13 +67,24 @@ final class OverviewSynchronization {
                         WalletKey(id: wallet.id, network: wallet.network),
                   ),
                 );
+                incomplete |= !value.isComplete;
               case Err(failure: UnreadableWalletFailure()):
-                continue;
+                incomplete = true;
               case Err():
                 return const Err(SyncStorageFailure());
             }
           }
-          return keys.isEmpty ? const Err(SyncNotFoundFailure()) : Ok(keys);
+          if (keys.isEmpty) {
+            return incomplete
+                ? const Err(SyncStorageFailure())
+                : const Err(SyncNotFoundFailure());
+          }
+          return Ok(
+            WalletRead(
+              keys,
+              incomplete: incomplete ? const SyncStorageFailure() : null,
+            ),
+          );
         },
         readWallet: (id) async => (await inventory.readWallet(id))
             .map((wallet) => WalletKey(id: wallet.id, network: wallet.network))

@@ -211,7 +211,24 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       state.discardIntent(scope);
       return;
     }
-    await _verify(state, scope, session, listed, object, intent);
+    final read = await session.read(object, maxBytes: backupMetadataMaxBytes);
+    if (read case Err(failure: BackupStorageTooLargeFailure())) {
+      // Our own writes never exceed the cap, so the listed bytes are not the
+      // ones this intent wrote.
+      state.discardIntent(scope);
+      return;
+    }
+    final bytes = _storageValue(read);
+    if (sha256.convert(bytes).toString() != intent.envelopeDigest) {
+      // The bytes were read back in full and differ from what this intent
+      // wrote: the mismatch is confirmed, not a transient read failure, which
+      // keeps the intent by throwing above. Retire the intent without
+      // acknowledging or pruning the damaged object, so this run uploads a
+      // fresh generation under a new name instead of reconciling it forever.
+      state.discardIntent(scope);
+      return;
+    }
+    await _confirm(state, scope, session, listed, object, intent);
   }
 
   Future<void> _create(
@@ -244,10 +261,13 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       ),
     );
     state.recordCreated(scope, object.id);
-    await _verify(state, scope, session, listed, object, intent);
+    await _verifyCreated(state, scope, session, listed, object, intent);
   }
 
-  Future<void> _verify(
+  /// Confirms an object this run has just created. A mismatch keeps the
+  /// intent: the write's response may still be in flight, and a later run
+  /// reconciles it.
+  Future<void> _verifyCreated(
     BackupMetadataState state,
     BackupScope scope,
     StorageSession session,
@@ -269,6 +289,17 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     if (sha256.convert(bytes).toString() != intent.envelopeDigest) {
       throw const _OperationFailure.unexpected();
     }
+    await _confirm(state, scope, session, listed, object, intent);
+  }
+
+  Future<void> _confirm(
+    BackupMetadataState state,
+    BackupScope scope,
+    StorageSession session,
+    Map<String, StoredObject> listed,
+    StoredObject object,
+    BackupIntent intent,
+  ) async {
     final refreshed = await _list(session);
     listed
       ..clear()
@@ -305,14 +336,11 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     BackupScope scope,
     StorageSession session,
     StoredObject? object,
-    String? envelopeDigest,
+    String envelopeDigest,
   ) async {
     if (object == null) return false;
     if (object.durability == Durability.durable) return true;
-    if (scope.destination != BackupDestination.folder ||
-        envelopeDigest == null) {
-      return false;
-    }
+    if (scope.destination != BackupDestination.folder) return false;
 
     final result = await session.read(object, maxBytes: backupMetadataMaxBytes);
     if (result case Err(
@@ -375,7 +403,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     BackupDestination destination,
   ) => _locked((_) async {
     final inventory = _value(await _inventory.read());
-    final session = await _authorize(destination, interactive: true);
+    final session = await _authorizeForDiscovery(destination);
     try {
       final objects = (await _list(session)).values.toList()
         ..sort((a, b) {
@@ -386,6 +414,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
           );
         });
       final discovered = <DiscoveredBackup>[];
+      BackupMetadataFailure? decodeFailure;
       for (final object in objects) {
         if ((object.size ?? 0) > backupMetadataMaxBytes) continue;
         final result = await session.read(
@@ -402,21 +431,32 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         if (bytes.length > backupMetadataMaxBytes) continue;
         for (final group in inventory.groups) {
           final decoded = await _codec.decode(group, bytes);
-          if (decoded case Ok(value: final backup?)) {
-            discovered.add(
-              DiscoveredBackup(
-                group: group,
-                destination: destination,
-                storedAt: object.createdAt ?? object.modifiedAt,
-                snapshot: backup,
-              ),
-            );
+          switch (decoded) {
+            case Ok(value: final backup?):
+              discovered.add(
+                DiscoveredBackup(
+                  group: group,
+                  destination: destination,
+                  storedAt: object.createdAt ?? object.modifiedAt,
+                  snapshot: backup,
+                ),
+              );
+            case Ok():
+              // This copy did not authenticate for this group.
+              break;
+            case Err(:final failure):
+              decodeFailure ??= failure;
           }
         }
       }
+      if (discovered.isEmpty && decodeFailure != null) {
+        // Nothing usable was found and at least one copy failed to decode:
+        // reporting an empty destination would hide a damaged backup.
+        throw _OperationFailure(decodeFailure, BackupActionReason.unexpected);
+      }
       return List<DiscoveredBackup>.unmodifiable(discovered);
     } finally {
-      session.dispose();
+      await session.close();
     }
   });
 
@@ -498,7 +538,17 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     return _storageValue(await storage.authorize(interactive: interactive));
   }
 
-  Future<Map<String, StoredObject>> _list(StorageSession session) async {
+  /// Reads a destination without touching the configured grant: browsing for
+  /// a restore file never changes where scheduled backups are written.
+  Future<StorageReadSession> _authorizeForDiscovery(
+    BackupDestination destination,
+  ) async {
+    final storage = _storages[destination];
+    if (storage == null) throw const _OperationFailure.unexpected();
+    return _storageValue(await storage.authorizeForDiscovery());
+  }
+
+  Future<Map<String, StoredObject>> _list(StorageReadSession session) async {
     final objects = _storageValue(
       await session.list(
         mimeType: backupMetadataMimeType,
@@ -520,6 +570,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       return Ok(await _store.locked(action));
     } on _OperationFailure catch (error) {
       return Err(error.failure);
+    } on BackupMetadataStoreNotReady {
+      return const Err(BackupMetadataNotReadyFailure());
     } on SqliteException {
       return const Err(BackupMetadataUnexpectedFailure());
     } on FileSystemException {
