@@ -1,8 +1,12 @@
-import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinStatus;
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show PayjoinReceiverSession, PayjoinStatus;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:receive/src/presentation/bloc/receive_bloc.dart';
 import 'package:receive/src/presentation/receive_payment_progress.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:transactions/transactions.dart'
+    show WalletTransaction, WalletTransactionDirection, WalletTransactionStatus;
 import 'package:swaps/swaps.dart'
     show Environment, LnReceiveSwap, Swap, SwapStatus, SwapType;
 
@@ -84,6 +88,7 @@ void main() {
   for (final status in SwapStatus.values) {
     for (final confirmed in [false, true]) {
       test('direct $status confirmed=$confirmed never fails', () {
+        final settled = confirmed && status == SwapStatus.completed;
         final progress = receiveLightningProgress(
           steps: const ['Payment detected', 'Confirmed'],
           status: status,
@@ -91,10 +96,10 @@ void main() {
           hasReceiveTxid: true,
           confirmed: confirmed,
         );
-        expect(progress.completed, confirmed ? 1 : 0);
+        expect(progress.completed, settled ? 1 : 0);
         expect(
           progress.currentState,
-          confirmed
+          settled
               ? BullPaymentStepState.active
               : BullPaymentStepState.broadcast,
         );
@@ -106,11 +111,33 @@ void main() {
             hasReceiveTxid: true,
             confirmed: confirmed,
           ),
-          confirmed ? BullPaymentPhase.success : BullPaymentPhase.sending,
+          settled ? BullPaymentPhase.success : BullPaymentPhase.sending,
         );
       });
     }
   }
+
+  test('direct payment with a confirmed candidate is not success until the '
+      'swap is completed', () {
+    final progress = receiveLightningProgress(
+      steps: const ['Payment detected', 'Confirmed'],
+      status: SwapStatus.paid,
+      wasDirectPayment: true,
+      hasReceiveTxid: true,
+      confirmed: true,
+    );
+    expect(progress.completed, 0);
+    expect(progress.currentState, BullPaymentStepState.broadcast);
+    expect(
+      receiveLightningPhase(
+        status: SwapStatus.paid,
+        wasDirectPayment: true,
+        hasReceiveTxid: true,
+        confirmed: true,
+      ),
+      BullPaymentPhase.sending,
+    );
+  });
 
   test(
     'lightning settlement is the claim transaction in the receive wallet',
@@ -136,6 +163,42 @@ void main() {
       expect(state('claim').settlementConfirmed, isFalse);
     },
   );
+
+  test('completed payjoin without a txid never borrows the address tx', () {
+    WalletTransaction tx() => WalletTransaction(
+      walletId: 'w',
+      network: BitcoinNetwork.mainnet,
+      direction: WalletTransactionDirection.incoming,
+      status: WalletTransactionStatus.confirmed,
+      txId: 'unrelated',
+      amountSat: 1,
+      feeSat: 0,
+      vsize: 1,
+      inputs: const [],
+      outputs: const [],
+      isRbf: false,
+    );
+    for (final status in [PayjoinStatus.completed, PayjoinStatus.aborted]) {
+      final state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        payjoin: PayjoinReceiverSession(
+          status: status,
+          id: 'pj',
+          network: BitcoinNetwork.mainnet,
+          walletId: 'w',
+          payjoinUri: 'bitcoin:x',
+          createdAt: DateTime(2026),
+          expiresAt: DateTime(2027),
+          hasOriginalTransaction: true,
+          hasProposal: true,
+        ),
+        tx: tx(),
+        settlementTx: tx(),
+      );
+      expect(state.settlement, isNull);
+      expect(state.settlementConfirmed, isFalse);
+    }
+  });
 
   test('direct payment is not routed away on a failed swap status', () {
     ReceiveState state({required bool direct}) => ReceiveState(

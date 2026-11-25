@@ -145,4 +145,44 @@ void main() {
       },
     );
   }
+
+  for (final path in const [
+    '/receive/lightning',
+    '/receive/lightning/qr',
+    '/receive/lightning/qr/in-progress',
+    '/receive/bitcoin/payjoin',
+  ]) {
+    testWidgets('syncs while $path is shown', (tester) async {
+      final requests = <String>[];
+      final poll = PollReceiveWalletUsecase((id, {required isActive}) async {
+        requests.add(id);
+      });
+      final router = GoRouter(
+        initialLocation: path,
+        routes: [
+          ShellRoute(
+            builder: (_, _, child) => ReceivePolling(
+              walletId: 'w',
+              isLiquid: true,
+              revealGeneration: 0,
+              poll: poll,
+              child: child,
+            ),
+            routes: [GoRoute(path: path, builder: (_, _) => const SizedBox())],
+          ),
+        ],
+      );
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Router.withConfig(config: router),
+        ),
+      );
+      await tester.pump();
+      expect(requests, ['w']);
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+    });
+  }
 }
