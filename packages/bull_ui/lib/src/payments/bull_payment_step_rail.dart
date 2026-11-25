@@ -176,7 +176,13 @@ class _BullPaymentStepRailState extends State<BullPaymentStepRail>
   Widget _segment(int i, int? failed, PaymentAnimationPalette p) {
     final progress = widget.progress;
     if (i == failed) {
-      return Container(height: 10, color: p.failure);
+      // A refund is never a loss: grey while it can be broadcast, white once
+      // the funds are back. Only a stop without a refund is red.
+      return switch (progress.refund) {
+        BullPaymentRefund.available => Container(height: 6, color: p.gray),
+        BullPaymentRefund.done => Container(height: 6, color: p.foreground),
+        null => Container(height: 10, color: p.failure),
+      };
     }
     if (i == progress.skippedAt) {
       // Bypassed without failing: grey and filled, neither done nor red.
