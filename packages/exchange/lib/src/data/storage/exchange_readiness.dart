@@ -31,6 +31,20 @@ Future<ExchangeApiRecords?> readExchangeApiRecords(
   return (mainnet: mainnet, testnet: testnet);
 }
 
+/// The Settings row every admitted store holds. A row that is absent, or whose
+/// username or password is neither text nor NULL, is never repaired.
+Future<bool> hasExchangeBasicAuthRow(ExchangeDatabase database) async {
+  final rows = await database
+      .customSelect(
+        'SELECT username, password FROM exchange_basic_auth '
+        'WHERE settings_id = 1',
+      )
+      .get();
+  if (rows.length != 1) return false;
+  final data = rows.single.data;
+  return data['username'] is String? && data['password'] is String?;
+}
+
 /// One receipt and both credential tables, or a refusal. A store whose
 /// receipt is missing, duplicated or unknown is never repaired or recreated.
 Future<Result<OwnerReadiness, LegacyImportFailure>> readExchangeReadiness(
@@ -41,15 +55,11 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readExchangeReadiness(
         .customSelect('SELECT id FROM legacy_import_receipts')
         .get();
     if (rows.isEmpty) return const Ok(OwnerReadiness.pending);
-    if (rows.length != 1 || await readExchangeApiRecords(database) == null) {
+    if (rows.length != 1 ||
+        await readExchangeApiRecords(database) == null ||
+        !await hasExchangeBasicAuthRow(database)) {
       return const Err(LegacyImportVerificationFailed());
     }
-    await database
-        .customSelect(
-          'SELECT settings_id, username, password FROM exchange_basic_auth '
-          'LIMIT 0',
-        )
-        .get();
     return switch (rows.single.data['id']) {
       exchangeImportReceipt => const Ok(OwnerReadiness.imported),
       exchangeFreshReceipt => const Ok(OwnerReadiness.initialized),

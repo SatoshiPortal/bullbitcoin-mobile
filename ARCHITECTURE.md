@@ -518,7 +518,7 @@ The standalone swap settings route lives in `features/swap`. It consumes `SwapRo
 
 Ordinary `.drift.dart` files are ignored build outputs. Historical schema JSON, migration steps and tracked migration-test helpers remain versioned in `packages/legacy_storage`. `make drift-migrations` runs the historical generator from that package. The package tests verify the legacy schema and its upgrade paths. App-level cutover tests under `test/storage_cutover` assemble the encrypted owners and the legacy source together.
 
-`make build-runner` builds the historical composer and the other members listed in `DRIFT_OWNER_PACKAGES` before the app. `make build-runner-watch` also starts a watcher for each listed member. The app retains modular Drift generation for its standalone order swaps database. CI restores and saves modular outputs alongside its build graph.
+`make build-runner` runs one `build_runner build --workspace`, which generates every member's outputs, including the Drift owners and the historical composer, in package-graph order. `make build-runner-watch` runs the same workspace build in watch mode. The app retains modular Drift generation for its standalone order swaps database. CI restores and saves modular outputs alongside its build graph.
 
 ## Electrum storage ownership
 

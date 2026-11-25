@@ -359,8 +359,8 @@ void main() {
 
   for (final initialFresh in [true, false]) {
     test(
-      'an owner that ignores residue is recorded fresh only when the install '
-      'had no legacy database (initialFresh=$initialFresh)',
+      'an owner joining a kept marker keeps its legacy origin and imports the '
+      'database that now exists (initialFresh=$initialFresh)',
       () async {
         final legacy = FixtureDatabase(
           File('${directory.path}/legacy.sqlite'),
@@ -385,7 +385,6 @@ void main() {
         final later = ProvenanceOwner(
           'later',
           File('${directory.path}/later.sqlite'),
-          freshWhenInitialFresh: true,
         );
         final fixture = fixtureCutover(directory);
         final result = await StorageCutover(
@@ -397,14 +396,12 @@ void main() {
         expect(result, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
         await (result as Ok<RuntimeAdmission, LegacyImportFailure>).value
             .close();
-        expect(later.prepared, [
-          initialFresh ? OwnerOrigin.fresh : OwnerOrigin.legacy,
-        ]);
+        expect(later.prepared, [OwnerOrigin.legacy]);
         final published =
             jsonDecode(await marker.readAsString()) as Map<String, Object?>;
         expect(
           (published['origins'] as Map<String, Object?>)['later'],
-          initialFresh ? 'fresh' : 'legacy',
+          'legacy',
         );
       },
     );

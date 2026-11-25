@@ -56,7 +56,6 @@ void main() {
     );
     final lease = await exclusive();
     try {
-      expect(participant.freshWhenInitialFresh, isTrue);
       // The keychain is not consulted, even when it is locked.
       keystore.locked = true;
       final readsBefore = keystore.reads;
@@ -100,7 +99,7 @@ void main() {
           exchange_testnet_basic_auth_username TEXT,
           exchange_testnet_basic_auth_password TEXT
         );
-        INSERT INTO settings VALUES (2, NULL, ''), (7, '', NULL);
+        INSERT INTO settings VALUES (1, NULL, 'one'), (2, NULL, ''), (7, '', NULL);
       ''');
       } finally {
         legacy.close();
@@ -157,9 +156,11 @@ void main() {
               'SELECT settings_id, username, password FROM exchange_basic_auth ORDER BY settings_id',
             )
             .get();
-        expect(settings.map((row) => row.read<int>('settings_id')), [2, 7]);
-        expect(settings.first.data['username'] == null, isTrue);
-        expect(settings.first.data['password'] == '', isTrue);
+        expect(settings.map((row) => row.read<int>('settings_id')), [1, 2, 7]);
+        expect(settings.first.data['username'], isNull);
+        expect(settings.first.data['password'], 'one');
+        expect(settings[1].data['username'], isNull);
+        expect(settings[1].data['password'], '');
         expect(settings.last.data['username'] == '', isTrue);
         expect(settings.last.data['password'] == null, isTrue);
       } finally {
@@ -177,6 +178,110 @@ void main() {
       );
     },
   );
+
+  // D103: a lone API key under a marker kept from a fresh install is ignored.
+  test('a kept fresh marker imports the Settings rows but not the keychain '
+      'record', () async {
+    _value(
+      await secrets.exchangeKeychain.write('{"key":"old"}', isTestnet: false),
+    );
+    final legacy = sqlite3.open(source.path);
+    try {
+      legacy.userVersion = 16;
+      legacy.execute('''
+        CREATE TABLE settings (
+          id INTEGER PRIMARY KEY,
+          exchange_testnet_basic_auth_username TEXT,
+          exchange_testnet_basic_auth_password TEXT
+        );
+        INSERT INTO settings VALUES (1, 'user', 'secret');
+      ''');
+    } finally {
+      legacy.close();
+    }
+    final lease = await exclusive();
+    try {
+      final owner = _value(
+        await participant.prepare(lease, OwnerOrigin.legacy),
+      );
+      // The opened store needs no keystore; a read here would be the key.
+      keystore.locked = true;
+      final readsBefore = keystore.reads;
+      expect(
+        await owner.importLegacy(LegacySource(source, 16, initialFresh: true)),
+        isA<Ok<void, LegacyImportFailure>>(),
+      );
+      expect(keystore.reads, readsBefore);
+      expect(_value(await owner.receipt()), OwnerReadiness.imported);
+      keystore.locked = false;
+      _value(await owner.close());
+    } finally {
+      await lease.close();
+    }
+    expect(
+      _value(await secrets.exchangeKeychain.read(isTestnet: false)),
+      '{"key":"old"}',
+    );
+  });
+
+  for (final rows in [
+    '',
+    "INSERT INTO settings VALUES (2, NULL, ''), (7, '', NULL);",
+  ]) {
+    test('refuses settings without id 1: $rows', () async {
+      final legacy = sqlite3.open(source.path);
+      try {
+        legacy.userVersion = 16;
+        legacy.execute('''
+          CREATE TABLE settings (
+            id INTEGER PRIMARY KEY,
+            exchange_testnet_basic_auth_username TEXT,
+            exchange_testnet_basic_auth_password TEXT
+          );
+          $rows
+        ''');
+      } finally {
+        legacy.close();
+      }
+      final before = await source.readAsBytes();
+      final lease = await exclusive();
+      try {
+        final owner = _value(
+          await participant.prepare(lease, OwnerOrigin.legacy),
+        );
+        expect(
+          await owner.importLegacy(LegacySource(source, 16)),
+          isA<Err<void, LegacyImportFailure>>(),
+        );
+        expect(_value(await owner.receipt()), OwnerReadiness.pending);
+        _value(await owner.close());
+        final store = _value(
+          await ExchangeStore.openForTesting(
+            file: destination,
+            admission: lease,
+            keys: secrets.databaseKeys(module: 'exchange'),
+            existing: true,
+          ),
+        );
+        expect(
+          await store.database
+              .customSelect('SELECT * FROM exchange_api_credentials')
+              .get(),
+          isEmpty,
+        );
+        expect(
+          await store.database
+              .customSelect('SELECT * FROM exchange_basic_auth')
+              .get(),
+          isEmpty,
+        );
+        await store.handle.close();
+      } finally {
+        await lease.close();
+      }
+      expect(await source.readAsBytes(), before);
+    });
+  }
 
   test(
     'incomplete historical schema does not leave a receipt or rows',

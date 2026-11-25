@@ -186,6 +186,13 @@ jobs:
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
 
+      # Diagnostic, compared with the same step in unit shard 1: hooks_runner reruns a hook when one of these variables changes, so print a short hash of each value, never the value.
+      - name: Fingerprint the Native Assets hook environment
+        shell: bash
+        run: |
+          env | cut -d= -f1 | LC_ALL=C sort | grep -E '^(ANDROID_HOME|ANDROID_NDK.*|HOME|LIBCLANG_PATH|PATH|TEMP|TMP|TMPDIR|HTTPS?_PROXY|NO_PROXY|no_proxy|CARGO_.*|RUSTUP_.*|CCACHE_.*|NIX_.*)$' |
+            while IFS= read -r name; do printf '%s %s\n' "$name" "$(printenv "$name" | sha256sum | cut -c1-12)"; done
+
       - name: Pack generated code and Native Assets
         shell: bash
         run: |
@@ -356,6 +363,19 @@ jobs:
         uses: ./.github/actions/flutter-setup
         with:
           codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
+
+      # Diagnostic: each shard's first `flutter test` has spent 9-14 silent minutes, presumably rebuilding the Rust Native Assets the prepare job already built. Shard 1 runs one access test (its first member anyway) verbosely and prints only the hooks_runner decisions and why it reran each hook; the environment fingerprint pairs with the prepare job's. Remove once the cause is fixed.
+      - name: Explain Native Assets hook reuse (diagnostic)
+        if: ${{ matrix.shard == 1 }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          env | cut -d= -f1 | LC_ALL=C sort | grep -E '^(ANDROID_HOME|ANDROID_NDK.*|HOME|LIBCLANG_PATH|PATH|TEMP|TMP|TMPDIR|HTTPS?_PROXY|NO_PROXY|no_proxy|CARGO_.*|RUSTUP_.*|CCACHE_.*|NIX_.*)$' |
+            while IFS= read -r name; do printf '%s %s\n' "$name" "$(printenv "$name" | sha256sum | cut -c1-12)"; done
+          ls -d .dart_tool/hooks_runner/*/*/ 2>/dev/null || true
+          cd features/access
+          fvm flutter test -v test/domain/usecases/attempt_unlock_with_pin_code_usecase_test.dart 2>&1 |
+            grep -E 'Running (build|link) hooks|Skipping (build|link) for|Rerunning (build|link) for' || true
 
       - name: Unit tests must pass
         run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
