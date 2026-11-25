@@ -1460,5 +1460,6 @@
   "buyPayoutFailed": "거래소가 이 지급을 완료하지 못했습니다. 주문 상세를 열거나 고객지원에 문의하세요.",
   "buyPayoutStillPending": "지급이 아직 진행 중입니다. 주문 상세에서 확인할 수 있습니다.",
   "limitOrdersOverBalanceWarning": "사용 가능한 잔액보다 많습니다. 주문이 체결될 때 그 시점의 잔액으로 매수합니다.",
-  "autoBuyAlreadyActive": "자동 매수가 이미 계정에서 활성화되어 있습니다."
+  "autoBuyAlreadyActive": "자동 매수가 이미 계정에서 활성화되어 있습니다.",
+  "recipientsValidationEmailInvalid": "올바른 이메일 주소를 입력하세요"
 }

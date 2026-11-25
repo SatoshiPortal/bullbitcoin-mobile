@@ -1463,5 +1463,6 @@
   "buyPayoutFailed": "Exchange yeh payout poora nahi kar saka. Order details kholein ya support se sampark karein.",
   "buyPayoutStillPending": "Aapka payout abhi raaste mein hai. Aap ise order details mein dekh sakte hain.",
   "limitOrdersOverBalanceWarning": "Yeh aapke available balance se zyada hai. Order execute hone par us waqt balance mein jitna hoga, utne se kharida jayega.",
-  "autoBuyAlreadyActive": "Aapke account par Auto Buy pehle se active hai."
+  "autoBuyAlreadyActive": "Aapke account par Auto Buy pehle se active hai.",
+  "recipientsValidationEmailInvalid": "Ek valid email address daalein"
 }

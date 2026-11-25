@@ -968,5 +968,6 @@
   "buyPayoutFailed": "Die Börse konnte diese Auszahlung nicht abschließen. Öffne die Auftragsdetails oder kontaktiere den Support.",
   "buyPayoutStillPending": "Deine Auszahlung ist noch unterwegs. Du kannst sie in den Auftragsdetails verfolgen.",
   "limitOrdersOverBalanceWarning": "Das ist mehr als dein verfügbares Guthaben. Wird der Auftrag ausgeführt, kauft er mit dem, was dann auf deinem Guthaben ist.",
-  "autoBuyAlreadyActive": "Automatischer Kauf ist für dein Konto bereits aktiv."
+  "autoBuyAlreadyActive": "Automatischer Kauf ist für dein Konto bereits aktiv.",
+  "recipientsValidationEmailInvalid": "Geben Sie eine gültige E-Mail-Adresse ein"
 }

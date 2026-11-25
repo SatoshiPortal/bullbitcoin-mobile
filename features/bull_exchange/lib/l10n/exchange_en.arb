@@ -3830,5 +3830,9 @@
   "autoBuyAlreadyActive": "Auto-Buy is already active on your account.",
   "@autoBuyAlreadyActive": {
     "description": "Auto-Buy review: the account already has Auto-Buy on, so there is nothing to activate"
+  },
+  "recipientsValidationEmailInvalid": "Enter a valid email address",
+  "@recipientsValidationEmailInvalid": {
+    "description": "Recipient form: the email field does not look like an email address"
   }
 }

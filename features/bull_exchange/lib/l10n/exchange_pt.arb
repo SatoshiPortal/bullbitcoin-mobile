@@ -946,5 +946,6 @@
   "buyPayoutFailed": "A plataforma não conseguiu concluir este pagamento. Abra os detalhes da ordem ou contacte o suporte.",
   "buyPayoutStillPending": "O seu pagamento ainda está a caminho. Pode acompanhá-lo nos detalhes da ordem.",
   "limitOrdersOverBalanceWarning": "Isto é mais do que o seu saldo disponível. Quando a ordem for executada, compra com o que estiver no seu saldo nesse momento.",
-  "autoBuyAlreadyActive": "A compra automática já está ativa na sua conta."
+  "autoBuyAlreadyActive": "A compra automática já está ativa na sua conta.",
+  "recipientsValidationEmailInvalid": "Introduza um endereço de e-mail válido"
 }

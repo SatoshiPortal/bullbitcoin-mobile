@@ -971,5 +971,6 @@
   "buyPayoutFailed": "L'exchange non è riuscito a completare questo pagamento. Apri i dettagli dell'ordine o contatta l'assistenza.",
   "buyPayoutStillPending": "Il tuo pagamento è ancora in arrivo. Puoi seguirlo nei dettagli dell'ordine.",
   "limitOrdersOverBalanceWarning": "È più del tuo saldo disponibile. Quando l'ordine viene eseguito, acquista con ciò che c'è in quel momento sul tuo saldo.",
-  "autoBuyAlreadyActive": "L'Acquisto Automatico è già attivo sul tuo account."
+  "autoBuyAlreadyActive": "L'Acquisto Automatico è già attivo sul tuo account.",
+  "recipientsValidationEmailInvalid": "Inserisci un indirizzo email valido"
 }

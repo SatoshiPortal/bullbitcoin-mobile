@@ -894,5 +894,6 @@
   "buyPayoutFailed": "Sàn không thể hoàn tất khoản thanh toán này. Mở chi tiết lệnh hoặc liên hệ hỗ trợ.",
   "buyPayoutStillPending": "Khoản thanh toán của bạn vẫn đang trên đường. Bạn có thể theo dõi trong chi tiết lệnh.",
   "limitOrdersOverBalanceWarning": "Số này lớn hơn số dư khả dụng của bạn. Khi lệnh khớp, nó sẽ mua bằng số dư bạn có lúc đó.",
-  "autoBuyAlreadyActive": "Mua tự động đã được bật trên tài khoản của bạn."
+  "autoBuyAlreadyActive": "Mua tự động đã được bật trên tài khoản của bạn.",
+  "recipientsValidationEmailInvalid": "Nhập địa chỉ email hợp lệ"
 }

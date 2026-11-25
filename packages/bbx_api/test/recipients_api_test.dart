@@ -350,30 +350,101 @@ void main() {
       ): '{"recipientTypeFiat":"BANK_TRANSFER_ARS","isArchived":false,'
           '"name":"Ada","claveUniform":"0000003100010000000001"}',
       const NewPseColombiaCopRecipient(
-        name: 'Ada',
+        holder: NewCopIndividual(name: 'Ada', lastname: 'Lovelace'),
+        email: 'ada@example.com',
         bankCode: '1007',
-        accountType: 'SAVINGS',
+        accountType: 'S',
         bankAccount: '123',
-        bankName: 'Bancolombia',
         documentId: '99',
         documentType: 'CC',
       ): '{"recipientTypeFiat":"PSE_COLOMBIA_COP","isArchived":false,'
-          '"name":"Ada","bankCode":"1007","accountType":"SAVINGS",'
-          '"bankAccount":"123","bankName":"Bancolombia","documentId":"99",'
-          '"documentType":"CC"}',
+          '"isCorporate":false,"name":"Ada","lastname":"Lovelace",'
+          '"email":"ada@example.com","bankCode":"1007","accountType":"S",'
+          '"bankAccount":"123","documentId":"99","documentType":"CC"}',
       const NewNequiColombiaCopRecipient(
-        name: 'Ada',
+        holder: NewCopCorporate(corporateName: 'ACME'),
+        email: 'pay@acme.co',
         bankAccount: '3001234567',
         documentId: '99',
-        documentType: 'CC',
+        documentType: 'NIT',
       ): '{"recipientTypeFiat":"NEQUI_COLOMBIA_COP","isArchived":false,'
-          '"name":"Ada","bankAccount":"3001234567","documentId":"99",'
-          '"documentType":"CC"}',
+          '"isCorporate":true,"corporateName":"ACME","email":"pay@acme.co",'
+          '"bankAccount":"3001234567","documentId":"99","documentType":"NIT"}',
     };
 
     for (final MapEntry(key: recipient, value: json) in payloads.entries) {
       test('${recipient.recipientTypeFiat} is sent as its flat fields', () {
         expect(jsonEncode(newFiatRecipientJsonForTesting(recipient)), json);
+      });
+    }
+
+    // The keys of API-Recipients' recipientOutCOPBankAccountSchema and
+    // recipientOutCOPNequiSchema (all required ones, nothing else), next to
+    // the common recipient keys.
+    const common = {'recipientTypeFiat', 'isArchived'};
+    const person = {'isCorporate', 'name', 'lastname'};
+    const company = {'isCorporate', 'corporateName'};
+    const pse = {
+      'email',
+      'bankCode',
+      'accountType',
+      'bankAccount',
+      'documentId',
+      'documentType',
+    };
+    const nequi = {'email', 'bankAccount', 'documentId', 'documentType'};
+    const individual = NewCopIndividual(name: 'Ada', lastname: 'Lovelace');
+    const corporate = NewCopCorporate(corporateName: 'ACME');
+    final schemaKeys = <String, (NewFiatRecipient, Set<String>)>{
+      'PSE, a person': (
+        const NewPseColombiaCopRecipient(
+          holder: individual,
+          email: 'a@b.co',
+          bankCode: '1007',
+          accountType: 'S',
+          bankAccount: '1',
+          documentId: '9',
+          documentType: 'CC',
+        ),
+        {...common, ...person, ...pse},
+      ),
+      'PSE, a company': (
+        const NewPseColombiaCopRecipient(
+          holder: corporate,
+          email: 'a@b.co',
+          bankCode: '1007',
+          accountType: 'C',
+          bankAccount: '1',
+          documentId: '9',
+          documentType: 'NIT',
+        ),
+        {...common, ...company, ...pse},
+      ),
+      'Nequi, a person': (
+        const NewNequiColombiaCopRecipient(
+          holder: individual,
+          email: 'a@b.co',
+          bankAccount: '3001234567',
+          documentId: '9',
+          documentType: 'CC',
+        ),
+        {...common, ...person, ...nequi},
+      ),
+      'Nequi, a company': (
+        const NewNequiColombiaCopRecipient(
+          holder: corporate,
+          email: 'a@b.co',
+          bankAccount: '3001234567',
+          documentId: '9',
+          documentType: 'NIT',
+        ),
+        {...common, ...company, ...nequi},
+      ),
+    };
+    for (final MapEntry(key: name, value: (recipient, keys))
+        in schemaKeys.entries) {
+      test('$name sends exactly the keys the API schema requires', () {
+        expect(newFiatRecipientJsonForTesting(recipient).keys.toSet(), keys);
       });
     }
   });

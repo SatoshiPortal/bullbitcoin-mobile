@@ -100,7 +100,8 @@ final _cases = <(RecipientDetails, PayoutRail, String?, List<AccountRow>)>[
   ),
   (
     PseColombiaDetails.create(
-      name: 'Sofi',
+      holder: ColombiaIndividual.create(firstName: 'Sofi', lastName: 'Gómez'),
+      email: 'sofi@example.com',
       accountType: 'SAVINGS',
       bankAccount: '123',
       bankCode: '1007',
@@ -109,18 +110,19 @@ final _cases = <(RecipientDetails, PayoutRail, String?, List<AccountRow>)>[
       documentType: 'CC',
     ),
     PayoutRails.pse,
-    'Sofi',
+    'Sofi Gómez',
     [const AccountRow(AccountField.accountNumber, '123')],
   ),
   (
     NequiColombiaDetails.create(
-      name: 'Sofi',
+      holder: ColombiaCorporate.create(corporateName: 'Sofi SAS'),
+      email: 'pagos@sofi.co',
       phoneNumber: '300',
       documentId: '99',
       documentType: 'CC',
     ),
     PayoutRails.nequi,
-    'Sofi',
+    'Sofi SAS',
     [const AccountRow(AccountField.phone, '300')],
   ),
 ];

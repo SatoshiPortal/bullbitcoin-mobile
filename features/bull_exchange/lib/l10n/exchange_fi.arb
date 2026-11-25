@@ -946,5 +946,6 @@
   "buyPayoutFailed": "Pörssi ei voinut suorittaa tätä maksua loppuun. Avaa tilauksen tiedot tai ota yhteyttä tukeen.",
   "buyPayoutStillPending": "Maksusi on vielä matkalla. Voit seurata sitä tilauksen tiedoissa.",
   "limitOrdersOverBalanceWarning": "Tämä ylittää käytettävissä olevan saldosi. Kun tilaus toteutuu, se ostaa sillä, mitä saldollasi silloin on.",
-  "autoBuyAlreadyActive": "Automaattinen osto on jo käytössä tililläsi."
+  "autoBuyAlreadyActive": "Automaattinen osto on jo käytössä tililläsi.",
+  "recipientsValidationEmailInvalid": "Anna kelvollinen sähköpostiosoite"
 }

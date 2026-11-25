@@ -946,5 +946,6 @@
   "buyPayoutFailed": "交易所无法完成这笔付款。请打开订单详情或联系客服。",
   "buyPayoutStillPending": "你的付款仍在途中。你可以在订单详情中查看进度。",
   "limitOrdersOverBalanceWarning": "这超过了你的可用余额。订单执行时，将使用届时余额中的资金买入。",
-  "autoBuyAlreadyActive": "你的账户已开启自动买入。"
+  "autoBuyAlreadyActive": "你的账户已开启自动买入。",
+  "recipientsValidationEmailInvalid": "请输入有效的电子邮箱地址"
 }

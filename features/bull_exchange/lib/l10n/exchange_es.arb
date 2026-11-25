@@ -971,5 +971,6 @@
   "buyPayoutFailed": "El exchange no pudo completar este pago. Abre los detalles de la orden o contacta con soporte.",
   "buyPayoutStillPending": "Tu pago sigue en camino. Puedes seguirlo en los detalles de la orden.",
   "limitOrdersOverBalanceWarning": "Esto supera tu saldo disponible. Cuando la orden se ejecute, comprará con lo que haya en tu saldo en ese momento.",
-  "autoBuyAlreadyActive": "La Compra Automática ya está activa en tu cuenta."
+  "autoBuyAlreadyActive": "La Compra Automática ya está activa en tu cuenta.",
+  "recipientsValidationEmailInvalid": "Introduce una dirección de correo electrónico válida"
 }

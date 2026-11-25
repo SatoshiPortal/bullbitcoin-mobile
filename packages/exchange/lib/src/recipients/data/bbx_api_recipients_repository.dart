@@ -258,11 +258,11 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
           label: d.label,
           isOwner: d.isOwner,
           isDefault: d.isDefault,
-          name: d.name,
+          holder: _copHolder(d.payee),
+          email: _copContact(d.payee).email,
           bankCode: d.bankCode,
           accountType: d.accountType,
           bankAccount: d.bankAccount,
-          bankName: d.bankName,
           documentId: d.documentId,
           documentType: d.documentType,
         ),
@@ -270,10 +270,27 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
           label: d.label,
           isOwner: d.isOwner,
           isDefault: d.isDefault,
-          name: d.name,
+          holder: _copHolder(d.payee),
+          email: _copContact(d.payee).email,
           bankAccount: d.phoneNumber,
           documentId: d.documentId,
           documentType: d.documentType,
+        ),
+      };
+
+  /// The contact a Colombian recipient is created with. A [ColombiaNameOnly]
+  /// payee only comes from the server, so it is never sent back to create.
+  static ColombiaContact _copContact(ColombiaPayee payee) => switch (payee) {
+    final ColombiaContact contact => contact,
+    ColombiaNameOnly() => throw const _NotCreatable('Colombian recipient'),
+  };
+
+  static bbx.NewCopHolder _copHolder(ColombiaPayee payee) =>
+      switch (_copContact(payee).holder) {
+        ColombiaIndividual(:final firstName, :final lastName) =>
+          bbx.NewCopIndividual(name: firstName, lastname: lastName),
+        ColombiaCorporate(:final corporateName) => bbx.NewCopCorporate(
+          corporateName: corporateName,
         ),
       };
 
@@ -321,7 +338,7 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
         bankName: r.bankName,
         documentId: r.documentId,
         documentType: r.documentType,
-      ).toDomain(),
+      ).toStoredDomain(),
     ),
   );
 
@@ -471,6 +488,17 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
     bbx.BbxTimeoutKind.send => 'sendTimeout',
     bbx.BbxTimeoutKind.receive => 'receiveTimeout',
   };
+}
+
+/// A recipient that can't be sent to create one: it came from the server
+/// without a field the API now requires.
+final class _NotCreatable implements Exception {
+  final String what;
+
+  const _NotCreatable(this.what);
+
+  @override
+  String toString() => 'NotCreatable($what)';
 }
 
 /// The domain could not represent an element the API returned. Carries only

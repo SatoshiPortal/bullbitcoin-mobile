@@ -894,5 +894,6 @@
   "buyPayoutFailed": "Soko halikuweza kukamilisha malipo haya. Fungua maelezo ya agizo au wasiliana na usaidizi.",
   "buyPayoutStillPending": "Malipo yako bado yako njiani. Unaweza kuyafuatilia kwenye maelezo ya agizo.",
   "limitOrdersOverBalanceWarning": "Hii ni zaidi ya salio lako linalopatikana. Agizo likitekelezwa, litanunua kwa kilichopo kwenye salio lako wakati huo.",
-  "autoBuyAlreadyActive": "Ununuzi wa Kiotomatiki tayari umewashwa kwenye akaunti yako."
+  "autoBuyAlreadyActive": "Ununuzi wa Kiotomatiki tayari umewashwa kwenye akaunti yako.",
+  "recipientsValidationEmailInvalid": "Weka anwani sahihi ya barua pepe"
 }

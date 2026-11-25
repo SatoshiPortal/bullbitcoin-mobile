@@ -1460,5 +1460,6 @@
   "buyPayoutFailed": "Borsa bu ödemeyi tamamlayamadı. Emir ayrıntılarını açın veya destekle iletişime geçin.",
   "buyPayoutStillPending": "Ödemeniz hâlâ yolda. Emir ayrıntılarından takip edebilirsiniz.",
   "limitOrdersOverBalanceWarning": "Bu, kullanılabilir bakiyenizden fazla. Emir gerçekleştiğinde, o anda bakiyenizde ne varsa onunla alım yapar.",
-  "autoBuyAlreadyActive": "Otomatik Alım hesabınızda zaten etkin."
+  "autoBuyAlreadyActive": "Otomatik Alım hesabınızda zaten etkin.",
+  "recipientsValidationEmailInvalid": "Geçerli bir e-posta adresi girin"
 }

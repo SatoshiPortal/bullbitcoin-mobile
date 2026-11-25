@@ -957,5 +957,6 @@
   "buyPayoutFailed": "La plateforme n'a pas pu finaliser ce paiement. Ouvrez les détails de l'ordre ou contactez le support.",
   "buyPayoutStillPending": "Votre paiement est toujours en cours d'acheminement. Vous pouvez le suivre dans les détails de l'ordre.",
   "limitOrdersOverBalanceWarning": "C'est plus que votre solde disponible. À l'exécution, l'ordre achète avec ce qui se trouve alors sur votre solde.",
-  "autoBuyAlreadyActive": "L'Achat Automatique est déjà actif sur votre compte."
+  "autoBuyAlreadyActive": "L'Achat Automatique est déjà actif sur votre compte.",
+  "recipientsValidationEmailInvalid": "Saisissez une adresse e-mail valide"
 }

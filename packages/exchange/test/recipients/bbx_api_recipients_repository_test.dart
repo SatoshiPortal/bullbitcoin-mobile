@@ -287,7 +287,12 @@ RecipientsFailure _failureOf<T>(Result<T, RecipientsFailure> result) =>
 
 void main() {
   group('the requests are the ones the old repository sent, as recorded', () {
-    for (final details in _newRecipients) {
+    // The old repository sent Colombian recipients without the last name and
+    // email the API requires, so they no longer match its recording: see
+    // 'saveRecipient sends what the API requires of a Colombian recipient'.
+    for (final details in _newRecipients.where(
+      (d) => d is! PseColombiaDetails && d is! NequiColombiaDetails,
+    )) {
       test('saveRecipient of ${details.type.name}', () async {
         final (old, sent) = await _bothSend('save ${details.type.name}', {
           'result': {'element': _everyType.first},
@@ -313,6 +318,8 @@ void main() {
           documentId: '99',
           documentType: 'CC',
           name: 'Ada',
+          lastname: 'Lovelace',
+          email: 'ada@example.com',
         ).toDomain(),
         isTestnet: false,
       );
@@ -323,11 +330,145 @@ void main() {
           '{"jsonrpc":"2.0","id":"0","method":"createRecipientFiat","params":'
               '{"element":{"recipientTypeFiat":"NEQUI_COLOMBIA_COP",'
               '"isOwner":true,"isDefault":false,"isArchived":false,'
-              '"name":"Ada","bankAccount":"3001234567","documentId":"99",'
-              '"documentType":"CC"}}}',
+              '"isCorporate":false,"name":"Ada","lastname":"Lovelace",'
+              '"email":"ada@example.com","bankAccount":"3001234567",'
+              '"documentId":"99","documentType":"CC"}}}',
           '2.0.0',
         ),
       ]);
+    });
+
+    group('saveRecipient sends what the API requires of a Colombian '
+        'recipient', () {
+      const pse = RecipientDetailsInput(
+        recipientType: RecipientType.pseColombia,
+        bankCode: '1007',
+        accountType: 'S',
+        bankAccount: '123',
+        bankName: 'Bancolombia',
+        documentId: '99',
+        documentType: 'CC',
+        name: 'Ada',
+        lastname: 'Lovelace',
+        email: 'ada@example.com',
+      );
+
+      Future<Map<String, Object?>> sentElement(RecipientDetails d) async {
+        final http = FakeBbxHttp(
+          body: {
+            'result': {'element': _everyType.first},
+          },
+        );
+        await _repository(http).saveRecipient(d, isTestnet: false);
+        final request = jsonDecode(
+          jsonEncode(http.requests.single.data),
+        ) as Map<String, Object?>;
+        final params = request['params']! as Map<String, Object?>;
+        return params['element']! as Map<String, Object?>;
+      }
+
+      test('a person: names, email, no bank name', () async {
+        expect(await sentElement(pse.toDomain()), {
+          'recipientTypeFiat': 'PSE_COLOMBIA_COP',
+          'isDefault': false,
+          'isArchived': false,
+          'isCorporate': false,
+          'name': 'Ada',
+          'lastname': 'Lovelace',
+          'email': 'ada@example.com',
+          'bankCode': '1007',
+          'accountType': 'S',
+          'bankAccount': '123',
+          'documentId': '99',
+          'documentType': 'CC',
+        });
+      });
+
+      test('a company: its name and email', () async {
+        final element = await sentElement(
+          NequiColombiaDetails.create(
+            holder: ColombiaCorporate.create(corporateName: 'ACME'),
+            email: 'pay@acme.co',
+            phoneNumber: '3001234567',
+            documentId: '900',
+            documentType: 'NIT',
+          ),
+        );
+        expect(element, {
+          'recipientTypeFiat': 'NEQUI_COLOMBIA_COP',
+          'isDefault': false,
+          'isArchived': false,
+          'isCorporate': true,
+          'corporateName': 'ACME',
+          'email': 'pay@acme.co',
+          'bankAccount': '3001234567',
+          'documentId': '900',
+          'documentType': 'NIT',
+        });
+      });
+
+      test('a recipient without last name or email is never built', () {
+        for (final input in [
+          RecipientDetailsInput(
+            recipientType: pse.recipientType,
+            bankCode: pse.bankCode,
+            accountType: pse.accountType,
+            bankAccount: pse.bankAccount,
+            documentId: pse.documentId,
+            documentType: pse.documentType,
+            name: 'Ada',
+            email: 'ada@example.com',
+          ),
+          RecipientDetailsInput(
+            recipientType: pse.recipientType,
+            bankCode: pse.bankCode,
+            accountType: pse.accountType,
+            bankAccount: pse.bankAccount,
+            documentId: pse.documentId,
+            documentType: pse.documentType,
+            name: 'Ada',
+            lastname: 'Lovelace',
+          ),
+          RecipientDetailsInput(
+            recipientType: pse.recipientType,
+            bankCode: pse.bankCode,
+            accountType: pse.accountType,
+            bankAccount: pse.bankAccount,
+            documentId: pse.documentId,
+            documentType: pse.documentType,
+            name: 'Ada',
+            lastname: 'Lovelace',
+            email: 'not an address',
+          ),
+        ]) {
+          expect(input.toDomain, throwsA(anything));
+          expect(input.tryToDomain(), isNull);
+        }
+      });
+
+      test(
+        'a stored recipient with only a name is listed, not re-sent',
+        () async {
+          final stored = const RecipientDetailsInput(
+            recipientType: RecipientType.pseColombia,
+            bankCode: '1007',
+            accountType: 'S',
+            bankAccount: '123',
+            documentId: '99',
+            documentType: 'CC',
+            name: 'Ada',
+          ).toStoredDomain();
+          expect(stored, isA<PseColombiaDetails>());
+          expect((stored as PseColombiaDetails).payee, isA<ColombiaNameOnly>());
+          expect(stored.name, 'Ada');
+
+          final http = FakeBbxHttp(body: const {'result': {}});
+          final result = await _repository(http)
+              .saveRecipient(stored, isTestnet: false);
+          expect(result, isA<Err<Recipient, RecipientsFailure>>());
+          expect(http.requests, isEmpty);
+        },
+      );
     });
 
     final listCalls = <String, Future<void> Function(RecipientsRepository)>{

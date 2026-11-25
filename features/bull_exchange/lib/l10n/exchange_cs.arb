@@ -1460,5 +1460,6 @@
   "buyPayoutFailed": "Burza tuto výplatu nemohla dokončit. Otevřete detail objednávky nebo kontaktujte podporu.",
   "buyPayoutStillPending": "Vaše výplata je stále na cestě. Můžete ji sledovat v detailu objednávky.",
   "limitOrdersOverBalanceWarning": "To je více než váš dostupný zůstatek. Až se objednávka provede, nakoupí za to, co v té chvíli na zůstatku bude.",
-  "autoBuyAlreadyActive": "Automatický nákup už je na vašem účtu aktivní."
+  "autoBuyAlreadyActive": "Automatický nákup už je na vašem účtu aktivní.",
+  "recipientsValidationEmailInvalid": "Zadejte platnou e-mailovou adresu"
 }

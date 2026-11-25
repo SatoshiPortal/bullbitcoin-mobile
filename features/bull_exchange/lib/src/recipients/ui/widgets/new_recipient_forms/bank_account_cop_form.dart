@@ -1,6 +1,7 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_document_type_label.dart';
+import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_holder_fields.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/cop_bank_account_type.dart';
@@ -25,14 +26,17 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _accountNumberFocusNode = FocusNode();
   final FocusNode _documentIdFocusNode = FocusNode();
-  final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
   CopBankInstitution? _institutionNumber;
   CopBankAccountType _accountType = CopBankAccountType.savings;
   String _accountNumber = '';
   CopDocumentType _documentType = CopDocumentType.cc;
   String _documentId = '';
-  String _name = '';
+  CopHolderFormData _holder = const CopIndividualFormData(
+    firstName: '',
+    lastName: '',
+  );
+  String _email = '';
   String _label = '';
 
   @override
@@ -44,7 +48,6 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
   void dispose() {
     _accountNumberFocusNode.dispose();
     _documentIdFocusNode.dispose();
-    _nameFocusNode.dispose();
     _labelFocusNode.dispose();
     super.dispose();
   }
@@ -57,7 +60,8 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
         bankAccount: _accountNumber,
         documentType: _documentType.value,
         documentId: _documentId,
-        name: _name,
+        holder: _holder,
+        email: _email,
         label: _label.isEmpty ? null : _label,
       );
 
@@ -197,7 +201,7 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             hintText: context.loc.recipientsFieldDocumentNumberHint,
             focusNode: _documentIdFocusNode,
             textInputAction: .next,
-            onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
+            onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? context.loc.recipientsValidationFieldRequired
                 : null,
@@ -208,20 +212,12 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             },
           ),
           const Gap(12.0),
-          BBTextFormField(
-            labelText: context.loc.recipientsFieldRecipientNameLabel,
-            hintText: context.loc.recipientsFieldNameHint,
-            focusNode: _nameFocusNode,
-            textInputAction: .next,
-            onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
-            onChanged: (value) {
-              setState(() {
-                _name = value;
-              });
+          CopHolderFields(
+            onChanged: (holder, email) {
+              _holder = holder;
+              _email = email;
             },
+            onDone: _labelFocusNode.requestFocus,
           ),
           const Gap(12.0),
           BBTextFormField(

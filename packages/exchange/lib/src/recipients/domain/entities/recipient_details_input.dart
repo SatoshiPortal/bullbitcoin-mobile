@@ -1,6 +1,7 @@
 import 'package:exchange/src/recipients/domain/entities/recipient_details.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_type.dart';
 import 'package:exchange/src/recipients/domain/entities/sepa_virtual_payee_status.dart';
+import 'package:exchange/src/recipients/domain/recipient_field_checks.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -131,8 +132,57 @@ class RecipientDetailsInput {
     }
   }
 
-  // Input → VO
-  RecipientDetails toDomain() {
+  /// The details of a new recipient, with every field the API requires to
+  /// create it. Throws [StateError] for a missing field and [ArgumentError]
+  /// for an invalid one.
+  RecipientDetails toDomain() => _toDomain(stored: false);
+
+  /// The details of a recipient the server returned. Unlike [toDomain], it
+  /// keeps a Colombian recipient saved before the API required the last
+  /// name and email ([ColombiaNameOnly]).
+  RecipientDetails toStoredDomain() => _toDomain(stored: true);
+
+  /// The Colombian payee of this input: a [ColombiaContact] when the holder
+  /// and email are complete; for a [stored] recipient without them, a
+  /// [ColombiaNameOnly] under the name it has.
+  ColombiaPayee _colombiaPayee(String type, {required bool stored}) {
+    String? text(String? value) =>
+        value == null || value.trim().isEmpty ? null : value;
+    final corporate = text(corporateName);
+    final first = text(name);
+    final last = text(lastname);
+    final mail = text(email);
+    final ColombiaAccountHolder? holder = isCorporate ?? false
+        ? (corporate == null
+              ? null
+              : ColombiaCorporate.create(corporateName: corporate))
+        : (first == null || last == null
+              ? null
+              : ColombiaIndividual.create(firstName: first, lastName: last));
+    if (holder != null && mail != null) {
+      if (!stored && !emailLooksValid(mail)) {
+        throw ArgumentError('email is not an address for $type.');
+      }
+      return ColombiaContact.create(holder: holder, email: mail);
+    }
+    if (!stored) {
+      if (holder == null) {
+        throw StateError(
+          isCorporate ?? false
+              ? 'corporateName is required for a corporate $type.'
+              : 'name and lastname are required for $type.',
+        );
+      }
+      throw StateError('email is required for $type.');
+    }
+    final shown = holder?.displayName ?? first ?? corporate;
+    if (shown == null) throw StateError('name is required for $type.');
+    return ColombiaNameOnly.create(
+      name: last == null || holder != null ? shown : '$shown $last',
+    );
+  }
+
+  RecipientDetails _toDomain({required bool stored}) {
     final def = isDefault ?? false;
 
     switch (recipientType) {
@@ -328,9 +378,6 @@ class RecipientDetailsInput {
           name: name!,
         );
       case RecipientType.pseColombia:
-        if (name == null) {
-          throw StateError('name is required for PSE_COLOMBIA.');
-        }
         if (accountType == null) {
           throw StateError('accountType is required for PSE_COLOMBIA.');
         }
@@ -346,11 +393,11 @@ class RecipientDetailsInput {
         if (documentType == null) {
           throw StateError('documentType is required for PSE_COLOMBIA.');
         }
-        return PseColombiaDetails.create(
+        return PseColombiaDetails.stored(
           label: label,
           isDefault: def,
           isOwner: isOwner,
-          name: name!,
+          payee: _colombiaPayee('PSE_COLOMBIA', stored: stored),
           accountType: accountType!,
           bankAccount: bankAccount!,
           bankCode: bankCode!,
@@ -359,16 +406,25 @@ class RecipientDetailsInput {
           documentType: documentType!,
         );
       case RecipientType.nequiColombia:
-        return NequiColombiaDetails.create(
+        // The API's field is bankAccount; the form calls it phoneNumber.
+        final phone = phoneNumber ?? bankAccount;
+        if (phone == null) {
+          throw StateError('phoneNumber is required for NEQUI_COLOMBIA.');
+        }
+        if (documentId == null) {
+          throw StateError('documentId is required for NEQUI_COLOMBIA.');
+        }
+        if (documentType == null) {
+          throw StateError('documentType is required for NEQUI_COLOMBIA.');
+        }
+        return NequiColombiaDetails.stored(
           label: label,
           isDefault: def,
           isOwner: isOwner,
-          // Nequi uses phone number as bank account and API field is bankAccount
-          // Phone number has a value when entered by user, bank account has a value when retrieved from API
-          phoneNumber: phoneNumber ?? bankAccount!,
+          payee: _colombiaPayee('NEQUI_COLOMBIA', stored: stored),
+          phoneNumber: phone,
           documentId: documentId!,
           documentType: documentType!,
-          name: name!,
         );
     }
   }

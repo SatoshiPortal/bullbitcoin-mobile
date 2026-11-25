@@ -598,7 +598,7 @@ class BankAccountArgentinaDetails extends RecipientDetails {
 // ── PSE (Colombia)
 @immutable
 class PseColombiaDetails extends RecipientDetails {
-  final String name;
+  final ColombiaPayee payee;
   final String accountType;
   final String bankAccount;
   final String bankCode;
@@ -610,7 +610,7 @@ class PseColombiaDetails extends RecipientDetails {
     super.label,
     super.isDefault = false,
     super.isOwner,
-    required this.name,
+    required this.payee,
     required this.accountType,
     required this.bankAccount,
     required this.bankCode,
@@ -619,11 +619,65 @@ class PseColombiaDetails extends RecipientDetails {
     required this.documentType,
   });
 
+  /// A new PSE recipient: the API requires the [holder]'s names and an
+  /// [email], so a recipient without them can't be built.
   factory PseColombiaDetails.create({
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    required ColombiaAccountHolder holder,
+    required String email,
+    required String accountType,
+    required String bankAccount,
+    required String bankCode,
+    String bankName = '',
+    required String documentId,
+    required String documentType,
+  }) => PseColombiaDetails._stored(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    payee: ColombiaContact.create(holder: holder, email: email),
+    accountType: accountType,
+    bankAccount: bankAccount,
+    bankCode: bankCode,
+    bankName: bankName,
+    documentId: documentId,
+    documentType: documentType,
+  );
+
+  /// A PSE recipient the server returned. [payee] may be a
+  /// [ColombiaNameOnly] recipient saved before the API required the names
+  /// and email.
+  factory PseColombiaDetails.stored({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required ColombiaPayee payee,
+    required String accountType,
+    required String bankAccount,
+    required String bankCode,
+    String bankName = '',
+    required String documentId,
+    required String documentType,
+  }) => PseColombiaDetails._stored(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    payee: payee,
+    accountType: accountType,
+    bankAccount: bankAccount,
+    bankCode: bankCode,
+    bankName: bankName,
+    documentId: documentId,
+    documentType: documentType,
+  );
+
+  static PseColombiaDetails _stored({
+    required String? label,
+    required bool isDefault,
+    required bool? isOwner,
+    required ColombiaPayee payee,
     required String accountType,
     required String bankAccount,
     required String bankCode,
@@ -631,9 +685,6 @@ class PseColombiaDetails extends RecipientDetails {
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
-      throw ArgumentError('Name cannot be empty');
-    }
     if (accountType.trim().isEmpty) {
       throw ArgumentError('Account type cannot be empty');
     }
@@ -643,19 +694,13 @@ class PseColombiaDetails extends RecipientDetails {
     if (bankCode.trim().isEmpty) {
       throw ArgumentError('Bank code cannot be empty');
     }
-
-    if (documentId.trim().isEmpty) {
-      throw ArgumentError('Document ID cannot be empty');
-    }
-    if (documentType.trim().isEmpty) {
-      throw ArgumentError('Document type cannot be empty');
-    }
+    _requireColombiaDocument(documentId, documentType);
 
     return PseColombiaDetails._(
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      payee: payee,
       accountType: accountType.trim(),
       bankAccount: bankAccount.trim(),
       bankCode: bankCode.trim(),
@@ -665,6 +710,20 @@ class PseColombiaDetails extends RecipientDetails {
     );
   }
 
+  /// The holder's name as shown in lists.
+  String get name => payee.displayName;
+
+  @override
+  String? get firstName => payee.firstName;
+  @override
+  String? get lastName => payee.lastName;
+  @override
+  String? get email => payee.email;
+  @override
+  bool? get isCorporate => payee.isCorporate;
+  @override
+  String? get corporateName => payee.corporateName;
+
   @override
   RecipientType get type => RecipientType.pseColombia;
 }
@@ -672,54 +731,219 @@ class PseColombiaDetails extends RecipientDetails {
 // ── Nequi (Colombia)
 @immutable
 class NequiColombiaDetails extends RecipientDetails {
+  final ColombiaPayee payee;
   final String phoneNumber;
   final String documentId;
   final String documentType;
-  final String name;
 
   const NequiColombiaDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
+    required this.payee,
     required this.phoneNumber,
     required this.documentId,
     required this.documentType,
-    required this.name,
   });
 
+  /// A new Nequi recipient: the API requires the [holder]'s names and an
+  /// [email], so a recipient without them can't be built.
   factory NequiColombiaDetails.create({
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    required ColombiaAccountHolder holder,
+    required String email,
+    required String phoneNumber,
+    required String documentId,
+    required String documentType,
+  }) => NequiColombiaDetails.stored(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    payee: ColombiaContact.create(holder: holder, email: email),
+    phoneNumber: phoneNumber,
+    documentId: documentId,
+    documentType: documentType,
+  );
+
+  /// A Nequi recipient the server returned. [payee] may be a
+  /// [ColombiaNameOnly] recipient saved before the API required the names
+  /// and email.
+  factory NequiColombiaDetails.stored({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required ColombiaPayee payee,
     required String phoneNumber,
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
-      throw ArgumentError('Name cannot be empty');
-    }
     if (phoneNumber.trim().isEmpty) {
       throw ArgumentError('Phone number cannot be empty');
     }
-    if (documentId.trim().isEmpty) {
-      throw ArgumentError('Document ID cannot be empty');
-    }
-    if (documentType.trim().isEmpty) {
-      throw ArgumentError('Document type cannot be empty');
-    }
+    _requireColombiaDocument(documentId, documentType);
 
     return NequiColombiaDetails._(
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      payee: payee,
       phoneNumber: phoneNumber.trim(),
       documentId: documentId.trim(),
       documentType: documentType.trim(),
     );
   }
 
+  /// The holder's name as shown in lists.
+  String get name => payee.displayName;
+
+  @override
+  String? get firstName => payee.firstName;
+  @override
+  String? get lastName => payee.lastName;
+  @override
+  String? get email => payee.email;
+  @override
+  bool? get isCorporate => payee.isCorporate;
+  @override
+  String? get corporateName => payee.corporateName;
+
   @override
   RecipientType get type => RecipientType.nequiColombia;
+}
+
+void _requireColombiaDocument(String documentId, String documentType) {
+  if (documentId.trim().isEmpty) {
+    throw ArgumentError('Document ID cannot be empty');
+  }
+  if (documentType.trim().isEmpty) {
+    throw ArgumentError('Document type cannot be empty');
+  }
+}
+
+// ── Colombian account holder
+
+/// Who holds a Colombian account: a person or a company.
+@immutable
+sealed class ColombiaAccountHolder {
+  const ColombiaAccountHolder();
+
+  String get displayName;
+}
+
+/// A person. The API requires both names.
+final class ColombiaIndividual extends ColombiaAccountHolder {
+  final String firstName;
+  final String lastName;
+
+  const ColombiaIndividual._(this.firstName, this.lastName);
+
+  factory ColombiaIndividual.create({
+    required String firstName,
+    required String lastName,
+  }) {
+    if (firstName.trim().isEmpty) {
+      throw ArgumentError('First name cannot be empty');
+    }
+    if (lastName.trim().isEmpty) {
+      throw ArgumentError('Last name cannot be empty');
+    }
+    return ColombiaIndividual._(firstName.trim(), lastName.trim());
+  }
+
+  @override
+  String get displayName => '$firstName $lastName';
+}
+
+/// A company, by its name.
+final class ColombiaCorporate extends ColombiaAccountHolder {
+  final String corporateName;
+
+  const ColombiaCorporate._(this.corporateName);
+
+  factory ColombiaCorporate.create({required String corporateName}) {
+    if (corporateName.trim().isEmpty) {
+      throw ArgumentError('Corporate name cannot be empty');
+    }
+    return ColombiaCorporate._(corporateName.trim());
+  }
+
+  @override
+  String get displayName => corporateName;
+}
+
+/// The person or company a Colombian recipient pays.
+///
+/// Only a [ColombiaContact] can be sent to the API to create a recipient:
+/// [ColombiaNameOnly] exists only for recipients the server returns that
+/// were saved before it required the names and email.
+@immutable
+sealed class ColombiaPayee {
+  const ColombiaPayee();
+
+  String get displayName;
+  String? get firstName => null;
+  String? get lastName => null;
+  String? get email => null;
+  bool? get isCorporate => null;
+  String? get corporateName => null;
+}
+
+/// A holder with the email the API requires for every Colombian recipient.
+final class ColombiaContact extends ColombiaPayee {
+  final ColombiaAccountHolder holder;
+  @override
+  final String email;
+
+  const ColombiaContact._(this.holder, this.email);
+
+  factory ColombiaContact.create({
+    required ColombiaAccountHolder holder,
+    required String email,
+  }) {
+    if (email.trim().isEmpty) {
+      throw ArgumentError('Email cannot be empty');
+    }
+    return ColombiaContact._(holder, email.trim());
+  }
+
+  @override
+  String get displayName => holder.displayName;
+  @override
+  String? get firstName => switch (holder) {
+    ColombiaIndividual(:final firstName) => firstName,
+    ColombiaCorporate() => null,
+  };
+  @override
+  String? get lastName => switch (holder) {
+    ColombiaIndividual(:final lastName) => lastName,
+    ColombiaCorporate() => null,
+  };
+  @override
+  bool get isCorporate => holder is ColombiaCorporate;
+  @override
+  String? get corporateName => switch (holder) {
+    ColombiaIndividual() => null,
+    ColombiaCorporate(:final corporateName) => corporateName,
+  };
+}
+
+/// A recipient the server returned without the last name or email it now
+/// requires: saved before the API required them. It can be listed and
+/// picked, never created.
+final class ColombiaNameOnly extends ColombiaPayee {
+  final String name;
+
+  const ColombiaNameOnly._(this.name);
+
+  factory ColombiaNameOnly.create({required String name}) {
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Name cannot be empty');
+    }
+    return ColombiaNameOnly._(name.trim());
+  }
+
+  @override
+  String get displayName => name;
 }
