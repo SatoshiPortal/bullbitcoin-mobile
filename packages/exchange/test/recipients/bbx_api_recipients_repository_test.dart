@@ -815,7 +815,12 @@ void main() {
           final failure = _failureOf(await call(repository));
 
           expect(failure, apiFailure);
-          expect(failure.logMessage, 'Exchange credential unavailable');
+          expect(
+            failure.logMessage,
+            name == 'saveRecipient'
+                ? 'not sent: credentialUnavailable'
+                : 'Exchange credential unavailable',
+          );
         },
       );
     }
@@ -843,7 +848,7 @@ void main() {
       await log.flush();
 
       final contents = await log.logsFile.readAsString();
-      expect(contents, contains('JSON-RPC error code -32602'));
+      expect(contents, contains('BbxRpcFailure(code: -32602'));
       expect(contents, isNot(contains(_iban)));
       expect(contents, isNot(contains('RecipientService.create')));
     });

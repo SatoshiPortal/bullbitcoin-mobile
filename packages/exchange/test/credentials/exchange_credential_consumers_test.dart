@@ -118,7 +118,11 @@ void main() {
       );
       expect(
         announcements,
-        isA<Ok>().having((r) => r.value, 'announcements', isEmpty),
+        isA<Err>().having(
+          (r) => r.failure,
+          'announcements',
+          isA<ExchangeNotAuthenticatedFailure>(),
+        ),
       );
       final messages = await user.getSupportMessages();
       expect(
