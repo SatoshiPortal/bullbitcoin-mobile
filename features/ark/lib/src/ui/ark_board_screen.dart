@@ -14,6 +14,7 @@ import '../presentation/ark_operation_status_l10n.dart';
 import 'ark_amount.dart';
 import 'ark_review.dart';
 import 'ark_board_amount_screen.dart';
+import 'ark_payment_progress_policy.dart';
 
 class ArkBoardScreen extends StatefulWidget {
   final ArkBoardCubit cubit;
@@ -340,9 +341,28 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
       }
 
       final l10n = arkLocalizationsOf(context);
+      final progress = arkPaymentProgress(
+        operation?.status,
+        pendingState: BullPaymentStepState.broadcast,
+        // Until an operation exists the funding is still being sent, and an
+        // unknown outcome is not evidence of a broadcast.
+        steps: [
+          switch (operation?.status) {
+            ArkOperationStatus.pending ||
+            ArkOperationStatus.succeeded ||
+            ArkOperationStatus.failed ||
+            ArkOperationStatus.conflicted => l10n.operationFundingSent,
+            ArkOperationStatus.outcomeUnknown => l10n.operationFundingUnknown,
+            _ => l10n.operationSendingFunding,
+          },
+          l10n.operationCompleted,
+        ],
+      );
       return BullPaymentTransition(
         network: BullPaymentNetwork.ark,
         phase: phase,
+        statusTag: operation?.status.toTranslated(context),
+        progress: progress,
         status: operation?.status.toTranslated(context) ?? l10n.loading,
         skipLabel: BullUiLocalizations.of(context).paymentViewStatus,
         onSkip: dismiss,

@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullText, BullAmount, BullButton, BullTopBar, Gap, BullTypographyX;
 import 'package:gif/gif.dart';
+import 'package:receive/src/ui/widgets/receive_lightning_transition.dart';
 
 class ReceivePaymentReceivedScreen extends StatelessWidget {
   final void Function(BuildContext) openHome;
@@ -37,7 +38,14 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
             onAction: () => openHome(context),
           ),
         ),
-        body: PaymentReceivedPage(successAnimation: successAnimation),
+        body:
+            context.select(
+              (ReceiveBloc bloc) =>
+                  bloc.state.orderSwap == null &&
+                  bloc.state.lightningSwap != null,
+            )
+            ? const ReceiveLightningTransition()
+            : PaymentReceivedPage(successAnimation: successAnimation),
         // child: AmountPage(),
       ),
     );
@@ -110,42 +118,39 @@ class ReceiveDetailsButton extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: BullButton.secondary(
         label: context.loc.receiveDetails,
-        onPressed: () {
-          final target = receiveDetailsTarget(
-            context.read<ReceiveBloc>().state,
-          );
-          if (target == null) return;
-          switch (target.kind) {
-            case ReceiveDetailsTargetKind.walletTransaction:
-              if (target.walletId case final walletId?) {
-                TransactionsNavigation.openDetails(
-                  context,
-                  TransactionDetailsTarget.wallet(
-                    target.id,
-                    walletId: walletId,
-                  ),
-                );
-              }
-            case ReceiveDetailsTargetKind.orderSwap:
-              TransactionsNavigation.openDetails(
-                context,
-                TransactionDetailsTarget.orderSwap(target.id),
-              );
-            case ReceiveDetailsTargetKind.swap:
-              if (target.walletId case final walletId?) {
-                TransactionsNavigation.openDetails(
-                  context,
-                  TransactionDetailsTarget.swap(target.id, walletId: walletId),
-                );
-              }
-            case ReceiveDetailsTargetKind.payjoin:
-              TransactionsNavigation.openDetails(
-                context,
-                TransactionDetailsTarget.payjoin(target.id),
-              );
-          }
-        },
+        onPressed: () => openReceiveDetails(context),
       ),
     );
+  }
+}
+
+void openReceiveDetails(BuildContext context) {
+  final target = receiveDetailsTarget(context.read<ReceiveBloc>().state);
+  if (target == null) return;
+  switch (target.kind) {
+    case ReceiveDetailsTargetKind.walletTransaction:
+      if (target.walletId case final walletId?) {
+        TransactionsNavigation.openDetails(
+          context,
+          TransactionDetailsTarget.wallet(target.id, walletId: walletId),
+        );
+      }
+    case ReceiveDetailsTargetKind.orderSwap:
+      TransactionsNavigation.openDetails(
+        context,
+        TransactionDetailsTarget.orderSwap(target.id),
+      );
+    case ReceiveDetailsTargetKind.swap:
+      if (target.walletId case final walletId?) {
+        TransactionsNavigation.openDetails(
+          context,
+          TransactionDetailsTarget.swap(target.id, walletId: walletId),
+        );
+      }
+    case ReceiveDetailsTargetKind.payjoin:
+      TransactionsNavigation.openDetails(
+        context,
+        TransactionDetailsTarget.payjoin(target.id),
+      );
   }
 }

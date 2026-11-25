@@ -11,6 +11,7 @@ import '../presentation/ark_payment_cubit.dart';
 import '../presentation/ark_failure_l10n.dart';
 import '../presentation/ark_operation_status_l10n.dart';
 import 'ark_amount.dart';
+import 'ark_payment_progress_policy.dart';
 import 'ark_review.dart';
 
 /// The caller replaces the owner for a full config or request replacement.
@@ -445,20 +446,21 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
         ArkOperationStatus.conflicted => BullPaymentPhase.failed,
         _ => BullPaymentPhase.sending,
       };
-      final network = switch (_confirmed?.destinationKind) {
-        ArkDestinationKind.bitcoin => BullPaymentNetwork.bitcoin,
-        ArkDestinationKind.bolt11 => BullPaymentNetwork.lightning,
-        ArkDestinationKind.ark || null => BullPaymentNetwork.ark,
-      };
       void dismiss() {
         if (_owns(owner, account) && _transitionId == transitionId) {
           setState(() => _showTransition = false);
         }
       }
 
+      final progress = arkPaymentProgress(
+        operation?.status,
+        steps: [l10n.operationPending, l10n.operationCompleted],
+      );
       return BullPaymentTransition(
-        network: network,
+        network: BullPaymentNetwork.ark,
         phase: transitionPhase,
+        statusTag: operation?.status.toTranslated(context),
+        progress: progress,
         status: operation?.status.toTranslated(context) ?? l10n.loading,
         skipLabel: BullUiLocalizations.of(context).paymentViewStatus,
         onSkip: dismiss,

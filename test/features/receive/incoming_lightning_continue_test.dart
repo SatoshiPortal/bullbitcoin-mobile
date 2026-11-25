@@ -132,6 +132,7 @@ void main() {
               resolveEntry: (wallet) async => Ok(wallet),
               refreshAfterLightningPayment: () async {},
               receive: operations,
+              watchReceiveSettlementUsecase: _NoSettlement(),
               pollAmountQuotes: false,
               prepareReceiveAddressUsecase: _MockPrepareReceiveAddressUsecase(),
               createReceiveOrderSwapUsecase: swap.execute,
@@ -250,3 +251,11 @@ void main() {
 }
 
 class _ReceiveAddressView extends Mock implements AddressView {}
+
+class _NoSettlement implements WatchReceiveSettlementUsecase {
+  @override
+  Stream<WalletTransaction> execute({
+    required String walletId,
+    required String txId,
+  }) => const Stream.empty();
+}

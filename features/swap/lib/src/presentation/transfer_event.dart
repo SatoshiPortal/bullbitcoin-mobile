@@ -74,4 +74,7 @@ sealed class TransferEvent with _$TransferEvent {
   ) = TransferOrderSwapUpdated;
   const factory TransferEvent.boltzSwapUpdated(Swap swap) =
       TransferBoltzSwapUpdated;
+  const factory TransferEvent.receiveTransactionUpdated(
+    WalletTransaction transaction,
+  ) = TransferReceiveTransactionUpdated;
 }

@@ -32,7 +32,10 @@ import 'package:send/send.dart';
 import 'package:fees/fees.dart';
 import 'package:swap_feature/src/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:swaps/swaps.dart';
+import 'package:transactions/transactions.dart'
+    show WalletTransaction, $WalletTransactionCopyWith;
 import 'package:swap_feature/src/domain/usecases/verify_transfer_lockup_usecase.dart';
+import 'package:swap_feature/src/domain/usecases/watch_transfer_settlement_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:swap_feature/src/domain/entities/swap_wallet.dart';
@@ -81,6 +84,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._recordPendingSwapLockupUsecase,
     required this._dropPendingSwapLockupUsecase,
     required this._watchSwapUsecase,
+    required this._watchSettlement,
   }) : super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
@@ -117,6 +121,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     on<TransferPresetFeesPreviewRequested>(_onPresetFeesPreviewRequested);
     on<TransferOrderSwapUpdated>(_onOrderSwapUpdated);
     on<TransferBoltzSwapUpdated>(_onBoltzSwapUpdated);
+    on<TransferReceiveTransactionUpdated>(_onReceiveTransactionUpdated);
   }
 
   final GetSwapAmountQuotesUsecase? _getSwapAmountQuotesUsecase;
@@ -185,6 +190,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final DropPendingSwapLockupUsecase _dropPendingSwapLockupUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   StreamSubscription<Swap>? _boltzSwapSubscription;
+  final WatchTransferSettlementUsecase _watchSettlement;
+  StreamSubscription<WalletTransaction>? _receiveSubscription;
+  String? _watchedReceiveTxId;
   int _transactionGeneration = 0;
 
   /// Bumped by [_clearBitcoinFeePreviews]; a preview build captures it
@@ -199,6 +207,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     await Future.wait([
       _orderSwapSubscription?.cancel() ?? Future.value(),
       _boltzSwapSubscription?.cancel() ?? Future.value(),
+      _receiveSubscription?.cancel() ?? Future.value(),
     ]);
     return super.close();
   }
@@ -2963,6 +2972,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         ),
       ),
     );
+    _watchReceiveTransaction(state.swap);
     if (orderSwap.localStatus.isTerminal) {
       unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
       final destinationWalletId = orderSwap.destinationWalletId;
@@ -2988,6 +2998,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             : updated,
       ),
     );
+    _watchReceiveTransaction(state.swap);
     if (updated.status == SwapStatus.completed ||
         updated.status == SwapStatus.refunded) {
       unawaited(_syncWalletAfterBroadcast(updated.sendWalletId));
@@ -3005,7 +3016,36 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     _orderSwapSubscription = null;
     await _boltzSwapSubscription?.cancel();
     _boltzSwapSubscription = null;
+    await _receiveSubscription?.cancel();
+    _receiveSubscription = null;
+    _watchedReceiveTxId = null;
   }
+
+  /// Observes the swap's claim or payout transaction in the receiving wallet,
+  /// the only way to know it is confirmed.
+  void _watchReceiveTransaction(ChainSwap? swap) {
+    final walletId = swap?.receiveWalletId;
+    final txId = swap?.receiveTxid;
+    if (walletId == null ||
+        txId == null ||
+        txId.isEmpty ||
+        txId == _watchedReceiveTxId) {
+      return;
+    }
+    _watchedReceiveTxId = txId;
+    _receiveSubscription?.cancel();
+    _receiveSubscription = _watchSettlement
+        .execute(walletId: walletId, txId: txId)
+        .listen((transaction) {
+          if (isClosed) return;
+          add(TransferEvent.receiveTransactionUpdated(transaction));
+        });
+  }
+
+  void _onReceiveTransactionUpdated(
+    TransferReceiveTransactionUpdated event,
+    Emitter<TransferState> emit,
+  ) => emit(state.copyWith(receiveTransaction: event.transaction));
 
   void _watchBoltzSwap(String swapId) {
     _boltzSwapSubscription?.cancel();

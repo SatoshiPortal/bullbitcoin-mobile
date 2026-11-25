@@ -46,6 +46,7 @@ import 'domain/usecases/refresh_order_swaps_usecase.dart';
 import 'domain/usecases/review_internal_ark_transfer_usecase.dart';
 import 'domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'domain/usecases/verify_transfer_lockup_usecase.dart';
+import 'domain/usecases/watch_transfer_settlement_usecase.dart';
 import 'order_swap_watcher.dart';
 import 'presentation/internal_ark_transfer_cubit.dart';
 import 'presentation/transfer_bloc.dart';
@@ -99,6 +100,7 @@ abstract interface class SwapFeature implements SwapActivity {
     required Receive receive,
     required Labels labels,
     required Transactions transactions,
+    required SettlementPoll pollSettlement,
     required SwapSyncPort Function() scheduler,
     required ArkTransferFacade? Function() ark,
   }) {
@@ -181,11 +183,13 @@ abstract interface class SwapFeature implements SwapActivity {
           recordPendingSwapLockupUsecase: recordPending,
           dropPendingSwapLockupUsecase: dropPending,
           watchSwapUsecase: WatchSwapUsecase(swaps.store),
+          watchSettlement: WatchTransferSettlementUsecase(transactions),
         ),
         createArk: () => InternalArkTransferCubit(
           loadArk,
           ReviewInternalArkTransferUsecase(loadArk, receive),
         ),
+        pollSettlement: pollSettlement,
       ),
       swapSettingsRoute(swaps, swaps),
     ];

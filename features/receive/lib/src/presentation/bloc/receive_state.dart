@@ -57,7 +57,12 @@ abstract class ReceiveState with _$ReceiveState {
     // creation failed). Set to false when a new eligibility decision starts,
     // to true as soon as its outcome is known, whatever the outcome.
     @Default(false) bool payjoinAttemptSettled,
+    // The first transaction detected for the watched address. Later
+    // transactions to the same address never replace it.
     WalletTransaction? tx,
+    // The latest revision of the transaction whose confirmation completes
+    // this receive, see [settlement].
+    WalletTransaction? settlementTx,
     ReceiveFailure? failure,
     @Default(false) bool creatingSwap,
   }) = _ReceiveState;
@@ -386,10 +391,11 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get hasTerminalLightningSwapFailure =>
       hasTerminalOrderSwapFailure ||
-      switch (lightningSwap?.status) {
-        SwapStatus.expired || SwapStatus.failed => true,
-        _ => false,
-      };
+      (lightningSwap?.wasDirectPayment != true &&
+          switch (lightningSwap?.status) {
+            SwapStatus.expired || SwapStatus.failed => true,
+            _ => false,
+          });
 
   /// Whether the payjoin flow owns navigation for this receive, so the
   /// shell's generic "payment received → transaction details" listener must
@@ -610,6 +616,52 @@ abstract class ReceiveState with _$ReceiveState {
     _ => tx?.txId ?? '',
   };
   String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
+
+  /// The exact transaction whose confirmation completes this receive, in the
+  /// wallet that receives it. Null until that transaction is known.
+  ({String walletId, String txId})? get settlement {
+    switch (type) {
+      case ReceiveType.lightning:
+        final swap = lightningSwap;
+        final txId = swap?.receiveTxid;
+        return swap == null || txId == null || txId.isEmpty
+            ? null
+            : (walletId: swap.receiveWalletId, txId: txId);
+      case ReceiveType.bitcoin:
+        final session = payjoin;
+        if (session != null &&
+            (session.status == PayjoinStatus.completed ||
+                session.status == PayjoinStatus.aborted)) {
+          // A finished session is settled by its own transaction only; the
+          // address watcher's transaction is no proof for it.
+          final payjoinTxId = session.status == PayjoinStatus.completed
+              ? session.txId
+              : session.originalTxId;
+          return payjoinTxId == null || payjoinTxId.isEmpty
+              ? null
+              : (walletId: session.walletId, txId: payjoinTxId);
+        }
+        final detected = tx;
+        return detected == null
+            ? null
+            : (walletId: detected.walletId, txId: detected.txId);
+      case ReceiveType.liquid:
+        final detected = tx;
+        return detected == null
+            ? null
+            : (walletId: detected.walletId, txId: detected.txId);
+      case null:
+        return null;
+    }
+  }
+
+  /// Whether the wallet observes the [settlement] transaction as confirmed.
+  bool get settlementConfirmed {
+    final expected = settlement;
+    final observed = settlementTx;
+    if (expected == null || observed == null) return false;
+    return observed.txId == expected.txId && observed.isConfirmed;
+  }
 
   Transaction get transaction => Transaction(
     walletTransaction: tx,

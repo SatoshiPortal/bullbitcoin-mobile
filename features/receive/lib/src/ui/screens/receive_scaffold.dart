@@ -6,8 +6,10 @@ import 'package:receive/src/ui/receive_localizations.dart';
 import 'package:receive/src/domain/receive_wallet.dart';
 import 'package:receive/src/ui/widgets/receive_network_selection.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullTopBar;
+import 'package:bull_ui/bull_ui.dart' show BullTopBar, BullPaymentNetwork;
 import 'package:go_router/go_router.dart';
+import 'package:receive/src/ui/widgets/receive_onchain_transition.dart';
+import 'package:transactions/routes.dart';
 
 class ReceiveScaffold extends StatelessWidget {
   const ReceiveScaffold({
@@ -25,13 +27,27 @@ class ReceiveScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final target = context.select(
-      (ReceiveBloc bloc) => (
-        bloc.state.type == ReceiveType.lightning ? null : bloc.state.wallet?.id,
-        bloc.state.wallet?.isLiquid ?? false,
-        bloc.state.revealedAddressGeneration,
-      ),
-    );
+    final target = context.select((ReceiveBloc bloc) {
+      final state = bloc.state;
+      if (state.type == ReceiveType.lightning) {
+        // The receiving wallet is the swap's own; sync it while the invoice
+        // awaits payment. No address reveal gates this, so a constant stands in.
+        final swapWalletId =
+            state.lightningSwap?.receiveWalletId ??
+            state.orderSwap?.destinationWalletId;
+        final hasSwap = state.lightningSwap != null || state.orderSwap != null;
+        return (
+          swapWalletId ?? state.wallet?.id,
+          state.wallet?.isLiquid ?? false,
+          hasSwap ? 0 : null,
+        );
+      }
+      return (
+        state.wallet?.id,
+        state.wallet?.isLiquid ?? false,
+        state.revealedAddressGeneration,
+      );
+    });
     return ReceivePolling(
       walletId: target.$1,
       isLiquid: target.$2,
@@ -42,6 +58,14 @@ class ReceiveScaffold extends StatelessWidget {
   }
 
   Widget _buildScaffold(BuildContext context) {
+    void onBack() {
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        openHome(context);
+      }
+    }
+
     final selectedWallet = context.select(
       (ReceiveBloc bloc) => bloc.state.wallet,
     );
@@ -53,37 +77,100 @@ class ReceiveScaffold extends StatelessWidget {
               selectedWallet.isLiquid == entryWallet.isLiquid
         ? selectedWallet
         : entryWallet;
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
+    final transaction = context.select((ReceiveBloc bloc) => bloc.state.tx);
+    // Reduced motion keeps develop's behaviour: no transition, the details
+    // open as soon as the payment is detected (see the listener below).
+    final reduced =
+        MediaQuery.disableAnimationsOf(context) ||
+        MediaQuery.reduceMotionOf(context);
+    final showTransition = context.select(
+      (ReceiveBloc bloc) =>
+          !reduced &&
+          bloc.state.tx != null &&
+          (bloc.state.type == ReceiveType.bitcoin ||
+              bloc.state.type == ReceiveType.liquid) &&
+          !bloc.state.isPayjoinFlowOwningNavigation,
+    );
+    final confirmed = context.select(
+      (ReceiveBloc bloc) => bloc.state.settlementConfirmed,
+    );
+    return BlocListener<ReceiveBloc, ReceiveState>(
+      listenWhen: (previous, current) =>
+          reduced &&
+          previous.isPaymentReceived != true &&
+          current.isPaymentReceived == true &&
+          (current.type == ReceiveType.bitcoin ||
+              current.type == ReceiveType.liquid) &&
+          !current.isPayjoinFlowOwningNavigation,
+      listener: (context, state) {
+        final walletId = state.wallet?.id;
+        if (walletId == null) return;
+        TransactionsNavigation.goToDetails(
+          context,
+          TransactionDetailsTarget.wallet(state.txId, walletId: walletId),
+        );
       },
-      behavior: .translucent,
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: BullTopBar(
-            title: context.loc.receiveTitle,
-            onBack: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                openHome(context);
-              }
-            },
-          ),
-        ),
-        body: Column(
-          crossAxisAlignment: .stretch,
-          children: [
-            ReceiveNetworkSelection(
-              wallet: selectionWallet,
-              network: selectedWallet?.network,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ExcludeSemantics(
+            excluding: showTransition,
+            child: IgnorePointer(
+              ignoring: showTransition,
+              child: GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                },
+                behavior: .translucent,
+                child: Scaffold(
+                  resizeToAvoidBottomInset: true,
+                  appBar: AppBar(
+                    forceMaterialTransparency: true,
+                    automaticallyImplyLeading: false,
+                    flexibleSpace: BullTopBar(
+                      title: context.loc.receiveTitle,
+                      onBack: onBack,
+                    ),
+                  ),
+                  body: Column(
+                    crossAxisAlignment: .stretch,
+                    children: [
+                      ReceiveNetworkSelection(
+                        wallet: selectionWallet,
+                        network: selectedWallet?.network,
+                      ),
+                      Expanded(child: child),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            Expanded(child: child),
-          ],
-        ),
+          ),
+          if (showTransition && transaction != null)
+            ReceiveOnchainTransition(
+              key: ValueKey(transaction.txId),
+              network: transaction.isBitcoin
+                  ? BullPaymentNetwork.bitcoin
+                  : BullPaymentNetwork.liquid,
+              confirmed: confirmed,
+              steps: [
+                context.loc.receiveStepPaymentDetected,
+                context.loc.receiveStepConfirmed,
+              ],
+              viewDetails: context.loc.receiveViewDetails,
+              networkLabel: transaction.isBitcoin
+                  ? context.loc.transactionNetworkBitcoin
+                  : context.loc.transactionNetworkLiquid,
+              onBack: onBack,
+              onViewDetails: () => TransactionsNavigation.goToDetails(
+                context,
+                TransactionDetailsTarget.wallet(
+                  transaction.txId,
+                  walletId: transaction.walletId,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

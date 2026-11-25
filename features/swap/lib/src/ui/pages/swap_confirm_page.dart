@@ -15,6 +15,8 @@ import 'package:swaps/order_swaps.dart';
 import 'package:swap_feature/src/ui/swap_router.dart';
 import 'package:swap_feature/src/ui/swap_transition_policy.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/transactions.dart'
+    show SettlementPoll, SettlementSyncPoller;
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBottomSheet,
@@ -31,7 +33,10 @@ import 'package:bull_ui/bull_ui.dart'
         Gap;
 
 class SwapConfirmPage extends StatefulWidget {
-  const SwapConfirmPage({super.key});
+  const SwapConfirmPage({super.key, this.poll});
+
+  /// Refreshes the receiving wallet; no polling when absent.
+  final SettlementPoll? poll;
 
   @override
   State<SwapConfirmPage> createState() => _SwapConfirmPageState();
@@ -53,7 +58,9 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
       setState(() {
         _attemptSwapId = swap.id;
         _attemptOrderId = state.orderSwap?.localId;
-        _network = swap.type == SwapType.bitcoinToLiquid
+        _network = _attemptOrderId == null
+            ? BullPaymentNetwork.boltz
+            : swap.type == SwapType.bitcoinToLiquid
             ? BullPaymentNetwork.liquid
             : BullPaymentNetwork.bitcoin;
         _showTransition = true;
@@ -152,7 +159,36 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
             swap: currentSwap,
             order: state.orderSwap,
             fundingTxId: state.txId,
+            receiveTransaction: state.receiveTransaction,
           );
+    final copy = context.swapCopyForLocale;
+    final observable = swapReceiveObservable(currentSwap);
+    final progress = swapTransitionProgress(
+      swapId: attemptId ?? '',
+      orderId: _attemptOrderId,
+      swap: currentSwap,
+      order: state.orderSwap,
+      fundingTxId: state.txId,
+      receiveTransaction: state.receiveTransaction,
+      steps: _attemptOrderId == null
+          ? [
+              copy.paymentStepSendingLockup,
+              copy.paymentStepLockupSent,
+              copy.paymentStepClaimable,
+              copy.paymentStepClaimBroadcast,
+              if (observable) copy.paymentStepConfirmed,
+            ]
+          : [
+              copy.paymentStepSendingPayin,
+              copy.paymentStepPayinBroadcast,
+              copy.paymentStepPayoutInProgress,
+              if (observable) ...[
+                copy.paymentStepPayoutBroadcast,
+                copy.paymentStepConfirmed,
+              ] else
+                copy.paymentStepCompleted,
+            ],
+    );
     final completed = phase == BullPaymentPhase.success;
     final failed = phase == BullPaymentPhase.failed;
     final provisionalFailure =
@@ -173,7 +209,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
             (state.orderSwap?.localStatus ==
                     OrderSwapLocalStatus.broadcastUnknown &&
                 !canRetryRejectedPayin));
-    return BlocListener<TransferBloc, TransferState>(
+    final confirmPage = BlocListener<TransferBloc, TransferState>(
       listenWhen: (previous, current) =>
           previous.isConfirming && !current.isConfirming,
       listener: (context, state) {
@@ -479,6 +515,29 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
                   child: BullPaymentTransition(
                     network: network,
                     phase: phase,
+                    descriptor: _attemptOrderId != null
+                        ? context.swapCopyForLocale.paymentExchangeDescriptor
+                        : null,
+                    statusTag: completed
+                        ? context.swapCopyForLocale.swapTransferCompletedTitle
+                        : sameAttempt &&
+                              (currentSwap?.refundTxid != null ||
+                                  currentSwap?.status == SwapStatus.refunded)
+                        ? context.swapCopyForLocale.swapTransferRefundedTitle
+                        : sameAttempt &&
+                              currentSwap?.status == SwapStatus.refundable
+                        ? context
+                              .swapCopyForLocale
+                              .swapTransferRefundInProgressTitle
+                        : sameAttempt &&
+                              currentSwap?.status == SwapStatus.expired
+                        ? context.swapCopyForLocale.transactionStatusSwapExpired
+                        : failed
+                        ? context.swapCopyForLocale.transactionStatusSwapFailed
+                        : sameAttempt && progress.completed > 0
+                        ? progress.steps[progress.completed]
+                        : context.swapCopyForLocale.swapTransferPendingTitle,
+                    progress: progress,
                     status: completed
                         ? context.swapCopyForLocale.swapTransferCompletedTitle
                         : sameAttempt &&
@@ -509,6 +568,21 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
           ],
         ),
       ),
+    );
+    final poll = widget.poll;
+    if (poll == null) return confirmPage;
+    final receiveTxId = currentSwap?.receiveTxid;
+    final receiveTransaction = state.receiveTransaction;
+    return SettlementSyncPoller(
+      walletId: currentSwap?.receiveWalletId,
+      active:
+          _showTransition &&
+          (receiveTxId?.isNotEmpty ?? false) &&
+          !(receiveTransaction?.txId == receiveTxId &&
+              receiveTransaction?.isConfirmed == true),
+      isLiquid: currentSwap?.type == SwapType.bitcoinToLiquid,
+      poll: poll,
+      child: confirmPage,
     );
   }
 }

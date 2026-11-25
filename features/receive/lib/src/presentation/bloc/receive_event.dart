@@ -40,6 +40,8 @@ class ReceiveEvent with _$ReceiveEvent {
     WalletTransaction tx, {
     required int generation,
   }) = ReceiveTransactionReceived;
+  const factory ReceiveEvent.receiveSettlementObserved(WalletTransaction tx) =
+      ReceiveSettlementObserved;
   const factory ReceiveEvent.receivePayjoinSettingChanged(bool enabled) =
       ReceivePayjoinSettingChanged;
   const factory ReceiveEvent.receivePayjoinMinAmountChanged(int amountSat) =
