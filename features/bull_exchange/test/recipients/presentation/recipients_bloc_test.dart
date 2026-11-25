@@ -413,6 +413,32 @@ void main() {
 
   // _runSelectionHook is the only catch left in this bloc, and the code it
   // guards belongs to another feature.
+  group('switching the new-recipient form', () {
+    for (final failure in <RecipientsFailure>[
+      const RecipientsSaveFailure(),
+      const RecipientsSaveOutcomeUnknownFailure(),
+      RecipientsInvalidFieldsFailure.fromFieldErrors(const {
+        'clabe': 'ERR_VALIDATION_FORMAT',
+      })!,
+    ]) {
+      test('clears the last save failure (${failure.runtimeType})', () async {
+        when(() => addRecipient.execute(any()))
+            .thenAnswer((_) async => Err(failure));
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(RecipientsEvent.added(_formData()));
+        await pumpEventQueue();
+        expect(bloc.state.failedToAddRecipient, same(failure));
+
+        bloc.add(const RecipientsEvent.newRecipientFormChanged());
+        await pumpEventQueue();
+
+        expect(bloc.state.failedToAddRecipient, isNull);
+      });
+    }
+  });
+
   group('the caller-supplied hook is contained', () {
     test('a throwing hook becomes a typed failure instead of escaping the '
         'handler', () async {

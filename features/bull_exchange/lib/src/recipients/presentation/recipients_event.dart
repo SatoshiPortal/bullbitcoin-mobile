@@ -24,4 +24,9 @@ sealed class RecipientsEvent with _$RecipientsEvent {
       RecipientsVirtualIbanActivated;
   const factory RecipientsEvent.sepaTypeChanged(RecipientType sepaType) =
       RecipientsSepaTypeChanged;
+
+  /// The new-recipient form now shows another country or payout method:
+  /// the last save's failure was about the form that is gone.
+  const factory RecipientsEvent.newRecipientFormChanged() =
+      RecipientsNewRecipientFormChanged;
 }
