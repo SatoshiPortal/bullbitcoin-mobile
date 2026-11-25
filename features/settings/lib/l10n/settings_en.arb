@@ -392,7 +392,7 @@
   "@settingsPaymentAnimationsTitle": {
     "description": "Settings entry title for the toggle that enables payment progress animations"
   },
-  "settingsPaymentAnimationsSubtitle": "Show the payment progress animation; when off, open the transaction details directly.",
+  "settingsPaymentAnimationsSubtitle": "When off, payments open their details directly.",
   "@settingsPaymentAnimationsSubtitle": {
     "description": "Subtitle of the payment animations toggle: when off, the app opens the transaction details directly"
   },

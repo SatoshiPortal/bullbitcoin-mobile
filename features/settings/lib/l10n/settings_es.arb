@@ -129,7 +129,7 @@
   "settingsScreenPrivacyTitle": "Privacidad de pantalla",
   "settingsScreenPrivacyDisabledMessage": "Ahora se permiten capturas de pantalla en pantallas sensibles",
   "settingsPaymentAnimationsTitle": "Animaciones de pago",
-  "settingsPaymentAnimationsSubtitle": "Mostrar la animación de progreso del pago; si está desactivada, abre directamente los detalles de la transacción.",
+  "settingsPaymentAnimationsSubtitle": "Desactivadas: los pagos abren sus detalles.",
   "settingsSearchPaymentAnimationsKeywords": "animación de pago|animación|animación de progreso|detalles de la transacción|reducir animaciones",
   "settingsSearchHint": "Buscar en ajustes",
   "settingsSearchNoResults": "No se encontraron ajustes.",
