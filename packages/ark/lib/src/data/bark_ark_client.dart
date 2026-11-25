@@ -47,7 +47,7 @@ final class BarkArkClient implements ArkClient {
     required this.stageBudget,
     required this.opener,
     required this.preflight,
-    this.nativeVersion = '0.27.0+bark-0.8.1',
+    this.nativeVersion = 'scuttle-2ad259dc',
     this.boardAbandonment,
     DateTime Function()? clock,
     this.claimDelivery = const HttpArkClaimDelivery(),

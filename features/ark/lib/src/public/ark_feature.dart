@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:ark/ark.dart';
-import 'package:ark/ark_setup.dart' show scuttleRegtestSmoke;
 import 'package:bloc/bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/widgets.dart' show StreamBuilder;
@@ -625,7 +624,6 @@ class _ArkPageState extends State<_ArkPage> {
       ),
       _Kind.exitRequest => ArkExitRequestScreen(
         snapshot: snapshot,
-        estimateOnly: scuttleRegtestSmoke,
         claimIds: switch (widget.entry) {
           _Entry(:final claimIds) => claimIds,
           _ => null,
@@ -669,7 +667,6 @@ class _ArkPageState extends State<_ArkPage> {
   Widget _exits(ArkCubit owner, ArkSnapshot snapshot, Sats? waitingForFunds) =>
       ArkExitsScreen(
         snapshot: snapshot,
-        estimateOnly: scuttleRegtestSmoke,
         waitingForFunds: waitingForFunds,
         onRefresh: () {
           if (_live(owner)) unawaited(owner.refresh());

@@ -15,7 +15,6 @@ import 'ark_exit_start_sheet.dart';
 class ArkExitRequestScreen extends StatefulWidget {
   final ArkSnapshot snapshot;
   final List<String>? claimIds;
-  final bool estimateOnly;
 
   /// Reviews a claim on its own screen.
   final ValueChanged<ArkQuoteRequest> onReview;
@@ -42,7 +41,6 @@ class ArkExitRequestScreen extends StatefulWidget {
     this.secureBitcoinAddress,
     this.onStarted,
     this.fundFees,
-    this.estimateOnly = false,
   });
 
   @override
@@ -89,9 +87,9 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
     _dropEstimate();
     _estimatedFor = key;
     if (ids.isEmpty ||
+        snapshot.stale ||
         snapshot.tipHeight == null ||
-        (!widget.estimateOnly &&
-            (snapshot.stale || !snapshot.vtxoInventoryComplete))) {
+        !snapshot.vtxoInventoryComplete) {
       return;
     }
     final cubit = quote(ArkQuoteRequest.emergencyExit(ids: ids));
@@ -194,7 +192,6 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
 
   /// The start sheet picks the destination, quotes it and holds to start.
   Future<void> _openStart(ArkExitRequestScreen rendered, int revision) async {
-    if (rendered.estimateOnly) return;
     final estimate = _estimated;
     final quote = rendered.quote;
     if (!_current(rendered, revision) || estimate == null || quote == null) {
@@ -271,23 +268,15 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (widget.estimateOnly && !claim)
-                BullText(
-                  l10n.nativeUnavailable,
-                  role: BullTextRole.caption,
-                  color: context.bull.textMuted,
-                  textAlign: TextAlign.center,
-                )
-              else
-                BullButton.big(
-                  label: claim ? l10n.exitReviewClaim : l10n.exitReviewExit,
-                  disabled: !ready,
-                  onPressed: () => claim
-                      ? _review(rendered, revision)
-                      : unawaited(_openStart(rendered, revision)),
-                  bgColor: context.bull.inverseSurface,
-                  textColor: context.bull.surface,
-                ),
+              BullButton.big(
+                label: claim ? l10n.exitReviewClaim : l10n.exitReviewExit,
+                disabled: !ready,
+                onPressed: () => claim
+                    ? _review(rendered, revision)
+                    : unawaited(_openStart(rendered, revision)),
+                bgColor: context.bull.inverseSurface,
+                textColor: context.bull.surface,
+              ),
               if (!claim && ids.isEmpty) ...[
                 const Gap(BullSpacing.xs),
                 BullText(
@@ -358,12 +347,7 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
                     label: _selectedOnly
                         ? l10n.exitSelectedValue
                         : l10n.exitAvailableValue,
-                    displayValue: formatArkObservedSats(
-                      context,
-                      widget.estimateOnly && !claim
-                          ? _estimated?.amount
-                          : _value(),
-                    ),
+                    displayValue: formatArkObservedSats(context, _value()),
                   ),
                 ],
               ),

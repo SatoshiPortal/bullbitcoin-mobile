@@ -14,7 +14,6 @@ class ArkExitsScreen extends StatefulWidget {
   final VoidCallback onReviewExit;
   final VoidCallback? onRefresh;
   final VoidCallback? onSendOnChain;
-  final bool estimateOnly;
 
   /// How much the Secure Bitcoin wallet must receive before started exits
   /// can pay their next fees; null when they are not waiting for it.
@@ -27,7 +26,6 @@ class ArkExitsScreen extends StatefulWidget {
     this.onRefresh,
     this.onSendOnChain,
     this.waitingForFunds,
-    this.estimateOnly = false,
   });
 
   @override
@@ -189,11 +187,7 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
       widget.snapshot.exits != ArkExitStatus.unknown &&
       widget.snapshot.exits != ArkExitStatus.failed;
   void _review(ArkAccountId account) {
-    if (!mounted ||
-        widget.snapshot.account != account ||
-        !(_current || widget.estimateOnly)) {
-      return;
-    }
+    if (!mounted || widget.snapshot.account != account || !_current) return;
     widget.onReviewExit();
   }
 
@@ -232,11 +226,9 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
             ),
             child: detail == null
                 ? BullButton.big(
-                    label: widget.estimateOnly
-                        ? l10n.exitReviewExit
-                        : l10n.startEmergencyExit,
+                    label: l10n.startEmergencyExit,
                     onPressed: () => _review(account),
-                    disabled: !_current && !widget.estimateOnly,
+                    disabled: !_current,
                     bgColor: context.bull.primary,
                     textColor: context.bull.onPrimary,
                   )
@@ -294,14 +286,13 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     return [
       const _EmergencyOnlyCard(),
       const Gap(BullSpacing.sm),
-      if (!widget.estimateOnly)
-        _ServerStatusBanner(
-          // A fresh observation with server facts means the server answered.
-          online: !snapshot.stale && snapshot.serverInfo != null,
-          onSendOnChain: widget.onSendOnChain == null
-              ? null
-              : () => _sendOnChain(account),
-        ),
+      _ServerStatusBanner(
+        // A fresh observation with server facts means the server answered.
+        online: !snapshot.stale && snapshot.serverInfo != null,
+        onSendOnChain: widget.onSendOnChain == null
+            ? null
+            : () => _sendOnChain(account),
+      ),
       if (snapshot.stale) _Note(l10n.stale),
       if (snapshot.recovery != ArkRecoveryStatus.complete) _Note(l10n.recovery),
       ..._waiting(context),

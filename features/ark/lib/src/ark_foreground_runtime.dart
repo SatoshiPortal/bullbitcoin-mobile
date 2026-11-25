@@ -277,17 +277,9 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     ArkForegroundMaintenance? maintenance;
     WalletArkDisplayData? displayData;
     final exitFunding = ArkExitFunding();
-    // An exit's fees come from Secure Bitcoin, at its start and when it
-    // needs more. Built on first use: opening Ark never needs the send stack.
-    final send = services.send;
-    // The legacy top-up does not journal a stable exit identity or preserve
-    // the signed transaction on an ambiguous broadcast.
-    final exitTopUp = send == null || native.scuttleRegtestSmoke
-        ? null
-        : WalletArkReserveTopUp(
-            sourceWallet: selection.displaySourceWalletId,
-            send: send,
-          );
+    // Scuttle funds the exit reserve only through a journaled, reviewed
+    // transfer; the unjournaled automatic top-up is not wired.
+    const ArkReserveTopUpPort? exitTopUp = null;
     try {
       final language =
           (await locator<RuntimeDisplayPreferencesReader>().readLanguage())

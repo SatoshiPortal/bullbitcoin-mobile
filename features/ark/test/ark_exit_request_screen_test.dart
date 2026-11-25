@@ -192,29 +192,6 @@ Future<void> fill(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets(
-    'estimate-only can price a stale view without admitting an exit',
-    (tester) async {
-      final client = ExitClient();
-      await tester.pumpWidget(
-        app(
-          ArkExitRequestScreen(
-            snapshot: inventory(stale: true, complete: false),
-            onReview: (_) => fail('A preview must not admit an exit'),
-            quote: quotes(client),
-            estimateOnly: true,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(client.requests.single.ids, ['selected']);
-      expect(find.text('340 sats'), findsOneWidget);
-      expect(find.widgetWithText(BullButton, 'Review exit'), findsNothing);
-      expect(find.byType(ArkExitStartSheet), findsNothing);
-      expect(client.submits, isEmpty);
-    },
-  );
-
   testWidgets('the choose screen shows the automatic exit estimate', (
     tester,
   ) async {
