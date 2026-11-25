@@ -130,13 +130,11 @@ void main() {
             resources,
             directory,
             preferencesFile: File('${directory.path}/preferences.sqlite'),
-            openPreferences: (file, admission, legacy) =>
-                PreferencesTesting.open(
-                  file: file,
-                  admission: admission,
-                  legacyDatabase: legacy,
-                  keys: keys,
-                ),
+            openPreferences: (file, admission) => PreferencesTesting.open(
+              file: file,
+              admission: admission,
+              keys: keys,
+            ),
           ),
           throwsStateError,
         );
@@ -212,10 +210,9 @@ void main() {
           resources,
           directory,
           preferencesFile: File('${directory.path}/preferences.sqlite'),
-          openPreferences: (file, admission, legacy) => PreferencesTesting.open(
+          openPreferences: (file, admission) => PreferencesTesting.open(
             file: file,
             admission: admission,
-            legacyDatabase: legacy,
             keys: keys,
           ),
           existingClient: (policy, budget) {
@@ -291,12 +288,8 @@ void main() {
       resources,
       directory,
       preferencesFile: File('${directory.path}/preferences.sqlite'),
-      openPreferences: (file, admission, legacy) => PreferencesTesting.open(
-        file: file,
-        admission: admission,
-        legacyDatabase: legacy,
-        keys: keys,
-      ),
+      openPreferences: (file, admission) =>
+          PreferencesTesting.open(file: file, admission: admission, keys: keys),
       existingClient: (policy, budget) => client,
     );
     await handler();
@@ -309,12 +302,8 @@ void main() {
       resources,
       directory,
       preferencesFile: File('${directory.path}/preferences.sqlite'),
-      openPreferences: (file, admission, legacy) => PreferencesTesting.open(
-        file: file,
-        admission: admission,
-        legacyDatabase: legacy,
-        keys: keys,
-      ),
+      openPreferences: (file, admission) =>
+          PreferencesTesting.open(file: file, admission: admission, keys: keys),
       existingClient: (_, _) {
         clients++;
         return _Client();
@@ -333,10 +322,9 @@ void main() {
         resources,
         directory,
         preferencesFile: File('${directory.path}/preferences.sqlite'),
-        openPreferences: (file, admission, legacy) => PreferencesTesting.open(
+        openPreferences: (file, admission) => PreferencesTesting.open(
           file: file,
           admission: admission,
-          legacyDatabase: legacy,
           keys: keys,
         ),
         existingClient: (_, _) {
@@ -358,12 +346,8 @@ void main() {
       resources,
       directory,
       preferencesFile: missing,
-      openPreferences: (file, admission, legacy) => PreferencesTesting.open(
-        file: file,
-        admission: admission,
-        legacyDatabase: legacy,
-        keys: keys,
-      ),
+      openPreferences: (file, admission) =>
+          PreferencesTesting.open(file: file, admission: admission, keys: keys),
       existingClient: (_, _) => fail('Ark must not open without Preferences'),
     );
     expect((await handler()).shouldRetry, isTrue);

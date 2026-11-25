@@ -1,42 +1,35 @@
-import 'package:exchange/exchange.dart';
-import 'package:exchange/setup.dart';
-
 import 'dart:async';
 
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
-import 'package:primitives/primitives.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 
-class _Storage extends FakeSecureStoragePlatform {
+class _Storage extends InMemoryExchangeCredentialStorage {
   final started = Completer<void>();
   final finish = Completer<void>();
   final operations = <String>[];
   bool failWrite = false;
 
   @override
-  Future<void> write({
-    required String key,
-    required String value,
-    required Map<String, String> options,
+  Future<void> writeApiKeyRecord(
+    String? record, {
+    required bool isTestnet,
   }) async {
+    if (record == null) {
+      await super.writeApiKeyRecord(record, isTestnet: isTestnet);
+      operations.add('delete');
+      return;
+    }
     started.complete();
     await finish.future;
     if (failWrite) {
       operations.add('failed-write');
       throw Exception('Simulated refusal');
     }
-    entries[key] = value;
+    await super.writeApiKeyRecord(record, isTestnet: isTestnet);
     operations.add('write');
-  }
-
-  @override
-  Future<void> delete({
-    required String key,
-    required Map<String, String> options,
-  }) async {
-    entries.remove(key);
-    operations.add('delete');
   }
 }
 
@@ -58,12 +51,8 @@ void main() {
     test(
       'logout wins over a pending ${failWrite ? 'failed' : 'successful'} credential write',
       () async {
-        final storage = _Storage()
-          ..install()
-          ..failWrite = failWrite;
-        final repository = ExchangeCredentials.open(
-          Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
-        );
+        final storage = _Storage()..failWrite = failWrite;
+        final repository = ExchangeCredentials.open(storage);
         final write = repository.saveApiKey(_credential(), isTestnet: true);
         await storage.started.future;
         final deletion = repository.deleteApiKey(isTestnet: true);

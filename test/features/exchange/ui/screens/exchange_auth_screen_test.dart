@@ -2,6 +2,7 @@ import '../../fixtures/legacy_access.dart';
 
 import 'package:exchange/setup.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
@@ -121,13 +122,8 @@ void main() {
         clearCookies: () async {},
       );
       final _ = await access.enable();
-      when(settings.readExchangeWebPreferences).thenAnswer(
-        (_) async => const Ok((
-          environment: Environment.testnet,
-          exchangeTestnetBasicAuthUsername: null,
-          exchangeTestnetBasicAuthPassword: null,
-        )),
-      );
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => const Ok(Environment.testnet));
       when(() => cubit.state).thenReturn(const ExchangeState());
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
       // The screen authenticates through its cubit, which runs the use case.
@@ -167,6 +163,9 @@ void main() {
         readSession: () async => fail('unexpected Exchange network request'),
         access: access,
         sessionPreferences: settings,
+        basicAuth: ExchangeCredentials.openBasicAuth(
+          InMemoryExchangeCredentialStorage(),
+        ),
         webAuthEndpoints: (
           mainnet: Uri.parse(ExchangeDefaults.bbAuthUrl),
           testnet: Uri.parse(ExchangeDefaults.bbAuthTestUrl),

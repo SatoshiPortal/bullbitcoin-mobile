@@ -19,16 +19,18 @@ void main() {
     setUp(() => preferences = _Preferences());
 
     void stubEnvironment(Environment environment) =>
-        when(preferences.readExchangeWebPreferences).thenAnswer(
-          (_) async => Ok((
-            environment: environment,
-            exchangeTestnetBasicAuthUsername: null,
-            exchangeTestnetBasicAuthPassword: null,
-          )),
-        );
+        when(preferences.readActiveEnvironment)
+            .thenAnswer((_) async => Ok(environment));
+
+    Exchange open() => exchangeForTesting(
+      sessionPreferences: preferences,
+      basicAuth: ExchangeCredentials.openBasicAuth(
+        InMemoryExchangeCredentialStorage(),
+      ),
+    );
 
     test('only a network without Exchange redirects entry', () async {
-      final exchange = exchangeForTesting(sessionPreferences: preferences);
+      final exchange = open();
 
       stubEnvironment(Environment.regtest);
       expect(await exchange.networkUnavailable(), isTrue);
@@ -37,14 +39,10 @@ void main() {
     });
 
     test('an unreadable preference does not hide Exchange', () async {
-      when(preferences.readExchangeWebPreferences)
+      when(preferences.readActiveEnvironment)
           .thenAnswer((_) async => const Err(PreferencesReadFailure()));
 
-      expect(
-        await exchangeForTesting(sessionPreferences: preferences)
-            .networkUnavailable(),
-        isFalse,
-      );
+      expect(await open().networkUnavailable(), isFalse);
     });
   });
 

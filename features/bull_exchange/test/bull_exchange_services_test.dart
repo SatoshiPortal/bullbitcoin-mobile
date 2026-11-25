@@ -1,11 +1,10 @@
 import 'package:bull_exchange/setup.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart' show Secrets;
-import 'package:secrets/testing.dart';
 
 class _Preferences extends Mock implements Preferences {}
 
@@ -13,13 +12,12 @@ void main() {
   late _Preferences preferences;
 
   setUp(() {
-    FakeSecureStoragePlatform().install();
     preferences = _Preferences();
   });
 
   Future<ExchangeAvailability> tradingEntry(ExchangePlatform platform) async {
     final exchange = BullExchangeServices.open(
-      keychain: Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
+      storage: InMemoryExchangeCredentialStorage(),
       preferences: preferences,
       platform: platform,
     );

@@ -90,13 +90,8 @@ void main() {
     () async {
       when(settings.fetch)
           .thenAnswer((_) async => Ok(_settings(Environment.regtest)));
-      when(settings.readExchangeWebPreferences).thenAnswer(
-        (_) async => Ok((
-          environment: Environment.regtest,
-          exchangeTestnetBasicAuthUsername: null,
-          exchangeTestnetBasicAuthPassword: null,
-        )),
-      );
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => const Ok(Environment.regtest));
       final results = [
         await GetExchangeAnnouncementsUsecase(
           exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
@@ -108,7 +103,12 @@ void main() {
           settingsRepository: settings,
           access: access,
         ).execute(language: 'fr'),
-        await GetExchangeWebSettingsUsecase(preferences: settings).execute(),
+        await GetExchangeWebSettingsUsecase(
+          environment: settings,
+          basicAuth: ExchangeCredentials.openBasicAuth(
+            InMemoryExchangeCredentialStorage(),
+          ),
+        ).execute(),
       ];
       for (final result in results) {
         expect(_failureOf(result), isA<ExchangeUnsupportedNetworkFailure>());

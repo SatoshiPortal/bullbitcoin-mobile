@@ -4,11 +4,10 @@ import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:dio/dio.dart';
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -81,7 +80,7 @@ ExchangeApiKey _credential() => switch (ExchangeApiKey.create(
 void main() {
   late Directory directory;
   late _Reporter reporter;
-  late FakeSecureStoragePlatform storage;
+  late InMemoryExchangeCredentialStorage storage;
   late ExchangeCredentials repository;
   setUp(() async {
     directory = await Directory.systemTemp.createTemp(
@@ -89,10 +88,8 @@ void main() {
     );
     reporter = _Reporter();
     log = Logger.replace(directory: directory, reporter: reporter);
-    storage = FakeSecureStoragePlatform().install();
-    repository = ExchangeCredentials.open(
-      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
-    );
+    storage = InMemoryExchangeCredentialStorage();
+    repository = ExchangeCredentials.open(storage);
   });
   tearDown(() async {
     await log.flush();
@@ -168,8 +165,7 @@ void main() {
       '${invalidJson ? 'corrupt' : 'inaccessible'} storage logs one failure and one recovery',
       () async {
         if (invalidJson) {
-          storage.entries['exchange_api_key_testnet'] =
-              '{"key":"$_sensitive", malformed';
+          storage.entries['testnet'] = '{"key":"$_sensitive", malformed';
         } else {
           storage.scripted.addAll(List.filled(3, Exception(_sensitive)));
         }
@@ -179,7 +175,7 @@ void main() {
             isA<Err<String?, ExchangeFailure>>(),
           );
         }
-        storage.entries['exchange_api_key_testnet'] = jsonEncode({
+        storage.entries['testnet'] = jsonEncode({
           'key': _sensitive,
           'isActive': true,
         });

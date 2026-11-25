@@ -36,6 +36,8 @@ extension ExchangeFailureL10n on ExchangeFailure {
     RecipientsFailure() ||
     ExchangeUnexpectedFailure() ||
     ExchangeApiKeyInvalidFailure() ||
+    ExchangeCredentialsUnavailableFailure() ||
+    ExchangeBasicAuthSaveFailure() ||
     ExchangeApiKeySaveFailure() ||
     ExchangeApiKeyDeleteFailure() ||
     ExchangeOrderLimitFailure() ||

@@ -11,7 +11,5 @@ export 'src/domain/settings_repository.dart'
         DeveloperEnvironmentReader,
         TorProxyPreferences,
         TorProxyPreferencesReader,
-        ExchangeWebPreferences,
-        ExchangeTestnetBasicAuthPreferences,
         RuntimeDisplayPreferencesReader,
         AmountInputPreferences;

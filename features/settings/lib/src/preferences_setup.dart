@@ -32,9 +32,6 @@ class SettingsLocator {
     locator.registerLazySingleton<domain.TorProxyPreferencesReader>(
       () => locator<domain.Preferences>(),
     );
-    locator.registerLazySingleton<domain.ExchangeTestnetBasicAuthPreferences>(
-      () => locator<domain.Preferences>(),
-    );
     locator.registerLazySingleton<domain.RecoverBullPreferences>(
       () => locator<domain.Preferences>().recoverBull,
     );

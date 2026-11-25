@@ -29,6 +29,7 @@ import 'domain/entities/user_summary.dart';
 import 'domain/entities/virtual_iban.dart';
 import 'domain/exchange_access.dart';
 import 'domain/exchange_availability.dart';
+import 'domain/exchange_basic_auth.dart';
 import 'domain/exchange_account_deletion_outcome.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
@@ -154,6 +155,7 @@ final class Exchange {
   final ExchangeAccessLifecycle? _access;
   final Preferences? _sessionPreferences;
   final ExchangeWebAuthEndpoints? _webAuthEndpoints;
+  final ExchangeBasicAuthStore? _basicAuth;
   final ExchangeRecipients recipients;
 
   const Exchange._(
@@ -177,6 +179,7 @@ final class Exchange {
     this.recipients,
     this._sessionPreferences,
     this._webAuthEndpoints,
+    this._basicAuth,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -193,6 +196,7 @@ final class Exchange {
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
     ExchangeWebAuthEndpoints? webAuthEndpoints,
+    ExchangeBasicAuthStore? basicAuth,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
@@ -203,6 +207,7 @@ final class Exchange {
     access: access,
     sessionPreferences: sessionPreferences,
     webAuthEndpoints: webAuthEndpoints,
+    basicAuth: basicAuth,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -224,6 +229,7 @@ final class Exchange {
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
     ExchangeWebAuthEndpoints? webAuthEndpoints,
+    ExchangeBasicAuthStore? basicAuth,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -549,7 +555,12 @@ final class Exchange {
           untimed: true,
         ),
       ),
-      kyc == null ? null : ExchangeKycConfigurationRepository(kyc),
+      kyc == null
+          ? null
+          : ExchangeKycConfigurationRepository(
+              kyc,
+              () => _loadWebPreferences(sessionPreferences, basicAuth),
+            ),
       () => withClient((client, untimedClient) async {
         switch (await BbxApiUserRepository(api: client).getUserSummary()) {
           case Err():
@@ -582,6 +593,7 @@ final class Exchange {
       ),
       sessionPreferences,
       webAuthEndpoints,
+      basicAuth,
     );
   }
 
@@ -601,11 +613,36 @@ final class Exchange {
 
   @useResult
   Future<Result<ExchangeWebPreferences, ExchangeFailure>>
-  loadWebPreferences() async {
-    final preferences = _sessionPreferences;
-    if (preferences == null) return const Err(ExchangeUnexpectedFailure());
-    return GetExchangeWebSettingsUsecase(preferences: preferences).execute();
+  loadWebPreferences() => _loadWebPreferences(_sessionPreferences, _basicAuth);
+
+  static Future<Result<ExchangeWebPreferences, ExchangeFailure>>
+  _loadWebPreferences(
+    ActiveEnvironmentReader? environment,
+    ExchangeBasicAuthStore? basicAuth,
+  ) async {
+    if (environment == null || basicAuth == null) {
+      return const Err(ExchangeUnexpectedFailure());
+    }
+    return GetExchangeWebSettingsUsecase(
+      environment: environment,
+      basicAuth: basicAuth,
+    ).execute();
   }
+
+  /// The sandbox's Basic Auth as stored. A failed read is not an empty value.
+  @useResult
+  Future<Result<ExchangeBasicAuthValues, ExchangeFailure>>
+  readTestnetBasicAuth() async =>
+      await _basicAuth?.read() ?? const Err(ExchangeCredentialReadFailure());
+
+  /// Replaces the sandbox's Basic Auth; a null field clears it.
+  @useResult
+  Future<Result<void, ExchangeFailure>> saveTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async =>
+      await _basicAuth?.save(username: username, password: password) ??
+      const Err(ExchangeBasicAuthSaveFailure());
 
   /// Whether the active network has no Exchange service.
   Future<bool> networkUnavailable() async =>
@@ -992,6 +1029,7 @@ Exchange exchangeForTesting({
   ExchangeRecipients? recipients,
   ExchangeAccessLifecycle? access,
   Preferences? sessionPreferences,
+  ExchangeBasicAuthStore? basicAuth,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -1076,6 +1114,7 @@ Exchange exchangeForTesting({
       ),
   sessionPreferences,
   null,
+  basicAuth,
 );
 
 Exchange exchangeWithTransportForTesting({

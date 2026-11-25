@@ -8,8 +8,6 @@ import 'package:primitives/primitives.dart';
 
 class _Dao extends Mock implements PreferencesDao {}
 
-class _LegacyDao extends Mock implements LegacyPreferencesDao {}
-
 const _row = OwnerSettingsRow(
   id: 1,
   environment: 'mainnet',
@@ -30,12 +28,10 @@ const _row = OwnerSettingsRow(
 
 void main() {
   late _Dao dao;
-  late _LegacyDao legacy;
   late Preferences preferences;
   setUp(() {
     dao = _Dao();
-    legacy = _LegacyDao();
-    preferences = PreferencesTesting.fromDao(dao, legacy: legacy);
+    preferences = PreferencesTesting.fromDao(dao);
     addTearDown(preferences.close);
   });
 
@@ -52,7 +48,6 @@ void main() {
         preferences.readConnectionPreferences(),
         preferences.readDeveloperEnvironment(),
         preferences.readTorProxyPreferences(),
-        preferences.readExchangeWebPreferences(),
       ]);
       for (final result in results) {
         result.fold(

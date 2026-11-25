@@ -144,8 +144,6 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
     @Default(true) bool screenCaptureProtectionEnabled,
-    String? exchangeTestnetBasicAuthUsername,
-    String? exchangeTestnetBasicAuthPassword,
   }) = _SettingsEntity;
   const SettingsEntity._();
 

@@ -1,24 +1,11 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 
 import 'dart:convert';
 
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-class _Storage extends FakeSecureStoragePlatform {
-  final readKeys = <String>[];
-  @override
-  Future<String?> read({
-    required String key,
-    required Map<String, String> options,
-  }) {
-    readKeys.add(key);
-    return super.read(key: key, options: options);
-  }
-}
 
 const _key = 'synthetic-credential';
 const _fields = {
@@ -45,22 +32,17 @@ ExchangeApiKey _credential() => switch (ExchangeApiKey.create(
 };
 
 void main() {
-  late _Storage storage;
+  late InMemoryExchangeCredentialStorage storage;
   late ExchangeCredentials repository;
 
   setUp(() {
-    storage = _Storage()..install();
-    repository = ExchangeCredentials.open(
-      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
-    );
+    storage = InMemoryExchangeCredentialStorage();
+    repository = ExchangeCredentials.open(storage);
   });
 
   test('reads selected environment at point of use without caching', () async {
-    storage.entries['exchange_api_key'] = jsonEncode(_fields);
-    storage.entries['exchange_api_key_testnet'] = jsonEncode({
-      ..._fields,
-      'key': 'test-only',
-    });
+    storage.entries['mainnet'] = jsonEncode(_fields);
+    storage.entries['testnet'] = jsonEncode({..._fields, 'key': 'test-only'});
     expect(
       await repository.readActiveApiKey(isTestnet: false),
       isA<Ok<String?, ExchangeFailure>>().having((r) => r.value, 'key', _key),
@@ -73,10 +55,7 @@ void main() {
         'test-only',
       ),
     );
-    storage.entries['exchange_api_key'] = jsonEncode({
-      ..._fields,
-      'key': 'replacement',
-    });
+    storage.entries['mainnet'] = jsonEncode({..._fields, 'key': 'replacement'});
     expect(
       await repository.readActiveApiKey(isTestnet: false),
       isA<Ok<String?, ExchangeFailure>>().having(
@@ -85,17 +64,12 @@ void main() {
         'replacement',
       ),
     );
-    storage.entries.remove('exchange_api_key');
+    storage.entries.remove('mainnet');
     expect(
       await repository.readActiveApiKey(isTestnet: false),
       isA<Ok<String?, ExchangeFailure>>().having((r) => r.value, 'key', isNull),
     );
-    expect(storage.readKeys, [
-      'exchange_api_key',
-      'exchange_api_key_testnet',
-      'exchange_api_key',
-      'exchange_api_key',
-    ]);
+    expect(storage.readKeys, ['mainnet', 'testnet', 'mainnet', 'mainnet']);
   });
 
   test('missing, empty and inactive records are signed out', () async {
@@ -107,7 +81,7 @@ void main() {
       if (stored == null) {
         storage.entries.clear();
       } else {
-        storage.entries['exchange_api_key'] = stored;
+        storage.entries['mainnet'] = stored;
       }
       expect(
         await repository.readActiveApiKey(isTestnet: false),
@@ -123,7 +97,7 @@ void main() {
   test(
     'authentication ignores metadata and does not add expiry policy',
     () async {
-      storage.entries['exchange_api_key'] = jsonEncode({
+      storage.entries['mainnet'] = jsonEncode({
         'key': _key,
         'isActive': true,
         'createdAt': 'invalid',
@@ -146,7 +120,7 @@ void main() {
         jsonEncode({'key': 4, 'isActive': true}),
         jsonEncode({'key': _key, 'isActive': 'true'}),
       ]) {
-        storage.entries['exchange_api_key'] = record;
+        storage.entries['mainnet'] = record;
         final result = await repository.readActiveApiKey(isTestnet: false);
         expect(
           result,
@@ -156,7 +130,7 @@ void main() {
             isA<ExchangeApiKeyInvalidFailure>(),
           ),
         );
-        expect(storage.entries['exchange_api_key'], record);
+        expect(storage.entries['mainnet'], record);
       }
     },
   );
@@ -164,7 +138,7 @@ void main() {
   test(
     'storage refusal stays distinct from logout and never echoes its message',
     () async {
-      storage.entries['exchange_api_key'] = jsonEncode(_fields);
+      storage.entries['mainnet'] = jsonEncode(_fields);
       storage.scripted.add(Exception('keychain refused $_key'));
       final result = await repository.readActiveApiKey(isTestnet: false);
       expect(
@@ -178,7 +152,7 @@ void main() {
       if (result case Err(:final failure)) {
         expect(failure.logMessage, isNot(contains(_key)));
       }
-      expect(storage.entries, contains('exchange_api_key'));
+      expect(storage.entries, contains('mainnet'));
     },
   );
 
@@ -189,10 +163,7 @@ void main() {
       'synthetic\u0000',
       'synthetic\u{1f600}',
     ]) {
-      storage.entries['exchange_api_key_testnet'] = jsonEncode({
-        'key': key,
-        'isActive': true,
-      });
+      storage.entries['testnet'] = jsonEncode({'key': key, 'isActive': true});
       final result = await repository.readActiveApiKey(isTestnet: true);
       expect(
         result is Err<String?, ExchangeFailure>,
@@ -207,8 +178,8 @@ void main() {
       await repository.saveApiKey(_credential(), isTestnet: true),
       isA<Ok<void, ExchangeFailure>>(),
     );
-    expect(storage.entries.keys, ['exchange_api_key_testnet']);
-    expect(jsonDecode(storage.entries['exchange_api_key_testnet'] ?? ''), {
+    expect(storage.entries.keys, ['testnet']);
+    expect(jsonDecode(storage.entries['testnet'] ?? ''), {
       ..._fields,
       'lastUsedAt': null,
       'expiresAt': null,
@@ -241,12 +212,12 @@ void main() {
   });
 
   test('delete affects only the selected environment', () async {
-    storage.entries['exchange_api_key'] = jsonEncode(_fields);
-    storage.entries['exchange_api_key_testnet'] = jsonEncode(_fields);
+    storage.entries['mainnet'] = jsonEncode(_fields);
+    storage.entries['testnet'] = jsonEncode(_fields);
     expect(
       await repository.deleteApiKey(isTestnet: true),
       isA<Ok<void, ExchangeFailure>>(),
     );
-    expect(storage.entries.keys, ['exchange_api_key']);
+    expect(storage.entries.keys, ['mainnet']);
   });
 }
