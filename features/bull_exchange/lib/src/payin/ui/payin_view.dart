@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/payin_l10n.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
@@ -40,7 +40,6 @@ class PayinView extends StatelessWidget {
     super.key,
     required this.title,
     required this.state,
-    required this.ui,
     required this.onEvent,
     required this.onBack,
     required this.externalLabels,
@@ -52,7 +51,6 @@ class PayinView extends StatelessWidget {
   final VoidCallback onBack;
   final PayinExternalLabels externalLabels;
   final PayinState<PayinSpend> state;
-  final ExchangePayinUi ui;
   final void Function(PayinEvent<PayinSpend> event) onEvent;
 
   @override
@@ -175,7 +173,6 @@ class PayinView extends StatelessWidget {
         labels: externalLabels,
         order: order,
         target: target,
-        ui: ui,
         onBack: () => onEvent(const PayinBackPressed()),
       ),
       PayinExternalLeaving() => page(
@@ -213,7 +210,6 @@ class _ExternalPayin extends StatelessWidget {
     required this.labels,
     required this.order,
     required this.target,
-    required this.ui,
     required this.onBack,
   });
 
@@ -221,7 +217,6 @@ class _ExternalPayin extends StatelessWidget {
   final PayinExternalLabels labels;
   final Order order;
   final DepositTarget target;
-  final ExchangePayinUi ui;
   final VoidCallback onBack;
 
   /// What another wallet pays: a payment link with the amount on chain and
@@ -284,7 +279,7 @@ class _ExternalPayin extends StatelessWidget {
                       style: context.bullType.headline,
                     ),
                     const Gap(16),
-                    ui.addressViewer(context, deposit),
+                    AddressViewer(deposit),
                     const Gap(16),
                     Text(
                       context.loc.exchangePayinExternalWaiting,

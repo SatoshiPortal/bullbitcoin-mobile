@@ -20,6 +20,5 @@ typedef ExchangePayinHost = ({
   PayjoinSender Function() payjoinSender,
   PayjoinSessions Function() payjoinSessions,
   Labels Function() labels,
-  Future<void> Function(List<Order>) labelOrders,
   ExchangePayinUi ui,
 });

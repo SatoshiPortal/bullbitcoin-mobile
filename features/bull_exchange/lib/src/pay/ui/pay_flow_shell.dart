@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:transactions/routes.dart';
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/src/payin/ui/review_details.dart';
 import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
@@ -300,7 +301,6 @@ List<Page<void>> payPagesFor(
                   label: context.loc.payDepositAddress,
                   order: quoted.order,
                   source: request.source,
-                  ui: ui,
                 ),
                 ...recipientReviewRows(
                   context,
@@ -316,7 +316,6 @@ List<Page<void>> payPagesFor(
                   instantPayments: context.loc.payInstantPayments,
                 ),
                 SpendOptionsSection(
-                  ui: ui,
                   spend: spend,
                   changes: states.map(spendOf),
                   current: () => spendOf(current?.call() ?? state),
@@ -433,7 +432,6 @@ List<Page<void>> payPagesFor(
             builder: (context) => PayinView(
               title: context.loc.payTitle,
               state: payin,
-              ui: ui,
               onEvent: (event) => onEvent(PayPayinChanged(event)),
               onBack: () => onEvent(const PayBackPressed()),
               externalLabels: (
@@ -470,13 +468,13 @@ List<Page<void>> payPagesFor(
             actions: [
               BullButton.secondary(
                 label: context.loc.payViewDetails,
-                onPressed: () => txid != null && order.payjoinBip21 != null
-                    ? ui.openPayjoinTransaction(context, txid)
-                    : ui.openOrder(
-                        context,
-                        order.orderId,
-                        returnToExchange: true,
-                      ),
+                onPressed: () => TransactionsNavigation.openDetails(
+                  context,
+                  txid != null && order.payjoinBip21 != null
+                      ? TransactionDetailsTarget.payjoinByTxId(txid)
+                      : TransactionDetailsTarget.order(order.orderId),
+                  returnToExchange: true,
+                ),
               ),
             ],
           ),
