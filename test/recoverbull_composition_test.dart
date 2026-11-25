@@ -12,6 +12,8 @@ import 'package:settings/setup.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/native_runtime_setup.dart';
+import 'package:overview/setup.dart' show OverviewSynchronization;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart'
     show readLegacyRecoverBullPermission;
@@ -64,8 +66,7 @@ void main() {
           await directory.delete(recursive: true);
         });
         FakeSecureStoragePlatform().install();
-        inventory = await InventoryFixture.open(directory);
-        inventory.register(services);
+        inventory = await InventoryFixture.compose(directory, services);
         final sourceFile = File('${directory.path}/bullbitcoin_sqlite.sqlite');
         final standalone = File('${directory.path}/recoverbull.sqlite');
         final ownerFile = File('${directory.path}/recoverbull-owner.sqlite');
@@ -174,6 +175,10 @@ void main() {
         );
         // Wallet's native runtime requires the Payjoin owner's reservation port.
         mountPayjoin(services, startRecovery: false);
+        registerNativeRuntime(
+          services,
+          overview: () => services<OverviewSynchronization>(),
+        );
         wallet.WalletLocator.setup(services);
 
         expect(services.isRegistered<EmbeddedTor>(), isFalse);

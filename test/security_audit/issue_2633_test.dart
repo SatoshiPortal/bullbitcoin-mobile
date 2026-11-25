@@ -8,53 +8,66 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2633 duplicate watch-only import', () {
     test('duplicate checks include imported wallets and use typed error', () {
-      final source = File('lib/features/wallet/data/wallet_repository.dart')
-          .readAsStringSync();
-      String method(String start, String end) => source.substring(
-        source.indexOf(start),
-        source.indexOf(end, source.indexOf(start)),
+      final source = File(
+        'packages/provisioning/lib/src/wallet_provisioning.dart',
+      ).readAsStringSync();
+      String method(String start, String end) {
+        final from = source.indexOf(start);
+        expect(from, greaterThanOrEqualTo(0), reason: start);
+        final to = source.indexOf(end, from);
+        expect(to, greaterThan(from), reason: end);
+        return source.substring(from, to);
+      }
+
+      final importWatchOnly = method(
+        'Future<Result<void, WalletProvisioningFailure>> _importWatchOnly(',
+        'Future<Result<bool, WalletProvisioningFailure>> _hasDefault(',
       );
-      final creationPaths = [
-        method(
-          'Future<String> createWallet(',
-          'Future<Wallet> _createdWallet(',
-        ),
-        method(
-          'Future<Result<Wallet, ImportWatchOnlyFailure>> _importWatchOnly(',
-          '  @override',
-        ),
-      ];
-      for (final path in creationPaths) {
-        expect(path, contains('await _provision(metadata);'));
-        expect(path, isNot(contains('_walletRegistrations.store(')));
-      }
-      // Imported and catalog-only wallets count without opening native stores.
-      for (final path in creationPaths.skip(1)) {
-        expect(path, contains('_walletRegistrations.fetchAll()'));
-        expect(
-          path.indexOf('_walletRegistrations.fetchAll()'),
-          lessThan(path.indexOf('await _provision(metadata);')),
-        );
-        expect(
-          path,
-          contains('return const Err(WalletAlreadyExistsFailure())'),
-        );
-      }
+      expect(importWatchOnly, contains('await _provision(account);'));
+      expect(importWatchOnly, isNot(contains('_inventory.registerWallet(')));
+      // Every account, imported or default, is checked by identifier before
+      // anything is created, and a duplicate is a typed failure.
       final provision = method(
-        'Future<void> _provision(',
-        'Future<void> _createNative(',
+        'Future<Result<void, WalletProvisioningFailure>> _provision(',
+        'Future<Result<void, SecretFailure>> _prepareProperties(',
       );
-      expect(provision, contains('_walletRegistrations.fetch(metadata.id)'));
-      expect(provision, contains('WalletAlreadyExistsException(metadata.id)'));
+      expect(provision, contains('_inventory.findWallet(account.id)'));
       expect(
         provision,
-        contains('await _walletRegistrations.insert(metadata);'),
+        contains('return const Err(WalletProvisioningConflictFailure());'),
       );
       expect(
-        provision.indexOf('_walletRegistrations.insert(metadata)'),
-        lessThan(provision.indexOf('await _createNative(metadata)')),
+        provision.indexOf('_inventory.findWallet(account.id)'),
+        lessThan(provision.indexOf('_native.prepareCreate(key)')),
       );
-      expect(provision, isNot(contains('_walletRegistrations.store(')));
+      expect(
+        provision.indexOf('_inventory.registerWallet('),
+        lessThan(provision.indexOf('_native.create(key)')),
+      );
+      expect(
+        provision,
+        contains('case Err(failure: WalletAlreadyRegisteredFailure()):'),
+      );
+      // The importers reach the catalog only through that provisioning step.
+      final defaults = method(
+        '  Future<Result<String, WalletProvisioningFailure>> createDefault(\n'
+            '    Secret secret,\n'
+            '    Network network, {\n'
+            '    DateTime? birthday,\n'
+            '  }) async {',
+        '  @override\n  Future<Result<void, ParentCustodyFailure>> importMnemonic({',
+      );
+      expect(defaults, contains('await _provision(account)'));
+      final mapping = File(
+        'features/wallet_import/lib/src/domain/watch_only/'
+        'import_watch_only_failure_mapping.dart',
+      ).readAsStringSync();
+      expect(
+        mapping,
+        contains(
+          'WalletProvisioningConflictFailure() => const WalletAlreadyExistsFailure()',
+        ),
+      );
       final inventory = File(
         'packages/secrets/lib/src/data/inventory_repository.dart',
       ).readAsStringSync();

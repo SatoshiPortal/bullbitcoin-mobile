@@ -8,8 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2593 post-sign edits', () {
     test('back navigation invalidates signedBitcoinTx', () {
-      final source = File('lib/features/send/presentation/bloc/send_cubit.dart')
-          .readAsStringSync();
+      final source = File(
+        'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
+      ).readAsStringSync();
       final back = source.substring(
         source.indexOf('void backClicked()'),
         source.indexOf('Future<void> loadWalletWithRatesAndFees('),

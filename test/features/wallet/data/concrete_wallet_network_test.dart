@@ -1,10 +1,18 @@
 import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:sync/write.dart' show nativeWalletStoragePath;
+import 'package:sync/write.dart'
+    show ElectrumSync, ForegroundWalletSynchronization, nativeWalletStoragePath;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:sync/sync.dart' show SyncReason, WalletKey;
+import 'package:sync/sync.dart'
+    show
+        SyncFailure,
+        SyncNotFoundFailure,
+        WalletConnection,
+        WalletConnectionPort,
+        WalletKey;
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Fingerprint, Ok;
+    show BitcoinNetwork, Err, Ok, Result;
+import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:preferences/preferences.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -17,6 +25,16 @@ import 'package:mocktail/mocktail.dart';
 class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
+
+class _Offline implements WalletConnectionPort {
+  @override
+  Future<Result<T, SyncFailure>> run<T>({
+    required primitives.Network network,
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
+    operation,
+    required bool Function(SyncFailure) mayRetry,
+  }) => throw StateError('A catalog read must not sync');
+}
 
 WalletMetadataModel _row(Network network) {
   final origin = 'wpkh([73c5da0a/84h/${network.coinType}h/0h])';
@@ -36,6 +54,14 @@ WalletMetadataModel _row(Network network) {
 }
 
 void main() {
+  final synchronization = ForegroundWalletSynchronization(
+    ElectrumSync(
+      connections: _Offline(),
+      documentsDirectory: () async => '/nonexistent',
+      readRevision: (_) async => const Err(SyncNotFoundFailure()),
+    ),
+  );
+
   test(
     'catalog filtering distinguishes testnet and regtest with coin type 1',
     () async {
@@ -58,14 +84,9 @@ void main() {
       final repository = WalletRepository(
         walletRegistrations: metadata,
         walletValuesDatasource: values,
-        synchronize: (
-          _, {
-          discover = false,
-          allowInitialScan = true,
-          reason = SyncReason.auto,
-        }) async {},
-        syncStarted: const Stream.empty(),
-        syncFinished: const Stream.empty(),
+        synchronization: synchronization,
+        syncStarted: const Stream<String>.empty(),
+        syncFinished: const Stream<String>.empty(),
       );
       for (final (environment, expected) in [
         (Environment.mainnet, Network.bitcoinMainnet),
@@ -81,41 +102,6 @@ void main() {
       }
     },
   );
-
-  for (final code in ['bitcoinRegtest', 'unresolved']) {
-    test(
-      'secret protection includes $code catalog references without native reads',
-      () async {
-        final metadata = _Metadata();
-        final values = _Values();
-        final row = _row(Network.bitcoinRegtest).copyWith(networkCode: code);
-        when(metadata.fetchAll).thenAnswer((_) async => [row]);
-        final repository = WalletRepository(
-          walletRegistrations: metadata,
-          walletValuesDatasource: values,
-          synchronize: (
-            _, {
-            discover = false,
-            allowInitialScan = true,
-            reason = SyncReason.auto,
-          }) async {},
-          syncStarted: const Stream.empty(),
-          syncFinished: const Stream.empty(),
-        );
-        final result = await repository.hasSecretReference(
-          Fingerprint('73c5da0a'),
-        );
-        expect(result.fold((value) => value, (_) => false), true);
-        when(metadata.fetchAll)
-            .thenAnswer((_) async => [row.copyWith(signer: Signer.none)]);
-        final watchOnly = await repository.hasSecretReference(
-          Fingerprint('73c5da0a'),
-        );
-        expect(watchOnly.fold((value) => value, (_) => true), false);
-        verifyZeroInteractions(values);
-      },
-    );
-  }
 
   test('native storage keeps regtest and testnet identities distinct', () {
     final regtest = _row(Network.bitcoinRegtest);

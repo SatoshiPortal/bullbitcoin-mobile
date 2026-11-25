@@ -29,6 +29,12 @@ class CoinSelectionSheet extends StatefulWidget {
   final Sats requestedAmount;
   final CoinSelectionLabels labels;
   final ValueChanged<Set<Outpoint>> onDone;
+  final ValueChanged<Outpoint>? onToggle;
+  final bool? doneEnabled;
+  final bool? showInsufficient;
+  final Widget? Function(CoinSelectionEntry)? statusBuilder;
+  final Widget? Function(CoinSelectionEntry)? labelsBuilder;
+  final bool Function(CoinSelectionEntry)? showAddressType;
 
   /// Renders the displayed address, including any accessible actions it offers.
   final Widget Function(String address, TextStyle style, Color color)
@@ -45,6 +51,12 @@ class CoinSelectionSheet extends StatefulWidget {
     required this.labels,
     required this.onDone,
     required this.addressBuilder,
+    this.onToggle,
+    this.doneEnabled,
+    this.showInsufficient,
+    this.statusBuilder,
+    this.labelsBuilder,
+    this.showAddressType,
   });
 
   @override
@@ -70,9 +82,16 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
     _selected.removeWhere((outpoint) => !eligible.contains(outpoint));
   }
 
-  void _toggle(Outpoint outpoint) => setState(() {
-    if (!_selected.remove(outpoint)) _selected.add(outpoint);
-  });
+  void _toggle(Outpoint outpoint) {
+    final onToggle = widget.onToggle;
+    if (onToggle != null) {
+      onToggle(outpoint);
+      return;
+    }
+    setState(() {
+      if (!_selected.remove(outpoint)) _selected.add(outpoint);
+    });
+  }
 
   String _formatBitcoin(BigInt amount) => switch (widget.bitcoinUnit) {
     BitcoinUnit.btc => FormatAmount.btc(
@@ -93,10 +112,13 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
   @override
   Widget build(BuildContext context) {
     final labels = widget.labels;
+    final selected = widget.onToggle == null
+        ? _selected
+        : widget.initialSelection;
     final coins = {for (final coin in widget.coins) coin.outpoint: coin}.values
         .toList();
     final total = coins
-        .where((coin) => _selected.contains(coin.outpoint))
+        .where((coin) => selected.contains(coin.outpoint))
         .fold(BigInt.zero, (sum, coin) => sum + coin.amount.value);
     final hasEnough = total >= widget.requestedAmount.value;
     final totalFiat = _formatFiat(total);
@@ -145,7 +167,7 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
             labels.requested(_formatBitcoin(widget.requestedAmount.value)),
             style: type.label.copyWith(color: colors.onSurfaceVariant),
           ),
-          if (!hasEnough) ...[
+          if (widget.showInsufficient ?? !hasEnough) ...[
             const Gap(8),
             BullText(
               labels.insufficient,
@@ -162,7 +184,9 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
               final coin = coins[index];
               final amount = _formatBitcoin(coin.amount.value);
               final fiat = _formatFiat(coin.amount.value);
-              final selected = _selected.contains(coin.outpoint);
+              final isSelected = selected.contains(coin.outpoint);
+              final status = widget.statusBuilder?.call(coin);
+              final coinLabels = widget.labelsBuilder?.call(coin);
               return BullBorderedTile(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,7 +195,7 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
                       key: ValueKey(coin.outpoint),
                       container: true,
                       label: '$amount, ${coin.address}',
-                      checked: selected,
+                      checked: isSelected,
                       button: true,
                       onTap: () => _toggle(coin.outpoint),
                       child: ExcludeSemantics(
@@ -185,7 +209,7 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
                               children: [
                                 BullText(amount, style: type.headline),
                                 BullCheckbox(
-                                  checked: selected,
+                                  checked: isSelected,
                                   onChanged: null,
                                 ),
                               ],
@@ -201,6 +225,7 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
                           color: colors.onSurfaceVariant,
                         ),
                       ),
+                    if (status != null) ...[const Gap(4), status],
                     const Gap(12),
                     Container(height: 1, color: colors.secondaryFixedDim),
                     Row(
@@ -214,12 +239,15 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
                             colors.onSurface,
                           ),
                         ),
-                        const Gap(4),
-                        BullText(labels.type, style: type.caption),
-                        const Gap(4),
-                        BullText(coin.addressType, style: type.label),
+                        if (widget.showAddressType?.call(coin) ?? true) ...[
+                          const Gap(8),
+                          BullText(labels.type, style: type.caption),
+                          const Gap(4),
+                          BullText(coin.addressType, style: type.label),
+                        ],
                       ],
                     ),
+                    if (coinLabels != null) ...[const Gap(8), coinLabels],
                   ],
                 ),
               );
@@ -228,10 +256,10 @@ class _CoinSelectionSheetState extends State<CoinSelectionSheet> {
           const Gap(24),
           BullButton.secondary(
             label: labels.done,
-            onPressed: hasEnough
+            onPressed: (widget.doneEnabled ?? hasEnough)
                 ? () {
                     final navigator = Navigator.of(context);
-                    widget.onDone(Set.unmodifiable(_selected));
+                    widget.onDone(Set.unmodifiable(selected));
                     if (navigator.mounted) navigator.pop();
                   }
                 : null,

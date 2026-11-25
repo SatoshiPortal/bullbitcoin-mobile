@@ -860,5 +860,8 @@
   "exchangeLandingDisclaimerLegal": "გაცვლის სერვისებზე წვდომა შეზღუდულია იმ ქვეყნებით, სადაც Bull Bitcoin-ს კანონიერად შეუძლია საქმიანობა, და შესაძლოა მოითხოვდეს KYC-ს.",
   "exchangeLandingDisclaimerNotAvailable": "კრიპტოვალუტის გაცვლის სერვისები მიუწვდომელია Bull Bitcoin მობილურ აპლიკაციაში.",
   "exchangeLoginButton": "შესვლა ან რეგისტრაცია",
-  "exchangeGoToWebsiteButton": "გადადით Bull Bitcoin-ის გაცვლის ვებგვერდზე"
+  "exchangeGoToWebsiteButton": "გადადით Bull Bitcoin-ის გაცვლის ვებგვერდზე",
+  "exchangeErrorSigningOut": "სისტემიდან სრულად გამოსვლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeErrorLoadingAnnouncements": "განცხადებების ჩატვირთვა ვერ მოხერხდა.",
+  "exchangeErrorRequestingAccountDeletion": "თქვენი ანგარიშის წაშლის მოთხოვნის გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
 }

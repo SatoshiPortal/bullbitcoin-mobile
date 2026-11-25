@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -7,9 +9,12 @@ import 'package:legacy_storage/wallet_column_projection.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart'
+    show SecretsInventory, WalletPropertyDraft, WalletPropertyStore;
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import '../domain/sync_failure.dart';
+import '../domain/wallet_key.dart';
 import 'sync_freshness.drift.dart';
 
 @DataClassName('WalletSyncTimeRow')
@@ -71,7 +76,7 @@ WalletColumnProjection<SyncFreshnessDatabase> _projection(
       ),
 );
 
-final class SyncFreshness {
+final class SyncFreshness implements WalletPropertyStore {
   final SyncFreshnessDatabase _database;
 
   const SyncFreshness._(this._database);
@@ -85,6 +90,30 @@ final class SyncFreshness {
       (await _projection(file, keys).openRuntime(admission))
           .map(SyncFreshness._)
           .mapErr((_) => const SyncStorageFailure());
+
+  /// A new wallet has never been synced.
+  @override
+  Future<Result<void, Failure>> prepareWallet(
+    WalletPropertyDraft wallet,
+  ) async => (await write(wallet.id, null)).mapErr((failure) => failure);
+
+  /// Stamps each completed sync of a wallet the inventory still lists, so a
+  /// sync finishing after a deletion never recreates its timestamp.
+  StreamSubscription<WalletKey> recordCompletions(
+    Stream<WalletKey> completed,
+    SecretsInventory inventory,
+  ) => completed.listen((key) async {
+    switch (await inventory.findWallet(key.id)) {
+      case Ok(value: null):
+        return;
+      case Ok():
+        if (await write(key.id, DateTime.now()) case Err()) {
+          log.warning('Wallet sync timestamp unavailable');
+        }
+      case Err():
+        log.warning('Wallet sync timestamp unavailable');
+    }
+  });
 
   @useResult
   Future<Result<DateTime?, SyncFailure>> read(String walletId) async {

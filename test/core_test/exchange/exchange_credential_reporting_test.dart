@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/testing.dart';
@@ -102,6 +102,13 @@ class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _Rates extends Mock implements ExchangeLimitOrders {}
 
+/// The Bitcoin destination check the default-wallet editor uses.
+Future<String?> _validateBitcoin(WalletAddressType _, String raw) async =>
+    (await const PaymentDestinations().validate(
+      raw,
+      acceptedTypes: const {PaymentDestinationType.bitcoin},
+    ))?.address;
+
 void main() {
   late _Logger logger;
   late Logger previous;
@@ -197,7 +204,7 @@ void main() {
         const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
         var failLoad = false;
         final cubit = defaultWalletsCubitForTesting(
-          validate: exchangePayoutFields.validate,
+          validate: _validateBitcoin,
           exchange: exchangeForTesting(
             getDefaultWallets: () async => failLoad
                 ? Err(failure)
@@ -240,7 +247,7 @@ void main() {
     'default wallet loading does not report or swallow programmer errors',
     () async {
       final cubit = defaultWalletsCubitForTesting(
-        validate: exchangePayoutFields.validate,
+        validate: _validateBitcoin,
         exchange: _users(_Thrown(StateError('synthetic programming error'))),
       );
       addTearDown(cubit.close);

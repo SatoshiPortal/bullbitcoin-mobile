@@ -2,13 +2,12 @@ import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repository.dart';
 import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Fingerprint, Ok, Result, ScriptType, SignerEntity;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 
 import 'dart:async';
 
-import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:sync/write.dart' show ForegroundWalletSynchronization;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show
@@ -18,9 +17,7 @@ import 'package:sync/sync.dart'
         isLiquidStatusConflict;
 
 import 'package:electrum/setup.dart';
-import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' as native_sync;
@@ -30,47 +27,26 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:wallet_import/wallet_import.dart';
 import 'package:meta/meta.dart';
 
-class WalletRepository implements SeedReferencePort, WalletReaderRepository {
-  final WalletNativeLifecycle? _native;
+class WalletRepository implements WalletReaderRepository {
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
   final WalletRegistrations _walletRegistrations;
   final SyncWalletValuesDatasource _values;
-  final Future<void> Function(
-    WalletMetadataModel, {
-    bool discover,
-    bool allowInitialScan,
-    SyncReason reason,
-  })
-  _syncWallet;
+  final ForegroundWalletSynchronization _synchronization;
   final Stream<String> _walletSyncStartedStream;
   final Stream<String> _walletSyncFinishedStream;
 
   WalletRepository({
-    this._native,
     required this._walletRegistrations,
     required SyncWalletValuesDatasource walletValuesDatasource,
-    required Future<void> Function(
-      WalletMetadataModel, {
-      bool discover,
-      bool allowInitialScan,
-      SyncReason reason,
-    })
-    synchronize,
+    required this._synchronization,
     required Stream<String> syncStarted,
     required Stream<String> syncFinished,
   }) : _values = walletValuesDatasource,
-       _syncWallet = synchronize,
        _walletSyncStartedStream = syncStarted,
-       _walletSyncFinishedStream = syncFinished {
-    // Keep track of the last sync time in the wallet metadata
-    _walletSyncFinishedStream.listen(_updateWalletSyncTime);
-    // Start auto syncing wallets
-  }
+       _walletSyncFinishedStream = syncFinished;
 
   Stream<String> get walletSyncStartedStream => _walletSyncStartedStream;
 
@@ -79,242 +55,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
       .where((wallet) => wallet != null)
       .map((wallet) => wallet!);
-
-  /// Catalog existence protects onboarding even when the selected network
-  /// has no wallets or a stored network cannot currently be decoded.
-  @useResult
-  Future<Result<bool, WalletFailure>> hasStoredWallets() async {
-    try {
-      return Ok((await _walletRegistrations.fetchAll()).isNotEmpty);
-    } catch (error) {
-      return Err(_classify(error, 'hasStoredWallets'));
-    }
-  }
-
-  /// Reads every catalog row, including unresolved networks and unavailable
-  /// native stores: neither condition permits deleting a shared secret.
-  @useResult
-  Future<Result<bool, WalletFailure>> hasSecretReference(
-    Fingerprint fingerprint,
-  ) async {
-    try {
-      final rows = await _walletRegistrations.fetchAll();
-      return Ok(
-        rows.any(
-          (row) =>
-              row.signer == Signer.local && row.seedFingerprint == fingerprint,
-        ),
-      );
-    } catch (error) {
-      return Err(_classify(error, 'hasSecretReference'));
-    }
-  }
-
-  static void _requireSupportedCreation(
-    Network network,
-    ScriptType scriptType,
-  ) {
-    if (network == Network.bitcoinRegtest && scriptType != ScriptType.bip84) {
-      throw const UnsupportedWalletScriptException();
-    }
-  }
-
-  Future<String> createWallet({
-    required Secret secret,
-    required Network network,
-    required ScriptType scriptType,
-    String? label,
-    bool isDefault = false,
-    DateTime? birthday,
-  }) async {
-    final metadata = await _provisionSecretWallet(
-      secret: secret,
-      network: network,
-      scriptType: scriptType,
-      label: label,
-      isDefault: isDefault,
-      birthday: birthday,
-    );
-    return metadata.id;
-  }
-
-  /// Explicit mnemonic import only: default creation/startup keep their existing
-  /// paths. Re-read custody under admission, publish locally, then reconcile.
-  /// Balance reads and any network work happen only after admission is released.
-  @useResult
-  Future<Result<Wallet, ParentCustodyFailure>> importWallet({
-    required Fingerprint parent,
-    required Secrets secrets,
-    required ParentCustodyAdmissionPort admission,
-    required BitcoinNetwork network,
-    required ScriptType scriptType,
-    String? label,
-  }) async {
-    final published = await admission.runExclusive<WalletMetadataModel>(
-      parent,
-      (lease) async {
-        final Secret secret;
-        switch (await secrets.fetch(parent)) {
-          case Ok(:final value):
-            secret = value;
-          case Err():
-            return const Err(ParentCustodySeedUnavailableFailure());
-        }
-        final metadata = await _provisionSecretWallet(
-          secret: secret,
-          network: Network.fromEnvironment(
-            environment: network.env,
-            isLiquid: false,
-          ),
-          scriptType: scriptType,
-          label: label,
-          isDefault: false,
-        );
-        // The catalog reference is durable before clearing either tombstone.
-        return lease.reconcilePresent().map((_) => metadata);
-      },
-    );
-    return switch (published) {
-      Err(:final failure) => Err(failure),
-      Ok(:final value) => Ok(await _createdWallet(value)),
-    };
-  }
-
-  Future<WalletMetadataModel> _provisionSecretWallet({
-    required Secret secret,
-    required Network network,
-    required ScriptType scriptType,
-    String? label,
-    required bool isDefault,
-    DateTime? birthday,
-  }) async {
-    _requireSupportedCreation(network, scriptType);
-    // Derive and store the wallet metadata
-    final walletLabel =
-        isDefault &&
-            (network == Network.bitcoinMainnet ||
-                network == Network.bitcoinTestnet)
-        ? 'Secure Bitcoin'
-        : isDefault &&
-              (network == Network.liquidMainnet ||
-                  network == Network.liquidTestnet)
-        ? 'Instant Payments'
-        : label;
-
-    final metadata = await WalletMetadataService.deriveFromSecret(
-      secret: secret,
-      network: network,
-      scriptType: scriptType,
-      label: walletLabel,
-      isDefault: isDefault,
-      birthday: birthday,
-    );
-
-    if (isDefault) {
-      final allWallets = (await _walletRegistrations.fetchAll()).where(
-        (row) => row.isDefault,
-      );
-      for (final wallet in allWallets) {
-        if (wallet.isDefault && wallet.network == metadata.network) {
-          throw Exception('Default wallet already exists');
-        }
-      }
-    }
-
-    await _provision(metadata);
-    return metadata;
-  }
-
-  Future<Wallet> _createdWallet(
-    WalletMetadataModel metadata, {
-    bool sync = false,
-  }) async {
-    final network = metadata.network;
-    final balance = await _getBalance(metadata, sync: sync);
-
-    return Wallet(
-      origin: metadata.origin,
-      label: metadata.label,
-      network: network,
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: metadata.scriptType,
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer.toEntity(),
-      signerDevice: metadata.signerDevice?.toEntity(),
-      balanceSat: balance.totalSat,
-      confirmedBalanceSat: balance.confirmedSat,
-    );
-  }
-
-  @useResult
-  Future<Result<Wallet, ImportWatchOnlyFailure>> importDescriptor({
-    required WatchOnlyDescriptorInput descriptor,
-    required SignerEntity signer,
-    required String label,
-    bool sync = false,
-  }) => _importWatchOnly(
-    network: descriptor.network,
-    scriptType: descriptor.scriptType,
-    derive: (_) => WalletMetadataService.fromDescriptor(
-      descriptor,
-      signer: signer,
-      label: label,
-    ),
-    sync: sync,
-  );
-
-  @useResult
-  Future<Result<Wallet, ImportWatchOnlyFailure>> importWatchOnlyXpub({
-    required String xpub,
-    required BitcoinNetwork network,
-    required ScriptType scriptType,
-    required String label,
-    bool sync = false,
-  }) => _importWatchOnly(
-    network: network,
-    scriptType: scriptType,
-    derive: (legacy) => WalletMetadataService.deriveFromXpub(
-      xpub: xpub,
-      network: legacy,
-      scriptType: scriptType,
-      label: label,
-    ),
-    sync: sync,
-  );
-
-  Future<Result<Wallet, ImportWatchOnlyFailure>> _importWatchOnly({
-    required BitcoinNetwork network,
-    required ScriptType scriptType,
-    required Future<WalletMetadataModel> Function(Network) derive,
-    required bool sync,
-  }) async {
-    try {
-      final legacy = Network.fromEnvironment(
-        environment: network.env,
-        isLiquid: false,
-      );
-      _requireSupportedCreation(legacy, scriptType);
-      final metadata = await derive(legacy);
-      final allWallets = await _walletRegistrations.fetchAll();
-      if (allWallets.any((wallet) => wallet.id == metadata.id)) {
-        return const Err(WalletAlreadyExistsFailure());
-      }
-      await _provision(metadata);
-      return Ok(await _createdWallet(metadata, sync: sync));
-    } on FormatException {
-      return const Err(InvalidFormatFailure());
-    } on WalletAlreadyExistsException {
-      return const Err(WalletAlreadyExistsFailure());
-    } catch (error) {
-      if (error is Error) rethrow;
-      log.warning('Failed to import watch-only wallet: ${error.runtimeType}');
-      return const Err(ImportFailedFailure());
-    }
-  }
 
   @override
   @useResult
@@ -432,30 +172,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
   }
 
-  /// Exhaustive custody references, independent of origin and native reads.
-  /// A partial result must never authorize destruction of a secret.
-  @override
-  @useResult
-  Future<Result<Set<Fingerprint>, WalletFailure>>
-  getCustodyFingerprints() async {
-    try {
-      final rows = await _walletRegistrations.fetchAll();
-      final fingerprints = <Fingerprint>{};
-      for (final row in rows) {
-        if (row.signer != Signer.local) continue;
-        final fingerprint = Fingerprint.tryParse(row.masterFingerprint);
-        if (fingerprint == null) {
-          return const Err(WalletStorageFailure('invalid custody reference'));
-        }
-        fingerprints.add(fingerprint);
-      }
-      return Ok(fingerprints);
-    } catch (_) {
-      log.warning('Wallet custody references unavailable category=storage');
-      return const Err(WalletStorageFailure('custody references unavailable'));
-    }
-  }
-
   void _reportReadFailure(Object error, StackTrace trace, String operation) {
     // Native readers and sync already own their terminal diagnostics.
     if (error is WalletSnapshotException) return;
@@ -548,80 +264,26 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     return _getBalance(metadata);
   }
 
-  @useResult
-  Future<Result<void, WalletFailure>> deleteWallet({
-    required String walletId,
+  /// Synchronizes the native wallet [metadata] describes.
+  Future<void> _syncWallet(
+    WalletMetadataModel metadata, {
+    bool discover = false,
+    bool allowInitialScan = true,
+    SyncReason reason = SyncReason.auto,
   }) async {
-    try {
-      final metadata = await _walletRegistrations.fetch(walletId);
-      if (metadata == null) {
-        return const Err(WalletNotFoundFailure('no metadata to delete'));
-      }
-
-      final native = _native;
-      if (native == null) throw StateError('Native writer is not configured');
-      WalletSyncBinding.value(
-        await native.delete(WalletSyncBinding.keyFromMetadata(metadata)),
-      );
-
-      await _walletRegistrations.delete(walletId);
-      WalletSyncBinding.value(
-        await native.catalogDeleted(
-          WalletSyncBinding.keyFromMetadata(metadata),
-        ),
-      );
-      log.fine('Wallet deleted outcome=ok');
-      return const Ok(null);
-    } catch (e, st) {
-      if (e is! WalletSnapshotException) {
-        log.severe(
-          message: 'Wallet delete failed reason=storage',
-          error: 'storage',
-          trace: st,
+    switch (WalletSyncBinding.descriptorFromMetadata(metadata)) {
+      case Err():
+        throw const WalletStorageFailure('Invalid sync descriptor');
+      case Ok(:final value):
+        WalletSyncBinding.value(
+          await _synchronization.execute(
+            value,
+            discover: discover,
+            allowInitialScan: allowInitialScan,
+            reason: reason,
+          ),
         );
-      }
-      return Err(_classify(e, 'deleteWallet'));
     }
-  }
-
-  Future<void> _updateWalletSyncTime(String walletId) async {
-    try {
-      await _walletRegistrations.recordSyncTime(walletId, DateTime.now());
-    } on Exception {
-      log.warning('Wallet sync timestamp unavailable');
-    }
-  }
-
-  Future<void> _provision(WalletMetadataModel metadata) async {
-    if (await _walletRegistrations.fetch(metadata.id) != null) {
-      throw WalletAlreadyExistsException(metadata.id);
-    }
-    final native = _native;
-    if (native != null) {
-      WalletSyncBinding.value(
-        await native.prepareCreate(WalletSyncBinding.keyFromMetadata(metadata)),
-      );
-    }
-    // The writer resolves descriptors from this row. Claim it exclusively,
-    // without holding an app database transaction across native work.
-    await _walletRegistrations.insert(metadata);
-    try {
-      await _createNative(metadata);
-    } catch (_) {
-      // Only a successful insert owns compensation; a duplicate never deletes.
-      // Keep secrets and native recovery state for a later retry.
-      await _walletRegistrations.delete(metadata.id);
-      log.warning('Wallet creation failed catalog row removed');
-      rethrow;
-    }
-  }
-
-  Future<void> _createNative(WalletMetadataModel metadata) async {
-    final native = _native;
-    if (native == null) throw StateError('Native writer is not configured');
-    WalletSyncBinding.value(
-      await native.create(WalletSyncBinding.keyFromMetadata(metadata)),
-    );
   }
 
   Future<native_sync.Balances> _getBalance(
@@ -666,14 +328,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   }
 }
 
-final class UnsupportedWalletScriptException implements Exception {
-  const UnsupportedWalletScriptException();
-}
-
-/// The order wallets are listed in: the default Bitcoin wallet (Secure
-/// Bitcoin) first, the default Liquid wallet (Instant payments) second, then
-/// every other wallet in the order the store returned it. Stable, so imported
-/// wallets keep their relative order.
+/// The default Bitcoin and Liquid wallets precede imports, whose order is stable.
 List<Wallet> walletDisplayOrder(Iterable<Wallet> wallets) {
   int rank(Wallet wallet) => switch (wallet) {
     _ when wallet.isDefault && !wallet.isLiquid => 0,

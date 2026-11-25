@@ -3,7 +3,6 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,7 +28,7 @@ void main() {
             builder: (context, _) => BackupTestSuccessScreen(
               successImage: AssetImage(Assets.animations.successTick.path),
               onContinue: () {
-                WalletRecoverBullBindings.tested(context);
+                context.read<WalletBloc>().add(const VerifyBackupStatus());
                 context.goNamed(WalletRoute.walletHome.name);
               },
             ),

@@ -1,14 +1,12 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 
-import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
 
 import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -46,9 +44,6 @@ class WalletLocator {
   }
 
   static void registerUsecases(GetIt locator) {
-    locator.registerFactory<GetWalletUsecase>(
-      () => GetWalletUsecase(walletRepository: locator<WalletRepository>()),
-    );
     locator.registerFactory<GetWalletsUsecase>(
       () => GetWalletsUsecase(
         settingsRepository: locator<ActiveEnvironmentReader>(),
@@ -66,8 +61,7 @@ class WalletLocator {
       ),
     );
     locator.registerFactory<CheckWalletSyncingUsecase>(
-      () =>
-          CheckWalletSyncingUsecase(locator<ForegroundWalletSync>().isSyncing),
+      () => CheckWalletSyncingUsecase(locator<ElectrumSync>().isSyncing),
     );
   }
 }

@@ -1576,5 +1576,8 @@
   "exchangeGoToWebsiteButton": "به سایت تبادل Bitcoin Bull بروید",
   "@exchangeGoToWebsiteButton": {
     "description": "Button label for navigating to the Bull Bitcoin exchange website"
-  }
+  },
+  "exchangeErrorSigningOut": "خروج کامل از حساب انجام نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeErrorLoadingAnnouncements": "اطلاعیه‌ها بارگذاری نشد.",
+  "exchangeErrorRequestingAccountDeletion": "درخواست حذف حساب شما ارسال نشد. لطفاً دوباره تلاش کنید."
 }

@@ -1,4 +1,3 @@
-import 'package:secrets/custody.dart';
 import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -6,9 +5,6 @@ import 'package:background_tasks/native_sync.dart';
 
 import 'dart:async';
 
-import 'package:swaps/swaps.dart' show SwapStore;
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart';
-import 'package:all_seed_view/testing.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -17,28 +13,18 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:labels/labels.dart';
-import 'package:wallet_import/wallet_import.dart';
-import 'package:satoshifier/satoshifier.dart' as satoshifier;
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:electrum/electrum.dart' show ElectrumSyncResult;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
-
-class _Swaps extends Mock implements SwapStore {}
-
-class _Native extends Mock implements WalletNativeLifecycle {}
-
-class _WatchOnly extends Mock implements satoshifier.WatchOnlyDescriptor {}
-
-class _Descriptor extends Mock implements satoshifier.Descriptor {}
 
 class _Labels extends Mock implements Labels {}
 
@@ -96,7 +82,7 @@ void main() {
   late _Metadata metadata;
   late _Values values;
   late WalletRepository repository;
-  late ForegroundWalletSync bridge;
+  late _Bridge bridge;
 
   setUp(() {
     directory = Directory.systemTemp.createTempSync('foreground-sync-');
@@ -104,8 +90,6 @@ void main() {
     metadata = _Metadata();
     values = _Values();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
-    when(() => metadata.recordSyncTime(any(), any())).thenAnswer((_) async {});
-    when(() => metadata.insert(any())).thenAnswer((_) async {});
     when(() => values.getBalance(key: any(named: 'key'))).thenAnswer(
       (_) async => Balances(
         confirmedSat: BigInt.zero,
@@ -116,7 +100,7 @@ void main() {
         totalSat: BigInt.zero,
       ),
     );
-    bridge = ForegroundWalletSync(
+    bridge = _Bridge(
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
@@ -126,7 +110,7 @@ void main() {
     repository = WalletRepository(
       walletRegistrations: metadata,
       walletValuesDatasource: values,
-      synchronize: bridge.synchronize,
+      synchronization: bridge.synchronization,
       syncStarted: bridge.started,
       syncFinished: bridge.finished,
     );
@@ -167,111 +151,6 @@ void main() {
       await resultSubscription.cancel();
       await finishedSubscription.cancel();
     }
-  });
-
-  for (final deleteWallet in [false, true]) {
-    test(
-      'invalid-origin local row protects seed; deleteWallet=$deleteWallet',
-      () async {
-        final storage = FakeSecureStoragePlatform()..install();
-        final secrets = Secrets(scratchDirectory: () async => directory.path);
-        final secret = await secrets.import(
-          words: [...List.filled(11, 'abandon'), 'about'],
-          language: Language.english,
-        ) as Ok<Secret, SecretFailure>;
-        final local = row.copyWith(
-          signer: Signer.local,
-          masterFingerprint: secret.value.id.hex,
-        );
-        final remaining = local.copyWith(id: 'invalid');
-        when(() => metadata.fetch(id)).thenAnswer((_) async => local);
-        when(() => metadata.fetchAll()).thenAnswer((_) async => [remaining]);
-        final native = _Native();
-        when(() => native.delete(any()))
-            .thenAnswer((_) async => const Ok(null));
-        when(() => native.catalogDeleted(any()))
-            .thenAnswer((_) async => const Ok(null));
-        when(() => metadata.delete(id)).thenAnswer((_) async {});
-        final guardedRepository = WalletRepository(
-          native: native,
-          walletRegistrations: metadata,
-          walletValuesDatasource: values,
-          synchronize: bridge.synchronize,
-          syncStarted: bridge.started,
-          syncFinished: bridge.finished,
-        );
-        if (deleteWallet) {
-          final swaps = _Swaps();
-          when(() => swaps.ongoing(walletId: id))
-              .thenAnswer((_) async => const Ok([]));
-          expect(
-            await DeleteWalletUsecase(
-              walletRepository: guardedRepository,
-              seedReferences: SeedReferences(
-                guardedRepository,
-                admission: SqliteParentCustodyAdmission(
-                  directory: () async => directory.path,
-                  mayCreate: true,
-                ),
-              ),
-              swapStore: swaps,
-              secrets: secrets,
-            ).execute(walletId: id),
-            isA<Ok>(),
-          );
-        } else {
-          final result = await DeleteSecretUsecase(
-            secrets: secrets,
-            seedReferences: SeedReferences(
-              guardedRepository,
-              admission: SqliteParentCustodyAdmission(
-                directory: () async => directory.path,
-                mayCreate: true,
-              ),
-            ),
-          ).execute(secret.value.id);
-          expect(result, isA<Err>());
-        }
-        expect(
-          storage.entries.keys.where((key) => key.startsWith('seed_')),
-          hasLength(1),
-        );
-      },
-    );
-  }
-
-  test(
-    'custody query ignores origins, balances and nonlocal fingerprints',
-    () async {
-      when(() => metadata.fetchAll()).thenAnswer(
-        (_) async => [
-          row.copyWith(
-            id: 'invalid',
-            signer: Signer.local,
-            masterFingerprint: 'AABBCCDD',
-          ),
-          row.copyWith(signer: Signer.none, masterFingerprint: 'invalid'),
-          row.copyWith(signer: Signer.remote, masterFingerprint: '11223344'),
-        ],
-      );
-      final result = await repository.getCustodyFingerprints();
-      expect(result, isA<Ok>());
-      expect((result as Ok).value, {Fingerprint('aabbccdd')});
-      verifyNever(() => values.getBalance(key: any(named: 'key')));
-    },
-  );
-
-  test('custody query refuses an incomplete local fingerprint set', () async {
-    when(() => metadata.fetchAll()).thenAnswer(
-      (_) async => [
-        row.copyWith(signer: Signer.local),
-        row.copyWith(signer: Signer.local, masterFingerprint: 'invalid'),
-      ],
-    );
-    expect(await repository.getCustodyFingerprints(), isA<Err>());
-    when(() => metadata.fetchAll())
-        .thenThrow(const FormatException('unreadable row'));
-    expect(await repository.getCustodyFingerprints(), isA<Err>());
   });
 
   test('invalid catalog origin does not hide a healthy wallet', () async {
@@ -449,25 +328,34 @@ void main() {
   test(
     'single-wallet usecase forwards discovery and initial-scan policy',
     () async {
-      final requests = <(bool, bool)>[];
+      log = Logger.replace(directory: directory);
+      final forwarding = _Policy();
       final repository = WalletRepository(
         walletRegistrations: metadata,
         walletValuesDatasource: values,
-        synchronize: (
-          metadata, {
-          bool discover = false,
-          allowInitialScan = true,
-          SyncReason reason = SyncReason.auto,
-        }) async => requests.add((discover, allowInitialScan)),
-        syncStarted: const Stream.empty(),
-        syncFinished: const Stream.empty(),
+        synchronization: ForegroundWalletSynchronization(
+          ElectrumSync(
+            connections: forwarding,
+            documentsDirectory: () async => directory.path,
+            readRevision: (_) async => const Err(SyncNotFoundFailure()),
+          ),
+        ),
+        syncStarted: const Stream<String>.empty(),
+        syncFinished: const Stream<String>.empty(),
       );
       final wallet =
           (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
       await repository.sync(wallet);
       await repository.sync(wallet, discover: true);
       await repository.sync(wallet, allowInitialScan: false);
-      expect(requests, [(false, true), (true, true), (false, false)]);
+      expect(forwarding.calls, 3);
+      final rows = (await log.readLogs())
+          .where((row) => row.contains('Electrum sync started '))
+          .toList();
+      expect(rows, hasLength(3));
+      expect(rows[0], contains('discovery=false allow_initial_scan=true'));
+      expect(rows[1], contains('discovery=true allow_initial_scan=true'));
+      expect(rows[2], contains('discovery=false allow_initial_scan=false'));
     },
   );
 
@@ -606,78 +494,6 @@ void main() {
     );
     verifyNever(() => values.getBalance(key: any(named: 'key')));
   });
-  test(
-    'descriptor import persists catalog then creates offline before sync',
-    () async {
-      final descriptor = _Descriptor();
-      when(() => descriptor.network)
-          .thenReturn(satoshifier.Network.bitcoinTestnet);
-      when(() => descriptor.derivation)
-          .thenReturn(satoshifier.Derivation.bip84);
-      when(() => descriptor.external).thenReturn('wpkh(public)');
-      when(() => descriptor.internal).thenReturn('wpkh(change)');
-      when(() => descriptor.pubkey).thenReturn(
-        'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
-      );
-      when(() => descriptor.fingerprint).thenReturn('aabbccdd');
-      final watchOnly = _WatchOnly();
-      when(() => watchOnly.descriptor).thenReturn(descriptor);
-      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
-      when(() => metadata.fetch(id)).thenAnswer((_) async => null);
-      var provisioned = false;
-      final native = _Native();
-      when(() => native.prepareCreate(any())).thenAnswer((_) async {
-        verifyNever(() => metadata.insert(any()));
-        return const Ok(null);
-      });
-      when(() => native.create(any())).thenAnswer((_) async {
-        verify(() => metadata.insert(any())).called(1);
-        verifyNever(() => values.getBalance(key: any(named: 'key')));
-        provisioned = true;
-        return const Ok(null);
-      });
-      var synchronized = false;
-      final originalBalance = await values.getBalance(
-        key: WalletSyncBinding.keyFromMetadata(row),
-      );
-      when(() => values.getBalance(key: any(named: 'key')))
-          .thenAnswer((_) async {
-            expect(provisioned, isTrue);
-            return originalBalance;
-          });
-      clearInteractions(values);
-      final importing = WalletRepository(
-        native: native,
-        walletRegistrations: metadata,
-        walletValuesDatasource: values,
-        synchronize:
-            (
-              value, {
-              bool discover = false,
-              allowInitialScan = true,
-              SyncReason reason = SyncReason.auto,
-            }) async {
-              expect(provisioned, isTrue);
-              expect(value.id, id);
-              verify(() => native.create(any())).called(1);
-              synchronized = true;
-            },
-        syncStarted: const Stream.empty(),
-        syncFinished: const Stream.empty(),
-      );
-      final input = WatchOnlyInput.fromDescriptor(watchOnly);
-      final result = await importing.importDescriptor(
-        descriptor:
-            (input as Ok<WatchOnlyDescriptorInput, ImportFailure>).value,
-        signer: SignerEntity.remote,
-        label: '',
-        sync: true,
-      );
-      expect(synchronized, isTrue);
-      expect((result as Ok<Wallet, ImportWatchOnlyFailure>).value.id, id);
-      verify(() => values.getBalance(key: any(named: 'key'))).called(1);
-    },
-  );
 }
 
 final class _ThrowingPolicy implements WalletConnectionPort {
@@ -690,4 +506,44 @@ final class _ThrowingPolicy implements WalletConnectionPort {
   }) async {
     throw const FormatException('sensitive error detail');
   }
+}
+
+/// The legacy repository's view of foreground sync: catalog rows resolve to
+/// descriptors, then the Sync operation runs.
+final class _Bridge {
+  final ElectrumSync sync;
+  final ForegroundWalletSynchronization synchronization;
+
+  _Bridge(this.sync) : synchronization = ForegroundWalletSynchronization(sync);
+
+  Stream<String> get started => sync.started.map((key) => key.id);
+  Stream<String> get finished => sync.finished.map((event) => event.key.id);
+  Stream<ElectrumSyncResult> get results =>
+      ElectrumSyncResult.watch(sync.finished);
+
+  Future<void> synchronize(
+    WalletMetadataModel metadata, {
+    bool discover = false,
+    bool allowInitialScan = true,
+    SyncReason reason = SyncReason.auto,
+  }) async {
+    switch (WalletSyncBinding.descriptorFromMetadata(metadata)) {
+      case Err():
+        throw const WalletStorageFailure('Invalid sync descriptor');
+      case Ok(:final value):
+        WalletSyncBinding.value(
+          await synchronization.execute(
+            value,
+            discover: discover,
+            allowInitialScan: allowInitialScan,
+            reason: reason,
+          ),
+        );
+    }
+  }
+
+  Future<Result<void, SyncFailure>> synchronizeDescriptor(
+    PublicWalletDescriptor descriptor, {
+    SyncReason reason = SyncReason.auto,
+  }) => synchronization.execute(descriptor, reason: reason);
 }

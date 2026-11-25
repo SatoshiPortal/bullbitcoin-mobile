@@ -13,8 +13,6 @@ sealed class WalletState with _$WalletState {
     WalletFailure? failure,
     @Default(0) int unconfirmedIncomingBalance,
     @Default(false) bool isRefreshing,
-    @Default(false) bool isDeletingWallet,
-    WalletFailure? walletDeletionFailure,
     @Default(false) bool isCheckingServiceStatus,
     @Default(0) int spBalanceSat,
     @Default(false) bool isSpWalletSetup,

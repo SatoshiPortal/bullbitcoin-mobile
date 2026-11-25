@@ -11,6 +11,107 @@
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
   },
+  "walletDeletionConfirmationCancelButton": "ยกเลิก",
+  "@walletDeletionConfirmationCancelButton": {
+    "description": "Cancel button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationDeleteButton": "ลบ",
+  "@walletDeletionConfirmationDeleteButton": {
+    "description": "Delete button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationMessage": "คุณต้องลบกระเป๋าสตางค์นี้?",
+  "@walletDeletionConfirmationMessage": {
+    "description": "Message in the wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationTitle": "ลบกระเป๋าสตางค์",
+  "@walletDeletionConfirmationTitle": {
+    "description": "Title for the wallet deletion confirmation dialog"
+  },
+  "walletDeletionErrorDefaultWallet": "คุณสามารถลบกระเป๋าสตางค์เริ่มต้น.",
+  "@walletDeletionErrorDefaultWallet": {
+    "description": "Error message when attempting to delete a default wallet"
+  },
+  "walletDeletionErrorGeneric": "ค้นหากระเป๋าสตางค์โปรดลองอีกครั้ง.",
+  "@walletDeletionErrorGeneric": {
+    "description": "Generic error message when wallet deletion fails"
+  },
+  "walletDeletionErrorOngoingSwaps": "คุณไม่สามารถลบกระเป๋าสตางค์อย่างต่อเนื่อง.",
+  "@walletDeletionErrorOngoingSwaps": {
+    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+  },
+  "walletDeletionErrorWalletNotFound": "กระเป๋าเงินที่คุณพยายามที่จะลบ.",
+  "@walletDeletionErrorWalletNotFound": {
+    "description": "Error message when the wallet to delete cannot be found"
+  },
+  "walletDeletionFailedOkButton": "ตกลง",
+  "@walletDeletionFailedOkButton": {
+    "description": "OK button label in wallet deletion failed dialog"
+  },
+  "walletDeletionFailedTitle": "ลบ",
+  "@walletDeletionFailedTitle": {
+    "description": "Title for the wallet deletion failed dialog"
+  },
+  "walletDetailsAddressTypeLabel": "ที่อยู่",
+  "@walletDetailsAddressTypeLabel": {
+    "description": "Label for the address type field in wallet details"
+  },
+  "walletDetailsDeletingMessage": "ข้อความ ...",
+  "@walletDetailsDeletingMessage": {
+    "description": "Message displayed while a wallet is being deleted"
+  },
+  "walletDetailsDerivationPathLabel": "กฎระเบียบ",
+  "@walletDetailsDerivationPathLabel": {
+    "description": "Label for the derivation path field in wallet details"
+  },
+  "walletDetailsDescriptorLabel": "ข้อความ",
+  "@walletDetailsDescriptorLabel": {
+    "description": "Label for the wallet descriptor field in wallet details"
+  },
+  "walletDetailsNetworkLabel": "เครือข่ายเครือข่าย",
+  "@walletDetailsNetworkLabel": {
+    "description": "Label for the network field in wallet details"
+  },
+  "walletDetailsPubkeyLabel": "หน้าแรก",
+  "@walletDetailsPubkeyLabel": {
+    "description": "Label for the public key field in wallet details"
+  },
+  "walletDetailsSignerDeviceLabel": "อุปกรณ์",
+  "@walletDetailsSignerDeviceLabel": {
+    "description": "Label for the signer device field in wallet details"
+  },
+  "walletDetailsSignerDeviceNotSupported": "ไม่สนับสนุน",
+  "@walletDetailsSignerDeviceNotSupported": {
+    "description": "Message displayed when a signer device is not supported"
+  },
+  "walletDetailsSignerLabel": "ลงทะเบียน",
+  "@walletDetailsSignerLabel": {
+    "description": "Label for the signer field in wallet details"
+  },
+  "walletDetailsUnnamedWalletFallback": "ชื่อข้อความ",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "walletDetailsWalletFingerprintLabel": "ลายนิ้วมือ",
+  "@walletDetailsWalletFingerprintLabel": {
+    "description": "Label for the wallet fingerprint field in wallet details"
+  },
+  "addressViewAddressesTitle": "ที่อยู่",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "copyDialogButton": "คัดลอก",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "globalDefaultBitcoinWalletLabel": "รักษาความปลอดภัย Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
   "bitcoinSettingsTestnetModeTitle": "โหมดทดสอบ",
   "@bitcoinSettingsTestnetModeTitle": {
     "description": "Title for the testnet mode toggle in Bitcoin settings"

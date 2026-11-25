@@ -1,6 +1,13 @@
 import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
+import 'package:bb_mobile/wallet_inventory_setup.dart';
+import 'package:bull_recoverbull/testing.dart';
+import 'package:drift/native.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
+import 'package:sync/storage.dart' show syncWalletMetadataImport;
+import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:flutter_test/flutter_test.dart';
@@ -19,9 +26,17 @@ final class InventoryFixture {
   final RuntimeAdmission admission;
   final SecretsInventory inventory;
   final SignerDevices? _signerDevices;
+  final bool _ownsInventory;
   final backup = const VerifiedBackups();
 
-  InventoryFixture._(this.admission, this.inventory, this._signerDevices);
+  InventoryFixture._(
+    this.admission,
+    this.inventory,
+    this._signerDevices, [
+    this._ownsInventory = true,
+  ]);
+
+  SignerDevices? get signerDevices => _signerDevices;
 
   Future<void> addPublicWallet({
     required String id,
@@ -124,30 +139,141 @@ final class InventoryFixture {
     }
   }
 
+  /// Composes the wallet owners the way production does: the storage cutover
+  /// admits the owners, then `openWalletInventory` opens and registers the
+  /// inventory, Signers, Sync freshness, both RecoverBull backups and the
+  /// wallet projections in [services]. [services] owns the opened stores and
+  /// closes them on reset; call [close] after the reset to release the
+  /// admission.
+  static Future<InventoryFixture> compose(
+    Directory directory,
+    GetIt services,
+  ) async {
+    File owner(String name) => File('${directory.path}/test-$name.sqlite');
+    final secrets = Secrets(scratchDirectory: () async => directory.path);
+    final signerKeys = secrets.databaseKeys(module: 'signers');
+    final syncKeys = secrets.databaseKeys(module: 'sync');
+    final legacyFile = owner('legacy');
+    final source = SqliteDatabase(NativeDatabase(legacyFile));
+    try {
+      await source.customStatement('SELECT 1');
+    } finally {
+      await source.close();
+    }
+    final legacy = LegacySourceStore(
+      source: LegacySource(legacyFile, SqliteDatabase.currentSchemaVersion),
+      create: SqliteDatabase.new,
+    );
+    final recoverBull = recoverBullCutoverForTesting(
+      file: owner('recoverbull'),
+      standalone: File('${directory.path}/test-recoverbull-standalone.sqlite'),
+    );
+    final regtestRecoverBull = recoverBullCutoverForTesting(
+      file: owner('recoverbull-regtest'),
+      standalone: File(
+        '${directory.path}/test-recoverbull-regtest-standalone.sqlite',
+      ),
+      regtest: true,
+    );
+    final prepared = await StorageCutover(
+      directory: Directory('${directory.path}/wallet-owner-coordination'),
+      legacy: legacy,
+      expectedOwners: const {
+        'secrets',
+        'signers',
+        'sync',
+        'recoverbull',
+        'recoverbull_regtest',
+      },
+      participants: [
+        recoverBull.participant,
+        regtestRecoverBull.participant,
+        SecretsImport(file: owner('secrets')),
+        signersWalletMetadataImport(file: owner('signers'), keys: signerKeys),
+        syncWalletMetadataImport(file: owner('sync'), keys: syncKeys),
+      ],
+    ).prepare();
+    final admission = switch (prepared) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('Cutover failed: ${failure.runtimeType}'),
+    };
+    final opened = await openWalletInventory(
+      services,
+      admission: admission,
+      legacy: legacy.source,
+      inventoryFile: owner('secrets'),
+      signersFile: owner('signers'),
+      syncFile: owner('sync'),
+      signerKeys: signerKeys,
+      syncKeys: syncKeys,
+      recoverBull: recoverBull,
+      regtestRecoverBull: regtestRecoverBull,
+    );
+    final inventory = switch (opened) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('Inventory failed: ${failure.runtimeType}'),
+    };
+    return InventoryFixture._(
+      admission,
+      inventory,
+      services<SignerDevices>(),
+      false,
+    );
+  }
+
   Future<void> registerMnemonic(
     Secret secret, {
     Network network = Network.bitcoinMainnet,
     String? unresolvedNetwork,
     String? internalDescriptor,
   }) async {
-    final metadata = await WalletMetadataService.deriveFromSecret(
-      secret: secret,
-      network: network,
+    final shared = network.shared;
+    final xpub = switch (await secret.derive.xpub(
+      network: shared,
       scriptType: ScriptType.bip84,
-      isDefault: false,
-    );
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('xpub: ${failure.runtimeType}'),
+    };
+    final ({String external, String internal}) descriptors;
+    switch (shared) {
+      case BitcoinNetwork():
+        descriptors = switch (await secret.derive.descriptors.bitcoin(
+          network: shared,
+          scriptType: ScriptType.bip84,
+        )) {
+          Ok(:final value) => (
+            external: value.external,
+            internal: value.internal,
+          ),
+          Err(:final failure) => fail('descriptors: ${failure.runtimeType}'),
+        };
+      case LiquidNetwork():
+        final descriptor = switch (await secret.derive.descriptors.liquid(
+          network: shared,
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('descriptor: ${failure.runtimeType}'),
+        };
+        descriptors = (external: descriptor, internal: descriptor);
+    }
     final registered = await inventory.registerWallet(
       RegisteredWallet(
-        id: unresolvedNetwork == null ? metadata.id : 'invalid origin',
+        id: unresolvedNetwork == null
+            ? WalletMetadataService.encodeId(
+                fingerprint: secret.id.hex,
+                network: network,
+                scriptType: ScriptType.bip84,
+              )
+            : 'invalid origin',
         secretFingerprint: secret.id.hex,
-        masterFingerprint: metadata.masterFingerprint,
+        masterFingerprint: secret.id.hex,
         signer: 'local',
-        network: unresolvedNetwork ?? metadata.networkCode,
-        xpub: metadata.xpub,
-        externalDescriptor: metadata.externalPublicDescriptor,
-        internalDescriptor:
-            internalDescriptor ?? metadata.internalPublicDescriptor,
-        label: metadata.label,
+        network: unresolvedNetwork ?? WalletNetworkCodec.encode(network),
+        xpub: xpub,
+        externalDescriptor: descriptors.external,
+        internalDescriptor: internalDescriptor ?? descriptors.internal,
+        label: null,
         birthday: null,
         isDefault: false,
       ),
@@ -168,7 +294,7 @@ final class InventoryFixture {
 
   Future<void> close() async {
     try {
-      await inventory.close();
+      if (_ownsInventory) await inventory.close();
     } finally {
       await admission.close();
     }

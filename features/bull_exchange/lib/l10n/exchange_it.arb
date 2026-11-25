@@ -948,5 +948,8 @@
   "exchangeFeatureBankTransfers": "• Invia bonifici e paga bollette con i tuoi bitcoin",
   "exchangeGoToWebsiteButton": "Vai al sito dell'exchange Bull Bitcoin",
   "exchangeFeatureDcaOrders": "• PAC, ordini limite e acquisto automatico",
-  "exchangeFeatureUnifiedHistory": "• Cronologia unificata delle transazioni"
+  "exchangeFeatureUnifiedHistory": "• Cronologia unificata delle transazioni",
+  "exchangeErrorSigningOut": "Non è stato possibile completare la disconnessione. Riprova.",
+  "exchangeErrorLoadingAnnouncements": "Non è stato possibile caricare gli annunci.",
+  "exchangeErrorRequestingAccountDeletion": "Non è stato possibile inviare la tua richiesta di eliminazione dell'account. Riprova."
 }

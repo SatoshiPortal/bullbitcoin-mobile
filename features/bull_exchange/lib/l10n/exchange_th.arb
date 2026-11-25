@@ -1576,5 +1576,8 @@
   "exchangeFeatureUnifiedHistory": "•ประวัติการทําธุรกรรม",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  }
+  },
+  "exchangeErrorSigningOut": "ไม่สามารถออกจากระบบได้อย่างสมบูรณ์ โปรดลองอีกครั้ง",
+  "exchangeErrorLoadingAnnouncements": "ไม่สามารถโหลดประกาศได้",
+  "exchangeErrorRequestingAccountDeletion": "ไม่สามารถส่งคำขอลบบัญชีของคุณได้ โปรดลองอีกครั้ง"
 }

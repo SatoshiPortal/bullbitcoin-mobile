@@ -3880,5 +3880,17 @@
   "exchangeGoToWebsiteButton": "Go to Bull Bitcoin exchange website",
   "@exchangeGoToWebsiteButton": {
     "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeErrorSigningOut": "You could not be fully signed out. Please try again.",
+  "@exchangeErrorSigningOut": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorLoadingAnnouncements": "Announcements could not be loaded.",
+  "@exchangeErrorLoadingAnnouncements": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorRequestingAccountDeletion": "Your account deletion request could not be sent. Please try again.",
+  "@exchangeErrorRequestingAccountDeletion": {
+    "description": "exchange user-facing failure message (#1895)."
   }
 }

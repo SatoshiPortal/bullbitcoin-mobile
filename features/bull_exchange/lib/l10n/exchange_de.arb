@@ -941,5 +941,8 @@
   "exchangeFeatureBankTransfers": "• Banküberweisungen tätigen und Rechnungen bezahlen",
   "exchangeGoToWebsiteButton": "Zur Webseite von Bull Bitcoin gehen",
   "exchangeFeatureDcaOrders": "• Sparpläne, Limitaufträge und automatische Käufe",
-  "exchangeFeatureUnifiedHistory": "• Einheitliche Transaktionshistorie"
+  "exchangeFeatureUnifiedHistory": "• Einheitliche Transaktionshistorie",
+  "exchangeErrorSigningOut": "Sie konnten nicht vollständig abgemeldet werden. Bitte versuchen Sie es erneut.",
+  "exchangeErrorLoadingAnnouncements": "Ankündigungen konnten nicht geladen werden.",
+  "exchangeErrorRequestingAccountDeletion": "Ihr Antrag auf Kontolöschung konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
 }

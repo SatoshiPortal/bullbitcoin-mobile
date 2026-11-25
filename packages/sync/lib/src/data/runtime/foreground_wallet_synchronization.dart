@@ -1,10 +1,12 @@
 import 'package:primitives/primitives.dart';
 
+import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/sync_completion.dart';
 import '../../domain/sync_failure.dart';
 import '../../domain/sync_reason.dart';
 import '../../domain/sync_transaction_target.dart';
+import '../../domain/wallet_key.dart';
 import '../write/sync/electrum_sync.dart';
 import 'wallet_native_runtime.dart';
 
@@ -86,4 +88,14 @@ final class ForegroundWalletSynchronization {
     }
     return result;
   }
+
+  /// Synchronizes the wallet that [catalog] resolves for [key].
+  Future<Result<void, SyncFailure>> executeKey(
+    WalletKey key,
+    WalletCatalogPort catalog, {
+    SyncReason reason = SyncReason.auto,
+  }) async => switch (await catalog.find(key)) {
+    Ok(:final value) => await execute(value, reason: reason),
+    Err(:final failure) => Err(failure),
+  };
 }

@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/entities/exchange_api_key.dart';
 import '../domain/exchange_access.dart';
+import '../domain/exchange_availability.dart';
 import '../domain/exchange_failure.dart';
 import 'exchange_credentials.dart';
 
@@ -41,6 +42,11 @@ abstract interface class ExchangeAccessLifecycle {
   Future<Result<void, ExchangeFailure>> runAuthenticated(
     Future<Result<void, ExchangeFailure>> Function() operation,
   );
+
+  /// Decides whether a trading route may open now. A signed-in session waits
+  /// for queued reconciliation before it is trusted.
+  @useResult
+  Future<Result<ExchangeAvailability, ExchangeFailure>> tradingAvailability();
   @useResult
   Future<Result<void, ExchangeFailure>> expireSession({
     required int epoch,
@@ -341,6 +347,33 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
       }
       return const Err(ExchangeNotAuthenticatedFailure());
     });
+  }
+
+  @override
+  Future<Result<ExchangeAvailability, ExchangeFailure>>
+  tradingAvailability() async {
+    try {
+      final availability = ExchangeAvailability.resolve(
+        platformAllowed: await _platformAllowed(),
+        access: _current,
+      );
+      if (availability == ExchangeAvailability.ready) {
+        // Reconciliation uses the same queue. A displayed session is not
+        // permission to trade before the active environment has been read.
+        final settled = await runAuthenticated(() async => const Ok(null));
+        if (settled case Err(:final failure)) {
+          if (failure is! ExchangeNotAuthenticatedFailure) return Err(failure);
+        }
+      }
+      return Ok(
+        ExchangeAvailability.resolve(
+          platformAllowed: await _platformAllowed(),
+          access: _current,
+        ),
+      );
+    } on Exception {
+      return const Err(ExchangeAccountUnavailableFailure());
+    }
   }
 
   @override

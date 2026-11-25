@@ -1579,5 +1579,8 @@
   "exchangeGoToWebsiteButton": "Bull Bitcoin exchange website par jao",
   "@exchangeGoToWebsiteButton": {
     "description": "Button label for navigating to the Bull Bitcoin exchange website"
-  }
+  },
+  "exchangeErrorSigningOut": "Aap poori tarah sign out nahin ho sake. Kripya dobara koshish karein.",
+  "exchangeErrorLoadingAnnouncements": "Announcements load nahin ho sake.",
+  "exchangeErrorRequestingAccountDeletion": "Aapka account delete karne ka request nahin bheja ja saka. Kripya dobara koshish karein."
 }
