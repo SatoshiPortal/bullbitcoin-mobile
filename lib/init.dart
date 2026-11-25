@@ -85,13 +85,12 @@ class Bull {
       case Err(:final failure):
         return Err(failure);
     }
-    await Report.init(
-      dsn: 'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1',
-      wizardConsent: consent,
-    );
+    const reportingDsn =
+        'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
+    await Report.init(dsn: reportingDsn, wizardConsent: consent);
     try {
       await Statistics.instance.start(
-        dsn: const String.fromEnvironment('BULL_METRICS_DSN'),
+        dsn: reportingDsn,
         environment: const String.fromEnvironment(
           'BULL_METRICS_ENVIRONMENT',
           defaultValue: 'mainnet',
