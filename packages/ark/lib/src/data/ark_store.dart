@@ -187,6 +187,213 @@ final class ArkStore {
         : quoteFromJson(decodeMap(rows.single['value'] as String));
   }
 
+  /// The smoke wallet admits only one manually funded reserve. Reopening or
+  /// repricing the same exit cannot substitute a different payment.
+  bool bindInitialExitReserve({
+    required ArkQuote quote,
+    required String reserveAddress,
+    required ArkExitReserveFunding funding,
+  }) {
+    final destination = quote.destination;
+    if (quote.kind != ArkOperationKind.emergencyExit ||
+        quote.account.network != BitcoinNetwork.regtest ||
+        destination == null ||
+        reserveAddress.isEmpty ||
+        quote.selectedIds.isEmpty ||
+        funding.amount.value < quote.fee.value) {
+      throw const FormatException('Invalid exit reserve binding');
+    }
+    const key = 'initial-exit-reserve';
+    final ids = quote.selectedIds.toList()..sort();
+    final binding = <String, Object?>{
+      'account': quote.account.canonical,
+      'source': quote.chainSource.toString(),
+      'destination': destination,
+      'reserve': reserveAddress,
+      'ids': ids,
+      'txid': funding.txid,
+      'amount': funding.amount.toString(),
+    };
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      final existing = get(key);
+      if (existing != null && jsonEncode(existing) != jsonEncode(binding)) {
+        _db.execute('ROLLBACK');
+        return false;
+      }
+      if (existing == null) put(key, binding);
+      _db.execute('COMMIT');
+      return true;
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
+  /// Returns only the funding bound to this exact exit scope and destination.
+  ({ArkExitReserveFunding funding, String address})? initialExitReserve(
+    ArkQuote quote,
+  ) {
+    final binding = get('initial-exit-reserve');
+    final destination = quote.destination;
+    final ids = quote.selectedIds.toList()..sort();
+    if (binding == null ||
+        quote.kind != ArkOperationKind.emergencyExit ||
+        quote.account.network != BitcoinNetwork.regtest ||
+        destination == null ||
+        binding['account'] != quote.account.canonical ||
+        binding['source'] != quote.chainSource.toString() ||
+        binding['destination'] != destination ||
+        jsonEncode(binding['ids']) != jsonEncode(ids)) {
+      return null;
+    }
+    final address = binding['reserve'];
+    final txid = binding['txid'];
+    final amount = binding['amount'];
+    if (address is! String || txid is! String || amount is! String) {
+      throw const FormatException('Invalid stored reserve funding');
+    }
+    final amountSats = Sats.tryParseBitcoin(amount, BitcoinUnit.sats);
+    if (amountSats == null || amountSats.value == BigInt.zero) {
+      throw const FormatException('Invalid stored reserve funding amount');
+    }
+    final funding = ArkExitReserveFunding(txid: txid, amount: amountSats);
+    if (funding.amount.value < quote.fee.value) return null;
+    return (funding: funding, address: address);
+  }
+
+  /// Commits a signed child and debits the absolute budget before delivery.
+  /// An ambiguous delivery keeps its debit; an identical retry is free.
+  bool admitExitCpfp({
+    required String exitOperationId,
+    required String vtxoId,
+    required String parentTxid,
+    required String childTxid,
+    required String raw,
+    required Sats fee,
+    required List<String> reserveInputs,
+  }) {
+    final txid = RegExp(r'^[0-9a-f]{64}$');
+    final hex = RegExp(r'^(?:[0-9a-f]{2})+$');
+    final outpoint = RegExp(r'^[0-9a-f]{64}:(?:0|[1-9][0-9]{0,9})$');
+    if (!txid.hasMatch(parentTxid) ||
+        !txid.hasMatch(childTxid) ||
+        parentTxid == childTxid ||
+        raw.length > 200000 ||
+        !hex.hasMatch(raw) ||
+        fee.value <= BigInt.zero ||
+        reserveInputs.isEmpty ||
+        reserveInputs.toSet().length != reserveInputs.length ||
+        reserveInputs.any((input) => !outpoint.hasMatch(input))) {
+      throw const FormatException('Invalid exit child evidence');
+    }
+    final inputs = reserveInputs.toList()..sort();
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      final admitted = operation(exitOperationId);
+      final binding = admitted?.binding;
+      final authorization = binding == null ? null : quote(binding);
+      final start = get('initial-exit-start');
+      if (start?['operation'] != exitOperationId ||
+          start?['quote'] != binding ||
+          admitted == null ||
+          admitted.operation.kind != ArkOperationKind.emergencyExit ||
+          !admitted.operation.actualIds.contains(vtxoId) ||
+          authorization == null ||
+          authorization.account.network != BitcoinNetwork.regtest ||
+          !authorization.selectedIds.contains(vtxoId) ||
+          !(admitted.operation.status == ArkOperationStatus.pending ||
+              admitted.operation.status == ArkOperationStatus.succeeded)) {
+        _db.execute('ROLLBACK');
+        return false;
+      }
+      const key = 'initial-exit-cpfp';
+      final journal = get(key) ?? {};
+      if (journal.isNotEmpty && journal['operation'] != exitOperationId) {
+        _db.execute('ROLLBACK');
+        return false;
+      }
+      final entries = (journal['children'] as Map<String, Object?>?) ?? {};
+      final evidence = {
+        'vtxo': vtxoId,
+        'txid': childTxid,
+        'raw': raw,
+        'fee': fee.value.toString(),
+        'inputs': inputs,
+      };
+      final existing = entries[parentTxid];
+      if (existing != null) {
+        _db.execute('COMMIT');
+        return jsonEncode(existing) == jsonEncode(evidence);
+      }
+      var spent = BigInt.zero;
+      for (final entry in entries.values.cast<Map<String, Object?>>()) {
+        spent += BigInt.parse(entry['fee'] as String);
+        if (entry['txid'] == childTxid ||
+            (entry['inputs'] as List<Object?>).any(inputs.contains)) {
+          _db.execute('ROLLBACK');
+          return false;
+        }
+      }
+      if (spent + fee.value > authorization.fee.value) {
+        _db.execute('ROLLBACK');
+        return false;
+      }
+      put(key, {
+        'operation': exitOperationId,
+        'children': {...entries, parentTxid: evidence},
+      });
+      _db.execute('COMMIT');
+      return true;
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
+  /// Progress can only reuse the bytes previously charged to this exit.
+  ({String txid, String raw, Sats fee})? exitCpfpEvidence({
+    required String exitOperationId,
+    required String parentTxid,
+  }) {
+    final evidence = _exitCpfpChildren(exitOperationId)[parentTxid];
+    if (evidence == null) return null;
+    if (evidence case {
+      'txid': final String txid,
+      'raw': final String raw,
+      'fee': final String sats,
+    }) {
+      final fee = Sats.tryParseBitcoin(sats, BitcoinUnit.sats);
+      if (fee != null && fee.value > BigInt.zero) {
+        return (txid: txid, raw: raw, fee: fee);
+      }
+    }
+    throw const FormatException('Invalid stored exit child evidence');
+  }
+
+  /// Journal order is delivery order, so a reserve parent is imported before
+  /// any later child that spends its change.
+  List<({String txid, String raw, Sats fee})> exitCpfpHistory(
+    String exitOperationId,
+  ) => [
+    for (final parent in _exitCpfpChildren(exitOperationId).keys)
+      ?exitCpfpEvidence(exitOperationId: exitOperationId, parentTxid: parent),
+  ];
+
+  Map<String, Object?> _exitCpfpChildren(String exitOperationId) {
+    final start = get('initial-exit-start');
+    final journal = get('initial-exit-cpfp');
+    if (start?['operation'] != exitOperationId ||
+        journal?['operation'] != exitOperationId) {
+      return const {};
+    }
+    final children = journal?['children'];
+    if (children is! Map<String, Object?>) {
+      throw const FormatException('Invalid stored exit child journal');
+    }
+    return children;
+  }
+
   ({ArkOperation operation, String binding, Map<String, Object?>? evidence})?
   operation(String id) {
     final rows = _db.select('SELECT * FROM operations WHERE id=?', [id]);
@@ -262,7 +469,11 @@ final class ArkStore {
   }
 
   /// Native execution is allowed only after both records commit together.
-  bool admitExit(ArkQuote authorization, ArkOperation admitted) {
+  bool admitExit(
+    ArkQuote authorization,
+    ArkOperation admitted, {
+    bool requireInitialReserve = false,
+  }) {
     final destination = authorization.destination;
     final maximum = authorization.maxClaimFee;
     final stored = quote(authorization.id);
@@ -282,6 +493,12 @@ final class ArkStore {
     }
     _db.execute('BEGIN IMMEDIATE');
     try {
+      if (requireInitialReserve &&
+          (initialExitReserve(authorization) == null ||
+              get('initial-exit-start') != null)) {
+        _db.execute('ROLLBACK');
+        return false;
+      }
       if (!createClaimAuthority(
         admitted.id,
         authorization.selectedIds,
@@ -290,6 +507,12 @@ final class ArkStore {
       )) {
         _db.execute('ROLLBACK');
         return false;
+      }
+      if (requireInitialReserve) {
+        put('initial-exit-start', {
+          'operation': admitted.id,
+          'quote': authorization.id,
+        });
       }
       saveOperation(admitted, authorization.id);
       _db.execute('COMMIT');

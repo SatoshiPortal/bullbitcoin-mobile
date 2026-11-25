@@ -23,40 +23,44 @@ import 'ark_information_widget_test.dart' show app;
 import 'ark_operations_test.dart' show account, Preferences;
 import 'fake_ark_client.dart';
 
-ArkSnapshot inventory({bool stale = false, bool complete = true}) =>
-    ArkSnapshot(
-      account: account(),
-      revision: 1,
-      observedAt: DateTime.utc(2026),
-      stale: stale,
-      tipHeight: 100,
-      recovery: ArkRecoveryStatus.complete,
-      exits: ArkExitStatus.none,
-      vtxoCompleteness: complete
-          ? ArkSectionCompleteness.complete
-          : ArkSectionCompleteness.unknown,
-      vtxos: [
-        ArkVtxo(
-          id: 'selected',
-          amount: Sats.fromInt(1000),
-          expiryHeight: 200,
-          state: ArkVtxoState.spendable,
-        ),
-        ArkVtxo(
-          id: 'locked',
-          amount: Sats.fromInt(1000),
-          expiryHeight: 200,
-          state: ArkVtxoState.locked,
-        ),
-      ],
-      exitDetails: [
-        ArkExit(
-          id: 'claimable',
-          amount: Sats.fromInt(1000),
-          status: ArkExitStatus.claimable,
-        ),
-      ],
-    );
+ArkSnapshot inventory({
+  bool stale = false,
+  bool complete = true,
+  List<ArkOperation> operations = const [],
+}) => ArkSnapshot(
+  account: account(),
+  revision: 1,
+  observedAt: DateTime.utc(2026),
+  stale: stale,
+  tipHeight: 100,
+  recovery: ArkRecoveryStatus.complete,
+  exits: ArkExitStatus.none,
+  operations: operations,
+  vtxoCompleteness: complete
+      ? ArkSectionCompleteness.complete
+      : ArkSectionCompleteness.unknown,
+  vtxos: [
+    ArkVtxo(
+      id: 'selected',
+      amount: Sats.fromInt(1000),
+      expiryHeight: 200,
+      state: ArkVtxoState.spendable,
+    ),
+    ArkVtxo(
+      id: 'locked',
+      amount: Sats.fromInt(1000),
+      expiryHeight: 200,
+      state: ArkVtxoState.locked,
+    ),
+  ],
+  exitDetails: [
+    ArkExit(
+      id: 'claimable',
+      amount: Sats.fromInt(1000),
+      status: ArkExitStatus.claimable,
+    ),
+  ],
+);
 
 /// Answers every exit request with a quote for exactly that request: 300 sats
 /// to broadcast, 40 to claim, from 1,000 sats per VTXO.
@@ -143,12 +147,17 @@ ArkExitRequestScreen exitScreen(
   ArkSnapshot? snapshot,
   Future<Result<String, ArkFailure>> Function()? secureBitcoinAddress = secure,
   List<ArkExitOutcome>? started,
+  Future<Result<ArkExitReserveFunding, ArkFailure>> Function(ArkQuote)?
+  fundFees,
+  Future<Result<String?, ArkFailure>> Function(List<String>)? savedDestination,
 }) => ArkExitRequestScreen(
   snapshot: snapshot ?? inventory(),
   onReview: (_) => fail('An exit never opens the claim review'),
   quote: quotes(client),
   secureBitcoinAddress: secureBitcoinAddress,
   onStarted: started?.add,
+  fundFees: fundFees,
+  savedDestination: savedDestination,
 );
 
 BullButton review(WidgetTester tester) =>
@@ -192,6 +201,94 @@ Future<void> fill(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('a stale inventory can price an individually finalized board', (
+    tester,
+  ) async {
+    final client = ExitClient();
+    final board = ArkOperation(
+      id: 'finalized-board',
+      kind: ArkOperationKind.board,
+      status: ArkOperationStatus.succeeded,
+      chainSource: Uri.parse('http://localhost:3000'),
+      configGeneration: 1,
+      actualIds: ['selected'],
+      boardFunding: ArkBoardFundingDetails.scuttle(
+        address: 'board-address',
+        token: 'board-token',
+        expiryHeight: 200,
+      ),
+    );
+    await tester.pumpWidget(
+      app(
+        exitScreen(
+          client,
+          snapshot: inventory(stale: true, operations: [board]),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(client.requests.single.ids, ['selected']);
+    await openSheet(tester);
+    expect(client.requests.last.destination, secureAddress);
+  });
+
+  testWidgets('restores the funded exit destination on reopen', (tester) async {
+    final client = ExitClient();
+    const destination = 'bcrt1-existing-destination';
+    await tester.pumpWidget(
+      app(
+        exitScreen(
+          client,
+          savedDestination: (ids) async {
+            expect(ids, ['selected']);
+            return const Ok(destination);
+          },
+          secureBitcoinAddress: () async {
+            fail('An existing exit already has a destination');
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await openSheet(tester);
+    expect(client.requests.last.destination, destination);
+    final input = tester.widget<BullInputText>(find.byType(BullInputText));
+    expect(input.value, destination);
+    expect(input.disabled, isTrue);
+  });
+
+  testWidgets('waits for reserve confirmation and requotes the reviewed exit', (
+    tester,
+  ) async {
+    final client = ExitClient();
+    final funding = ArkExitReserveFunding(
+      txid: 'f' * 64,
+      amount: Sats.fromInt(1000),
+    );
+    var confirmed = false;
+    await tester.pumpWidget(
+      app(
+        exitScreen(
+          client,
+          fundFees: (_) async =>
+              confirmed ? Ok(funding) : const Err(ArkOperationBusyFailure()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await openSheet(tester);
+    await hold(tester);
+    expect(client.submits, isEmpty);
+    expect(client.requests.last.reserveFunding, isNull);
+
+    confirmed = true;
+    await hold(tester);
+    expect(client.requests.last.reserveFunding, same(funding));
+    expect(client.requests.last.destination, secureAddress);
+    expect(client.requests.last.ids, ['selected']);
+    expect(client.submits, ['submit']);
+  });
+
   testWidgets('the choose screen shows the automatic exit estimate', (
     tester,
   ) async {

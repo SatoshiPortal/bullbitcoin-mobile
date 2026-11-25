@@ -236,6 +236,12 @@ Map<String, Object?> quoteToJson(ArkQuote q) => {
   'exposure': q.confirmedReserveExposure?.toString(),
   'maxClaim': q.maxClaimFee?.toString(),
   'claimFee': q.claimFee?.toString(),
+  if (q.boardEvidence case final evidence?)
+    'boardEvidence': {
+      'serverKey': evidence.serverKey,
+      'tipHash': evidence.tipHash,
+      'confirmations': evidence.requiredConfirmations,
+    },
 };
 ArkQuote quoteFromJson(Map<String, Object?> m) => _decode(
   () => ArkQuote(
@@ -260,8 +266,19 @@ ArkQuote quoteFromJson(Map<String, Object?> m) => _decode(
     confirmedReserveExposure: nullableSats(m['exposure']),
     maxClaimFee: nullableSats(m['maxClaim']),
     claimFee: nullableSats(m['claimFee']),
+    boardEvidence: switch (m['boardEvidence']) {
+      final raw? => _boardQuoteEvidence(mapValue(raw)),
+      null => null,
+    },
   ),
 );
+ArkBoardQuoteEvidence _boardQuoteEvidence(Map<String, Object?> m) =>
+    ArkBoardQuoteEvidence(
+      serverKey: m['serverKey'] as String,
+      tipHash: m['tipHash'] as String,
+      requiredConfirmations: m['confirmations'] as int,
+    );
+
 Map<String, Object?> operationToJson(ArkOperation o) => {
   'id': o.id,
   'kind': o.kind.name,
@@ -283,7 +300,8 @@ Map<String, Object?> operationToJson(ArkOperation o) => {
   'funding': switch (o.boardFunding) {
     final f? => {
       'address': f.address,
-      'index': f.keypairIndex,
+      'index': ?f.keypairIndex,
+      'scuttleToken': ?f.scuttleToken,
       'expiry': f.expiryHeight,
     },
     null => null,
@@ -316,11 +334,19 @@ ArkClaimRecovery _claimRecovery(Map<String, Object?> m) => ArkClaimRecovery(
   fee: sats(m['fee']),
 );
 ArkBoardFundingDetails _funding(Map<String, Object?> m) =>
-    ArkBoardFundingDetails(
-      address: m['address'] as String,
-      keypairIndex: m['index'] as int,
-      expiryHeight: m['expiry'] as int,
-    );
+    switch ((m.containsKey('index'), m.containsKey('scuttleToken'))) {
+      (true, false) => ArkBoardFundingDetails(
+        address: m['address'] as String,
+        keypairIndex: m['index'] as int,
+        expiryHeight: m['expiry'] as int,
+      ),
+      (false, true) => ArkBoardFundingDetails.scuttle(
+        address: m['address'] as String,
+        token: m['scuttleToken'] as String,
+        expiryHeight: m['expiry'] as int,
+      ),
+      _ => throw const FormatException('Invalid board funding identity'),
+    };
 
 T _decode<T>(T Function() action) {
   try {
