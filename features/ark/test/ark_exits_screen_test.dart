@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/ui/ark_exit_steps.dart';
 import 'package:bull_ark/src/ui/ark_exits_screen.dart';
@@ -7,6 +9,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullDetailsTable,
         BullDetailsTableItem,
         BullBadge,
+        BullPaymentTransition,
+        BullPaymentViewSwitch,
         BullRefreshIndicator,
         SizedBox,
         ValueKey,
@@ -64,12 +68,22 @@ class Harness {
   int exits = 0, sends = 0;
   final bool withSend;
   final Sats? waitingForFunds;
-  Harness(this.snapshot, {this.withSend = false, this.waitingForFunds});
+
+  /// The payment animation preference; the tests of the page keep it off.
+  final Future<bool> Function()? readAnimations;
+  Harness(
+    this.snapshot, {
+    this.withSend = false,
+    this.waitingForFunds,
+    this.readAnimations = _off,
+  });
+  static Future<bool> _off() async => false;
   ArkExitsScreen get screen => ArkExitsScreen(
     snapshot: snapshot,
     onReviewExit: () => exits++,
     onSendOnChain: withSend ? () => sends++ : null,
     waitingForFunds: waitingForFunds,
+    readPaymentAnimations: readAnimations,
   );
   bool get untouched => exits == 0;
 }
@@ -581,6 +595,128 @@ void main() {
         findsOneWidget,
       );
     }
+  });
+  group('payment animation view', () {
+    Harness animated(ArkExitStatus status, {Future<bool> Function()? read}) =>
+        Harness(
+          view(rows: [exitRow(status: status)]),
+          readAnimations: read,
+        );
+
+    testWidgets('opens on the full-screen status, details one tap away', (
+      tester,
+    ) async {
+      final h = animated(ArkExitStatus.pending);
+      await tester.pumpWidget(app(h.screen));
+      await tester.pump();
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      expect(find.byType(BullPaymentViewSwitch), findsOneWidget);
+      expect(find.byType(ArkExitSteps), findsNothing);
+      expect(find.text('Done'), findsNothing);
+
+      await tester.tap(find.text('Details'));
+      await tester.pump();
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      expect(find.byType(ArkExitSteps), findsOneWidget);
+      expect(find.text('Done'), findsOneWidget);
+      // The embedded banner is gone: the animation only has its own view.
+      expect(find.byType(BullPaymentViewSwitch), findsOneWidget);
+
+      await tester.tap(find.text('Status'));
+      await tester.pump();
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      expect(find.byType(ArkExitSteps), findsNothing);
+    });
+
+    testWidgets('a failed exit has an animation phase, so it has both views', (
+      tester,
+    ) async {
+      final h = animated(ArkExitStatus.failed);
+      await tester.pumpWidget(app(h.screen));
+      await tester.pump();
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      expect(find.byType(BullPaymentViewSwitch), findsOneWidget);
+    });
+
+    testWidgets('an unknown exit shows its details alone', (tester) async {
+      final h = animated(ArkExitStatus.unknown);
+      await tester.pumpWidget(app(h.screen));
+      await tester.pump();
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      expect(find.byType(BullPaymentViewSwitch), findsNothing);
+      expect(find.text('Done'), findsOneWidget);
+    });
+
+    testWidgets('animations off shows the details alone', (tester) async {
+      final h = animated(ArkExitStatus.pending, read: () async => false);
+      await tester.pumpWidget(app(h.screen));
+      await tester.pump();
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      expect(find.byType(BullPaymentViewSwitch), findsNothing);
+      expect(find.byType(ArkExitSteps), findsOneWidget);
+    });
+
+    testWidgets('an unread preference shows details, then the status', (
+      tester,
+    ) async {
+      final read = Completer<bool>();
+      final h = animated(ArkExitStatus.pending, read: () => read.future);
+      await tester.pumpWidget(app(h.screen));
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      expect(find.byType(BullPaymentViewSwitch), findsNothing);
+      expect(find.byType(ArkExitSteps), findsOneWidget);
+
+      read.complete(true);
+      await tester.pump();
+      await tester.pump();
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      expect(find.byType(BullPaymentViewSwitch), findsOneWidget);
+    });
+
+    testWidgets('a failing preference read keeps animations on', (
+      tester,
+    ) async {
+      final h = animated(
+        ArkExitStatus.pending,
+        read: () async => throw StateError('unreadable'),
+      );
+      await tester.pumpWidget(app(h.screen));
+      await tester.pump();
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+    });
+
+    testWidgets('back closes the detail once, from either view', (
+      tester,
+    ) async {
+      final h = animated(ArkExitStatus.pending);
+      await tester.pumpWidget(app(h.screen));
+      await tester.pump();
+
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      expect(find.text('Start emergency exit'), findsOneWidget);
+
+      await openDetail(tester);
+      await tester.tap(find.text('Details'));
+      await tester.pump();
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(find.byType(ArkExitSteps), findsNothing);
+      expect(find.text('Start emergency exit'), findsOneWidget);
+      // Reopened, the exit opens on its status again.
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      expect(h.untouched, true);
+    });
   });
   testWidgets('claimed exit offers Done back to the list', (tester) async {
     final h = Harness(view(rows: [exitRow(status: ArkExitStatus.claimed)]));
