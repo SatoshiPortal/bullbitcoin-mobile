@@ -43,6 +43,19 @@ void main() {
   ) async =>
       ok(await store.recordBackground(Observation(topic, ids), aggregate));
 
+  test('reserved IDs remain distinct from outbox IDs across reopen', () async {
+    final first = ok(await store.reservePlatformId());
+    ok(await store.recordForeground(Observation('wallet', [])));
+    await background('wallet', ['payment']);
+    final claim = ok(await store.claimNext());
+    expect(claim, isNotNull);
+    expect(claim?.platformId, isNot(first));
+    await store.close();
+    store = ok(SqliteNotificationStoreRepository.openForeground(path));
+    final later = ok(await store.reservePlatformId());
+    expect(later, isNot(anyOf(first, claim?.platformId)));
+  });
+
   test('an empty wallet seen in the foreground is a baseline', () async {
     expect(
       await background('wallet', ['first']),
