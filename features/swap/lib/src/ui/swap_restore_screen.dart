@@ -1,9 +1,11 @@
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
-import 'package:settings/settings.dart';
+
+import '../swap_l10n.dart';
+import '../presentation/swap_restore_cubit.dart';
+import '../presentation/swaps_failure_l10n.dart';
+import '../swap_feature.dart';
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -208,8 +210,7 @@ class _SwapRow extends StatelessWidget {
     return GestureDetector(
       // Make the whole row tappable, not just its painted children.
       behavior: HitTestBehavior.opaque,
-      onTap: () =>
-          context.pushNamed(SettingsRoute.swapRescue.name, extra: restorable),
+      onTap: () => SwapNavigation.openRescue(context, restorable),
       child: row,
     );
   }

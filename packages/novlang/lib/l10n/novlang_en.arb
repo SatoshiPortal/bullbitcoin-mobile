@@ -1,11 +1,11 @@
 {
   "@@locale": "en",
-  "app__swapRestoreTitle_apple": "Transfer restore",
-  "@app__swapRestoreTitle_apple": {
+  "swap__swapRestoreTitle_apple": "Transfer restore",
+  "@swap__swapRestoreTitle_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRestoreTitle."
   },
-  "app__swapRestoreActionable_apple": "{count, plural, =0{No transfers to recover} =1{You can attempt recovering 1 transfer. It may already be in a terminal status.} other{You can attempt recovering {count} transfers. Note, some of them may already be in a terminal status.}}",
-  "@app__swapRestoreActionable_apple": {
+  "swap__swapRestoreActionable_apple": "{count, plural, =0{No transfers to recover} =1{You can attempt recovering 1 transfer. It may already be in a terminal status.} other{You can attempt recovering {count} transfers. Note, some of them may already be in a terminal status.}}",
+  "@swap__swapRestoreActionable_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRestoreActionable.",
     "placeholders": {
       "count": {
@@ -13,28 +13,28 @@
       }
     }
   },
-  "app__swapRestoreNoSwaps_apple": "No transfers found to restore",
-  "@app__swapRestoreNoSwaps_apple": {
+  "swap__swapRestoreNoSwaps_apple": "No transfers found to restore",
+  "@swap__swapRestoreNoSwaps_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRestoreNoSwaps."
   },
-  "app__swapRestoreAllSection_apple": "All transfers",
-  "@app__swapRestoreAllSection_apple": {
+  "swap__swapRestoreAllSection_apple": "All transfers",
+  "@swap__swapRestoreAllSection_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRestoreAllSection."
   },
-  "app__swapRestoreFailed_apple": "Couldn't restore transfers",
-  "@app__swapRestoreFailed_apple": {
+  "swap__swapRestoreFailed_apple": "Couldn't restore transfers",
+  "@swap__swapRestoreFailed_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRestoreFailed."
   },
-  "app__swapRescueTitle_apple": "Rescue transfer",
-  "@app__swapRescueTitle_apple": {
+  "swap__swapRescueTitle_apple": "Rescue transfer",
+  "@swap__swapRescueTitle_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRescueTitle."
   },
-  "app__swapRescueIdLabel_apple": "Transfer ID",
-  "@app__swapRescueIdLabel_apple": {
+  "swap__swapRescueIdLabel_apple": "Transfer ID",
+  "@swap__swapRescueIdLabel_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRescueIdLabel."
   },
-  "app__swapRescueSuccess_apple": "Transfer restored — it will now resume",
-  "@app__swapRescueSuccess_apple": {
+  "swap__swapRescueSuccess_apple": "Transfer restored — it will now resume",
+  "@swap__swapRescueSuccess_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapRescueSuccess."
   },
   "app__coreSwapsLnReceivePending_apple": "Transfer is not yet initialized.",
