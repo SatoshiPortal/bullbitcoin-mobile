@@ -15,6 +15,8 @@ import 'package:swaps/order_swaps.dart';
 import 'package:swap_feature/src/ui/swap_router.dart';
 import 'package:swap_feature/src/ui/swap_transition_policy.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/transactions.dart'
+    show SettlementPoll, SettlementSyncPoller;
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBottomSheet,
@@ -31,7 +33,10 @@ import 'package:bull_ui/bull_ui.dart'
         Gap;
 
 class SwapConfirmPage extends StatefulWidget {
-  const SwapConfirmPage({super.key});
+  const SwapConfirmPage({super.key, this.poll});
+
+  /// Refreshes the receiving wallet; no polling when absent.
+  final SettlementPoll? poll;
 
   @override
   State<SwapConfirmPage> createState() => _SwapConfirmPageState();
@@ -204,7 +209,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
             (state.orderSwap?.localStatus ==
                     OrderSwapLocalStatus.broadcastUnknown &&
                 !canRetryRejectedPayin));
-    return BlocListener<TransferBloc, TransferState>(
+    final confirmPage = BlocListener<TransferBloc, TransferState>(
       listenWhen: (previous, current) =>
           previous.isConfirming && !current.isConfirming,
       listener: (context, state) {
@@ -563,6 +568,21 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
           ],
         ),
       ),
+    );
+    final poll = widget.poll;
+    if (poll == null) return confirmPage;
+    final receiveTxId = currentSwap?.receiveTxid;
+    final receiveTransaction = state.receiveTransaction;
+    return SettlementSyncPoller(
+      walletId: currentSwap?.receiveWalletId,
+      active:
+          _showTransition &&
+          (receiveTxId?.isNotEmpty ?? false) &&
+          !(receiveTransaction?.txId == receiveTxId &&
+              receiveTransaction?.isConfirmed == true),
+      isLiquid: currentSwap?.type == SwapType.bitcoinToLiquid,
+      poll: poll,
+      child: confirmPage,
     );
   }
 }

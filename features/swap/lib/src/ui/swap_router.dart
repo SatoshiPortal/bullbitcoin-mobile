@@ -6,6 +6,7 @@ import 'package:swap_feature/src/ui/pages/swap_confirm_page.dart';
 import 'package:swap_feature/src/ui/pages/swap_in_progress_page.dart';
 import 'package:swap_feature/src/ui/pages/internal_transfer_page.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/transactions.dart' show SettlementPoll;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,6 +33,7 @@ class SwapRouter {
   static GoRoute route({
     required TransferBloc Function() createTransfer,
     required InternalArkTransferCubit Function() createArk,
+    required SettlementPoll pollSettlement,
   }) => GoRoute(
     name: TransferRoute.swap.name,
     path: TransferRoute.swap.path,
@@ -80,7 +82,7 @@ class SwapRouter {
                   );
                 }
               },
-              child: const SwapConfirmPage(),
+              child: SwapConfirmPage(poll: pollSettlement),
             ),
           );
         },

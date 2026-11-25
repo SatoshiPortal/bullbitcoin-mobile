@@ -582,6 +582,8 @@ class AppLocator {
         receive: locator<Receive>(),
         labels: locator<Labels>(),
         transactions: locator<Transactions>(),
+        pollSettlement: (id, {required isActive}) =>
+            overviewSync().coordinator.pollWallet(id, isActive: isActive),
         scheduler: () => locator<SwapSyncPort>(),
         ark: () => locator.isRegistered<ArkTransferFacade>()
             ? locator<ArkTransferFacade>()

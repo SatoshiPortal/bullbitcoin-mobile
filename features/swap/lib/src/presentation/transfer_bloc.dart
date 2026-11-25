@@ -33,8 +33,9 @@ import 'package:fees/fees.dart';
 import 'package:swap_feature/src/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:transactions/transactions.dart'
-    show Transactions, WalletTransaction, $WalletTransactionCopyWith;
+    show WalletTransaction, $WalletTransactionCopyWith;
 import 'package:swap_feature/src/domain/usecases/verify_transfer_lockup_usecase.dart';
+import 'package:swap_feature/src/domain/usecases/watch_transfer_settlement_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:swap_feature/src/domain/entities/swap_wallet.dart';
@@ -83,7 +84,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._recordPendingSwapLockupUsecase,
     required this._dropPendingSwapLockupUsecase,
     required this._watchSwapUsecase,
-    required this._transactions,
+    required this._watchSettlement,
   }) : super(const TransferState()) {
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
@@ -189,7 +190,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final DropPendingSwapLockupUsecase _dropPendingSwapLockupUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   StreamSubscription<Swap>? _boltzSwapSubscription;
-  final Transactions _transactions;
+  final WatchTransferSettlementUsecase _watchSettlement;
   StreamSubscription<WalletTransaction>? _receiveSubscription;
   String? _watchedReceiveTxId;
   int _transactionGeneration = 0;
@@ -3033,8 +3034,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
     _watchedReceiveTxId = txId;
     _receiveSubscription?.cancel();
-    _receiveSubscription = _transactions
-        .watchWalletTransactionByTxId(walletId: walletId, txId: txId)
+    _receiveSubscription = _watchSettlement
+        .execute(walletId: walletId, txId: txId)
         .listen((transaction) {
           if (isClosed) return;
           add(TransferEvent.receiveTransactionUpdated(transaction));
