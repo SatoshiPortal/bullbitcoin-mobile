@@ -32,6 +32,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullPaymentTransition,
         BullPaymentViewSwitch,
+        BullPaymentViews,
         BullShimmerLine,
         BullSnackBar,
         BullTransactionDetailsPage,
@@ -161,45 +162,47 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) closeScreen();
         },
-        child: IndexedStack(
-          sizing: StackFit.expand,
-          index: view == TransactionDetailsView.status ? 0 : 1,
-          children: [
-            // A hidden view must not tick: its scene stops animating.
-            TickerMode(
-              enabled: view == TransactionDetailsView.status,
-              child: animation == null || !_statusBuilt
-                  ? const SizedBox.shrink()
-                  : SettlementSyncPoller(
-                      walletId: target?.walletId,
-                      active:
-                          view == TransactionDetailsView.status &&
-                          statusState.settlementPending,
-                      isLiquid: target?.isLiquid ?? false,
-                      poll: widget.pollSettlement,
-                      child: BullPaymentTransition(
-                        network: animation.network,
-                        direction: animation.direction,
-                        phase: animation.phase,
-                        progress: animation.progress,
-                        status: animation.status,
-                        statusTag: animation.status,
-                        bottom: switcher,
-                        onBack: closeScreen,
-                        onDone: () {},
+        child: BullPaymentViews(
+          showingStatus: view == TransactionDetailsView.status,
+          switcher: switcher,
+          views: IndexedStack(
+            sizing: StackFit.expand,
+            index: view == TransactionDetailsView.status ? 0 : 1,
+            children: [
+              // A hidden view must not tick: its scene stops animating.
+              TickerMode(
+                enabled: view == TransactionDetailsView.status,
+                child: animation == null || !_statusBuilt
+                    ? const SizedBox.shrink()
+                    : SettlementSyncPoller(
+                        walletId: target?.walletId,
+                        active:
+                            view == TransactionDetailsView.status &&
+                            statusState.settlementPending,
+                        isLiquid: target?.isLiquid ?? false,
+                        poll: widget.pollSettlement,
+                        child: BullPaymentTransition(
+                          network: animation.network,
+                          direction: animation.direction,
+                          phase: animation.phase,
+                          progress: animation.progress,
+                          status: animation.status,
+                          statusTag: animation.status,
+                          onBack: closeScreen,
+                          onDone: () {},
+                        ),
                       ),
-                    ),
-            ),
-            TickerMode(
-              enabled: view == TransactionDetailsView.details,
-              child: _details(
-                context,
-                closeScreen: closeScreen,
-                canPopBack: canPopBack,
-                switcher: switcher,
               ),
-            ),
-          ],
+              TickerMode(
+                enabled: view == TransactionDetailsView.details,
+                child: _details(
+                  context,
+                  closeScreen: closeScreen,
+                  canPopBack: canPopBack,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -209,7 +212,6 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     BuildContext context, {
     required VoidCallback closeScreen,
     required bool canPopBack,
-    required Widget? switcher,
   }) {
     final actions = widget.actions;
     final isLoading = context.select(
@@ -357,7 +359,6 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
               actions.accelerateWalletTransaction(context, walletTransaction);
             },
           ),
-        ?switcher,
       ],
     );
   }
