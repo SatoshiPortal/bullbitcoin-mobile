@@ -39,6 +39,8 @@ sealed class TransferState with _$TransferState {
     SwapFailure? swapFailure,
     ChainSwap? swap,
     OrderSwapRecord? orderSwap,
+    // The swap's claim or payout transaction as the receiving wallet sees it.
+    WalletTransaction? receiveTransaction,
     @Default('') String signedPsbt,
     int? bitcoinAbsoluteFeesSat,
     int? liquidAbsoluteFeesSat,

@@ -181,6 +181,7 @@ abstract interface class SwapFeature implements SwapActivity {
           recordPendingSwapLockupUsecase: recordPending,
           dropPendingSwapLockupUsecase: dropPending,
           watchSwapUsecase: WatchSwapUsecase(swaps.store),
+          transactions: transactions,
         ),
         createArk: () => InternalArkTransferCubit(
           loadArk,
