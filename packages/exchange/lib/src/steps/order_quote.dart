@@ -184,7 +184,8 @@ final class OrderVerifying<R, O> extends OrderStepState<R, O> {
   String toString() => 'OrderVerifying($request, $attempt)';
 }
 
-/// The re-read failed; Retry reads again (never creates again).
+/// The re-read failed or found no matching order; Retry reads again (never
+/// creates again).
 final class OrderUnverified<R, O> extends OrderStepState<R, O> {
   final R request;
   final int attempt;
@@ -315,7 +316,8 @@ final class OrderCreateAnswered<R, O> extends OrderStepEvent<R, O> {
 }
 
 /// The re-read after an unknown create of [attempt]: [ReadGot] is the
-/// matching order, [ReadMissing] means no order matches.
+/// matching order, [ReadMissing] means no order matched, which cannot prove
+/// the create did not happen.
 final class OrderFindAnswered<R, O> extends OrderStepEvent<R, O> {
   final int attempt;
   final ExchangeRead<O> read;
@@ -563,7 +565,7 @@ OrderStepNext<R, O> _found<R, O>(
 ) => switch (read) {
   ReadGot(:final value) => _held(policy, value),
   ReadMissing() => StepNext(
-    OrderCreateFailed<R, O>(request, attempt, const WriteProblemNotApplied()),
+    OrderUnverified<R, O>(request, attempt, const ReadProblemMissing()),
   ),
   ReadUnreachable() || ReadMalformed() => StepNext(
     OrderUnverified<R, O>(request, attempt, ReadProblem.of(read)!),

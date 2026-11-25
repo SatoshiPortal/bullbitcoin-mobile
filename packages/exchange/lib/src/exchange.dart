@@ -297,9 +297,14 @@ final class Exchange {
           try {
             final result = await operation(client);
             // A committed write remains successful even if the session
-            // changes before its response arrives.
+            // changes before its response arrives. An unknown recipient save
+            // also belongs to the session that sent it: it may have committed,
+            // so a session change must not turn it back into a retryable save.
             if (completionCheck == _CompletionCheck.write &&
-                result is Ok<T, ExchangeFailure>) {
+                (result is Ok<T, ExchangeFailure> ||
+                    (result is Err<T, ExchangeFailure> &&
+                        result.failure
+                            is RecipientsSaveOutcomeUnknownFailure))) {
               return result;
             }
             if (stale) return const Err(ExchangeOperationStaleFailure());
