@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:swaps/swaps.dart';
 import 'package:transactions/generated/l10n/transactions_localizations_en.dart';
+import 'package:transactions/generated/l10n/transactions_localizations_fr.dart';
 import 'package:transactions/testing.dart';
 
 import 'animation_fixtures.dart';
@@ -76,7 +77,13 @@ void main() {
         labels,
       )!;
       expect(pending.direction, BullPaymentDirection.incoming);
-      expect(pending.progress.steps, ['Detected', 'Confirmed']);
+      // The receive flow's own wording, so a status reads the same everywhere.
+      expect(pending.progress.steps, ['Payment detected', 'Confirmed']);
+      final fr = transactionPaymentAnimation(
+        state(Transaction(walletTransaction: walletTx('tx', incoming: true))),
+        TransactionsLocalizationsFr(),
+      )!;
+      expect(fr.progress.steps, ['Paiement détecté', 'Confirmé']);
       expect(pending.progress.completed, 0);
       expect(pending.phase, BullPaymentPhase.sending);
       final confirmed = transactionPaymentAnimation(
