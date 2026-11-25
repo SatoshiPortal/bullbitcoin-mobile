@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
 import 'package:bull_ui/testing.dart';
@@ -11,8 +11,6 @@ import 'package:fees_feature/fee_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sync/sync.dart' show BitcoinCoin, Keychain;
-
-import 'fake_address_viewer.dart';
 
 const _fees = FeeOptions(
   fastest: RelativeFee(2500),
@@ -40,16 +38,6 @@ const SpendOptionsLabels _labels = (
   feesUnavailable: 'Fees unavailable',
 );
 
-final ExchangePayinUi _ui = (
-  walletCards: (context, onSelected) => const SizedBox(),
-  addressViewer: fakeAddressViewer,
-  openWalletHome: (context) {},
-  openOrder: (context, orderId, {required returnToExchange}) {},
-  openPayjoinTransaction: (context, txid) {},
-  brandAsset: 'assets/none.png',
-  successAsset: 'assets/none.png',
-);
-
 Future<ExchangeLocalizations> _pump(
   WidgetTester tester,
   SpendOptionsState spend,
@@ -74,7 +62,6 @@ Future<ExchangeLocalizations> _pump(
             exchangeRate: 50000,
             fiatCurrency: 'CAD',
             onEvent: events.add,
-            ui: _ui,
           ),
         ),
       ),
@@ -184,7 +171,13 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    expect(find.text('tb1qcoin'), findsOneWidget);
+    final viewer = tester.widget<AddressViewer>(find.byType(AddressViewer));
+    expect(viewer.data, 'tb1qcoin');
+    expect(viewer.style, isNotNull);
+    expect(viewer.color, isNotNull);
+    final size = tester.getSize(find.byType(AddressViewer));
+    expect(size.width, greaterThanOrEqualTo(48));
+    expect(size.height, greaterThanOrEqualTo(48));
     await changes.close();
   });
 
