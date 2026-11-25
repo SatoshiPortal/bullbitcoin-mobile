@@ -15,6 +15,7 @@ import 'package:wizard/src/ui/widgets/welcome_bg_pattern.dart';
 import 'package:wizard/src/ui/widgets/welcome_step.dart';
 import 'package:wizard/src/ui/widgets/wizard_dots.dart';
 import 'package:wizard/src/ui/widgets/wizard_header.dart';
+import 'package:wizard/src/ui/widgets/wizard_network_control.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -33,11 +34,13 @@ class WizardScreen extends StatefulWidget {
     required this.exchangeAllowed,
     required this.backgroundTasksAvailable,
     required this.branding,
+    this.allowDeveloperNetwork = false,
     super.key,
   });
   final bool exchangeAllowed;
   final bool backgroundTasksAvailable;
   final WizardBranding branding;
+  final bool allowDeveloperNetwork;
 
   @override
   State<WizardScreen> createState() => _WizardScreenState();
@@ -197,7 +200,17 @@ class _WizardScreenState extends State<WizardScreen> {
                               onPageChanged: (i) =>
                                   setState(() => _page = _pages[i]),
                               children: [
-                                WelcomeStep(logo: widget.branding.welcomeLogo),
+                                WelcomeStep(
+                                  logo: widget.branding.welcomeLogo,
+                                  logoWidget: widget.allowDeveloperNetwork
+                                      ? WizardNetworkControl(
+                                          logo: widget.branding.welcomeLogo,
+                                          onChanged: (network) => bloc.add(
+                                            WizardEvent.networkPicked(network),
+                                          ),
+                                        )
+                                      : null,
+                                ),
                                 CustomizeStep(
                                   exchangeAccess: widget.exchangeAllowed
                                       ? c.exchangeAccess

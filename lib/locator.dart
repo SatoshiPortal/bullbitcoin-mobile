@@ -182,6 +182,11 @@ class AppLocator {
     String? arkFundingDatabasePath,
     bool initializeArkFunding = false,
     RegtestElectrumProfile? regtestProfile,
+    Future<Result<void, Failure>> Function(
+      Preferences,
+      ElectrumDefaultsProvisioner,
+    )?
+    prepareInitialNetwork,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
     locator.registerSingleton(
@@ -270,6 +275,19 @@ class AppLocator {
     if (openedPreferences case Err(:final failure)) return Err(failure);
     final preferences =
         (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
+    if (prepareInitialNetwork case final prepare?) {
+      var prepared = false;
+      try {
+        final result = await prepare(
+          preferences,
+          locator<ElectrumDefaultsProvisioner>(),
+        );
+        if (result case Err()) return result;
+        prepared = true;
+      } finally {
+        if (!prepared) await preferences.close();
+      }
+    }
     final repositories = await CoreLocator.registerRepositories(
       locator,
       preferences: preferences,
