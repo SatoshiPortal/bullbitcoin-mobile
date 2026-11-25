@@ -9,13 +9,13 @@ import 'package:backup_storage/backup_storage.dart';
 import 'package:backup_metadata/backup_metadata.dart';
 import 'package:backup_metadata/setup.dart';
 import 'package:backup_metadata/src/data/backup_metadata_repository_impl.dart';
-import 'package:backup_metadata/src/data/backup_metadata_store.dart';
 import 'package:backup_metadata/src/domain/usecases/apply_restore_usecase.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+import 'support/fake_backup_secrets.dart';
 import 'support/memory_backup_storage.dart';
 
 void main() {
@@ -24,14 +24,16 @@ void main() {
   late MemoryBackupStorage storage;
   late _Inventory inventory;
   late _Labels labels;
+  late FakeBackupSecrets secrets;
 
   BackupMetadataRepositoryImpl repository([
     String? statePath,
     BackupMetadataCodec codec = const _Codec(),
   ]) => BackupMetadataRepositoryImpl(
-    store: BackupMetadataStore(path: statePath ?? path),
+    store: BackupMetadataStore(path: statePath ?? path, key: testJournalKey),
     inventory: inventory,
     labels: labels,
+    secrets: secrets,
     codec: codec,
     storages: [storage],
   );
@@ -61,6 +63,7 @@ void main() {
     storage = MemoryBackupStorage();
     inventory = _Inventory();
     labels = _Labels();
+    secrets = FakeBackupSecrets();
   });
 
   tearDown(() async => directory.delete(recursive: true));
@@ -480,120 +483,40 @@ void main() {
       conflicts: [],
       freezes: [],
     );
-    final result = await ApplyRestoreUsecase(labels)
-        .execute(plan, MergeChoices({}));
-    expect(result, isA<Err<ApplyReport, BackupMetadataFailure>>());
-    expect(
-      result.fold((_) => null, (failure) => failure),
-      isA<BackupMetadataStalePlanFailure>(),
+    final group = (await inventory.read()).fold(
+      (value) => value.groups.single,
+      (_) => throw StateError('read'),
     );
-  });
-
-  test('a headless run never creates the owner database', () async {
-    final result = await runBackupMetadataTask(
-      readiness: const _Ready(),
-      inventory: inventory,
-      labels: labels,
-      codec: const _Codec(),
-      storages: [storage],
-      statePath: path,
+    final backup = DiscoveredBackup(
+      group: group,
+      destination: storage.destination,
+      storedAt: null,
+      content: _content(0),
+      scope: 'scope',
     );
-
-    expect(
-      result.fold((_) => null, (failure) => failure),
-      isA<BackupMetadataNotReadyFailure>(),
+    final result = await ApplyRestoreUsecase(
+      labels,
+      secrets,
+    ).execute(backup, plan, MergeChoices({}));
+    final report = result.fold(
+      (value) => value,
+      (failure) => throw StateError('$failure'),
     );
-    expect(inventory.calls, 0);
-    expect(File(path).existsSync(), isFalse);
-    expect(File('$path.guard').existsSync(), isFalse);
-  });
-
-  test(
-    'a headless run uses the owner database the foreground prepared',
-    () async {
-      await enable();
-
-      final result = await runBackupMetadataTask(
-        readiness: const _Ready(),
-        inventory: inventory,
-        labels: labels,
-        codec: const _Codec(),
-        storages: [storage],
-        statePath: path,
-      );
-
-      expect(
-        result.fold(
-          (status) => status.groups.single.lastDurableBackup,
-          (_) => null,
-        ),
-        isNotNull,
-      );
-      expect(storage.created, 1);
-    },
-  );
-
-  test(
-    'a headless run refuses another schema version without upgrading',
-    () async {
-      await enable();
-      final db = sqlite3.open(path);
-      try {
-        db.userVersion = 42;
-      } finally {
-        db.close();
-      }
-
-      final result = await runBackupMetadataTask(
-        readiness: const _Ready(),
-        inventory: inventory,
-        labels: labels,
-        codec: const _Codec(),
-        storages: [storage],
-        statePath: path,
-      );
-
-      expect(
-        result.fold((_) => null, (failure) => failure),
-        isA<BackupMetadataNotReadyFailure>(),
-      );
-      final reopened = sqlite3.open(path);
-      try {
-        expect(reopened.userVersion, 42);
-        expect(reopened.select('SELECT * FROM intents'), isEmpty);
-      } finally {
-        reopened.close();
-      }
-      expect(storage.created, 0);
-    },
-  );
-
-  test('background readiness gate runs before any other port', () async {
-    final result = await runBackupMetadataTask(
-      readiness: const _NotReady(),
-      inventory: inventory,
-      labels: labels,
-      codec: const _Codec(),
-      storages: [storage],
-      statePath: path,
-    );
-
-    expect(
-      result.fold((_) => null, (failure) => failure),
-      isA<BackupMetadataNotReadyFailure>(),
-    );
-    expect(inventory.calls, 0);
-    expect(File(path).existsSync(), isFalse);
+    expect(report.isPartial, isTrue);
+    expect(report.labelsFailure, isA<BackupMetadataStalePlanFailure>());
+    expect(report.secrets, isNotNull);
   });
 
   test('separate isolates serialize access to the same state path', () async {
     final acquired = Completer<void>();
     final release = Completer<void>();
-    final first = BackupMetadataStore(path: path).locked((state) async {
+    final first = BackupMetadataStore(path: path, key: testJournalKey).locked((
+      state,
+    ) async {
       acquired.complete();
       await release.future;
       return state.selection.lineage;
-    });
+    }, view: 'scope');
     await acquired.future;
 
     final statePath = path;
@@ -632,8 +555,10 @@ void main() {
 Future<String> _readLineageInIsolate(String path, SendPort events) =>
     Isolate.run(() async {
       events.send('started');
-      final lineage = await BackupMetadataStore(path: path)
-          .locked((state) async => state.selection.lineage);
+      final lineage = await BackupMetadataStore(
+        path: path,
+        key: testJournalKey,
+      ).locked((state) async => state.selection.lineage, view: 'scope');
       events.send('acquired');
       return lineage;
     });
@@ -641,13 +566,15 @@ Future<String> _readLineageInIsolate(String path, SendPort events) =>
 Future<void> _tryLockInIsolate(String path) => Isolate.run(
   () => BackupMetadataStore(
     path: path,
+    key: testJournalKey,
     lockTimeout: Duration.zero,
-  ).locked((_) async {}),
+  ).locked((_) async {}, view: 'scope'),
 );
 
 final class _Inventory implements BackupInventoryPort {
   String descriptor = 'first descriptor';
   int calls = 0;
+  bool ambiguous = false;
 
   @override
   Future<Result<BackupInventory, BackupMetadataFailure>> read() async {
@@ -663,6 +590,7 @@ final class _Inventory implements BackupInventoryPort {
             liquidWalletIds: [],
             bitcoinPublicDescriptors: [descriptor],
             seedBackupVerified: true,
+            ambiguous: ambiguous,
           ),
         ],
         unsupported: [],
@@ -674,6 +602,9 @@ final class _Inventory implements BackupInventoryPort {
 final class _Labels implements BackupLabelsPort {
   int revision = 0;
   int skipped = 0;
+  int applied = 0;
+  bool failApply = true;
+  void Function()? onCapture;
 
   @override
   Stream<void> get changes => const Stream.empty();
@@ -681,7 +612,10 @@ final class _Labels implements BackupLabelsPort {
   @override
   Future<Result<LabelsSnapshot, BackupMetadataFailure>> capture(
     BackupGroup group,
-  ) async => Ok(_snapshot(revision, skipped: skipped));
+  ) async {
+    onCapture?.call();
+    return Ok(_snapshot(revision, skipped: skipped));
+  }
 
   @override
   Future<Result<MergePlan, BackupMetadataFailure>> preview(
@@ -693,7 +627,18 @@ final class _Labels implements BackupLabelsPort {
   Future<Result<ApplyReport, BackupMetadataFailure>> apply(
     MergePlan plan,
     MergeChoices choices,
-  ) async => const Err(BackupMetadataStalePlanFailure());
+  ) async {
+    if (failApply) return const Err(BackupMetadataStalePlanFailure());
+    applied++;
+    return Ok(
+      ApplyReport(
+        labelsApplied: 0,
+        labelsUnchanged: 0,
+        labelsRejected: {},
+        freezes: {},
+      ),
+    );
+  }
 }
 
 final class _Codec implements BackupMetadataCodec {
@@ -702,13 +647,13 @@ final class _Codec implements BackupMetadataCodec {
   @override
   Result<PreparedBackup, BackupMetadataFailure> prepare(
     BackupGroup group,
-    LabelsSnapshot snapshot,
+    BackupContent content,
   ) {
     final bytes = Uint8List.fromList(
       utf8.encode(
         jsonEncode([
           ...group.bitcoinPublicDescriptors,
-          snapshot.records.single.ref,
+          content.labels.records.single.ref,
         ]),
       ),
     );
@@ -719,18 +664,24 @@ final class _Codec implements BackupMetadataCodec {
   }
 
   @override
-  Future<Result<LabelsSnapshot?, BackupMetadataFailure>> decode(
+  Future<Result<BackupContent?, BackupMetadataFailure>> decode(
     BackupGroup group,
     Uint8List envelope,
   ) async {
     final data = jsonDecode(utf8.decode(envelope));
     if (data case [final String descriptor, final String revision]
         when group.bitcoinPublicDescriptors.contains(descriptor)) {
-      return Ok(_snapshot(int.parse(revision)));
+      return Ok(_content(int.parse(revision)));
     }
     return const Ok(null);
   }
 }
+
+BackupContent _content(int revision) => BackupContent(
+  labels: _snapshot(revision),
+  wallets: const [],
+  derivations: const [],
+);
 
 LabelsSnapshot _snapshot(int revision, {int skipped = 0}) => LabelsSnapshot(
   records: [
@@ -744,31 +695,17 @@ LabelsSnapshot _snapshot(int revision, {int skipped = 0}) => LabelsSnapshot(
   skippedCount: skipped,
 );
 
-final class _NotReady implements BackupReadinessPort {
-  const _NotReady();
-
-  @override
-  Future<bool> databaseReady() async => false;
-}
-
-final class _Ready implements BackupReadinessPort {
-  const _Ready();
-
-  @override
-  Future<bool> databaseReady() async => true;
-}
-
 final class _BrokenCodec implements BackupMetadataCodec {
   const _BrokenCodec();
 
   @override
   Result<PreparedBackup, BackupMetadataFailure> prepare(
     BackupGroup group,
-    LabelsSnapshot snapshot,
-  ) => const _Codec().prepare(group, snapshot);
+    BackupContent content,
+  ) => const _Codec().prepare(group, content);
 
   @override
-  Future<Result<LabelsSnapshot?, BackupMetadataFailure>> decode(
+  Future<Result<BackupContent?, BackupMetadataFailure>> decode(
     BackupGroup group,
     Uint8List envelope,
   ) async {

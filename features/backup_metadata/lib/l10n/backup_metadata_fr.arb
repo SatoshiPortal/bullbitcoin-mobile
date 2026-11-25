@@ -61,6 +61,8 @@
   "failureNotReady": "Ouvrez BULL et réessayez une fois le démarrage terminé.",
   "failureStalePlan": "Vos libellés ont changé. Vérifiez à nouveau la sauvegarde avant de restaurer.",
   "failureTooLarge": "Cette sauvegarde est trop volumineuse.",
+  "failureScopeChanged": "La vue a changé pendant l'opération. Rien n'a été sauvegardé ni restauré.",
+  "failureIncompatible": "Cette sauvegarde ne correspond pas aux données de ce téléphone. Rien n'a été modifié pour cette partie.",
   "failureUnexpected": "Une erreur est survenue. Veuillez réessayer.",
   "privacyProvider": "Sans ces informations, {provider} ne peut pas l’ouvrir.",
   "backUpWallet": "Sauvegarder {wallet}",

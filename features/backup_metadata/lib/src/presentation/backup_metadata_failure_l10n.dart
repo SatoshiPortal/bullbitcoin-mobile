@@ -10,6 +10,8 @@ extension BackupMetadataFailureL10n on BackupMetadataFailure {
       BackupMetadataNotReadyFailure() => l10n.failureNotReady,
       BackupMetadataStalePlanFailure() => l10n.failureStalePlan,
       BackupMetadataTooLargeFailure() => l10n.failureTooLarge,
+      BackupMetadataScopeChangedFailure() => l10n.failureScopeChanged,
+      BackupMetadataIncompatibleFailure() => l10n.failureIncompatible,
       BackupMetadataUnexpectedFailure() => l10n.failureUnexpected,
     };
   }

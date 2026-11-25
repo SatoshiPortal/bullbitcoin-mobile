@@ -9,10 +9,12 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../domain/backup_metadata_failure.dart';
+import '../domain/entities/backup_content.dart';
 import '../domain/entities/backup_status.dart';
 import '../domain/entities/discovered_backup.dart';
 import '../domain/ports/backup_inventory_port.dart';
 import '../domain/ports/backup_labels_port.dart';
+import '../domain/ports/backup_secrets_port.dart';
 import '../domain/repositories/backup_metadata_codec.dart';
 import '../domain/repositories/backup_metadata_repository.dart';
 import 'backup_metadata_store.dart';
@@ -25,6 +27,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   final BackupMetadataStore _store;
   final BackupInventoryPort _inventory;
   final BackupLabelsPort _labels;
+  final BackupSecretsPort _secrets;
   final BackupMetadataCodec _codec;
   final Map<BackupDestination, BackupStorage> _storages;
 
@@ -32,6 +35,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     required this._store,
     required this._inventory,
     required this._labels,
+    required this._secrets,
     required this._codec,
     required Iterable<BackupStorage> storages,
   }) : _storages = {
@@ -48,7 +52,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
 
   Future<Result<BackupRunStatus, BackupMetadataFailure>> _inspect({
     required bool write,
-  }) => _locked((state) async {
+  }) => _locked((state, view) async {
     final inventory = _value(await _inventory.read());
     var selection = state.selection;
     final destination = selection.destination;
@@ -114,15 +118,23 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
               BackupActionReason.incompleteCapture,
             );
           }
-          final prepared = _value(_codec.prepare(group, captured));
+          final content = BackupContent(
+            labels: captured,
+            wallets: group.wallets,
+            derivations: _value(await _secrets.derivations(group)),
+          );
+          final prepared = _value(_codec.prepare(group, content));
           digest = prepared.digest;
           if (write && state.intent(scope) == null) {
+            await _requireView(view);
             final latest = state.verified(scope).firstOrNull;
             if (latest == null ||
                 latest.digest != digest ||
                 !await _canSkipWrite(scope, session, listed, latest)) {
+              await _requireView(view);
               await _create(state, scope, session, listed, prepared);
             }
+            await _requireView(view);
             durable = await _prune(state, scope, session, listed);
           }
         } on _OperationFailure catch (error) {
@@ -401,7 +413,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   @override
   Future<Result<List<DiscoveredBackup>, BackupMetadataFailure>> discover(
     BackupDestination destination,
-  ) => _locked((_) async {
+  ) => _locked((_, view) async {
     final inventory = _value(await _inventory.read());
     final session = await _authorizeForDiscovery(destination);
     try {
@@ -429,7 +441,9 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         }
         final bytes = _storageValue(result);
         if (bytes.length > backupMetadataMaxBytes) continue;
-        for (final group in inventory.groups) {
+        for (final group in inventory.groups.where(
+          (group) => !group.ambiguous,
+        )) {
           final decoded = await _codec.decode(group, bytes);
           switch (decoded) {
             case Ok(value: final backup?):
@@ -438,7 +452,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
                   group: group,
                   destination: destination,
                   storedAt: object.createdAt ?? object.modifiedAt,
-                  snapshot: backup,
+                  content: backup,
+                  scope: view,
                 ),
               );
             case Ok():
@@ -465,12 +480,13 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     required BackupDestination? destination,
     required Set<String> groups,
     required bool deleteOwnedFiles,
-  }) => _locked((state) async {
+  }) => _locked((state, view) async {
     final previous = state.selection;
     final previousDestination = previous.destination;
     if (destination == null &&
         deleteOwnedFiles &&
         previousDestination != null) {
+      await _requireView(view);
       final session = await _authorize(previousDestination, interactive: false);
       try {
         if (session.account.id != previous.account) {
@@ -563,11 +579,31 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     };
   }
 
+  /// Revokes an operation whose view is no longer the active one, before it
+  /// publishes, deletes or applies anything.
+  Future<void> _requireView(String view) async {
+    final current = await _secrets.viewScope();
+    if (current is! Ok<String, BackupMetadataFailure> ||
+        current.value != view) {
+      throw const _OperationFailure(
+        BackupMetadataScopeChangedFailure(),
+        BackupActionReason.unexpected,
+      );
+    }
+  }
+
   Future<Result<T, BackupMetadataFailure>> _locked<T>(
-    Future<T> Function(BackupMetadataState) action,
+    Future<T> Function(BackupMetadataState, String view) action,
   ) async {
+    final scope = await _secrets.viewScope();
+    if (scope is! Ok<String, BackupMetadataFailure>) {
+      return const Err(BackupMetadataNotReadyFailure());
+    }
+    final view = scope.value;
     try {
-      return Ok(await _store.locked(action));
+      return Ok(
+        await _store.locked((state) => action(state, view), view: view),
+      );
     } on _OperationFailure catch (error) {
       return Err(error.failure);
     } on BackupMetadataStoreNotReady {

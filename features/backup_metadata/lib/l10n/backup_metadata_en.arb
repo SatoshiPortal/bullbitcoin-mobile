@@ -61,6 +61,8 @@
   "failureNotReady": "Open BULL and try again after it finishes starting.",
   "failureStalePlan": "Your labels changed. Review the backup again before restoring.",
   "failureTooLarge": "This backup is too large.",
+  "failureScopeChanged": "This view changed while the backup was running. Nothing was saved or restored.",
+  "failureIncompatible": "This backup does not match the data on this phone. Nothing was changed for that part.",
   "failureUnexpected": "Something went wrong. Please try again.",
   "privacyProvider": "{provider} can’t open it without those credentials.",
   "@privacyProvider": {

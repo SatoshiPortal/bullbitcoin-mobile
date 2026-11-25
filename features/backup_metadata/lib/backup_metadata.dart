@@ -2,6 +2,8 @@
 library;
 
 export 'src/domain/backup_metadata_failure.dart';
+export 'src/domain/entities/backup_content.dart';
 export 'src/domain/entities/backup_inventory.dart';
 export 'src/domain/entities/backup_status.dart';
 export 'src/domain/entities/discovered_backup.dart';
+export 'src/domain/entities/restore_report.dart';

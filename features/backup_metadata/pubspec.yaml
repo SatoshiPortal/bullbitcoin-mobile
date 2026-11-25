@@ -26,6 +26,7 @@ dependencies:
   meta: ^1.17.0
   primitives:
   backup_storage:
+  rust_bindings:
   labels:
   secrets:
   sqlite3: ^3.5.2

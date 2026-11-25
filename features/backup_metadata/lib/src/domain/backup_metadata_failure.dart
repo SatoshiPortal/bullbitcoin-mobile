@@ -20,6 +20,18 @@ final class BackupMetadataTooLargeFailure extends BackupMetadataFailure {
   const BackupMetadataTooLargeFailure();
 }
 
+/// The view the operation started in is no longer the active one. Nothing
+/// was published or applied.
+final class BackupMetadataScopeChangedFailure extends BackupMetadataFailure {
+  const BackupMetadataScopeChangedFailure();
+}
+
+/// The archive does not fit this phone's data (a conflicting BIP85 record, an
+/// ambiguous public wallet). Nothing was written for that part.
+final class BackupMetadataIncompatibleFailure extends BackupMetadataFailure {
+  const BackupMetadataIncompatibleFailure();
+}
+
 final class BackupMetadataUnexpectedFailure extends BackupMetadataFailure {
   const BackupMetadataUnexpectedFailure();
 }

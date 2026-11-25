@@ -5,6 +5,7 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/backup_metadata_failure.dart';
 import '../domain/entities/discovered_backup.dart';
+import '../domain/entities/restore_report.dart';
 import '../domain/usecases/apply_restore_usecase.dart';
 import '../domain/usecases/discover_backups_usecase.dart';
 import '../domain/usecases/preview_restore_usecase.dart';
@@ -28,14 +29,15 @@ final class BackupMetadataRestoreDiscovered extends BackupMetadataRestoreState {
 }
 
 final class BackupMetadataRestorePreview extends BackupMetadataRestoreState {
+  final DiscoveredBackup backup;
   final MergePlan plan;
   final MergeChoices choices;
 
-  const BackupMetadataRestorePreview(this.plan, this.choices);
+  const BackupMetadataRestorePreview(this.backup, this.plan, this.choices);
 }
 
 final class BackupMetadataRestoreReported extends BackupMetadataRestoreState {
-  final ApplyReport report;
+  final RestoreReport report;
 
   const BackupMetadataRestoreReported(this.report);
 }
@@ -62,15 +64,21 @@ final class BackupMetadataRestoreCubit
 
   Future<void> preview(DiscoveredBackup backup) => _perform(
     () => _preview.execute(backup),
-    (plan) => BackupMetadataRestorePreview(plan, MergeChoices({})),
+    (plan) => BackupMetadataRestorePreview(backup, plan, MergeChoices({})),
   );
 
   void choose(LabelConflict conflict, ConflictResolution resolution) {
     if (isClosed) return;
-    if (state case BackupMetadataRestorePreview(:final plan, :final choices)
+    if (state
+        case BackupMetadataRestorePreview(
+          :final backup,
+          :final plan,
+          :final choices,
+        )
         when plan.conflicts.contains(conflict)) {
       emit(
         BackupMetadataRestorePreview(
+          backup,
           plan,
           MergeChoices({...choices.resolutions, conflict: resolution}),
         ),
@@ -79,9 +87,13 @@ final class BackupMetadataRestoreCubit
   }
 
   Future<void> apply() async {
-    if (state case BackupMetadataRestorePreview(:final plan, :final choices)) {
+    if (state case BackupMetadataRestorePreview(
+      :final backup,
+      :final plan,
+      :final choices,
+    )) {
       await _perform(
-        () => _apply.execute(plan, choices),
+        () => _apply.execute(backup, plan, choices),
         BackupMetadataRestoreReported.new,
       );
     }
