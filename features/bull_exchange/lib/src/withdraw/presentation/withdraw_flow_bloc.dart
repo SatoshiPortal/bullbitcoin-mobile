@@ -28,7 +28,7 @@ typedef WithdrawFlowCalls = ({
   )
   confirm,
   Future<ExchangeRead<Order>> Function(String orderId) readOrder,
-  PayoutRequirementsCalls requirements,
+  PayoutRequirementsUsecases requirements,
 });
 
 WithdrawFlowCalls withdrawFlowCallsOf(
@@ -103,7 +103,7 @@ WithdrawFlowCalls withdrawFlowCallsOf(
       ),
     ),
     readOrder: (orderId) async => readOfResult(await orders.getOrder(orderId)),
-    requirements: payoutRequirementsCallsOf(exchange, session),
+    requirements: PayoutRequirementsUsecases.of(exchange),
   );
 }
 
@@ -137,20 +137,24 @@ class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
     required ExchangeSession? session,
     required Stream<ExchangeAccess> accessChanges,
   }) : this._(
+         session,
          session == null ? null : calls(session),
          accessChanges,
          withdrawFlowStart(session),
        );
 
   WithdrawFlowBloc._(
+    ExchangeSession? session,
     this._calls,
     Stream<ExchangeAccess> accessChanges,
     WithdrawFlowNext start,
   ) : super(start.state) {
     on<WithdrawFlowEvent>(_onEvent, transformer: sequential());
     final calls = _calls;
-    if (calls != null) {
-      _requirements = PayoutRequirementsRunner(calls.requirements, (event) {
+    if (calls != null && session != null) {
+      _requirements = PayoutRequirementsRunner(calls.requirements, session, (
+        event,
+      ) {
         if (!isClosed) add(WithdrawRequirementsChanged(event));
       });
     }

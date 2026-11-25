@@ -1,86 +1,47 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/exchange_answers.dart';
+import 'package:bull_exchange/src/payout/domain/usecases/activate_virtual_payee_usecase.dart';
+import 'package:bull_exchange/src/payout/domain/usecases/create_virtual_iban_usecase.dart';
+import 'package:bull_exchange/src/payout/domain/usecases/find_virtual_iban_usecase.dart';
+import 'package:bull_exchange/src/payout/domain/usecases/get_virtual_payee_status_usecase.dart';
+import 'package:bull_exchange/src/payout/domain/usecases/load_virtual_iban_context_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
-import 'package:primitives/primitives.dart';
 
-/// The exchange calls the payout requirements (composition §4.5) need, bound
-/// to one session.
-typedef PayoutRequirementsCalls = ({
-  Future<ExchangeRead<VirtualIbanContext>> Function() loadVirtualIban,
-  Future<ExchangeWrite<VirtualIban>> Function() createVirtualIban,
-  Future<ExchangeRead<VirtualIban?>> Function() findVirtualIban,
-  Future<ExchangeRead<SepaVirtualPayeeStatus>> Function(String recipientId)
-  payeeStatus,
-  Future<ExchangeWrite<SepaVirtualPayeeStatus>> Function(String recipientId)
-  activatePayee,
-});
+/// The use cases of the payout requirements step (composition §4.5). Only
+/// [PayoutRequirementsRunner] calls them; a flow's bloc hands them over.
+final class PayoutRequirementsUsecases {
+  final LoadVirtualIbanContextUsecase loadVirtualIban;
+  final CreateVirtualIbanUsecase createVirtualIban;
+  final FindVirtualIbanUsecase findVirtualIban;
+  final GetVirtualPayeeStatusUsecase payeeStatus;
+  final ActivateVirtualPayeeUsecase activatePayee;
 
-PayoutRequirementsCalls payoutRequirementsCallsOf(
-  Exchange exchange,
-  ExchangeSession session,
-) {
-  final environment = session.environment;
-  final isTestnet = environment == ExchangeEnvironment.testnet;
-  Future<ExchangeRead<VirtualIban?>> find() async =>
-      readOfResult(await exchange.virtualIbans.find(environment));
-  Future<ExchangeRead<SepaVirtualPayeeStatus>> status(String id) async =>
-      switch (await exchange.recipients.findStatus(
-        recipientId: id,
-        isTestnet: isTestnet,
-      )) {
-        Ok(value: final SepaVirtualPayeeStatus status) => ReadGot(status),
-        Ok(value: null) => const ReadMissing(),
-        Err(:final failure) => readOfExchangeFailure(failure),
-      };
-  return (
-    loadVirtualIban: () async {
-      final owner = readOfResult(await exchange.getUserSummary(environment));
-      final iban = await find();
-      return switch ((owner, iban)) {
-        (ReadGot(value: final summary), ReadGot(value: final virtualIban)) =>
-          ReadGot(
-            VirtualIbanContext(
-              virtualIban: virtualIban,
-              ownerName:
-                  '${summary.profile.firstName.trim()} '
-                          '${summary.profile.lastName.trim()}'
-                      .trim(),
-            ),
-          ),
-        (ReadSessionRejected(:final why), _) ||
-        (_, ReadSessionRejected(:final why)) => ReadSessionRejected(why),
-        (ReadGot(), final failed) => _failedRead(failed),
-        (final failed, _) => _failedRead(failed),
-      };
-    },
-    createVirtualIban: () async =>
-        writeOfResult(await exchange.virtualIbans.create(environment)),
-    findVirtualIban: find,
-    payeeStatus: status,
-    activatePayee: (id) async => writeOfResult(
-      await exchange.recipients.activate(recipientId: id, isTestnet: isTestnet),
-    ),
-  );
+  const PayoutRequirementsUsecases({
+    required this.loadVirtualIban,
+    required this.createVirtualIban,
+    required this.findVirtualIban,
+    required this.payeeStatus,
+    required this.activatePayee,
+  });
+
+  PayoutRequirementsUsecases.of(Exchange exchange)
+    : this(
+        loadVirtualIban: LoadVirtualIbanContextUsecase(exchange),
+        createVirtualIban: CreateVirtualIbanUsecase(exchange),
+        findVirtualIban: FindVirtualIbanUsecase(exchange),
+        payeeStatus: GetVirtualPayeeStatusUsecase(exchange),
+        activatePayee: ActivateVirtualPayeeUsecase(exchange),
+      );
 }
 
-ExchangeRead<T> _failedRead<T>(ExchangeRead<Object?> read) => switch (read) {
-  ReadMissing() => const ReadMissing(),
-  ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable(
-    reason,
-    isNetwork: isNetwork,
-  ),
-  ReadMalformed(:final reason) => ReadMalformed(reason),
-  ReadSessionRejected(:final why) => ReadSessionRejected(why),
-  ReadGot() => const ReadMalformed('combined read'),
-};
-
 /// Runs the effects of the requirements step (virtual IBAN, virtual payee)
-/// for a flow's bloc and answers with requirement events. Poll and deadline
-/// timers live here, one per kind, so a StopWatching or [close] ends them.
+/// for a flow's bloc, with the flow's session, and answers with requirement
+/// events. Poll and deadline timers live here, one per kind, so a
+/// StopWatching or [close] ends them.
 final class PayoutRequirementsRunner {
-  final PayoutRequirementsCalls _calls;
+  final PayoutRequirementsUsecases _usecases;
+  final ExchangeSession _session;
   final VirtualIbanPolicy _virtualIban;
   final void Function(RequirementsEvent event) _emit;
 
@@ -91,7 +52,8 @@ final class PayoutRequirementsRunner {
   bool _closed = false;
 
   PayoutRequirementsRunner(
-    this._calls,
+    this._usecases,
+    this._session,
     this._emit, {
     this._virtualIban = const VirtualIbanPolicy(),
   });
@@ -113,28 +75,30 @@ final class PayoutRequirementsRunner {
     switch (effect) {
       case VibanLoad(:final attempt):
         unawaited(
-          _calls.loadVirtualIban().then((r) => answer(VibanLoaded(attempt, r))),
+          _usecases.loadVirtualIban
+              .execute(_session)
+              .then((r) => answer(VibanLoaded(attempt, r))),
         );
       case VibanCreate(:final attempt):
         unawaited(
-          _calls.createVirtualIban().then(
-            (w) => answer(VibanCreated(attempt, w)),
-          ),
+          _usecases.createVirtualIban
+              .execute(_session)
+              .then((w) => answer(VibanCreated(attempt, w))),
         );
       case VibanVerify(:final attempt):
         unawaited(
-          _calls.findVirtualIban().then(
-            (r) => answer(VibanVerified(attempt, r)),
-          ),
+          _usecases.findVirtualIban
+              .execute(_session)
+              .then((r) => answer(VibanVerified(attempt, r))),
         );
       case VibanSchedulePoll(:final ticket, :final immediate):
         _ibanPoll?.cancel();
         _ibanPoll = Timer(
           immediate ? Duration.zero : _virtualIban.pollEvery,
           () => unawaited(
-            _calls.findVirtualIban().then(
-              (r) => answer(VibanPolled(ticket, r)),
-            ),
+            _usecases.findVirtualIban
+                .execute(_session)
+                .then((r) => answer(VibanPolled(ticket, r))),
           ),
         );
       case VibanCancelPoll():
@@ -154,14 +118,14 @@ final class PayoutRequirementsRunner {
     switch (effect) {
       case PayeeLoad(:final attempt):
         unawaited(
-          _calls
-              .payeeStatus(recipientId)
+          _usecases.payeeStatus
+              .execute(_session, recipientId)
               .then((r) => answer(PayeeLoaded(attempt, r))),
         );
       case PayeeActivate(:final attempt):
         unawaited(
-          _calls
-              .activatePayee(recipientId)
+          _usecases.activatePayee
+              .execute(_session, recipientId)
               .then((w) => answer(PayeeActivated(attempt, w))),
         );
       case PayeeSchedulePoll(:final ticket, :final after):
@@ -169,8 +133,8 @@ final class PayoutRequirementsRunner {
         _payeePoll = Timer(
           after,
           () => unawaited(
-            _calls
-                .payeeStatus(recipientId)
+            _usecases.payeeStatus
+                .execute(_session, recipientId)
                 .then((r) => answer(PayeePolled(ticket, r))),
           ),
         );
