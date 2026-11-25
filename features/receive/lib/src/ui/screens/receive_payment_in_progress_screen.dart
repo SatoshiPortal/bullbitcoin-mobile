@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullText, BullAmount, BullTopBar, Gap, BullTypographyX;
+import 'package:receive/src/ui/widgets/receive_lightning_transition.dart';
 
 class ReceivePaymentInProgressScreen extends StatelessWidget {
   final void Function(BuildContext) openHome;
@@ -29,7 +30,14 @@ class ReceivePaymentInProgressScreen extends StatelessWidget {
             onAction: () => openHome(context),
           ),
         ),
-        body: const PaymentInProgressPage(),
+        body:
+            context.select(
+              (ReceiveBloc bloc) =>
+                  bloc.state.orderSwap == null &&
+                  bloc.state.lightningSwap != null,
+            )
+            ? const ReceiveLightningTransition()
+            : const PaymentInProgressPage(),
         // child: AmountPage(),
       ),
     );

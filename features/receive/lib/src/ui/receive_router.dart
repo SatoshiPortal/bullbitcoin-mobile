@@ -137,19 +137,6 @@ class ReceiveRouter {
                       extra: bloc,
                     );
                     return;
-                  } else {
-                    // For Bitcoin or Liquid, show the transaction details screen
-                    // when the payment is received.
-                    final walletId = state.wallet?.id;
-                    if (walletId != null) {
-                      TransactionsNavigation.goToDetails(
-                        context,
-                        TransactionDetailsTarget.wallet(
-                          state.txId,
-                          walletId: walletId,
-                        ),
-                      );
-                    }
                   }
                 },
               ),

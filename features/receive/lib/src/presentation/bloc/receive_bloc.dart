@@ -99,6 +99,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
     on<ReceivePayjoinSenderWaitElapsed>(_onPayjoinSenderWaitElapsed);
     on<ReceiveTransactionReceived>(_onReceiveTransactionReceived);
+    on<ReceiveSettlementObserved>(_onSettlementObserved);
     // restartable(): a rapid on/off/on toggle must not let a stale event's
     //  in-flight session creation land after a newer event already decided
     //  the opposite outcome — restartable() drops a handler's own emit()
@@ -179,6 +180,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   StreamSubscription<Result<PayjoinSession, ReceiveFailure>>?
   _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
+  StreamSubscription<WalletTransaction>? _settlementSubscription;
   int _receiveGeneration = 0;
   StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>>?
   _orderSwapSubscription;
@@ -198,6 +200,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     await Future.wait([
       _payjoinSubscription?.cancel() ?? Future.value(),
       _walletTransactionSubscription?.cancel() ?? Future.value(),
+      _settlementSubscription?.cancel() ?? Future.value(),
       _orderSwapSubscription?.cancel() ?? Future.value(),
       _lightningSwapSubscription?.cancel() ?? Future.value(),
       _payjoinSettingChangeSubscription.cancel(),
@@ -1618,7 +1621,38 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx.network != state.wallet?.network) {
       return;
     }
-    emit(state.copyWith(tx: tx));
+    // The address watch emits the latest transaction for the address. Pin the
+    // receive to the first one so a later, different payment cannot take over.
+    final detected = state.tx;
+    if (detected != null && detected.txId != tx.txId) return;
+    emit(state.copyWith(tx: tx, settlementTx: tx));
+  }
+
+  Future<void> _onSettlementObserved(
+    ReceiveSettlementObserved event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    if (event.tx.txId != state.settlement?.txId) return;
+    emit(state.copyWith(settlementTx: event.tx));
+  }
+
+  @override
+  void onChange(Change<ReceiveState> change) {
+    super.onChange(change);
+    final settlement = change.nextState.settlement;
+    if (settlement == change.currentState.settlement) return;
+    _settlementSubscription?.cancel();
+    _settlementSubscription = settlement == null
+        ? null
+        : _transactions
+              .watchWalletTransactionByTxId(
+                walletId: settlement.walletId,
+                txId: settlement.txId,
+              )
+              .listen((tx) {
+                if (isClosed) return;
+                add(ReceiveSettlementObserved(tx));
+              });
   }
 
   Future<void> _onOrderSwapUpdated(
@@ -1746,15 +1780,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(
       state.copyWith(
         lightningSwap: swap,
-        failure: switch (swap.status) {
-          SwapStatus.expired => const ReceiveSwapUnavailableFailure(
-            'Boltz swap expired',
-          ),
-          SwapStatus.failed => const ReceiveSwapUnavailableFailure(
-            'Boltz swap failed',
-          ),
-          _ => state.failure,
-        },
+        failure: swap.wasDirectPayment
+            ? state.failure
+            : switch (swap.status) {
+                SwapStatus.expired => const ReceiveSwapUnavailableFailure(
+                  'Boltz swap expired',
+                ),
+                SwapStatus.failed => const ReceiveSwapUnavailableFailure(
+                  'Boltz swap failed',
+                ),
+                _ => state.failure,
+              },
       ),
     );
     if (swap.status == SwapStatus.completed) {

@@ -5,6 +5,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/src/presentation/bloc/receive_bloc.dart';
 import 'package:receive/src/presentation/receive_failure_l10n.dart';
+import 'package:receive/src/presentation/receive_payment_progress.dart';
 import 'package:transactions/routes.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,14 +17,35 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullCountdown,
         BullFadingLinearProgress,
+        BullPaymentAnimation,
+        BullPaymentDirection,
+        BullPaymentNetwork,
         BullTopBar,
         Gap,
         BullTypographyX;
 
-class ReceivePayjoinInProgressScreen extends StatelessWidget {
+class ReceivePayjoinInProgressScreen extends StatefulWidget {
   final void Function(BuildContext) openHome;
 
   const ReceivePayjoinInProgressScreen({super.key, required this.openHome});
+
+  @override
+  State<ReceivePayjoinInProgressScreen> createState() =>
+      _ReceivePayjoinInProgressScreenState();
+}
+
+class _ReceivePayjoinInProgressScreenState
+    extends State<ReceivePayjoinInProgressScreen> {
+  String? _completedId;
+
+  void _showDetails(String id) {
+    if (!mounted) return;
+    TransactionsNavigation.goToDetails(
+      context,
+      TransactionDetailsTarget.payjoin(id),
+      returnHome: true,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +76,12 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
       listener: (context, state) {
         final payjoin = state.payjoin;
         if (payjoin == null) return;
-        TransactionsNavigation.goToDetails(
-          context,
-          TransactionDetailsTarget.payjoin(payjoin.id),
-          returnHome: true,
-        );
+        if (MediaQuery.disableAnimationsOf(context) ||
+            MediaQuery.reduceMotionOf(context)) {
+          _showDetails(payjoin.id);
+        } else {
+          setState(() => _completedId = payjoin.id);
+        }
       },
       // TODO: PopScope can be removed since we can do pop here now
       child: PopScope(
@@ -66,7 +89,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
         onPopInvokedWithResult: (didPop, _) {
           if (didPop) return; // Don't allow back navigation
 
-          openHome(context);
+          widget.openHome(context);
         },
         child: Scaffold(
           appBar: AppBar(
@@ -74,7 +97,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             automaticallyImplyLeading: false,
             flexibleSpace: BullTopBar(
               title: context.loc.receiveTitle,
-              onAction: () => openHome(context),
+              onAction: () => widget.openHome(context),
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(3.0),
@@ -85,7 +108,11 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
               ),
             ),
           ),
-          body: const PayjoinInProgressPage(),
+          body: PayjoinInProgressPage(
+            onAnimationDone: () {
+              if (_completedId case final id?) _showDetails(id);
+            },
+          ),
         ),
       ),
     );
@@ -93,10 +120,30 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
 }
 
 class PayjoinInProgressPage extends StatelessWidget {
-  const PayjoinInProgressPage();
+  final VoidCallback? onAnimationDone;
+
+  const PayjoinInProgressPage({super.key, this.onAnimationDone});
 
   @override
   Widget build(BuildContext context) {
+    final payjoin = context.select((ReceiveBloc bloc) => bloc.state.payjoin);
+    final confirmed = context.select(
+      (ReceiveBloc bloc) => bloc.state.settlementConfirmed,
+    );
+    final progress = payjoin == null
+        ? null
+        : receivePayjoinProgress(
+            steps: [
+              context.loc.receiveStepOriginalReceived,
+              context.loc.receiveStepProposalSent,
+              context.loc.receiveStepPaymentDetected,
+              context.loc.receiveStepConfirmed,
+            ],
+            status: payjoin.status,
+            hasOriginal: payjoin.hasOriginalTransaction,
+            hasProposal: payjoin.hasProposal,
+            confirmed: confirmed,
+          );
     final amountSat = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.amountSat,
     );
@@ -166,160 +213,239 @@ class PayjoinInProgressPage extends StatelessWidget {
     // Mirrors SendSucessScreen's layout so both terminal payment screens read
     // the same: centered copy with horizontal margins, the amount block, and
     // a single bottom-anchored action button.
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        mainAxisAlignment: .center,
-        children: [
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                if (isBelowMinimum) ...[
-                  BullText(
-                    context.loc.receivePayjoinBelowMinimum,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    textAlign: .center,
-                  ),
-                  const Gap(8),
-                  BullText(
-                    context.loc.receivePayjoinBelowMinimumSubtext,
-                    style: context.bullType.body,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
-                ] else if (isFallbackCompleted) ...[
-                  BullText(
-                    context.loc.receivePayjoinFallbackCompleted,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    textAlign: .center,
-                  ),
-                  const Gap(8),
-                  BullText(
-                    context.loc.receivePayjoinFallbackCompletedSubtext,
-                    style: context.bullType.body,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
-                ] else if (isRealPayjoin) ...[
-                  BullText(
-                    context.loc.receivePaymentInProgress,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    textAlign: .center,
-                  ),
-                  const Gap(8),
-                  BullText(
-                    context.loc.receiveBitcoinConfirmationMessage,
-                    style: context.bullType.body,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
-                ] else if (isExpired) ...[
-                  BullText(
-                    context.loc.receivePayjoinExpired,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    textAlign: .center,
-                  ),
-                  const Gap(8),
-                  BullText(
-                    context.loc.receivePayjoinExpiredSubtext,
-                    style: context.bullType.body,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
-                ] else ...[
-                  BullText(
-                    context.loc.receivePayjoinInProgress,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    textAlign: .center,
-                  ),
-                  const Gap(8),
-                  BullText(
-                    context.loc.receiveWaitForPayjoin,
-                    style: context.bullType.body,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
-                  // Gated on the same canManuallyBroadcastOriginal as the
-                  // fallback button below — a single source of truth so the
-                  // countdown never outlives the action it is counting down
-                  // to (see ReceiveState.canOfferPayjoinFallback).
-                  if (canManuallyBroadcastOriginal &&
-                      payjoinExpiresAt != null &&
-                      isFallbackImminent) ...[
-                    const Gap(8),
-                    Row(
-                      mainAxisAlignment: .center,
-                      children: [
-                        BullText(
-                          context.loc.receivePayjoinFallbackCountdown,
-                          style: context.bullType.body,
-                          color: context.appColors.secondary,
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: .stretch,
+                mainAxisAlignment: .center,
+                children: [
+                  if (progress != null) ...[
+                    SizedBox(
+                      height: 110,
+                      child: BullPaymentAnimation(
+                        network: BullPaymentNetwork.payjoin,
+                        direction: BullPaymentDirection.incoming,
+                        statusTag: switch (payjoin?.status) {
+                          PayjoinStatus.started =>
+                            context.loc.receiveStatusStarted,
+                          PayjoinStatus.requested =>
+                            context.loc.receiveStatusRequested,
+                          PayjoinStatus.proposed =>
+                            context.loc.receiveStatusProposed,
+                          PayjoinStatus.completed =>
+                            confirmed
+                                ? context.loc.receiveStepConfirmed
+                                : context.loc.receiveStepPaymentDetected,
+                          PayjoinStatus.aborted =>
+                            context.loc.receivePayjoinFallbackCompleted,
+                          PayjoinStatus.expired =>
+                            context.loc.receiveStatusExpired,
+                          null => null,
+                        },
+                        phase: receivePayjoinPhase(
+                          status: payjoin!.status,
+                          confirmed: confirmed,
                         ),
-                        const Gap(4),
-                        BullCountdown(until: payjoinExpiresAt),
+                        progress: progress,
+                        onDone: onAnimationDone,
+                      ),
+                    ),
+                    Semantics(
+                      liveRegion: true,
+                      child: Wrap(
+                        spacing: 8,
+                        children: [
+                          for (var i = 0; i < progress.steps.length; i++)
+                            Semantics(
+                              label: progress.steps[i],
+                              value: progress.skippedAt == i
+                                  ? context.loc.receiveStepSkipped
+                                  : i < progress.completed
+                                  ? context.loc.receiveStepComplete
+                                  : progress.failedAt == i
+                                  ? context.loc.receiveStepFailed
+                                  : context.loc.receiveStepPending,
+                              child: ExcludeSemantics(
+                                child: Text(
+                                  '${progress.skippedAt == i
+                                      ? '— '
+                                      : i < progress.completed
+                                      ? '✓ '
+                                      : progress.failedAt == i
+                                      ? '✕ '
+                                      : '○ '}${progress.steps[i]}',
+                                  style: progress.skippedAt == i
+                                      ? context.bullType.body.copyWith(
+                                          color: context.appColors.secondary,
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        if (isBelowMinimum) ...[
+                          BullText(
+                            context.loc.receivePayjoinBelowMinimum,
+                            style: context.bullType.subtitle.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 2,
+                            textAlign: .center,
+                          ),
+                          const Gap(8),
+                          BullText(
+                            context.loc.receivePayjoinBelowMinimumSubtext,
+                            style: context.bullType.body,
+                            color: context.appColors.secondary,
+                            maxLines: 4,
+                            textAlign: .center,
+                          ),
+                        ] else if (isFallbackCompleted) ...[
+                          BullText(
+                            context.loc.receivePayjoinFallbackCompleted,
+                            style: context.bullType.subtitle.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 2,
+                            textAlign: .center,
+                          ),
+                          const Gap(8),
+                          BullText(
+                            context.loc.receivePayjoinFallbackCompletedSubtext,
+                            style: context.bullType.body,
+                            color: context.appColors.secondary,
+                            maxLines: 4,
+                            textAlign: .center,
+                          ),
+                        ] else if (isRealPayjoin) ...[
+                          BullText(
+                            context.loc.receivePaymentInProgress,
+                            style: context.bullType.subtitle.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 2,
+                            textAlign: .center,
+                          ),
+                          const Gap(8),
+                          BullText(
+                            context.loc.receiveBitcoinConfirmationMessage,
+                            style: context.bullType.body,
+                            color: context.appColors.secondary,
+                            maxLines: 4,
+                            textAlign: .center,
+                          ),
+                        ] else if (isExpired) ...[
+                          BullText(
+                            context.loc.receivePayjoinExpired,
+                            style: context.bullType.subtitle.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 2,
+                            textAlign: .center,
+                          ),
+                          const Gap(8),
+                          BullText(
+                            context.loc.receivePayjoinExpiredSubtext,
+                            style: context.bullType.body,
+                            color: context.appColors.secondary,
+                            maxLines: 4,
+                            textAlign: .center,
+                          ),
+                        ] else ...[
+                          BullText(
+                            context.loc.receivePayjoinInProgress,
+                            style: context.bullType.subtitle.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 2,
+                            textAlign: .center,
+                          ),
+                          const Gap(8),
+                          BullText(
+                            context.loc.receiveWaitForPayjoin,
+                            style: context.bullType.body,
+                            color: context.appColors.secondary,
+                            maxLines: 4,
+                            textAlign: .center,
+                          ),
+                          // Gated on the same canManuallyBroadcastOriginal as the
+                          // fallback button below — a single source of truth so the
+                          // countdown never outlives the action it is counting down
+                          // to (see ReceiveState.canOfferPayjoinFallback).
+                          if (canManuallyBroadcastOriginal &&
+                              payjoinExpiresAt != null &&
+                              isFallbackImminent) ...[
+                            const Gap(8),
+                            Row(
+                              mainAxisAlignment: .center,
+                              children: [
+                                BullText(
+                                  context.loc.receivePayjoinFallbackCountdown,
+                                  style: context.bullType.body,
+                                  color: context.appColors.secondary,
+                                ),
+                                const Gap(4),
+                                BullCountdown(until: payjoinExpiresAt),
+                              ],
+                            ),
+                          ],
+                        ],
+                        if (amountSat != null) ...[
+                          const Gap(16),
+                          BullAmount.signedSats(
+                            amountSat,
+                            interactive: true,
+                            style: context.bullType.headline,
+                            textAlign: .center,
+                          ),
+                          if (amountFiat != null) ...[
+                            const Gap(4),
+                            BullText(
+                              '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
+                              style: context.bullType.body,
+                              color: context.appColors.secondary,
+                              maxLines: 4,
+                              textAlign: .center,
+                            ),
+                          ],
+                        ],
                       ],
                     ),
-                  ],
-                ],
-                if (amountSat != null) ...[
-                  const Gap(16),
-                  BullAmount.signedSats(
-                    amountSat,
-                    interactive: true,
-                    style: context.bullType.headline,
-                    textAlign: .center,
                   ),
-                  if (amountFiat != null) ...[
-                    const Gap(4),
-                    BullText(
-                      '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
-                      style: context.bullType.body,
-                      color: context.appColors.secondary,
-                      maxLines: 4,
-                      textAlign: .center,
-                    ),
-                  ],
+                  const Spacer(flex: 2),
+                  if ((isFallbackCompleted || isRealPayjoin) &&
+                      payjoinId != null)
+                    BullButton.secondary(
+                      label: context.loc.receiveViewDetails,
+                      onPressed: () => TransactionsNavigation.goToDetails(
+                        context,
+                        TransactionDetailsTarget.payjoin(payjoinId),
+                        returnHome: true,
+                      ),
+                    )
+                  else if (canManuallyBroadcastOriginal)
+                    const ReceiveBroadcastPayjoinButton(),
+                  const Gap(32),
                 ],
-              ],
+              ),
             ),
           ),
-          const Spacer(flex: 2),
-          if (isFallbackCompleted && payjoinId != null)
-            BullButton.secondary(
-              label: context.loc.receiveViewDetails,
-              onPressed: () => TransactionsNavigation.goToDetails(
-                context,
-                TransactionDetailsTarget.payjoin(payjoinId),
-                returnHome: true,
-              ),
-            )
-          else if (canManuallyBroadcastOriginal)
-            const ReceiveBroadcastPayjoinButton(),
-          const Gap(32),
-        ],
+        ),
       ),
     );
   }
