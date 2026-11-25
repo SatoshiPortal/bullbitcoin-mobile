@@ -30,6 +30,7 @@ import 'package:primitives/primitives.dart'
 import 'dart:math' as math;
 
 import 'package:send/src/payment/domain/internal_recipient_policy.dart';
+import 'package:send/src/payment/domain/bitcoin_recipient_list_policy.dart';
 
 import 'package:fees/fees.dart';
 import 'package:address_view/payment_destination.dart'
@@ -38,8 +39,7 @@ import 'package:swaps/swaps.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:send/src/send_localizations.dart';
 import 'package:send/src/payment/presentation/onchain_send_labels_l10n.dart';
-import 'package:satoshifier/payment_request.dart'
-    show Bip21PaymentRequest, BitcoinPaymentRequest;
+import 'package:satoshifier/payment_request.dart' show Bip21PaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:label_editor/label_editor.dart';
