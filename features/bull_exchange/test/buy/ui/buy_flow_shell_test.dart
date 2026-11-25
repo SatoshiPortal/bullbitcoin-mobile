@@ -18,10 +18,13 @@ Widget _field({
   required ValueChanged<String?> onValidated,
 }) => const SizedBox.shrink();
 
+Future<bool> _animationsOn() async => true;
+
 final BuyFlowUi _ui = (
   payoutField: _field,
   bitcoinAsset: '',
   openOrder: (_, _) {},
+  showPaymentAnimations: _animationsOn,
 );
 
 List<String> _keys(BuyFlowState state) => [
