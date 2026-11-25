@@ -50,6 +50,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
 import 'package:exchange/exchange.dart' show Exchange;
+import 'package:exchange/migration.dart' show ExchangeCredentialImport;
+import 'package:exchange/setup.dart' show ExchangeCredentialStorage;
 import 'package:wizard/wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
@@ -190,6 +192,7 @@ class Bull {
     final secretsFile = destination('secrets');
     final signersFile = destination('signers');
     final syncFile = destination('sync');
+    final exchangeFile = destination('exchange');
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -228,6 +231,7 @@ class Bull {
         ),
         ElectrumImport(file: electrumFile),
         LabelsImport(file: labelsFile),
+        ExchangeCredentialImport(file: exchangeFile, secrets: secrets),
       ],
     );
     var admitted = await cutover.prepare();
@@ -309,6 +313,19 @@ class Bull {
           dispose: (_) => value.handle.close(),
         );
       }
+      // Existing-only: a store that is missing or unreadable after admission
+      // blocks startup rather than reading as a signed-out user.
+      final exchangeStorage = await ExchangeCredentialStorage.open(
+        file: exchangeFile,
+        admission: admission,
+      );
+      if (exchangeStorage case Err(:final failure)) return Err(failure);
+      if (exchangeStorage case Ok(:final value)) {
+        locator.registerSingleton<ExchangeCredentialStorage>(
+          value,
+          dispose: (_) => value.close(),
+        );
+      }
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),
@@ -325,11 +342,8 @@ class Bull {
           readPreferences: readPreferences,
           tor: tor,
         ),
-        openPreferences: (legacy) => Preferences.open(
-          file: preferencesFile,
-          admission: admission,
-          legacyDatabase: legacy,
-        ),
+        openPreferences: () =>
+            Preferences.open(file: preferencesFile, admission: admission),
         openMempool: (tor, http) => Mempool.open(
           file: mempoolFile,
           admission: admission,

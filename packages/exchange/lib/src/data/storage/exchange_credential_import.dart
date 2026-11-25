@@ -7,11 +7,10 @@ import 'package:secrets/secrets.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import 'exchange_database.dart';
+import 'exchange_readiness.dart';
 import 'exchange_store.dart';
 
-const _importReceipt = 'split-v1/exchange';
-const _freshReceipt = 'fresh-v1/exchange';
-typedef _Records = ({String? mainnet, String? testnet});
+typedef _Records = ExchangeApiRecords;
 typedef _BasicAuth = ({int id, String? username, String? password});
 
 /// Uses the fake keystore installed on the test isolate, not a platform worker.
@@ -27,7 +26,8 @@ ExchangeCredentialImport exchangeCredentialImportForTesting({
 /// Copies the two fixed keychain records and the historical Settings rows.
 /// The foreground coordinator must freeze both sets of legacy writers before
 /// calling any operation under exclusive admission.
-final class ExchangeCredentialImport implements LegacyImportParticipant {
+final class ExchangeCredentialImport
+    implements LegacyImportParticipant, SourceProvenanceCheck {
   final File _file;
   final ExchangeKeychain _legacy;
   final DatabaseKeys? _testingKeys;
@@ -49,22 +49,19 @@ final class ExchangeCredentialImport implements LegacyImportParticipant {
     '.retire-pending',
   ].any((suffix) => File('${_file.path}$suffix').existsSync());
 
-  /// Checks both fixed records before a new source marker may be published.
-  /// A keychain-only legacy state is not supported and cannot become fresh.
+  /// A keychain record without a legacy database is iOS residue of an earlier
+  /// install. It is never read, written or deleted, so there is nothing to
+  /// refuse: the coordinator records the owner as fresh and Exchange starts
+  /// signed out.
+  @override
+  bool get freshWhenInitialFresh => true;
+
+  @override
   Future<Result<void, LegacyImportFailure>> verifyInitialSource(
     ExclusiveAdmission admission, {
     required bool legacySqlitePresent,
-  }) async {
-    if (!admission.isOpen) return const Err(LegacyImportDeferred());
-    return switch (await _readRecords(_legacy)) {
-      Err(:final failure) => Err(failure),
-      Ok(:final value)
-          when !legacySqlitePresent &&
-              (value.mainnet != null || value.testnet != null) =>
-        const Err(LegacyImportVerificationFailed()),
-      Ok() => const Ok(null),
-    };
-  }
+  }) async =>
+      admission.isOpen ? const Ok(null) : const Err(LegacyImportDeferred());
 
   Future<Result<ExchangeStore, LegacyImportFailure>> _open(
     LifecycleAdmission admission, {
@@ -88,15 +85,6 @@ final class ExchangeCredentialImport implements LegacyImportParticipant {
     ExclusiveAdmission admission,
     OwnerOrigin origin,
   ) async {
-    // Refuse inconsistent fresh provenance before provisioning a missing
-    // owner file. A retained record must not be treated as a fresh install.
-    if (origin == OwnerOrigin.fresh && !await hasState()) {
-      final verified = await verifyInitialSource(
-        admission,
-        legacySqlitePresent: false,
-      );
-      if (verified case Err(:final failure)) return Err(failure);
-    }
     return (await _open(
       admission,
       existing: false,
@@ -167,7 +155,7 @@ final class _PreparedExchange implements PreparedOwner {
     if (records case Err(:final failure)) return Err(failure);
     final keys = (records as Ok<_Records, LegacyImportFailure>).value;
     return importLegacyDatabase(
-      id: _importReceipt,
+      id: exchangeImportReceipt,
       source: source.file,
       sourceSchemaVersion: source.schemaVersion,
       destination: _db,
@@ -202,14 +190,7 @@ final class _PreparedExchange implements PreparedOwner {
       case Ok(value: OwnerReadiness.pending):
         break;
     }
-    switch (await _readRecords(_legacy)) {
-      case Ok(value: _emptyRecords):
-        break;
-      case Ok():
-        return const Err(LegacyImportVerificationFailed());
-      case Err(:final failure):
-        return Err(failure);
-    }
+    // The keychain is not consulted: any record there is ignored residue.
     try {
       await _db.transaction(() async {
         if (!await _isEmpty() ||
@@ -220,7 +201,7 @@ final class _PreparedExchange implements PreparedOwner {
         }
         await _db.customStatement(
           'INSERT INTO legacy_import_receipts (id) VALUES (?)',
-          [_freshReceipt],
+          [exchangeFreshReceipt],
         );
       });
       return const Ok(null);
@@ -280,48 +261,11 @@ final class _PreparedExchange implements PreparedOwner {
     return true;
   }
 
-  Future<_Records?> _readKeys() async {
-    final rows = await _db
-        .customSelect(
-          'SELECT environment, encoded_record '
-          'FROM exchange_api_credentials ORDER BY environment',
-        )
-        .get();
-    if (rows.length != 2 ||
-        rows[0].data['environment'] != 'mainnet' ||
-        rows[1].data['environment'] != 'testnet') {
-      return null;
-    }
-    final mainnet = rows[0].data['encoded_record'];
-    final testnet = rows[1].data['encoded_record'];
-    if (mainnet is! String? || testnet is! String?) return null;
-    return (mainnet: mainnet, testnet: testnet);
-  }
+  Future<_Records?> _readKeys() => readExchangeApiRecords(_db);
 
   @override
-  Future<Result<OwnerReadiness, LegacyImportFailure>> receipt() async {
-    try {
-      final rows = await _db
-          .customSelect('SELECT id FROM legacy_import_receipts')
-          .get();
-      if (rows.isEmpty) return const Ok(OwnerReadiness.pending);
-      if (rows.length != 1 || await _readKeys() == null) {
-        return const Err(LegacyImportVerificationFailed());
-      }
-      await _db
-          .customSelect(
-            'SELECT settings_id, username, password FROM exchange_basic_auth LIMIT 0',
-          )
-          .get();
-      return switch (rows.single.data['id']) {
-        _importReceipt => const Ok(OwnerReadiness.imported),
-        _freshReceipt => const Ok(OwnerReadiness.initialized),
-        _ => const Err(LegacyImportVerificationFailed()),
-      };
-    } on SqliteException {
-      return const Err(LegacyImportUnavailable());
-    }
-  }
+  Future<Result<OwnerReadiness, LegacyImportFailure>> receipt() =>
+      readExchangeReadiness(_db);
 
   @override
   Future<Result<void, LegacyImportFailure>> close() async {

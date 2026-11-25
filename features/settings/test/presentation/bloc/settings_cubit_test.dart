@@ -49,6 +49,16 @@ class _MockSetScreenCaptureProtectionUsecase extends Mock
 class _MockSetExchangeTestnetBasicAuthUsecase extends Mock
     implements SetExchangeTestnetBasicAuthUsecase {}
 
+class _MockLoadExchangeTestnetBasicAuthUsecase extends Mock
+    implements LoadExchangeTestnetBasicAuthUsecase {}
+
+LoadExchangeTestnetBasicAuthUsecase _loadBasicAuth() {
+  final usecase = _MockLoadExchangeTestnetBasicAuthUsecase();
+  when(usecase.execute)
+      .thenAnswer((_) async => const Ok((username: null, password: null)));
+  return usecase;
+}
+
 class _MockSetPayjoinEnabledUsecase extends Mock
     implements SetPayjoinEnabledUsecase {}
 
@@ -80,6 +90,7 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.checkSpWalletSetupUsecase,
     required super.setErrorReportingUsecase,
     required super.setScreenCaptureProtectionUsecase,
+    required super.loadExchangeTestnetBasicAuthUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
     required super.watchPayjoinPolicyUsecase,
@@ -99,6 +110,7 @@ void main() {
   late _MockSetPayjoinEnabledUsecase setPayjoinEnabled;
   late _MockSetBitcoinUnitUsecase setBitcoinUnit;
   late _MockSetScreenCaptureProtectionUsecase setScreenCapture;
+  late _MockSetExchangeTestnetBasicAuthUsecase setBasicAuth;
   late _TestSettingsCubit cubit;
 
   setUp(() {
@@ -106,6 +118,7 @@ void main() {
     setPayjoinEnabled = _MockSetPayjoinEnabledUsecase();
     setBitcoinUnit = _MockSetBitcoinUnitUsecase();
     setScreenCapture = _MockSetScreenCaptureProtectionUsecase();
+    setBasicAuth = _MockSetExchangeTestnetBasicAuthUsecase();
     final watchChanges = _MockWatchPayjoinPolicyUsecase();
     when(() => watchChanges.execute()).thenAnswer((_) => changes.stream);
     cubit = _TestSettingsCubit(
@@ -124,8 +137,8 @@ void main() {
       checkSpWalletSetupUsecase: _MockCheckSpWalletSetupForSettingsUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setScreenCaptureProtectionUsecase: setScreenCapture,
-      setExchangeTestnetBasicAuthUsecase:
-          _MockSetExchangeTestnetBasicAuthUsecase(),
+      loadExchangeTestnetBasicAuthUsecase: _loadBasicAuth(),
+      setExchangeTestnetBasicAuthUsecase: setBasicAuth,
       setPayjoinEnabledUsecase: setPayjoinEnabled,
       watchPayjoinPolicyUsecase: watchChanges,
       setPayjoinMinAmountUsecase: _MockSetPayjoinMinAmountUsecase(),
@@ -144,6 +157,48 @@ void main() {
   tearDown(() async {
     await cubit.close();
     await changes.close();
+  });
+
+  group('Exchange testnet Basic Auth', () {
+    test(
+      'is stored through Exchange and kept out of the stored settings',
+      () async {
+        when(
+          () => setBasicAuth.execute(
+            username: any(named: 'username'),
+            password: any(named: 'password'),
+          ),
+        ).thenAnswer((_) async => const Ok(null));
+        final settings = cubit.state.storedSettings;
+
+        await cubit.setExchangeTestnetBasicAuth(
+          username: ' user ',
+          password: '   ',
+        );
+
+        verify(() => setBasicAuth.execute(username: 'user', password: null))
+            .called(1);
+        expect(cubit.state.exchangeTestnetBasicAuthUsername, 'user');
+        expect(cubit.state.exchangeTestnetBasicAuthPassword, isNull);
+        expect(cubit.state.storedSettings, settings);
+      },
+    );
+
+    test('a refused write leaves the displayed credential alone', () async {
+      when(
+        () => setBasicAuth.execute(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(SettingsStorageFailure('store refused')),
+      );
+
+      await cubit.setExchangeTestnetBasicAuth(username: 'user');
+
+      expect(cubit.state.exchangeTestnetBasicAuthUsername, isNull);
+      expect(cubit.state.failure, isA<SettingsStorageFailure>());
+    });
   });
 
   test('a successful disable updates the cubit state to false', () async {

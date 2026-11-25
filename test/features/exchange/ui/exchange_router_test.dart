@@ -129,14 +129,14 @@ void main() {
     'injected network refusal redirects before exchange presentation',
     (tester) async {
       final preferences = _Preferences();
-      when(preferences.readExchangeWebPreferences).thenAnswer(
-        (_) async => const Ok((
-          environment: Environment.regtest,
-          exchangeTestnetBasicAuthUsername: null,
-          exchangeTestnetBasicAuthPassword: null,
-        )),
+      when(preferences.readActiveEnvironment)
+          .thenAnswer((_) async => const Ok(Environment.regtest));
+      final capability = exchangeForTesting(
+        sessionPreferences: preferences,
+        basicAuth: ExchangeCredentials.openBasicAuth(
+          InMemoryExchangeCredentialStorage(),
+        ),
       );
-      final capability = exchangeForTesting(sessionPreferences: preferences);
       final router = GoRouter(
         initialLocation: BullExchangeNavigation.landingPath,
         routes: [
@@ -148,7 +148,7 @@ void main() {
       await tester.pumpWidget(MaterialApp.router(routerConfig: router));
       await tester.pumpAndSettle();
       expect(find.text('home'), findsOneWidget);
-      verify(preferences.readExchangeWebPreferences).called(1);
+      verify(preferences.readActiveEnvironment).called(1);
     },
   );
 

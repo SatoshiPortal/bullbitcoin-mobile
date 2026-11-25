@@ -4,20 +4,20 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart' show ExchangeKeychain;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// Opens the Exchange capability with its session, credentials and platform
 /// policy. Storage, WebView cookies and the platform belong to this feature;
-/// the host supplies only the keychain and the preferences.
+/// the host supplies only the admitted credential store and the preferences.
 abstract final class BullExchangeServices {
   static Exchange open({
-    required ExchangeKeychain keychain,
+    required ExchangeCredentialStorage storage,
     required Preferences preferences,
     ExchangePlatform? platform,
   }) {
-    final credentials = ExchangeCredentials.open(keychain);
+    final credentials = ExchangeCredentials.open(storage);
+    final basicAuth = ExchangeCredentials.openBasicAuth(storage);
     final activePlatform =
         platform ??
         (Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other);
@@ -47,6 +47,7 @@ abstract final class BullExchangeServices {
       paymentReturnUrl: Uri.parse(ExchangeDefaults.bbAppUrl),
       access: access,
       sessionPreferences: preferences,
+      basicAuth: basicAuth,
       webAuthEndpoints: (
         mainnet: Uri.parse(ExchangeDefaults.bbAuthUrl),
         testnet: Uri.parse(ExchangeDefaults.bbAuthTestUrl),
@@ -54,7 +55,6 @@ abstract final class BullExchangeServices {
       kyc: (
         mainnetUrl: Uri.parse(ExchangeDefaults.bbKycUrl),
         testnetUrl: Uri.parse(ExchangeDefaults.bbKycTestUrl),
-        preferences: preferences,
       ),
       readSession: () => readLegacyExchangeSession(
         preferences: preferences,

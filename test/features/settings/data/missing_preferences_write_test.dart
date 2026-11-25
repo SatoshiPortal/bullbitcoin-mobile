@@ -2,9 +2,7 @@ import 'package:preferences/testing.dart';
 
 import 'dart:async';
 
-import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_tor/tor.dart';
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
@@ -29,17 +27,14 @@ void main() {
         'theme': (p) => p.setThemeMode(AppThemeMode.dark),
         'reporting': (p) => p.setErrorReportingEnabled(true),
         'screen protection': (p) => p.setScreenCaptureProtectionEnabled(true),
-        'exchange web authorization': (p) => p.setExchangeTestnetBasicAuth(),
       };
   for (final write in writes.entries) {
     test(
       '${write.key} rejects a missing row without announcing a change',
       () async {
-        final legacy = SqliteDatabase(NativeDatabase.memory());
         final database = await createPreferencesDatabase();
-        final preferences = PreferencesTesting.fromDatabases(
-          owner: database,
-          legacy: legacy,
+        final preferences = PreferencesTesting.fromDao(
+          PreferencesDao(database),
         );
         final notifications = <Object>[];
         final subscriptions = <StreamSubscription<Object>>[
@@ -52,10 +47,8 @@ void main() {
           }
           await preferences.close();
           await database.close();
-          await legacy.close();
         });
         expect(await database.delete(database.ownerSettings).go(), 1);
-        expect(await legacy.delete(legacy.settings).go(), 1);
         final result = await write.value(preferences);
         expect(
           result,
@@ -68,7 +61,6 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         expect(notifications, isEmpty);
         expect(await database.select(database.ownerSettings).get(), isEmpty);
-        expect(await legacy.select(legacy.settings).get(), isEmpty);
       },
     );
   }

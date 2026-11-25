@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:drift/drift.dart' show GeneratedDatabase;
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:meta/meta.dart';
@@ -17,7 +16,6 @@ import 'package:secrets/secrets.dart'
         DatabaseNotReady,
         DatabaseOpenFailure;
 
-import 'data/legacy_preferences_dao.dart';
 import 'data/preferences_dao.dart';
 import 'data/preferences_import.dart';
 import 'data/preferences_store.dart';
@@ -29,8 +27,8 @@ import 'domain/settings_repository.dart' as domain;
 
 part 'data/legacy_preferences.dart';
 
-/// Encrypted preferences with borrowed legacy access for unmigrated owners.
-/// Opening requires runtime admission and committed owner readiness.
+/// Encrypted preferences. Opening requires runtime admission and committed
+/// owner readiness.
 class Preferences implements domain.SettingsRepository {
   /// Applies the primary store's consent once foreground startup admits it.
   Future<void> refreshReportingConsent() => Report.refreshConsent(
@@ -42,8 +40,6 @@ class Preferences implements domain.SettingsRepository {
 
   final PreferencesDao _settingsDatasource;
   final PreferencesStore? _store;
-  final LegacyPreferencesDao Function() _legacyFactory;
-  late final LegacyPreferencesDao _legacy = _legacyFactory();
   final StreamController<Result<String, PreferencesFailure>>
   _currencyChangeController;
   final StreamController<Result<Environment, PreferencesFailure>>
@@ -53,29 +49,21 @@ class Preferences implements domain.SettingsRepository {
     _settingsDatasource,
   );
 
-  Preferences._({
-    required this._settingsDatasource,
-    required LegacyPreferencesDao Function() legacy,
-    this._store,
-  }) : _legacyFactory = legacy,
-       _currencyChangeController =
-           StreamController<Result<String, PreferencesFailure>>.broadcast(),
-       _environmentChangeController =
-           StreamController<
-             Result<Environment, PreferencesFailure>
-           >.broadcast();
+  Preferences._({required this._settingsDatasource, this._store})
+    : _currencyChangeController =
+          StreamController<Result<String, PreferencesFailure>>.broadcast(),
+      _environmentChangeController =
+          StreamController<Result<Environment, PreferencesFailure>>.broadcast();
 
   @useResult
   static Future<Result<Preferences, PreferencesFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-    required GeneratedDatabase legacyDatabase,
-  }) => _open(file: file, admission: admission, legacyDatabase: legacyDatabase);
+  }) => _open(file: file, admission: admission);
 
   static Future<Result<Preferences, PreferencesFailure>> _open({
     required File file,
     required RuntimeAdmission admission,
-    required GeneratedDatabase legacyDatabase,
     DatabaseKeys? testingKeys,
   }) async {
     final opened = await PreferencesStore.open(
@@ -101,7 +89,6 @@ class Preferences implements domain.SettingsRepository {
       return Ok(
         Preferences._(
           settingsDatasource: PreferencesDao(store.database),
-          legacy: () => LegacyPreferencesDao(legacyDatabase),
           store: store,
         ),
       );
@@ -252,49 +239,7 @@ class Preferences implements domain.SettingsRepository {
 
   @override
   @useResult
-  Future<Result<domain.ExchangeWebPreferences, PreferencesFailure>>
-  readExchangeWebPreferences() async =>
-      (await _fetchWithLegacyCredentials()).map(
-        (settings) => (
-          environment: settings.environment,
-          exchangeTestnetBasicAuthUsername:
-              settings.environment == Environment.testnet
-              ? settings.exchangeTestnetBasicAuthUsername
-              : null,
-          exchangeTestnetBasicAuthPassword:
-              settings.environment == Environment.testnet
-              ? settings.exchangeTestnetBasicAuthPassword
-              : null,
-        ),
-      );
-
-  @override
-  @useResult
   Future<Result<SettingsEntity, PreferencesFailure>> fetch() => _fetchOwner();
-
-  /// Composes the owner settings with credentials still needed by the legacy UI.
-  @useResult
-  Future<Result<SettingsEntity, PreferencesFailure>> fetchForSettingsScreen() =>
-      _fetchWithLegacyCredentials();
-
-  Future<Result<SettingsEntity, PreferencesFailure>>
-  _fetchWithLegacyCredentials() async {
-    final owned = await _fetchOwner();
-    if (owned case Err()) return owned;
-    try {
-      final credentials = await _legacy.readCredentials();
-      return owned.map(
-        (settings) => settings.copyWith(
-          exchangeTestnetBasicAuthUsername: credentials.username,
-          exchangeTestnetBasicAuthPassword: credentials.password,
-        ),
-      );
-    } on PreferencesMissingRowException {
-      return const Err(PreferencesMissingFailure());
-    } on Exception {
-      return const Err(PreferencesReadFailure());
-    }
-  }
 
   Future<Result<SettingsEntity, PreferencesFailure>> _fetchOwner() async {
     try {
@@ -562,34 +507,6 @@ class Preferences implements domain.SettingsRepository {
 
   @override
   @useResult
-  Future<Result<void, PreferencesFailure>> setExchangeTestnetBasicAuth({
-    String? username,
-    String? password,
-  }) async {
-    try {
-      await _legacy.setExchangeTestnetBasicAuth(
-        username: username,
-        password: password,
-      );
-      return const Ok(null);
-    } on PreferencesMissingRowException {
-      return const Err(PreferencesMissingFailure());
-    } on Exception catch (e, st) {
-      log.severe(
-        message: 'Failed to persist settings: setExchangeTestnetBasicAuth',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return Err(
-        PreferencesWriteFailure(
-          'setExchangeTestnetBasicAuth failed: ${e.runtimeType}',
-        ),
-      );
-    }
-  }
-
-  @override
-  @useResult
   Future<Result<void, PreferencesFailure>> setErrorReportingEnabled(
     bool enabled,
   ) async {
@@ -660,28 +577,9 @@ extension PreferencesTesting on Preferences {
   static Future<Result<Preferences, PreferencesFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-    required GeneratedDatabase legacyDatabase,
     required DatabaseKeys keys,
-  }) => Preferences._open(
-    file: file,
-    admission: admission,
-    legacyDatabase: legacyDatabase,
-    testingKeys: keys,
-  );
+  }) => Preferences._open(file: file, admission: admission, testingKeys: keys);
 
-  static Preferences fromDao(
-    PreferencesDao dao, {
-    LegacyPreferencesDao? legacy,
-  }) => Preferences._(
-    settingsDatasource: dao,
-    legacy: () => legacy ?? LegacyPreferencesDao(dao.attachedDatabase),
-  );
-
-  static Preferences fromDatabases({
-    required GeneratedDatabase owner,
-    required GeneratedDatabase legacy,
-  }) => Preferences._(
-    settingsDatasource: PreferencesDao(owner),
-    legacy: () => LegacyPreferencesDao(legacy),
-  );
+  static Preferences fromDao(PreferencesDao dao) =>
+      Preferences._(settingsDatasource: dao);
 }

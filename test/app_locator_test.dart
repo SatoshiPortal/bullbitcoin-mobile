@@ -56,7 +56,7 @@ Future<Result<Preferences, PreferencesFailure>> _openTestPreferences(
 ) async {
   final owner = await createPreferencesDatabase(copySettingsFrom: legacy);
   addTearDown(owner.close);
-  return Ok(PreferencesTesting.fromDatabases(owner: owner, legacy: legacy));
+  return Ok(PreferencesTesting.fromDao(PreferencesDao(owner)));
 }
 
 class _SecureStorage extends FakeSecureStoragePlatform {
@@ -152,7 +152,7 @@ void main() {
               tor: tor,
             ),
           ),
-          openPreferences: _openTestPreferences,
+          openPreferences: () => _openTestPreferences(database),
           openMempool: (tor, http) async => Ok(
             createMempoolForTesting(
               database: database,
@@ -457,7 +457,7 @@ void main() {
             tor: tor,
           ),
         ),
-        openPreferences: _openTestPreferences,
+        openPreferences: () => _openTestPreferences(database),
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
@@ -566,7 +566,7 @@ void main() {
           tor: tor,
         ),
       ),
-      openPreferences: _openTestPreferences,
+      openPreferences: () => _openTestPreferences(database),
       openMempool: (tor, http) async => Ok(
         createMempoolForTesting(database: database, tor: tor, torHttp: http),
       ),

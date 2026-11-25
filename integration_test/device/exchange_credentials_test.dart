@@ -1,6 +1,4 @@
 import 'package:exchange/setup.dart';
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
 
 import 'dart:convert';
 import 'dart:async';
@@ -14,61 +12,28 @@ import 'package:bbx_api/bbx_api.dart'
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('native exchange credential probes', () {
-    final locator = GetIt.asNewInstance();
-    late ExchangeKeychain storage;
-    late ExchangeKeychainProbe probe;
+    late InMemoryExchangeCredentialStorage storage;
     late ExchangeCredentials repository;
-    Future<void> storeCredential(
-      String value, {
-      required bool isTestnet,
-    }) async {
-      expect(
-        await storage.write(value, isTestnet: isTestnet) is Ok,
-        isTrue,
-        reason: 'synthetic credential must be persisted',
-      );
-    }
+    Future<void> storeCredential(String value, {required bool isTestnet}) =>
+        storage.writeApiKeyRecord(value, isTestnet: isTestnet);
 
     var completedProbes = 0;
-    const livePreprod = bool.fromEnvironment('TEST_EXCHANGE_LIVE');
-    const expectedProbes = livePreprod ? 7 : 6;
+    // The production credential lives in the app's encrypted Exchange store,
+    // which a standalone probe cannot open, so no live preprod probe exists.
+    const livePreprod = false;
+    const expectedProbes = 6;
 
-    // Register every test synchronously before platform initialization can yield.
-    setUpAll(() async {
-      final secrets = Secrets(
-        scratchDirectory: () async => Directory.systemTemp.path,
-      );
-      locator.registerSingleton<Secrets>(secrets);
-      probe = ExchangeKeychainProbe()..install();
-      storage = secrets.exchangeKeychain;
+    setUp(() {
+      storage = InMemoryExchangeCredentialStorage();
       repository = ExchangeCredentials.open(storage);
     });
-
-    setUp(() async {
-      probe.refuseReads = false;
-      probe.install();
-      for (final isTestnet in [false, true]) {
-        expect(await storage.delete(isTestnet: isTestnet) is Ok, isTrue);
-      }
-    });
-    tearDown(() async {
-      probe.refuseReads = false;
-      await probe.clearWrittenProbeKeys();
-      completedProbes++;
-    });
-    tearDownAll(() async {
-      try {
-        await probe.clearWrittenProbeKeys();
-      } finally {
-        probe.restore();
-        await locator.reset();
-      }
+    tearDown(() => completedProbes++);
+    tearDownAll(() {
       expect(completedProbes, expectedProbes);
       // Fixture cleanup alone must not count as an executed widget test.
       expect(binding.results, hasLength(expectedProbes));
@@ -81,7 +46,7 @@ void main() {
     });
 
     testWidgets(
-      'native storage preserves absence and inactive session semantics',
+      'stored credentials preserve absence and inactive session semantics',
       (tester) async {
         final absent = await repository.readActiveApiKey(isTestnet: true);
         expect(
@@ -100,7 +65,7 @@ void main() {
       },
     );
 
-    testWidgets('native storage rereads rotation and isolates environments', (
+    testWidgets('stored credentials reread rotation and isolate environments', (
       tester,
     ) async {
       await storeCredential(
@@ -144,7 +109,7 @@ void main() {
       );
     });
 
-    testWidgets('native authentication does not require account metadata', (
+    testWidgets('authentication does not require account metadata', (
       tester,
     ) async {
       await storeCredential(
@@ -173,31 +138,18 @@ void main() {
             invalid.failure is ExchangeApiKeyInvalidFailure,
         isTrue,
       );
-      expect(
-        (await storage.read(
-              isTestnet: true,
-            ) as Ok<String?, SecretFailure>).value ==
-            corrupt,
-        isTrue,
-      );
-      probe.refuseReads = true;
+      expect(storage.entries['testnet'] == corrupt, isTrue);
+      storage.scripted.add(Exception());
       final unavailable = await repository.readActiveApiKey(isTestnet: true);
       expect(
         unavailable is Err<String?, ExchangeFailure> &&
             unavailable.failure is ExchangeCredentialReadFailure,
         isTrue,
       );
-      probe.refuseReads = false;
-      expect(
-        (await storage.read(
-              isTestnet: true,
-            ) as Ok<String?, SecretFailure>).value ==
-            corrupt,
-        isTrue,
-      );
+      expect(storage.entries['testnet'] == corrupt, isTrue);
     });
     testWidgets(
-      'native HTTP and WebSocket authentication reread the same credential',
+      'HTTP and WebSocket authentication reread the same credential',
       (tester) async {
         final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
         final keys = <String?>[];
@@ -266,7 +218,7 @@ void main() {
         );
         expect(await exchange.connectNotifications(), isA<Ok>());
         exchange.disconnectNotifications();
-        probe.refuseReads = true;
+        storage.scripted.add(Exception());
         expect(
           await api.users.registerResponsibilityConsent(),
           isA<Err>().having(
@@ -374,87 +326,5 @@ void main() {
         await tester.pumpWidget(const SizedBox.shrink());
       },
     );
-
-    if (livePreprod) {
-      testWidgets(
-        'read-only preprod calls retain the existing testnet session',
-        (tester) async {
-          probe.restore();
-          try {
-            final credentials = ExchangeCredentials.open(
-              locator<Secrets>().exchangeKeychain,
-            );
-            final before = await credentials.readActiveApiKey(isTestnet: true);
-            final authenticated =
-                before is Ok<String?, ExchangeFailure> && before.value != null;
-            expect(
-              authenticated,
-              isTrue,
-              reason: 'requires an existing preprod session',
-            );
-            final exchange = Exchange.open(
-              mainnetEndpoint: Uri.parse(ExchangeDefaults.bbApiUrl),
-              testnetEndpoint: Uri.parse(ExchangeDefaults.bbApiTestUrl),
-              readSession: () async {
-                final credential = await credentials.readActiveApiKey(
-                  isTestnet: true,
-                );
-                return credential
-                    .map(
-                      (apiKey) => (
-                        environment: ExchangeEnvironment.testnet,
-                        epoch: 0,
-                        apiKey: apiKey,
-                      ),
-                    )
-                    .mapErr((_) => const ExchangeCredentialReadFailure());
-              },
-            );
-            final account = await exchange.getUserSummary(
-              ExchangeEnvironment.testnet,
-            );
-            expect(
-              account is Ok,
-              isTrue,
-              reason: 'preprod account read must succeed',
-            );
-            final orders = await exchange
-                .orders(ExchangeEnvironment.testnet)
-                .getOrders();
-            expect(
-              orders is Ok,
-              isTrue,
-              reason: 'preprod history read must succeed',
-            );
-            final recipients = await BbxApiRecipientsRepository(
-              api: locator<Bbx>(instanceName: 'testnetBbxApiClient'),
-            ).listRecipients(isTestnet: true);
-            expect(
-              recipients is Ok,
-              isTrue,
-              reason: 'preprod recipients read must succeed',
-            );
-            final after = await credentials.readActiveApiKey(isTestnet: true);
-            final unchanged = switch ((before, after)) {
-              (Ok(value: final original), Ok(value: final current)) =>
-                original == current,
-              _ => false,
-            };
-            expect(
-              unchanged,
-              isTrue,
-              reason: 'read-only probes must preserve the credential',
-            );
-            expect(
-              after is Ok<String?, ExchangeFailure> && after.value != null,
-              isTrue,
-              reason: 'read-only probes must not clear the existing session',
-            );
-          } finally {
-            probe.install();
-          }
-        },
-      );
-    }
   });
 }

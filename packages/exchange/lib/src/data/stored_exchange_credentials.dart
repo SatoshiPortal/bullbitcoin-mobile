@@ -2,22 +2,24 @@ import 'dart:convert';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../domain/entities/exchange_api_key.dart';
 import '../domain/exchange_failure.dart';
 import '../setup/exchange_credentials.dart';
 import 'exchange_api_key_mapper.dart';
+import 'storage/exchange_credential_storage.dart';
 
-/// Owns credential persistence and maps storage exceptions without logging their payload.
-class LegacyExchangeCredentials implements ExchangeCredentials {
-  final ExchangeKeychain _secureStorage;
+/// Owns credential persistence in the module database and maps storage
+/// exceptions without logging their payload. A read failure is never a
+/// signed-out state.
+class StoredExchangeCredentials implements ExchangeCredentials {
+  final ExchangeCredentialStorage _storage;
   final _mainnetMutationLock = Lock();
   final _testnetMutationLock = Lock();
   final _readFailureTypes = <bool, Type>{};
 
-  LegacyExchangeCredentials({required this._secureStorage});
+  StoredExchangeCredentials({required this._storage});
 
   Lock _mutationLock(bool isTestnet) =>
       isTestnet ? _testnetMutationLock : _mainnetMutationLock;
@@ -47,12 +49,7 @@ class LegacyExchangeCredentials implements ExchangeCredentials {
   }) async {
     final String? stored;
     try {
-      switch (await _secureStorage.read(isTestnet: isTestnet)) {
-        case Ok(:final value):
-          stored = value;
-        case Err():
-          return const Err(ExchangeCredentialReadFailure());
-      }
+      stored = await _storage.readApiKeyRecord(isTestnet: isTestnet);
     } on Exception {
       return const Err(ExchangeCredentialReadFailure());
     }
@@ -79,19 +76,10 @@ class LegacyExchangeCredentials implements ExchangeCredentials {
     try {
       final apiKeyModel = ExchangeApiKeyMapper.toModel(apiKey);
 
-      final stored = await _secureStorage.write(
+      await _storage.writeApiKeyRecord(
         jsonEncode(apiKeyModel.toJson()),
         isTestnet: isTestnet,
       );
-      if (stored case Err(:final failure)) {
-        log.warning(
-          'Exchange credential write failed: env=${isTestnet ? 'testnet' : 'mainnet'}',
-          error: failure.runtimeType,
-        );
-        return Err(
-          ExchangeApiKeySaveFailure('store failed: ${failure.runtimeType}'),
-        );
-      }
       log.fine(
         'Exchange credential stored: env=${isTestnet ? 'testnet' : 'mainnet'}',
       );
@@ -111,16 +99,7 @@ class LegacyExchangeCredentials implements ExchangeCredentials {
     required bool isTestnet,
   }) => _mutationLock(isTestnet).synchronized(() async {
     try {
-      final deleted = await _secureStorage.delete(isTestnet: isTestnet);
-      if (deleted case Err(:final failure)) {
-        log.warning(
-          'Exchange credential deletion failed: env=${isTestnet ? 'testnet' : 'mainnet'}',
-          error: failure.runtimeType,
-        );
-        return Err(
-          ExchangeApiKeyDeleteFailure('delete failed: ${failure.runtimeType}'),
-        );
-      }
+      await _storage.writeApiKeyRecord(null, isTestnet: isTestnet);
       log.fine(
         'Exchange credential removed: env=${isTestnet ? 'testnet' : 'mainnet'}',
       );

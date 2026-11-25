@@ -65,6 +65,38 @@ class FixtureOwner implements LegacyImportParticipant {
   }
 }
 
+class ProvenanceOwner extends FixtureOwner implements SourceProvenanceCheck {
+  final Result<void, LegacyImportFailure> verdict;
+  final List<bool> asked = [];
+  final List<OwnerOrigin> prepared = [];
+  @override
+  final bool freshWhenInitialFresh;
+  ProvenanceOwner(
+    super.ownerId,
+    super.file, {
+    this.verdict = const Ok(null),
+    this.freshWhenInitialFresh = false,
+  });
+
+  @override
+  Future<Result<PreparedOwner, LegacyImportFailure>> prepare(
+    ExclusiveAdmission admission,
+    OwnerOrigin origin,
+  ) {
+    prepared.add(origin);
+    return super.prepare(admission, origin);
+  }
+
+  @override
+  Future<Result<void, LegacyImportFailure>> verifyInitialSource(
+    ExclusiveAdmission admission, {
+    required bool legacySqlitePresent,
+  }) async {
+    asked.add(legacySqlitePresent);
+    return verdict;
+  }
+}
+
 class _Prepared implements PreparedOwner {
   final String id;
   final FixtureDatabase db;
