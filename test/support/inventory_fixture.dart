@@ -114,6 +114,7 @@ final class InventoryFixture {
       final opened = await SecretsInventory.open(
         file: file,
         admission: admission,
+        backupVerification: const VerifiedBackups(),
       );
       if (opened case Err()) throw StateError('Inventory open failed');
       inventory = (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
@@ -286,7 +287,6 @@ final class InventoryFixture {
     if (_signerDevices case final signers?) {
       services.registerSingleton<SignerDevices>(signers);
     }
-    services.registerSingleton<InventoryBackupVerification>(backup);
     services.registerSingleton<WalletRegistrations>(
       MemoryWalletRegistrations(),
     );
@@ -305,9 +305,8 @@ final class VerifiedBackups implements InventoryBackupVerification {
   const VerifiedBackups();
 
   @override
-  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    List<WalletRegistration> defaults,
-  ) async => const Ok(true);
+  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret) async =>
+      const Ok(BackupProof.verified);
 }
 
 /// Lets the database isolate and the widget test's fake clock advance together.

@@ -509,12 +509,7 @@ void main() {
     'reopening with an expired wall deadline still delays PIN comparison',
     () async {
       final pin = DateTime.now().microsecondsSinceEpoch.toString();
-      _value(
-        await inventory.setCredential(
-          pin,
-          backupVerification: _VerifiedBackup(allowEmpty: true),
-        ),
-      );
+      _value(await inventory.setCredential(pin));
       await inventory.close();
       final store = _value(
         await InventoryStore.open(file, admission, existing: true),
@@ -538,35 +533,6 @@ void main() {
       final attempt = _value(await reopened.unlock(pin));
       expect(attempt.accepted, isFalse);
       expect(attempt.failedAttempts, 5);
-    },
-  );
-
-  test(
-    'the verified default wallet is sufficient to set and change a PIN',
-    () async {
-      final backup = _VerifiedBackup();
-      expect(_value(await inventory.hasVerifiedBackups(backup)), isFalse);
-      _value(
-        await inventory.registerWallet(
-          _registration(
-            'wpkh([01234567/84h/1h/0h])',
-            network: 'bitcoinTestnet',
-            signer: 'local',
-            isDefault: true,
-          ),
-        ),
-      );
-      _value(await inventory.registerWallet(_wallet('unverified', '89abcdef')));
-      final pin = DateTime.now().microsecondsSinceEpoch.toString();
-
-      expect(_value(await inventory.hasVerifiedBackups(backup)), isTrue);
-      _value(await inventory.setCredential(pin, backupVerification: backup));
-      final replacement = '${pin}0';
-      _value(
-        await inventory.setCredential(replacement, backupVerification: backup),
-      );
-      inventory.lock();
-      expect(_value(await inventory.unlock(replacement)).accepted, isTrue);
     },
   );
 
@@ -602,21 +568,6 @@ void main() {
     final keys = Secrets(scratchDirectory: () async => directory.path);
     expect(() => keys.databaseKeys(module: 'secrets'), throwsArgumentError);
   });
-}
-
-final class _VerifiedBackup implements InventoryBackupVerification {
-  final bool allowEmpty;
-
-  _VerifiedBackup({this.allowEmpty = false});
-
-  @override
-  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    List<WalletRegistration> defaults,
-  ) async => Ok(
-    defaults.isEmpty
-        ? allowEmpty
-        : defaults.single.secretFingerprint?.hex == '01234567',
-  );
 }
 
 RegisteredWallet _wallet(String id, String parent) => RegisteredWallet(

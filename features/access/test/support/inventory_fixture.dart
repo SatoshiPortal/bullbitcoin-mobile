@@ -13,13 +13,14 @@ final class InventoryFixture {
   final RuntimeAdmission admission;
   final SecretsInventory inventory;
   final FakeSecureStoragePlatform storage;
-  final backup = const VerifiedBackups();
+  final TestBackups backup;
 
   InventoryFixture._(
     this.directory,
     this.admission,
     this.inventory,
     this.storage,
+    this.backup,
   );
 
   static Future<InventoryFixture> open({String? pin}) async {
@@ -53,9 +54,11 @@ final class InventoryFixture {
       exclusive: false,
       timeout: Duration.zero,
     ) as RuntimeAdmission;
+    final backup = TestBackups();
     final opened = await SecretsInventory.open(
       file: file,
       admission: admission,
+      backupVerification: backup,
     );
     final inventory =
         (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
@@ -64,12 +67,10 @@ final class InventoryFixture {
       admission,
       inventory,
       storage,
+      backup,
     );
     if (pin != null) {
-      final credential = await inventory.setCredential(
-        pin,
-        backupVerification: fixture.backup,
-      );
+      final credential = await inventory.setCredential(pin);
       if (credential case Err()) {
         await fixture.close();
         throw StateError('inventory credential setup failed');
@@ -86,11 +87,30 @@ final class InventoryFixture {
   }
 }
 
-final class VerifiedBackups implements InventoryBackupVerification {
-  const VerifiedBackups();
+/// A backup owner the test controls: every secret is proven until
+/// [verified] is cleared, and each read is counted.
+final class TestBackups implements InventoryBackupVerification {
+  bool verified = true;
+  int reads = 0;
 
   @override
-  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    List<WalletRegistration> defaults,
-  ) async => const Ok(true);
+  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret) async {
+    reads++;
+    return Ok(verified ? BackupProof.verified : BackupProof.missing);
+  }
 }
+
+/// A wallet whose seed the inventory holds, so a view has a secret to prove.
+RegisteredWallet localWallet() => const RegisteredWallet(
+  id: 'wallet-a',
+  secretFingerprint: '01234567',
+  masterFingerprint: '01234567',
+  signer: 'local',
+  network: 'bitcoinMainnet',
+  xpub: 'xpub-marker',
+  externalDescriptor: 'external-marker',
+  internalDescriptor: 'internal-marker',
+  label: null,
+  birthday: null,
+  isDefault: false,
+);

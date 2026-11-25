@@ -7,7 +7,6 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
-import 'package:secrets/secrets.dart' show SecretFailure, WalletRegistration;
 import 'package:secrets/src/data/fss_datasource.dart';
 import 'package:secrets/src/data/inventory_store.dart';
 import 'package:secrets/src/data/owner_keychain.dart';
@@ -394,12 +393,7 @@ void main() {
         admission: admission,
       ) as Ok<SecretsInventory, DatabaseOpenFailure>).value;
       final inventory = await open();
-      _expectOk(
-        await inventory.setCredential(
-          pin,
-          backupVerification: const _VerifiedBackups(),
-        ),
-      );
+      _expectOk(await inventory.setCredential(pin));
       await inventory.close();
       await writeReceipt(admission, 'fresh-v1/secrets');
       _expectOk(await OwnerKeychain().write(OwnerKey.pin, '${pin}0'));
@@ -561,15 +555,6 @@ void main() {
 }
 
 void _expectOk(Result<void, Failure> result) => expect(result, isA<Ok>());
-
-final class _VerifiedBackups implements InventoryBackupVerification {
-  const _VerifiedBackups();
-
-  @override
-  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    List<WalletRegistration> defaults,
-  ) async => const Ok(true);
-}
 
 final class _InventoryReadFailure extends FakeSecureStoragePlatform {
   bool failed = true;

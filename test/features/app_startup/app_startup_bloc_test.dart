@@ -238,25 +238,18 @@ void main() {
       final installation = await InventoryFixture.open(directory);
       addTearDown(installation.close);
       pin = Random.secure().nextInt(10000).toString().padLeft(4, '0');
-      expect(
-        await installation.inventory.setCredential(
-          pin,
-          backupVerification: installation.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await installation.inventory.setCredential(pin), isA<Ok>());
       await installation.inventory.close();
       final opened = await SecretsInventory.open(
         file: File('${directory.path}/test-secrets.sqlite'),
         admission: installation.admission,
+        backupVerification: installation.backup,
       );
       final inventory =
           (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
       final feature = AccessFeature.mount(
         services: services,
         inventory: inventory,
-        backupVerification: installation.backup,
-        hasVerifiedBackup: () async => true,
         onUnlocked: (_) {},
         onBackUp: (_) async {},
       );

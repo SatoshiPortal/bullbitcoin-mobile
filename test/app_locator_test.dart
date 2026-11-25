@@ -199,13 +199,7 @@ void main() {
 
     test('PIN protection defers Silent Payments and swap watchers', () async {
       final pin = DateTime.now().microsecondsSinceEpoch.toString();
-      expect(
-        await inventoryFixture.inventory.setCredential(
-          pin,
-          backupVerification: inventoryFixture.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await inventoryFixture.inventory.setCredential(pin), isA<Ok>());
       inventoryFixture.inventory.lock();
       await compose(startWatchers: true);
       final swap = locator<SwapFeature>();
@@ -493,13 +487,7 @@ void main() {
         isA<Ok>(),
       );
       expect(await catalog.find(key), isA<Ok>());
-      expect(
-        await inventoryFixture.inventory.setCredential(
-          '1234',
-          backupVerification: inventoryFixture.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await inventoryFixture.inventory.setCredential('1234'), isA<Ok>());
       inventoryFixture.inventory.lock();
       expect(await catalog.list(), isA<Err>());
       expect(
