@@ -212,10 +212,13 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// Reserve the ID before preparing properties owned by other stores. The
   /// callback must not call back into this inventory. If it fails, the wallet
   /// and its membership are not published; a retry prepares its properties.
+  /// When passed true, the callback must preserve backup evidence belonging to
+  /// the existing secret member and refuse a conflicting wallet identity.
   @useResult
   Future<Result<void, SecretFailure>> registerWallet(
     RegisteredWallet wallet, {
-    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+    Future<Result<void, SecretFailure>> Function(bool existingSecretMember)?
+    prepareProperties,
   }) => _inSession(
     (_) => _wallets.register(
       wallet,

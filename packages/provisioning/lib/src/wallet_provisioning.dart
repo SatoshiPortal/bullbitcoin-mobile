@@ -388,7 +388,7 @@ final class _WalletProvisioning implements WalletProvisioning {
         birthday: account.birthday?.toIso8601String(),
         isDefault: account.isDefault,
       ),
-      prepareProperties: () => _prepareProperties(
+      prepareProperties: (existingSecretMember) => _prepareProperties(
         WalletPropertyDraft(
           id: account.id,
           network: account.network,
@@ -396,6 +396,7 @@ final class _WalletProvisioning implements WalletProvisioning {
               ? Fingerprint.tryParse(account.masterFingerprint)
               : null,
           signerDevice: account.signerDevice,
+          existingSecretMember: existingSecretMember,
         ),
       ),
     );

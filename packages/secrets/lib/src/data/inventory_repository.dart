@@ -272,7 +272,8 @@ final class InventoryRepository {
     RegisteredWallet wallet, {
     required String view,
     required BackupGuard guard,
-    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+    Future<Result<void, SecretFailure>> Function(bool existingSecretMember)?
+    prepareProperties,
   }) async {
     SecretFailure? refused;
     final result = await boundary(
@@ -291,22 +292,42 @@ final class InventoryRepository {
         final member = secret == null
             ? 'wallet:${wallet.id}'
             : 'secret:$secret';
-        if (secret != null && await _isProtected(view)) {
-          final known =
-              await (_database.select(_database.viewMembers)..where(
-                    (row) =>
-                        row.viewId.equals(view) & row.member.equals(member),
-                  ))
-                  .getSingleOrNull();
-          final newSecret = Fingerprint.tryParse(secret);
-          if (known == null && newSecret == null) {
+        final known =
+            await (_database.select(_database.viewMembers)..where(
+                  (row) => row.viewId.equals(view) & row.member.equals(member),
+                ))
+                .getSingleOrNull();
+        final existingSecretMember = secret != null && known != null;
+        if (await _isProtected(view)) {
+          final members = await viewSecrets(_database, view);
+          final newSecret = secret == null
+              ? null
+              : Fingerprint.tryParse(secret);
+          if (secret != null && known == null && newSecret == null) {
             throw const _InvalidRegistration();
           }
-          if (known == null && newSecret != null) {
-            refused = await guard.require([
-              ...await viewSecrets(_database, view),
-              newSecret,
-            ]);
+          if ((known == null && newSecret != null) ||
+              prepareProperties != null) {
+            final regtest = switch (wallet.network) {
+              'bitcoinRegtest' || 'liquidRegtest' => true,
+              'bitcoinMainnet' ||
+              'bitcoinTestnet' ||
+              'liquidMainnet' ||
+              'liquidTestnet' => false,
+              _ => throw const _InvalidRegistration(),
+            };
+            final replacement = (walletId: wallet.id, regtest: regtest);
+            if (known == null && newSecret != null) {
+              refused = await guard.require(
+                [...members, newSecret],
+                replacingWallet: prepareProperties == null ? null : replacement,
+              );
+            } else if (prepareProperties != null) {
+              refused = await guard.requirePreserved(
+                members.where((item) => item != newSecret),
+                replacingWallet: replacement,
+              );
+            }
             if (refused != null) return false;
           }
         }
@@ -329,7 +350,7 @@ final class InventoryRepository {
               onConflict: DoNothing(target: [_database.wallets.id]),
             );
         if (inserted == null) return false;
-        if (await prepareProperties?.call() case Err()) {
+        if (await prepareProperties?.call(existingSecretMember) case Err()) {
           throw const _InvalidRegistration();
         }
         await _database

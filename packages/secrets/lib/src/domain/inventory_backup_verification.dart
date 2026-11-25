@@ -22,5 +22,8 @@ enum BackupProof {
 /// read without finding proof. An unreadable store with no positive proof is an
 /// [Err], never a [BackupProof.missing].
 abstract interface class InventoryBackupVerification {
-  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret);
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  });
 }

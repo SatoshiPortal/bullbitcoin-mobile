@@ -21,10 +21,21 @@ final class RecoverBullBackupVerification
   /// A positive proof wins even when the other store cannot be read. With no
   /// proof, an unreadable store means the state is unknown, never missing.
   @override
-  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret) async {
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async {
     var unreadable = false;
-    for (final store in [_backups, _regtestBackups]) {
-      switch (await store.projection(secret)) {
+    for (final (store, regtest) in [
+      (_backups, false),
+      (_regtestBackups, true),
+    ]) {
+      switch (await store.projection(
+        secret,
+        excludingWalletId: replacingWallet?.regtest == regtest
+            ? replacingWallet?.walletId
+            : null,
+      )) {
         case Ok(:final value):
           if (value.encryptedVaultTested || value.physicalBackupTested) {
             return const Ok(BackupProof.verified);

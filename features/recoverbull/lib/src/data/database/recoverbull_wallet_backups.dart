@@ -63,6 +63,33 @@ final class RecoverBullWalletBackups {
             .insertOnConflictUpdate(backupUsageCompanion(usage));
       });
 
+  /// Claims a wallet usage without changing evidence for another identity.
+  /// Existing members retain the evidence for their already-authorized seed.
+  Future<Result<void, RecoverBullFailure>> prepare(
+    WalletBackupUsage usage, {
+    required bool preserveVerified,
+  }) => _result(
+    () => _database.transaction(() async {
+      final table = _database.recoverbullWalletBackups;
+      // Claim the write lock before reading, including across connections.
+      await _database.customStatement(
+        'UPDATE recoverbull_wallet_backups SET wallet_id = wallet_id WHERE wallet_id = ?',
+        [usage.walletId],
+      );
+      final existing = await (_database.select(
+        table,
+      )..where((row) => row.walletId.equals(usage.walletId))).getSingleOrNull();
+      if (existing != null &&
+          existing.secretFingerprint != usage.secretFingerprint) {
+        throw const FormatException('wallet backup identity mismatch');
+      }
+      if (existing != null && preserveVerified) return;
+      await _database
+          .into(table)
+          .insertOnConflictUpdate(backupUsageCompanion(usage));
+    }),
+  );
+
   /// Records a successful challenge for the verified secret in this store.
   @useResult
   Future<Result<void, RecoverBullFailure>> recordPhysicalVerification({
@@ -111,8 +138,15 @@ final class RecoverBullWalletBackups {
 
   @useResult
   Future<Result<SecretBackupProjection, RecoverBullFailure>> projection(
-    Fingerprint fingerprint,
-  ) => _result(() => readSecretBackupProjection(_database, fingerprint.hex));
+    Fingerprint fingerprint, {
+    String? excludingWalletId,
+  }) => _result(
+    () => readSecretBackupProjection(
+      _database,
+      fingerprint.hex,
+      excludingWalletId: excludingWalletId,
+    ),
+  );
 
   Future<Result<T, RecoverBullFailure>> _result<T>(
     Future<T> Function() operation,

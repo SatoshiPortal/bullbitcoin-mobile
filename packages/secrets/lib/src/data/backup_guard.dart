@@ -58,8 +58,9 @@ final class BackupGuard {
   /// state is unknown; with no definite miss, an unknown state refuses as
   /// [BackupStateUnavailableFailure]. Nothing to check needs no verifier.
   Future<Result<List<Fingerprint>, SecretFailure>> missing(
-    Iterable<Fingerprint> secrets,
-  ) async {
+    Iterable<Fingerprint> secrets, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async {
     final pending = secrets.toSet();
     if (pending.isEmpty) return const Ok([]);
     final verifier = _verifier;
@@ -67,7 +68,7 @@ final class BackupGuard {
     final missing = <Fingerprint>[];
     SecretFailure? unreadable;
     for (final secret in pending) {
-      switch (await verifier.verify(secret)) {
+      switch (await verifier.verify(secret, replacingWallet: replacingWallet)) {
         case Ok(value: BackupProof.verified):
           break;
         case Ok(value: BackupProof.missing):
@@ -84,11 +85,34 @@ final class BackupGuard {
   }
 
   /// Refuses with [BackupRequiredFailure] unless every secret is verified.
-  Future<SecretFailure?> require(Iterable<Fingerprint> secrets) async =>
-      switch (await missing(secrets)) {
+  Future<SecretFailure?> require(
+    Iterable<Fingerprint> secrets, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async =>
+      switch (await missing(secrets, replacingWallet: replacingWallet)) {
         Err(:final failure) => failure,
         Ok(value: final missing) when missing.isNotEmpty =>
           BackupRequiredFailure(missing),
         Ok() => null,
       };
+
+  /// A legacy protected view may already contain unbacked secrets. Preparing
+  /// another wallet must not destroy an existing proof, but it does not add a
+  /// secret and must not require the legacy view to acquire new proofs.
+  Future<SecretFailure?> requirePreserved(
+    Iterable<Fingerprint> secrets, {
+    required ({String walletId, bool regtest}) replacingWallet,
+  }) async {
+    final surviving = await missing(secrets, replacingWallet: replacingWallet);
+    if (surviving case Err(:final failure)) return failure;
+    final after = (surviving as Ok<List<Fingerprint>, SecretFailure>).value;
+    if (after.isEmpty) return null;
+    final current = await missing(after);
+    if (current case Err(:final failure)) return failure;
+    final alreadyMissing = (current as Ok<List<Fingerprint>, SecretFailure>)
+        .value
+        .toSet();
+    final lost = after.where((secret) => !alreadyMissing.contains(secret));
+    return lost.isEmpty ? null : BackupRequiredFailure(lost);
+  }
 }

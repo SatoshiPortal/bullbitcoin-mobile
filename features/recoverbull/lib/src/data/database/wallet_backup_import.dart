@@ -148,11 +148,18 @@ WalletBackupUsage backupUsageFromRow(WalletBackupUsageRow row) => (
 
 Future<SecretBackupProjection> readSecretBackupProjection(
   RecoverBullDatabase database,
-  String fingerprint,
-) async {
-  final rows = await (database.select(
-    database.recoverbullWalletBackups,
-  )..where((row) => row.secretFingerprint.equals(fingerprint))).get();
+  String fingerprint, {
+  String? excludingWalletId,
+}) async {
+  final rows =
+      await (database.select(database.recoverbullWalletBackups)..where(
+            (row) =>
+                row.secretFingerprint.equals(fingerprint) &
+                (excludingWalletId == null
+                    ? const Constant(true)
+                    : row.walletId.isNotValue(excludingWalletId)),
+          ))
+          .get();
   int? encrypted;
   int? physical;
   var encryptedTested = false;
