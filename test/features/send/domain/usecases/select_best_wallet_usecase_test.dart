@@ -106,6 +106,98 @@ void main() {
     }
   });
 
+  group('selects by chain within the active environment', () {
+    PaymentRequest invoice({required bool isTestnet}) => PaymentRequest.bolt11(
+      invoice: 'lninvoice',
+      amountSat: 50000,
+      paymentHash: 'hash',
+      expiresAt: 0,
+      isTestnet: isTestnet,
+    );
+
+    for (final (name, bitcoin, liquid, isTestnet) in [
+      ('mainnet', Network.bitcoinMainnet, Network.liquidMainnet, false),
+      ('testnet', Network.bitcoinTestnet, Network.liquidTestnet, true),
+      ('regtest', Network.bitcoinRegtest, Network.liquidRegtest, true),
+    ]) {
+      test('a $name invoice is paid from Liquid first', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+            _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+          ],
+          request: invoice(isTestnet: isTestnet),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<Wallet, SendFailure>).value.network, liquid);
+      });
+
+      // Detection rejects Lightning addresses on regtest.
+      if (name != 'regtest') {
+        test('a $name Lightning address is paid from Liquid first', () {
+          final result = usecase.execute(
+            wallets: [
+              _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+              _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+            ],
+            request: const PaymentRequest.lnAddress(
+              address: 'name@example.com',
+            ),
+            amountSat: 50000,
+          );
+
+          expect((result as Ok<Wallet, SendFailure>).value.network, liquid);
+        });
+      }
+
+      test('a $name invoice falls back to Bitcoin when Liquid is short', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'liquid', balanceSat: 1000, network: liquid),
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+          ],
+          request: invoice(isTestnet: isTestnet),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<Wallet, SendFailure>).value.network, bitcoin);
+      });
+
+      test('a $name Bitcoin address is paid from Bitcoin', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+          ],
+          request: PaymentRequest.bitcoin(
+            address: 'address',
+            isTestnet: isTestnet,
+          ),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<Wallet, SendFailure>).value.network, bitcoin);
+      });
+
+      test('a $name Liquid address is paid from Liquid', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+            _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+          ],
+          request: PaymentRequest.liquid(
+            address: 'address',
+            isTestnet: isTestnet,
+          ),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<Wallet, SendFailure>).value.network, liquid);
+      });
+    }
+  });
+
   test('reports a shortfall when there are no wallets at all', () async {
     final result = usecase.execute(
       wallets: const [],
