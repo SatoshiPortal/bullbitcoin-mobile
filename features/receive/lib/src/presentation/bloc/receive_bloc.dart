@@ -37,6 +37,7 @@ import 'package:receive/src/domain/usecases/prepare_receive_address_usecase.dart
 import 'package:receive/src/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_order_swap_usecase.dart';
+import 'package:receive/src/domain/usecases/watch_receive_settlement_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:transactions/transactions.dart';
@@ -69,6 +70,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._broadcastOriginalTransactionUsecase,
     required this._watchPayjoinUsecase,
     required this._transactions,
+    required this._watchReceiveSettlementUsecase,
     required this._watchReceiveOrderSwapUsecase,
     required this._watchReceivePayjoinEnabledUsecase,
     required this._watchReceivePayjoinMinAmountUsecase,
@@ -170,6 +172,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final Transactions _transactions;
+  final WatchReceiveSettlementUsecase _watchReceiveSettlementUsecase;
   final WatchReceiveOrderSwapUsecase _watchReceiveOrderSwapUsecase;
   final WatchReceivePayjoinEnabledUsecase _watchReceivePayjoinEnabledUsecase;
   final WatchReceivePayjoinMinAmountUsecase
@@ -1621,10 +1624,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx.network != state.wallet?.network) {
       return;
     }
-    // The address watch emits the latest transaction for the address. Pin the
-    // receive to the first one so a later, different payment cannot take over.
-    final detected = state.tx;
-    if (detected != null && detected.txId != tx.txId) return;
+    // The address watch emits the latest transaction for the address; `tx`
+    // follows it so a replacement (RBF) takes over and settles instead.
     emit(state.copyWith(tx: tx, settlementTx: tx));
   }
 
@@ -1644,11 +1645,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _settlementSubscription?.cancel();
     _settlementSubscription = settlement == null
         ? null
-        : _transactions
-              .watchWalletTransactionByTxId(
-                walletId: settlement.walletId,
-                txId: settlement.txId,
-              )
+        : _watchReceiveSettlementUsecase
+              .execute(walletId: settlement.walletId, txId: settlement.txId)
               .listen((tx) {
                 if (isClosed) return;
                 add(ReceiveSettlementObserved(tx));

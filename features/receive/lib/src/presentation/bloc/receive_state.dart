@@ -629,13 +629,17 @@ abstract class ReceiveState with _$ReceiveState {
             : (walletId: swap.receiveWalletId, txId: txId);
       case ReceiveType.bitcoin:
         final session = payjoin;
-        final payjoinTxId = switch (session?.status) {
-          PayjoinStatus.completed => session?.txId,
-          PayjoinStatus.aborted => session?.originalTxId,
-          _ => null,
-        };
-        if (session != null && payjoinTxId != null) {
-          return (walletId: session.walletId, txId: payjoinTxId);
+        if (session != null &&
+            (session.status == PayjoinStatus.completed ||
+                session.status == PayjoinStatus.aborted)) {
+          // A finished session is settled by its own transaction only; the
+          // address watcher's transaction is no proof for it.
+          final payjoinTxId = session.status == PayjoinStatus.completed
+              ? session.txId
+              : session.originalTxId;
+          return payjoinTxId == null || payjoinTxId.isEmpty
+              ? null
+              : (walletId: session.walletId, txId: payjoinTxId);
         }
         final detected = tx;
         return detected == null
@@ -652,10 +656,12 @@ abstract class ReceiveState with _$ReceiveState {
   }
 
   /// Whether the wallet observes the [settlement] transaction as confirmed.
-  bool get settlementConfirmed =>
-      settlement != null &&
-      settlementTx?.txId == settlement!.txId &&
-      settlementTx!.isConfirmed;
+  bool get settlementConfirmed {
+    final expected = settlement;
+    final observed = settlementTx;
+    if (expected == null || observed == null) return false;
+    return observed.txId == expected.txId && observed.isConfirmed;
+  }
 
   Transaction get transaction => Transaction(
     walletTransaction: tx,

@@ -18,6 +18,7 @@ import 'package:receive/src/domain/usecases/prepare_receive_address_usecase.dart
 import 'package:receive/src/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_order_swap_usecase.dart';
+import 'package:receive/src/domain/usecases/watch_receive_settlement_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:receive/src/presentation/bloc/receive_bloc.dart';
@@ -92,6 +93,9 @@ final class ReceiveFeature {
     locator.registerFactory<WatchReceivePayjoinMinAmountUsecase>(
       () => WatchReceivePayjoinMinAmountUsecase(locator<PayjoinPolicyAccess>()),
     );
+    locator.registerFactory<WatchReceiveSettlementUsecase>(
+      () => WatchReceiveSettlementUsecase(locator<Transactions>()),
+    );
     locator.registerFactory<WatchReceiveOrderSwapUsecase>(
       () => WatchReceiveOrderSwapUsecase(orderSwaps),
     );
@@ -141,6 +145,7 @@ final class ReceiveFeature {
             locator<BroadcastOriginalTransactionUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         transactions: locator<Transactions>(),
+        watchReceiveSettlementUsecase: locator<WatchReceiveSettlementUsecase>(),
         watchReceiveOrderSwapUsecase: locator<WatchReceiveOrderSwapUsecase>(),
         watchReceivePayjoinEnabledUsecase:
             locator<WatchReceivePayjoinEnabledUsecase>(),

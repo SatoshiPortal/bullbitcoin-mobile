@@ -70,7 +70,9 @@ BullPaymentPhase receivePayjoinPhase({
 ///
 /// Boltz `completed` is written when the claim is broadcast, so only
 /// [confirmed], the wallet observing the `receiveTxid` transaction as
-/// confirmed, completes the payment.
+/// confirmed, completes a swap. A direct payment's `receiveTxid` is only a
+/// candidate until the swap resolver accepts it by setting the swap
+/// `completed`: it completes only when both hold.
 BullPaymentProgress receiveLightningProgress({
   required List<String> steps,
   required SwapStatus status,
@@ -80,10 +82,11 @@ BullPaymentProgress receiveLightningProgress({
 }) {
   assert(steps.length == (wasDirectPayment ? 2 : 3));
   if (wasDirectPayment) {
+    final settled = confirmed && status == SwapStatus.completed;
     return BullPaymentProgress(
       steps: steps,
-      completed: confirmed ? 1 : 0,
-      currentState: confirmed
+      completed: settled ? 1 : 0,
+      currentState: settled
           ? BullPaymentStepState.active
           : BullPaymentStepState.broadcast,
     );
@@ -117,9 +120,12 @@ BullPaymentPhase receiveLightningPhase({
   required bool hasReceiveTxid,
   required bool confirmed,
 }) {
-  if (confirmed && (wasDirectPayment || hasReceiveTxid)) {
-    return BullPaymentPhase.success;
+  if (wasDirectPayment) {
+    return confirmed && status == SwapStatus.completed
+        ? BullPaymentPhase.success
+        : BullPaymentPhase.sending;
   }
+  if (confirmed && hasReceiveTxid) return BullPaymentPhase.success;
   if (!wasDirectPayment && status.hasFailed && !hasReceiveTxid) {
     return BullPaymentPhase.failed;
   }

@@ -17,6 +17,7 @@ export 'src/domain/usecases/watch_payjoin_usecase.dart';
 export 'src/domain/usecases/watch_receive_order_swap_usecase.dart';
 export 'src/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 export 'src/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
+export 'src/domain/usecases/watch_receive_settlement_usecase.dart';
 export 'src/presentation/bloc/receive_bloc.dart';
 export 'src/presentation/receive_failure_l10n.dart';
 export 'src/presentation/receive_navigation.dart';
