@@ -143,6 +143,12 @@ class AppLocator {
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
       admission: locator<RuntimeAdmission>(),
+      inventory: locator<SecretsInventory>(),
+      activeEnvironment: locator<ActiveEnvironmentReader>(),
+      normalBackups: locator<RecoverBullWalletBackups>(),
+      regtestBackups: locator<RecoverBullWalletBackups>(
+        instanceName: 'regtest',
+      ),
       cutover: locator<RecoverBullCutover>(instanceName: family),
     );
     locator.registerSingleton<RecoverBullFeature>(
