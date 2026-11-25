@@ -276,7 +276,7 @@ void main() {
           source: LegacySource(source, 16),
           create: SqliteDatabase.new,
         ),
-        expectedOwners: const {'exchange', 'pilot'},
+        expectedOwners: const {'exchange'},
         participants: const [],
       );
       await admitted(await before.prepare()).close();

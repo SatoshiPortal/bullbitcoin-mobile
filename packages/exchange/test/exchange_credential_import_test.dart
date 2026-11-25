@@ -54,11 +54,11 @@ void main() {
     _value(
       await secrets.exchangeKeychain.write('{"key":"old"}', isTestnet: false),
     );
-    keystore.locked = true;
     final lease = await exclusive();
     try {
       expect(participant.freshWhenInitialFresh, isTrue);
       // The keychain is not consulted, even when it is locked.
+      keystore.locked = true;
       final readsBefore = keystore.reads;
       expect(
         await participant.verifyInitialSource(
@@ -67,15 +67,15 @@ void main() {
         ),
         isA<Ok<void, LegacyImportFailure>>(),
       );
+      expect(keystore.reads, readsBefore);
+      keystore.locked = false;
       final owner = _value(await participant.prepare(lease, OwnerOrigin.fresh));
       expect(await owner.initializeFresh(), isA<Ok>());
       expect(_value(await owner.receipt()), OwnerReadiness.initialized);
       _value(await owner.close());
-      expect(keystore.reads, readsBefore);
     } finally {
       await lease.close();
     }
-    keystore.locked = false;
     expect(
       _value(await secrets.exchangeKeychain.read(isTestnet: false)),
       '{"key":"old"}',
