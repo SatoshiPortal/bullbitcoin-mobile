@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:exchange/src/data/storage/exchange_credential_import.dart'
@@ -342,37 +343,73 @@ void main() {
     },
   );
 
-  test(
-    'a marker published before Exchange joined also ignores the residue',
-    () async {
-      await source.delete();
-      final before = StorageCutover(
-        directory: Directory('${directory.path}/coordination'),
-        legacy: LegacySourceStore(
-          source: LegacySource(source, 16),
-          create: SqliteDatabase.new,
-        ),
-        expectedOwners: const {'exchange'},
-        participants: const [],
+  for (final version in [1, 2]) {
+    test('a v$version marker kept from a fresh install imports the Basic Auth '
+        'the app wrote afterwards', () async {
+      final markerFile = File('${directory.path}/coordination/split-v1.json');
+      await markerFile.parent.create();
+      await markerFile.writeAsString(
+        jsonEncode({
+          'version': version,
+          'protocol': 'split-v1',
+          'state': 'importing',
+          'sourceSchemaVersion': 16,
+          'initialFresh': true,
+          'sourceEstablished': true,
+          'origins': {'exchange': 'legacy'},
+          if (version == 2) 'admittedOwners': <String>[],
+        }),
       );
-      await admitted(await before.prepare()).close();
       final admission = admitted(await cutover().prepare());
       try {
         final storage = switch (await open(admission)) {
           Ok(:final value) => value,
           Err() => fail('the admitted store must open'),
         };
-        expect(await storage.readApiKeyRecord(isTestnet: false), isNull);
+        final basicAuth = await storage.readBasicAuth();
+        expect(basicAuth.username, 'legacy-user');
+        expect(basicAuth.password, 'legacy-password');
         await storage.close();
       } finally {
         await admission.close();
       }
-      expect(
-        (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
-        _mainnetRecord,
-      );
-    },
-  );
+      final published =
+          jsonDecode(await markerFile.readAsString()) as Map<String, Object?>;
+      expect((published['origins'] as Map)['exchange'], 'legacy');
+    });
+  }
+
+  // PENDING PRODUCT DECISION: whether a lone API key under a marker kept from
+  // a fresh install is imported or ignored. This pins today's behaviour only.
+  test('[pending product decision] a marker published before Exchange joined '
+      'still ignores the keychain residue', () async {
+    await source.delete();
+    final before = StorageCutover(
+      directory: Directory('${directory.path}/coordination'),
+      legacy: LegacySourceStore(
+        source: LegacySource(source, 16),
+        create: SqliteDatabase.new,
+      ),
+      expectedOwners: const {'exchange'},
+      participants: const [],
+    );
+    await admitted(await before.prepare()).close();
+    final admission = admitted(await cutover().prepare());
+    try {
+      final storage = switch (await open(admission)) {
+        Ok(:final value) => value,
+        Err() => fail('the admitted store must open'),
+      };
+      expect(await storage.readApiKeyRecord(isTestnet: false), isNull);
+      await storage.close();
+    } finally {
+      await admission.close();
+    }
+    expect(
+      (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+      _mainnetRecord,
+    );
+  });
 
   test(
     'a legacy database that disagrees with the store stays blocked',

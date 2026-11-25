@@ -56,7 +56,6 @@ void main() {
     );
     final lease = await exclusive();
     try {
-      expect(participant.freshWhenInitialFresh, isTrue);
       // The keychain is not consulted, even when it is locked.
       keystore.locked = true;
       final readsBefore = keystore.reads;
@@ -179,6 +178,52 @@ void main() {
       );
     },
   );
+
+  // PENDING PRODUCT DECISION: a lone API key under a marker kept from a fresh
+  // install. This pins today's behaviour (ignored, never read) only.
+  test('[pending product decision] a kept fresh marker imports the Settings '
+      'rows but not the keychain record', () async {
+    _value(
+      await secrets.exchangeKeychain.write('{"key":"old"}', isTestnet: false),
+    );
+    final legacy = sqlite3.open(source.path);
+    try {
+      legacy.userVersion = 16;
+      legacy.execute('''
+        CREATE TABLE settings (
+          id INTEGER PRIMARY KEY,
+          exchange_testnet_basic_auth_username TEXT,
+          exchange_testnet_basic_auth_password TEXT
+        );
+        INSERT INTO settings VALUES (1, 'user', 'secret');
+      ''');
+    } finally {
+      legacy.close();
+    }
+    final lease = await exclusive();
+    try {
+      final owner = _value(
+        await participant.prepare(lease, OwnerOrigin.legacy),
+      );
+      // The opened store needs no keystore; a read here would be the key.
+      keystore.locked = true;
+      final readsBefore = keystore.reads;
+      expect(
+        await owner.importLegacy(LegacySource(source, 16, initialFresh: true)),
+        isA<Ok<void, LegacyImportFailure>>(),
+      );
+      expect(keystore.reads, readsBefore);
+      expect(_value(await owner.receipt()), OwnerReadiness.imported);
+      keystore.locked = false;
+      _value(await owner.close());
+    } finally {
+      await lease.close();
+    }
+    expect(
+      _value(await secrets.exchangeKeychain.read(isTestnet: false)),
+      '{"key":"old"}',
+    );
+  });
 
   for (final rows in [
     '',
