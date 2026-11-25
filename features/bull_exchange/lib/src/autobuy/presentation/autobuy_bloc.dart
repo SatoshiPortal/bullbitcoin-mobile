@@ -24,10 +24,10 @@ AutoBuyCalls autoBuyCallsOf(Exchange exchange, ExchangeSession session) {
       readOfResult(await exchange.getUserSummary(session.environment));
   return (
     loadContext: () async {
-      final (read, entries) = await (
-        summary(),
-        exchange.openUnknownWrites(),
-      ).wait;
+      // One after the other: a record `.wait` would wrap a programmer error
+      // of either read in a ParallelWaitError instead of rethrowing it.
+      final read = await summary();
+      final entries = await exchange.openUnknownWrites();
       // A journal that can't be read leaves no entry to start from; the
       // write gate then refuses the write itself (JournalUnreadable).
       final open = switch (entries) {
