@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:bull_reporting/src/metrics/statistics_transport.dart';
@@ -99,6 +100,76 @@ void main() {
     nonMainnet.installationActive(DateTime.utc(2026, 11, 25));
     await nonMainnet.flush();
     expect(requests, isEmpty);
+  });
+
+  group('HTTP status', () {
+    late Directory logs;
+
+    setUp(() async {
+      logs = await Directory.systemTemp.createTemp('statistics-status-');
+      await initializeLogging(directory: logs, background: false);
+    });
+
+    tearDown(() async {
+      await log.flush();
+      await logs.delete(recursive: true);
+    });
+
+    Future<String> supportLog() async {
+      await log.flush();
+      final file = File('${logs.path}/bull_logs.tsv');
+      return await file.exists() ? file.readAsString() : '';
+    }
+
+    for (final status in [200, 204, 400, 429, 500, 503]) {
+      final ok = status < 300;
+      test('${ok ? 'accepts' : 'records'} $status without a retry', () async {
+        await server.close(force: true);
+        var received = 0;
+        server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+        server.listen((request) async {
+          received++;
+          await request.drain<void>();
+          request.response.statusCode = status;
+          request.response.headers.set('retry-after', '1');
+          request.response.write('secret-response-body');
+          await request.response.close();
+        });
+        final endpoint = 'public@127.0.0.1:${server.port}';
+        transport = StatisticsTransport(
+          'http://$endpoint/1',
+          '6.16.0+220',
+          'mainnet',
+          () async => true,
+        );
+        transport.updateConsent(true);
+        transport.installationActive(DateTime.utc(2026, 11, 25));
+
+        await transport.flush().timeout(const Duration(seconds: 5));
+        // A rejected batch is dropped, never re-sent or re-queued.
+        await transport.flush().timeout(const Duration(seconds: 5));
+        expect(received, 1);
+
+        final text = await supportLog();
+        if (ok) {
+          expect(text, isNot(contains('Statistics delivery rejected')));
+        } else {
+          expect(
+            text,
+            contains('Statistics delivery rejected, status $status'),
+          );
+        }
+        expect(text, isNot(contains('secret-response-body')));
+        expect(text, isNot(contains('${server.port}')));
+        expect(text, isNot(contains('public')));
+        expect(text, isNot(contains('bull.installation.active')));
+
+        // The wallet path is not blocked: a later observation still goes out.
+        transport.installationActive(DateTime.utc(2026, 11, 26));
+        await transport.flush().timeout(const Duration(seconds: 5));
+        expect(received, 2);
+      });
+    }
   });
 
   test('revocation terminates a request awaiting a response', () async {
