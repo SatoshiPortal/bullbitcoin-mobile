@@ -327,7 +327,6 @@ container-tools:
 		--build-arg ANDROID_NDK=$$android_ndk \
 		--build-arg BDK_RUST_VERSION=$(BDK_RUST_VERSION) \
 		--build-arg PAYJOIN_RUST_VERSION=$(PAYJOIN_RUST_VERSION) \
-		--build-arg BARK_RUST_VERSION=$(BARK_RUST_VERSION) \
 		$(if $(EXPECTED_RUST_VERSION),--build-arg EXPECTED_RUST_VERSION=$(EXPECTED_RUST_VERSION)) \
 		.
 
@@ -429,21 +428,19 @@ export RUSTUP_AUTO_INSTALL ?= 0
 BDK_RUST_VERSION ?= $(RUST_VERSION)
 # Official hosted Payjoin pins this compiler explicitly in native/rust-toolchain.toml.
 PAYJOIN_RUST_VERSION ?= 1.85.1
-BARK_RUST_VERSION ?= 1.90.0
 EXPECTED_ABIS ?= arm64-v8a
 # The pinned Rust compilers as KEY=VALUE lines: CI loads them into $GITHUB_ENV so these variables stay their single source.
 rust-versions:
 	@echo RUST_VERSION=$(RUST_VERSION)
 	@echo BDK_RUST_VERSION=$(BDK_RUST_VERSION)
 	@echo PAYJOIN_RUST_VERSION=$(PAYJOIN_RUST_VERSION)
-	@echo BARK_RUST_VERSION=$(BARK_RUST_VERSION)
 verify-rustc-pins:
 	@set -e; \
-	for version in $(RUST_VERSION) $(BDK_RUST_VERSION) $(PAYJOIN_RUST_VERSION) $(BARK_RUST_VERSION); do \
+	for version in $(RUST_VERSION) $(BDK_RUST_VERSION) $(PAYJOIN_RUST_VERSION); do \
 		actual=$$($(CONTAINER) run --rm bull-app rustup run $$version rustc --version); \
 		case "$$actual" in "rustc $$version ("*) ;; *) echo "Unexpected Rust compiler: $$actual" >&2; exit 1 ;; esac; \
 	done; \
-	bash tools/verify_rustc_pins.sh --require-bark "$(APK)" "$(RUST_VERSION)" "$(PAYJOIN_RUST_VERSION)" $(EXPECTED_ABIS)
+	bash tools/verify_rustc_pins.sh --require-scuttle "$(APK)" "$(RUST_VERSION)" "$(PAYJOIN_RUST_VERSION)" $(EXPECTED_ABIS)
 
 rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins
