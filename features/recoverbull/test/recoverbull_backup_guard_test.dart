@@ -25,6 +25,7 @@ void main() {
 
   late Directory directory;
   late File secretsFile;
+  late File mainFile;
   late File regtestFile;
   late RuntimeAdmission admission;
   late RecoverBullWalletBackups mainBackups;
@@ -48,11 +49,12 @@ void main() {
     addTearDown(() => directory.delete(recursive: true));
     File file(String name) => File('${directory.path}/$name.sqlite');
     secretsFile = file('secrets');
+    mainFile = file('recoverbull');
     regtestFile = file('recoverbull_regtest');
 
     FakeSecureStoragePlatform().install();
     final main = recoverBullCutoverForTesting(
-      file: file('recoverbull'),
+      file: mainFile,
       standalone: file('standalone'),
     );
     final regtest = recoverBullCutoverForTesting(
@@ -107,14 +109,16 @@ void main() {
     String seed,
   ) => target.registerWallet(
     _local(id, seed),
-    prepareProperties: () async => (await properties.prepareWallet(
-      WalletPropertyDraft(
-        id: id,
-        network: BitcoinNetwork.mainnet,
-        secretFingerprint: Fingerprint(seed),
-        signerDevice: null,
-      ),
-    )).mapErr((_) => const StoreSecretFailure()),
+    prepareProperties: (existingSecretMember) async =>
+        (await properties.prepareWallet(
+          WalletPropertyDraft(
+            id: id,
+            network: BitcoinNetwork.mainnet,
+            secretFingerprint: Fingerprint(seed),
+            signerDevice: null,
+            existingSecretMember: existingSecretMember,
+          ),
+        )).mapErr((_) => const StoreSecretFailure()),
   );
 
   Future<void> back(
@@ -240,6 +244,144 @@ void main() {
       _ok(await register(inventory, 'wallet-c', _c));
       expect(_ok(await inventory.findWallet('wallet-c')), isNotNull);
     });
+
+    test(
+      'refuses when preparing the wallet would erase its only proof',
+      () async {
+        await protectedWithA();
+        await back(mainBackups, 'wallet-c', _c);
+        final before = _ok(await mainBackups.read('wallet-c'));
+
+        expect(
+          _failure(await register(inventory, 'wallet-c', _c)),
+          isA<BackupRequiredFailure>(),
+        );
+        expect(_ok(await inventory.findWallet('wallet-c')), isNull);
+        expect(_ok(await mainBackups.read('wallet-c')), before);
+        expect(_ok(await inventory.unbackedSecrets()), isEmpty);
+      },
+    );
+
+    test(
+      'retains a proof with the same wallet id in the other store',
+      () async {
+        await protectedWithA();
+        await back(mainBackups, 'wallet-c', _c);
+        await back(regtestBackups, 'wallet-c', _c);
+        _ok(await register(inventory, 'wallet-c', _c));
+        expect(_ok(await inventory.unbackedSecrets()), isEmpty);
+        expect(
+          _ok(await mainBackups.read('wallet-c'))?.physicalBackupTested,
+          isFalse,
+        );
+        expect(
+          _ok(await regtestBackups.read('wallet-c'))?.physicalBackupTested,
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'retains a verified vault when replacing the matching usage',
+      () async {
+        await protectedWithA();
+        await back(mainBackups, 'wallet-c', _c);
+        final db = openRecoverBullDatabaseForTesting(mainFile.path);
+        addTearDown(db.close);
+        await db.customStatement(
+          "INSERT INTO recoverbull_backup_status (network, fingerprint, vault_digest, verified_at) VALUES (?, ?, zeroblob(32), ?)",
+          ['bitcoinMainnet', _c, '2026-01-01T00:00:00.000Z'],
+        );
+        _ok(await register(inventory, 'wallet-c', _c));
+        expect(_ok(await inventory.unbackedSecrets()), isEmpty);
+        expect(
+          _ok(await mainBackups.read('wallet-c'))?.physicalBackupTested,
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'preserves the only proof when an existing member adds a wallet',
+      () async {
+        await protectedWithA();
+        await back(mainBackups, 'wallet-a-two', _a);
+        await back(mainBackups, 'wallet-a', _a, tested: false);
+        final before = _ok(await mainBackups.read('wallet-a-two'));
+        _ok(await register(inventory, 'wallet-a-two', _a));
+        expect(_ok(await inventory.findWallet('wallet-a-two')), isNotNull);
+        expect(_ok(await mainBackups.read('wallet-a-two')), before);
+        expect(_ok(await inventory.unbackedSecrets()), isEmpty);
+      },
+    );
+
+    test('a legacy unbacked member can add another wallet', () async {
+      await protectedWithA();
+      await back(mainBackups, 'wallet-a', _a, tested: false);
+      _ok(await register(inventory, 'wallet-a-two', _a));
+      expect(_ok(await inventory.findWallet('wallet-a-two')), isNotNull);
+      expect(_ok(await inventory.unbackedSecrets()), [Fingerprint(_a)]);
+    });
+
+    test(
+      'refuses an existing member wallet id owned by a different seed',
+      () async {
+        await protectedWithA();
+        await back(mainBackups, 'earlier-b', _b);
+        _ok(await register(inventory, 'wallet-b', _b));
+        await back(mainBackups, 'wallet-a-two', _b);
+        await back(mainBackups, 'earlier-b', _b, tested: false);
+        final before = _ok(await mainBackups.read('wallet-a-two'));
+        expect(
+          _failure(await register(inventory, 'wallet-a-two', _a)),
+          isA<BackupRequiredFailure>(),
+        );
+        expect(_ok(await inventory.findWallet('wallet-a-two')), isNull);
+        expect(_ok(await mainBackups.read('wallet-a-two')), before);
+        expect(_ok(await inventory.unbackedSecrets()), isEmpty);
+      },
+    );
+
+    test(
+      'the property owner refuses a conflicting identity with other proofs',
+      () async {
+        await protectedWithA();
+        await back(mainBackups, 'wallet-a-two', _b);
+        final before = _ok(await mainBackups.read('wallet-a-two'));
+        expect(
+          _failure(await register(inventory, 'wallet-a-two', _a)),
+          isA<StoreSecretFailure>(),
+        );
+        expect(_ok(await inventory.findWallet('wallet-a-two')), isNull);
+        expect(_ok(await mainBackups.read('wallet-a-two')), before);
+        expect(_ok(await inventory.unbackedSecrets()), isEmpty);
+      },
+    );
+
+    test(
+      'refuses watch-only preparation that would erase a member proof',
+      () async {
+        await protectedWithA();
+        await back(mainBackups, 'watch-only', _a);
+        await back(mainBackups, 'wallet-a', _a, tested: false);
+        final before = _ok(await mainBackups.read('watch-only'));
+        final result = await inventory.registerWallet(
+          _watchOnly('watch-only'),
+          prepareProperties: (existingSecretMember) async =>
+              (await properties.prepareWallet(
+                const WalletPropertyDraft(
+                  id: 'watch-only',
+                  network: BitcoinNetwork.mainnet,
+                  secretFingerprint: null,
+                  signerDevice: null,
+                ),
+              )).mapErr((_) => const StoreSecretFailure()),
+        );
+        expect(_failure(result), isA<BackupRequiredFailure>());
+        expect(_ok(await inventory.findWallet('watch-only')), isNull);
+        expect(_ok(await mainBackups.read('watch-only')), before);
+      },
+    );
 
     test('accepts another wallet of a seed already in the view', () async {
       await protectedWithA();

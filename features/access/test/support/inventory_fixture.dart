@@ -94,7 +94,10 @@ final class TestBackups implements InventoryBackupVerification {
   int reads = 0;
 
   @override
-  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret) async {
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async {
     reads++;
     return Ok(verified ? BackupProof.verified : BackupProof.missing);
   }

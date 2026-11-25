@@ -26,8 +26,10 @@ final class _Proofs implements InventoryBackupVerification {
       unreadable = unreadable ?? {};
 
   @override
-  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret) async =>
-      unreadable.contains(secret.hex)
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async => unreadable.contains(secret.hex)
       ? const Err(BackupStateUnavailableFailure())
       : Ok(proofs[secret.hex] ?? BackupProof.missing);
 }
@@ -40,7 +42,10 @@ final class _PausedProof implements InventoryBackupVerification {
   _PausedProof(this.proofs);
 
   @override
-  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret) async {
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async {
     if (!entered.isCompleted) {
       entered.complete();
       await release.future;

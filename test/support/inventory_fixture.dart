@@ -305,8 +305,10 @@ final class VerifiedBackups implements InventoryBackupVerification {
   const VerifiedBackups();
 
   @override
-  Future<Result<BackupProof, SecretFailure>> verify(Fingerprint secret) async =>
-      const Ok(BackupProof.verified);
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async => const Ok(BackupProof.verified);
 }
 
 /// Lets the database isolate and the widget test's fake clock advance together.

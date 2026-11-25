@@ -120,7 +120,8 @@ void main() {
       );
       final attempt = await inventory.registerWallet(
         wallet,
-        prepareProperties: () async => const Err(StoreSecretFailure()),
+        prepareProperties: (existingSecretMember) async =>
+            const Err(StoreSecretFailure()),
       );
       expect(attempt, isA<Err<void, SecretFailure>>());
       expect(_value(await inventory.findWallet(id)), isNull);
@@ -131,7 +132,7 @@ void main() {
         for (var attempt = 0; attempt < 2; attempt++)
           inventory.registerWallet(
             wallet,
-            prepareProperties: () async {
+            prepareProperties: (existingSecretMember) async {
               preparations++;
               return const Ok(null);
             },
