@@ -676,6 +676,7 @@ class _ArkPageState extends State<_ArkPage> {
       ArkExitsScreen(
         snapshot: snapshot,
         waitingForFunds: waitingForFunds,
+        readPaymentAnimations: widget.feature._readPaymentAnimations?.execute,
         onRefresh: () {
           if (_live(owner)) unawaited(owner.refresh());
         },
