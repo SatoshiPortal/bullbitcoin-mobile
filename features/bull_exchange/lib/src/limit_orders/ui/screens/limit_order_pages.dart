@@ -623,6 +623,7 @@ String limitAmountProblemText(
       AmountNoRate() ||
           AmountInvalid() ||
           AmountOverBalance() ||
+          AmountRefusedByExchange() ||
           AmountKycNeeded(),
       _,
     ) =>

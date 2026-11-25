@@ -38,6 +38,11 @@ const _entered = EnteredAmount(
   overBalance: false,
 );
 const _unreachable = ReadProblemUnreachable(isNetwork: true);
+const _minimum150 = ExchangeOrderLimit(
+  ExchangeOrderAmountBound.minimum,
+  150,
+  'CAD',
+);
 
 const _noMarket = AmountNoMarket(_ctx);
 const _loading = AmountEditing(
@@ -82,6 +87,7 @@ const _events = <AmountEntryEvent>[
   AmountContinuePressed(),
   AmountDetourReturned(_ctx2),
   AmountEditRequested(),
+  AmountLimitRefused(_minimum150),
 ];
 
 AmountEditing _editing(
@@ -123,6 +129,7 @@ final _table = <AmountEntryState, List<_Next?>>{
       [AmountFetchRate(_cad)],
     ),
     null,
+    null,
   ],
   _loading: [
     _to(_editing(_d.copyWith(text: '250'), const RateLoading(_cad))),
@@ -144,6 +151,7 @@ final _table = <AmountEntryState, List<_Next?>>{
     _to(_editing(_d, const RateLoading(_cad), problem: const AmountNoRate())),
     null,
     null,
+    null,
   ],
   _ready: [
     _to(_editing(_d.copyWith(text: '250'), const RateReady(_rate))),
@@ -163,6 +171,7 @@ final _table = <AmountEntryState, List<_Next?>>{
     null,
     null,
     const _Next(_done),
+    null,
     null,
     null,
   ],
@@ -194,6 +203,7 @@ final _table = <AmountEntryState, List<_Next?>>{
     ),
     null,
     null,
+    null,
   ],
   _kyc: [
     null,
@@ -217,13 +227,26 @@ final _table = <AmountEntryState, List<_Next?>>{
       ),
     ),
     null,
+    null,
   ],
   _funding: [
     for (var i = 0; i < 12; i++) null,
     _to(_editing(_d, const RateReady(_rate), context: _ctx2)),
     null,
+    null,
   ],
-  _done: [for (var i = 0; i < 13; i++) null, _to(_ready)],
+  _done: [
+    for (var i = 0; i < 13; i++) null,
+    _to(_ready),
+    _to(
+      _editing(
+        _d,
+        const RateReady(_rate),
+        context: _ctx.withExchangeLimit(_minimum150),
+        problem: const AmountBelowMinimum(150),
+      ),
+    ),
+  ],
   _rejected: List.filled(_events.length, null),
 };
 
@@ -420,6 +443,50 @@ void main() {
       expect(_check('150', policy: limited), isA<AmountCheckPassed>());
     });
 
+    test('limits the exchange answered are checked per currency', () {
+      final known = _ctx
+          .withExchangeLimit(_minimum150)
+          .withExchangeLimit(
+            const ExchangeOrderLimit(
+              ExchangeOrderAmountBound.maximum,
+              400,
+              'CAD',
+            ),
+          );
+      expect(
+        _check('100', context: known),
+        const AmountCheckRefused(AmountBelowMinimum(150)),
+      );
+      expect(
+        _check('450', context: known),
+        const AmountCheckRefused(AmountAboveMaximum(400)),
+      );
+      expect(_check('200', context: known), isA<AmountCheckPassed>());
+      // The stricter of the policy's and the known bounds.
+      expect(
+        _check(
+          '170',
+          context: known,
+          policy: _policy(limits: const AmountLimits(minFiat: 180)),
+        ),
+        const AmountCheckRefused(AmountBelowMinimum(180)),
+      );
+      // A limit of another currency is not this market's.
+      expect(
+        _check(
+          '100',
+          context: _ctx.withExchangeLimit(
+            const ExchangeOrderLimit(
+              ExchangeOrderAmountBound.minimum,
+              150,
+              'EUR',
+            ),
+          ),
+        ),
+        isA<AmountCheckPassed>(),
+      );
+    });
+
     test("the market's KYC policy decides", () {
       const none = AmountContext(
         kycGroups: {},
@@ -565,6 +632,58 @@ void main() {
       ),
       _to(_editing(_d, const RateFailed(_cad, ReadProblemMalformed()))),
     );
+  });
+
+  group('a limit refusal from the exchange', () {
+    test('goes back to the draft with the limit, and Continue now refuses', () {
+      final back = transitionAmountEntry(
+        _buy,
+        _done,
+        const AmountLimitRefused(_minimum150),
+      ).state;
+      expect(
+        back,
+        isA<AmountEditing>()
+            .having((s) => s.draft, 'draft', _d)
+            .having((s) => s.problem, 'problem', const AmountBelowMinimum(150)),
+      );
+      final again = transitionAmountEntry(
+        _buy,
+        back,
+        const AmountContinuePressed(),
+      ).state;
+      expect((again as AmountEditing).problem, const AmountBelowMinimum(150));
+      final raised = transitionAmountEntry(
+        _buy,
+        again,
+        const AmountTyped('200'),
+      );
+      expect(
+        transitionAmountEntry(
+          _buy,
+          raised.state,
+          const AmountContinuePressed(),
+        ).state,
+        isA<AmountDone>(),
+      );
+    });
+
+    test('in another currency it is shown as the exchange said it', () {
+      const limit = ExchangeOrderLimit(
+        ExchangeOrderAmountBound.minimum,
+        10,
+        'EUR',
+      );
+      final back = transitionAmountEntry(
+        _buy,
+        _done,
+        const AmountLimitRefused(limit),
+      ).state;
+      expect(
+        (back as AmountEditing).problem,
+        const AmountRefusedByExchange(limit),
+      );
+    });
   });
 
   test('every state is reachable', () {

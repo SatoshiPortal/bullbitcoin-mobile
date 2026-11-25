@@ -5,6 +5,7 @@ import '../domain/catalog/kyc_policy.dart';
 import '../domain/catalog/market.dart';
 import '../domain/entities/order.dart';
 import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart' show ExchangeOrderAmountBound;
 import 'step_next.dart';
 
 enum AmountUnit { fiat, bitcoin }
@@ -55,6 +56,32 @@ final class AmountLimits {
 
   const AmountLimits({this.minFiat, this.maxFiat});
 
+  static const none = AmountLimits();
+
+  /// Both bounds at once: the higher minimum and the lower maximum.
+  AmountLimits and(AmountLimits other) => AmountLimits(
+    minFiat: _pick(minFiat, other.minFiat, (a, b) => a > b ? a : b),
+    maxFiat: _pick(maxFiat, other.maxFiat, (a, b) => a < b ? a : b),
+  );
+
+  static double? _pick(
+    double? a,
+    double? b,
+    double Function(double, double) choose,
+  ) => switch ((a, b)) {
+    (final a?, final b?) => choose(a, b),
+    (final a?, null) => a,
+    (null, final b?) => b,
+    (null, null) => null,
+  };
+
+  /// These limits with the bound the exchange refused an order for.
+  AmountLimits withExchangeLimit(ExchangeOrderLimit limit) =>
+      and(switch (limit.bound) {
+        ExchangeOrderAmountBound.minimum => AmountLimits(minFiat: limit.amount),
+        ExchangeOrderAmountBound.maximum => AmountLimits(maxFiat: limit.amount),
+      });
+
   @override
   bool operator ==(Object other) =>
       other is AmountLimits &&
@@ -95,20 +122,49 @@ final class AmountContext {
   /// Available balance per currency; a currency missing here has none.
   final Map<FiatCurrency, double> balances;
 
-  const AmountContext({required this.kycGroups, required this.balances});
+  /// The order limits known per currency: the exchange's answers this flow
+  /// has seen. A currency missing here has none known yet.
+  final Map<FiatCurrency, AmountLimits> limits;
+
+  const AmountContext({
+    required this.kycGroups,
+    required this.balances,
+    this.limits = const {},
+  });
 
   double balanceOf(FiatCurrency currency) => balances[currency] ?? 0;
+
+  AmountLimits limitsOf(FiatCurrency currency) =>
+      limits[currency] ?? AmountLimits.none;
+
+  /// This context, knowing [limit]. A limit in a currency the exchange
+  /// doesn't trade is not kept.
+  AmountContext withExchangeLimit(ExchangeOrderLimit limit) {
+    final currency = FiatCurrency.values
+        .where((c) => c.code == limit.currency)
+        .firstOrNull;
+    if (currency == null) return this;
+    return withLimits({
+      ...limits,
+      currency: limitsOf(currency).withExchangeLimit(limit),
+    });
+  }
+
+  AmountContext withLimits(Map<FiatCurrency, AmountLimits> limits) =>
+      AmountContext(kycGroups: kycGroups, balances: balances, limits: limits);
 
   @override
   bool operator ==(Object other) =>
       other is AmountContext &&
       _sameSet(other.kycGroups, kycGroups) &&
-      _sameMap(other.balances, balances);
+      _sameMap(other.balances, balances) &&
+      _sameMap(other.limits, limits);
 
   @override
   int get hashCode => Object.hash(
     Object.hashAllUnordered(kycGroups),
     Object.hashAllUnordered(balances.entries.map((e) => (e.key, e.value))),
+    Object.hashAllUnordered(limits.entries.map((e) => (e.key, e.value))),
   );
 }
 
@@ -360,6 +416,21 @@ final class AmountOverBalance extends AmountProblem {
   int get hashCode => Object.hash(AmountOverBalance, available);
 }
 
+/// The exchange refused the amount for [limit], in a currency other than the
+/// draft's, so the step can't check it itself.
+final class AmountRefusedByExchange extends AmountProblem {
+  final ExchangeOrderLimit limit;
+
+  const AmountRefusedByExchange(this.limit);
+
+  @override
+  bool operator ==(Object other) =>
+      other is AmountRefusedByExchange && other.limit == limit;
+
+  @override
+  int get hashCode => Object.hash(AmountRefusedByExchange, limit);
+}
+
 /// Back from the KYC detour, the account's level still doesn't allow the
 /// amount.
 final class AmountKycNeeded extends AmountProblem {
@@ -473,9 +544,11 @@ AmountCheck checkAmount(
   };
   if (parsed == null) return const AmountCheckRefused(AmountInvalid());
   final (:fiat, :sats) = parsed;
-  final limits = policy.limits;
-  final min = limits?.minFiat;
-  final max = limits?.maxFiat;
+  final limits = (policy.limits ?? AmountLimits.none).and(
+    context.limitsOf(currency),
+  );
+  final min = limits.minFiat;
+  final max = limits.maxFiat;
   if (min != null && fiat < min) {
     return AmountCheckRefused(AmountBelowMinimum(min));
   }
@@ -685,6 +758,14 @@ final class AmountEditRequested extends AmountEntryEvent {
   const AmountEditRequested();
 }
 
+/// The exchange refused an order for the entered amount: it broke [limit].
+/// The step goes back to editing the same draft, knowing the limit.
+final class AmountLimitRefused extends AmountEntryEvent {
+  final ExchangeOrderLimit limit;
+
+  const AmountLimitRefused(this.limit);
+}
+
 @immutable
 sealed class AmountEntryEffect {
   const AmountEntryEffect();
@@ -766,6 +847,36 @@ AmountProblem? _problemOnReturn(AmountCheck check) => switch (check) {
   AmountCheckKycRequired() => const AmountKycNeeded(),
   AmountCheckShortfall(:final available) => AmountOverBalance(available),
 };
+
+/// The exchange refused [amount] for [limit]: editing the same draft again,
+/// with the limit known, so Continue now refuses it here and says why.
+AmountEntryNext _onLimitRefused(
+  AmountPolicy policy,
+  EnteredAmount amount,
+  AmountContext context,
+  ExchangeOrderLimit limit,
+) {
+  final learned = context.withExchangeLimit(limit);
+  final quote = RateReady(amount.rate);
+  final problem = switch (checkAmount(policy, amount.draft, quote, learned)) {
+    AmountCheckRefused(
+      problem: final problem && (AmountBelowMinimum() || AmountAboveMaximum()),
+    ) =>
+      problem,
+    AmountCheckRefused() ||
+    AmountCheckPassed() ||
+    AmountCheckKycRequired() ||
+    AmountCheckShortfall() => AmountRefusedByExchange(limit),
+  };
+  return StepNext(
+    AmountEditing(
+      draft: amount.draft,
+      quote: quote,
+      context: learned,
+      problem: problem,
+    ),
+  );
+}
 
 /// A rate answer: it lands only on the rate being loaded for its market.
 AmountEntryNext _onRate(
@@ -909,7 +1020,10 @@ AmountEntryNext transitionAmountEntry(
         AmountOpenFunding(draft.market),
       ]),
     },
-  (AmountEditing(), AmountDetourReturned() || AmountEditRequested()) =>
+  (
+    AmountEditing(),
+    AmountDetourReturned() || AmountEditRequested() || AmountLimitRefused(),
+  ) =>
     StepNext.stay(state),
 
   (
@@ -953,10 +1067,16 @@ AmountEntryNext transitionAmountEntry(
         AmountMarketChosen() ||
         AmountRateRetryPressed() ||
         AmountContinuePressed() ||
-        AmountEditRequested(),
+        AmountEditRequested() ||
+        AmountLimitRefused(),
   ) =>
     StepNext.stay(state),
 
+  (
+    AmountDone(:final amount, :final context),
+    AmountLimitRefused(:final limit),
+  ) =>
+    _onLimitRefused(policy, amount, context, limit),
   (AmountDone(:final amount, :final context), AmountEditRequested()) =>
     StepNext(
       AmountEditing(
@@ -991,7 +1111,8 @@ AmountEntryNext transitionAmountEntry(
         AmountRateArrived() ||
         AmountRateRetryPressed() ||
         AmountContinuePressed() ||
-        AmountEditRequested(),
+        AmountEditRequested() ||
+        AmountLimitRefused(),
   ) =>
     StepNext.stay(state),
 
@@ -1005,7 +1126,8 @@ AmountEntryNext transitionAmountEntry(
         AmountRateRetryPressed() ||
         AmountContinuePressed() ||
         AmountDetourReturned() ||
-        AmountEditRequested(),
+        AmountEditRequested() ||
+        AmountLimitRefused(),
   ) =>
     StepNext.stay(state),
 };
