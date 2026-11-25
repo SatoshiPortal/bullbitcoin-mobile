@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -17,6 +19,20 @@ import 'package:swap_feature/src/ui/pages/swap_confirm_page.dart';
 import 'package:swaps/swaps.dart';
 
 class _MockTransferBloc extends Mock implements TransferBloc {}
+
+/// The confirm page shows the app's swap icon, which the app bundles and this
+/// member's own test run does not. Serve that one asset as a transparent pixel;
+/// any other missing asset still fails.
+final class _AppAssets extends CachingAssetBundle {
+  static const _swapIcon = 'assets/icons/swap.png';
+  static final _pixel = base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+  );
+
+  @override
+  Future<ByteData> load(String key) async =>
+      key == _swapIcon ? ByteData.sublistView(_pixel) : rootBundle.load(key);
+}
 
 void main() {
   testWidgets('coin selection failure dismisses the confirmation transition', (
@@ -59,11 +75,14 @@ void main() {
         theme: AppTheme.themeData(AppThemeType.dark),
         locale: const Locale('en'),
         localizationsDelegates: BullUiLocalizations.localizationsDelegates,
-        home: MediaQuery(
-          data: const MediaQueryData(disableAnimations: true),
-          child: BlocProvider<TransferBloc>.value(
-            value: bloc,
-            child: const SwapConfirmPage(),
+        home: DefaultAssetBundle(
+          bundle: _AppAssets(),
+          child: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: BlocProvider<TransferBloc>.value(
+              value: bloc,
+              child: const SwapConfirmPage(),
+            ),
           ),
         ),
       ),
