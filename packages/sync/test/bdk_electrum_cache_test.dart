@@ -104,22 +104,75 @@ List<int> _bytes(String hex) => [
 String _scripthash(String scriptHex) =>
     _hex(sha256.convert(_bytes(scriptHex)).bytes.reversed.toList());
 
-// Synthetic spends accepted by the loopback fixture. Native BDK still parses
-// their exact outpoints and verifies their canonical confirmation evidence.
-Uint8List _replacementSpend(Outpoint input, int sats) {
-  final amount = ByteData(8)..setUint64(0, sats, Endian.little);
-  final index = ByteData(4)..setUint32(0, input.vout, Endian.little);
-  return (BytesBuilder()
-        ..add([2, 0, 0, 0, 1])
-        ..add([
-          for (var i = 62; i >= 0; i -= 2)
-            int.parse(input.txId.substring(i, i + 2), radix: 16),
-        ])
-        ..add(index.buffer.asUint8List())
-        ..add([0, 0xfd, 0xff, 0xff, 0xff, 1])
-        ..add(amount.buffer.asUint8List())
-        ..add([22, 0, 20, ...List.filled(20, 0xab), 0, 0, 0, 0]))
-      .toBytes();
+/// A validly signed spend of [input] from the wallet stored at [path], paying
+/// [sats] to a foreign script. BDK drops an unconfirmed transaction whose
+/// owned inputs fail script verification, so the witness must be real. Another
+/// [sats] value yields a conflicting spend of the same outpoint.
+Uint8List _replacementSpend(String path, Outpoint input, int sats) {
+  final open = _Wallet.open(path);
+  final mnemonic = bdk.Mnemonic.fromString(mnemonic: _testMnemonic);
+  final secret = bdk.DescriptorSecretKey(
+    networkKind: bdk.NetworkKind.test,
+    mnemonic: mnemonic,
+    password: null,
+  );
+  final signers = [
+    for (final keychain in [
+      bdk.KeychainKind.external_,
+      bdk.KeychainKind.internal,
+    ])
+      bdk.SignersContainer.fromDescriptor(
+        descriptor: bdk.Descriptor.newBip84(
+          secretKey: secret,
+          keychainKind: keychain,
+          networkKind: bdk.NetworkKind.test,
+        ),
+      ),
+  ];
+  final recipient = bdk.Script(
+    rawOutputScript: Uint8List.fromList([0, 20, ...List.filled(20, 0xab)]),
+  );
+  final outpoint = bdk.OutPoint(
+    txid: bdk.Txid.fromString(hex: input.txId),
+    vout: input.vout,
+  );
+  try {
+    final psbt = bdk.TxBuilder()
+        .addUtxo(outpoint: outpoint)
+        .manuallySelectedOnly()
+        .addRecipient(
+          script: recipient,
+          amount: bdk.Amount.fromSat(satoshi: sats),
+        )
+        .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: 1000))
+        .finish(wallet: open.wallet);
+    try {
+      expect(
+        open.wallet.signWithSigners(
+          psbt: psbt,
+          signers: signers,
+          signOptions: null,
+        ),
+        isTrue,
+      );
+      final tx = psbt.extractTx();
+      try {
+        return Uint8List.fromList(tx.serialize());
+      } finally {
+        tx.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
+  } finally {
+    recipient.dispose();
+    for (final signer in signers) {
+      signer.dispose();
+    }
+    secret.dispose();
+    mnemonic.dispose();
+    open.close();
+  }
 }
 
 final class _NoInputReservations implements InputReservationPort {
@@ -715,7 +768,7 @@ void main() {
           txId: phase.ids['T2'] ?? fail('missing T2'),
           vout: 0,
         );
-        final original = _replacementSpend(input, 90000);
+        final original = _replacementSpend(path, input, 90000);
         final native = bdk.Transaction(transactionBytes: original);
         final txid = native.computeTxid();
         final originalId = txid.toString();
@@ -762,6 +815,7 @@ void main() {
         if (scenario != 'unknown replacement') {
           final replacement = bdk.Transaction(
             transactionBytes: _replacementSpend(
+              path,
               scenario == 'confirmed nonconflict' ? independent : input,
               scenario == 'confirmed nonconflict' ? 40000 : 80000,
             ),
@@ -1516,7 +1570,7 @@ void main() {
       test('covers the index that held a spent outpoint', () async {
         final phase = await fixture.load('S1-reorg-reconfirmed', 0);
         completed(await sync.execute(descriptor));
-        final spend = _replacementSpend(input(phase.ids), 5000);
+        final spend = _replacementSpend(path, input(phase.ids), 5000);
         final txid = await broadcast(spend);
         await fixture.exposeBroadcasts(true);
         await fixture.requests();
@@ -1555,7 +1609,7 @@ void main() {
           final phase = await fixture.load('S1-reorg-reconfirmed', 0);
           completed(await sync.execute(descriptor));
           final outpoint = input(phase.ids);
-          final raw = _replacementSpend(outpoint, 5000);
+          final raw = _replacementSpend(path, outpoint, 5000);
           final txid = await broadcast(raw);
           await fixture.exposeBroadcasts(true);
 
@@ -1605,7 +1659,7 @@ void main() {
         final phase = await fixture.load('S1-reorg-reconfirmed', 0);
         completed(await sync.execute(descriptor));
         final outpoint = input(phase.ids);
-        final raw = _replacementSpend(outpoint, 5000);
+        final raw = _replacementSpend(path, outpoint, 5000);
         final txid = await broadcast(raw);
         await fixture.exposeBroadcasts(true);
 
@@ -1695,7 +1749,7 @@ void main() {
       test('a covered eviction proves the target absent', () async {
         final phase = await fixture.load('S1-reorg-reconfirmed', 0);
         completed(await sync.execute(descriptor));
-        final spend = _replacementSpend(input(phase.ids), 5000);
+        final spend = _replacementSpend(path, input(phase.ids), 5000);
         final txid = await broadcast(spend);
         await fixture.exposeBroadcasts(true);
         final target = SyncTransactionTarget(
@@ -1725,7 +1779,9 @@ void main() {
       test('a fresh confirmation proves a target visible', () async {
         final phase = await fixture.load('S1-reorg-reconfirmed', 0);
         completed(await sync.execute(descriptor));
-        final txid = await broadcast(_replacementSpend(input(phase.ids), 5000));
+        final txid = await broadcast(
+          _replacementSpend(path, input(phase.ids), 5000),
+        );
         await fixture.confirmBroadcast(txid);
         final target = SyncTransactionTarget(
           txid: txid,
@@ -1754,7 +1810,7 @@ void main() {
           final phase = await fixture.load('S1-reorg-reconfirmed', 0);
           completed(await sync.execute(descriptor));
           final outpoint = input(phase.ids);
-          final txid = await broadcast(_replacementSpend(outpoint, 5000));
+          final txid = await broadcast(_replacementSpend(path, outpoint, 5000));
           await fixture.confirmBroadcast(txid, validAnchor: false);
           await fixture.requests();
 
@@ -1781,9 +1837,13 @@ void main() {
           final phase = await fixture.load('S1-reorg-reconfirmed', 0);
           completed(await sync.execute(descriptor));
           final outpoint = input(phase.ids);
-          final first = await broadcast(_replacementSpend(outpoint, 5000));
+          final first = await broadcast(
+            _replacementSpend(path, outpoint, 5000),
+          );
           await fixture.exposeBroadcasts(true);
-          final second = await broadcast(_replacementSpend(outpoint, 4000));
+          final second = await broadcast(
+            _replacementSpend(path, outpoint, 4000),
+          );
           await fixture.exposeBroadcasts(true);
           await fixture.requests();
 
