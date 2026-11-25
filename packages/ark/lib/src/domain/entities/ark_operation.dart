@@ -29,7 +29,7 @@ sealed class ArkSubmission {
   factory ArkSubmission.registerBoard({
     required String operationId,
     required String unfinalisedPsbt,
-    required int keypairIndex,
+    required int? keypairIndex,
     required int expiryHeight,
   }) = ArkRegisterBoard;
 }
@@ -83,17 +83,17 @@ final class ArkBoardFunding extends ArkSubmission {
 final class ArkRegisterBoard extends ArkSubmission {
   final String operationId;
   final String unfinalisedPsbt;
-  final int keypairIndex;
+  final int? keypairIndex;
   final int expiryHeight;
   ArkRegisterBoard({
     required this.operationId,
     required this.unfinalisedPsbt,
-    required this.keypairIndex,
+    required int? keypairIndex,
     required this.expiryHeight,
-  }) {
+  }) : keypairIndex = keypairIndex {
     if (operationId.isEmpty ||
         unfinalisedPsbt.isEmpty ||
-        keypairIndex < 0 ||
+        (keypairIndex != null && keypairIndex < 0) ||
         expiryHeight < 0) {
       throw ArgumentError('Invalid board registration');
     }
@@ -102,15 +102,28 @@ final class ArkRegisterBoard extends ArkSubmission {
 
 final class ArkBoardFundingDetails {
   final String address;
-  final int keypairIndex;
+  final int? keypairIndex;
+  final String? scuttleToken;
   final int expiryHeight;
   ArkBoardFundingDetails({
     required this.address,
-    required this.keypairIndex,
+    required int keypairIndex,
     required this.expiryHeight,
-  }) {
+  }) : keypairIndex = keypairIndex,
+       scuttleToken = null {
     if (address.isEmpty || keypairIndex < 0 || expiryHeight < 0) {
       throw ArgumentError('Invalid board funding tuple');
+    }
+  }
+
+  ArkBoardFundingDetails.scuttle({
+    required this.address,
+    required String token,
+    required this.expiryHeight,
+  }) : keypairIndex = null,
+       scuttleToken = token {
+    if (address.isEmpty || token.isEmpty || expiryHeight < 0) {
+      throw ArgumentError('Invalid Scuttle board funding tuple');
     }
   }
 }

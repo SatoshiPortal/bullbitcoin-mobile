@@ -148,16 +148,17 @@ void main() {
           },
         ),
       );
-      expect(
-        await pending,
-        write && status == 200
-            ? isA<Ok<BuyOrder, ExchangeFailure>>()
-            : isA<Err<Order, ExchangeFailure>>().having(
-                (result) => result.failure,
-                'failure',
-                isA<ExchangeOperationStaleFailure>(),
-              ),
-      );
+      // A write keeps the answer of the session that sent it: a write that
+      // may have happened is never turned into a stale failure.
+      expect(await pending, switch ((write, status)) {
+        (true, 200) => isA<WriteDone<BuyOrder>>(),
+        (true, _) => isA<WriteSessionRejected<BuyOrder>>(),
+        (false, _) => isA<Err<Order, ExchangeFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ExchangeOperationStaleFailure>(),
+        ),
+      });
       expect(http.requests, hasLength(1));
     });
   }
@@ -216,6 +217,53 @@ void main() {
     });
   }
 
+  test(
+    'a recipient write with an unknown answer survives a session change',
+    () async {
+      var epoch = 0;
+      final http = _HeldResponse();
+      final exchange = exchangeWithTransportForTesting(
+        readSession: () async => Ok((
+          environment: ExchangeEnvironment.testnet,
+          epoch: epoch,
+          apiKey: 'synthetic-session-key',
+        )),
+        openClient: (endpoint, readKey) => bbxForTesting(
+          endpoint: endpoint.toString(),
+          adapter: http,
+          readActiveApiKey: readKey,
+        ),
+      );
+      final pending = exchange.recipients.saveRecipient(
+        InteracEmailCadDetails.create(
+          email: 'test@example.invalid',
+          name: 'Test Recipient',
+        ),
+        isTestnet: true,
+      );
+      await http.started.future;
+      epoch++;
+      http.response.complete(
+        ResponseBody.fromString(
+          '{"error":{"code":-32603}}',
+          502,
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
+        ),
+      );
+      expect(
+        await pending,
+        isA<Err<Recipient, RecipientsFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<RecipientsSaveOutcomeUnknownFailure>(),
+        ),
+      );
+      expect(http.requests, hasLength(1));
+    },
+  );
+
   for (final changeSession in [false, true]) {
     test('confirmed withdrawal preserves success when the Interac update '
         '${changeSession ? 'would cross a session' : 'is refused'}', () async {
@@ -265,7 +313,7 @@ void main() {
         ),
       );
 
-      expect(await pending, isA<Ok<WithdrawOrder, ExchangeFailure>>());
+      expect(await pending, isA<WriteDone<WithdrawOrder>>());
       expect(http.requests.map((request) => (request.data as Map)['method']), [
         'confirmOrderSummary',
         if (!changeSession) 'updateMyRecipient',
@@ -307,10 +355,10 @@ void main() {
         );
         final result = await exchange.deleteDefaultWallet(
           recipientId: 'synthetic',
-          walletType: WalletAddressType.bitcoin,
+          walletType: BtcNetwork.bitcoin,
           address: 'synthetic-address',
         );
-        expect(result, isA<Ok<void, ExchangeFailure>>());
+        expect(result, isA<WriteDone<void>>());
         expect(endpoints.single.host, startsWith(environment.name));
       },
     );

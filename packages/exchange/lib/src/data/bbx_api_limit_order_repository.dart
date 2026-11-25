@@ -7,19 +7,33 @@ import 'package:primitives/primitives.dart';
 import '../domain/entities/limit_order.dart';
 import '../domain/entities/limit_order_draft.dart';
 import '../domain/entities/limit_order_rate.dart';
+import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
+import 'exchange_call_classifier.dart';
+import 'limit_order_status_wire.dart';
 
 final class BbxApiLimitOrderRepository {
   final bbx.Bbx _api;
 
   const BbxApiLimitOrderRepository(this._api);
 
+  /// The orders that may still execute: active ones and ones whose status
+  /// this build doesn't know, so an unknown status neither hides an order nor
+  /// frees a slot of the open-order cap.
   Future<Result<List<LimitOrder>, ExchangeFailure>> listActive() => _guard(
     'list the active limit orders',
     ExchangeLimitOrderProblem.load,
     (api) => api.orderTriggers.listLimitOrders(),
     (orders) =>
-        orders.map(_toLimitOrder).where((order) => order.isActive).toList(),
+        orders.map(_toLimitOrder).where((order) => order.isOpen).toList(),
+  );
+
+  /// The most recent page of limit orders, every status (newest first).
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent() => _guard(
+    'list the recent limit orders',
+    ExchangeLimitOrderProblem.load,
+    (api) => api.orderTriggers.listLimitOrders(),
+    (orders) => orders.map(_toLimitOrder).toList(),
   );
 
   Future<Result<LimitOrder, ExchangeFailure>> get(String id) => _guard(
@@ -29,14 +43,17 @@ final class BbxApiLimitOrderRepository {
     _toLimitOrder,
   );
 
-  Future<Result<LimitOrder, ExchangeFailure>> create(LimitOrderDraft draft) =>
-      _guard(
+  /// A create that may have reached the exchange without a readable answer,
+  /// including a created order the app can't read, is [WriteOutcomeUnknown],
+  /// never a plain failure the user could retry into a second order. A
+  /// refusal keeps its code (see `limitOrderRefusalOf`).
+  Future<ExchangeWrite<LimitOrder>> create(LimitOrderDraft draft) =>
+      exchangeWrite<bbx.LimitOrder, LimitOrder>(
         'create the limit order',
-        ExchangeLimitOrderProblem.create,
-        (api) => api.orderTriggers.addLimitOrder(
-          limitPrice: draft.limitPrice.toStringAsFixed(2),
-          fiatAmount: draft.fiatAmount.toStringAsFixed(2),
-          currencyCode: draft.currencyCode,
+        () => _api.orderTriggers.addLimitOrder(
+          limitPrice: draft.limitPrice.toStringAsFixed(draft.currency.decimals),
+          fiatAmount: draft.fiatAmount.toStringAsFixed(draft.currency.decimals),
+          currencyCode: draft.currency.code,
           estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
           address: draft.address,
         ),
@@ -74,7 +91,7 @@ final class BbxApiLimitOrderRepository {
     currencyCode: order.currencyCode,
     limitPrice: double.parse(order.limitPrice),
     estimatedBtcAmount: double.parse(order.estimatedBtcAmount),
-    status: LimitOrderStatus.fromValue(order.status),
+    status: limitOrderStatusFromWire(order.status),
     createdAt: DateTime.parse(order.createdAt),
     expiresAt: DateTime.parse(order.expiresAt),
     executedAt: switch (order.executedAt) {
@@ -89,12 +106,31 @@ final class BbxApiLimitOrderRepository {
     address: order.address ?? '',
   );
 
+  /// The rate, validated before [LimitOrderRate] is built: a rate the
+  /// server sends without a currency, with a negative precision or with a
+  /// price that is not positive is a typed load failure, not an
+  /// [ArgumentError] out of the constructor that left the wizard stuck
+  /// (LIM-8).
   static LimitOrderRate _toRate(bbx.UserRate rate) {
-    final divisor = pow(10, rate.precision ?? 2);
+    final currencyCode = rate.fromCurrency ?? '';
+    final precision = rate.precision ?? 2;
+    if (currencyCode.isEmpty) {
+      throw const _UnreadableRate('no currency');
+    }
+    if (precision < 0) throw const _UnreadableRate('negative precision');
+    final divisor = pow(10, precision);
+    final indexPrice = rate.indexPrice / divisor;
+    final userPrice = rate.userPrice / divisor;
+    if (!indexPrice.isFinite || indexPrice <= 0) {
+      throw const _UnreadableRate('index price not positive');
+    }
+    if (!userPrice.isFinite || userPrice <= 0) {
+      throw const _UnreadableRate('user price not positive');
+    }
     return LimitOrderRate(
-      currencyCode: rate.fromCurrency ?? '',
-      indexPrice: rate.indexPrice / divisor,
-      userPrice: rate.userPrice / divisor,
+      currencyCode: currencyCode,
+      indexPrice: indexPrice,
+      userPrice: userPrice,
     );
   }
 
@@ -111,6 +147,13 @@ final class BbxApiLimitOrderRepository {
       };
     } on Error {
       rethrow;
+    } on _UnreadableRate catch (e, st) {
+      log.severe(
+        message: 'Unreadable reply to $operation',
+        error: e.reason,
+        trace: st,
+      );
+      return Err(ExchangeLimitOrderFailure(fallback, 'unreadable rate'));
     } catch (e, st) {
       final description = e.runtimeType.toString();
       log.severe(
@@ -140,7 +183,7 @@ final class BbxApiLimitOrderRepository {
       case bbx.BbxFailure():
         break;
     }
-    final description = _describe(failure);
+    final description = '$failure';
     log.severe(
       message: 'Failed to $operation',
       error: description,
@@ -179,17 +222,11 @@ final class BbxApiLimitOrderRepository {
     ),
     _ => ExchangeUnexpectedFailure(description),
   };
+}
 
-  /// A JSON-RPC error message can quote the request, so only its codes are
-  /// kept.
-  static String _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code, :final apiCode) =>
-      'BbxRpcFailure(code: $code, apiCode: $apiCode)'
-          '${failure.requestIdLabel}',
-    bbx.BbxHttpFailure(:final status) => 'BbxHttpFailure(status: $status)',
-    bbx.BbxTimeoutFailure(:final kind) => 'BbxTimeoutFailure(${kind.name})',
-    bbx.BbxResponseFormatFailure(:final reason) =>
-      'BbxResponseFormatFailure($reason)',
-    _ => failure.runtimeType.toString(),
-  };
+/// A rate reply the app can't use. [reason] names the field, never its value.
+final class _UnreadableRate implements Exception {
+  final String reason;
+
+  const _UnreadableRate(this.reason);
 }

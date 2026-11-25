@@ -43,8 +43,14 @@ void main() {
       ),
     );
     var localTransactions = [pending];
-    when(() => read.execute(walletId: null))
-        .thenAnswer((_) async => Ok(localTransactions));
+    when(() => read.execute(walletId: null)).thenAnswer(
+      (_) async => Ok(
+        TransactionHistory(
+          transactions: localTransactions,
+          exchangeOrders: const ExchangeOrdersMerged(),
+        ),
+      ),
+    );
     when(() => started.execute(walletId: null))
         .thenAnswer((_) => const Stream.empty());
     when(() => finished.execute(walletId: null))

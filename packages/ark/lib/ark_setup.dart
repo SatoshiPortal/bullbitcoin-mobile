@@ -8,8 +8,8 @@ import 'ark.dart';
 import 'src/domain/ark_execution_policy.dart';
 import 'src/domain/ark_board_abandonment_port.dart';
 import 'src/data/bark_ark_client.dart';
-import 'src/data/bark_native_opener.dart';
 import 'src/data/ark_chain_preflight.dart';
+import 'src/data/scuttle_native_opener.dart';
 
 ArkClient createArkClient({
   required String storagePath,
@@ -27,6 +27,6 @@ ArkClient createArkClient({
   boardAbandonment: boardAbandonment,
   executionMode: executionMode,
   stageBudget: stageBudget,
-  opener: const BarkNativeOpener(),
+  opener: const ScuttleNativeOpener(),
   preflight: const HttpArkChainPreflight(),
 );

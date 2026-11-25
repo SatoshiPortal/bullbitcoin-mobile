@@ -10,6 +10,8 @@ abstract final class BullExchangeNavigation {
   static const authName = 'exchangeAuth';
   static const authPath = '/exchange/auth';
   static const kycName = 'exchangeKyc';
+  static const kycSegment = 'kyc';
+  static const kycPath = '$dashboardPath/$kycSegment';
 
   static void goToLanding(BuildContext context) => context.goNamed(landingName);
   static void goToDashboard(BuildContext context) =>

@@ -42,7 +42,7 @@ final class UsersApi {
   /// Saves [preferences], replacing the stored set.
   Future<Result<void, BbxFailure>> saveUserPreferences(
     UserPreferences preferences,
-  ) => _transport.request(
+  ) => _transport.write(
     endpoint,
     'saveUserPreferences',
     params: {'userPreferences': userPreferencesToJson(preferences)},

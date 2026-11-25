@@ -15,8 +15,6 @@ import '../domain/ark_board_funding_port.dart';
 import '../domain/ark_display_data_port.dart';
 import '../domain/ark_exit_destination_port.dart';
 import '../domain/ark_exit_funding.dart';
-import '../domain/ark_reserve_top_up_port.dart';
-import '../domain/usecases/fund_ark_exit_start_usecase.dart';
 import '../domain/usecases/read_ark_exit_destination_usecase.dart';
 import '../domain/usecases/read_ark_display_data_usecase.dart';
 import '../domain/usecases/read_ark_next_round_usecase.dart';
@@ -123,7 +121,13 @@ final class ArkFeature {
   final ArkExitFunding? _exitFunding;
 
   /// Sends the exit fees from Secure Bitcoin to the reserve when it is short.
-  final ArkReserveTopUpPort? _exitTopUp;
+  final Future<Result<ArkExitReserveFunding, ArkFailure>> Function(
+    ArkQuote quote,
+    String? reserveAddress,
+  )?
+  _fundInitialExit;
+  final Future<Result<String?, ArkFailure>> Function(List<String>)?
+  _savedExitDestination;
   final ArkScanner? _scanner;
 
   /// The host's wallet-card artwork, so the Ark wallet matches the app's
@@ -169,7 +173,8 @@ final class ArkFeature {
     this._confirmIcon,
     this._exitDestination,
     this._exitFunding,
-    this._exitTopUp,
+    this._fundInitialExit,
+    this._savedExitDestination,
   }) : _client = client,
        _preferences = preferences,
        _provisioning = provisioning,
@@ -637,17 +642,10 @@ class _ArkPageState extends State<_ArkPage> {
           null => null,
         },
         onStarted: (outcome) => _exitStarted(owner, outcome),
-        fundFees: switch ((
-          widget.feature._exitTopUp,
-          widget.feature._exitFunding,
-        )) {
-          (final port?, final funding?) =>
-            (quote) => FundArkExitStartUsecase(port, funding).execute(
-              widget.feature._config.id,
-              quote: quote,
-              reserveAddress: snapshot.reserveAddress,
-            ),
-          _ => null,
+        savedDestination: widget.feature._savedExitDestination,
+        fundFees: switch (widget.feature._fundInitialExit) {
+          final fund? => (quote) => fund(quote, snapshot.reserveAddress),
+          null => null,
         },
       ),
       _Kind.info => ArkInformationScreen(

@@ -44,7 +44,12 @@ void main() {
     var reads = 0;
     when(() => read.execute(walletId: 'a')).thenAnswer((_) async {
       reads++;
-      return const Ok([]);
+      return const Ok(
+        TransactionHistory(
+          transactions: [],
+          exchangeOrders: ExchangeOrdersMerged(),
+        ),
+      );
     });
     final cubit = TransactionsCubit(
       walletId: 'a',
@@ -132,7 +137,12 @@ void main() {
     when(() => read.execute(walletId: any(named: 'walletId')))
         .thenAnswer((_) async {
           reads++;
-          return const Ok([]);
+          return const Ok(
+            TransactionHistory(
+              transactions: [],
+              exchangeOrders: ExchangeOrdersMerged(),
+            ),
+          );
         });
     final cubit = TransactionsCubit(
       getTransactionsUsecase: read,

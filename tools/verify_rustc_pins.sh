@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-require_bark=false
-if [ "${1:-}" = "--require-bark" ]; then
-  require_bark=true
+require_scuttle=false
+if [ "${1:-}" = "--require-scuttle" ]; then
+  require_scuttle=true
   shift
 fi
 
 if [ "$#" -lt 4 ]; then
-  echo "Usage: $0 [--require-bark] APK SDK_RUST_VERSION PAYJOIN_RUST_VERSION EXPECTED_ABI..." >&2
+  echo "Usage: $0 [--require-scuttle] APK SDK_RUST_VERSION PAYJOIN_RUST_VERSION EXPECTED_ABI..." >&2
   exit 2
 fi
 
@@ -55,7 +55,7 @@ for abi_dir in "${abi_dirs[@]}"; do
   if [ "$expected_abi" = false ]; then
     for so in "$abi_dir"/*.so; do
       case "${so##*/}" in
-        librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so|libbark_ffi_dart.so)
+        librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so|librust_lib_scuttle.so)
           echo "Tracked Rust library in unexpected ABI: $abi/${so##*/}" >&2
           exit 1
           ;;
@@ -72,8 +72,8 @@ for abi_dir in "${abi_dirs[@]}"; do
     continue
   fi
   libraries=(librust_lib_onion.so librust_lib_bull_sdk.so libbdk_dart_ffi.so libpayjoin_ffi_wrapper.so)
-  if [ "$require_bark" = true ] || [ -f "$abi_dir/libbark_ffi_dart.so" ]; then
-    libraries+=(libbark_ffi_dart.so)
+  if [ "$require_scuttle" = true ] || [ -f "$abi_dir/librust_lib_scuttle.so" ]; then
+    libraries+=(librust_lib_scuttle.so)
   fi
   for name in "${libraries[@]}"; do
     so="$abi_dir/$name"
@@ -82,9 +82,8 @@ for abi_dir in "${abi_dirs[@]}"; do
       exit 1
     fi
     case "$name" in
-      librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so) expected=$sdk_rust ;;
+      librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|librust_lib_scuttle.so) expected=$sdk_rust ;;
       libpayjoin_ffi_wrapper.so) expected=$payjoin_rust ;;
-      libbark_ffi_dart.so) expected=1.90.0 ;;
     esac
     if ! strings "$so" > "$tmpdir/strings"; then
       echo "Cannot inspect Rust library: $abi/$name" >&2
@@ -104,7 +103,7 @@ for abi_dir in "${abi_dirs[@]}"; do
   done
   for so in "$abi_dir"/*.so; do
     case "${so##*/}" in
-      librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so|libbark_ffi_dart.so) continue ;;
+      librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so|librust_lib_scuttle.so) continue ;;
     esac
     if ! strings "$so" > "$tmpdir/strings"; then
       echo "Cannot inspect library: $abi/${so##*/}" >&2

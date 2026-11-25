@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 import 'package:go_router/go_router.dart';
@@ -12,7 +11,7 @@ import '../widgets/not_logged_in_bottom_sheet.dart';
 
 class ExchangeSettingsScreen extends StatefulWidget {
   const ExchangeSettingsScreen({
-    required this.isSuperuser,
+    required this.websiteOnly,
     required this.onOpenRecipients,
     required this.onOpenTransactions,
     required this.onOpenDefaultWallets,
@@ -25,7 +24,8 @@ class ExchangeSettingsScreen extends StatefulWidget {
     super.key,
   });
 
-  final bool isSuperuser;
+  /// iOS without superuser: only the account actions are shown.
+  final bool websiteOnly;
   final VoidCallback onOpenRecipients;
   final VoidCallback onOpenTransactions;
   final VoidCallback onOpenDefaultWallets;
@@ -83,14 +83,19 @@ class _ExchangeSettingsScreenState extends State<ExchangeSettingsScreen> {
             openWhenLoggedIn(() => context.pushNamed(route.name));
 
         return Scaffold(
-          appBar: AppBar(title: Text(widget.title(context))),
+          appBar: AppBar(
+            // A route nested under the settings route, whose page is always
+            // under it: the router's own pop is this screen's Back.
+            automaticallyImplyLeading: true,
+            title: Text(widget.title(context)),
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    if (widget.isSuperuser || Platform.isAndroid) ...[
+                    if (!widget.websiteOnly) ...[
                       BullSettingsEntryItem(
                         icon: Icons.account_circle,
                         title:
@@ -155,9 +160,7 @@ class _ExchangeSettingsScreenState extends State<ExchangeSettingsScreen> {
                               BullExchangeNavigation.goToLanding(context),
                         ),
                     ],
-                    widget.buildAccountActions(
-                      !widget.isSuperuser && Platform.isIOS,
-                    ),
+                    widget.buildAccountActions(widget.websiteOnly),
                   ],
                 ),
               ),

@@ -327,7 +327,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "Hledat",
+  "retry": "Zkusit znovu",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -726,5 +726,6 @@
   "transactionPayjoinBroadcastFailed": "Původní transakci se nepodařilo odeslat. Zkuste to prosím znovu.",
   "transactionPayjoinOriginalUnavailable": "Původní transakce již není k dispozici k odeslání.",
   "transactionLabelLimitReached": "Můžete mít nejvýše 10 štítků.",
-  "copiedToClipboard": "Zkopírováno do schránky"
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "transactionListExchangeOrdersUnavailable": "Objednávky ze směnárny se nepodařilo načíst."
 }

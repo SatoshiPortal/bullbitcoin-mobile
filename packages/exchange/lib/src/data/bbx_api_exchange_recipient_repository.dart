@@ -1,8 +1,12 @@
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:primitives/primitives.dart';
 
+import '../domain/entities/btc_network.dart';
 import '../domain/entities/default_wallet.dart';
+import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
+import 'btc_network_wire.dart';
+import 'exchange_call_classifier.dart';
 
 /// Default Bitcoin, Lightning and Liquid payouts for one session.
 final class BbxApiExchangeRecipientRepository {
@@ -12,7 +16,7 @@ final class BbxApiExchangeRecipientRepository {
 
   Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() async {
     final result = await _api.recipients.listMyRecipients(
-      recipientTypes: WalletAddressType.values.map(_recipientType).toList(),
+      recipientTypes: BtcNetworkWire.recipientTypes,
       isDefault: true,
     );
     switch (result) {
@@ -21,13 +25,21 @@ final class BbxApiExchangeRecipientRepository {
         DefaultWallet? lightning;
         DefaultWallet? liquid;
         for (final recipient in value) {
-          final wallet = _toDefaultWallet(recipient);
-          switch (wallet.walletType) {
-            case WalletAddressType.bitcoin:
+          // A rail this build doesn't know is not read as another one.
+          final network = switch (BtcNetworkWire.parseRecipientType(
+            recipient.recipientType,
+          )) {
+            KnownBtcNetwork(:final network) => network,
+            UnknownBtcNetwork() => null,
+          };
+          if (network == null) continue;
+          final wallet = _toDefaultWallet(recipient, network);
+          switch (network) {
+            case BtcNetwork.bitcoin:
               bitcoin = wallet;
-            case WalletAddressType.lightning:
+            case BtcNetwork.lightning:
               lightning = wallet;
-            case WalletAddressType.liquid:
+            case BtcNetwork.liquid:
               liquid = wallet;
           }
         }
@@ -43,49 +55,47 @@ final class BbxApiExchangeRecipientRepository {
     }
   }
 
-  Future<Result<DefaultWallet, ExchangeFailure>> saveDefaultWallet({
-    required WalletAddressType walletType,
+  /// A save that may have reached the server without a readable answer is
+  /// [WriteOutcomeUnknown]: a new recipient may exist, so the caller re-reads
+  /// before saving again (DW-2).
+  Future<ExchangeWrite<DefaultWallet>> saveDefaultWallet({
+    required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
-  }) async {
-    final result = existingRecipientId != null && existingRecipientId.isNotEmpty
-        ? await _api.recipients.updateMyRecipient(
+  }) => exchangeWrite<bbx.MyRecipient, DefaultWallet>(
+    'saveDefaultWallet',
+    () => existingRecipientId != null && existingRecipientId.isNotEmpty
+        ? _api.recipients.updateMyRecipient(
             recipientId: existingRecipientId,
-            recipientType: _recipientType(walletType),
+            recipientType: BtcNetworkWire.recipientType(walletType),
             address: address,
             isDefault: true,
           )
-        : await _api.recipients.createMyRecipient(
-            recipientType: _recipientType(walletType),
+        : _api.recipients.createMyRecipient(
+            recipientType: BtcNetworkWire.recipientType(walletType),
             address: address,
             isOwner: true,
             isDefault: true,
-          );
-    return switch (result) {
-      Ok(:final value) => Ok(_toDefaultWallet(value)),
-      Err(:final failure) => Err(_mapFailure(failure)),
-    };
-  }
+          ),
+    (recipient) => _toDefaultWallet(recipient, walletType),
+  );
 
-  Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
+  /// Unsets the default flag of [recipientId]. Like a save, an answer lost
+  /// after sending is [WriteOutcomeUnknown]: re-read before unsetting again.
+  Future<ExchangeWrite<void>> deleteDefaultWallet({
     required String recipientId,
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
-  }) async {
-    final result = await _api.recipients.updateMyRecipient(
+  }) => exchangeWrite<bbx.MyRecipient, void>(
+    'deleteDefaultWallet',
+    () => _api.recipients.updateMyRecipient(
       recipientId: recipientId,
-      recipientType: _recipientType(walletType),
+      recipientType: BtcNetworkWire.recipientType(walletType),
       address: address,
       isDefault: false,
-    );
-    return result.map((_) {}).mapErr(_mapFailure);
-  }
-
-  static String _recipientType(WalletAddressType type) => switch (type) {
-    WalletAddressType.bitcoin => 'OUT_BITCOIN_ADDRESS',
-    WalletAddressType.lightning => 'OUT_LIGHTNING_ADDRESS',
-    WalletAddressType.liquid => 'OUT_LIQUID_ADDRESS',
-  };
+    ),
+    (_) {},
+  );
 
   static ExchangeFailure _mapFailure(bbx.BbxFailure failure) =>
       switch (failure) {
@@ -98,33 +108,22 @@ final class BbxApiExchangeRecipientRepository {
         bbx.BbxTimeoutFailure() ||
         bbx.BbxConnectionFailure() => const ExchangeNetworkFailure(),
         _ => ExchangeUnexpectedFailure(
-          'Exchange destination request failed: ${_describe(failure)}',
+          'Exchange destination request failed: $failure',
         ),
       };
 
-  /// An unknown recipient type is read as a Bitcoin address.
-  static DefaultWallet _toDefaultWallet(bbx.MyRecipient recipient) =>
-      DefaultWallet(
-        recipientId: recipient.recipientId,
-        walletType: switch (recipient.recipientType) {
-          'OUT_LIGHTNING_ADDRESS' => WalletAddressType.lightning,
-          'OUT_LIQUID_ADDRESS' => WalletAddressType.liquid,
-          _ => WalletAddressType.bitcoin,
-        },
-        address:
-            recipient.address ??
-            recipient.bitcoinAddress ??
-            recipient.lightningAddress ??
-            recipient.liquidAddress ??
-            '',
-        isDefault: recipient.isDefault ?? false,
-      );
-
-  /// A JSON-RPC error message can quote the request, so only its code is
-  /// kept.
-  static Object _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code) =>
-      'BbxRpcFailure(code: $code)${failure.requestIdLabel}',
-    _ => failure.runtimeType.toString(),
-  };
+  static DefaultWallet _toDefaultWallet(
+    bbx.MyRecipient recipient,
+    BtcNetwork network,
+  ) => DefaultWallet(
+    recipientId: recipient.recipientId,
+    walletType: network,
+    address:
+        recipient.address ??
+        recipient.bitcoinAddress ??
+        recipient.lightningAddress ??
+        recipient.liquidAddress ??
+        '',
+    isDefault: recipient.isDefault ?? false,
+  );
 }

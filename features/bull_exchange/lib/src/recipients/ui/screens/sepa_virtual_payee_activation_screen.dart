@@ -77,6 +77,10 @@ class SepaVirtualPayeeActivationView extends StatelessWidget {
             context.loc.recipientsConfidentialSepaNotActivatedTitle,
             context.loc.recipientsConfidentialSepaNotActivatedDescription,
           ),
+          SepaVirtualPayeeStatus.unknown => (
+            context.loc.recipientsConfidentialSepaStatusUnknownTitle,
+            context.loc.recipientsConfidentialSepaStatusUnknownDescription,
+          ),
           SepaVirtualPayeeStatus.pending || null => (
             context.loc.recipientsConfidentialSepaActivatingTitle,
             context.loc.recipientsConfidentialSepaActivatingDescription,

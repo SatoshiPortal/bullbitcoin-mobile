@@ -1,5 +1,3 @@
-import 'package:exchange/exchange.dart';
-
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
@@ -10,6 +8,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:settings/testing.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +19,12 @@ import 'package:network/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err;
 import 'package:settings/settings.dart';
+
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
@@ -38,9 +43,8 @@ void main() {
       settingsChanges.stream,
       initialState: const SettingsState(),
     );
-    when(
-      () => exchange.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    when(() => exchange.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
     when(exchange.watch).thenAnswer((_) => accessChanges.stream);
     locator.pushNewScope();
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
@@ -93,7 +97,7 @@ void main() {
     expect(find.text('Account Settings'), findsOneWidget);
 
     accessChanges.add(
-      const ExchangeAccessEnabled(ExchangeAccessSession.signedOut),
+      const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet),
     );
     await tester.pumpAndSettle();
     expect(find.text('Account Settings'), findsNothing);

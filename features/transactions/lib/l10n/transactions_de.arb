@@ -226,5 +226,6 @@
   "transactionPayjoinOriginalUnavailable": "Die ursprüngliche Transaktion steht nicht mehr zum Senden zur Verfügung.",
   "transactionLabelLimitReached": "Sie können höchstens 10 Labels haben.",
   "transactionListPending": "Ausstehend",
-  "copiedToClipboard": "In die Zwischenablage kopiert"
+  "copiedToClipboard": "In die Zwischenablage kopiert",
+  "transactionListExchangeOrdersUnavailable": "Börsenaufträge konnten nicht geladen werden."
 }

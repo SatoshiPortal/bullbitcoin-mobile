@@ -5,6 +5,7 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/ark_failure.dart';
+import '../domain/ark_exit_candidates.dart';
 import '../presentation/ark_failure_l10n.dart';
 import '../presentation/ark_l10n.dart';
 import '../presentation/ark_operation_cubit.dart';
@@ -30,7 +31,13 @@ class ArkExitRequestScreen extends StatefulWidget {
   final ValueChanged<ArkExitOutcome>? onStarted;
 
   /// Funds the reserve for a fresh exit quote before it starts.
-  final Future<Result<void, ArkFailure>> Function(ArkQuote quote)? fundFees;
+  final Future<Result<ArkExitReserveFunding, ArkFailure>> Function(
+    ArkQuote quote,
+  )?
+  fundFees;
+
+  final Future<Result<String?, ArkFailure>> Function(List<String>)?
+  savedDestination;
 
   const ArkExitRequestScreen({
     super.key,
@@ -41,6 +48,7 @@ class ArkExitRequestScreen extends StatefulWidget {
     this.secureBitcoinAddress,
     this.onStarted,
     this.fundFees,
+    this.savedDestination,
   });
 
   @override
@@ -86,12 +94,7 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
     if (_estimate != null && key == _estimatedFor) return;
     _dropEstimate();
     _estimatedFor = key;
-    if (ids.isEmpty ||
-        snapshot.stale ||
-        snapshot.tipHeight == null ||
-        !snapshot.vtxoInventoryComplete) {
-      return;
-    }
+    if (ids.isEmpty) return;
     final cubit = quote(ArkQuoteRequest.emergencyExit(ids: ids));
     _estimate = cubit;
     _estimateChanges = cubit.stream.listen((_) {
@@ -129,7 +132,7 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
   List<String> get _ids =>
       widget.claimIds ??
       [
-        for (final vtxo in _eligible)
+        for (final vtxo in arkExitCandidates(widget.snapshot))
           if (!_selectedOnly || _selected.contains(vtxo.id)) vtxo.id,
       ];
 
@@ -206,6 +209,10 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
       quote: quote,
       secureBitcoinAddress: rendered.secureBitcoinAddress,
       fundFees: rendered.fundFees,
+      savedDestination: switch (rendered.savedDestination) {
+        final read? => () => read(_ids),
+        null => null,
+      },
     );
     if (outcome == null || !_current(rendered, revision)) return;
     setState(() => _consumed = true);

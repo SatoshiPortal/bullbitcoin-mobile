@@ -24,6 +24,9 @@ abstract class TransactionsState with _$TransactionsState {
     @Default(TransactionsFilter.all) TransactionsFilter filter,
     @Default(false) bool exchangeOnly,
     TransactionFailure? failure,
+
+    /// Null until the first read lands.
+    ExchangeOrdersInHistory? exchangeOrders,
   }) = _TransactionsState;
   const TransactionsState._();
 

@@ -1,23 +1,22 @@
+import 'package:bull_exchange/src/buy/presentation/buy_flow.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
-import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show LiquidNetwork;
 
-extension BuyWalletLabel on WalletRegistration {
+extension BuyWalletLabel on BuyPayoutWallet {
   String displayLabel(BuildContext context) {
-    final name = label;
     if (!isDefault) {
-      return name ??
-          buyPayoutMethodLabel(context, isLiquid: network is LiquidNetwork);
+      return label ??
+          buyPayoutMethodLabel(context, isLiquid: rail == BtcNetwork.liquid);
     }
-    return network is LiquidNetwork
+    return rail == BtcNetwork.liquid
         ? context.loc.globalDefaultLiquidWalletLabel
         : context.loc.globalDefaultBitcoinWalletLabel;
   }
 }
 
 /// The network a buy pays out over, worded for the user. Shared by the wallet
-/// dropdown and the confirmation screen so that the two cannot drift.
+/// dropdown and the review so that the two cannot drift.
 String buyPayoutMethodLabel(BuildContext context, {required bool isLiquid}) {
   return isLiquid
       ? context.loc.buyPayoutMethodLiquid

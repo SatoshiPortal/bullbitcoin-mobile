@@ -7,6 +7,11 @@ import 'package:primitives/primitives.dart';
 /// [BbxRpcFailure] keeps the server's text only in [BbxRpcFailure.message],
 /// which [Object.toString] leaves out.
 ///
+/// [toString] is the one log-safe description of a failure: its kind, its
+/// codes and the server's [requestId]. Diagnostics write the failure itself
+/// (`'$failure'`) and never rebuild that text from its fields, so no caller
+/// can drop a field support needs.
+///
 /// [requestId] is the server's identifier for the refused request, the one
 /// value that lets the backend trace it. It is null when the server sent none
 /// or the request never reached it.
@@ -19,13 +24,6 @@ sealed class BbxFailure extends Failure {
   const BbxFailure([this.origin]);
 
   String? get requestId => null;
-
-  /// ` requestId=<id>` to append to a diagnostic line, or nothing when the
-  /// server sent no identifier.
-  String get requestIdLabel {
-    final id = requestId;
-    return id == null ? '' : ' requestId=$id';
-  }
 }
 
 /// Written `requestId=` on purpose: the log sanitizer keeps a token with
@@ -64,10 +62,16 @@ final class BbxHttpFailure extends BbxFailure {
 /// quote account data, so [toString] leaves it out. [apiCode] is the error's
 /// `data.apiError.code`, kept only when it is an `ERR_` code so that it never
 /// carries account details.
+///
+/// [fieldErrors] are the request fields the server's validation refused,
+/// each with its `ERR_VALIDATION_` code: the field path inside the request's
+/// `element` (`email`, `bankAccount`) to the code. Never a value or the
+/// server's message, which can quote one; [toString] lists only the paths.
 final class BbxRpcFailure extends BbxFailure {
   final int? code;
   final String? message;
   final String? apiCode;
+  final Map<String, String> fieldErrors;
   @override
   final String? requestId;
 
@@ -75,6 +79,7 @@ final class BbxRpcFailure extends BbxFailure {
     this.code,
     this.message,
     this.apiCode,
+    this.fieldErrors = const {},
     this.requestId,
     StackTrace? origin,
   }) : super(origin);
@@ -82,6 +87,7 @@ final class BbxRpcFailure extends BbxFailure {
   @override
   String toString() =>
       'BbxRpcFailure(code: $code, apiCode: $apiCode'
+      '${fieldErrors.isEmpty ? '' : ', fields: ${fieldErrors.keys.toList()}'}'
       '${_requestIdSuffix(requestId)})';
 }
 
@@ -116,7 +122,8 @@ final class BbxOrderLimitFailure extends BbxFailure {
   @override
   String toString() =>
       'BbxOrderLimitFailure(bound: ${bound.name}, amount: $amount, '
-      'currency: $currency${_requestIdSuffix(requestId)})';
+      'currency: $currency, code: $code, apiCode: $apiCode'
+      '${_requestIdSuffix(requestId)})';
 }
 
 /// The server refused a Confidential SEPA order because the recipient's
@@ -136,7 +143,7 @@ final class BbxConfidentialSepaInactiveFailure extends BbxFailure {
 
   @override
   String toString() =>
-      'BbxConfidentialSepaInactiveFailure(code: $code'
+      'BbxConfidentialSepaInactiveFailure(code: $code, apiCode: $apiCode'
       '${_requestIdSuffix(requestId)})';
 }
 
@@ -176,6 +183,22 @@ final class BbxTransformTimeoutFailure extends BbxFailure {
 /// Any other transport failure.
 final class BbxTransportFailure extends BbxFailure {
   const BbxTransportFailure({StackTrace? origin}) : super(origin);
+}
+
+/// A write failed after its request may have reached the server, so the
+/// write may have happened: a send or receive timeout, a dropped connection,
+/// a gateway error, a status below 400 other than 200, or a reply that could
+/// not be read. Read the resource again before sending the write again.
+///
+/// [reason] names the failure and never quotes the request or the response.
+final class BbxOutcomeUnknownFailure extends BbxFailure {
+  final String reason;
+
+  const BbxOutcomeUnknownFailure(this.reason, {StackTrace? origin})
+    : super(origin);
+
+  @override
+  String toString() => 'BbxOutcomeUnknownFailure($reason)';
 }
 
 /// The response did not have the expected shape.

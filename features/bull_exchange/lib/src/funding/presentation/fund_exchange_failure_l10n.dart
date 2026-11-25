@@ -6,11 +6,8 @@ import 'package:flutter/widgets.dart';
 /// switch makes a missing message a compile error. Never returns the raw
 /// `logMessage`.
 ///
-/// Deviation from the single-method shape used by the other migrated features:
-/// fund_exchange renders errors as a headline plus a body (`InfoCard.title`,
-/// and the bold-title column in `FundExchangeErrorText`), so the title is
-/// exposed as a second method rather than dropped. Both return only `.arb`
-/// strings — neither can carry backend data.
+/// The title is a second method: a headline above the message. Both return
+/// only `.arb` strings, never backend data.
 extension FundExchangeFailureL10n on FundExchangeFailure {
   String toTranslated(BuildContext context) => switch (this) {
     FundExchangeUnsupportedNetworkFailure() =>

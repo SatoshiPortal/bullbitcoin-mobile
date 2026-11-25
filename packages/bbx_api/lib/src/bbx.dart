@@ -66,6 +66,11 @@ final class Bbx {
     ),
   );
 
+  /// Whether the server answered HTTP 401 to a request this client sent with
+  /// its key: the key is no longer valid. The owner of the session decides
+  /// what to do with it; a request that was not sent never sets it.
+  bool get sessionRejected => _transport.sessionRejected;
+
   /// Releases the HTTP transport and notification socket owned by this client.
   void dispose() {
     notifications.dispose();

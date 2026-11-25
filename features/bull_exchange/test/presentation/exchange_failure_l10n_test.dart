@@ -16,6 +16,7 @@ const _everyFailure = <ExchangeFailure>[
   ExchangeApiKeyStorageFailure(_rawReason),
   ExchangeSessionClearFailure(_rawReason),
   ExchangePreferencesSaveFailure(_rawReason),
+  ExchangePreferencesSaveOutcomeUnknownFailure(_rawReason),
   ExchangeAnnouncementsUnavailableFailure(_rawReason),
   ExchangeNotificationsUnavailableFailure(_rawReason),
   ExchangeAccountDeletionRequestFailure(_rawReason),

@@ -229,5 +229,6 @@
   "transactionDetailSwapRetryStarted": "Nuovo tentativo di riscossione / rimborso in corso…",
   "transactionPayjoinFallbackProcessing": "Elaborazione come transazione normale in corso…",
   "transactionDetailSwapRetryFailed": "Impossibile completare la riscossione / il rimborso. Riprova.",
-  "transactionListPending": "In attesa"
+  "transactionListPending": "In attesa",
+  "transactionListExchangeOrdersUnavailable": "Impossibile caricare gli ordini dell'exchange."
 }

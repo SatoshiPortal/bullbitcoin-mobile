@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -31,6 +30,8 @@ import 'auth/exchange_auth_host.dart';
 import 'auth/exchange_auth_screen.dart';
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
+import 'buy/mount_buy.dart';
+import 'dca/mount_dca.dart';
 import 'exchange_purchase_routes.dart';
 import 'funding/fund_exchange_router.dart';
 import 'kyc/exchange_kyc_host.dart';
@@ -88,8 +89,8 @@ final class BullExchangeFeature {
   final GoRoute? limitOrderCreate;
   final List<RouteBase> buyRoutes;
   final GoRoute? dcaRoute;
-  final ShellRoute? sellRoute;
-  final ShellRoute? payRoute;
+  final GoRoute? sellRoute;
+  final GoRoute? payRoute;
 
   const BullExchangeFeature._(
     this.routes,
@@ -132,7 +133,9 @@ final class BullExchangeFeature {
         exchangeSignedIn(exchange().currentAccess);
     return mountBullExchange(
       networkUnavailable: () => exchange().networkUnavailable(),
-      showWebsiteOnly: (context) => Platform.isIOS && !isSuperuser(context),
+      showWebsiteOnly: (context) => ExchangePlatform.current.websiteOnly(
+        isSuperuser: isSuperuser(context),
+      ),
       unavailableRedirectPath: homePath,
       brandAssetPath: brandAssetPath,
       onExit: onExit,
@@ -167,7 +170,6 @@ final class BullExchangeFeature {
       withdrawal: (
         exchange: exchange,
         preferences: preferences,
-        isLoggedIn: ExchangeSessionScope.hasAccount,
         openOrder: (context, orderId) => TransactionsNavigation.openDetails(
           context,
           TransactionDetailsTarget.order(orderId),
@@ -180,6 +182,8 @@ final class BullExchangeFeature {
         currentAccess: () => exchange().currentAccess,
         watchAccess: () => exchange().watchAccess(),
         watchDashboard: ExchangeSessionScope.watchDashboard,
+        watchUnreadSupportMessages:
+            ExchangeSessionScope.watchUnreadSupportMessages,
         refreshAccount: ExchangeSessionScope.refresh,
         stopDca: ExchangeSessionScope.stopDca,
         onOpenSettings: onOpenSettings,
@@ -201,10 +205,7 @@ final class BullExchangeFeature {
           color: context.appColors.onSurface,
         ),
       ),
-      funding: (
-        exchange: exchange,
-        isLoggedIn: ExchangeSessionScope.hasAccount,
-      ),
+      funding: (exchange: exchange),
       kyc: ExchangeKycHost(
         loadConfiguration: () => exchange().loadKyc(),
         failureMessage: failureMessage,
@@ -224,8 +225,7 @@ final class BullExchangeFeature {
         ),
         loginLabel: (context) => context.loc.exchangeLoginButton,
         failureMessage: failureMessage,
-        onMessagesRead: (context) =>
-            unawaited(ExchangeSessionScope.markSupportMessagesRead(context)),
+        onMessagesRead: ExchangeSessionScope.markSupportMessagesRead,
         onExit: (context, fromExchange) {
           if (fromExchange) {
             BullExchangeNavigation.goToDashboard(context);
@@ -264,7 +264,7 @@ BullExchangeFeature mountBullExchange({
       ? null
       : GoRoute(
           name: BullExchangeNavigation.kycName,
-          path: 'kyc',
+          path: BullExchangeNavigation.kycSegment,
           builder: (_, _) => ExchangeKycScreen(host: kyc),
         );
   return BullExchangeFeature._(

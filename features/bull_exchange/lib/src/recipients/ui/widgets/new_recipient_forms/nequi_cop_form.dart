@@ -1,6 +1,9 @@
+import 'package:exchange/exchange.dart' show RecipientField;
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_error.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_document_type_label.dart';
+import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_holder_fields.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/cop_document_type.dart';
@@ -21,12 +24,15 @@ class NequiCopForm extends StatefulWidget {
 
 class NequiCopFormState extends State<NequiCopForm> {
   final _formKey = GlobalKey<FormState>();
-  final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
   String _phoneNumber = '';
   CopDocumentType _documentType = CopDocumentType.cc;
   String _documentId = '';
-  String _name = '';
+  CopHolderFormData _holder = const CopIndividualFormData(
+    firstName: '',
+    lastName: '',
+  );
+  String _email = '';
   String _label = '';
 
   @override
@@ -36,7 +42,6 @@ class NequiCopFormState extends State<NequiCopForm> {
 
   @override
   void dispose() {
-    _nameFocusNode.dispose();
     _labelFocusNode.dispose();
     super.dispose();
   }
@@ -47,7 +52,8 @@ class NequiCopFormState extends State<NequiCopForm> {
         phoneNumber: _phoneNumber,
         documentType: _documentType.value,
         documentId: _documentId,
-        name: _name,
+        holder: _holder,
+        email: _email,
         label: _label.isEmpty ? null : _label,
       );
 
@@ -67,6 +73,9 @@ class NequiCopFormState extends State<NequiCopForm> {
           // Phone Number
           BBTextFormField(
             labelText: context.loc.recipientsFieldPhoneNumber,
+            errorText: context.recipientServerFieldError(
+              RecipientField.bankAccount,
+            ),
             hintText: context.loc.recipientsFieldPhoneNumberHint,
             autofocus: true,
             prefixText: '+57',
@@ -114,8 +123,11 @@ class NequiCopFormState extends State<NequiCopForm> {
               _documentType,
             ),
             hintText: context.loc.recipientsFieldDocumentNumberHint,
+            errorText: context.recipientServerFieldError(
+              RecipientField.documentId,
+            ),
             textInputAction: .next,
-            onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
+            onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? context.loc.recipientsValidationFieldRequired
                 : null,
@@ -126,24 +138,17 @@ class NequiCopFormState extends State<NequiCopForm> {
             },
           ),
           const Gap(12.0),
-          BBTextFormField(
-            labelText: context.loc.recipientsFieldRecipientNameLabel,
-            hintText: context.loc.recipientsFieldNameHint,
-            focusNode: _nameFocusNode,
-            textInputAction: .next,
-            onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
-            onChanged: (value) {
-              setState(() {
-                _name = value;
-              });
+          CopHolderFields(
+            onChanged: (holder, email) {
+              _holder = holder;
+              _email = email;
             },
+            onDone: _labelFocusNode.requestFocus,
           ),
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsLabelOptional,
+            errorText: context.recipientServerFieldError(RecipientField.label),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -159,6 +164,15 @@ class NequiCopFormState extends State<NequiCopForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            shownFields: const {
+              RecipientField.bankAccount,
+              RecipientField.documentId,
+              RecipientField.label,
+              RecipientField.name,
+              RecipientField.lastname,
+              RecipientField.corporateName,
+              RecipientField.email,
+            },
           ),
         ],
       ),

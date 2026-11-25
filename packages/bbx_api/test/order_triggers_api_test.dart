@@ -119,7 +119,7 @@ void main() {
       ]);
     });
 
-    test('a missing element or field is a format error', () async {
+    test('a missing element or field is an unknown outcome', () async {
       answer({'result': <String, Object?>{}});
       expect(
         await failedCall(
@@ -131,7 +131,7 @@ void main() {
             address: 'lq1',
           ),
         ),
-        isA<BbxResponseFormatFailure>(),
+        isA<BbxOutcomeUnknownFailure>(),
       );
 
       answer({
@@ -149,7 +149,7 @@ void main() {
             address: 'lq1',
           ),
         ),
-        isA<BbxResponseFormatFailure>().having(
+        isA<BbxOutcomeUnknownFailure>().having(
           (f) => f.reason,
           'reason',
           'invalid userId',

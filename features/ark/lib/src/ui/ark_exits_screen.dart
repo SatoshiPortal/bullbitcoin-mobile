@@ -2,6 +2,8 @@ import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/ark_exit_candidates.dart';
+
 import '../../generated/l10n/ark_localizations.dart';
 import '../presentation/ark_l10n.dart';
 import 'ark_amount.dart';
@@ -179,13 +181,12 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     if (mounted) setState(() => _selected = null);
   }
 
-  // The snapshot has no separate exit-freshness stamp. Never manufacture one
-  // from recovery or VTXO completeness; stale observations remain read-only.
+  // A stale wallet can only open review for an individually priced board.
   bool get _current =>
-      !widget.snapshot.stale &&
       widget.snapshot.tipHeight != null &&
       widget.snapshot.exits != ArkExitStatus.unknown &&
-      widget.snapshot.exits != ArkExitStatus.failed;
+      widget.snapshot.exits != ArkExitStatus.failed &&
+      (!widget.snapshot.stale || arkExitCandidates(widget.snapshot).isNotEmpty);
   void _review(ArkAccountId account) {
     if (!mounted || widget.snapshot.account != account || !_current) return;
     widget.onReviewExit();

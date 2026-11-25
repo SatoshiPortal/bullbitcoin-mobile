@@ -1,6 +1,7 @@
 import 'package:bbx_api/bbx_api.dart' as bbx;
 
 import '../domain/entities/order.dart';
+import 'order_status_wire.dart';
 
 /// Whether [s] settled through [txId].
 ///
@@ -31,9 +32,9 @@ Order orderFromBbxApi(bbx.OrderSummary s, {required bool isTestnet}) {
   final orderTypeEnum = OrderType.fromValue(s.orderType);
   final payinMethodEnum = OrderPaymentMethod.fromValue(s.payinMethod ?? '');
   final payoutMethodEnum = OrderPaymentMethod.fromValue(s.payoutMethod ?? '');
-  final orderStatusEnum = OrderStatus.fromValue(s.orderStatus ?? '');
-  final payinStatusEnum = OrderPayinStatus.fromValue(s.payinStatus ?? '');
-  final payoutStatusEnum = OrderPayoutStatus.fromValue(s.payoutStatus ?? '');
+  final orderStatusEnum = orderStatusFromWire(s.orderStatus);
+  final payinStatusEnum = payinStatusFromWire(s.payinStatus);
+  final payoutStatusEnum = payoutStatusFromWire(s.payoutStatus);
   final confirmationDeadlineDt = _tryParse(s.confirmationDeadline);
   final createdAtDt = DateTime.parse(s.createdAt);
   final completedAtDt = _tryParse(s.completedAt);

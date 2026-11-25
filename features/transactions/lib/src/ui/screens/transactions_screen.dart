@@ -5,6 +5,7 @@ import 'package:transactions/src/presentation/transaction_failure_l10n.dart';
 
 import '../transactions_navigation.dart';
 
+import 'package:transactions/src/ui/widgets/exchange_orders_notice.dart';
 import 'package:transactions/src/ui/widgets/tx_list.dart';
 import 'package:transactions/src/ui/widgets/txs_filter_row.dart';
 import 'package:transactions/src/ui/widgets/txs_syncing_indicator.dart';
@@ -76,6 +77,7 @@ class _Screen extends StatelessWidget {
               ),
             ),
           ),
+        const SliverToBoxAdapter(child: ExchangeOrdersNotice()),
         const SliverToBoxAdapter(child: Gap(16.0)),
         const TxList(sliver: true),
       ],

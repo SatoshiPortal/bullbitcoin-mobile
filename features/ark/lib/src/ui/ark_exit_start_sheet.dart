@@ -38,7 +38,12 @@ class ArkExitStartSheet extends StatefulWidget {
 
   /// Makes sure the reserve can pay the fresh quote's fees, topping it up
   /// from Secure Bitcoin; a failure means the exit must not start.
-  final Future<Result<void, ArkFailure>> Function(ArkQuote quote)? fundFees;
+  final Future<Result<ArkExitReserveFunding, ArkFailure>> Function(
+    ArkQuote quote,
+  )?
+  fundFees;
+
+  final Future<Result<String?, ArkFailure>> Function()? savedDestination;
 
   const ArkExitStartSheet({
     super.key,
@@ -49,6 +54,7 @@ class ArkExitStartSheet extends StatefulWidget {
     required this.quote,
     this.secureBitcoinAddress,
     this.fundFees,
+    this.savedDestination,
   });
 
   static Future<ArkExitOutcome?> show(
@@ -59,7 +65,9 @@ class ArkExitStartSheet extends StatefulWidget {
     required ArkQuote estimate,
     required ArkOperationCubit Function(ArkQuoteRequest request) quote,
     Future<Result<String, ArkFailure>> Function()? secureBitcoinAddress,
-    Future<Result<void, ArkFailure>> Function(ArkQuote quote)? fundFees,
+    Future<Result<String?, ArkFailure>> Function()? savedDestination,
+    Future<Result<ArkExitReserveFunding, ArkFailure>> Function(ArkQuote quote)?
+    fundFees,
   }) => BullBottomSheet.show<ArkExitOutcome>(
     context: context,
     avoidKeyboard: true,
@@ -71,6 +79,7 @@ class ArkExitStartSheet extends StatefulWidget {
       quote: quote,
       secureBitcoinAddress: secureBitcoinAddress,
       fundFees: fundFees,
+      savedDestination: savedDestination,
     ),
   );
 
@@ -82,6 +91,7 @@ class _ArkExitStartSheetState extends State<ArkExitStartSheet> {
   late _Destination _choice;
   String? _secureAddress;
   bool _secureUnavailable = false;
+  bool _destinationSaved = false;
   String _another = '';
   ArkOperationCubit? _cubit;
   StreamSubscription<ArkOperationState>? _changes;
@@ -111,6 +121,19 @@ class _ArkExitStartSheetState extends State<ArkExitStartSheet> {
   }
 
   Future<void> _loadSecureAddress() async {
+    if (widget.savedDestination case final read?) {
+      final result = await read();
+      if (!mounted) return;
+      if (result case Ok(value: final String destination)) {
+        setState(() {
+          _choice = _Destination.another;
+          _another = destination;
+          _destinationSaved = true;
+        });
+        _requote();
+        return;
+      }
+    }
     final read = widget.secureBitcoinAddress;
     if (read == null) return;
     final result = await read();
@@ -132,12 +155,13 @@ class _ArkExitStartSheetState extends State<ArkExitStartSheet> {
   };
 
   void _choose(_Destination choice) {
-    if (_choice == choice || _busy) return;
+    if (_choice == choice || _busy || _destinationSaved) return;
     setState(() => _choice = choice);
     _requote();
   }
 
   void _typed(String value) {
+    if (_destinationSaved) return;
     _another = value;
     _typing?.cancel();
     // Quote once the address stops changing, not on every keystroke.
@@ -212,8 +236,13 @@ class _ArkExitStartSheetState extends State<ArkExitStartSheet> {
     _ => null,
   };
 
-  /// Starts the exit with a fresh quote for what is on screen. Its fees come
-  /// from Secure Bitcoin later, as the exit needs them: nothing to fund now.
+  bool _withinReviewedTerms(ArkQuote candidate, ArkQuote reviewed) =>
+      candidate.chainSource == reviewed.chainSource &&
+      candidate.configGeneration == reviewed.configGeneration &&
+      candidate.fee.value <= reviewed.fee.value &&
+      candidate.net.value >= reviewed.net.value;
+
+  /// Starts the exit with a fresh quote for the reviewed destination.
   Future<void> _start() async {
     final cubit = _cubit;
     final state = cubit?.state;
@@ -236,26 +265,54 @@ class _ArkExitStartSheetState extends State<ArkExitStartSheet> {
     final fresh = cubit.state;
     if (cubit.isClosed ||
         fresh is! ArkOperationReview ||
-        !identical(fresh.quote, _ready)) {
+        !identical(fresh.quote, _ready) ||
+        !_withinReviewedTerms(fresh.quote, state.quote)) {
       setState(() => _starting = false);
       return; // A refused re-quote shows its failure; nothing started.
     }
-    // Without its fees the exit could not move forward: fund the reserve
-    // from Secure Bitcoin first, and start nothing if that is not possible.
+    var confirmation = cubit;
     if (widget.fundFees case final fund?) {
       final funded = await fund(fresh.quote);
       if (!mounted) return;
-      if (funded case Err(:final failure)) {
-        setState(() {
-          _starting = false;
-          _fundFailure = failure;
-        });
-        return;
+      switch (funded) {
+        case Err(:final failure):
+          setState(() {
+            _starting = false;
+            _fundFailure = failure;
+          });
+          return;
+        case Ok(:final value):
+          if (!identical(_cubit, cubit) || !_matches(fresh.quote)) {
+            setState(() => _starting = false);
+            return;
+          }
+          _drop();
+          confirmation = widget.quote(
+            ArkQuoteRequest.emergencyExit(
+              ids: fresh.quote.selectedIds,
+              destination: fresh.quote.destination,
+              feeRate: fresh.quote.feeRate,
+              maxClaimFee: fresh.quote.maxClaimFee,
+              reserveFunding: value,
+            ),
+          );
+          _cubit = confirmation;
+          _changes = confirmation.stream.listen(_changed);
+          await confirmation.load();
+          if (!mounted) return;
       }
     }
     setState(() => _starting = false);
-    if (cubit.isClosed || !identical(cubit.state, fresh)) return;
-    unawaited(cubit.confirm());
+    if (confirmation.isClosed ||
+        !identical(_cubit, confirmation) ||
+        confirmation.state is! ArkOperationReview) {
+      return;
+    }
+    final reviewed = _ready;
+    if (reviewed == null || !_withinReviewedTerms(reviewed, fresh.quote)) {
+      return;
+    }
+    unawaited(confirmation.confirm());
   }
 
   /// Why the fees could not be covered; the exit did not start.
@@ -374,7 +431,8 @@ class _ArkExitStartSheetState extends State<ArkExitStartSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (widget.secureBitcoinAddress != null) ...[
+                          if (widget.secureBitcoinAddress != null &&
+                              !_destinationSaved) ...[
                             BullPickerRow(
                               label: l10n.exitSecureBitcoinWallet,
                               subtitle: secureSubtitle,
@@ -402,7 +460,7 @@ class _ArkExitStartSheetState extends State<ArkExitStartSheet> {
                       BullInputText(
                         value: _another,
                         hint: l10n.exitBitcoinAddress,
-                        disabled: _busy,
+                        disabled: _busy || _destinationSaved,
                         autocorrect: false,
                         enableSuggestions: false,
                         onChanged: _typed,

@@ -152,7 +152,7 @@ void main() {
       time.elapse(const Duration(seconds: 5));
       expect(reads, 2);
       available = true;
-      time.elapse(const Duration(seconds: 5));
+      time.elapse(const Duration(seconds: 10));
       expect(reads, 3);
       time.elapse(const Duration(seconds: 30));
       expect(reads, 3);

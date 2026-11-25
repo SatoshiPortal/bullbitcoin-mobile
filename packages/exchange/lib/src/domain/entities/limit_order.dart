@@ -3,16 +3,29 @@ enum LimitOrderStatus {
   executed('EXECUTED'),
   cancelled('CANCELLED'),
   expired('EXPIRED'),
-  failed('FAILED');
+  failed('FAILED'),
+
+  /// A status this build doesn't know. Not terminal: the order may still be
+  /// open on the exchange, so it stays in the open list and counts toward the
+  /// open-order cap.
+  unknown('UNKNOWN');
 
   final String value;
 
   const LimitOrderStatus(this.value);
 
-  static LimitOrderStatus fromValue(String value) => values.firstWhere(
-    (status) => status.value == value,
-    orElse: () => LimitOrderStatus.failed,
-  );
+  bool get isTerminal => switch (this) {
+    LimitOrderStatus.executed ||
+    LimitOrderStatus.cancelled ||
+    LimitOrderStatus.expired ||
+    LimitOrderStatus.failed => true,
+    LimitOrderStatus.active || LimitOrderStatus.unknown => false,
+  };
+
+  bool get isFailed => this == LimitOrderStatus.failed;
+
+  /// The exchange has no rejected status for a limit order.
+  bool get isRejected => false;
 }
 
 final class LimitOrder {
@@ -46,5 +59,10 @@ final class LimitOrder {
     this.executedOrderId,
   });
 
+  /// Whether the user can still cancel it.
   bool get isActive => status == LimitOrderStatus.active;
+
+  /// Whether it may still execute: active, or a status this build doesn't
+  /// know.
+  bool get isOpen => !status.isTerminal;
 }

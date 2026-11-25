@@ -62,7 +62,7 @@ final class BbxApiVirtualIbanRepository {
       case bbx.BbxCredentialUnavailableFailure():
         return const ExchangeCredentialReadFailure();
       case bbx.BbxRpcFailure(:final apiCode):
-        final description = _describe(failure);
+        final description = '$failure';
         log.warning('API refused to $operation — $description');
         return switch (apiCode) {
           _optionNotAvailableCode =>
@@ -72,7 +72,7 @@ final class BbxApiVirtualIbanRepository {
           _ => ExchangeUnexpectedFailure(description),
         };
       case bbx.BbxHttpFailure():
-        final description = _describe(failure);
+        final description = '$failure';
         log.warning('API refused to $operation — $description');
         return ExchangeUnexpectedFailure(description);
       case bbx.BbxTimeoutFailure(:final kind):
@@ -108,13 +108,5 @@ final class BbxApiVirtualIbanRepository {
     bbx.BbxTimeoutKind.connect => 'connectionTimeout',
     bbx.BbxTimeoutKind.send => 'sendTimeout',
     bbx.BbxTimeoutKind.receive => 'receiveTimeout',
-  };
-
-  /// The JSON-RPC error message can quote account details: keep the codes.
-  static String _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code, :final apiCode) =>
-      'BbxRpcFailure(code: $code, apiCode: $apiCode)'
-          '${failure.requestIdLabel}',
-    _ => '$failure',
   };
 }

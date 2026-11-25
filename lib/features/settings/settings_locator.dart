@@ -37,7 +37,10 @@ class SettingsLocator {
           settings: locator<Preferences>(),
           isIOS: Platform.isIOS,
           platformChanges: locator<Settings>().watchSuperuser().map(
-            (value) => !Platform.isIOS || value,
+            (value) => ExchangeAvailability.platformAllowed(
+              ExchangePlatform.current,
+              isSuperuser: value,
+            ),
           ),
         ).execute(),
         exchangeEntry: _exchangeActivationOffer(locator, onlyWhileOff: false),
@@ -58,9 +61,15 @@ class SettingsLocator {
     required bool onlyWhileOff,
   }) => WatchExchangeActivationOfferUsecase(
     exchange: locator<Exchange>(),
-    platformAllowed: () => !Platform.isIOS || locator<Settings>().isSuperuser,
+    platformAllowed: () => ExchangeAvailability.platformAllowed(
+      ExchangePlatform.current,
+      isSuperuser: locator<Settings>().isSuperuser,
+    ),
     platformChanges: locator<Settings>().watchSuperuser().map(
-      (value) => !Platform.isIOS || value,
+      (value) => ExchangeAvailability.platformAllowed(
+        ExchangePlatform.current,
+        isSuperuser: value,
+      ),
     ),
     onlyWhileOff: onlyWhileOff,
   ).execute();

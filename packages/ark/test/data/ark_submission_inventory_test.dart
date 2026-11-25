@@ -48,6 +48,60 @@ void main() {
     temp.deleteSync(recursive: true);
   });
   test(
+    'explicit exit starts only with the same still-confirmed reserve',
+    () async {
+      native
+        ..explicitExitReserve = true
+        ..observationStale = true;
+      final funding = ArkExitReserveFunding(
+        txid: 'f' * 64,
+        amount: Sats.fromInt(1000),
+      );
+      final request = ArkQuoteRequest.emergencyExit(
+        ids: [FakeOpener.firstId],
+        destination: 'destination',
+        maxClaimFee: Sats.fromInt(100),
+        reserveFunding: funding,
+      );
+      expect(await client.quote(account, request), isA<Err>());
+      expect(native.importedReserve, isNull);
+      native.reserveConfirmed = true;
+      native.failReserveImport = true;
+      expect(await client.quote(account, request), isA<Err>());
+      expect(native.importedReserve, isNull);
+      native.failReserveImport = false;
+      final quote = ok(
+        await client.quote(
+          account,
+          ArkQuoteRequest.emergencyExit(
+            ids: [FakeOpener.firstId],
+            destination: 'destination',
+            maxClaimFee: Sats.fromInt(100),
+          ),
+        ),
+      );
+      expect(native.importedReserve, funding.amount);
+      final submit = ArkSubmission.confirmQuote(
+        quoteId: quote.id,
+        operationId: 'exit',
+      );
+      native.reserveConfirmed = false;
+      expect(await client.submit(account, submit), isA<Err>());
+      expect(native.executes, 0);
+      native.reserveConfirmed = true;
+      expect(
+        ok(await client.submit(account, submit)).status,
+        ArkOperationStatus.pending,
+      );
+      expect(
+        ok(await client.submit(account, submit)).status,
+        ArkOperationStatus.pending,
+      );
+      expect(native.executes, 1);
+    },
+  );
+
+  test(
     'submission refuses unexplained disappearance since the reviewed quote',
     () async {
       final quote = ok(
@@ -160,4 +214,60 @@ void main() {
     expect(native.fundings, 1);
     expect(native.registrations, 1);
   });
+
+  for (final changedTip in [false, true]) {
+    test('live board checks same-height chain changes: $changedTip', () async {
+      native
+        ..requireBoardServerInfo = false
+        ..observationStale = true
+        ..inventoryCompleteness = ArkSectionCompleteness.incomplete
+        ..liveBoardTipHash = 'a' * 64;
+      final quote = ok(
+        await client.quote(
+          account,
+          ArkQuoteRequest.board(amount: Sats.fromInt(1000)),
+        ),
+      );
+      final prepared = ok(
+        await client.submit(
+          account,
+          ArkSubmission.boardFunding(
+            quoteId: quote.id,
+            operationId: 'live-board',
+          ),
+        ),
+      );
+      expect(prepared.boardFunding?.scuttleToken, 'opaque-funding-token');
+      if (changedTip) native.liveBoardTipHash = 'b' * 64;
+      final registration = await client.submit(
+        account,
+        ArkSubmission.registerBoard(
+          operationId: 'live-board',
+          unfinalisedPsbt: 'public',
+          keypairIndex: null,
+          expiryHeight: 2000,
+        ),
+      );
+      if (changedTip) {
+        expect(registration, isA<Err<ArkOperation, ArkWalletFailure>>());
+      } else {
+        expect(ok(registration).status, ArkOperationStatus.pending);
+      }
+      expect(native.registrations, changedTip ? 0 : 1);
+      expect(ok(await client.read(account)).stale, isTrue);
+      expect(
+        await client.quote(
+          account,
+          ArkQuoteRequest.payment(
+            destination: ArkPaymentDestination(
+              kind: ArkDestinationKind.ark,
+              value: 'address',
+            ),
+            amount: Sats.fromInt(1000),
+          ),
+        ),
+        isA<Err<ArkQuote, ArkWalletFailure>>(),
+      );
+    });
+  }
 }
