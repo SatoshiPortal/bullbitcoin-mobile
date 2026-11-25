@@ -420,6 +420,21 @@ extension MetadataBackupRestore on SecretsInventory {
       birthday: birthday,
     ),
   );
+
+  /// Merges archived BIP85 records of one parent. All or nothing; it can
+  /// add rows and make a child more restricted, never fewer, so the next
+  /// index can only rise. It does not lift any recovery block.
+  @useResult
+  Future<Result<DerivationMergeReport, SecretFailure>> mergeDerivationArchive({
+    required Fingerprint parent,
+    required List<RecordedDerivation> records,
+  }) => _inSession(
+    (_) => _derivations.merge(
+      view: defaultViewId,
+      parent: parent,
+      records: records,
+    ),
+  );
 }
 
 /// Scope for background sync. Only descriptors in views with an active
