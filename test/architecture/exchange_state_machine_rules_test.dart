@@ -360,6 +360,100 @@ List<String> screenWrites(Iterable<File> sources, Set<String> writes) {
   return found..sort();
 }
 
+// ---------------------------------------------------------------------------
+// (e) Back is stated, never implied by a navigator.
+//
+// Flow pages live in the flow's own navigator: its first page can't pop, so
+// an implied back (AppBar's automaticallyImplyLeading, `canPop() ? pop :
+// null`) shows nothing there and the user is stuck, and popping the inner
+// navigator skips the flow machine. Each screen states its back.
+
+/// `Name(args)` as the parser sees it without types: an instance creation
+/// (`const Name(...)`, `new Name(...)`) or a bare call `Name(...)`.
+({String name, ArgumentList arguments})? _construction(AstNode node) =>
+    switch (node) {
+      InstanceCreationExpression(:final constructorName, :final argumentList)
+          when constructorName.name == null =>
+        (name: constructorName.type.name.lexeme, arguments: argumentList),
+      MethodInvocation(:final target, :final methodName, :final argumentList)
+          when target == null =>
+        (name: methodName.name, arguments: argumentList),
+      _ => null,
+    };
+
+Expression? _namedArgument(ArgumentList arguments, String name) {
+  for (final argument in arguments.arguments) {
+    if (argument is NamedArgument && argument.name.lexeme == name) {
+      return argument.argumentExpression;
+    }
+  }
+  return null;
+}
+
+class _Identifiers extends RecursiveAstVisitor<void> {
+  final names = <String>{};
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    names.add(node.name);
+    super.visitSimpleIdentifier(node);
+  }
+}
+
+bool _mentions(AstNode node, String name) {
+  final identifiers = _Identifiers();
+  node.accept(identifiers);
+  return identifiers.names.contains(name);
+}
+
+class _ImpliedBacks extends RecursiveAstVisitor<void> {
+  _ImpliedBacks(this.report);
+
+  final void Function(AstNode) report;
+
+  void _check(AstNode node) {
+    final construction = _construction(node);
+    if (construction == null) return;
+    final (:name, :arguments) = construction;
+    switch (name) {
+      case 'AppBar':
+        if (_namedArgument(arguments, 'leading') == null &&
+            _namedArgument(arguments, 'automaticallyImplyLeading') == null) {
+          report(node);
+        }
+      case 'BackButton' || 'CloseButton':
+        if (_namedArgument(arguments, 'onPressed') == null) report(node);
+      case 'BullTopBar':
+        final onBack = _namedArgument(arguments, 'onBack');
+        if (onBack != null && _mentions(onBack, 'canPop')) report(onBack);
+    }
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    _check(node);
+    super.visitInstanceCreationExpression(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    _check(node);
+    super.visitMethodInvocation(node);
+  }
+}
+
+/// App bars that don't say `leading:` or `automaticallyImplyLeading:`,
+/// back and close buttons without `onPressed:`, and `BullTopBar` backs
+/// derived from `canPop`.
+List<String> impliedBacks(Iterable<File> sources) {
+  final found = <String>[];
+  for (final source in sources) {
+    final unit = _parse(source);
+    unit.accept(_ImpliedBacks((node) => found.add(_where(source, unit, node))));
+  }
+  return found..sort();
+}
+
 void main() {
   final exchangeLibSources = [
     ..._dartSources(_exchangeLib),
@@ -392,5 +486,9 @@ void main() {
     final writes = exchangeWriteNames();
     expect(writes, contains('confirmBuyOrder'));
     expect(screenWrites(exchangeLibSources, writes), isEmpty);
+  });
+
+  test('bull_exchange screens state their back, never imply it', () {
+    expect(impliedBacks(_dartSources(_exchangeFeatureLib)), isEmpty);
   });
 }
