@@ -1,12 +1,12 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/localizations.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+
+const _exchangeHome = 'exchangeHome';
 
 enum _Sheet { deleteAccount, deleted, logout, signIn }
 
@@ -20,15 +20,6 @@ class _SheetObserver extends NavigatorObserver {
 }
 
 void main() {
-  setUpAll(() async {
-    await (FontLoader(
-      'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-    await (FontLoader(
-      'Golos Text',
-    )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
-  });
-
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     for (final action in _Sheet.values) {
       testWidgets('${action.name} in ${theme.name}', (tester) async {
@@ -66,11 +57,8 @@ void main() {
                       ),
                       _Sheet.signIn => NotLoggedInBottomSheet.show(
                         context,
-                        message: AppLocalizations.of(context)
-                            .notLoggedInMessage,
-                        onSignIn: () => context.goNamed(
-                          BullExchangeNavigation.dashboardName,
-                        ),
+                        message: 'Sign in to continue',
+                        onSignIn: () => context.goNamed(_exchangeHome),
                       ),
                     },
                   ),
@@ -78,8 +66,8 @@ void main() {
               ),
             ),
             GoRoute(
-              path: BullExchangeNavigation.dashboardPath,
-              name: BullExchangeNavigation.dashboardName,
+              path: '/exchange',
+              name: _exchangeHome,
               builder: (_, _) =>
                   const Scaffold(body: Text('Exchange destination')),
             ),
@@ -91,11 +79,10 @@ void main() {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.themeData(theme),
             localizationsDelegates: const [
-              ExchangeLocalizations.delegate,
+              ...ExchangeLocalizations.localizationsDelegates,
               bullUiLocalizationsDelegate,
-              ...appLocalizationsDelegates,
             ],
-            supportedLocales: AppLocalizations.supportedLocales,
+            supportedLocales: ExchangeLocalizations.supportedLocales,
             routerConfig: router,
           ),
         );
@@ -105,7 +92,7 @@ void main() {
         await tester.pumpAndSettle();
         final sheet = find.byType(BullBottomSheet);
         expect(sheet, findsOneWidget);
-        final loc = AppLocalizations.of(tester.element(sheet));
+        final loc = ExchangeLocalizations.of(tester.element(sheet));
 
         final cancelLabel = switch (action) {
           _Sheet.deleteAccount => loc.deleteAccountConfirmationCancel,

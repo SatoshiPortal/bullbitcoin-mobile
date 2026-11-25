@@ -6,8 +6,6 @@ import 'package:settings/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../core/exchange/fake_exchange_users.dart';
-
 class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockExchangeUserRepository extends Mock

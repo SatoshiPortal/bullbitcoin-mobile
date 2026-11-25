@@ -9,8 +9,6 @@ import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../core/exchange/fake_exchange_users.dart';
-
 const _testSession = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,

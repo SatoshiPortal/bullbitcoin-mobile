@@ -1,4 +1,4 @@
-import '../fixtures/legacy_access.dart';
+import 'fixtures/legacy_access.dart';
 
 import 'package:exchange/setup.dart';
 import 'package:shared_preferences/shared_preferences.dart';

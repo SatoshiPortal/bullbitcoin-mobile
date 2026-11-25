@@ -1,6 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/testing.dart';
-import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullText;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,12 +13,13 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.themeData(themeType),
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates:
+                ExchangeLocalizations.localizationsDelegates,
+            supportedLocales: ExchangeLocalizations.supportedLocales,
             home: Scaffold(
               body: Builder(
                 builder: (context) => NotLoggedInBottomSheet(
-                  message: AppLocalizations.of(context).notLoggedInMessage,
+                  message: 'Sign in to continue',
                   onSignIn: () {},
                 ),
               ),

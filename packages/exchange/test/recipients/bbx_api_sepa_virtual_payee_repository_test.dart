@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:exchange/testing.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxCredentialUnavailableFailure;
 import 'package:exchange/exchange.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../exchange/data/bbx_api_test_http.dart';
+import '../bbx_api_test_http.dart';
 
 /// Answers each request with the next of [bodies].
 class _Answers extends FakeBbxHttp {
@@ -148,7 +149,7 @@ void main() {
     test('an unreadable credential is unexpected', () async {
       final repository = BbxApiSepaVirtualPayeeRepository(
         mainnet: FakeBbxHttp().client(
-          readApiKey: () async => const Err(ExchangeCredentialReadFailure()),
+          readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
         ),
         testnet: FakeBbxHttp().client(),
       );

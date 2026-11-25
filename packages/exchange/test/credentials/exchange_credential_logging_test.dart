@@ -12,7 +12,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../features/exchange/data/bbx_api_test_http.dart';
+import '../bbx_api_test_http.dart';
 
 const _sensitive = 'synthetic-private-credential';
 

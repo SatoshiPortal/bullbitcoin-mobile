@@ -4,6 +4,7 @@ library;
 export 'src/exchange.dart'
     show exchangeForTesting, exchangeWithTransportForTesting;
 export 'src/setup/fixed_access_for_testing.dart';
+export 'src/testing/fake_exchange_users.dart';
 export 'src/data/unknown_write_journal_store.dart'
     show InMemoryUnknownWriteJournal;
 export 'src/recipients/data/bbx_api_recipients_repository.dart';

@@ -1,6 +1,6 @@
 import 'package:exchange/exchange.dart';
+import 'package:exchange/src/exchange.dart' show exchangeForTesting;
 import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
-import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
 
 abstract interface class ExchangeUserOperations {

@@ -2,19 +2,13 @@ import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:address_view/payment_destination.dart';
-import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
-import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
-import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-import '../../features/exchange/data/bbx_api_test_http.dart';
 
 /// Throws [error] for every request, as a failing transport.
 class _Throwing implements HttpClientAdapter {
@@ -63,7 +57,7 @@ Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
     _ => Ok((
       environment: ExchangeEnvironment.testnet,
       epoch: 0,
-      apiKey: refusal is _MissingKey ? null : anonymousTestApiKey,
+      apiKey: refusal is _MissingKey ? null : _testApiKey,
     )),
   },
   openClient: (endpoint, readKey) => bbxForTesting(
@@ -79,22 +73,19 @@ Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
 
 class _Logger extends Mock implements Logger {}
 
-/// The Bitcoin destination check the default-wallet editor uses.
-Future<String?> _validateBitcoin(BtcNetwork _, String raw) async =>
-    (await const PaymentDestinations().validate(
-      raw,
-      acceptedTypes: const {PaymentDestinationType.bitcoin},
-    ))?.address;
+/// The payout address check: these tests are about reporting, not parsing.
+Future<String?> _acceptAddress(BtcNetwork type, String raw) async => raw;
+
+/// The key the sessions in this file carry; never sent to a server.
+const _testApiKey = 'synthetic-key';
 
 void main() {
   late _Logger logger;
   late Logger previous;
-  setUpAll(() async {
-    await BullSdk.init();
+  setUpAll(() {
     registerFallbackValue(StackTrace.empty);
     registerFallbackValue(BtcNetwork.bitcoin);
   });
-  tearDownAll(BullSdk.dispose);
   setUp(() {
     previous = log;
     logger = _Logger();
@@ -167,7 +158,7 @@ void main() {
             defaultWalletsEffectForTesting(
               effect,
               exchange: exchange,
-              validate: _validateBitcoin,
+              validate: _acceptAddress,
             );
 
         expect(
@@ -214,7 +205,7 @@ void main() {
             getDefaultWallets: () =>
                 throw StateError('synthetic programming error'),
           ),
-          validate: _validateBitcoin,
+          validate: _acceptAddress,
         ),
         throwsStateError,
       );

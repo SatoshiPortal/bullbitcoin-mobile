@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bbx_api/bbx_api.dart' show BbxCredentialUnavailableFailure;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -8,7 +9,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../exchange/data/bbx_api_test_http.dart';
+import '../bbx_api_test_http.dart';
 import 'bbx_api_recipients_repository_legacy.dart';
 
 const _iban = 'DE89370400440532013000';
@@ -807,7 +808,7 @@ void main() {
           final repository = BbxApiRecipientsRepository(
             api: http.client(
               readApiKey: () async =>
-                  const Err(ExchangeCredentialReadFailure()),
+                  const Err(BbxCredentialUnavailableFailure()),
             ),
           );
 

@@ -1,5 +1,3 @@
-import '../../fixtures/legacy_access.dart';
-
 import 'package:exchange/setup.dart';
 import 'package:exchange/exchange.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,12 +98,18 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       when(() => keys.readActiveApiKey(isTestnet: true))
           .thenAnswer((_) async => const Ok(null));
-      final access = legacyAccessForTesting(
+      Object? storedAccess;
+      final access = ExchangeAccessLifecycle.open(
         apiKeyRepository: keys,
         readEnvironment: () async => true,
         platformAllowed: () async => true,
         disconnectNotifications: () async {},
         clearCookies: () async {},
+        readPreference: () async => storedAccess,
+        writePreference: (value) async {
+          storedAccess = value;
+          return true;
+        },
       );
       final _ = await access.enable();
       when(settings.readExchangeWebPreferences).thenAnswer(
