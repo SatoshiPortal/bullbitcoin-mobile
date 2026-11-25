@@ -42,7 +42,15 @@ final class WithdrawContext {
   final UserSummary summary;
   final List<UnknownWrite> openEntries;
 
-  const WithdrawContext(this.summary, this.openEntries);
+  /// The order limits the exchange answered in this flow, per currency:
+  /// the amount step checks them before the next order.
+  final Map<FiatCurrency, AmountLimits> limits;
+
+  const WithdrawContext(
+    this.summary,
+    this.openEntries, {
+    this.limits = const {},
+  });
 
   AmountContext get amountContext => AmountContext(
     kycGroups: summary.kycGroups,
@@ -53,7 +61,16 @@ final class WithdrawContext {
         ))
           market.currency: balance.amount,
     },
+    limits: limits,
   );
+
+  /// This context, knowing the order limit the exchange refused for.
+  WithdrawContext withExchangeLimit(ExchangeOrderLimit limit) =>
+      WithdrawContext(
+        summary,
+        openEntries,
+        limits: amountContext.withExchangeLimit(limit).limits,
+      );
 
   Market? get preferredMarket => switch (summary.currency) {
     final code? => switch (ExchangeCatalog.parse(code)) {
@@ -67,7 +84,8 @@ final class WithdrawContext {
   bool operator ==(Object other) =>
       other is WithdrawContext &&
       other.summary == summary &&
-      identical(other.openEntries, openEntries);
+      identical(other.openEntries, openEntries) &&
+      _sameLimits(other.limits, limits);
 
   @override
   int get hashCode => Object.hash(summary, openEntries.length);
@@ -629,6 +647,27 @@ WithdrawFlowNext _stepped<S, F>(
     ? WithdrawFlowNext.stay(flow)
     : map(next);
 
+/// The exchange refused [amount] for [limit]: back to the amount with the
+/// draft, the limit known to the step from now on.
+WithdrawFlowNext _amountRefused(
+  WithdrawOpen open,
+  EnteredAmount amount,
+  ExchangeOrderLimit limit,
+) {
+  final learned = WithdrawOpen(
+    open.session,
+    open.context.withExchangeLimit(limit),
+  );
+  return _amountNext(
+    learned,
+    transitionAmountEntry(
+      withdrawAmountPolicy,
+      AmountDone(amount, learned.context.amountContext),
+      AmountLimitRefused(limit),
+    ),
+  );
+}
+
 /// Back to the amount with the entered draft kept.
 WithdrawFlowNext _editAmount(WithdrawOpen open, EnteredAmount amount) =>
     _amountNext(
@@ -753,6 +792,8 @@ WithdrawFlowNext _order(
     quoted: QuotedOrder(:final order),
   ) => WithdrawFlowNext(WithdrawReview(open, amount, recipient, order)),
   OrderLeft() => WithdrawFlowNext(WithdrawRecipient(open, amount)),
+  // Retry would send the same amount: back to it, with the limit shown.
+  OrderAmountRefused(:final limit) => _amountRefused(open, amount, limit),
   OrderSessionEnded() => _ended,
   OrderCreating() ||
   OrderWriteRefused() ||
@@ -910,3 +951,8 @@ WithdrawFlowNext _sessionEnded(
   WithdrawVisibilityChanged() ||
   WithdrawSessionChanged() => WithdrawFlowNext.stay(state),
 };
+
+bool _sameLimits(
+  Map<FiatCurrency, AmountLimits> a,
+  Map<FiatCurrency, AmountLimits> b,
+) => a.length == b.length && a.entries.every((e) => b[e.key] == e.value);

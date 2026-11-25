@@ -43,10 +43,28 @@ final class SellContext {
   final UserSummary summary;
   final List<UnknownWrite> openEntries;
 
-  const SellContext(this.summary, this.openEntries);
+  /// The order limits the exchange answered in this flow, per currency:
+  /// the amount step checks them before the next order.
+  final Map<FiatCurrency, AmountLimits> limits;
 
-  AmountContext get amountContext =>
-      AmountContext(kycGroups: summary.kycGroups, balances: const {});
+  const SellContext(this.summary, this.openEntries, {this.limits = const {}});
+
+  AmountContext get amountContext => AmountContext(
+    kycGroups: summary.kycGroups,
+    balances: const {},
+    limits: limits,
+  );
+
+  /// This context, knowing the order limit the exchange refused for.
+  SellContext withExchangeLimit(ExchangeOrderLimit limit) => SellContext(
+    summary,
+    openEntries,
+    limits: amountContext.withExchangeLimit(limit).limits,
+  );
+
+  /// [loaded] (a reload), keeping the limits this flow learned.
+  SellContext withAccount(SellContext loaded) =>
+      SellContext(loaded.summary, loaded.openEntries, limits: limits);
 
   Market? get preferredMarket => switch (summary.currency) {
     final code? => switch (ExchangeCatalog.parse(code)) {
@@ -60,7 +78,8 @@ final class SellContext {
   bool operator ==(Object other) =>
       other is SellContext &&
       other.summary == summary &&
-      identical(other.openEntries, openEntries);
+      identical(other.openEntries, openEntries) &&
+      _sameLimits(other.limits, limits);
 
   @override
   int get hashCode => Object.hash(summary, openEntries.length);
@@ -703,7 +722,7 @@ SellFlowNext _amount(SellAmount state, SellFlowEvent event) => switch (event) {
   SellDetourLoaded(:final read) => switch (state.amount) {
     AmountKycDetour() => switch (read) {
       ReadGot(value: final context) => _amountNext(
-        SellOpen(state.open.session, context),
+        SellOpen(state.open.session, state.open.context.withAccount(context)),
         transitionAmountEntry(
           sellAmountPolicy,
           state.amount,
@@ -737,6 +756,24 @@ SellFlowNext _amount(SellAmount state, SellFlowEvent event) => switch (event) {
   SellVisibilityChanged() ||
   SellSessionChanged() => SellFlowNext.stay(state),
 };
+
+/// The exchange refused [request]'s amount for [limit]: back to the amount
+/// with the draft, the limit known to the step from now on.
+SellFlowNext _amountRefused(
+  SellOpen open,
+  SellRequest request,
+  ExchangeOrderLimit limit,
+) {
+  final learned = SellOpen(open.session, open.context.withExchangeLimit(limit));
+  return _amountNext(
+    learned,
+    transitionAmountEntry(
+      sellAmountPolicy,
+      AmountDone(request.amount, learned.context.amountContext),
+      AmountLimitRefused(limit),
+    ),
+  );
+}
 
 /// Back to the amount with the entered draft kept.
 SellFlowNext _editAmount(SellOpen open, EnteredAmount amount) => _amountNext(
@@ -992,6 +1029,8 @@ SellFlowNext _order(
       ),
     },
     OrderLeft() => SellFlowNext(_orderLeft(open, request).state, effects),
+    // Retry would send the same amount: back to it, with the limit shown.
+    OrderAmountRefused(:final limit) => _amountRefused(open, request, limit),
     OrderSessionEnded() => SellFlowNext(const SellSessionEnded(), effects),
     OrderCreating() ||
     OrderWriteRefused() ||
@@ -1238,3 +1277,8 @@ SellFlowNext _terminal(SellFlowState state, SellFlowEvent event) =>
       SellVisibilityChanged() ||
       SellSessionChanged() => SellFlowNext.stay(state),
     };
+
+bool _sameLimits(
+  Map<FiatCurrency, AmountLimits> a,
+  Map<FiatCurrency, AmountLimits> b,
+) => a.length == b.length && a.entries.every((e) => b[e.key] == e.value);

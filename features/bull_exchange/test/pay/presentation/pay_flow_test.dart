@@ -282,4 +282,60 @@ void main() {
       expect(identical(next.state, payPayingState), isTrue);
     });
   });
+
+  // A pay of 10 CAD the exchange refused (minimum 20): not a dead-end Retry
+  // but the amount again, with the minimum, which the step now enforces.
+  test('an order limit refusal goes back to the amount with the limit', () {
+    final back = applyPay(payOrderingState, [
+      PayOrderChanged(
+        OrderCreateAnswered(
+          1,
+          GateAdmitted(
+            WriteRefused(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]);
+    expect(back, isA<PayAmount>());
+    final amount = (back as PayAmount).amount as AmountEditing;
+    expect(amount.draft.text, '10');
+    expect(amount.problem, const AmountBelowMinimum(20));
+
+    final again = applyPay(back, const [
+      PayAmountChanged(AmountContinuePressed()),
+    ]);
+    expect(
+      ((again as PayAmount).amount as AmountEditing).problem,
+      const AmountBelowMinimum(20),
+    );
+    // Back to the recipient and forward again: the limit is still known.
+    final reentered = applyPay(again, [
+      const PayBackPressed(),
+      PayRecipientPicked(payBankRecipient),
+      const PayAmountChanged(
+        AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+      ),
+      const PayAmountChanged(AmountTyped('10')),
+      const PayAmountChanged(AmountContinuePressed()),
+    ]);
+    expect(
+      ((reentered as PayAmount).amount as AmountEditing).problem,
+      const AmountBelowMinimum(20),
+    );
+    expect(
+      applyPay(again, const [
+        PayAmountChanged(AmountTyped('25')),
+        PayAmountChanged(AmountContinuePressed()),
+      ]),
+      isA<PaySource>(),
+    );
+  });
 }

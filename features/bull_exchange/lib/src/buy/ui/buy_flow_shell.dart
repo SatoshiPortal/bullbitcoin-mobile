@@ -317,6 +317,7 @@ List<Page<void>> buyPagesFor(
         OrderPlaced() ||
         OrderCommitted() ||
         OrderSessionEnded() ||
+        OrderAmountRefused() ||
         OrderLeft() => status(_orderKey, busy: true),
       },
     ],

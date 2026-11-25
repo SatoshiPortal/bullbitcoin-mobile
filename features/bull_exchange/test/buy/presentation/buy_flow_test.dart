@@ -697,4 +697,34 @@ void main() {
       );
     });
   });
+
+  test('an order limit refusal goes back to the entry with the limit', () {
+    final back = applyBuy(buyOrderingState, [
+      BuyOrderChanged(
+        OrderCreateAnswered(
+          1,
+          GateAdmitted(
+            WriteRefused(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]).state;
+    expect(back, isA<BuyEntry>());
+    final amount = (back as BuyEntry).amount as AmountEditing;
+    expect(amount.draft.text, '10');
+    expect(amount.problem, const AmountBelowMinimum(20));
+    final again = applyBuy(back, const [BuyContinuePressed()]).state;
+    expect(
+      ((again as BuyEntry).amount as AmountEditing).problem,
+      const AmountBelowMinimum(20),
+    );
+  });
 }

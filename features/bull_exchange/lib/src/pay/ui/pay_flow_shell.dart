@@ -380,6 +380,7 @@ List<Page<void>> payPagesFor(
         OrderPlaced() ||
         OrderCommitted() ||
         OrderSessionEnded() ||
+        OrderAmountRefused() ||
         OrderLeft() => status(_orderKey, busy: true),
       },
     ],

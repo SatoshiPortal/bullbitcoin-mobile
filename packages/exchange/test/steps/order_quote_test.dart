@@ -62,6 +62,8 @@ const _placed = OrderPlaced<String, _Order>(_q);
 const _committed = OrderCommitted<String, _Order>(_q);
 const _ended = OrderSessionEnded<String, _Order>();
 const _left = OrderLeft<String, _Order>();
+const _limit = ExchangeOrderLimit(ExchangeOrderAmountBound.minimum, 10, 'CAD');
+const _amountRefused = OrderAmountRefused<String, _Order>(_req, _limit);
 
 const _states = <_S>[
   _creating,
@@ -75,6 +77,7 @@ const _states = <_S>[
   _unavailable,
   _placed,
   _committed,
+  _amountRefused,
   _ended,
   _left,
 ];
@@ -108,6 +111,10 @@ const _events = <_E>[
   OrderRetryPressed(), // 19
   OrderCommitPressed(), // 20
   OrderBackPressed(), // 21
+  OrderCreateAnswered(
+    1,
+    GateAdmitted(WriteRefused(ExchangeRefusal(orderLimit: _limit))),
+  ), // 22
 ];
 
 const _toLive = _Next(_live, [OrderStartLockTimer('o1')]);
@@ -128,6 +135,7 @@ final _table = <_S, Map<int, _Next>>{
     3: const _Next(_verifying, [OrderFindCreated(_req, 1)]),
     4: const _Next(_ended),
     5: const _Next(_gateRefused),
+    22: const _Next(_amountRefused),
   },
   _gateRefused: {
     19: const _Next(OrderCreating(_req, 2), [OrderSendCreate(_req, 2)]),
@@ -170,6 +178,7 @@ final _table = <_S, Map<int, _Next>>{
   },
   _placed: {},
   _committed: {},
+  _amountRefused: {},
   _ended: {},
   _left: {},
 };

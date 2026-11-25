@@ -268,6 +268,28 @@ final class OrderSessionEnded<R, O> extends OrderStepState<R, O> {
   int get hashCode => (OrderSessionEnded).hashCode;
 }
 
+/// The exchange refused the order for its amount: [limit] is the bound it
+/// broke. Terminal: the flow takes the user back to the amount step with
+/// the limit (Retry would send the same amount and fail the same way).
+final class OrderAmountRefused<R, O> extends OrderStepState<R, O> {
+  final R request;
+  final ExchangeOrderLimit limit;
+
+  const OrderAmountRefused(this.request, this.limit);
+
+  @override
+  bool operator ==(Object other) =>
+      other is OrderAmountRefused &&
+      other.request == request &&
+      other.limit == limit;
+
+  @override
+  int get hashCode => Object.hash(OrderAmountRefused, request, limit);
+
+  @override
+  String toString() => 'OrderAmountRefused($request, $limit)';
+}
+
 /// The user went back to the previous step. Terminal.
 final class OrderLeft<R, O> extends OrderStepState<R, O> {
   const OrderLeft();
@@ -514,6 +536,10 @@ OrderStepNext<R, O> _created<R, O>(
     OrderWriteRefused<R, O>(request, attempt, refusal),
   ),
   GateAdmitted(result: WriteDone(:final value)) => _held(policy, value),
+  GateAdmitted(
+    result: WriteRefused(reason: ExchangeRefusal(orderLimit: final limit?)),
+  ) =>
+    StepNext(OrderAmountRefused<R, O>(request, limit)),
   GateAdmitted(result: WriteRefused(:final reason)) => StepNext(
     OrderCreateFailed<R, O>(request, attempt, WriteProblemRefused(reason)),
   ),
@@ -696,7 +722,11 @@ OrderStepNext<R, O> transitionOrderStep<R, O>(
     StepNext.stay(state),
 
   (
-    OrderPlaced() || OrderCommitted() || OrderSessionEnded() || OrderLeft(),
+    OrderPlaced() ||
+        OrderCommitted() ||
+        OrderAmountRefused() ||
+        OrderSessionEnded() ||
+        OrderLeft(),
     OrderCreateAnswered() ||
         OrderFindAnswered() ||
         OrderLockDue() ||

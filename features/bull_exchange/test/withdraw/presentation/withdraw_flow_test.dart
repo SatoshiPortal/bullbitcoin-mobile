@@ -4,6 +4,7 @@ import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../recipients/recipient_fixture.dart';
+import '../withdraw_fixtures.dart' as fx;
 
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -404,23 +405,15 @@ void main() {
       );
     });
 
+    // An amount refusal goes back to the amount instead (see 'an order
+    // limit refusal goes back to the amount with the limit').
     test('a refused create shows the refusal; Retry sends again', () {
       final refused = transitionWithdrawFlow(
         _ordering,
         const WithdrawOrderChanged(
           OrderCreateAnswered(
             1,
-            GateAdmitted(
-              WriteRefused(
-                ExchangeRefusal(
-                  orderLimit: ExchangeOrderLimit(
-                    ExchangeOrderAmountBound.minimum,
-                    20,
-                    'CAD',
-                  ),
-                ),
-              ),
-            ),
+            GateAdmitted(WriteRefused(ExchangeRefusal(rpcCode: -32000))),
           ),
         ),
       );
@@ -593,6 +586,49 @@ void main() {
     expect(
       withdrawConfirmCheck(const ReadUnreachable('x', isNetwork: true)),
       isA<ConfirmCheckFailed<WithdrawOrder>>(),
+    );
+  });
+
+  test('an order limit refusal goes back to the amount with the limit', () {
+    final ordering = fx.applyWithdraw(fx.withdrawRecipientState, [
+      WithdrawRecipientPicked(fx.withdrawBankRecipient),
+    ]);
+    expect(ordering, isA<WithdrawOrdering>());
+    final back = fx.applyWithdraw(ordering, [
+      WithdrawOrderChanged(
+        OrderCreateAnswered(
+          1,
+          GateAdmitted(
+            WriteRefused(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]);
+    expect(back, isA<WithdrawAmount>());
+    final amount = (back as WithdrawAmount).amount as AmountEditing;
+    expect(amount.draft.text, '10');
+    expect(amount.problem, const AmountBelowMinimum(20));
+    final again = fx.applyWithdraw(back, const [
+      WithdrawAmountChanged(AmountContinuePressed()),
+    ]);
+    expect(
+      ((again as WithdrawAmount).amount as AmountEditing).problem,
+      const AmountBelowMinimum(20),
+    );
+    expect(
+      fx.applyWithdraw(again, const [
+        WithdrawAmountChanged(AmountTyped('25')),
+        WithdrawAmountChanged(AmountContinuePressed()),
+      ]),
+      isA<WithdrawRecipient>(),
     );
   });
 }

@@ -409,6 +409,7 @@ List<Page<void>> sellPagesFor(
         OrderPlaced() ||
         OrderCommitted() ||
         OrderSessionEnded() ||
+        OrderAmountRefused() ||
         OrderLeft() => status(_orderKey, busy: true),
       },
     ],

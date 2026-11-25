@@ -41,16 +41,35 @@ final class PayContext {
   final UserSummary summary;
   final List<UnknownWrite> openEntries;
 
-  const PayContext(this.summary, this.openEntries);
+  /// The order limits the exchange answered in this flow, per currency:
+  /// the amount step checks them before the next order.
+  final Map<FiatCurrency, AmountLimits> limits;
 
-  AmountContext get amountContext =>
-      AmountContext(kycGroups: summary.kycGroups, balances: const {});
+  const PayContext(this.summary, this.openEntries, {this.limits = const {}});
+
+  AmountContext get amountContext => AmountContext(
+    kycGroups: summary.kycGroups,
+    balances: const {},
+    limits: limits,
+  );
+
+  /// This context, knowing the order limit the exchange refused for.
+  PayContext withExchangeLimit(ExchangeOrderLimit limit) => PayContext(
+    summary,
+    openEntries,
+    limits: amountContext.withExchangeLimit(limit).limits,
+  );
+
+  /// [loaded] (a reload), keeping the limits this flow learned.
+  PayContext withAccount(PayContext loaded) =>
+      PayContext(loaded.summary, loaded.openEntries, limits: limits);
 
   @override
   bool operator ==(Object other) =>
       other is PayContext &&
       other.summary == summary &&
-      identical(other.openEntries, openEntries);
+      identical(other.openEntries, openEntries) &&
+      _sameLimits(other.limits, limits);
 
   @override
   int get hashCode => Object.hash(summary, openEntries.length);
@@ -742,7 +761,7 @@ PayFlowNext _amount(PayAmount state, PayFlowEvent event) => switch (event) {
   PayDetourLoaded(:final read) => switch (state.amount) {
     AmountKycDetour() => switch (read) {
       ReadGot(value: final context) => _amountNext(
-        PayOpen(state.open.session, context),
+        PayOpen(state.open.session, state.open.context.withAccount(context)),
         state.recipient,
         transitionAmountEntry(
           state.policy,
@@ -791,6 +810,25 @@ PayFlowNext _editAmount(
     const AmountEditRequested(),
   ),
 );
+
+/// The exchange refused [request]'s amount for [limit]: back to the amount
+/// with the draft, the limit known to the step from now on.
+PayFlowNext _amountRefused(
+  PayOpen open,
+  PayRequest request,
+  ExchangeOrderLimit limit,
+) {
+  final learned = PayOpen(open.session, open.context.withExchangeLimit(limit));
+  return _amountNext(
+    learned,
+    request.recipient,
+    transitionAmountEntry(
+      payAmountPolicy(request.recipient.rail.market),
+      AmountDone(request.amount, learned.context.amountContext),
+      AmountLimitRefused(limit),
+    ),
+  );
+}
 
 /// Whether [source] can pay in (as sell).
 bool _sourceAllowed(PayinSource source) => switch (source) {
@@ -896,6 +934,8 @@ PayFlowNext _order(
       PaySource(open, request.recipient, request.amount),
       effects,
     ),
+    // Retry would send the same amount: back to it, with the limit shown.
+    OrderAmountRefused(:final limit) => _amountRefused(open, request, limit),
     OrderSessionEnded() => PayFlowNext(const PaySessionEnded(), effects),
     OrderCreating() ||
     OrderWriteRefused() ||
@@ -1178,3 +1218,8 @@ PayFlowNext _terminal(PayFlowState state, PayFlowEvent event) =>
       PayVisibilityChanged() ||
       PaySessionChanged() => PayFlowNext.stay(state),
     };
+
+bool _sameLimits(
+  Map<FiatCurrency, AmountLimits> a,
+  Map<FiatCurrency, AmountLimits> b,
+) => a.length == b.length && a.entries.every((e) => b[e.key] == e.value);

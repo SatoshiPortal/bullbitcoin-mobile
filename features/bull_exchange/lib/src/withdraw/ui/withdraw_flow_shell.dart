@@ -281,6 +281,7 @@ List<Page<void>> withdrawPagesFor(
         OrderPlaced() ||
         OrderCommitted() ||
         OrderSessionEnded() ||
+        OrderAmountRefused() ||
         OrderLeft() => status(_orderingKey, title, busy: true),
       },
     ],

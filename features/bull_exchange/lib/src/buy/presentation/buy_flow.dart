@@ -102,7 +102,12 @@ final class BuyContext {
     required this.wallets,
     required this.payjoinAllowed,
     required this.openEntries,
+    this.limits = const {},
   });
+
+  /// The order limits the exchange answered in this flow, per currency:
+  /// the amount step checks them before the next order.
+  final Map<FiatCurrency, AmountLimits> limits;
 
   AmountContext get amountContext => AmountContext(
     kycGroups: summary.kycGroups,
@@ -113,6 +118,16 @@ final class BuyContext {
         ))
           market.currency: balance.amount,
     },
+    limits: limits,
+  );
+
+  /// This context, knowing the order limit the exchange refused for.
+  BuyContext withExchangeLimit(ExchangeOrderLimit limit) => BuyContext(
+    summary: summary,
+    wallets: wallets,
+    payjoinAllowed: payjoinAllowed,
+    openEntries: openEntries,
+    limits: amountContext.withExchangeLimit(limit).limits,
   );
 
   Market? get preferredMarket => switch (summary.currency) {
@@ -158,6 +173,7 @@ final class BuyContext {
     wallets: wallets,
     payjoinAllowed: payjoinAllowed,
     openEntries: loaded.openEntries,
+    limits: limits,
   );
 
   @override
@@ -166,7 +182,8 @@ final class BuyContext {
       other.summary == summary &&
       _listEquals(other.wallets, wallets) &&
       other.payjoinAllowed == payjoinAllowed &&
-      identical(other.openEntries, openEntries);
+      identical(other.openEntries, openEntries) &&
+      _sameLimits(other.limits, limits);
 
   @override
   int get hashCode => Object.hash(
@@ -1206,6 +1223,32 @@ BuyFlowNext _led(List<BuyFlowEffect> effects, BuyFlowNext flow) =>
 BuyEntry buyEntryUnder(BuyOpen open, BuyRequest request) =>
     _editEntry(open, request).state as BuyEntry;
 
+/// The exchange refused [request]'s amount for [limit]: back to the entry
+/// with the draft, the destination and the switch, the limit known to the
+/// amount step from now on.
+BuyFlowNext _amountRefused(
+  BuyOpen open,
+  BuyRequest request,
+  ExchangeOrderLimit limit,
+) {
+  final learned = BuyOpen(open.session, open.context.withExchangeLimit(limit));
+  return _entryOf(
+    learned,
+    transitionAmountEntry(
+      buyAmountPolicy,
+      AmountDone(request.amount, learned.context.amountContext),
+      AmountLimitRefused(limit),
+    ),
+    PickNext<DestinationOption, Destination>(
+      PickChosen<DestinationOption, Destination>(
+        learned.context.options,
+        request.destination,
+      ),
+    ),
+    request.payjoinChosen,
+  );
+}
+
 BuyFlowNext _editEntry(BuyOpen open, BuyRequest request) => _entryOf(
   open,
   transitionAmountEntry(
@@ -1258,6 +1301,11 @@ BuyFlowNext _orderNext(
       leading: effects,
     ),
     OrderLeft() => _led(effects, _editEntry(open, request)),
+    // Retry would send the same amount: back to it, with the limit shown.
+    OrderAmountRefused(:final limit) => _led(
+      effects,
+      _amountRefused(open, request, limit),
+    ),
     OrderSessionEnded() => BuyFlowNext(const BuySessionEnded(), effects),
     OrderCreating() ||
     OrderWriteRefused() ||
@@ -1543,3 +1591,8 @@ BuyFlowNext _sessionEnded(BuySessionEnded state, BuyFlowEvent event) =>
       BuyVisibilityChanged() ||
       BuySessionChanged() => BuyFlowNext.stay(state),
     };
+
+bool _sameLimits(
+  Map<FiatCurrency, AmountLimits> a,
+  Map<FiatCurrency, AmountLimits> b,
+) => a.length == b.length && a.entries.every((e) => b[e.key] == e.value);

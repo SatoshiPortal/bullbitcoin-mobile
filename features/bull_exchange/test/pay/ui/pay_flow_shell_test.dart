@@ -172,4 +172,33 @@ void main() {
       expect(events.single, isA<PayBackPressed>());
     });
   }
+
+  testWidgets('an order limit refusal shows the amount page with the limit', (
+    tester,
+  ) async {
+    final back = applyPay(payOrderingState, [
+      PayOrderChanged(
+        OrderCreateAnswered(
+          1,
+          GateAdmitted(
+            WriteRefused(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]);
+    final labels = await _pump(tester, back);
+    expect(find.byType(PayAmountPage), findsOneWidget);
+    expect(
+      find.text(labels.exchangeOrderBelowMinimum('20.0', 'CAD')),
+      findsOneWidget,
+    );
+  });
 }
