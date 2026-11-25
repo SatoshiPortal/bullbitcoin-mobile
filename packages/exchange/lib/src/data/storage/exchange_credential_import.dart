@@ -173,6 +173,8 @@ final class _PreparedExchange implements PreparedOwner {
           }
           rows.add((id: id, username: username, password: password));
         }
+        // Admission requires the Settings row the app always wrote.
+        if (!rows.any((row) => row.id == 1)) return false;
         return _insertAndVerify(keys, rows);
       },
     );
