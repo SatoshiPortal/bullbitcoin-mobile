@@ -127,7 +127,7 @@ void main() {
     String seed, {
     bool tested = true,
   }) async => _ok(
-    await store.write((
+    await writeWalletBackupForTesting(store, (
       walletId: id,
       secretFingerprint: seed,
       encryptedVaultTested: false,

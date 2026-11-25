@@ -80,7 +80,7 @@ void main() {
       signerDevice: null,
     );
     _ok(
-      await regtestBackups.write((
+      await writeWalletBackupForTesting(regtestBackups, (
         walletId: draft.id,
         secretFingerprint: draft.secretFingerprint?.hex,
         encryptedVaultTested: true,
@@ -99,6 +99,39 @@ void main() {
     expect(prepared?.latestPhysicalBackup, isNull);
     // The reset stays in the network's own store.
     expect(_ok(await mainBackups.read(draft.id)), isNull);
+  });
+
+  test('direct backup preparation can erase matching evidence', () async {
+    const fingerprint = '01234567';
+    const usage = (
+      walletId: 'wallet',
+      secretFingerprint: fingerprint,
+      encryptedVaultTested: false,
+      physicalBackupTested: true,
+      latestEncryptedBackup: null,
+      latestPhysicalBackup: 13,
+    );
+    _ok(await writeWalletBackupForTesting(mainBackups, usage));
+    expect(
+      _ok(await mainBackups.projection(Fingerprint(fingerprint)))
+          .physicalBackupTested,
+      isTrue,
+    );
+    _ok(
+      await mainBackups.prepare((
+        walletId: usage.walletId,
+        secretFingerprint: usage.secretFingerprint,
+        encryptedVaultTested: false,
+        physicalBackupTested: false,
+        latestEncryptedBackup: null,
+        latestPhysicalBackup: null,
+      ), preserveVerified: false),
+    );
+    expect(
+      _ok(await mainBackups.projection(Fingerprint(fingerprint)))
+          .physicalBackupTested,
+      isFalse,
+    );
   });
 }
 
