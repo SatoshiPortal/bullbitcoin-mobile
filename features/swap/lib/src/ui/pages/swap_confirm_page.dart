@@ -13,7 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:swaps/swaps.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:swap_feature/src/ui/swap_router.dart';
-import 'package:swap_feature/src/ui/swap_transition_policy.dart';
+import 'package:transactions/payment_status.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/transactions.dart'
     show SettlementPoll, SettlementSyncPoller;
@@ -49,12 +49,23 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
   bool _showTransition = false;
   bool _statusOpen = false;
   bool _confirmArmed = false;
+  bool _awaitingDetails = false;
 
   void _confirm(TransferState state) {
-    if (_confirmArmed || state.isConfirming) return;
+    // The path (animation or details) depends on the preference.
+    if (_confirmArmed ||
+        state.isConfirming ||
+        state.showPaymentAnimations == null) {
+      return;
+    }
     _confirmArmed = true;
     final swap = state.swap;
-    if (!state.isSameChainTransfer && swap != null) {
+    if (!state.isSameChainTransfer &&
+        swap != null &&
+        state.showPaymentAnimations == false) {
+      // Without the transition the details open once the lockup is broadcast.
+      _awaitingDetails = true;
+    } else if (!state.isSameChainTransfer && swap != null) {
       setState(() {
         _attemptSwapId = swap.id;
         _attemptOrderId = state.orderSwap?.localId;
@@ -67,6 +78,27 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
       });
     }
     context.read<TransferBloc>().add(const TransferEvent.confirmed());
+  }
+
+  /// With payment animations off, opens the details once, as soon as the
+  /// funding broadcast gives the transfer a durable target.
+  void _openDetailsWithoutTransition(TransferState state) {
+    if (!_awaitingDetails || state.txId.isEmpty) return;
+    final swap = state.swap;
+    final orderId = state.orderSwap?.localId ?? _attemptOrderId;
+    final TransactionDetailsTarget? target = orderId != null
+        ? TransactionDetailsTarget.orderSwap(orderId)
+        : swap == null
+        ? null
+        : TransactionDetailsTarget.swap(swap.id, walletId: swap.walletId);
+    if (target == null) return;
+    _awaitingDetails = false;
+    TransactionsNavigation.goToDetails(
+      context,
+      target,
+      returnHome: true,
+      view: TransactionDetailsView.details,
+    );
   }
 
   Future<void> _openStatus() async {
@@ -85,6 +117,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
             context,
             TransactionDetailsTarget.orderSwap(orderId),
             returnHome: true,
+            view: TransactionDetailsView.details,
           );
         } else {
           context.goNamed(TransferRoute.inProgressSwap.name, extra: bloc);
@@ -94,6 +127,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
           context,
           TransactionDetailsTarget.orderSwap(orderId),
           returnHome: true,
+          view: TransactionDetailsView.details,
         );
       } else {
         await context.pushNamed<void>(
@@ -217,8 +251,10 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
           _confirmArmed = false;
           if (state.txId.isEmpty) {
             _showTransition = false;
+            _awaitingDetails = false;
           }
         });
+        _openDetailsWithoutTransition(state);
       },
       child: PopScope<Object?>(
         canPop: !_showTransition && !requiresStatus,
@@ -486,6 +522,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
                                   : _confirmArmed ||
                                         isConfirming ||
                                         fromWallet == null ||
+                                        state.showPaymentAnimations == null ||
                                         !transferReady
                                   ? null
                                   : () => _confirm(state),
@@ -569,8 +606,14 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
         ),
       ),
     );
+    final page = BlocListener<TransferBloc, TransferState>(
+      listenWhen: (previous, current) =>
+          previous.txId.isEmpty && current.txId.isNotEmpty,
+      listener: (_, state) => _openDetailsWithoutTransition(state),
+      child: confirmPage,
+    );
     final poll = widget.poll;
-    if (poll == null) return confirmPage;
+    if (poll == null) return page;
     final receiveTxId = currentSwap?.receiveTxid;
     final receiveTransaction = state.receiveTransaction;
     return SettlementSyncPoller(
@@ -582,7 +625,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
               receiveTransaction?.isConfirmed == true),
       isLiquid: currentSwap?.type == SwapType.bitcoinToLiquid,
       poll: poll,
-      child: confirmPage,
+      child: page,
     );
   }
 }

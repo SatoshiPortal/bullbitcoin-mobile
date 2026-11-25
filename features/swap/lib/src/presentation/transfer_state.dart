@@ -83,6 +83,9 @@ sealed class TransferState with _$TransferState {
     SwapAmountConversion? amountConversion,
     SwapAmountConversion? confirmedConversion,
     String? fiatCurrencyCode,
+    // The payment animations preference; null until read, so a confirmation
+    // waits for it instead of guessing a path.
+    bool? showPaymentAnimations,
   }) = _TransferState;
   const TransferState._();
 
