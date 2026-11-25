@@ -133,12 +133,14 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
           ? TransactionDetailsView.details
           : TransactionDetailsView.status;
     }
-    final view = animation == null
-        ? TransactionDetailsView.details
-        : (_view ?? TransactionDetailsView.details);
+    // Animations off (or not known yet): the details alone, with no switch.
+    final switchable = animation != null && animationsEnabled == true;
+    final view = switchable
+        ? (_view ?? TransactionDetailsView.details)
+        : TransactionDetailsView.details;
     if (view == TransactionDetailsView.status) _statusBuilt = true;
 
-    final switcher = animation == null
+    final switcher = !switchable
         ? null
         : BullPaymentViewSwitch(
             showingStatus: view == TransactionDetailsView.status,
