@@ -66,7 +66,21 @@ void main() {
       expect(await client.quote(account, request), isA<Err>());
       expect(native.importedReserve, isNull);
       native.reserveConfirmed = true;
-      final quote = ok(await client.quote(account, request));
+      native.failReserveImport = true;
+      expect(await client.quote(account, request), isA<Err>());
+      expect(native.importedReserve, isNull);
+      native.failReserveImport = false;
+      final quote = ok(
+        await client.quote(
+          account,
+          ArkQuoteRequest.emergencyExit(
+            ids: [FakeOpener.firstId],
+            destination: 'destination',
+            maxClaimFee: Sats.fromInt(100),
+          ),
+        ),
+      );
+      expect(native.importedReserve, funding.amount);
       final submit = ArkSubmission.confirmQuote(
         quoteId: quote.id,
         operationId: 'exit',

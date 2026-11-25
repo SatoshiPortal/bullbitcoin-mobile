@@ -13,6 +13,7 @@ ScuttleMovement _movement({
   ScuttleMovementStatus status = ScuttleMovementStatus.successful,
   int effective = -1000,
   int? completedAt,
+  String? offboardTxid,
 }) => ScuttleMovement(
   id: id,
   subsystem: subsystem,
@@ -24,6 +25,7 @@ ScuttleMovement _movement({
   createdAt: 1700000000,
   updatedAt: 1700000001,
   completedAt: completedAt,
+  offboardTxid: offboardTxid,
 );
 
 ScuttleVtxo _vtxo(String id, ScuttleVtxoState state) => ScuttleVtxo(
@@ -103,6 +105,20 @@ void main() {
     );
     expect(projected.completedAt?.millisecondsSinceEpoch, 1700000002000);
     expect(projectScuttleMovement(_movement()).completedAt, isNull);
+  });
+
+  test('offboard history keeps the confirmed Bitcoin transaction ID', () {
+    final txid = 'ab' * 32;
+    final movement = projectScuttleMovement(
+      _movement(
+        subsystem: 'bark.offboard',
+        kind: 'send_onchain',
+        offboardTxid: txid,
+      ),
+    );
+    expect(movement.kind, ArkMovementKind.payment);
+    expect(movement.transactionId, txid);
+    expect(projectScuttleMovement(_movement()).transactionId, isNull);
   });
 
   test('payment reconciliation never turns a failed movement into failed', () {

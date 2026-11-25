@@ -98,7 +98,9 @@ final class FakeOpener implements ArkNativeOpener {
   int tip = 100;
   String? liveBoardTipHash;
   bool explicitExitReserve = false;
+  bool offboardSession = false;
   bool reserveConfirmed = false;
+  bool failReserveImport = false;
   Sats? importedReserve;
 
   /// Runs right after a quote is priced, e.g. to mine a block before its
@@ -162,6 +164,9 @@ final class FakeOpener implements ArkNativeOpener {
       onOpened(opens == 1 ? recovery : ArkRecoveryStatus.notRun, 'cafefeed');
       if (explicitExitReserve) {
         return FakeExitReserveSession(this, config, stages);
+      }
+      if (offboardSession) {
+        return FakeOffboardSession(this, config, stages);
       }
       return liveBoardTipHash == null
           ? FakeSession(this, config, stages)
@@ -483,7 +488,10 @@ final class FakeExitReserveSession extends FakeSession
     ArkExitReserveFunding funding,
     String reserveAddress,
   ) async {
-    if (!await verifyInitialExitReserve(funding, reserveAddress)) return false;
+    if (owner.failReserveImport ||
+        !await verifyInitialExitReserve(funding, reserveAddress)) {
+      return false;
+    }
     owner.importedReserve = funding.amount;
     return true;
   }
@@ -492,6 +500,11 @@ final class FakeExitReserveSession extends FakeSession
 final class FakeLiveBoardSession extends FakeSession
     implements ArkNativeLiveBoardSession {
   FakeLiveBoardSession(super.owner, super.config, super.stages);
+}
+
+final class FakeOffboardSession extends FakeSession
+    implements ArkNativeOffboardSession {
+  FakeOffboardSession(super.owner, super.config, super.stages);
 }
 
 final class FakeVerifier implements ArkTransactionVerifierPort {
