@@ -158,8 +158,10 @@ List<Page<void>> withdrawPagesFor(
     () => onEvent(const WithdrawBackPressed()),
     primary: false,
   );
-  FlowAction retry(BuildContext context) =>
-      FlowAction(context.loc.retry, () => onEvent(const WithdrawRetryPressed()));
+  FlowAction retry(BuildContext context) => FlowAction(
+    context.loc.retry,
+    () => onEvent(const WithdrawRetryPressed()),
+  );
 
   List<Page<void>> amountPages(WithdrawOpen open, AmountEntryState amount) =>
       switch (amount) {
@@ -221,8 +223,11 @@ List<Page<void>> withdrawPagesFor(
     ],
     WithdrawLoading() => [status(_amountKey, title, busy: true)],
     WithdrawAmount(:final open, :final amount) => amountPages(open, amount),
-    WithdrawRecipient(:final open, :final amount, :final refused) =>
-      pickPages(open, amount, refused: refused),
+    WithdrawRecipient(:final open, :final amount, :final refused) => pickPages(
+      open,
+      amount,
+      refused: refused,
+    ),
     WithdrawRequirements(:final open, :final amount, :final requirements) => [
       ...pickPages(open, amount),
       page(

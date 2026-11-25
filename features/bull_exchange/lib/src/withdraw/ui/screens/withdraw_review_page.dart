@@ -66,8 +66,8 @@ class WithdrawReviewPage extends StatelessWidget {
       ConfirmLeft() => null,
     };
     final label = switch (confirm) {
-      ConfirmUnverified() || ConfirmVerifying() =>
-        context.loc.withdrawConfirmCheckAgainButton,
+      ConfirmUnverified() ||
+      ConfirmVerifying() => context.loc.withdrawConfirmCheckAgainButton,
       null ||
       ConfirmConfirming() ||
       ConfirmWriteRefused() ||

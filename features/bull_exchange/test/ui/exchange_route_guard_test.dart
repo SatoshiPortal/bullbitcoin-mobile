@@ -337,10 +337,7 @@ void main() {
       final router = await _pumpRouter(tester, exchange, path);
       router.push(path);
       await tester.pumpAndSettle();
-      expect(
-        router.state.uri.path,
-        '/exchange/landing',
-      );
+      expect(router.state.uri.path, '/exchange/landing');
       expect(find.text('Website only'), findsOneWidget);
       expect(find.text('Target'), findsNothing);
       expect(find.text('Trading is unavailable.'), findsNothing);
