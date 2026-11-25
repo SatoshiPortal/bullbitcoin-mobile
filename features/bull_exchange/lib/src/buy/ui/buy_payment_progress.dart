@@ -27,12 +27,12 @@ bool _watchHeld(OutcomeWatchState<BuyOrder> watch) => switch (watch) {
   WatchLeft() => false,
 };
 
-/// An on-chain payout is proven only by the exchange's completed status
-/// together with the transaction it sent: this app cannot observe that
-/// transaction in the destination wallet, so there is no confirmed status.
+/// The payout is delivered once the exchange reports it completed: the same
+/// proof that ends the buy watch ([buyPayoutVerdict]), so the rail never waits
+/// for an update the watch no longer fetches. This app cannot observe the
+/// payout in the destination wallet, so there is no confirmed status.
 bool _delivered(BuyOrder order) =>
-    order.payoutStatus == OrderPayoutStatus.completed &&
-    (_isLightning(order) || order.transactionId != null);
+    order.payoutStatus == OrderPayoutStatus.completed;
 
 /// The payout stopped with nothing in flight. A transaction already sent keeps
 /// the payment open: it can still reach its destination.
@@ -59,9 +59,7 @@ int _reached(BuyOrder order) {
   }
   return switch (order.payoutStatus) {
     OrderPayoutStatus.inProgress || OrderPayoutStatus.awaitingClaim => 1,
-    // Completed without a transaction: the exchange says it paid but nothing
-    // proves it, so the payout stays in progress.
-    OrderPayoutStatus.completed => 1,
+    OrderPayoutStatus.completed => 3,
     OrderPayoutStatus.notStarted ||
     OrderPayoutStatus.scheduled ||
     OrderPayoutStatus.canceled ||
