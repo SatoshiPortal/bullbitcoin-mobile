@@ -54,11 +54,26 @@ pub struct ScuttleVtxo {
     pub state: ScuttleVtxoState,
 }
 
-/// Local inventory and chain tip, not proof of a complete or current sync.
+/// Local inventory and chain tip. Freshness comes from the sync stages the
+/// host ran before reading it, not from this read.
 pub struct ScuttleObservation {
     pub tip_height: u32,
-    pub last_known_spendable_sats: u64,
+    pub spendable_sats: u64,
+    pub needs_refresh_sats: u64,
+    pub pending_sats: u64,
+    pub pending_board_sats: u64,
+    pub confirmed_reserve_sats: u64,
+    pub server: Option<ScuttleServerInfo>,
     pub vtxos: Vec<ScuttleVtxo>,
+}
+
+pub struct ScuttleServerInfo {
+    pub public_key: String,
+    pub round_interval_secs: u64,
+    pub vtxo_lifetime_blocks: u32,
+    pub min_board_sats: u64,
+    pub max_vtxo_sats: Option<u64>,
+    pub board_confirmations: u32,
 }
 
 #[frb(opaque)]
@@ -274,6 +289,41 @@ impl ScuttleWallet {
             .map_err(|_| "Cannot scan onchain wallet".into())
     }
 
+    /// Reconnects to the Ark server and refreshes its parameters.
+    pub async fn refresh_server(&self) -> Result<(), String> {
+        let guard = self.wallet.lock().await;
+        let session = guard.as_ref().ok_or("Wallet closed")?;
+        session
+            .wallet
+            .refresh_server()
+            .await
+            .map_err(|_| "Cannot reach Ark server".into())
+    }
+
+    /// Processes mailbox messages: received VTXOs, round and Lightning updates.
+    /// An `Ok` does not prove every message was processed; a stalled message is
+    /// retried from the same checkpoint by the next call.
+    pub async fn sync_mailbox(&self) -> Result<(), String> {
+        let guard = self.wallet.lock().await;
+        let session = guard.as_ref().ok_or("Wallet closed")?;
+        session
+            .wallet
+            .sync_mailbox()
+            .await
+            .map_err(|_| "Cannot sync mailbox".into())
+    }
+
+    /// Advances registered boards from their funding confirmations.
+    pub async fn sync_pending_boards(&self) -> Result<(), String> {
+        let guard = self.wallet.lock().await;
+        let session = guard.as_ref().ok_or("Wallet closed")?;
+        session
+            .wallet
+            .sync_pending_boards()
+            .await
+            .map_err(|_| "Cannot sync pending boards".into())
+    }
+
     /// Reads the chain source tip and cached native inventory without synchronizing it.
     pub async fn observation(&self) -> Result<ScuttleObservation, String> {
         let guard = self.wallet.lock().await;
@@ -294,9 +344,29 @@ impl ScuttleWallet {
             .balance()
             .await
             .map_err(|_| "Cannot observe wallet balance")?;
+        let confirmed_reserve_sats = session.onchain.read().await.balance().confirmed.to_sat();
+        let server = session
+            .wallet
+            .ark_info()
+            .await
+            .map_err(|_| "Cannot observe server")?
+            .map(|info| ScuttleServerInfo {
+                public_key: info.server_pubkey.to_string(),
+                round_interval_secs: info.round_interval.as_secs(),
+                vtxo_lifetime_blocks: info.vtxo_lifetime.into(),
+                min_board_sats: info.min_board_amount.to_sat(),
+                max_vtxo_sats: info.max_vtxo_amount.map(|amount| amount.to_sat()),
+                board_confirmations: u32::try_from(info.required_board_confirmations)
+                    .unwrap_or(u32::MAX),
+            });
         Ok(ScuttleObservation {
             tip_height: tip.to_u32(),
-            last_known_spendable_sats: balance.summary().spendable.to_sat(),
+            spendable_sats: balance.spendable.to_sat(),
+            needs_refresh_sats: balance.needs_refresh.to_sat(),
+            pending_sats: balance.pending().to_sat(),
+            pending_board_sats: balance.pending_board.to_sat(),
+            confirmed_reserve_sats,
+            server,
             vtxos: vtxos
                 .into_iter()
                 .map(|vtxo| ScuttleVtxo {

@@ -5,9 +5,11 @@ import 'package:primitives/primitives.dart';
 
 import '../../ark.dart';
 import '../rust/api/exit.dart' as exit;
+import '../rust/api/payments.dart' as scuttle;
 import '../rust/api/wallet.dart' as scuttle;
 import '../rust/frb_generated.dart';
 import 'ark_native_session.dart';
+import 'scuttle_mapping.dart';
 
 /// Opt-in debug adapter. It never delegates an unsupported operation to Bark.
 final class ScuttleNativeOpener implements ArkNativeOpener {
@@ -74,7 +76,7 @@ final class ScuttleNativeOpener implements ArkNativeOpener {
         wallet.recoveryStatus,
       );
       onOpened(_recovery(recovery), fingerprint);
-      return _ScuttleSession(wallet, stages, isNew: !exists);
+      return _ScuttleSession(wallet, stages, config, isNew: !exists);
     } catch (_) {
       await wallet.close();
       rethrow;
@@ -101,17 +103,46 @@ final class _ScuttleSession
         ArkNativeExitCpfpSession {
   final scuttle.ScuttleWallet _wallet;
   final ArkStageRunner _stages;
+  final ArkAccountConfig _config;
   final bool _isNew;
 
-  const _ScuttleSession(this._wallet, this._stages, {required this._isNew});
+  const _ScuttleSession(
+    this._wallet,
+    this._stages,
+    this._config, {
+    required this._isNew,
+  });
 
   @override
   Future<void> close() => _wallet.close();
 
   @override
   Future<void> synchronizeStage(String name) async {
-    if (name != 'initial-scan' || !_isNew) _unsupported();
-    await _stages.run(name, _wallet.initialScan);
+    switch (name) {
+      case 'initial-scan':
+        // The native scan can rebroadcast stored transactions: only a wallet
+        // created by this open has none.
+        if (!_isNew) _unsupported();
+        await _stages.run(name, _wallet.initialScan);
+      case 'server':
+        await _stages.run(name, _wallet.refreshServer);
+      case 'ark':
+        await _stages.run(name, _wallet.syncMailbox);
+      case 'lightning':
+        await _stages.run(name, _wallet.claimLightningReceives);
+      case 'rounds':
+        await _stages.run(name, _wallet.progressPendingRounds);
+      case 'boards':
+        await _stages.run(name, _wallet.syncPendingBoards);
+      case 'exits-observe':
+        await _stages.run(name, _wallet.refreshExitInventory);
+      case 'onchain':
+        // The reserve is updated only by journaled imports; a general wallet
+        // sync would rebroadcast. Verify the locally known reserve instead.
+        await _stages.run(name, _wallet.confirmedReserve);
+      default:
+        _unsupported();
+    }
   }
 
   @override
@@ -127,34 +158,111 @@ final class _ScuttleSession
     final exitDetails = [
       for (final item in await _stages.run(
         'scuttle-observe-exits',
-        _wallet.refreshExitInventory,
+        _wallet.exitInventory,
       ))
         _projectExit(item),
     ];
+    final rounds = await _stages.run(
+      'scuttle-observe-rounds',
+      _wallet.pendingRoundStates,
+    );
+    final receives = await _stages.run(
+      'scuttle-observe-receives',
+      _wallet.pendingLightningReceives,
+    );
+    final sends = await _stages.run(
+      'scuttle-observe-sends',
+      _wallet.pendingLightningSends,
+    );
+    final history = await _stages.run(
+      'scuttle-observe-history',
+      _wallet.history,
+    );
+    final pendingIds = {for (final round in rounds) ...round.inputVtxoIds};
+    final vtxos = [
+      for (final vtxo in native.vtxos)
+        ArkVtxo(
+          id: vtxo.id,
+          amount: Sats(vtxo.amountSats),
+          expiryHeight: vtxo.expiryHeight,
+          state: switch (vtxo.state) {
+            scuttle.ScuttleVtxoState.spendable => ArkVtxoState.spendable,
+            scuttle.ScuttleVtxoState.locked => ArkVtxoState.locked,
+            scuttle.ScuttleVtxoState.spent => ArkVtxoState.spent,
+            scuttle.ScuttleVtxoState.exited => ArkVtxoState.exited,
+          },
+          anchor: vtxo.id,
+          pendingRound: pendingIds.contains(vtxo.id),
+        ),
+    ];
+    final liveExits = exitDetails.where(
+      (item) =>
+          item.status == ArkExitStatus.claimable ||
+          item.status == ArkExitStatus.pending ||
+          item.status == ArkExitStatus.submitted,
+    );
     return ArkSnapshot(
       account: account,
       revision: revision,
       observedAt: now,
       tipHeight: native.tipHeight,
-      stale: true,
+      stale: previousRecovery != ArkRecoveryStatus.complete,
       spendable: previousRecovery == ArkRecoveryStatus.complete
-          ? Sats(native.lastKnownSpendableSats)
+          ? Sats(native.spendableSats)
           : null,
-      vtxos: [
-        for (final vtxo in native.vtxos)
-          ArkVtxo(
-            id: vtxo.id,
-            amount: Sats(vtxo.amountSats),
-            expiryHeight: vtxo.expiryHeight,
-            state: switch (vtxo.state) {
-              scuttle.ScuttleVtxoState.spendable => ArkVtxoState.spendable,
-              scuttle.ScuttleVtxoState.locked => ArkVtxoState.locked,
-              scuttle.ScuttleVtxoState.spent => ArkVtxoState.spent,
-              scuttle.ScuttleVtxoState.exited => ArkVtxoState.exited,
-            },
-          ),
-      ],
+      pending: Sats(native.pendingSats),
+      pendingBoardBalance: Sats(native.pendingBoardSats),
+      confirmedReserve: Sats(native.confirmedReserveSats),
+      vtxoCompleteness: previousRecovery == ArkRecoveryStatus.complete
+          ? ArkSectionCompleteness.complete
+          : ArkSectionCompleteness.incomplete,
+      usingFallback: chainSource != _config.primaryEsploraUrl,
+      serverInfo: switch (native.server) {
+        final info? => ArkServerInfo(
+          publicKey: info.publicKey,
+          roundIntervalSeconds: info.roundIntervalSecs.toInt(),
+          vtxoLifetimeBlocks: info.vtxoLifetimeBlocks,
+          minimumBoard: Sats(info.minBoardSats),
+          maximumVtxo: switch (info.maxVtxoSats) {
+            final amount? => Sats(amount),
+            null => null,
+          },
+          boardConfirmations: info.boardConfirmations,
+        ),
+        null => null,
+      },
+      vtxos: vtxos,
       operations: operations,
+      pendingLightningCount: receives.length + sends.length,
+      pendingRoundCount: rounds.length,
+      movements: [
+        for (final movement in history) projectScuttleMovement(movement),
+      ],
+      renewal: pendingIds.isNotEmpty
+          ? ArkRenewalStatus.delegated
+          : vtxos.any(
+              (v) => v.renewalDueAt(
+                native.tipHeight,
+                _config.renewalThresholdBlocks,
+              ),
+            )
+          ? ArkRenewalStatus.due
+          : ArkRenewalStatus.current,
+      obligations:
+          native.pendingSats > BigInt.zero ||
+              native.pendingBoardSats > BigInt.zero ||
+              native.confirmedReserveSats > BigInt.zero ||
+              liveExits.isNotEmpty ||
+              rounds.isNotEmpty ||
+              receives.isNotEmpty ||
+              sends.isNotEmpty ||
+              vtxos.any(
+                (v) =>
+                    v.state != ArkVtxoState.spent &&
+                    v.state != ArkVtxoState.exited,
+              )
+          ? ArkObligationStatus.present
+          : ArkObligationStatus.none,
       exitDetails: exitDetails,
       exits: exitDetails.any((item) => item.status == ArkExitStatus.claimable)
           ? ArkExitStatus.claimable
@@ -284,15 +392,56 @@ final class _ScuttleSession
 
   @override
   Future<ArkReceiveDestination> receive(ArkReceiveRequest request) async {
-    if (request is! ArkAddressReceiveRequest) _unsupported();
-    return ArkReceiveDestination(
-      kind: ArkDestinationKind.ark,
-      value: await _stages.run('scuttle-receive', _wallet.newArkAddress),
-    );
+    switch (request) {
+      case ArkAddressReceiveRequest(:final amount, :final message):
+        if (amount != null || (message != null && message.isNotEmpty)) {
+          // Raw Ark addresses do not carry these optional payload fields.
+          throw const ArkBoundaryException(
+            ArkValidationFailure(ArkFailureReason.unsupportedMethod),
+          );
+        }
+        return ArkReceiveDestination(
+          kind: ArkDestinationKind.ark,
+          value: await _stages.run('scuttle-receive', _wallet.newArkAddress),
+        );
+      case ArkBolt11ReceiveRequest(
+        :final amount,
+        :final description,
+        :final expirySeconds,
+      ):
+        // The bridge creates invoices from an amount alone.
+        if ((description != null && description.isNotEmpty) ||
+            expirySeconds != null) {
+          throw const ArkBoundaryException(
+            ArkValidationFailure(ArkFailureReason.unsupportedMethod),
+          );
+        }
+        final fee = await _stages.run(
+          'scuttle-receive-fee',
+          () => _wallet.estimateLightningReceiveFee(amountSats: amount.value),
+        );
+        if (isScuttleDust(fee.netSats)) {
+          throw const ArkBoundaryException(
+            ArkValidationFailure(ArkFailureReason.dust),
+          );
+        }
+        final invoice = await _stages.run(
+          'scuttle-receive-bolt11',
+          () => _wallet.createLightningInvoice(amountSats: amount.value),
+        );
+        return ArkReceiveDestination(
+          kind: ArkDestinationKind.bolt11,
+          value: invoice.invoice,
+          net: Sats(fee.netSats),
+          fee: Sats(fee.feeSats),
+        );
+    }
   }
 
   @override
-  Future<DateTime> nextRoundStart() async => _unsupported();
+  Future<DateTime> nextRoundStart() async => scuttleRoundStart(
+    await _stages.run('scuttle-next-round', _wallet.nextRoundStartTime),
+  );
 
   @override
   Future<ArkQuote> estimate({
@@ -353,6 +502,41 @@ final class _ScuttleSession
         maxClaimFee: request.maxFee,
       );
     }
+    if (request is ArkPaymentQuoteRequest) {
+      return _estimateSpend(
+        snapshot: snapshot,
+        request: request,
+        id: id,
+        chainSource: chainSource,
+        configGeneration: configGeneration,
+        now: now,
+      );
+    }
+    if (request is ArkRenewalQuoteRequest) {
+      final tip = _tip(snapshot);
+      final estimate = await _stages.run(
+        'scuttle-estimate-renewal',
+        () => _wallet.estimateRefreshFee(vtxoIds: request.ids),
+      );
+      final selected = validateScuttleEstimate(
+        estimate: estimate,
+        tip: tip,
+        vtxos: snapshot.vtxos,
+        spendable: snapshot.spendable,
+        renewalIds: request.ids,
+      );
+      return _spendQuote(
+        snapshot: snapshot,
+        id: id,
+        chainSource: chainSource,
+        configGeneration: configGeneration,
+        now: now,
+        kind: ArkOperationKind.renewal,
+        estimate: estimate,
+        selected: selected,
+        tip: tip,
+      );
+    }
     if (request is! ArkBoardQuoteRequest) _unsupported();
     final anchor = request.anchor;
     final terms = await _stages.run(
@@ -391,6 +575,113 @@ final class _ScuttleSession
         tipHash: terms.tipHash,
         requiredConfirmations: terms.requiredConfirmations,
       ),
+    );
+  }
+
+  static int _tip(ArkSnapshot snapshot) =>
+      snapshot.tipHeight ??
+      (throw const ArkBoundaryException(
+        ArkUnavailableFailure(ArkFailureReason.unavailable),
+      ));
+
+  Future<ArkQuote> _estimateSpend({
+    required ArkSnapshot snapshot,
+    required ArkPaymentQuoteRequest request,
+    required String id,
+    required Uri chainSource,
+    required int configGeneration,
+    required DateTime now,
+  }) async {
+    final tip = _tip(snapshot);
+    final destination = request.destination;
+    final amount = request.amount.value;
+    final parsed = await _stages.run(
+      'scuttle-parse-payment',
+      () => _wallet.parsePaymentRequest(payment: destination.value),
+    );
+    final kind = validateScuttlePaymentRequest(
+      destination,
+      request.amount,
+      parsed,
+    );
+    final estimate = await _stages.run(
+      'scuttle-estimate-payment',
+      () => switch (kind) {
+        scuttle.ScuttlePaymentKind.ark => _wallet.estimateArkPaymentFee(
+          amountSats: amount,
+        ),
+        scuttle.ScuttlePaymentKind.bolt11 =>
+          _wallet.estimateLightningPaymentFee(
+            invoice: destination.value,
+            amountSats: amount,
+          ),
+        scuttle.ScuttlePaymentKind.bitcoin => _wallet.estimateOnchainSendFee(
+          address: destination.value,
+          amountSats: amount,
+        ),
+      },
+    );
+    final selected = validateScuttleEstimate(
+      estimate: estimate,
+      tip: tip,
+      vtxos: snapshot.vtxos,
+      spendable: snapshot.spendable,
+    );
+    return _spendQuote(
+      snapshot: snapshot,
+      id: id,
+      chainSource: chainSource,
+      configGeneration: configGeneration,
+      now: now,
+      kind: ArkOperationKind.payment,
+      estimate: estimate,
+      selected: selected,
+      tip: tip,
+      destination: destination,
+    );
+  }
+
+  ArkQuote _spendQuote({
+    required ArkSnapshot snapshot,
+    required String id,
+    required Uri chainSource,
+    required int configGeneration,
+    required DateTime now,
+    required ArkOperationKind kind,
+    required scuttle.ScuttleFeeEstimate estimate,
+    required List<String> selected,
+    required int tip,
+    ArkPaymentDestination? destination,
+  }) {
+    if (estimate.feeSats < BigInt.zero ||
+        estimate.grossSats < estimate.netSats ||
+        ((kind == ArkOperationKind.renewal ||
+                destination?.kind == ArkDestinationKind.ark) &&
+            isScuttleDust(estimate.netSats))) {
+      throw ArkBoundaryException(
+        ArkValidationFailure(
+          estimate.feeSats < BigInt.zero ||
+                  estimate.grossSats < estimate.netSats
+              ? ArkFailureReason.validation
+              : ArkFailureReason.dust,
+        ),
+      );
+    }
+    return ArkQuote(
+      id: id,
+      account: snapshot.account,
+      generation: snapshot.revision,
+      chainSource: chainSource,
+      configGeneration: configGeneration,
+      kind: kind,
+      amount: Sats(estimate.grossSats),
+      fee: Sats(estimate.feeSats),
+      net: Sats(estimate.netSats),
+      selectedIds: selected,
+      destination: destination?.value,
+      destinationKind: destination?.kind,
+      observedTip: tip,
+      validUntil: now.add(const Duration(minutes: 2)),
     );
   }
 
@@ -498,6 +789,31 @@ final class _ScuttleSession
 
   @override
   Future<ArkOperation> execute(ArkQuote quote, String operationId) async {
+    // A native error after admission ("Payment outcome unknown", "Refresh
+    // outcome unknown") propagates as an exception: the client records
+    // `outcomeUnknown` for any non-Error thrown here and never retries.
+    switch (quote.kind) {
+      case ArkOperationKind.payment:
+        return _executePayment(quote, operationId);
+      case ArkOperationKind.renewal:
+        final round = await _stages.run(
+          'scuttle-renew',
+          () => _wallet.refreshVtxosDelegated(vtxoIds: quote.selectedIds),
+        );
+        return ArkOperation(
+          id: operationId,
+          kind: quote.kind,
+          status: round == null
+              ? ArkOperationStatus.outcomeUnknown
+              : ArkOperationStatus.pending,
+          chainSource: quote.chainSource,
+          configGeneration: quote.configGeneration,
+          nativeReference: round?.toString(),
+          actualIds: quote.selectedIds,
+        );
+      default:
+        break;
+    }
     final exposure = quote.confirmedReserveExposure;
     if (quote.kind != ArkOperationKind.emergencyExit ||
         quote.account.network != BitcoinNetwork.regtest ||
@@ -520,8 +836,50 @@ final class _ScuttleSession
     );
   }
 
+  Future<ArkOperation> _executePayment(
+    ArkQuote quote,
+    String operationId,
+  ) async {
+    final destination = quote.destination;
+    final kind = quote.destinationKind;
+    if (destination == null || kind == null) {
+      throw const ArkBoundaryException(
+        ArkValidationFailure(ArkFailureReason.validation),
+      );
+    }
+    // The payment API takes the destination amount, not the gross.
+    final amount = quote.net.value;
+    final String reference = switch (kind) {
+      ArkDestinationKind.ark => (await _stages.run(
+        'scuttle-send-ark',
+        () => _wallet.sendArk(address: destination, amountSats: amount),
+      )).toString(),
+      ArkDestinationKind.bolt11 => await _stages.run(
+        'scuttle-send-lightning',
+        () => _wallet.payLightningInvoice(
+          invoice: destination,
+          amountSats: amount,
+        ),
+      ),
+      ArkDestinationKind.bitcoin => (await _stages.run(
+        'scuttle-send-onchain',
+        () => _wallet.sendOnchain(address: destination, amountSats: amount),
+      )).movementId.toString(),
+    };
+    return ArkOperation(
+      id: operationId,
+      kind: quote.kind,
+      status: ArkOperationStatus.pending,
+      chainSource: quote.chainSource,
+      configGeneration: quote.configGeneration,
+      nativeReference: reference,
+      actualIds: quote.selectedIds,
+    );
+  }
+
   @override
-  Future<List<String>> renewalCandidates() async => _unsupported();
+  Future<List<String>> renewalCandidates() =>
+      _stages.run('scuttle-renewal-candidates', _wallet.vtxosToRefresh);
 
   @override
   Future<ArkBoardFundingDetails> boardFunding() async {
@@ -600,9 +958,74 @@ final class _ScuttleSession
   @override
   Future<String> broadcast(String rawTransaction) async => _unsupported();
 
+  Future<ArkOperationStatus?> _reconcileSpend(
+    ArkOperation operation,
+    String? reference,
+  ) async {
+    if (reference == null) return null;
+    if (operation.kind == ArkOperationKind.renewal) {
+      final rounds = await _stages.run(
+        'scuttle-reconcile-rounds',
+        _wallet.pendingRoundStates,
+      );
+      final observed = await _stages.run(
+        'scuttle-reconcile-vtxos',
+        _wallet.observation,
+      );
+      final history = await _stages.run(
+        'scuttle-reconcile-renewal-history',
+        _wallet.history,
+      );
+      return scuttleRenewalOutcome(
+        reference: reference,
+        actualIds: operation.actualIds,
+        rounds: rounds,
+        vtxos: observed.vtxos,
+        history: history,
+      );
+    }
+    if (isScuttleMovementReference(reference)) {
+      final history = await _stages.run(
+        'scuttle-reconcile-movement',
+        _wallet.history,
+      );
+      ArkOperationStatus? status;
+      for (final movement in history.where(
+        (m) => m.id.toString() == reference,
+      )) {
+        status = scuttlePaymentMovementOutcome(movement.status);
+      }
+      return status;
+    }
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(reference)) return null;
+    return scuttleLightningSendOutcome(
+      await _stages.run(
+        'scuttle-reconcile-lightning',
+        () => _wallet.lightningSendStatus(paymentHash: reference),
+      ),
+    );
+  }
+
   @override
   Future<ArkOperation?> reconcile(ArkOperation operation) async {
     final txid = operation.nativeReference;
+    if (operation.kind == ArkOperationKind.payment ||
+        operation.kind == ArkOperationKind.renewal) {
+      final status = await _reconcileSpend(operation, txid);
+      if (status == null) return null;
+      return ArkOperation(
+        id: operation.id,
+        kind: operation.kind,
+        status: status,
+        chainSource: operation.chainSource,
+        configGeneration: operation.configGeneration,
+        nativeReference: txid,
+        actualIds: operation.actualIds,
+        skippedIds: operation.skippedIds,
+        boardFunding: operation.boardFunding,
+        claimRecovery: operation.claimRecovery,
+      );
+    }
     if (operation.kind != ArkOperationKind.board ||
         operation.status != ArkOperationStatus.pending ||
         operation.boardFunding?.scuttleToken == null ||
