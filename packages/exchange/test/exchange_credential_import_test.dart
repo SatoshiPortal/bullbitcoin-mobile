@@ -49,9 +49,17 @@ void main() {
       await gate.acquire(exclusive: true, timeout: Duration.zero)
           as ExclusiveAdmission;
 
-  test('fresh provenance refuses a retained empty record and an unreadable keychain', () async {
+  test('a residual keychain record never blocks a fresh install', () async {
+    _value(await secrets.exchangeKeychain.write('', isTestnet: true));
+    _value(
+      await secrets.exchangeKeychain.write('{"key":"old"}', isTestnet: false),
+    );
+    keystore.locked = true;
     final lease = await exclusive();
     try {
+      expect(participant.freshWhenInitialFresh, isTrue);
+      // The keychain is not consulted, even when it is locked.
+      final readsBefore = keystore.reads;
       expect(
         await participant.verifyInitialSource(
           lease,
@@ -59,39 +67,20 @@ void main() {
         ),
         isA<Ok<void, LegacyImportFailure>>(),
       );
-      _value(await secrets.exchangeKeychain.write('', isTestnet: true));
-      expect(
-        await participant.verifyInitialSource(
-          lease,
-          legacySqlitePresent: false,
-        ),
-        isA<Err<void, LegacyImportFailure>>().having(
-          (outcome) => outcome.failure,
-          'failure',
-          isA<LegacyImportVerificationFailed>(),
-        ),
-      );
-      expect(
-        await participant.prepare(lease, OwnerOrigin.fresh),
-        isA<Err<PreparedOwner, LegacyImportFailure>>(),
-      );
-      keystore.locked = true;
-      expect(
-        await participant.verifyInitialSource(
-          lease,
-          legacySqlitePresent: false,
-        ),
-        isA<Err<void, LegacyImportFailure>>().having(
-          (outcome) => outcome.failure,
-          'failure',
-          isA<LegacyImportDeferred>(),
-        ),
-      );
-      expect(await participant.hasState(), isFalse);
-      expect(await source.exists(), isFalse);
+      final owner = _value(await participant.prepare(lease, OwnerOrigin.fresh));
+      expect(await owner.initializeFresh(), isA<Ok>());
+      expect(_value(await owner.receipt()), OwnerReadiness.initialized);
+      _value(await owner.close());
+      expect(keystore.reads, readsBefore);
     } finally {
       await lease.close();
     }
+    keystore.locked = false;
+    expect(
+      _value(await secrets.exchangeKeychain.read(isTestnet: false)),
+      '{"key":"old"}',
+    );
+    expect(_value(await secrets.exchangeKeychain.read(isTestnet: true)), '');
   });
 
   test(

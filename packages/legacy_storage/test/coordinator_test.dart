@@ -357,6 +357,59 @@ void main() {
     );
   }
 
+  for (final initialFresh in [true, false]) {
+    test(
+      'an owner that ignores residue is recorded fresh only when the install '
+      'had no legacy database (initialFresh=$initialFresh)',
+      () async {
+        final legacy = FixtureDatabase(
+          File('${directory.path}/legacy.sqlite'),
+          legacy: true,
+        );
+        await legacy.customStatement('SELECT 1');
+        await legacy.close();
+        final marker = File('${directory.path}/coordination/split-v1.json');
+        await marker.parent.create();
+        await marker.writeAsString(
+          jsonEncode({
+            'version': 2,
+            'protocol': 'split-v1',
+            'state': 'importing',
+            'sourceSchemaVersion': 16,
+            'initialFresh': initialFresh,
+            'sourceEstablished': true,
+            'origins': {'pilot': 'legacy', 'later': 'legacy'},
+            'admittedOwners': <String>[],
+          }),
+        );
+        final later = ProvenanceOwner(
+          'later',
+          File('${directory.path}/later.sqlite'),
+          freshWhenInitialFresh: true,
+        );
+        final fixture = fixtureCutover(directory);
+        final result = await StorageCutover(
+          directory: fixture.directory,
+          legacy: fixture.legacy,
+          expectedOwners: fixture.expectedOwners,
+          participants: [later],
+        ).prepare();
+        expect(result, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
+        await (result as Ok<RuntimeAdmission, LegacyImportFailure>).value
+            .close();
+        expect(later.prepared, [
+          initialFresh ? OwnerOrigin.fresh : OwnerOrigin.legacy,
+        ]);
+        final published =
+            jsonDecode(await marker.readAsString()) as Map<String, Object?>;
+        expect(
+          (published['origins'] as Map<String, Object?>)['later'],
+          initialFresh ? 'fresh' : 'legacy',
+        );
+      },
+    );
+  }
+
   test('unknown marker blocks background and foreground', () async {
     final marker = File('${directory.path}/coordination/split-v1.json');
     await marker.parent.create();

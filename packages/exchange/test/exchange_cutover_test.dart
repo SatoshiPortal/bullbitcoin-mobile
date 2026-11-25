@@ -235,26 +235,82 @@ void main() {
     await expectLegacySourcesUntouched();
   });
 
-  test('a keychain record without a legacy database stays blocked', () async {
-    await source.delete();
-    final result = await cutover().prepare();
-    expect(
-      result,
-      isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
-        (err) => err.failure,
-        'failure',
-        isA<LegacyImportVerificationFailed>(),
-      ),
-    );
-    expect(source.existsSync(), isFalse);
-    expect(destination.existsSync(), isFalse);
-    expect(
-      File('${directory.path}/coordination/split-v1.json').existsSync(),
-      isFalse,
-    );
-    expect(
-      (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
-      _mainnetRecord,
-    );
-  });
+  test(
+    'a residual keychain record on a fresh install starts signed out',
+    () async {
+      await source.delete();
+      final admission = admitted(await cutover().prepare());
+      try {
+        final storage = switch (await open(admission)) {
+          Ok(:final value) => value,
+          Err() => fail('the admitted store must open'),
+        };
+        expect(await storage.readApiKeyRecord(isTestnet: false), isNull);
+        expect(await storage.readApiKeyRecord(isTestnet: true), isNull);
+        expect(await storage.readBasicAuth(), (username: null, password: null));
+        await storage.close();
+      } finally {
+        await admission.close();
+      }
+      expect(
+        (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+        _mainnetRecord,
+      );
+      expect(
+        (await secrets.exchangeKeychain.read(isTestnet: true) as Ok).value,
+        _testnetRecord,
+      );
+      // Later launches stay admitted and never read the keychain again.
+      final admission2 = admitted(await cutover().prepare());
+      await admission2.close();
+    },
+  );
+
+  test(
+    'a marker published before Exchange joined also ignores the residue',
+    () async {
+      await source.delete();
+      final before = StorageCutover(
+        directory: Directory('${directory.path}/coordination'),
+        legacy: LegacySourceStore(
+          source: LegacySource(source, 16),
+          create: SqliteDatabase.new,
+        ),
+        expectedOwners: const {'exchange', 'pilot'},
+        participants: const [],
+      );
+      await admitted(await before.prepare()).close();
+      final admission = admitted(await cutover().prepare());
+      try {
+        final storage = switch (await open(admission)) {
+          Ok(:final value) => value,
+          Err() => fail('the admitted store must open'),
+        };
+        expect(await storage.readApiKeyRecord(isTestnet: false), isNull);
+        await storage.close();
+      } finally {
+        await admission.close();
+      }
+      expect(
+        (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+        _mainnetRecord,
+      );
+    },
+  );
+
+  test(
+    'a legacy database that disagrees with the store stays blocked',
+    () async {
+      final legacy = sqlite3.open(source.path);
+      legacy.execute('DROP TABLE settings');
+      legacy.close();
+      final result = await cutover().prepare();
+      expect(result, isA<Err<RuntimeAdmission, LegacyImportFailure>>());
+      expect(destination.existsSync(), isTrue);
+      expect(
+        (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+        _mainnetRecord,
+      );
+    },
+  );
 }
