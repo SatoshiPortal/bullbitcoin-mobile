@@ -5017,6 +5017,9 @@ class SendCubit extends Cubit<SendState>
     );
     _payjoinSubscription?.cancel();
     if (walletId != null) {
+      // The payjoin session no longer emits: the settled transaction (the
+      // payjoin or the original fallback) is now observed like a direct send.
+      _watchWalletTransactionByTxId(walletId: walletId, txId: finalTxId);
       unawaited(
         _refreshSource(
           walletId,
