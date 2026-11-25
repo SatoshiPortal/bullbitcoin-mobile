@@ -43,9 +43,8 @@ void main() {
       settingsChanges.stream,
       initialState: const SettingsState(),
     );
-    when(
-      () => exchange.current,
-    ).thenReturn(const ExchangeAccessSignedIn(_testSession));
+    when(() => exchange.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
     when(exchange.watch).thenAnswer((_) => accessChanges.stream);
     locator.pushNewScope();
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));

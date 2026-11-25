@@ -96,9 +96,8 @@ void main() {
     tester,
   ) async {
     final lifecycle = _Access();
-    when(
-      () => lifecycle.current,
-    ).thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
+    when(() => lifecycle.current)
+        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     when(() => lifecycle.enable(forSupport: true))
         .thenAnswer((_) async => const Ok(null));
     final capability = exchangeForTesting(access: lifecycle);

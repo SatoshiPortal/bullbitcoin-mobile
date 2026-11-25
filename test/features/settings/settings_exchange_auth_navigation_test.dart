@@ -39,9 +39,8 @@ void main() {
   ) async {
     final exchange = _Exchange();
     final settings = _Settings();
-    when(
-      () => exchange.current,
-    ).thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
+    when(() => exchange.current)
+        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     when(exchange.watch).thenAnswer((_) => const Stream.empty());
     when(() => settings.state).thenReturn(const SettingsState());
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
@@ -123,9 +122,8 @@ void main() {
         ),
       ),
     );
-    when(
-      () => exchange.current,
-    ).thenReturn(const ExchangeAccessSignedIn(_testSession));
+    when(() => exchange.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
     when(exchange.watch).thenAnswer((_) => const Stream.empty());
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
     addTearDown(() => locator.unregister<Exchange>());
