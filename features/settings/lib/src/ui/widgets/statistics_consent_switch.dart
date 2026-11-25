@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:bull_reporting/statistics.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:material_ui/material_ui.dart';
 import 'package:settings/src/l10n.dart';
 
 class StatisticsConsentSwitch extends StatefulWidget {
-  const StatisticsConsentSwitch({super.key});
+  const StatisticsConsentSwitch({super.key, this.showRestartNotice = false});
+
+  final bool showRestartNotice;
 
   @override
   State<StatisticsConsentSwitch> createState() =>
@@ -36,6 +39,12 @@ class _StatisticsConsentSwitchState extends State<StatisticsConsentSwitch> {
       _writing = false;
       _failedChoice = saved ? null : value;
     });
+    if (saved && widget.showRestartNotice) {
+      BullSnackBar.show(
+        context,
+        message: context.loc.errorReportingRestartSnackbar,
+      );
+    }
   }
 
   @override

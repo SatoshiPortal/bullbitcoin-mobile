@@ -118,7 +118,7 @@ class AppSettingsScreen extends StatelessWidget {
                     if (item.id == SettingsItemId.currency)
                       const AmountInputModeSetting(),
                   ],
-                  const StatisticsConsentSwitch(),
+                  const StatisticsConsentSwitch(showRestartNotice: true),
                 ],
               ),
             ),

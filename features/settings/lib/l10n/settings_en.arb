@@ -328,7 +328,7 @@
   "@errorReportingCancelButton": {
     "description": "Button to cancel error reporting"
   },
-  "errorReportingRestartSnackbar": "Restart the app to apply this change",
+  "errorReportingRestartSnackbar": "Close and reopen the app to apply this change.",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
