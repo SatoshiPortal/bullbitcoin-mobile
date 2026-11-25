@@ -111,14 +111,8 @@ void main() {
     );
     when(() => a.id).thenReturn('a');
     when(() => b.id).thenReturn('b');
-    when(() => wallets.execute(onlyBitcoin: true)).thenAnswer(
-      (_) async => Ok(
-        TransactionHistory(
-          transactions: [a, b],
-          exchangeOrders: const ExchangeOrdersMerged(),
-        ),
-      ),
-    );
+    when(() => wallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([a, b]));
     var walletRuns = 0;
     for (final entry in [(a, first), (b, second)]) {
       when(

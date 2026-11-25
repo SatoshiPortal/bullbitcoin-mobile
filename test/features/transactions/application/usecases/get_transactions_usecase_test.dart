@@ -232,6 +232,8 @@ void main() {
   test('no stored exchange account is no account, not a failure', () async {
     when(() => mainnetOrderRepository.getOrders())
         .thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
 
     final history = historyOf(await usecase.execute());
 
@@ -548,7 +550,7 @@ void main() {
 
       final result = await usecase.execute();
 
-      expect(result, isA<bb.Err<List<Transaction>, TransactionFailure>>());
+      expect(result, isA<bb.Err<TransactionHistory, TransactionFailure>>());
       final failure = (result as bb.Err).failure as TransactionFailure;
       expect(failure, isA<TransactionAggregationFailure>());
       // The raw reason belongs in the log, not in a value the UI can reach.
