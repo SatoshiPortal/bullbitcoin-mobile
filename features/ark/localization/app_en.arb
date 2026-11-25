@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
+  "exitClaimableTitle": "Ark exit ready to claim",
+  "@exitClaimableTitle": {},
+  "exitClaimableBody": "Open the app to review your Ark exit.",
+  "@exitClaimableBody": {},
   "title": "Ark",
   "@title": {},
   "loading": "Loading Ark…",

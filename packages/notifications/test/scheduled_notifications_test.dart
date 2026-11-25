@@ -20,6 +20,7 @@ class Android extends AndroidFlutterLocalNotificationsPlugin {
         })
       >[];
   final shown = <int>[];
+  final shownDetails = <AndroidNotificationDetails?>[];
   final cancelled = <int>[];
   @override
   Future<bool?> areNotificationsEnabled() async => allowed;
@@ -57,6 +58,7 @@ class Android extends AndroidFlutterLocalNotificationsPlugin {
   }) async {
     effects.add('show:$id');
     shown.add(id);
+    shownDetails.add(notificationDetails);
   }
 
   @override
@@ -110,6 +112,27 @@ void main() {
     expect(android.shown, [-1]);
     expect(android.scheduled, isEmpty);
   });
+  test(
+    'an immediate-only ID is replaced without cancelling its notification',
+    () async {
+      for (var attempt = 0; attempt < 2; attempt++) {
+        expect(
+          await gateway.schedule(
+            notification,
+            platformId: 11,
+            at: DateTime.utc(2020),
+            cancelExisting: false,
+          ),
+          isA<Ok>(),
+        );
+      }
+      expect(android.effects, ['show:11', 'show:11']);
+      expect(
+        android.shownDetails.every((details) => details?.onlyAlertOnce == true),
+        isTrue,
+      );
+    },
+  );
   test(
     'permission denial is typed and does not remove existing alarm',
     () async {

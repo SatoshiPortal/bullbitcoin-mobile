@@ -17,6 +17,10 @@ final class NotificationsFacade {
   Future<Result<void, NotificationsFailure>> initialize() =>
       _gateway.initialize();
 
+  /// Reserves an ID for a durable non-outbox notification.
+  Future<Result<int, NotificationsFailure>> reservePlatformId() =>
+      _outbox.reservePlatformId();
+
   /// The complete history of a sync completed in the foreground, never a
   /// snapshot reload. What it holds is never announced.
   Future<Result<void, NotificationsFailure>> recordForeground(

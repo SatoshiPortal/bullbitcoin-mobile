@@ -31,6 +31,10 @@ final class ClaimedNotification {
 
 /// Observed events per topic and the aggregates waiting to be shown.
 abstract interface class NotificationStoreRepository {
+  /// Reserves a platform ID permanently, without creating an outbox entry.
+  @useResult
+  Future<Result<int, NotificationsFailure>> reservePlatformId();
+
   /// Records the complete history a foreground sync saw. The first one
   /// initializes the topic silently, even when the history is empty.
   @useResult

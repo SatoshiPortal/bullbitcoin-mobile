@@ -30,6 +30,7 @@ import 'package:primitives/primitives.dart'
 import 'dart:math' as math;
 
 import 'package:send/src/payment/domain/internal_recipient_policy.dart';
+import 'package:send/src/payment/domain/bitcoin_recipient_list_policy.dart';
 
 import 'package:fees/fees.dart';
 import 'package:address_view/payment_destination.dart'
@@ -38,8 +39,7 @@ import 'package:swaps/swaps.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:send/src/send_localizations.dart';
 import 'package:send/src/payment/presentation/onchain_send_labels_l10n.dart';
-import 'package:satoshifier/payment_request.dart'
-    show Bip21PaymentRequest, BitcoinPaymentRequest;
+import 'package:satoshifier/payment_request.dart' show Bip21PaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:label_editor/label_editor.dart';
@@ -937,6 +937,30 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     );
   }
 
+  /// Leaves room for a trailing [BullFieldAction] while keeping the text
+  /// inset of the other tiles.
+  static const _fieldTilePadding = EdgeInsetsDirectional.only(
+    start: 15,
+    top: BullSpacing.xs,
+    end: BullSpacing.xs,
+    bottom: BullSpacing.xs,
+  );
+
+  Future<void> _editNote(BuildContext context, SendState state) async {
+    final cubit = context.read<SendCubit>();
+    final saved = await LabelEditor.label(
+      context,
+      title: context.loc.transactionNoteAddTitle,
+      initialValue: state.label.isEmpty ? null : state.label,
+      hint: context.loc.transactionNoteHint,
+      suggestionsFuture: cubit.fetchDistinctLabels(),
+    );
+    if (saved == null || !context.mounted) {
+      return;
+    }
+    cubit.noteChanged(saved);
+  }
+
   @override
   Widget build(BuildContext context) {
     final scopeData = BullAmountScope.maybeOf(context);
@@ -1070,6 +1094,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       onTap: () => context
                                           .read<SendCubit>()
                                           .backClicked(),
+                                      padding: _fieldTilePadding,
                                       child: Row(
                                         children: [
                                           Expanded(
@@ -1114,10 +1139,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                               ],
                                             ),
                                           ),
-                                          Icon(
-                                            Icons.edit,
-                                            size: 20,
-                                            color: context.appColors.text,
+                                          BullFieldAction(
+                                            icon: BullIcons.edit,
+                                            label: context.loc.sendEdit,
+                                            onPressed: () => context
+                                                .read<SendCubit>()
+                                                .backClicked(),
                                           ),
                                         ],
                                       ),
@@ -1231,32 +1258,35 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             !isLightning &&
                                             !isChainSwap &&
                                             !state.hasMultipleRecipients)
-                                          Row(
-                                            children: [
-                                              Text(
-                                                context.loc.swapMax,
-                                                style: context.bullType.label,
-                                              ),
-                                              const Gap(8),
-                                              BullSwitch(
-                                                value: state.isMaxSend,
-                                                onChanged: (value) {
+                                          Padding(
+                                            // Aligns with the tiles' actions.
+                                            padding:
+                                                const EdgeInsetsDirectional.only(
+                                                  end: BullSpacing.xs,
+                                                ),
+                                            child: Semantics(
+                                              toggled: state.isMaxSend,
+                                              child: BullFieldAction(
+                                                label: context.loc.swapMax,
+                                                onPressed: () {
+                                                  final isMax =
+                                                      !state.isMaxSend;
                                                   context
                                                       .read<SendCubit>()
                                                       .amountChanged(
-                                                        amount: value
+                                                        amount: isMax
                                                             ? null
                                                             : _amountController
                                                                   .text,
-                                                        isMax: value,
+                                                        isMax: isMax,
                                                       );
-                                                  if (!value) {
+                                                  if (!isMax) {
                                                     _amountFocusNode
                                                         .requestFocus();
                                                   }
                                                 },
                                               ),
-                                            ],
+                                            ),
                                           ),
                                       ],
                                     ),
@@ -1404,6 +1434,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           CrossAxisAlignment.stretch,
                                       children: [
                                         BullAmountInput(
+                                          inCard: true,
+                                          framed: true,
                                           canonicalUnit: BitcoinUnit.fromCode(
                                             inputCurrency,
                                           ),
@@ -1495,24 +1527,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     ),
                                   Gap(Device.screen.height * 0.02),
                                   BullBorderedTile(
-                                    onTap: () async {
-                                      final cubit = context.read<SendCubit>();
-                                      final saved = await LabelEditor.label(
-                                        context,
-                                        title:
-                                            context.loc.transactionNoteAddTitle,
-                                        initialValue: state.label.isEmpty
-                                            ? null
-                                            : state.label,
-                                        hint: context.loc.transactionNoteHint,
-                                        suggestionsFuture: cubit
-                                            .fetchDistinctLabels(),
-                                      );
-                                      if (saved == null || !context.mounted) {
-                                        return;
-                                      }
-                                      cubit.noteChanged(saved);
-                                    },
+                                    onTap: () => _editNote(context, state),
+                                    padding: _fieldTilePadding,
                                     child: Row(
                                       children: [
                                         Expanded(
@@ -1544,10 +1560,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             ],
                                           ),
                                         ),
-                                        Icon(
-                                          Icons.edit,
-                                          size: 20,
-                                          color: context.appColors.secondary,
+                                        BullFieldAction(
+                                          icon: BullIcons.edit,
+                                          label: context.loc.sendEdit,
+                                          onPressed: () =>
+                                              _editNote(context, state),
                                         ),
                                       ],
                                     ),

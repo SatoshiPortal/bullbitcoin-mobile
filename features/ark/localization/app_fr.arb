@@ -1,5 +1,9 @@
 {
   "@@locale": "fr",
+  "exitClaimableTitle": "Sortie Ark réclamable",
+  "@exitClaimableTitle": {},
+  "exitClaimableBody": "Ouvrez l’application pour vérifier votre sortie Ark.",
+  "@exitClaimableBody": {},
   "title": "Ark",
   "loading": "Chargement d’Ark…",
   "unavailable": "Ark est indisponible. Réessayez.",

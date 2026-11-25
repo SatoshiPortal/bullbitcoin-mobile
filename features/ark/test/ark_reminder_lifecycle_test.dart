@@ -30,6 +30,7 @@ class Gateway implements ScheduledNotificationPort {
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   }) async {
     if (throwBeforeEffect) throw Exception('Before OS effect');
     actions.add((id: platformId, at: at));
