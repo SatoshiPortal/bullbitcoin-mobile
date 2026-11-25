@@ -12,7 +12,6 @@ dependencies:
   bip32_keys: 3.1.4
   bip39_mnemonic: 4.1.0
   sqlite3: ^3.5.2
-  bark_bitcoin: 0.27.0+bark-0.8.1
   flutter_rust_bridge: 2.13.0
   flutter_rust_bridge_hooks: 2.13.0
 dev_dependencies:

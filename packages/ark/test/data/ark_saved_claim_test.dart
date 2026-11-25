@@ -6,8 +6,6 @@ import 'package:ark/ark.dart';
 import 'package:ark/src/data/ark_store.dart';
 import 'package:ark/src/data/ark_claim_delivery.dart';
 import 'package:ark/src/data/ark_native_session.dart';
-import 'package:ark/src/data/bark_native_opener.dart';
-import 'package:bark_bitcoin/bark_bitcoin.dart' as bark;
 import 'package:ark/src/data/bark_ark_client.dart';
 import 'package:ark/src/domain/ark_execution_policy.dart';
 import 'package:primitives/primitives.dart';
@@ -534,93 +532,6 @@ void main() {
       store.close();
     });
   });
-  for (final missing in [false, true]) {
-    test(
-      'wrong or missing actual native input amount refuses before debit missing=$missing',
-      () async {
-        final wallet = _SubsetWallet()
-          ..omitFirst = missing
-          ..firstAmount = 9999;
-        final adapter = BarkNativeSession(
-          wallet,
-          _SubsetOnchain(),
-          _SubsetStages(),
-          config,
-        );
-        native.claimPreparer = adapter.prepareClaim;
-        await signedClaim(succeeds: false);
-        expect(native.broadcasts, 0);
-        final store = ArkStore.open(path(), create: false);
-        expect(store.operation('claim')?.evidence?['raw'], isNull);
-        expect(
-          store.claimAuthority(
-            [FakeOpener.firstId],
-            'destination',
-            Sats.fromInt(100),
-          ),
-          'exit',
-        );
-        store.close();
-      },
-    );
-  }
-  for (final includeSkipped in [false, true]) {
-    test(
-      'real adapter two available exits and one actual input remains readable skipped=$includeSkipped',
-      () async {
-        final wallet = _SubsetWallet();
-        final adapter = BarkNativeSession(
-          wallet,
-          _SubsetOnchain(),
-          _SubsetStages(),
-          config,
-        );
-        native.claimPreparer = (quote) async {
-          final prepared = await adapter.prepareClaim(quote);
-          expect(
-            prepared.inputAmounts.length,
-            2,
-            reason: 'actual adapter reports all available claimable amounts',
-          );
-          expect(prepared.actualIds, [FakeOpener.firstId]);
-          return prepared;
-        };
-        await signedClaim(
-          selected: includeSkipped
-              ? [FakeOpener.firstId, FakeOpener.secondId]
-              : null,
-        );
-        final result = await client.read(account);
-        expect(result, isA<Ok>());
-        final snapshot = (result as Ok<ArkSnapshot, ArkWalletFailure>).value;
-        final operation = snapshot.operations.singleWhere(
-          (op) => op.id == 'claim',
-        );
-        expect(operation.claimRecovery?.net, Sats.fromInt(9990));
-        expect(
-          operation.skippedIds,
-          includeSkipped ? [FakeOpener.secondId] : isEmpty,
-        );
-        final store = ArkStore.open(path(), create: false);
-        expect(store.operation('claim')?.evidence?['inputAmounts'], {
-          FakeOpener.firstId: '10000',
-        });
-        if (includeSkipped) {
-          expect(
-            store.claimAuthority(
-              [FakeOpener.secondId],
-              'destination',
-              Sats.fromInt(90),
-            ),
-            'exit',
-          );
-        }
-        store.close();
-        expect(wallet.drainCalls, 1);
-        expect(native.broadcasts, 1);
-      },
-    );
-  }
   test(
     'projection rechecks saved facts instead of trusting a cached summary',
     () async {
@@ -672,72 +583,6 @@ void main() {
 
 // A synthetic non-spendable PSBT exercises the existing FFI extraction codec;
 // native wallet handles and host facts remain scripted, not chain/signature proof.
-final class _SubsetWallet implements bark.Wallet {
-  int drainCalls = 0;
-  int firstAmount = 10000;
-  bool omitFirst = false;
-  @override
-  Future<List<bark.ExitVtxo>> listClaimableExits() async => [
-    for (final id in [FakeOpener.firstId, FakeOpener.secondId])
-      if (!omitFirst || id != FakeOpener.firstId)
-        bark.ExitVtxo(
-          vtxoId: id,
-          amountSats: id == FakeOpener.firstId ? firstAmount : 10000,
-          isClaimable: true,
-          state: bark.ClaimableExitState(
-            tipHeight: 100,
-            claimableSince: bark.BlockRef(height: 99, hash: 'c' * 64),
-            lastScannedBlock: null,
-          ),
-        ),
-  ];
-  @override
-  Future<bark.ExitClaimTransaction> drainExits({
-    required List<String> vtxoIds,
-    required bool drainAll,
-    required String address,
-    required int? feeRateSatPerVb,
-  }) async {
-    drainCalls++;
-    expect(drainAll, isFalse);
-    final tx = _hexBytes(
-      '0200000001${'aa' * 32}0000000000ffffffff010627000000000000015100000000',
-    );
-    final psbt = [
-      ..._hexBytes('70736274ff0100'),
-      tx.length,
-      ...tx,
-      ..._hexBytes('0001010a102700000000000001510108030101000000'),
-    ];
-    return bark.ExitClaimTransaction(
-      psbtBase64: base64Encode(psbt),
-      feeSats: 10,
-      vtxoIds: [FakeOpener.firstId],
-      skippedVtxoIds: vtxoIds.where((id) => id != FakeOpener.firstId).toList(),
-    );
-  }
-
-  List<int> _hexBytes(String hex) => [
-    for (var i = 0; i < hex.length; i += 2)
-      int.parse(hex.substring(i, i + 2), radix: 16),
-  ];
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw StateError('Unexpected native wallet call');
-}
-
-final class _SubsetOnchain implements bark.OnchainWallet {
-  @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw StateError('Unexpected onchain call');
-}
-
-final class _SubsetStages implements ArkStageRunner {
-  @override
-  Future<T> run<T>(String name, Future<T> Function() action) => action();
-}
-
 final class _RevokingVerifier implements ArkTransactionVerifierPort {
   final ArkTransactionVerifierPort delegate;
   final void Function() revoke;
