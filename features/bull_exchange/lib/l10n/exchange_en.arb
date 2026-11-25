@@ -2876,6 +2876,26 @@
   "@buyPayoutStillPending": {
     "description": "On the buy success page when the payout could not be read for a while or is taking longer than expected; the order is confirmed"
   },
+  "buyStepOrderPlaced": "Order placed",
+  "@buyStepOrderPlaced": {
+    "description": "Label of the first status of a buy payment rail: the order is confirmed and the payout has not started"
+  },
+  "buyStepPayoutInProgress": "Payout in progress",
+  "@buyStepPayoutInProgress": {
+    "description": "Label of a buy payment rail status: the exchange is preparing the payout"
+  },
+  "buyStepPayoutBroadcast": "Payout broadcast",
+  "@buyStepPayoutBroadcast": {
+    "description": "Label of an on-chain buy payment rail status: the payout transaction is on the network and waits for its confirmation"
+  },
+  "buyStepPayoutSent": "Payout sent",
+  "@buyStepPayoutSent": {
+    "description": "Label of the last status of an on-chain buy payment rail: the exchange reports the payout as completed and gave its transaction"
+  },
+  "buyStepPaid": "Paid",
+  "@buyStepPaid": {
+    "description": "Label of the last status of a Lightning buy payment rail: the exchange reports the payout as completed"
+  },
   "dcaUseDefaultBitcoinWallet": "Use my default Bitcoin wallet",
   "@dcaUseDefaultBitcoinWallet": {
     "description": "Checkbox in recurring buy wallet selection: pay out to the Bitcoin address saved in the user's exchange default wallets."

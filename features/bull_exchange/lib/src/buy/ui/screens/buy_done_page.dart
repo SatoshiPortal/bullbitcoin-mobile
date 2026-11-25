@@ -1,6 +1,7 @@
 import 'package:bull_exchange/src/buy/domain/buy_payjoin_window.dart';
 import 'package:bull_exchange/src/buy/presentation/buy_flow.dart';
 import 'package:bull_exchange/src/buy/ui/buy_flow_shell.dart';
+import 'package:bull_exchange/src/buy/ui/buy_payment_progress.dart';
 import 'package:bull_exchange/src/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -9,9 +10,12 @@ import 'package:bull_ui/bull_ui.dart'
         BullAsyncStatusState,
         BullButton,
         BullCountdown,
+        BullPaymentNetwork,
+        BullPaymentStepRail,
         BullSuccessScreen,
         BullTypographyX,
-        Gap;
+        Gap,
+        PaymentAnimationPalette;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
@@ -66,6 +70,19 @@ class BuyDonePage extends StatelessWidget {
     };
     final payoutPending =
         order.payoutStatus != OrderPayoutStatus.completed && !failed;
+    final network = buyPaymentNetwork(order);
+    final palette =
+        Theme.of(context).extension<PaymentAnimationPalette>() ??
+        PaymentAnimationPalette.standard;
+    final steps = [
+      context.loc.buyStepOrderPlaced,
+      context.loc.buyStepPayoutInProgress,
+      if (network != BullPaymentNetwork.lightning) ...[
+        context.loc.buyStepPayoutBroadcast,
+        context.loc.buyStepPayoutSent,
+      ] else
+        context.loc.buyStepPaid,
+    ];
     return BullSuccessScreen(
       title: context.loc.buyConfirmTitle,
       headline: context.loc.buyYouBought(
@@ -76,6 +93,26 @@ class BuyDonePage extends StatelessWidget {
       message: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // The rail carries its own dark palette: give it that background so
+          // its white, orange and green segments read in a light theme too.
+          ColoredBox(
+            color: palette.background,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: BullPaymentStepRail(
+                progress: buyPaymentProgress(
+                  steps: steps,
+                  order: order,
+                  watch: done.watch,
+                ),
+                network: network,
+                phase: buyPaymentPhase(order: order, watch: done.watch),
+                palette: palette,
+                reduced: MediaQuery.disableAnimationsOf(context),
+              ),
+            ),
+          ),
+          const Gap(16),
           BullAsyncStatus(
             state: switch (order.payjoinOutcome) {
               OrderPayjoinOutcome.none => BullAsyncStatusState.hidden,
