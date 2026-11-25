@@ -31,6 +31,12 @@ class MissionStep extends StatelessWidget {
           SizedBox(height: vGapMd),
           BullText(loc.wizardMissionBody2, style: bodyStyle),
           SizedBox(height: vGapLg),
+          // Independent of the error-report question below, which the
+          // Yes/No buttons answer on their own.
+          const StatisticsConsentSwitch(),
+          SizedBox(height: vGapMd),
+          Divider(height: 1, color: context.appColors.border),
+          SizedBox(height: vGapMd),
           BullText(
             loc.wizardMissionQuestion,
             style: context.bullType.body
@@ -40,7 +46,6 @@ class MissionStep extends StatelessWidget {
                   color: context.appColors.onSurface,
                 ),
           ),
-          const StatisticsConsentSwitch(),
         ],
       ),
     );
