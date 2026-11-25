@@ -285,7 +285,7 @@ flowchart TD
 | [`bitcoin_price`](features/bitcoin_price/pubspec.yaml) | `bull_logger`, `bull_pricer`, `bull_ui`, `preferences`, `primitives` | — |
 | [`btc_map`](features/btc_map/pubspec.yaml) | `bull_logger`, `bull_ui`, `primitives` | — |
 | [`bull_ark`](features/ark/pubspec.yaml) | `ark`, `background_tasks`, `bull_logger`, `bull_pricer`, `bull_ui`, `fees`, `legacy_storage`, `notifications`, `preferences`, `primitives`, `secrets`, `sync` | — |
-| [`bull_exchange`](features/bull_exchange/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `exchange`, `fees`, `file_system`, `labels`, `preferences`, `primitives`, `satoshifier`, `secrets`, `spend`, `sync` | — |
+| [`bull_exchange`](features/bull_exchange/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `exchange`, `fees`, `file_system`, `labels`, `preferences`, `primitives`, `satoshifier`, `secrets`, `spend`, `sync` | `bbx_api` |
 | [`bull_logs`](features/logs/pubspec.yaml) | `bull_logger`, `bull_ui`, `primitives` | — |
 | [`bull_quick_actions`](features/quick_actions/pubspec.yaml) | `bull_ui`, `primitives` | — |
 | [`bull_recoverbull`](features/recoverbull/pubspec.yaml) | `backup_storage`, `bull_logger`, `bull_tor`, `bull_ui`, `file_system`, `legacy_storage`, `preferences`, `primitives`, `provisioning`, `screen_awake`, `screen_privacy`, `secrets` | — |
