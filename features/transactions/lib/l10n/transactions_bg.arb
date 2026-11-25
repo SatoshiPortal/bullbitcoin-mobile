@@ -672,5 +672,6 @@
   "transactionPayjoinBroadcastFailed": "Оригиналната транзакция не можа да бъде излъчена. Моля, опитайте отново.",
   "transactionPayjoinOriginalUnavailable": "Оригиналната транзакция вече не е достъпна за излъчване.",
   "transactionLabelLimitReached": "Можете да имате най-много 10 етикета.",
-  "copiedToClipboard": "Копирано в клипборда"
+  "copiedToClipboard": "Копирано в клипборда",
+  "transactionListExchangeOrdersUnavailable": "Поръчките от борсата не можаха да бъдат заредени."
 }

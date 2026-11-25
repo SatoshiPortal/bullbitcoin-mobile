@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bbx_api/src/bbx_failure.dart';
+import 'package:bbx_api/src/bbx_timeouts.dart';
 import 'package:bbx_api/src/bbx_transport.dart';
 import 'package:bbx_api/src/rpc_error.dart';
 import 'package:meta/meta.dart';
@@ -22,14 +23,16 @@ final class KycApi {
   /// Fails with a [BbxRpcFailure] when the response object, or its `result`
   /// object, carries an `error` or `errors` field, and a
   /// [BbxResponseFormatFailure] when the response is neither empty nor an
-  /// object.
+  /// object. Sending has no time limit; [onProgress] reports the bytes sent.
   Future<Result<void, BbxFailure>> uploadDocument({
     required List<int> fileBytes,
     required String fileName,
     required String idTypeCode,
     required String sourceDetail,
+    BbxProgress? onProgress,
   }) => _transport.upload(
     '$endpoint/upload',
+    onProgress: onProgress,
     fields: {
       'kycIDDocument': jsonEncode({
         'jsonrpc': '2.0',

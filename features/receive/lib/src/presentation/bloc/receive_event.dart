@@ -6,6 +6,8 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveBitcoinStarted;
   const factory ReceiveEvent.receiveLightningStarted() =
       ReceiveLightningStarted;
+  const factory ReceiveEvent.receivePaymentAnimationsRead(bool enabled) =
+      ReceivePaymentAnimationsRead;
   const factory ReceiveEvent.receiveLiquidStarted() = ReceiveLiquidStarted;
   const factory ReceiveEvent.receiveAddressRetried() = ReceiveAddressRetried;
   const factory ReceiveEvent.receiveAmountCurrencyChanged(String currencyCode) =
@@ -40,6 +42,8 @@ class ReceiveEvent with _$ReceiveEvent {
     WalletTransaction tx, {
     required int generation,
   }) = ReceiveTransactionReceived;
+  const factory ReceiveEvent.receiveSettlementObserved(WalletTransaction tx) =
+      ReceiveSettlementObserved;
   const factory ReceiveEvent.receivePayjoinSettingChanged(bool enabled) =
       ReceivePayjoinSettingChanged;
   const factory ReceiveEvent.receivePayjoinMinAmountChanged(int amountSat) =

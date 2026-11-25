@@ -36,6 +36,9 @@ class _MockSetThemeModeUsecase extends Mock implements SetThemeModeUsecase {}
 class _MockSetScreenCaptureProtectionUsecase extends Mock
     implements SetScreenCaptureProtectionUsecase {}
 
+class _MockSetShowPaymentAnimationsUsecase extends Mock
+    implements SetShowPaymentAnimationsUsecase {}
+
 class _MockSetPayjoinEnabledUsecase extends Mock
     implements SetPayjoinEnabledUsecase {}
 
@@ -126,6 +129,7 @@ void main() {
       setScreenCaptureProtectionUsecase:
           _MockSetScreenCaptureProtectionUsecase(),
       loadExchangeTestnetBasicAuthUsecase: _loadBasicAuth(),
+      setShowPaymentAnimationsUsecase: _MockSetShowPaymentAnimationsUsecase(),
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),
       setPayjoinEnabledUsecase: _MockSetPayjoinEnabledUsecase(),

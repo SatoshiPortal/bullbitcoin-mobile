@@ -1,14 +1,16 @@
 # Ark
 
-Pure Dart protocol boundary for bark. `ark.dart` publishes accounts, immutable observations, reviewed quotes, journalled operations, receive requests and the `ArkClient` interface. `ark_setup.dart` is the privileged composition surface: it accepts a scoped dedicated-child provider, a host public-transaction-codec verifier, execution policy and stage budget. It must not be re-exported by an ordinary feature facade.
+Protocol boundary for the Scuttle Ark wallet. `ark.dart` publishes accounts, immutable observations, reviewed quotes, journalled operations, receive requests and the `ArkClient` interface. `ark_setup.dart` is the privileged composition surface: it accepts a scoped dedicated-child provider, a host public-transaction-codec verifier, execution policy and stage budget. It must not be re-exported by an ordinary feature facade.
 
-The exact native dependency is `bark_bitcoin 0.27.0+bark-0.8.1`. Native constructors and calls live only in `bark_native_opener.dart`. The adapter opens the internal on-chain wallet and Ark wallet under one account lock, with `runDaemon:false`. It never attaches bark's logger, receives the parent seed, signs a BULL source transaction or broadcasts a source-wallet funding PSBT.
+The native wallet is Scuttle's `bark-wallet`, reached through the `rust_lib_scuttle` bridge in `rust/`. Native calls live only in `scuttle_native_opener.dart`. The adapter opens one wallet per account under the account lock and runs no daemon. It never receives the parent seed, signs a BULL source transaction or broadcasts a source-wallet funding PSBT. Synchronization stages never run Scuttle's general sync, which can rebroadcast stored transactions; exit observation uses `progress_exits_without_broadcast`, and every exit CPFP and claim is journalled before delivery.
+
+Movement projections retain Scuttle's local movement ID and payment direction where the native subsystem and kind identify it. Incoming direction does not prove an external sender; legacy snapshots without a direction remain unknown and this signal alone must not trigger an external-payment notification.
 
 ## Admission and recovery
 
 The host must register a durable parent obligation under parent-custody admission before calling `create`. Lock order is parent admission, package lifecycle admission, account writer, short metadata transaction. The child provider executes inside the account writer and must not reacquire parent admission. A durable obligation protects subsequent scoped derivation. Source-wallet funding admission happens separately after all Ark native locks are released.
 
-Projection reads never open bark. Native stages await their admitted future before closing handles and releasing SQLite rollback-journal locks. A budget revokes only the next stage. `backgroundExisting` refuses creation, missing or incompatible metadata and native datadirs; it can synchronize and delegate renewal but cannot submit foreground exits/claims or receive/payment requests. The host supplies background eligibility independently of whether Ark is offered as a new payment route.
+Projection reads never open the native wallet. Native stages await their admitted future before closing handles and releasing SQLite rollback-journal locks. A budget revokes only the next stage. `backgroundExisting` refuses creation, missing or incompatible metadata and native datadirs; it can synchronize and delegate renewal but cannot submit foreground exits/claims or receive/payment requests. The host supplies background eligibility independently of whether Ark is offered as a new payment route.
 
 A quote binds account observation, configuration generation, exact chain provider, fee, selection, destination and review validity. Exit progression also binds the complete live exit set, fixed integer fee rate and confirmed internal reserve coin set/exposure. It authorizes one account-wide attempt. Raw addresses are only syntactically classified by `isArkAddress`; authoritative parsing and estimation stay inside the writer.
 
@@ -24,7 +26,15 @@ Primary and optional fallback Esplora endpoints are configured explicitly. Only 
 
 ## Verification
 
-Use the repository's pinned FVM toolchain and make targets for integrated checks. The package tests cover public contracts, real SQLite persistence/exclusion across processes, abrupt process death, lifecycle admission through a native fake, quote/idempotency/claim policies and local HTTP fallback discrimination. Native-fake tests do not establish actual bark signing, persistence or network behavior. Native runtime and end-to-end board/payment/renewal/exit proof remain separate integration gates, as do Android background and iOS lifecycle validation. Bark's hook requires its own pinned Rust 1.90.0 and protoc; another dependency's Rust environment override must not replace that compiler.
+Use the repository's pinned FVM toolchain and make targets for integrated checks. The package tests cover public contracts, real SQLite persistence/exclusion across processes, abrupt process death, lifecycle admission through a native fake, quote/idempotency/claim policies and local HTTP fallback discrimination. Native-fake tests do not establish actual Scuttle signing, persistence or network behavior. Native runtime and end-to-end board/payment/renewal/exit proof remain separate integration gates, as do Android background and iOS lifecycle validation.
+
+### Scuttle bridge
+
+The Native Assets hook builds `rust_lib_scuttle` from a separate locked Cargo graph, keeping Scuttle's SQLite dependency out of `rust_lib_bull_sdk`. The exact Scuttle revision and Rust toolchain are recorded in `rust/Cargo.toml` and `rust/rust-toolchain.toml`. Use `make scuttle-codegen` with flutter_rust_bridge_codegen 2.13.0 and libclang after changing the Rust API.
+
+Scuttle's `bark-server-rpc` runs protoc at build time. The Ark feature only opens regtest accounts.
+
+`fvm dart test test/scuttle_bridge_test.dart` from `packages/ark` exercises native loading and the wallet lifecycle against a local genesis response. It does not establish interoperability with a live Scuttle server or constitute mobile packaging validation.
 
 ## Already signed claim delivery
 

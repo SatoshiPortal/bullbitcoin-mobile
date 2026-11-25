@@ -9,6 +9,12 @@ import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Preferences extends Mock implements Preferences {}
@@ -59,7 +65,7 @@ void main() {
     ).execute().listen(values.add);
     await _settle();
     expect(values, [true]);
-    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    access.add(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     await _settle();
     expect(values, [true, false]);
     access.add(const ExchangeAccessDisabled());
@@ -77,7 +83,7 @@ void main() {
       onlyWhileOff: false,
     ).execute().listen(values.add);
     await _settle();
-    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    access.add(const ExchangeAccessSignedIn(_testSession));
     await _settle();
     expect(values, [true]);
     await sub.cancel();

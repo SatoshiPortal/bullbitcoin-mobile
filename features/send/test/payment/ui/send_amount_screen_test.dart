@@ -22,6 +22,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmountUnitToggle,
         BullAmountInput,
         BullButton,
+        BullFieldAction,
         BullDropdown,
         bullUiLocalizationsDelegate;
 import 'package:send/src/payment/domain/send_failure.dart';
@@ -105,6 +106,7 @@ void main() {
     testWidgets('destination card identifies ${entry.key}', (tester) async {
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state)
           .thenReturn(SendState(paymentRequest: entry.value));
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
@@ -155,6 +157,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -209,6 +212,7 @@ void main() {
       );
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state).thenReturn(state);
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
       when(() => cubit.onAmountConfirmed()).thenAnswer((_) async {});
@@ -280,6 +284,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => cubit.amountChanged(amount: null, isMax: true))
@@ -318,7 +323,7 @@ void main() {
     );
     expect(find.byType(BullDropdown<String>), findsNothing);
 
-    await tester.tap(find.byType(Switch));
+    await tester.tap(find.widgetWithText(BullFieldAction, 'MAX'));
     verify(() => cubit.amountChanged(amount: null, isMax: true)).called(1);
   });
 
@@ -358,6 +363,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenAnswer((_) => state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(
@@ -463,6 +469,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -534,6 +541,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => cubit.amountChanged(amount: '999000', isMax: false))
@@ -564,7 +572,20 @@ void main() {
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('Send remaining balance'), findsNothing);
 
-    await tester.tap(find.byType(Switch));
+    expect(
+      tester.getSemantics(find.widgetWithText(BullFieldAction, 'MAX')),
+      matchesSemantics(
+        label: 'MAX',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+        isFocusable: true,
+        hasToggledState: true,
+        isToggled: true,
+      ),
+    );
+    await tester.tap(find.widgetWithText(BullFieldAction, 'MAX'));
     verify(() => cubit.amountChanged(amount: '999000', isMax: false)).called(1);
   });
 
@@ -618,6 +639,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -705,6 +727,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -772,6 +795,7 @@ void main() {
       );
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state).thenReturn(state);
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -854,6 +878,7 @@ void main() {
       addTearDown(states.close);
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state).thenAnswer((_) => state);
       when(() => cubit.stream).thenAnswer((_) => states.stream);
 

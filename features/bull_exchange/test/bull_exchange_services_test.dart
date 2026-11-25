@@ -26,20 +26,23 @@ void main() {
     return (result as Ok<ExchangeAvailability, ExchangeFailure>).value;
   }
 
-  test('unreadable iOS preferences hide trading without failing', () async {
-    when(preferences.fetch)
-        .thenAnswer((_) async => const Err(PreferencesReadFailure()));
+  test(
+    'unreadable iOS preferences send trading to the website without failing',
+    () async {
+      when(preferences.fetch)
+          .thenAnswer((_) async => const Err(PreferencesReadFailure()));
 
-    expect(
-      await tradingEntry(ExchangePlatform.ios),
-      ExchangeAvailability.hidden,
-    );
-  });
+      expect(
+        await tradingEntry(ExchangePlatform.ios),
+        ExchangeAvailability.websiteOnly,
+      );
+    },
+  );
 
   test('the non-iOS platform check does not read preferences', () async {
     expect(
       await tradingEntry(ExchangePlatform.other),
-      isNot(ExchangeAvailability.hidden),
+      isNot(ExchangeAvailability.websiteOnly),
     );
     verifyZeroInteractions(preferences);
   });
@@ -58,7 +61,7 @@ void main() {
 
     expect(
       await tradingEntry(ExchangePlatform.ios),
-      isNot(ExchangeAvailability.hidden),
+      isNot(ExchangeAvailability.websiteOnly),
     );
   });
 }

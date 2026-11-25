@@ -24,6 +24,7 @@ const _row = OwnerSettingsRow(
   themeMode: 'system',
   isErrorReportingEnabled: false,
   screenCaptureProtectionEnabled: true,
+  showPaymentAnimations: true,
 );
 
 void main() {

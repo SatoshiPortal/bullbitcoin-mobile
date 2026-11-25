@@ -5,6 +5,18 @@ import 'package:go_router/go_router.dart';
 void main() {
   test('publishes the legacy swap recovery routes', () {
     final routeNames = SettingsRouter.childRoutes(
+      swapRecoveryRoutes: [
+        GoRoute(
+          name: 'swapRestore',
+          path: 'swap-restore',
+          builder: (_, _) => throw StateError('Unexpected swap restore'),
+        ),
+        GoRoute(
+          name: 'swapRescue',
+          path: 'swap-rescue',
+          builder: (_, _) => throw StateError('Unexpected swap rescue'),
+        ),
+      ],
       accessRoutes: const [],
       addressRoutes: const [],
       exchangeSettingsRoutes: const [],

@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 import '../domain/entities/order.dart' show OrderStatus;
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
+import 'order_status_wire.dart';
 
 typedef InventorySession = ({
   Uri endpoint,
@@ -70,13 +71,21 @@ final class PendingOrders {
         var hasPending = false;
         for (final order in orders) {
           final id = order.orderId.trim();
-          final status = OrderStatus.fromValue(order.orderStatus ?? '');
-          if (id.isEmpty || !seen.add(id) || status == OrderStatus.unknown) {
+          if (id.isEmpty || !seen.add(id)) {
             return const Err(ExchangeOrderInventoryUnavailableFailure());
           }
-          if (status == OrderStatus.inProgress ||
-              status == OrderStatus.awaitingConfirmation) {
-            hasPending = true;
+          switch (orderStatusFromWire(order.orderStatus)) {
+            case OrderStatus.inProgress || OrderStatus.awaitingConfirmation:
+              hasPending = true;
+            case OrderStatus.unknown:
+              return const Err(ExchangeOrderInventoryUnavailableFailure());
+            case OrderStatus.canceled ||
+                OrderStatus.expired ||
+                OrderStatus.orderExpired ||
+                OrderStatus.completed ||
+                OrderStatus.rejected ||
+                OrderStatus.failed:
+              break;
           }
         }
         if (hasPending) return const Ok(true);

@@ -239,6 +239,11 @@ class Preferences implements domain.SettingsRepository {
 
   @override
   @useResult
+  Future<Result<bool, PreferencesFailure>> readShowPaymentAnimations() async =>
+      (await _fetchOwner()).map((settings) => settings.showPaymentAnimations);
+
+  @override
+  @useResult
   Future<Result<SettingsEntity, PreferencesFailure>> fetch() => _fetchOwner();
 
   Future<Result<SettingsEntity, PreferencesFailure>> _fetchOwner() async {
@@ -566,6 +571,30 @@ class Preferences implements domain.SettingsRepository {
       return Err(
         PreferencesWriteFailure(
           'setScreenCaptureProtectionEnabled failed: ${e.runtimeType}',
+        ),
+      );
+    }
+  }
+
+  @override
+  @useResult
+  Future<Result<void, PreferencesFailure>> setShowPaymentAnimations(
+    bool enabled,
+  ) async {
+    try {
+      await _settingsDatasource.setShowPaymentAnimations(enabled);
+      return const Ok(null);
+    } on PreferencesMissingRowException {
+      return const Err(PreferencesMissingFailure());
+    } on Exception catch (e, st) {
+      log.severe(
+        message: 'Failed to persist settings: setShowPaymentAnimations',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return Err(
+        PreferencesWriteFailure(
+          'setShowPaymentAnimations failed: ${e.runtimeType}',
         ),
       );
     }

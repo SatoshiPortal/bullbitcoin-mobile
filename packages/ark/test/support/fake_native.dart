@@ -84,16 +84,24 @@ final class FakeOpener implements ArkNativeOpener {
   int opens = 0;
   int creates = 0;
   int closes = 0;
+  Future<void> Function()? beforeClose;
   int executes = 0;
   int broadcasts = 0;
   int preparations = 0;
   int claimFee = 10;
+  List<String> claimReserveInputs = [];
   List<String>? claimableIds;
   List<ArkExit> exitDetails = [];
   int registrations = 0;
   int fundings = 0;
   int boardExpiry = 2000;
   int tip = 100;
+  String? liveBoardTipHash;
+  bool explicitExitReserve = false;
+  bool offboardSession = false;
+  bool reserveConfirmed = false;
+  bool failReserveImport = false;
+  Sats? importedReserve;
 
   /// Runs right after a quote is priced, e.g. to mine a block before its
   /// confirmation.
@@ -154,7 +162,15 @@ final class FakeOpener implements ArkNativeOpener {
         throw Exception('open interrupted');
       }
       onOpened(opens == 1 ? recovery : ArkRecoveryStatus.notRun, 'cafefeed');
-      return FakeSession(this, config, stages);
+      if (explicitExitReserve) {
+        return FakeExitReserveSession(this, config, stages);
+      }
+      if (offboardSession) {
+        return FakeOffboardSession(this, config, stages);
+      }
+      return liveBoardTipHash == null
+          ? FakeSession(this, config, stages)
+          : FakeLiveBoardSession(this, config, stages);
     });
   }
 }
@@ -166,7 +182,8 @@ final class FakeSession implements ArkNativeSession {
   bool serverReady = false;
   FakeSession(this.owner, this.config, this.stages);
   @override
-  void close() {
+  Future<void> close() async {
+    await owner.beforeClose?.call();
     owner.closes++;
   }
 
@@ -301,6 +318,13 @@ final class FakeSession implements ArkNativeSession {
       _ => null,
     };
     final estimatedFee = kind == ArkOperationKind.claim ? owner.claimFee : 10;
+    final gross =
+        amount.value +
+        BigInt.from(switch (kind) {
+          ArkOperationKind.payment => 10,
+          ArkOperationKind.claim => 10000 * owner.claimReserveInputs.length,
+          _ => 0,
+        });
     final quote = ArkQuote(
       id: id,
       account: snapshot.account,
@@ -308,14 +332,16 @@ final class FakeSession implements ArkNativeSession {
       chainSource: chainSource,
       configGeneration: configGeneration,
       kind: kind,
-      amount: Sats(
-        amount.value + BigInt.from(kind == ArkOperationKind.payment ? 10 : 0),
-      ),
+      amount: Sats(gross),
       fee: Sats.fromInt(estimatedFee),
-      net: kind == ArkOperationKind.payment
-          ? amount
-          : Sats(amount.value - BigInt.from(estimatedFee)),
+      net: Sats(gross - BigInt.from(estimatedFee)),
       selectedIds: selected,
+      reserveOutpoints: kind == ArkOperationKind.claim
+          ? owner.claimReserveInputs
+          : const [],
+      confirmedReserveExposure: kind == ArkOperationKind.emergencyExit
+          ? owner.importedReserve
+          : null,
       destination: destination,
       destinationKind: switch (request) {
         ArkPaymentQuoteRequest(:final destination) => destination.kind,
@@ -323,6 +349,14 @@ final class FakeSession implements ArkNativeSession {
       },
       observedTip: owner.tip,
       validUntil: now.add(const Duration(minutes: 2)),
+      boardEvidence: switch ((request, owner.liveBoardTipHash)) {
+        (ArkBoardQuoteRequest(), final hash?) => ArkBoardQuoteEvidence(
+          serverKey: '02${'a' * 64}',
+          tipHash: hash,
+          requiredConfirmations: 2,
+        ),
+        _ => null,
+      },
       maxClaimFee: max,
       feeRate: switch (request) {
         ArkEmergencyExitQuoteRequest(:final feeRate) => feeRate ?? FeeRate(2),
@@ -360,6 +394,13 @@ final class FakeSession implements ArkNativeSession {
   Future<ArkBoardFundingDetails> boardFunding() =>
       stages.run('funding', () async {
         owner.fundings++;
+        if (this is ArkNativeLiveBoardSession) {
+          return ArkBoardFundingDetails.scuttle(
+            address: 'funding-address',
+            token: 'opaque-funding-token',
+            expiryHeight: owner.boardExpiry,
+          );
+        }
         return ArkBoardFundingDetails(
           address: 'funding-address',
           keypairIndex: 4,
@@ -367,28 +408,35 @@ final class FakeSession implements ArkNativeSession {
         );
       });
   @override
-  Future<String> registerBoard(ArkRegisterBoard submission) =>
-      stages.run('register', () async {
-        owner.registrations++;
-        return 'c' * 64;
-      });
+  Future<String> registerBoard(
+    ArkRegisterBoard submission,
+    ArkBoardFundingDetails funding,
+  ) => stages.run('register', () async {
+    owner.registrations++;
+    return 'c' * 64;
+  });
   @override
-  Future<ArkClaimTransaction> prepareClaim(ArkQuote quote) =>
-      stages.run('prepare-claim', () async {
-        owner.preparations++;
-        final prepare = owner.claimPreparer;
-        if (prepare != null) {
-          return prepare(quote);
-        }
-        return ArkClaimTransaction(
-          rawTransaction: 'raw-public',
-          signedPsbt: 'signed-public',
-          actualIds: owner.claimActual,
-          skippedIds: owner.claimSkipped,
-          inputAmounts: {for (final id in owner.claimActual) id: '10000'},
-          fee: owner.claimFee.toString(),
-        );
-      });
+  Future<ArkClaimTransaction> prepareClaim(ArkQuote quote) => stages.run(
+    'prepare-claim',
+    () async {
+      owner.preparations++;
+      final prepare = owner.claimPreparer;
+      if (prepare != null) {
+        return prepare(quote);
+      }
+      return ArkClaimTransaction(
+        rawTransaction: 'raw-public',
+        signedPsbt: 'signed-public',
+        actualIds: owner.claimActual,
+        skippedIds: owner.claimSkipped,
+        inputAmounts: {
+          for (final id in [...owner.claimActual, ...owner.claimReserveInputs])
+            id: '10000',
+        },
+        fee: owner.claimFee.toString(),
+      );
+    },
+  );
   @override
   Future<String> broadcast(String rawTransaction) =>
       stages.run('broadcast', () async {
@@ -423,6 +471,40 @@ final class FakeSession implements ArkNativeSession {
           boardFunding: operation.boardFunding,
         );
       });
+}
+
+final class FakeExitReserveSession extends FakeSession
+    implements ArkNativeExitReserveSession {
+  FakeExitReserveSession(super.owner, super.config, super.stages);
+
+  @override
+  Future<bool> verifyInitialExitReserve(
+    ArkExitReserveFunding funding,
+    String reserveAddress,
+  ) async => owner.reserveConfirmed && reserveAddress == 'reserve-address';
+
+  @override
+  Future<bool> importInitialExitReserve(
+    ArkExitReserveFunding funding,
+    String reserveAddress,
+  ) async {
+    if (owner.failReserveImport ||
+        !await verifyInitialExitReserve(funding, reserveAddress)) {
+      return false;
+    }
+    owner.importedReserve = funding.amount;
+    return true;
+  }
+}
+
+final class FakeLiveBoardSession extends FakeSession
+    implements ArkNativeLiveBoardSession {
+  FakeLiveBoardSession(super.owner, super.config, super.stages);
+}
+
+final class FakeOffboardSession extends FakeSession
+    implements ArkNativeOffboardSession {
+  FakeOffboardSession(super.owner, super.config, super.stages);
 }
 
 final class FakeVerifier implements ArkTransactionVerifierPort {

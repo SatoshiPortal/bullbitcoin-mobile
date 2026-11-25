@@ -257,6 +257,7 @@ abstract class SendState with _$SendState {
 
   bool get hasFixedRequestAmount => switch (paymentRequest) {
     Bip21PaymentRequest(:final amountSat) => (amountSat ?? 0) > 0,
+    Bolt11PaymentRequest(:final amountSat) => amountSat > 0,
     LnAddressPaymentRequest() => lnurlPayLimits?.fixedAmountSat != null,
     _ => false,
   };

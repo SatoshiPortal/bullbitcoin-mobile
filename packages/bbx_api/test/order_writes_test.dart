@@ -236,6 +236,30 @@ void main() {
       );
       expect(_sent(http), contains('"paymentProcessor":"REGULAR_SEPA"'));
     });
+
+    test('sends the Interac security details only together', () async {
+      valueOf(
+        await orders.sellToRecipient(
+          recipientId: 'r-1',
+          bitcoinNetwork: 'bitcoin',
+          fiatAmount: 20,
+          securityQuestion: 'Pet?',
+          securityAnswer: 'rex',
+        ),
+      );
+      expect(
+        _sent(http),
+        _rpc('sellToRecipient', {
+          'recipientId': 'r-1',
+          'bitcoinNetwork': 'bitcoin',
+          'fiatAmount': 20.0,
+          'paymentProcessorData': {
+            'securityQuestion': 'Pet?',
+            'securityAnswer': 'rex',
+          },
+        }),
+      );
+    });
   });
 
   group('createWithdrawalOrder', () {
@@ -478,14 +502,34 @@ void main() {
       );
     });
 
-    test('a non-200 status is an HTTP failure', () async {
+    test('a status below 400 other than 200 is an unknown outcome', () async {
       answer({'result': _order}, status: 204);
-      expect(await failedCall(sell()), isA<BbxHttpFailure>());
+      expect(await failedCall(sell()), isA<BbxOutcomeUnknownFailure>());
     });
 
-    test('a result that is not an object is a format failure', () async {
+    test('a refused status is an HTTP failure', () async {
+      answer({'result': _order}, status: 500);
+      expect(
+        await failedCall(sell()),
+        isA<BbxHttpFailure>().having((f) => f.status, 'status', 500),
+      );
+    });
+
+    test('a result that is not an object is an unknown outcome', () async {
       answer({'result': null});
-      expect(await failedCall(sell()), isA<BbxResponseFormatFailure>());
+      expect(await failedCall(sell()), isA<BbxOutcomeUnknownFailure>());
+    });
+
+    test('confirm and accelerate are writes too', () async {
+      answer({'result': null});
+      expect(
+        await failedCall(orders.confirmOrderSummary('o-1')),
+        isA<BbxOutcomeUnknownFailure>(),
+      );
+      expect(
+        await failedCall(orders.unbatchAndExpressOrder('o-1')),
+        isA<BbxOutcomeUnknownFailure>(),
+      );
     });
   });
 }

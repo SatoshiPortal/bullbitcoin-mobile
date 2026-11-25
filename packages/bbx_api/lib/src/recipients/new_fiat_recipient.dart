@@ -230,22 +230,48 @@ final class NewBankTransferArsRecipient extends NewFiatRecipient {
   String get recipientTypeFiat => 'BANK_TRANSFER_ARS';
 }
 
-/// `PSE_COLOMBIA_COP`.
-final class NewPseColombiaCopRecipient extends NewFiatRecipient {
+/// Who holds a Colombian account, as `createRecipientFiat` takes it: a
+/// person by first and last name, or a company by its name.
+///
+/// The API requires `name` and `lastname` unless `isCorporate` is true, and
+/// then `corporateName`; this type can't be built without them.
+@immutable
+sealed class NewCopHolder {
+  const NewCopHolder();
+}
+
+/// A person: sent as `isCorporate: false`, `name`, `lastname`.
+final class NewCopIndividual extends NewCopHolder {
   final String name;
+  final String lastname;
+
+  const NewCopIndividual({required this.name, required this.lastname});
+}
+
+/// A company: sent as `isCorporate: true`, `corporateName`.
+final class NewCopCorporate extends NewCopHolder {
+  final String corporateName;
+
+  const NewCopCorporate({required this.corporateName});
+}
+
+/// `PSE_COLOMBIA_COP`, saved as `OUT_COP_BANK_ACCOUNT`. The API requires
+/// [email] for every holder.
+final class NewPseColombiaCopRecipient extends NewFiatRecipient {
+  final NewCopHolder holder;
+  final String email;
   final String bankCode;
   final String accountType;
   final String bankAccount;
-  final String bankName;
   final String documentId;
   final String documentType;
 
   const NewPseColombiaCopRecipient({
-    required this.name,
+    required this.holder,
+    required this.email,
     required this.bankCode,
     required this.accountType,
     required this.bankAccount,
-    required this.bankName,
     required this.documentId,
     required this.documentType,
     super.label,
@@ -257,15 +283,18 @@ final class NewPseColombiaCopRecipient extends NewFiatRecipient {
   String get recipientTypeFiat => 'PSE_COLOMBIA_COP';
 }
 
-/// `NEQUI_COLOMBIA_COP`. The Nequi phone number is sent as `bankAccount`.
+/// `NEQUI_COLOMBIA_COP`, saved as `OUT_COP_NEQUI`. The Nequi phone number is
+/// sent as `bankAccount`. The API requires [email] for every holder.
 final class NewNequiColombiaCopRecipient extends NewFiatRecipient {
-  final String name;
+  final NewCopHolder holder;
+  final String email;
   final String bankAccount;
   final String documentId;
   final String documentType;
 
   const NewNequiColombiaCopRecipient({
-    required this.name,
+    required this.holder,
+    required this.email,
     required this.bankAccount,
     required this.documentId,
     required this.documentType,

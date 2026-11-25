@@ -23,6 +23,7 @@ class Notifications implements ScheduledNotificationPort {
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   }) async {
     scheduled.add((id: platformId, at: at));
     await hold?.future;

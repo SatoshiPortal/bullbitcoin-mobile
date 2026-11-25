@@ -10,6 +10,8 @@ export 'src/domain/entities/transaction_input.dart';
 export 'src/domain/entities/transaction_output.dart';
 export 'src/domain/entities/wallet_transaction.dart';
 export 'src/domain/transaction_failure.dart';
+export 'src/ui/widgets/settlement_sync_poller.dart'
+    show SettlementPoll, SettlementSyncPoller;
 export 'src/ui/widgets/txs_syncing_indicator.dart' show TxsSyncingIndicator;
 export 'src/ui/widgets/wallet_detail_txs_list.dart' show WalletDetailTxsList;
 export 'src/ui/widgets/wallet_history_scope.dart' show WalletHistoryScope;

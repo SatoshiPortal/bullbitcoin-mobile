@@ -7,7 +7,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
+import '../../generated/l10n/bull_ui_localizations.dart';
+import '../../generated/l10n/bull_ui_localizations_en.dart';
 import '../theme/payment_animation_palette.dart';
+import 'bull_payment_progress.dart';
 import 'payment_scenes.dart';
 
 export 'payment_scenes.dart' show BullPaymentNetwork, BullPaymentPhase;
@@ -16,6 +19,19 @@ export 'payment_scenes.dart' show BullPaymentNetwork, BullPaymentPhase;
 class BullPaymentAnimation extends StatefulWidget {
   final BullPaymentNetwork network;
   final BullPaymentPhase phase;
+  final BullPaymentDirection direction;
+
+  /// Proven protocol steps drawn by the scene, or null for the decorative
+  /// default.
+  final BullPaymentProgress? progress;
+
+  /// Translated real status of the tracked object, shown top right. Falls
+  /// back to a direction-aware word for the phase.
+  final String? statusTag;
+
+  /// Translated top-left descriptor replacing the network's own, for a flow
+  /// that borrows another network's scene.
+  final String? descriptor;
   final VoidCallback? onImpact;
   final VoidCallback? onDone;
 
@@ -23,6 +39,10 @@ class BullPaymentAnimation extends StatefulWidget {
     super.key,
     required this.network,
     required this.phase,
+    this.direction = BullPaymentDirection.outgoing,
+    this.progress,
+    this.statusTag,
+    this.descriptor,
     this.onImpact,
     this.onDone,
   });
@@ -47,7 +67,11 @@ class _BullPaymentAnimationState extends State<BullPaymentAnimation>
 
   double? get _badgeAt => switch ((widget.network, widget.phase)) {
     (
-      BullPaymentNetwork.bitcoin || BullPaymentNetwork.ark,
+      BullPaymentNetwork.bitcoin ||
+          BullPaymentNetwork.ark ||
+          BullPaymentNetwork.arkExit ||
+          BullPaymentNetwork.boltz ||
+          BullPaymentNetwork.payjoin,
       BullPaymentPhase.success,
     ) =>
       1.1,
@@ -87,7 +111,8 @@ class _BullPaymentAnimationState extends State<BullPaymentAnimation>
   void didUpdateWidget(BullPaymentAnimation oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.phase != oldWidget.phase ||
-        widget.network != oldWidget.network) {
+        widget.network != oldWidget.network ||
+        widget.direction != oldWidget.direction) {
       _frame.elapsed = 0;
       _impacted = false;
       _done = false;
@@ -160,6 +185,16 @@ class _BullPaymentAnimationState extends State<BullPaymentAnimation>
     super.dispose();
   }
 
+  PaymentSceneText _text(BuildContext context) => PaymentSceneText.resolve(
+    Localizations.of<BullUiLocalizations>(context, BullUiLocalizations) ??
+        BullUiLocalizationsEn(),
+    network: widget.network,
+    phase: widget.phase,
+    direction: widget.direction,
+    statusTag: widget.statusTag,
+    steps: widget.progress?.steps ?? const [],
+  );
+
   @override
   Widget build(BuildContext context) {
     return ExcludeSemantics(
@@ -170,6 +205,9 @@ class _BullPaymentAnimationState extends State<BullPaymentAnimation>
               _frame,
               widget.network,
               widget.phase,
+              widget.direction,
+              widget.progress,
+              _text(context),
               _reduced,
               Theme.of(context).extension<PaymentAnimationPalette>() ??
                   PaymentAnimationPalette.standard,
@@ -201,6 +239,9 @@ class _PaymentPainter extends CustomPainter {
   final _PaymentFrame frame;
   final BullPaymentNetwork network;
   final BullPaymentPhase phase;
+  final BullPaymentDirection direction;
+  final BullPaymentProgress? progress;
+  final PaymentSceneText text;
   final bool reduced;
   final PaymentAnimationPalette palette;
 
@@ -208,6 +249,9 @@ class _PaymentPainter extends CustomPainter {
     this.frame,
     this.network,
     this.phase,
+    this.direction,
+    this.progress,
+    this.text,
     this.reduced,
     this.palette,
   ) : super(repaint: frame);
@@ -225,6 +269,16 @@ class _PaymentPainter extends CustomPainter {
       roll: reduced ? 0 : frame.roll,
       springRoll: reduced ? 0 : frame.springRoll,
       palette: palette,
+      direction: direction,
+      stepCount: progress?.total ?? 0,
+      completed: progress?.completed ?? 0,
+      failedAt: progress?.failedAt,
+      skippedAt: progress?.skippedAt,
+      refund: progress?.refund,
+      currentState: progress?.currentState ?? BullPaymentStepState.active,
+      currentFraction: progress?.currentFraction,
+      text: text,
+      reduced: reduced,
     );
   }
 
@@ -233,6 +287,9 @@ class _PaymentPainter extends CustomPainter {
       oldDelegate.frame != frame ||
       oldDelegate.network != network ||
       oldDelegate.phase != phase ||
+      oldDelegate.direction != direction ||
+      oldDelegate.progress != progress ||
+      oldDelegate.text != text ||
       oldDelegate.reduced != reduced ||
       oldDelegate.palette != palette;
 }

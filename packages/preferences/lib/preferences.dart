@@ -12,4 +12,5 @@ export 'src/domain/settings_repository.dart'
         TorProxyPreferences,
         TorProxyPreferencesReader,
         RuntimeDisplayPreferencesReader,
+        PaymentAnimationPreferencesReader,
         AmountInputPreferences;

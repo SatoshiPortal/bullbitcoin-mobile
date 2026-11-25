@@ -66,6 +66,9 @@ catalogues:
   settings:
     path: features/settings
     description: settings navigation and preferences
+  swap:
+    path: features/swap
+    description: swap recovery and transfer screens
   onboarding:
     path: features/onboarding
     output-dir: features/onboarding/lib/generated/novlang
@@ -80,14 +83,14 @@ entries:
   - {catalogue: all_seed_view, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreNoSwaps, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreAllSection, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreFailed, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRescueTitle, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRescueIdLabel, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRescueSuccess, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreNoSwaps, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreAllSection, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRescueTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRescueIdLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRescueSuccess, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreSwapsLnReceivePending, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreSwapsLnReceiveClaimable, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreSwapsLnReceiveRefundable, store: apple, word: swap, euphemism: transfer}
@@ -115,7 +118,6 @@ entries:
   - {catalogue: app, key: coreSwapsChainFailedRefunding, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreSwapsChainFailed, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: settingsExchangeSettingsTitle, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeTestnetBasicAuthTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: walletDeletionErrorOngoingSwaps, store: apple, word: swap, euphemism: transfer}
   - {catalogue: onboarding, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: wizard, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
@@ -125,7 +127,6 @@ entries:
   - {catalogue: app, key: receiveSwapId, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: receiveTransferFee, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: sellExchangeRate, store: apple, word: exchange rate, euphemism: rate}
-  - {catalogue: app, key: payExchangeRate, store: apple, word: exchange rate, euphemism: rate}
   - {catalogue: app, key: transactionDetailTransferProgress, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: transactionDetailSwapProgress, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: transactionFilterTransfer, store: apple, word: swap, euphemism: transfer}
@@ -216,11 +217,6 @@ entries:
   - {catalogue: app, key: autoswapUpdateSettingsError, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: confirmLogoutMessage, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: notLoggedInMessage, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: paySwapFee, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: payRequiresSwap, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: paySwapInProgress, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: paySwapCompleted, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: paySwapFailed, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: sendSubmarineSwap, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: sendInitiatingSwap, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: sendSwapDetails, store: apple, word: swap, euphemism: transfer}
@@ -253,9 +249,6 @@ entries:
   - {catalogue: app, key: sellRateExpired, store: apple, word: exchange rate, euphemism: rate}
   - {catalogue: app, key: sellUpdatingRate, store: apple, word: exchange rate, euphemism: rate}
   - {catalogue: app, key: exportTransactionsDescription, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: exchangeLandingConnect, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeLandingLoginToUseSupport, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: sellSendPaymentExchangeRate, store: apple, word: exchange rate, euphemism: rate}
   - {catalogue: app, key: swapTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapInfoBanner, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapConfirmTitle, store: apple, word: swap, euphemism: transfer}
@@ -278,7 +271,6 @@ entries:
   - {catalogue: bull_exchange, key: exchangeLandingConnectAccount, store: apple, word: exchange, euphemism: account}
   - {catalogue: bull_exchange, key: exchangeLandingRecommendedExchange, store: apple, word: exchange, euphemism: account}
   - {catalogue: bull_exchange, key: exchangeGoToWebsiteButton, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeSupportChatWalletIssuesInfo, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: navigationTabExchange, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: coreScreensExternalTransfer, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreScreensInternalTransfer, store: apple, word: swap, euphemism: transfer}
@@ -287,7 +279,6 @@ entries:
   - {catalogue: app, key: coreScreensTransferFeeLabel, store: apple, word: swap, euphemism: transfer}
   - {catalogue: label_editor, key: systemLabelSwaps, store: apple, word: swap, euphemism: transfer}
   - {catalogue: label_editor, key: systemLabelAutoSwap, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: logoutConfirmationDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: wizard, key: wizardJourneyTip5, store: apple, word: swap, euphemism: transfer}
   - {catalogue: wizard, key: wizardJourneyTip6, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: transactionSwapOpenWithin24h, store: apple, word: swap, euphemism: transfer}
@@ -299,9 +290,6 @@ entries:
   - {catalogue: app, key: swapUnderReviewSupportMessage, store: apple, word: swap, euphemism: transfer}
   - {catalogue: announcements, key: announcementAppUpdateRequiredDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapErrorRouteUnavailableGeneric, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: autoBuyInfoMessage, store: apple, word: exchange rate, euphemism: rate}
-  - {catalogue: app, key: limitOrdersBackToExchange, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangePaymentSentPastDeadline, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}

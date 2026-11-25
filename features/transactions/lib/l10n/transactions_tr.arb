@@ -323,7 +323,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "Retry",
+  "retry": "Tekrar dene",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -726,5 +726,6 @@
   "transactionPayjoinBroadcastFailed": "Orijinal işlem yayınlanamadı. Lütfen tekrar deneyin.",
   "transactionPayjoinOriginalUnavailable": "Orijinal işlem artık yayınlanmak üzere mevcut değil.",
   "transactionLabelLimitReached": "En fazla 10 etiketiniz olabilir.",
-  "copiedToClipboard": "Panoya kopyalandı"
+  "copiedToClipboard": "Panoya kopyalandı",
+  "transactionListExchangeOrdersUnavailable": "Borsa emirleri yüklenemedi."
 }

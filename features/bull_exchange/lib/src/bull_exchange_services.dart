@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
 import 'package:preferences/preferences.dart';
@@ -18,9 +16,7 @@ abstract final class BullExchangeServices {
   }) {
     final credentials = ExchangeCredentials.open(storage);
     final basicAuth = ExchangeCredentials.openBasicAuth(storage);
-    final activePlatform =
-        platform ??
-        (Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other);
+    final activePlatform = platform ?? ExchangePlatform.current;
     // The lifecycle and the capability call each other only after opening.
     late final Exchange exchange;
     final access = ExchangeAccessLifecycle.open(
@@ -32,6 +28,11 @@ abstract final class BullExchangeServices {
       platformAllowed: () =>
           _platformAllowed(activePlatform, preferences: preferences),
       disconnectNotifications: () async => exchange.disconnectNotifications(),
+      connectNotifications: (environment, {required reconnect}) async {
+        final _ = reconnect
+            ? await exchange.reconnectNotifications(environment)
+            : await exchange.connectNotifications(environment);
+      },
       clearCookies: () async {
         await WebViewCookieManager().clearCookies();
       },
@@ -58,14 +59,18 @@ abstract final class BullExchangeServices {
       ),
       readSession: () => readLegacyExchangeSession(
         preferences: preferences,
-        readEpoch: () => access.epoch,
+        readSession: () => access.session,
         readKey: credentials.readActiveApiKey,
       ),
       notifications: (
-        readEnvironment: () => readLegacyExchangeEnvironment(preferences),
         readKey: ({required isTestnet}) =>
             credentials.readActiveApiKey(isTestnet: isTestnet),
       ),
+      // TODO(exchange): pass `unknownWrites:
+      // DriftUnknownWriteJournal(<exchange store>.database)` once the
+      // storage cutover mounts the exchange database at runtime. Until
+      // then no unknown write is journaled, sign-in reconciles nothing and
+      // the write gate only tracks writes in flight.
     );
     return exchange;
   }

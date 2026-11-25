@@ -1,10 +1,12 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/exchange_access.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
 
-/// Captures the environment and credential under the same access epoch.
+/// Captures the environment and credential under the same session. The epoch
+/// is the current session's, or 0 while no session is signed in.
 Future<
   Result<
     ({ExchangeEnvironment environment, int epoch, String? apiKey}),
@@ -13,11 +15,12 @@ Future<
 >
 readLegacyExchangeSession({
   required Preferences preferences,
-  required int Function() readEpoch,
+  required ExchangeSession? Function() readSession,
   required Future<Result<String?, Failure>> Function({required bool isTestnet})
   readKey,
 }) async {
-  final epoch = readEpoch();
+  final session = readSession();
+  final epoch = session?.epoch ?? 0;
   final ExchangeEnvironment environment;
   switch (await readLegacyExchangeEnvironment(preferences)) {
     case Ok(:final value):
@@ -28,7 +31,7 @@ readLegacyExchangeSession({
   final key = await readKey(
     isTestnet: environment == ExchangeEnvironment.testnet,
   );
-  if (readEpoch() != epoch) {
+  if (readSession() != session) {
     return const Err(ExchangeOperationStaleFailure());
   }
   return switch (key) {

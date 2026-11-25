@@ -31,6 +31,7 @@ class SendPaymentReview extends StatelessWidget {
     this.feeWarning,
     this.changeLabel,
     this.change,
+    this.extra,
   }) : assert((change == null) == (changeLabel == null));
 
   final String title;
@@ -47,6 +48,7 @@ class SendPaymentReview extends StatelessWidget {
   final Widget source;
   final String? changeLabel;
   final Widget? change;
+  final Widget? extra;
   final String noteLabel;
   final String note;
   final String editLabel;
@@ -122,6 +124,10 @@ class SendPaymentReview extends StatelessWidget {
                   ),
                   if (feeWarning case final warning?) ...[
                     warning,
+                    const Gap(BullSpacing.md),
+                  ],
+                  if (extra case final widget?) ...[
+                    widget,
                     const Gap(BullSpacing.md),
                   ],
                   Container(

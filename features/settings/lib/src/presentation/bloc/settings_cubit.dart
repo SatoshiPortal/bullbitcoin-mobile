@@ -24,6 +24,7 @@ import 'package:settings/src/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:settings/src/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:settings/src/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:settings/src/domain/usecases/set_screen_capture_protection_usecase.dart';
+import 'package:settings/src/domain/usecases/set_show_payment_animations_usecase.dart';
 import 'package:settings/src/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:settings/src/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:settings/src/domain/usecases/watch_payjoin_policy_usecase.dart';
@@ -55,6 +56,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setErrorReportingUsecase,
     required this._setScreenCaptureProtectionUsecase,
     required this._loadExchangeTestnetBasicAuthUsecase,
+    required this._setShowPaymentAnimationsUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
@@ -86,6 +88,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetScreenCaptureProtectionUsecase _setScreenCaptureProtectionUsecase;
   final LoadExchangeTestnetBasicAuthUsecase
   _loadExchangeTestnetBasicAuthUsecase;
+  final SetShowPaymentAnimationsUsecase _setShowPaymentAnimationsUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
@@ -434,6 +437,26 @@ class SettingsCubit extends Cubit<SettingsState> {
       state.copyWith(
         storedSettings: state.storedSettings?.copyWith(
           screenCaptureProtectionEnabled: enabled,
+        ),
+      ),
+    );
+  }
+
+  Future<void> toggleShowPaymentAnimations(bool enabled) async {
+    log.config(
+      'Payment animations toggled: $enabled was '
+      '${state.storedSettings?.showPaymentAnimations}',
+    );
+    final result = await _setShowPaymentAnimationsUsecase.execute(enabled);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
+          showPaymentAnimations: enabled,
         ),
       ),
     );

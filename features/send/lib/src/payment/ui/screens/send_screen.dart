@@ -13,6 +13,7 @@ import '../widgets/send_grouped_address.dart';
 import 'dart:async';
 
 import '../../domain/send_source.dart';
+import '../../domain/fixed_amount_wallet_choice_policy.dart';
 import '../send_payment_ui.dart';
 import 'send_payment_page.dart';
 import 'send_payment_review.dart';
@@ -20,7 +21,8 @@ import '../widgets/send_payment_settings.dart';
 import '../widgets/send_custom_fee_editor.dart';
 import '../widgets/send_whole_balance_dialog.dart';
 import '../../domain/send_custom_fee_policy.dart';
-import 'send_payment_animation_policy.dart';
+
+import 'package:transactions/payment_status.dart';
 
 import '../widgets/send_ark_routing_actions.dart';
 
@@ -30,6 +32,7 @@ import 'package:primitives/primitives.dart'
 import 'dart:math' as math;
 
 import 'package:send/src/payment/domain/internal_recipient_policy.dart';
+import 'package:send/src/payment/domain/bitcoin_recipient_list_policy.dart';
 
 import 'package:fees/fees.dart';
 import 'package:address_view/payment_destination.dart'
@@ -39,7 +42,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:send/src/send_localizations.dart';
 import 'package:send/src/payment/presentation/onchain_send_labels_l10n.dart';
 import 'package:satoshifier/payment_request.dart'
-    show Bip21PaymentRequest, BitcoinPaymentRequest;
+    show Bip21PaymentRequest, Bolt11PaymentRequest, LiquidPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:label_editor/label_editor.dart';
@@ -53,6 +56,8 @@ import 'package:send/src/payment/ui/widgets/multi_recipient_transaction_review.d
 import 'package:send/src/payment/ui/widgets/recipient_fields.dart';
 import 'package:send/src/payment/ui/widgets/send_info_row.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/transactions.dart'
+    show SettlementPoll, SettlementSyncPoller;
 import 'package:send/send.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:material_ui/material_ui.dart';
@@ -90,8 +95,10 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullInfoCard,
         BullLoader,
+        BullPaymentAnimation,
         BullPaymentNetwork,
         BullPaymentPhase,
+        BullPaymentProgress,
         BullPaymentTransition,
         BullPickerItem,
         BullSegmented,
@@ -109,7 +116,11 @@ String _sendFlowTitle(BuildContext context) {
 }
 
 class SendScreen extends StatefulWidget {
-  const SendScreen({super.key});
+  const SendScreen({super.key, this.poll});
+
+  /// Refreshes the wallet holding the settlement transaction; no polling when
+  /// absent.
+  final SettlementPoll? poll;
 
   @override
   State<SendScreen> createState() => _SendScreenState();
@@ -122,18 +133,40 @@ class _SendScreenState extends State<SendScreen> {
   bool _confirmInFlight = false;
   bool _expectsSwap = false;
   String? _previousTxId;
+  bool _showAnimations = true;
+  bool _animationsLoaded = false;
+  late final Future<void> _animationsRead;
+  bool _awaitingDetails = false;
+  bool _awaitingPayjoinDetails = false;
+  String? _baselineOrderId;
+  String? _baselineOrderPayinTxId;
+  String? _baselineSwapId;
+  String? _baselineSwapSendTxId;
 
   @override
   void initState() {
     super.initState();
-    _payment = _SendPaymentSession(context.read<SendCubit>(), _confirm);
+    final cubit = context.read<SendCubit>();
+    _payment = _SendPaymentSession(cubit, _confirm);
+    _animationsRead = cubit.readShowPaymentAnimations().then((enabled) {
+      _showAnimations = enabled;
+      _animationsLoaded = true;
+    });
   }
 
   Future<void> _confirm() async {
     final cubit = context.read<SendCubit>();
     if (_confirmInFlight) return;
     _confirmInFlight = true;
+    if (!_animationsLoaded) await _animationsRead;
+    if (!mounted) {
+      _confirmInFlight = false;
+      return;
+    }
     if (cubit.state.willAttemptPayjoin || cubit.state.payjoinSender != null) {
+      // Without animations the Payjoin progress stays on this screen and
+      // hands off to the details once the session settles.
+      if (!_showAnimations) _awaitingPayjoinDetails = true;
       try {
         await cubit.onConfirmTransactionClicked();
       } finally {
@@ -142,8 +175,18 @@ class _SendScreenState extends State<SendScreen> {
       return;
     }
     setState(() {
-      _transitionVisible = true;
+      _transitionVisible = _showAnimations;
+      _awaitingDetails = !_showAnimations;
       _previousTxId = cubit.state.txId;
+      final previousOrder = cubit.state.lightningOrder;
+      final previousSwap = cubit.state.boltzSendSwap;
+      _baselineOrderId = previousOrder?.localId;
+      _baselineOrderPayinTxId = previousOrder?.localPayinTransactionId;
+      _baselineSwapId = previousSwap?.id;
+      _baselineSwapSendTxId = switch (previousSwap) {
+        LnSendSwap(:final sendTxid) || ChainSwap(:final sendTxid) => sendTxid,
+        _ => null,
+      };
       _expectsSwap =
           cubit.state.sendType == SendType.lightning ||
           cubit.state.requireChainSwap ||
@@ -156,11 +199,16 @@ class _SendScreenState extends State<SendScreen> {
       _confirmInFlight = false;
       if (mounted) {
         final state = cubit.state;
-        final uncertain =
-            state.hasBroadcastFailure ||
-            state.lightningOrder?.localStatus ==
-                OrderSwapLocalStatus.broadcastUnknown;
+        final uncertain = _isUncertain(state);
+        _openDetailsWithoutTransition(state);
         setState(() {
+          if (_awaitingDetails &&
+              (uncertain ||
+                  (state.failure != null && !_isPreBroadcastFailure(state)) ||
+                  (state.step == SendStep.confirm &&
+                      _terminalPhase(state) == null))) {
+            _awaitingDetails = false;
+          }
           if (uncertain ||
               (state.failure != null && !_isPreBroadcastFailure(state)) ||
               (state.step == SendStep.confirm &&
@@ -170,6 +218,77 @@ class _SendScreenState extends State<SendScreen> {
         });
       }
     }
+  }
+
+  bool _isUncertain(SendState state) =>
+      state.hasBroadcastFailure ||
+      state.lightningOrder?.localStatus ==
+          OrderSwapLocalStatus.broadcastUnknown;
+
+  /// With payment animations off, opens the details once, as soon as this
+  /// attempt has broadcast evidence and the Send route is still current. An
+  /// order or swap that already existed before the attempt never counts, and a
+  /// failure before broadcast keeps the user in the flow with its error.
+  void _openDetailsWithoutTransition(SendState state) {
+    if (_awaitingPayjoinDetails) {
+      _openPayjoinDetailsWithoutAnimation(state);
+      return;
+    }
+    if (!_awaitingDetails || _isUncertain(state)) return;
+    if (!_hasBroadcastEvidence(state)) return;
+    final target = _detailsTarget(state);
+    if (target == null) return;
+    _awaitingDetails = false;
+    if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
+    unawaited(
+      TransactionsNavigation.openDetails(
+        context,
+        target,
+        returnHome: true,
+        view: TransactionDetailsView.details,
+      ),
+    );
+  }
+
+  void _openPayjoinDetailsWithoutAnimation(SendState state) {
+    final payjoin = state.payjoinSender;
+    final txId = state.txId;
+    if (payjoin == null || txId == null) return;
+    if (!(payjoin.isCompleted || payjoin.isAborted)) return;
+    if (state.step != SendStep.success) return;
+    _awaitingPayjoinDetails = false;
+    if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
+    unawaited(
+      TransactionsNavigation.openDetails(
+        context,
+        TransactionDetailsTarget.wallet(txId, walletId: payjoin.walletId),
+        returnHome: true,
+        view: TransactionDetailsView.details,
+      ),
+    );
+  }
+
+  /// True only when the broadcast belongs to the current confirmation.
+  bool _hasBroadcastEvidence(SendState state) {
+    final order = state.lightningOrder;
+    if (order != null) {
+      final payin = order.localPayinTransactionId;
+      return payin != null &&
+          (order.localId != _baselineOrderId ||
+              payin != _baselineOrderPayinTxId);
+    }
+    final swap = state.boltzSendSwap;
+    if (swap != null) {
+      final sendTxId = switch (swap) {
+        LnSendSwap(:final sendTxid) || ChainSwap(:final sendTxid) => sendTxid,
+        _ => null,
+      };
+      return sendTxId != null &&
+          (swap.id != _baselineSwapId || sendTxId != _baselineSwapSendTxId);
+    }
+    if (_expectsSwap) return false;
+    final txId = state.txId;
+    return txId != null && txId != _previousTxId && state.payjoinSender == null;
   }
 
   BullPaymentPhase? _terminalPhase(SendState state) {
@@ -182,30 +301,26 @@ class _SendScreenState extends State<SendScreen> {
     }
     final swap = state.boltzSendSwap;
     if (swap != null) {
-      return boltzPaymentPhase(
-        swap.status,
-        refunded: switch (swap) {
-          ChainSwap(:final refundTxid) ||
-          LnSendSwap(:final refundTxid) => refundTxid != null,
-          _ => false,
-        },
-        completedProven: switch (swap) {
-          ChainSwap(:final receiveTxid) => receiveTxid?.isNotEmpty ?? false,
-          LnSendSwap() => true,
-          _ => false,
-        },
-      );
+      return boltzPaymentPhase(swap);
     }
     if (_isPreBroadcastFailure(state)) return BullPaymentPhase.failed;
+    final transaction = state.walletTransaction;
     return directPaymentSucceeded(
-          expectsSwap: _expectsSwap,
-          previousTxId: _previousTxId,
+          broadcast: _directBroadcast(state),
           transactionId: state.txId,
-          hasPayjoin: state.payjoinSender != null,
+          observedTransactionId: transaction?.txId,
+          observedConfirmed: transaction?.isConfirmed ?? false,
         )
         ? BullPaymentPhase.success
         : null;
   }
+
+  bool _directBroadcast(SendState state) => directPaymentBroadcast(
+    expectsSwap: _expectsSwap,
+    previousTxId: _previousTxId,
+    transactionId: state.txId,
+    hasPayjoin: state.payjoinSender != null,
+  );
 
   bool _isPreBroadcastFailure(SendState state) =>
       !_expectsSwap &&
@@ -213,20 +328,71 @@ class _SendScreenState extends State<SendScreen> {
       state.payjoinSender == null &&
       state.hasBuildFailure;
 
-  String _transitionStatus(
+  BullPaymentProgress? _transitionProgress(
     BuildContext context,
     SendState state,
     BullPaymentPhase? terminal,
   ) {
     final loc = context.loc;
-    final orderStatus = state.lightningOrder?.localStatus;
+    final order = state.lightningOrder;
+    if (order != null) {
+      return orderPaymentProgress(
+        steps: [
+          loc.paymentStepSendingPayin,
+          loc.paymentStepPayinBroadcast,
+          loc.paymentStepPayoutInProgress,
+          loc.paymentStepCompleted,
+        ],
+        status: order.localStatus,
+        payinTxid: order.localPayinTransactionId,
+        underReview: order.order?.requiresManualReview ?? false,
+      );
+    }
     final swap = state.boltzSendSwap;
+    if (swap != null) {
+      final submarine = swap is LnSendSwap;
+      return boltzPaymentProgress(
+        steps: [
+          loc.paymentStepSendingLockup,
+          loc.paymentStepLockupSent,
+          submarine ? loc.paymentStepInvoicePaid : loc.paymentStepClaimable,
+          submarine ? loc.paymentStepCompleted : loc.paymentStepClaimBroadcast,
+        ],
+        swap: swap,
+      );
+    }
+    if (_expectsSwap) return null;
+    return directPaymentProgress(
+      steps: [
+        loc.paymentStepSigning,
+        loc.paymentStepBroadcasted,
+        loc.paymentStepConfirmed,
+      ],
+      broadcast: _directBroadcast(state),
+      failed: terminal == BullPaymentPhase.failed,
+    );
+  }
+
+  String _transitionStatus(
+    BuildContext context,
+    SendState state,
+    BullPaymentPhase? terminal,
+    BullPaymentProgress? progress,
+  ) {
+    final loc = context.loc;
+    final orderStatus = state.lightningOrder?.localStatus;
+    final swap = orderStatus == null ? state.boltzSendSwap : null;
     final refundBroadcast = switch (swap) {
       ChainSwap(:final refundTxid) ||
       LnSendSwap(:final refundTxid) => refundTxid != null,
       _ => false,
     };
-    if (terminal == BullPaymentPhase.success) return loc.sendSuccessfullySent;
+    if (terminal == BullPaymentPhase.success) {
+      return _expectsSwap ? loc.sendSuccessfullySent : loc.paymentStepConfirmed;
+    }
+    if (terminal == null && _directBroadcast(state)) {
+      return loc.paymentPendingMempool;
+    }
     if (terminal == BullPaymentPhase.failed) {
       if (_isPreBroadcastFailure(state)) {
         return state.failure?.toTranslated(context) ??
@@ -247,8 +413,41 @@ class _SendScreenState extends State<SendScreen> {
       SwapStatus.expired ||
       OrderSwapLocalStatus.failed ||
       OrderSwapLocalStatus.expired => loc.sendSwapRefundInProgress,
+      _ when progress != null && (swap != null || orderStatus != null) =>
+        progress.steps[progress.completed],
       _ => _expectsSwap ? loc.sendPaymentProcessing : loc.sendSending,
     };
+  }
+
+  String? _transitionStatusTag(
+    BuildContext context,
+    SendState state,
+    BullPaymentProgress? progress,
+  ) {
+    final loc = context.loc;
+    final current = progress == null
+        ? null
+        : progress.steps[progress.completed];
+    final swap = state.boltzSendSwap;
+    if (swap != null && state.lightningOrder == null) {
+      return switch (swap.status) {
+        SwapStatus.refundable => loc.sendSwapRefundInProgress,
+        SwapStatus.refunded => loc.sendSwapRefundCompleted,
+        SwapStatus.expired => loc.sendSwapExpiredTitle,
+        SwapStatus.failed => loc.sendSwapFailed,
+        _ => current,
+      };
+    }
+    final order = state.lightningOrder;
+    if (order != null) {
+      return switch (order.localStatus) {
+        OrderSwapLocalStatus.refunded => loc.sendSwapRefundCompleted,
+        OrderSwapLocalStatus.expired => loc.sendSwapExpiredTitle,
+        OrderSwapLocalStatus.failed => loc.sendSwapFailed,
+        _ => current,
+      };
+    }
+    return null;
   }
 
   void _dismissTransition() {
@@ -278,6 +477,7 @@ class _SendScreenState extends State<SendScreen> {
         context,
         target,
         returnHome: true,
+        view: TransactionDetailsView.details,
       );
     }
   }
@@ -291,24 +491,41 @@ class _SendScreenState extends State<SendScreen> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SendCubit>().state;
-    final content = _content(context, state);
+    final content = BlocListener<SendCubit, SendState>(
+      listener: (_, state) {
+        _payment.update(state);
+        _openDetailsWithoutTransition(state);
+      },
+      child: _content(context, state),
+    );
     final terminal = _terminalPhase(state);
+    final progress = _transitionProgress(context, state, terminal);
     final showTransition =
         _transitionVisible &&
         (state.failure == null || _isPreBroadcastFailure(state)) &&
         state.lightningOrder?.localStatus !=
             OrderSwapLocalStatus.broadcastUnknown;
-    final network = switch (state.lightningOrder?.outNetwork) {
-      OrderSwapNetwork.bitcoin => BullPaymentNetwork.bitcoin,
-      OrderSwapNetwork.lightning => BullPaymentNetwork.lightning,
-      OrderSwapNetwork.liquid => BullPaymentNetwork.liquid,
-      null => switch (state.sendType) {
-        SendType.bitcoin => BullPaymentNetwork.bitcoin,
-        SendType.lightning => BullPaymentNetwork.lightning,
-        SendType.liquid => BullPaymentNetwork.liquid,
-      },
-    };
-    return PopScope<Object?>(
+    final network = state.lightningOrder == null && state.boltzSendSwap != null
+        ? BullPaymentNetwork.boltz
+        : switch (state.lightningOrder?.outNetwork) {
+            OrderSwapNetwork.bitcoin => BullPaymentNetwork.bitcoin,
+            OrderSwapNetwork.lightning => BullPaymentNetwork.lightning,
+            OrderSwapNetwork.liquid => BullPaymentNetwork.liquid,
+            null => switch (state.sendType) {
+              SendType.bitcoin => BullPaymentNetwork.bitcoin,
+              SendType.lightning => BullPaymentNetwork.lightning,
+              SendType.liquid => BullPaymentNetwork.liquid,
+            },
+          };
+    final settlementWallet = state.selectedWallet;
+    final poll = widget.poll;
+    final settlementPending =
+        showTransition &&
+        poll != null &&
+        settlementWallet is SendWalletBitcoin &&
+        (state.txId?.isNotEmpty ?? false) &&
+        state.walletTransaction?.isConfirmed != true;
+    final transitionScreen = PopScope<Object?>(
       canPop: !showTransition,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop && showTransition) _dismissTransition();
@@ -327,7 +544,12 @@ class _SendScreenState extends State<SendScreen> {
               child: BullPaymentTransition(
                 network: network,
                 phase: terminal ?? BullPaymentPhase.sending,
-                status: _transitionStatus(context, state, terminal),
+                descriptor: state.lightningOrder != null
+                    ? context.loc.paymentExchangeDescriptor
+                    : null,
+                progress: progress,
+                status: _transitionStatus(context, state, terminal, progress),
+                statusTag: _transitionStatusTag(context, state, progress),
                 skipLabel: _detailsTarget(state) != null && !_expectsSwap
                     ? context.loc.sendViewDetails
                     : BullUiLocalizations.of(context).paymentViewStatus,
@@ -343,6 +565,14 @@ class _SendScreenState extends State<SendScreen> {
         ],
       ),
     );
+    if (poll == null) return transitionScreen;
+    return SettlementSyncPoller(
+      walletId: settlementWallet?.id,
+      active: settlementPending,
+      isLiquid: settlementWallet?.isLiquid ?? false,
+      poll: poll,
+      child: transitionScreen,
+    );
   }
 
   Widget _content(BuildContext context, SendState state) {
@@ -351,10 +581,7 @@ class _SendScreenState extends State<SendScreen> {
         (step == SendStep.address ||
             step == SendStep.amount ||
             step == SendStep.confirm)) {
-      return BlocListener<SendCubit, SendState>(
-        listener: (_, state) => _payment.update(state),
-        child: _payment.build(context, state),
-      );
+      return _payment.build(context, state);
     }
     switch (step) {
       case SendStep.address:
@@ -367,9 +594,9 @@ class _SendScreenState extends State<SendScreen> {
       case SendStep.confirm:
         return const SendConfirmScreen();
       case SendStep.sending:
-        return const SendSendingScreen();
+        return SendSendingScreen(animate: _showAnimations);
       case SendStep.success:
-        return const SendSucessScreen();
+        return SendSucessScreen(animate: _showAnimations);
     }
   }
 }
@@ -937,6 +1164,30 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     );
   }
 
+  /// Leaves room for a trailing [BullFieldAction] while keeping the text
+  /// inset of the other tiles.
+  static const _fieldTilePadding = EdgeInsetsDirectional.only(
+    start: 15,
+    top: BullSpacing.xs,
+    end: BullSpacing.xs,
+    bottom: BullSpacing.xs,
+  );
+
+  Future<void> _editNote(BuildContext context, SendState state) async {
+    final cubit = context.read<SendCubit>();
+    final saved = await LabelEditor.label(
+      context,
+      title: context.loc.transactionNoteAddTitle,
+      initialValue: state.label.isEmpty ? null : state.label,
+      hint: context.loc.transactionNoteHint,
+      suggestionsFuture: cubit.fetchDistinctLabels(),
+    );
+    if (saved == null || !context.mounted) {
+      return;
+    }
+    cubit.noteChanged(saved);
+  }
+
   @override
   Widget build(BuildContext context) {
     final scopeData = BullAmountScope.maybeOf(context);
@@ -1070,6 +1321,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       onTap: () => context
                                           .read<SendCubit>()
                                           .backClicked(),
+                                      padding: _fieldTilePadding,
                                       child: Row(
                                         children: [
                                           Expanded(
@@ -1114,10 +1366,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                               ],
                                             ),
                                           ),
-                                          Icon(
-                                            Icons.edit,
-                                            size: 20,
-                                            color: context.appColors.text,
+                                          BullFieldAction(
+                                            icon: BullIcons.edit,
+                                            label: context.loc.sendEdit,
+                                            onPressed: () => context
+                                                .read<SendCubit>()
+                                                .backClicked(),
                                           ),
                                         ],
                                       ),
@@ -1131,14 +1385,16 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   const Gap(8),
                                   ColoredBox(
                                     color: context.appColors.background,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0,
-                                      ),
-                                      child:
-                                          state.usesSelectedInputsOnly ||
-                                              pickableWallet == null
-                                          ? ConstrainedBox(
+                                    // The dropdown draws its own border, aligned with
+                                    // the recipient tile; only bare text is inset.
+                                    child:
+                                        state.usesSelectedInputsOnly ||
+                                            pickableWallet == null
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0,
+                                            ),
+                                            child: ConstrainedBox(
                                               constraints: const BoxConstraints(
                                                 minHeight: 48,
                                               ),
@@ -1160,28 +1416,28 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                       TextOverflow.ellipsis,
                                                 ),
                                               ),
-                                            )
-                                          : BullDropdown<String>(
-                                              value: selectedWallet.id,
-                                              items: [
-                                                for (final w in wallets)
-                                                  BullPickerItem(
-                                                    value: w.id,
-                                                    label: w.displayLabel(
-                                                      context,
-                                                    ),
-                                                  ),
-                                              ],
-                                              onChanged: (walletId) => context
-                                                  .read<SendCubit>()
-                                                  .updateSelectedWallet(
-                                                    wallets.firstWhere(
-                                                      (wallet) =>
-                                                          wallet.id == walletId,
-                                                    ),
-                                                  ),
                                             ),
-                                    ),
+                                          )
+                                        : BullDropdown<String>(
+                                            value: selectedWallet.id,
+                                            items: [
+                                              for (final w in wallets)
+                                                BullPickerItem(
+                                                  value: w.id,
+                                                  label: w.displayLabel(
+                                                    context,
+                                                  ),
+                                                ),
+                                            ],
+                                            onChanged: (walletId) => context
+                                                .read<SendCubit>()
+                                                .updateSelectedWallet(
+                                                  wallets.firstWhere(
+                                                    (wallet) =>
+                                                        wallet.id == walletId,
+                                                  ),
+                                                ),
+                                          ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -1229,32 +1485,35 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             !isLightning &&
                                             !isChainSwap &&
                                             !state.hasMultipleRecipients)
-                                          Row(
-                                            children: [
-                                              Text(
-                                                context.loc.swapMax,
-                                                style: context.bullType.label,
-                                              ),
-                                              const Gap(8),
-                                              BullSwitch(
-                                                value: state.isMaxSend,
-                                                onChanged: (value) {
+                                          Padding(
+                                            // Aligns with the tiles' actions.
+                                            padding:
+                                                const EdgeInsetsDirectional.only(
+                                                  end: BullSpacing.xs,
+                                                ),
+                                            child: Semantics(
+                                              toggled: state.isMaxSend,
+                                              child: BullFieldAction(
+                                                label: context.loc.swapMax,
+                                                onPressed: () {
+                                                  final isMax =
+                                                      !state.isMaxSend;
                                                   context
                                                       .read<SendCubit>()
                                                       .amountChanged(
-                                                        amount: value
+                                                        amount: isMax
                                                             ? null
                                                             : _amountController
                                                                   .text,
-                                                        isMax: value,
+                                                        isMax: isMax,
                                                       );
-                                                  if (!value) {
+                                                  if (!isMax) {
                                                     _amountFocusNode
                                                         .requestFocus();
                                                   }
                                                 },
                                               ),
-                                            ],
+                                            ),
                                           ),
                                       ],
                                     ),
@@ -1402,6 +1661,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           CrossAxisAlignment.stretch,
                                       children: [
                                         BullAmountInput(
+                                          inCard: true,
+                                          framed: true,
                                           canonicalUnit: BitcoinUnit.fromCode(
                                             inputCurrency,
                                           ),
@@ -1493,24 +1754,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     ),
                                   Gap(Device.screen.height * 0.02),
                                   BullBorderedTile(
-                                    onTap: () async {
-                                      final cubit = context.read<SendCubit>();
-                                      final saved = await LabelEditor.label(
-                                        context,
-                                        title:
-                                            context.loc.transactionNoteAddTitle,
-                                        initialValue: state.label.isEmpty
-                                            ? null
-                                            : state.label,
-                                        hint: context.loc.transactionNoteHint,
-                                        suggestionsFuture: cubit
-                                            .fetchDistinctLabels(),
-                                      );
-                                      if (saved == null || !context.mounted) {
-                                        return;
-                                      }
-                                      cubit.noteChanged(saved);
-                                    },
+                                    onTap: () => _editNote(context, state),
+                                    padding: _fieldTilePadding,
                                     child: Row(
                                       children: [
                                         Expanded(
@@ -1542,10 +1787,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             ],
                                           ),
                                         ),
-                                        Icon(
-                                          Icons.edit,
-                                          size: 20,
-                                          color: context.appColors.secondary,
+                                        BullFieldAction(
+                                          icon: BullIcons.edit,
+                                          label: context.loc.sendEdit,
+                                          onPressed: () =>
+                                              _editNote(context, state),
                                         ),
                                       ],
                                     ),
@@ -2853,7 +3099,11 @@ class SendConfirmTopArea extends StatelessWidget {
 }
 
 class SendSendingScreen extends StatelessWidget {
-  const SendSendingScreen({super.key});
+  const SendSendingScreen({super.key, this.animate = true});
+
+  /// False when the user turned payment animations off: Payjoin shows its
+  /// plain progress text instead of the animation.
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
@@ -2874,11 +3124,25 @@ class SendSendingScreen extends StatelessWidget {
     final isPayjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender != null,
     );
+    final payjoinStatus = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender?.status,
+    );
     final pausedFailure = context.select(
       (SendCubit cubit) => cubit.state.failure is SendPayjoinPausedFailure
           ? cubit.state.failure
           : null,
     );
+    final payjoinProgress = payjoinPaymentProgress(
+      steps: [
+        context.loc.paymentStepRequested,
+        context.loc.paymentStepProposed,
+        context.loc.paymentStepBroadcasted,
+        context.loc.paymentStepConfirmed,
+      ],
+      status: payjoinStatus,
+      paused: pausedFailure != null,
+    );
+    final payjoinStep = payjoinProgress.steps[payjoinProgress.completed];
     final canRetryProposal = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender?.canRetryProposal ?? false,
     );
@@ -2916,8 +3180,22 @@ class SendSendingScreen extends StatelessWidget {
         child: Align(
           child: Column(
             children: [
-              const Gap(192),
-              if (pausedFailure == null) const BullLoader.large(),
+              if (isPayjoin && animate)
+                SizedBox(
+                  height: 192,
+                  child: IgnorePointer(
+                    child: BullPaymentAnimation(
+                      network: BullPaymentNetwork.payjoin,
+                      phase: payjoinPaymentPhase(payjoinStatus),
+                      progress: payjoinProgress,
+                      statusTag: payjoinStep,
+                    ),
+                  ),
+                )
+              else ...[
+                const Gap(192),
+                if (pausedFailure == null) const BullLoader.large(),
+              ],
               if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
                 BullText(
@@ -2959,6 +3237,17 @@ class SendSendingScreen extends StatelessWidget {
                   ),
               ],
               if (isPayjoin) ...[
+                Semantics(
+                  liveRegion: true,
+                  child: BullText(
+                    BullUiLocalizations.of(context).paymentStepOf(
+                      payjoinProgress.completed + 1,
+                      payjoinProgress.total,
+                      payjoinStep,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 const Gap(8),
                 BullText(
                   context.loc.sendSending,
@@ -3018,7 +3307,9 @@ class SendSendingScreen extends StatelessWidget {
 }
 
 class SendSucessScreen extends StatelessWidget {
-  const SendSucessScreen({super.key});
+  const SendSucessScreen({super.key, this.animate = true});
+
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
@@ -3040,6 +3331,7 @@ class SendSucessScreen extends StatelessWidget {
     final payjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender,
     );
+    final settledTxId = context.select((SendCubit cubit) => cubit.state.txId);
     final orderSwap = context.select(
       (SendCubit cubit) => cubit.state.lightningOrder,
     );
@@ -3203,21 +3495,55 @@ class SendSucessScreen extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    // A payjoin send that completed via the plain-broadcast
-                    // fallback (receiver declined/expired or the payjoin
-                    // negotiation failed). The user explicitly expected a
-                    // payjoin, so say that it didn't happen instead of
-                    // presenting the fallback as indistinguishable from a
-                    // successful payjoin.
-                    if (payjoin != null && payjoin.isAborted) ...[
-                      const Gap(8),
-                      BullText(
-                        context.loc.sendSentWithoutPayjoin,
-                        style: context.bullType.body,
-                        color: context.appColors.secondary,
-                        maxLines: 4,
-                        textAlign: TextAlign.center,
-                      ),
+                    if (payjoin != null) ...[
+                      if (animate)
+                        SizedBox(
+                          height: 96,
+                          child: IgnorePointer(
+                            child: BullPaymentAnimation(
+                              network: BullPaymentNetwork.payjoin,
+                              phase: payjoinPaymentPhase(
+                                payjoin.status,
+                                confirmed: directPaymentSucceeded(
+                                  broadcast: true,
+                                  transactionId: settledTxId,
+                                  observedTransactionId:
+                                      walletTransaction?.txId,
+                                  observedConfirmed:
+                                      walletTransaction?.isConfirmed ?? false,
+                                ),
+                              ),
+                              statusTag: payjoin.isAborted
+                                  ? context.loc.sendSentWithoutPayjoin
+                                  : null,
+                              progress: payjoinPaymentProgress(
+                                status: payjoin.status,
+                                steps: [
+                                  context.loc.paymentStepRequested,
+                                  context.loc.paymentStepProposed,
+                                  context.loc.paymentStepBroadcasted,
+                                  context.loc.paymentStepConfirmed,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      // A payjoin send that completed via the plain-broadcast
+                      // fallback (receiver declined/expired or the payjoin
+                      // negotiation failed). The user explicitly expected a
+                      // payjoin, so say that it didn't happen instead of
+                      // presenting the fallback as indistinguishable from a
+                      // successful payjoin.
+                      if (payjoin.isAborted) ...[
+                        const Gap(8),
+                        BullText(
+                          context.loc.sendSentWithoutPayjoin,
+                          style: context.bullType.body,
+                          color: context.appColors.secondary,
+                          maxLines: 4,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ],
                   ],
                   const Gap(8),
@@ -3255,6 +3581,7 @@ class SendSucessScreen extends StatelessWidget {
                       context,
                       TransactionDetailsTarget.orderSwap(orderSwap.localId),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   } else if (boltzSwap != null) {
                     TransactionsNavigation.openDetails(
@@ -3264,6 +3591,7 @@ class SendSucessScreen extends StatelessWidget {
                         walletId: boltzSwap.walletId,
                       ),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   } else if (walletTransaction != null) {
                     TransactionsNavigation.openDetails(
@@ -3273,6 +3601,7 @@ class SendSucessScreen extends StatelessWidget {
                         walletId: walletTransaction.walletId,
                       ),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   } else if (payjoin != null) {
                     // Navigate by the on-chain txid, NOT payjoin.id: a
@@ -3289,6 +3618,7 @@ class SendSucessScreen extends StatelessWidget {
                         walletId: payjoin.walletId,
                       ),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   }
                 },

@@ -75,23 +75,26 @@ void main() {
       );
     });
 
-    test('a platform refusal hides trading without reconciling', () async {
-      final access = ExchangeAccessLifecycle.open(
-        apiKeyRepository: _Credentials(),
-        readEnvironment: () async => false,
-        platformAllowed: () async => false,
-        disconnectNotifications: () async {},
-        clearCookies: () async {},
-        readPreference: () async => null,
-        writePreference: (_) async => true,
-      );
+    test(
+      'a platform refusal sends trading to the website without reconciling',
+      () async {
+        final access = ExchangeAccessLifecycle.open(
+          apiKeyRepository: _Credentials(),
+          readEnvironment: () async => false,
+          platformAllowed: () async => false,
+          disconnectNotifications: () async {},
+          clearCookies: () async {},
+          readPreference: () async => null,
+          writePreference: (_) async => true,
+        );
 
-      final result = await access.tradingAvailability();
+        final result = await access.tradingAvailability();
 
-      expect(
-        (result as Ok<ExchangeAvailability, ExchangeFailure>).value,
-        ExchangeAvailability.hidden,
-      );
-    });
+        expect(
+          (result as Ok<ExchangeAvailability, ExchangeFailure>).value,
+          ExchangeAvailability.websiteOnly,
+        );
+      },
+    );
   });
 }

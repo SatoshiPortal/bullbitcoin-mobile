@@ -17,8 +17,6 @@ import 'bbx_api_notification_datasource.dart';
 class ExchangeNotificationService {
   final BbxApiNotificationDatasource _mainnetDatasource;
   final BbxApiNotificationDatasource _testnetDatasource;
-  final Future<Result<ExchangeEnvironment, ExchangeFailure>> Function()
-  _readEnvironment;
 
   final _messageController =
       StreamController<
@@ -27,26 +25,27 @@ class ExchangeNotificationService {
 
   StreamSubscription<Result<BbxNotification, BbxFailure>>? _mainnetSubscription;
   StreamSubscription<Result<BbxNotification, BbxFailure>>? _testnetSubscription;
-  bool _isTestnet = false;
+
+  /// The environment of the socket the caller asked for; only [connect] and
+  /// [disconnect] change it, never a read.
+  ExchangeEnvironment? _connected;
   int _generation = 0;
 
   ExchangeNotificationService({
     required this._mainnetDatasource,
     required this._testnetDatasource,
-    required this._readEnvironment,
   }) {
     _setupInternalListeners();
   }
 
   void _setupInternalListeners() {
-    // Listen to mainnet and forward messages only when on mainnet
+    // Forward a socket's events only while it is the one asked for.
     _mainnetSubscription = _mainnetDatasource.events.listen((event) {
-      if (!_isTestnet) _forward(event);
+      if (_connected == ExchangeEnvironment.mainnet) _forward(event);
     });
 
-    // Listen to testnet and forward messages only when on testnet
     _testnetSubscription = _testnetDatasource.events.listen((event) {
-      if (_isTestnet) _forward(event);
+      if (_connected == ExchangeEnvironment.testnet) _forward(event);
     });
   }
 
@@ -97,34 +96,35 @@ class ExchangeNotificationService {
         BbxNotificationKind.unknown => NotificationMessageKind.unknown,
       };
 
-  /// Connects without holding the access queue during a native handshake.
-  Future<Result<void, ExchangeFailure>> connect() async {
+  /// Connects the socket of [environment] (the session's) and closes the
+  /// other one, without holding the access queue during the handshake.
+  Future<Result<void, ExchangeFailure>> connect(
+    ExchangeEnvironment environment,
+  ) async {
     final generation = ++_generation;
-    final environment = await _readEnvironment();
+    _connected = environment;
+    final datasource = switch (environment) {
+      ExchangeEnvironment.mainnet => _mainnetDatasource,
+      ExchangeEnvironment.testnet => _testnetDatasource,
+    };
+    final other = switch (environment) {
+      ExchangeEnvironment.mainnet => _testnetDatasource,
+      ExchangeEnvironment.testnet => _mainnetDatasource,
+    };
+    other.disconnect();
+    final result = await datasource.connect();
     if (generation != _generation) {
       return const Err(ExchangeOperationStaleFailure());
     }
-    switch (environment) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        _isTestnet = value == ExchangeEnvironment.testnet;
-        final datasource = _isTestnet ? _testnetDatasource : _mainnetDatasource;
-        final other = _isTestnet ? _mainnetDatasource : _testnetDatasource;
-        other.disconnect();
-        final result = await datasource.connect();
-        if (generation != _generation) {
-          return const Err(ExchangeOperationStaleFailure());
-        }
-        return result.mapErr(
-          (_) => const ExchangeNotificationsUnavailableFailure(),
-        );
-    }
+    return result.mapErr(
+      (_) => const ExchangeNotificationsUnavailableFailure(),
+    );
   }
 
   /// Disconnect from both mainnet and testnet WebSockets
   void disconnect() {
     _generation++;
+    _connected = null;
     _mainnetDatasource.disconnect();
     _testnetDatasource.disconnect();
   }
@@ -133,19 +133,24 @@ class ExchangeNotificationService {
   Stream<Result<NotificationMessage, ExchangeFailure>> get messageStream =>
       _messageController.stream;
 
-  bool get isConnected =>
-      (_isTestnet ? _testnetDatasource : _mainnetDatasource).isConnected;
+  bool get isConnected => switch (_connected) {
+    ExchangeEnvironment.mainnet => _mainnetDatasource.isConnected,
+    ExchangeEnvironment.testnet => _testnetDatasource.isConnected,
+    null => false,
+  };
 
-  /// Reconnect to the WebSocket for the current environment
-  /// Call this when the network changes to switch connections
-  Future<Result<void, ExchangeFailure>> reconnect() async {
+  /// Closes both sockets and opens the one of [environment] again, as after
+  /// the platform dropped it.
+  Future<Result<void, ExchangeFailure>> reconnect(
+    ExchangeEnvironment environment,
+  ) async {
     disconnect();
     final generation = _generation;
     await Future.delayed(const Duration(milliseconds: 500));
     if (generation != _generation) {
       return const Err(ExchangeOperationStaleFailure());
     }
-    return connect();
+    return connect(environment);
   }
 
   Future<void> dispose() async {

@@ -15,8 +15,6 @@ import '../domain/ark_board_funding_port.dart';
 import '../domain/ark_display_data_port.dart';
 import '../domain/ark_exit_destination_port.dart';
 import '../domain/ark_exit_funding.dart';
-import '../domain/ark_reserve_top_up_port.dart';
-import '../domain/usecases/fund_ark_exit_start_usecase.dart';
 import '../domain/usecases/read_ark_exit_destination_usecase.dart';
 import '../domain/usecases/read_ark_display_data_usecase.dart';
 import '../domain/usecases/read_ark_next_round_usecase.dart';
@@ -28,6 +26,11 @@ import '../domain/repositories/ark_repository.dart';
 import '../domain/usecases/load_ark_settings_usecase.dart';
 import '../domain/usecases/read_ark_usecase.dart';
 import '../domain/usecases/enable_ark_usecase.dart';
+import '../domain/usecases/read_ark_payment_animations_usecase.dart';
+
+import 'package:preferences/preferences.dart'
+    show PaymentAnimationPreferencesReader;
+
 import '../domain/usecases/set_ark_enabled_usecase.dart';
 import '../domain/usecases/quote_ark_operation_usecase.dart';
 import '../domain/usecases/confirm_ark_operation_usecase.dart';
@@ -123,7 +126,13 @@ final class ArkFeature {
   final ArkExitFunding? _exitFunding;
 
   /// Sends the exit fees from Secure Bitcoin to the reserve when it is short.
-  final ArkReserveTopUpPort? _exitTopUp;
+  final Future<Result<ArkExitReserveFunding, ArkFailure>> Function(
+    ArkQuote quote,
+    String? reserveAddress,
+  )?
+  _fundInitialExit;
+  final Future<Result<String?, ArkFailure>> Function(List<String>)?
+  _savedExitDestination;
   final ArkScanner? _scanner;
 
   /// The host's wallet-card artwork, so the Ark wallet matches the app's
@@ -135,6 +144,7 @@ final class ArkFeature {
 
   /// The app's confirmation arrow, so Ark's confirm screens match Send's.
   final Widget? _confirmIcon;
+  final ReadArkPaymentAnimationsUsecase? _readPaymentAnimations;
   final ArkRepositoryImpl _repository;
   final ArkFacade facade;
   final _ownerListeners = <VoidCallback>{};
@@ -169,8 +179,13 @@ final class ArkFeature {
     this._confirmIcon,
     this._exitDestination,
     this._exitFunding,
-    this._exitTopUp,
-  }) : _client = client,
+    this._fundInitialExit,
+    this._savedExitDestination,
+    PaymentAnimationPreferencesReader? paymentAnimations,
+  }) : _readPaymentAnimations = paymentAnimations == null
+           ? null
+           : ReadArkPaymentAnimationsUsecase(paymentAnimations),
+       _client = client,
        _preferences = preferences,
        _provisioning = provisioning,
        _boardFunding = boardFunding,
@@ -637,17 +652,10 @@ class _ArkPageState extends State<_ArkPage> {
           null => null,
         },
         onStarted: (outcome) => _exitStarted(owner, outcome),
-        fundFees: switch ((
-          widget.feature._exitTopUp,
-          widget.feature._exitFunding,
-        )) {
-          (final port?, final funding?) =>
-            (quote) => FundArkExitStartUsecase(port, funding).execute(
-              widget.feature._config.id,
-              quote: quote,
-              reserveAddress: snapshot.reserveAddress,
-            ),
-          _ => null,
+        savedDestination: widget.feature._savedExitDestination,
+        fundFees: switch (widget.feature._fundInitialExit) {
+          final fund? => (quote) => fund(quote, snapshot.reserveAddress),
+          null => null,
         },
       ),
       _Kind.info => ArkInformationScreen(
@@ -668,6 +676,7 @@ class _ArkPageState extends State<_ArkPage> {
       ArkExitsScreen(
         snapshot: snapshot,
         waitingForFunds: waitingForFunds,
+        readPaymentAnimations: widget.feature._readPaymentAnimations?.execute,
         onRefresh: () {
           if (_live(owner)) unawaited(owner.refresh());
         },
@@ -896,6 +905,7 @@ class _ArkPageState extends State<_ArkPage> {
         onViewDetails: (reference) =>
             unawaited(_paymentDetails(owner, reference)),
         confirmIcon: widget.feature._confirmIcon,
+        readPaymentAnimations: widget.feature._readPaymentAnimations?.execute,
       ),
       ArkReceiveCubit() => ArkReceiveScreen(
         cubit: owner,
@@ -908,6 +918,7 @@ class _ArkPageState extends State<_ArkPage> {
         onViewDetails: (txid) => unawaited(_boardDetails(owner, txid)),
         onClose: _home,
         confirmIcon: widget.feature._confirmIcon,
+        readPaymentAnimations: widget.feature._readPaymentAnimations?.execute,
       ),
       ArkOperationCubit() => ArkOperationReviewScreen(
         cubit: owner,

@@ -143,6 +143,12 @@ class AppLocator {
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
       admission: locator<RuntimeAdmission>(),
+      inventory: locator<SecretsInventory>(),
+      activeEnvironment: locator<ActiveEnvironmentReader>(),
+      normalBackups: locator<RecoverBullWalletBackups>(),
+      regtestBackups: locator<RecoverBullWalletBackups>(
+        instanceName: 'regtest',
+      ),
       cutover: locator<RecoverBullCutover>(instanceName: family),
     );
     locator.registerSingleton<RecoverBullFeature>(
@@ -467,6 +473,8 @@ class AppLocator {
         syncStarted: () => electrumSync.started.map((key) => key.id),
         syncFinished: () => electrumSync.finished.map((event) => event.key.id),
         orderSwaps: () => locator<OrderSwaps>(),
+        pollSettlement: (id, {required isActive}) =>
+            overviewSync().coordinator.pollWallet(id, isActive: isActive),
         actions: TransactionUiActions(
           openExchange: (context) =>
               context.goNamed(BullExchangeNavigation.dashboardName),
@@ -573,6 +581,8 @@ class AppLocator {
         receive: locator<Receive>(),
         labels: locator<Labels>(),
         transactions: locator<Transactions>(),
+        pollSettlement: (id, {required isActive}) =>
+            overviewSync().coordinator.pollWallet(id, isActive: isActive),
         scheduler: () => locator<SwapSyncPort>(),
         ark: () => locator.isRegistered<ArkTransferFacade>()
             ? locator<ArkTransferFacade>()

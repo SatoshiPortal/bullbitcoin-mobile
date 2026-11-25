@@ -16,37 +16,6 @@ enum FiatCurrency {
   final String code;
   final int decimals;
   final String symbol;
-
-  static FiatCurrency fromCode(String code) {
-    final currency = tryFromCode(code);
-    if (currency == null) throw Exception('Unknown FiatCurrency: $code');
-    return currency;
-  }
-
-  // Nullable counterpart of [fromCode], for parsing server payloads where a
-  // currency this build doesn't support must not fail the whole response.
-  // There is deliberately no `unknown` member: [FiatCurrency.values] populates
-  // the user-facing currency pickers.
-  static FiatCurrency? tryFromCode(String code) {
-    switch (code.toUpperCase()) {
-      case 'USD':
-        return FiatCurrency.usd;
-      case 'CAD':
-        return FiatCurrency.cad;
-      case 'CRC':
-        return FiatCurrency.crc;
-      case 'EUR':
-        return FiatCurrency.eur;
-      case 'MXN':
-        return FiatCurrency.mxn;
-      case 'ARS':
-        return FiatCurrency.ars;
-      case 'COP':
-        return FiatCurrency.cop;
-      default:
-        return null;
-    }
-  }
 }
 
 enum OrderType {
@@ -71,25 +40,6 @@ enum OrderType {
     return OrderType.values.firstWhere(
       (e) => e.value == value,
       orElse: () => OrderType.unknown,
-    );
-  }
-}
-
-enum OrderBitcoinNetwork {
-  bitcoin('bitcoin'),
-  liquid('liquid'),
-  lightning('lightning');
-
-  final String value;
-  const OrderBitcoinNetwork(this.value);
-
-  @override
-  String toString() => value;
-
-  static OrderBitcoinNetwork fromValue(String value) {
-    return OrderBitcoinNetwork.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderBitcoinNetwork: $value'),
     );
   }
 }
@@ -127,12 +77,22 @@ enum OrderStatus {
   final String value;
   const OrderStatus(this.value);
 
-  static OrderStatus fromValue(String value) {
-    return OrderStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderStatus.unknown,
-    );
-  }
+  /// Whether the order can no longer change. [unknown] is not terminal: a
+  /// status this build doesn't know may still move.
+  bool get isTerminal => switch (this) {
+    OrderStatus.canceled ||
+    OrderStatus.expired ||
+    OrderStatus.orderExpired ||
+    OrderStatus.completed ||
+    OrderStatus.rejected ||
+    OrderStatus.failed => true,
+    OrderStatus.inProgress ||
+    OrderStatus.awaitingConfirmation ||
+    OrderStatus.unknown => false,
+  };
+
+  bool get isFailed => this == OrderStatus.failed;
+  bool get isRejected => this == OrderStatus.rejected;
 }
 
 enum OrderPayinStatus {
@@ -148,12 +108,20 @@ enum OrderPayinStatus {
   final String value;
   const OrderPayinStatus(this.value);
 
-  static OrderPayinStatus fromValue(String value) {
-    return OrderPayinStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderPayinStatus.unknown,
-    );
-  }
+  /// Whether the payin can no longer change. [unknown] is not terminal.
+  bool get isTerminal => switch (this) {
+    OrderPayinStatus.completed || OrderPayinStatus.rejected => true,
+    OrderPayinStatus.notStarted ||
+    OrderPayinStatus.awaitingPayment ||
+    OrderPayinStatus.inProgress ||
+    OrderPayinStatus.underReview ||
+    OrderPayinStatus.awaitingConfirmation ||
+    OrderPayinStatus.unknown => false,
+  };
+
+  /// The payin has no failed status; a refused payin is [rejected].
+  bool get isFailed => false;
+  bool get isRejected => this == OrderPayinStatus.rejected;
 }
 
 enum OrderPayoutStatus {
@@ -169,12 +137,22 @@ enum OrderPayoutStatus {
   final String value;
   const OrderPayoutStatus(this.value);
 
-  static OrderPayoutStatus fromValue(String value) {
-    return OrderPayoutStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderPayoutStatus.unknown,
-    );
-  }
+  /// Whether the payout can no longer change. [unknown] is not terminal.
+  bool get isTerminal => switch (this) {
+    OrderPayoutStatus.completed ||
+    OrderPayoutStatus.canceled ||
+    OrderPayoutStatus.failed => true,
+    OrderPayoutStatus.notStarted ||
+    OrderPayoutStatus.inProgress ||
+    OrderPayoutStatus.scheduled ||
+    OrderPayoutStatus.awaitingClaim ||
+    OrderPayoutStatus.unknown => false,
+  };
+
+  bool get isFailed => this == OrderPayoutStatus.failed;
+
+  /// The payout has no rejected status.
+  bool get isRejected => false;
 }
 
 // enum WithdrawalPaymentProcessor {
@@ -324,7 +302,12 @@ enum OrderPayjoinOutcome {
   succeeded,
 
   /// The exchange settled through an ordinary transaction instead.
-  plainSend;
+  plainSend,
+
+  /// Attached, but the order ended (cancelled, expired, rejected, failed, or
+  /// completed without a reported transaction) and no transaction is known:
+  /// nothing will settle through it any more.
+  abandoned;
 
   bool get isOngoing => this == OrderPayjoinOutcome.inProgress;
   bool get hasPayjoin => this != OrderPayjoinOutcome.none;
@@ -775,6 +758,9 @@ sealed class Order with _$Order {
     // A settled order that never produced a payjoin txid was paid plainly,
     // whether because nobody answered or because the customer opted out.
     if (transactionId != null) return OrderPayjoinOutcome.plainSend;
+    // A terminal order without any txid will never report one: stop treating
+    // its payjoin as ongoing (B12). An unknown status is not terminal.
+    if (orderStatus.isTerminal) return OrderPayjoinOutcome.abandoned;
     return OrderPayjoinOutcome.inProgress;
   }
 
@@ -843,8 +829,8 @@ sealed class Order with _$Order {
 
 extension FiatPaymentOrderDisplayX on FiatPaymentOrder {
   /// The fiat amount the recipient gets, e.g. "125.00 CAD". The currency code
-  /// is used as returned by the server, without going through
-  /// [FiatCurrency.fromCode], which throws on codes the app doesn't know yet.
+  /// is shown as returned by the server, so a code the app doesn't know yet
+  /// still displays.
   String get payoutAmountToDisplay =>
       '${payoutAmount.toStringAsFixed(2)} $payoutCurrency';
 

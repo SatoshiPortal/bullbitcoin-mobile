@@ -8,6 +8,7 @@ import 'package:exchange/exchange.dart';
 import 'package:swaps/swaps.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:transactions/src/domain/entities/transaction.dart';
+import 'package:transactions/src/domain/entities/transaction_history.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transactions/src/domain/transaction_failure.dart';
 import 'package:transactions/src/domain/usecases/get_transactions_usecase.dart';
@@ -138,7 +139,12 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       case Ok(:final value):
         _loadGeneration++;
         emit(
-          state.copyWith(transactions: value, isSyncing: false, failure: null),
+          state.copyWith(
+            transactions: value.transactions,
+            exchangeOrders: value.exchangeOrders,
+            isSyncing: false,
+            failure: null,
+          ),
         );
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isSyncing: false));

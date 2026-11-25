@@ -144,6 +144,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(AppThemeMode.system) AppThemeMode themeMode,
     @Default(false) bool isErrorReportingEnabled,
     @Default(true) bool screenCaptureProtectionEnabled,
+    @Default(true) bool showPaymentAnimations,
   }) = _SettingsEntity;
   const SettingsEntity._();
 

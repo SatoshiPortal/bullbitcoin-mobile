@@ -21,12 +21,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:secrets/secrets.dart';
+import 'package:legacy_storage/coordination.dart'
+    show LifecycleHandle, RuntimeAdmission;
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:material_ui/material_ui.dart' show WidgetsBinding;
 
 import 'ark_app_services.dart';
 import 'data/ark_board_funding.dart';
+import 'data/ark_exit_notification_setup.dart';
 
 /// Constructs the wallet-owned Board actor over the runtime's single client.
 typedef ArkBoardFundingFactory = ArkBoardFundingPort Function(
@@ -48,11 +51,13 @@ typedef ArkBoardFundingBinding = ({
 final class ArkForegroundRuntime {
   final ArkFeature feature;
   final ArkClient _client;
+  final LifecycleHandle? _clientHandle;
   final Future<void> Function() _closeBoardFunding;
   final _ForegroundPolicy _policy;
   final ArkForegroundMaintenance _maintenance;
   final _WalletArkSelection _selection;
   final ArkAccountConfig _config;
+  final OwnedArkExitNotifier? _exitNotifier;
 
   /// This runtime's Board funding, which releases a stuck reservation.
   final ArkBoardFundingPort _board;
@@ -64,12 +69,14 @@ final class ArkForegroundRuntime {
   ArkForegroundRuntime._(
     this.feature,
     this._client,
+    this._clientHandle,
     this._closeBoardFunding,
     this._policy,
     this._maintenance,
     this._selection,
     this._config,
     this._board,
+    this._exitNotifier,
   );
 
   /// The selected account this runtime was opened for.
@@ -189,7 +196,18 @@ final class ArkForegroundRuntime {
       trace ??= stack;
     }
     try {
-      await _client.close();
+      final handle = _clientHandle;
+      if (handle == null) {
+        await _client.close();
+      } else {
+        await handle.close();
+      }
+    } catch (failure, stack) {
+      error ??= failure;
+      trace ??= stack;
+    }
+    try {
+      await _exitNotifier?.close();
     } catch (failure, stack) {
       error ??= failure;
       trace ??= stack;
@@ -259,47 +277,90 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     final registry = referenceOwner.registry;
     if (registry == null) return const Err(ArkFeatureStorageFailure());
 
-    final secrets = locator<Secrets>();
+    final locale = await () async {
+      try {
+        final language =
+            (await locator<RuntimeDisplayPreferencesReader>().readLanguage())
+                .fold(
+                  (value) => value,
+                  (failure) => throw Exception('Preferences read failed'),
+                );
+        return language == null
+            ? const Locale('en')
+            : Locale.fromSubtags(
+                languageCode: language.languageCode,
+                scriptCode: language.scriptCode,
+                countryCode: language.countryCode,
+              );
+      } catch (failure, stack) {
+        try {
+          await boardFunding.close();
+        } catch (_) {}
+        Error.throwWithStackTrace(failure, stack);
+      }
+    }();
+    OwnedArkExitNotifier? exitNotifier;
+    if (Platform.isAndroid && locator.isRegistered<RuntimeAdmission>()) {
+      try {
+        exitNotifier = await openForegroundArkExitNotifier(
+          documents: documents.path,
+          directory: directory.path,
+          locale: locale,
+          admission: locator<RuntimeAdmission>(),
+        );
+      } on Exception {
+        log.warning('Ark exit notifications unavailable');
+      } catch (failure, stack) {
+        try {
+          await boardFunding.close();
+        } catch (_) {}
+        Error.throwWithStackTrace(failure, stack);
+      }
+    }
     final policy = _ForegroundPolicy(config.id);
-    final client = createArkNativeClient(
-      storagePath: '${directory.path}/native',
-      childProvider: SecretsArkChildProvider(secrets, registry),
-      transactionVerifier: const ArkTransactionVerifier(),
-      boardAbandonment: WalletArkBoardAbandonment(
-        locator.isRegistered<SqliteArkFundingReservations>()
-            ? Ok(locator<SqliteArkFundingReservations>())
-            : const Err(SyncStorageFailure()),
-      ),
-      executionPolicy: policy,
-      executionMode: native.ArkExecutionMode.foreground,
-      stageBudget: const native.ArkUnlimitedStageBudget(),
-    );
+    late final Secrets secrets;
+    ArkClient? createdClient;
+    late final ArkClient client;
+    LifecycleHandle? clientHandle;
+    try {
+      secrets = locator<Secrets>();
+      client = createArkNativeClient(
+        storagePath: '${directory.path}/native',
+        childProvider: SecretsArkChildProvider(secrets, registry),
+        transactionVerifier: const ArkTransactionVerifier(),
+        boardAbandonment: WalletArkBoardAbandonment(
+          locator.isRegistered<SqliteArkFundingReservations>()
+              ? Ok(locator<SqliteArkFundingReservations>())
+              : const Err(SyncStorageFailure()),
+        ),
+        executionPolicy: policy,
+        executionMode: native.ArkExecutionMode.foreground,
+        stageBudget: const native.ArkUnlimitedStageBudget(),
+        exitObserver: exitNotifier?.observer,
+      );
+      createdClient = client;
+      if (locator.isRegistered<RuntimeAdmission>()) {
+        clientHandle = locator<RuntimeAdmission>().track(client.close);
+      }
+    } catch (failure, stack) {
+      try {
+        await createdClient?.close();
+      } catch (_) {}
+      try {
+        await exitNotifier?.close();
+      } catch (_) {}
+      try {
+        await boardFunding.close();
+      } catch (_) {}
+      Error.throwWithStackTrace(failure, stack);
+    }
     ArkForegroundMaintenance? maintenance;
     WalletArkDisplayData? displayData;
     final exitFunding = ArkExitFunding();
-    // An exit's fees come from Secure Bitcoin, at its start and when it
-    // needs more. Built on first use: opening Ark never needs the send stack.
-    final send = services.send;
-    final exitTopUp = send == null
-        ? null
-        : WalletArkReserveTopUp(
-            sourceWallet: selection.displaySourceWalletId,
-            send: send,
-          );
+    // Scuttle funds the exit reserve only through a journaled, reviewed
+    // transfer; the unjournaled automatic top-up is not wired.
+    const ArkReserveTopUpPort? exitTopUp = null;
     try {
-      final language =
-          (await locator<RuntimeDisplayPreferencesReader>().readLanguage())
-              .fold(
-                (value) => value,
-                (failure) => throw Exception('Preferences read failed'),
-              );
-      final locale = language == null
-          ? const Locale('en')
-          : Locale.fromSubtags(
-              languageCode: language.languageCode,
-              scriptCode: language.scriptCode,
-              countryCode: language.countryCode,
-            );
       final openedMaintenance = await openArkForegroundMaintenance(
         path: '${directory.path}/reminders.sqlite',
         locale: locale,
@@ -345,6 +406,9 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         config: config,
         client: client,
         preferences: preferences ?? SharedPreferencesArkPreferencesRepository(),
+        paymentAnimations: locator.isRegistered<Preferences>()
+            ? locator<Preferences>()
+            : null,
         provisioning: ArkCustodyProvisioner(
           locator<ParentCustodyAdmissionPort>(),
           SecretsArkParentPresence(secrets),
@@ -355,7 +419,25 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         boardFunding: board,
         displayData: displayData,
         exitFunding: exitFunding,
-        exitTopUp: exitTopUp,
+        savedExitDestination: switch (board) {
+          WalletArkBoardFunding actor => (
+            ids,
+          ) => actor.readInitialExitDestination(config.id, ids),
+          _ => null,
+        },
+        fundInitialExit: switch (board) {
+          WalletArkBoardFunding actor => (quote, address) async {
+            if (!policy.active || quote.account != config.id) {
+              return const Err(ArkServiceUnavailableFailure());
+            }
+            return actor.fundInitialExit(
+              quote,
+              address,
+              isCurrent: () => policy.active,
+            );
+          },
+          _ => null,
+        },
         exitDestination: switch (services.nextReceiveAddress) {
           final nextAddress? => WalletArkExitDestination(
             sourceWallet: selection.displaySourceWalletId,
@@ -371,6 +453,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
       final runtime = ArkForegroundRuntime._(
         feature,
         client,
+        clientHandle,
         () async {
           await _closeArkDisplayAndBoard(displayData, boardFunding.close);
           await exitFunding.close();
@@ -380,6 +463,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         selection,
         config,
         board,
+        exitNotifier,
       );
       final inventory = await registry.list();
       if (inventory case Ok(:final value)
@@ -399,7 +483,14 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         await _closeArkDisplayAndBoard(displayData, boardFunding.close);
       } catch (_) {}
       try {
-        await client.close();
+        if (clientHandle == null) {
+          await client.close();
+        } else {
+          await clientHandle.close();
+        }
+      } catch (_) {}
+      try {
+        await exitNotifier?.close();
       } catch (_) {}
       Error.throwWithStackTrace(failure, stack);
     }

@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Comece com a compra automática",
   "autoBuyConfirmTitle": "Confirmar compra automática",
   "autoBuyInfoMessage": "Qualquer valor adicionado à sua conta será convertido em Bitcoin pela taxa de câmbio atual e enviado para a sua carteira.",
-  "autoBuyAccountUnavailableError": "Sua conta Bull Bitcoin não está disponível. Tente novamente mais tarde.",
-  "autoBuyWalletRequiredError": "Adicione pelo menos um endereço padrão de Bitcoin, Lightning ou Liquid.",
   "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
   "exchangeAuthLoginFailedMessage": "Um erro ocorreu, tente fazer login novamente.",
   "exchangeAuthLoginFailedOkButton": "ESTÁ BEM",
@@ -422,7 +420,6 @@
   "recipientsFieldSecurityQuestionHint": "Insira a pergunta de segurança (10-40 caracteres)",
   "recipientsFieldSecurityAnswer": "Resposta de segurança",
   "recipientsFieldSecurityAnswerHint": "Insira a resposta de segurança",
-  "recipientsValidationSecurityQuestionMin": "A pergunta de segurança deve ter pelo menos 10 caracteres",
   "recipientsCharCounter": "{count}/40 caracteres",
   "recipientsFieldInstitutionCode": "Código da instituição",
   "recipientsFieldInstitutionCodeHint": "Insira o código da instituição",
@@ -501,35 +498,20 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Os nomes do seu banco e do IBAN virtual precisam corresponder, caso contrário as transferências serão devolvidas automaticamente.",
   "recipientsFieldBankAccountIban": "Número da conta bancária (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Os saques aparecem como uma transferência para você mesmo com o nome da sua conta",
-  "withdrawAboveMaxAmountError": "A quantidade máxima é {amount} {currency}",
-  "withdrawConfirmCard": "Cartão",
-  "withdrawConfirmPhone": "Telefone",
-  "withdrawBelowMinAmountError": "Quantidade mínima é {amount} {currency}",
   "withdrawAmountContinue": "Continue",
   "withdrawConfirmTitle": "Confirmação",
-  "withdrawUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "withdrawConfirmAmount": "Montante",
   "withdrawConfirmButton": "Confirmação",
-  "withdrawConfirmEmail": "Email",
   "withdrawAmountTitle": "Fiat de retirada",
-  "withdrawConfirmPayee": "Pagamento",
   "withdrawConfirmRecipientName": "Nome do destinatário",
-  "withdrawConfirmAccount": "Conta",
-  "withdrawConfirmClabe": "CLABE",
-  "withdrawConfirmIban": "IBAN",
   "withdrawConfirmBankAccount": "Conta bancária",
   "withdrawSuccessOrderDetails": "Detalhes da ordem",
   "withdrawSuccessTitle": "Iniciada retirada",
-  "withdrawOwnershipMyAccount": "Esta é a minha conta",
-  "withdrawOwnershipOtherAccount": "Esta é a conta de outra pessoa",
-  "withdrawOwnershipQuestion": "A quem pertence esta conta?",
   "withdrawInteracSecurityDetailsTitle": "Dados de segurança da transferência",
   "withdrawInteracSaveAsDefault": "Salvar estes dados como padrão",
   "withdrawInteracSecurityQuestionLengthError": "A pergunta de segurança deve ter entre 3 e 40 caracteres",
   "withdrawInteracSecurityAnswerLengthError": "A resposta de segurança deve ter entre 3 e 40 caracteres",
   "withdrawInteracSecurityAnswerFormatError": "Use letras, números ou hifens sem espaços",
-  "withdrawUnexpectedError": "Seu saque não pôde ser concluído no momento. Tente novamente ou entre em contato com o suporte.",
-  "withdrawConfidentialSepaNotActivatedError": "Ative a opção de pagamento confidencial para este destinatário SEPA.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -792,10 +774,6 @@
   "@buyConfirmTitle": {
     "description": "AppBar title for buy confirmation screen"
   },
-  "buyConfirmPurchase": "Confirme a compra",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
   "dcaConfirmFrequencyDaily": "Todos os dias",
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
@@ -819,10 +797,6 @@
   "buyThatWasFast": "Foi rápido, não foi?",
   "@buyThatWasFast": {
     "description": "Additional success message for accelerated transaction"
-  },
-  "buyInputMaxAmountError": "Você não pode comprar mais do que",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
   },
   "buyConfirmYouPay": "Você paga",
   "@buyConfirmYouPay": {
@@ -892,10 +866,6 @@
   "dcaConfirmFrequencyWeekly": "Toda semana",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
-  },
-  "buyInputMinAmountError": "Você deve comprar pelo menos",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
   },
   "buyEnterBitcoinAddress": "Digite o endereço bitcoin",
   "@buyEnterBitcoinAddress": {
@@ -967,31 +937,6 @@
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
-  "buyBelowMinAmountError": "Você está tentando comprar abaixo da quantidade mínima.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
-  "dcaAccountUnavailableError": "Não foi possível carregar sua conta. Verifique sua conexão, veja se você está conectado e tente novamente.",
-  "dcaLightningAddressRequiredError": "Insira um endereço Lightning para receber suas compras.",
-  "dcaReceiveAddressError": "Não foi possível preparar um endereço de recebimento na sua carteira. Tente novamente.",
-  "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde.",
-  "payPayinAmount": "Quantidade de pagamento",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
-  "payPleasePayInvoice": "Por favor, pague esta fatura",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
   "paySinpeBeneficiario": "Beneficiário",
   "@paySinpeBeneficiario": {
     "description": "Label for beneficiary in SINPE details"
@@ -1008,25 +953,9 @@
   "@payInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
-  "payPayoutAmount": "Quantidade de pagamento",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "Taxas de rede",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "sellLoadingGeneric": "A carregar...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "Pagamento em Progresso!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
-  },
-  "payAboveMaxAmountError": "O valor máximo que você pode pagar com esta carteira é {amount}.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "payPayFromWallet": "Pagar da carteira",
   "@payPayFromWallet": {
@@ -1036,33 +965,9 @@
   "@sellCompleteKYC": {
     "description": "Button to start verification process"
   },
-  "payLightningNetwork": "Rede de relâmpago",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "Carteira externa",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "Estado inválido",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
   "sellEurBalance": "EUR Balanço",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellBelowMinAmountError": "Você está tentando vender abaixo da quantidade mínima que pode ser vendida com esta carteira.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "sellSelectNetwork": "Selecione Rede",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "Não existem dados de fatura disponíveis",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -1080,17 +985,9 @@
   "@sellShowQrCode": {
     "description": "Button to show QR code"
   },
-  "payNoDetailsAvailable": "Sem detalhes disponíveis",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
-  },
   "sellViewDetailsButton": "Ver detalhes",
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
-  },
-  "sellOrderAlreadyConfirmedError": "Esta ordem de venda já foi confirmada.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "payShowQrCode": "Mostrar código QR",
   "@payShowQrCode": {
@@ -1100,25 +997,9 @@
   "@paySinpeOrigen": {
     "description": "Label for origin in SINPE details"
   },
-  "paySelectNetwork": "Selecione Rede",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "payRecipientType": "Tipo de destinatário",
   "@payRecipientType": {
     "description": "Label for recipient type"
-  },
-  "sellOrderCompleted": "Ordem concluída!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "Por favor, pague esta fatura",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payInsufficientBalanceError": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellCadBalance": "CADA Balanço",
   "@sellCadBalance": {
@@ -1140,10 +1021,6 @@
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
   },
-  "payExchangeRate": "Taxa de câmbio",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "payQrCode": "Código QR",
   "@payQrCode": {
     "description": "Title for QR code bottom sheet"
@@ -1151,10 +1028,6 @@
   "sellDone": "Feito",
   "@sellDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellSendPaymentContinue": "Continue",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
   },
   "sellLightningNetwork": "Rede de relâmpago",
   "@sellLightningNetwork": {
@@ -1169,8 +1042,6 @@
     "description": "Button in modal dialog to copy value to clipboard"
   },
   "payTitle": "Pagamento",
-  "payDescriptionLabel": "Descrição do pagamento (opcional)",
-  "payDescriptionHint": "Adicione uma nota a este pagamento",
   "payPaymentDescription": "Descrição do pagamento",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1187,14 +1058,6 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "sellHowToPayInvoice": "Como você quer pagar esta fatura?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
-  "sellGoHome": "Vai para casa",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1203,10 +1066,6 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "Não existem dados de fatura disponíveis",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
   "payContinue": "Continue",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -1214,14 +1073,6 @@
   "payRbfActivated": "Substitui-a-taxa activada",
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
-  },
-  "sellSelectWallet": "Selecione a carteira",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
-  },
-  "sellInsufficientBalanceError": "Equilíbrio insuficiente na carteira selecionada para completar esta ordem de venda.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellFeePriority": "Prioridade de Taxas",
   "@sellFeePriority": {
@@ -1235,21 +1086,9 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "Pagar de outra carteira Bitcoin",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
-  "payBitcoinPrice": "Preço de Bitcoin",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
-  },
   "sellMxnBalance": "MXN Balanço",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
-  },
-  "sellBitcoinPriceLabel": "Preço de Bitcoin",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
   },
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
@@ -1266,10 +1105,6 @@
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
-  "payWhichWallet": "De que carteira queres pagar?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
-  },
   "sellKycPendingDescription": "Você deve concluir a verificação ID primeiro",
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
@@ -1277,10 +1112,6 @@
   "sellWhichWalletQuestion": "De que carteira queres vender?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "payHowToPayInvoice": "Como você quer pagar esta fatura?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
   },
   "paySelectCoinsManually": "Selecione moedas manualmente",
   "@paySelectCoinsManually": {
@@ -1293,10 +1124,6 @@
   "payPriceRefreshIn": "Preço irá refrescar-se ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "payBitcoinAmount": "Quantidade de Bitcoin",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
   },
   "sellFastest": "Mais rápido",
   "@sellFastest": {
@@ -1314,10 +1141,6 @@
   "@sellUsdBalance": {
     "description": "Display text for USD balance payout method"
   },
-  "sellUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payCopyInvoice": "Fatura de cópia",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
@@ -1325,14 +1148,6 @@
   "sellKycPendingTitle": "Pendente de Verificação de ID KYC",
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
-  },
-  "payLiquidNetwork": "Rede líquida",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "payBelowMinAmountError": "O valor mínimo que você pode pagar com esta carteira é {amount}.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
   },
   "payRecipientName": "Nome do destinatário",
   "@payRecipientName": {
@@ -1354,17 +1169,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payRecipientDetails": "Detalhes do destinatário",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
-  },
   "sellOrderNumber": "Número de ordem",
   "@sellOrderNumber": {
     "description": "Label for order number"
-  },
-  "sellOrderNotFoundError": "A ordem de venda não foi encontrada. Por favor, tente novamente.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "sellPayoutRecipient": "Receptor de pagamento",
   "@sellPayoutRecipient": {
@@ -1374,25 +1181,13 @@
   "@payDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellInProgress": "Vender em progresso...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
-  },
   "payAdvancedSettings": "Configurações avançadas",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "paySelectWallet": "Selecione a carteira",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
-  },
   "sellSendPaymentNetworkFees": "Taxas de rede",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "Pagamento concluído!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
   },
   "paySinpeNumeroComprobante": "Número de referência",
   "@paySinpeNumeroComprobante": {
@@ -1401,10 +1196,6 @@
   "paySecureBitcoinWallet": "Carteira Bitcoin segura",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
-  },
-  "payConfirmPayment": "Confirmar pagamento",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellAdvancedSettings": "Configurações avançadas",
   "@sellAdvancedSettings": {
@@ -1426,10 +1217,6 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
-  "payExternalWallet": "Carteira externa",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "sellLiquidNetwork": "Rede líquida",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
@@ -1438,29 +1225,13 @@
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
   },
-  "sellAboveMaxAmountError": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "payUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
-  },
   "viewerTapToCopy": "Toque para copiar",
   "invoiceViewerTitle": "Fatura",
   "paySinpeReceipt": "Recibo SINPE",
-  "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
-  "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
   "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
   "copiedToClipboard": "Copiado para a área de transferência",
   "sellPayoutBalance": "Adicionar ao saldo da minha conta",
-  "sellPayoutSepaDescription": "Os saques aparecem como enviados pela Leonod",
   "sellPayoutTitle": "Selecionar destinatário",
-  "sellPayoutNewBadge": "NOVO",
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
   "sendSelectedUtxosInsufficient": "Utxos selecionados não cobre a quantidade necessária",
   "@sendSelectedUtxosInsufficient": {
@@ -1521,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Balança insuficiente",
   "limitOrdersInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "limitOrdersFundAccount": "Fina sua conta",
@@ -1579,5 +1349,124 @@
   },
   "exchangeErrorSigningOut": "Não foi possível sair da conta por completo. Por favor, tente novamente.",
   "exchangeErrorLoadingAnnouncements": "Não foi possível carregar os anúncios.",
-  "exchangeErrorRequestingAccountDeletion": "Não foi possível enviar sua solicitação de exclusão de conta. Por favor, tente novamente."
+  "exchangeErrorRequestingAccountDeletion": "Não foi possível enviar sua solicitação de exclusão de conta. Por favor, tente novamente.",
+  "exchangeFileUploadStatusUnknown": "Status desconhecido",
+  "exchangeSupportChatAttachFileTooltip": "Anexar um arquivo",
+  "exchangeSupportChatAttachLogsTooltip": "Anexar logs",
+  "exchangeSupportChatSendTooltip": "Enviar mensagem",
+  "exchangeSupportChatLogDraft": "Aqui estão meus logs",
+  "exchangeSupportChatLoadOlder": "Carregar mensagens anteriores",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "Recursos da exchange",
+  "exchangeAccessSettingsOffHint": "Ative para entrar ou criar uma conta Bull Bitcoin.",
+  "exchangeAccessSettingsOnHint": "Os recursos da exchange estão ativados.",
+  "exchangeAccessSignIn": "Entrar ou criar uma conta",
+  "exchangeAccessDisableTitle": "Desativar os recursos da exchange?",
+  "exchangeAccessDisableBody": "Isso desconecta você neste dispositivo. Ordens existentes, AutoBuy e compras recorrentes não são canceladas.",
+  "exchangeAccessDisableConfirm": "Sair e desativar",
+  "exchangeTradingRetry": "Tentar novamente",
+  "exchangeAccessUnreadable": "Não foi possível ler o acesso à exchange. Tente novamente ou redefina.",
+  "exchangeAccessReset": "Redefinir acesso à exchange",
+  "exchangeAccessLogoutIncomplete": "A saída está incompleta. Conclua a saída antes de ativar a exchange.",
+  "exchangeAccessRetryLogout": "Concluir saída",
+  "exchangeAccessExpiring": "Sua sessão expirou. Desconectando você neste dispositivo.",
+  "exchangeLogoutDidNotFinish": "A saída não foi concluída neste dispositivo.",
+  "networkFeatureUnavailable": "Este recurso não está disponível na rede selecionada.",
+  "exchangeBitcoinWalletsLoadFailed": "Falha ao carregar as carteiras padrão",
+  "exchangeBitcoinWalletsAddressEmpty": "O endereço não pode estar vazio",
+  "exchangeBitcoinWalletsSaveFailed": "Falha ao salvar o endereço da carteira",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "Não conseguimos saber se este endereço foi salvo. Confira abaixo antes de salvar novamente.",
+  "exchangeBitcoinWalletsDeleteFailed": "Falha ao excluir o endereço da carteira",
+  "exchangeSettingsWriteBusy": "Outra solicitação à exchange ainda está em andamento. Tente novamente em instantes.",
+  "exchangeSettingsSignedOut": "Você não está mais conectado à exchange. Entre novamente para alterar estas configurações.",
+  "exchangeBitcoinWalletsBusy": "Outra solicitação à exchange ainda está em andamento. Tente novamente em instantes.",
+  "exchangeBitcoinWalletsUnsetSuccess": "Endereço da carteira removido",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Não conseguimos saber se este endereço foi removido. Verifique novamente antes de alterá-lo.",
+  "exchangeBitcoinWalletsCheckAgain": "Verificar novamente",
+  "exchangeBitcoinWalletsSessionEnded": "Você não está mais conectado à exchange. Entre novamente para editar suas carteiras padrão.",
+  "destinationExpectedType": "Digite ou escaneie um {type} válido.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "Compre, venda e pague com a Bull Bitcoin direto da sua carteira.",
+  "exchangeTradingUnavailable": "As negociações não estão disponíveis.",
+  "priceChartShowTooltip": "Mostrar gráfico de preços",
+  "recipientsErrorSaveOutcomeUnknown": "Não conseguimos saber se este destinatário foi salvo. Confira seus destinatários antes de adicioná-lo novamente.",
+  "recipientsConfidentialSepaStatusUnknownTitle": "Status de ativação desconhecido",
+  "recipientsConfidentialSepaStatusUnknownDescription": "Não conseguimos ler o status de ativação deste destinatário. Entre em contato com o suporte antes de usá-lo para SEPA Confidencial.",
+  "recipientsReturnHome": "Voltar ao início",
+  "withdrawConfirmOutcomeUnknownError": "Não conseguimos confirmar se seu saque foi concluído. Verifique novamente antes de iniciar um novo saque.",
+  "withdrawConfirmCheckAgainButton": "Verificar novamente",
+  "limitOrderStatusUnknown": "Status desconhecido",
+  "dcaUseDefaultBitcoinWallet": "Usar minha carteira Bitcoin padrão",
+  "dcaUseDefaultLiquidWallet": "Usar minha carteira Liquid padrão",
+  "dcaNoDefaultBitcoinWallet": "Você não tem uma carteira Bitcoin padrão na sua conta Bull Bitcoin. Defina uma ou digite um endereço Bitcoin abaixo.",
+  "dcaNoDefaultLiquidWallet": "Você não tem uma carteira Liquid padrão na sua conta Bull Bitcoin. Defina uma ou digite um endereço Liquid abaixo.",
+  "dcaManageDefaultWallets": "Definir carteiras padrão",
+  "dcaEnterBitcoinAddressLabel": "Digite o endereço Bitcoin",
+  "dcaEnterLiquidAddressLabel": "Digite o endereço Liquid",
+  "dcaConfirmPayoutAddress": "Endereço de recebimento",
+  "exchangePaymentOutcomeUnknownChecking": "Verificando se seu pagamento foi enviado…",
+  "walletSpendAwaitingObservation": "Não é possível gastar até que esta carteira esteja sincronizada e tenha visto seus pagamentos anteriores na rede. Atualize a carteira ou use \"Buscar transações ausentes\" e tente novamente.",
+  "sendPayjoinSpendPaused": "Este pagamento Payjoin está pausado porque a carteira não pode continuar com segurança. Suas entradas continuam reservadas. Atualize a carteira ou use \"Buscar transações ausentes\" e tente esta proposta novamente enquanto ela ainda for válida. Se tiver expirado, confira o pagamento em Transações antes de fazer qualquer outra coisa.",
+  "walletSpendBusy": "A carteira está ocupada. Tente novamente em instantes.",
+  "fundExchangeJurisdictionHint": "Selecione de onde você envia o dinheiro",
+  "fundExchangeScamConsentUnverified": "Não conseguimos confirmar que seu consentimento foi registrado. Verifique sua conexão e tente novamente.",
+  "fundExchangeSessionEnded": "Sua sessão na exchange terminou. Entre novamente para depositar na sua conta.",
+  "exchangePlatformNotAllowedError": "A exchange não pode ser ativada neste dispositivo.",
+  "exchangeStepReadFailed": "Não foi possível carregar isso da exchange agora. Tente novamente.",
+  "exchangeStepNotSent": "Nada foi enviado à exchange. Verifique sua conexão e tente novamente.",
+  "exchangeStepNotApplied": "A exchange não aplicou esta solicitação. Você pode tentar novamente.",
+  "exchangeStepWriteRefused": "A exchange recusou esta solicitação.",
+  "exchangeOrderBelowMinimum": "O valor mínimo é {amount} {currency}",
+  "exchangeOrderAboveMaximum": "O valor máximo é {amount} {currency}",
+  "exchangePayeeInactive": "Este destinatário ainda não está ativado para SEPA Confidencial.",
+  "exchangeWriteGateBusy": "Outra solicitação à exchange ainda está em andamento. Aguarde a conclusão e tente novamente.",
+  "exchangeWriteGateUnsettled": "Uma solicitação anterior à exchange ainda está sendo verificada. Tente novamente quando ela for concluída.",
+  "exchangeWriteGateJournalUnreadable": "Não conseguimos verificar suas solicitações anteriores à exchange. Tente novamente.",
+  "exchangeStepUnverified": "Não conseguimos verificar se a exchange recebeu isso. Verifique novamente antes de iniciar outra.",
+  "exchangeStepTimedOut": "Está demorando mais que o esperado. Você pode verificar novamente ou sair e voltar mais tarde.",
+  "exchangeAmountNoRate": "O preço do bitcoin não está disponível no momento. Tente novamente.",
+  "exchangeAmountKycNeeded": "Conclua sua verificação de identidade para usar este valor.",
+  "exchangeStepVerifying": "Verificando com a exchange…",
+  "exchangeFlowSessionEnded": "Sua sessão na exchange terminou. Entre novamente para continuar.",
+  "withdrawNoFundedBalance": "Você não tem saldo para sacar.",
+  "exchangePayinNoFunds": "Esta carteira não tem fundos suficientes para este pagamento e sua taxa de rede.",
+  "exchangePayinFeeTooLow": "A taxa de rede está abaixo do mínimo da rede. Tente novamente.",
+  "exchangePayinWalletBusy": "A carteira está sincronizando. Tente novamente em instantes.",
+  "exchangePayinConsolidationRequired": "Esta carteira precisa consolidar suas moedas antes de poder pagar este valor.",
+  "exchangePayinSigningRefused": "A carteira não conseguiu assinar o pagamento.",
+  "exchangePayinNotAuthorized": "Esta carteira não está autorizada a enviar pagamentos.",
+  "exchangePayinBuildFailed": "Não foi possível preparar o pagamento. Nada foi enviado.",
+  "exchangePayinNodeRejected": "A rede recusou a transação. Nada foi enviado.",
+  "exchangePayinPayjoinNotStarted": "Não foi possível iniciar o pagamento payjoin. Nada foi enviado.",
+  "exchangePayinDeadlinePassed": "O prazo de pagamento da ordem terminou antes do envio do pagamento. Nada foi enviado.",
+  "exchangePayinSending": "Enviando seu pagamento…",
+  "exchangePayinNotSent": "Pagamento não enviado",
+  "exchangePayinPayjoinNegotiating": "Negociando um payjoin com a exchange…",
+  "exchangePayinPayjoinPaused": "O payjoin está pausado porque a carteira está ocupada. Tente novamente.",
+  "exchangePayinUnseen": "Nem a rede nem a exchange mostram este pagamento ainda. Você pode enviar a mesma transação novamente.",
+  "exchangePayinResend": "Enviar a mesma transação novamente",
+  "exchangeStepCheckAgain": "Verificar novamente",
+  "exchangePayinLeaveTitle": "Sair deste pagamento?",
+  "exchangePayinLeaveMessage": "Se você já pagou, a exchange ainda vai recebê-lo. Caso contrário, a ordem expira no prazo final.",
+  "exchangePayinStay": "Ficar",
+  "exchangePayinExternalTitle": "Envie exatamente este valor para o endereço abaixo",
+  "exchangePayinExternalWaiting": "Aguardando seu pagamento…",
+  "exchangePayinRefusedByExchange": "A exchange não aceitou este pagamento. Entre em contato com o suporte informando o número da ordem.",
+  "exchangePayinOrderEnded": "Esta ordem terminou antes do envio do seu pagamento. Nada foi enviado.",
+  "exchangePayinDepositRefused": "Esta ordem não pode ser paga com esta carteira. Nada foi enviado.",
+  "exchangePayinReceived": "A exchange recebeu seu pagamento",
+  "exchangePayinCoinsUnavailable": "Não foi possível carregar as moedas da sua carteira. Tente novamente.",
+  "buyPayoutAddressUnavailable": "Não foi possível obter um endereço de recebimento desta carteira. Selecione-a de novo ou escolha outra carteira.",
+  "buyPayoutFailed": "A exchange não conseguiu concluir este pagamento. Abra os detalhes da ordem ou fale com o suporte.",
+  "buyPayoutStillPending": "Seu pagamento ainda está a caminho. Você pode acompanhá-lo nos detalhes da ordem.",
+  "limitOrdersOverBalanceWarning": "Isso é mais do que seu saldo disponível. Quando a ordem for executada, ela compra com o que estiver no seu saldo naquele momento.",
+  "autoBuyAlreadyActive": "A compra automática já está ativa na sua conta.",
+  "recipientsValidationEmailInvalid": "Insira um endereço de e-mail válido",
+  "recipientsValidationClabeLength": "Uma CLABE tem 18 dígitos",
+  "recipientsValidationClabeCheckDigit": "Esta CLABE não é válida. Verifique o número",
+  "recipientsValidationSpeiPhone": "Insira o número de telefone de 10 dígitos, sem o código do país",
+  "recipientsValidationDebitCard": "Um número de cartão de débito tem 16 dígitos",
+  "recipientsErrorFieldRefused": "A exchange não aceitou este valor",
+  "recipientsErrorCheckFields": "Alguns dados não foram aceitos. Verifique os campos marcados acima.",
+  "recipientsErrorFieldsRefused": "Alguns dados não foram aceitos: {fields}"
 }

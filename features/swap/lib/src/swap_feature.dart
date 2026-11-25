@@ -41,11 +41,13 @@ import 'domain/usecases/load_internal_ark_transfer_usecase.dart';
 import 'domain/usecases/load_swap_wallets_usecase.dart';
 import 'domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'domain/usecases/load_transfer_preferences_usecase.dart';
+import 'domain/usecases/read_transfer_payment_animations_usecase.dart';
 import 'domain/usecases/read_swap_coins_usecase.dart';
 import 'domain/usecases/refresh_order_swaps_usecase.dart';
 import 'domain/usecases/review_internal_ark_transfer_usecase.dart';
 import 'domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'domain/usecases/verify_transfer_lockup_usecase.dart';
+import 'domain/usecases/watch_transfer_settlement_usecase.dart';
 import 'order_swap_watcher.dart';
 import 'presentation/internal_ark_transfer_cubit.dart';
 import 'presentation/transfer_bloc.dart';
@@ -57,6 +59,11 @@ import 'domain/usecases/set_swap_exchange_fallback_usecase.dart';
 import 'domain/usecases/set_swap_route_override_usecase.dart';
 import 'domain/usecases/set_swap_server_usecase.dart';
 import 'presentation/swap_settings_cubit.dart';
+import 'presentation/swap_restore_cubit.dart';
+import 'presentation/swap_rescue_cubit.dart';
+import 'domain/usecases/get_swap_rescue_wallets_usecase.dart';
+import 'ui/swap_restore_screen.dart';
+import 'ui/swap_rescue_details_screen.dart';
 import 'swap_l10n.dart';
 import 'ui/swap_settings_page.dart';
 
@@ -64,6 +71,8 @@ const _settingsRoute = 'swapSettings';
 
 const _autoswapRoute = 'autoswapSettings';
 const _autoswapPath = 'autoswap-settings';
+const _restoreRoute = 'swapRestore';
+const _rescueRoute = 'swapRescue';
 
 /// The two swap refresh entry points used by foreground wallet sync.
 abstract interface class SwapActivity {
@@ -74,6 +83,7 @@ abstract interface class SwapActivity {
 abstract interface class SwapFeature implements SwapActivity {
   List<GoRoute> get routes;
   GoRoute get autoswapSettingsRoute;
+  List<GoRoute> get recoveryRoutes;
   bool get isWatchingOrders;
   bool get isWatchingAutoswap;
   Future<Result<OrderSwapRecord, ReceiveFailure>> createReceiveOrder({
@@ -99,6 +109,7 @@ abstract interface class SwapFeature implements SwapActivity {
     required Receive receive,
     required Labels labels,
     required Transactions transactions,
+    required SettlementPoll pollSettlement,
     required SwapSyncPort Function() scheduler,
     required ArkTransferFacade? Function() ark,
   }) {
@@ -181,16 +192,38 @@ abstract interface class SwapFeature implements SwapActivity {
           recordPendingSwapLockupUsecase: recordPending,
           dropPendingSwapLockupUsecase: dropPending,
           watchSwapUsecase: WatchSwapUsecase(swaps.store),
+          watchSettlement: WatchTransferSettlementUsecase(transactions),
+          readPaymentAnimationsUsecase: ReadTransferPaymentAnimationsUsecase(
+            preferences,
+          ),
         ),
         createArk: () => InternalArkTransferCubit(
           loadArk,
           ReviewInternalArkTransferUsecase(loadArk, receive),
         ),
+        pollSettlement: pollSettlement,
       ),
       swapSettingsRoute(swaps, swaps),
     ];
     return _SwapFeature(
       List.unmodifiable(routes),
+      swapRecoveryRoutes(
+        createRestore: () => SwapRestoreCubit(
+          restoreSwapsUsecase: RestoreSwapsUsecase(swaps.resolver, swaps.store),
+        )..restore(),
+        createRescue: (restorable) => SwapRescueCubit(
+          rescueSwapUsecase: RescueSwapUsecase(
+            swaps.resolver,
+            swaps.store,
+            swaps.watcher,
+          ),
+          getRescueWalletsUsecase: GetSwapRescueWalletsUsecase(
+            inventory: inventory,
+            environment: preferences,
+          ),
+          restored: restorable.swap,
+        ),
+      ),
       GoRoute(
         name: _autoswapRoute,
         path: _autoswapPath,
@@ -233,9 +266,39 @@ abstract interface class SwapFeature implements SwapActivity {
   }
 }
 
+List<GoRoute> swapRecoveryRoutes({
+  required SwapRestoreCubit Function() createRestore,
+  required SwapRescueCubit Function(RestorableSwap) createRescue,
+}) => [
+  GoRoute(
+    name: _restoreRoute,
+    path: 'swap-restore',
+    builder: (_, _) => BlocProvider(
+      create: (_) => createRestore(),
+      child: const SwapRestoreScreen(),
+    ),
+  ),
+  GoRoute(
+    name: _rescueRoute,
+    path: 'swap-rescue',
+    redirect: (_, state) => state.extra is RestorableSwap
+        ? null
+        : state.namedLocation(_restoreRoute),
+    builder: (_, state) => switch (state.extra) {
+      final RestorableSwap restorable => BlocProvider(
+        create: (_) => createRescue(restorable),
+        child: SwapRescueDetailsScreen(restorable: restorable),
+      ),
+      _ => const SizedBox.shrink(),
+    },
+  ),
+];
+
 final class _SwapFeature implements SwapFeature {
   @override
   final List<GoRoute> routes;
+  @override
+  final List<GoRoute> recoveryRoutes;
   @override
   final GoRoute autoswapSettingsRoute;
   final RefreshOrderSwapsUsecase _refresh;
@@ -248,6 +311,7 @@ final class _SwapFeature implements SwapFeature {
 
   _SwapFeature(
     this.routes,
+    this.recoveryRoutes,
     this.autoswapSettingsRoute,
     this._refresh,
     this._retry,
@@ -305,6 +369,12 @@ final class _SwapFeature implements SwapFeature {
 }
 
 abstract final class SwapNavigation {
+  static Future<void> openRestore(BuildContext context) =>
+      context.pushNamed<void>(_restoreRoute);
+
+  static Future<void> openRescue(BuildContext context, RestorableSwap swap) =>
+      context.pushNamed<void>(_rescueRoute, extra: swap);
+
   static Future<void> open(BuildContext context) =>
       context.pushNamed<void>(TransferRoute.swap.name);
 

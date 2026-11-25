@@ -31,6 +31,7 @@ Future<void> pumpKeyboard(
   Set<String>? enabledLetters,
   bool canBackspace = true,
   bool canAdvance = true,
+  bool shuffleActive = false,
   void Function(String)? onLetter,
   VoidCallback? onBackspace,
   VoidCallback? onEnter,
@@ -64,7 +65,7 @@ Future<void> pumpKeyboard(
               onLetter: onLetter ?? (_) {},
               onBackspace: onBackspace ?? () {},
               onEnter: onEnter ?? () {},
-              shuffleActive: false,
+              shuffleActive: shuffleActive,
               onToggleShuffle: () {},
               shuffleHint: 'shuffle',
               layout: layout,
@@ -156,10 +157,10 @@ void main() {
 
         final on = tester.widget<BullKeyCap>(keyCap('a'));
         final off = tester.widget<BullKeyCap>(keyCap('b'));
-        expect(on.fill, keypad.key);
+        expect(on.fill, testBullTheme.surfaceContainer);
         expect(off.fill, testBullTheme.transparent);
         expect(styleOf(tester, 'b')?.color, keypad.disabledGlyph);
-        expect(styleOf(tester, 'a')?.color, keypad.onKey);
+        expect(styleOf(tester, 'a')?.color, testBullTheme.text);
       },
     );
 
@@ -187,7 +188,9 @@ void main() {
       expect((backspaces, enters), (1, 1));
     });
 
-    testWidgets('the keys sit on the keypad panel', (tester) async {
+    testWidgets('the keys sit on the page background, under a rule', (
+      tester,
+    ) async {
       await pumpKeyboard(tester);
       final panel = tester.widget<Material>(
         find
@@ -197,16 +200,28 @@ void main() {
             )
             .first,
       );
-      expect(panel.color, keypad.panel);
+      expect(panel.color, testBullTheme.background);
+      expect(panel.shape, Border(top: BorderSide(color: testBullTheme.border)));
     });
 
-    testWidgets('function key glyphs read the keypad roles', (tester) async {
+    testWidgets('function keys share the letters\' fill', (tester) async {
       await pumpKeyboard(tester, canBackspace: false);
       Color? iconColor(IconData icon) =>
           tester.widget<Icon>(find.byIcon(icon)).color;
-      expect(iconColor(Icons.keyboard_return), keypad.onFunctionKey);
-      expect(iconColor(Icons.backspace_outlined), keypad.onFunctionKeyDisabled);
-      expect(fillOf(tester, backspace()), keypad.functionKey);
+      expect(iconColor(Icons.keyboard_return), testBullTheme.text);
+      expect(iconColor(Icons.backspace_outlined), keypad.disabledGlyph);
+      expect(fillOf(tester, backspace()), testBullTheme.surfaceContainer);
+    });
+
+    testWidgets('an active scramble key turns its glyph to the accent', (
+      tester,
+    ) async {
+      await pumpKeyboard(tester, shuffleActive: true);
+      expect(
+        tester.widget<Icon>(find.byIcon(Icons.shuffle)).color,
+        testBullTheme.primary,
+      );
+      expect(fillOf(tester, scramble()), testBullTheme.surfaceContainer);
     });
 
     testWidgets('glyphs ignore the system text size, the key already scales', (
@@ -317,14 +332,17 @@ void main() {
         expect(key.size.height, closeTo(bs.height, 0.01));
         expect(key.top, closeTo(language.top, 0.01));
       }
-      // Function keys share one look, distinct from the letters.
+      // Function keys share one look, the letters' fill.
       for (final finder in [languageKey(), pageKey(), scramble(), enter()]) {
         final cap = find.descendant(
           of: finder,
           matching: find.byType(BullKeyCap),
           matchRoot: true,
         );
-        expect(tester.widget<BullKeyCap>(cap.first).fill, keypad.functionKey);
+        expect(
+          tester.widget<BullKeyCap>(cap.first).fill,
+          testBullTheme.surfaceContainer,
+        );
       }
     });
 

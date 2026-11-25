@@ -21,7 +21,7 @@ final class BbxApiOrderStatsRepository {
       ),
       Err(:final failure) => Err(
         ExchangeStatisticsUnavailableFailure(
-          'Failed to get order stats: ${failure.runtimeType}',
+          'Failed to get order stats: $failure',
         ),
       ),
     };

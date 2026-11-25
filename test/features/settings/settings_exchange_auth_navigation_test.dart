@@ -20,14 +20,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Exchange extends Mock implements ExchangeAccessLifecycle {}
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
-class _ExchangeCubit extends MockCubit<ExchangeState>
-    implements ExchangeCubit {}
-
-class _ExchangeState extends Mock implements ExchangeState {}
+class _ExchangeBloc extends MockBloc<ExchangeEvent, ExchangeState>
+    implements ExchangeBloc {}
 
 void main() {
   testWidgets('sign-in from manage access returns to the same route', (
@@ -35,9 +39,8 @@ void main() {
   ) async {
     final exchange = _Exchange();
     final settings = _Settings();
-    when(
-      () => exchange.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    when(() => exchange.current)
+        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     when(exchange.watch).thenAnswer((_) => const Stream.empty());
     when(() => settings.state).thenReturn(const SettingsState());
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
@@ -106,11 +109,9 @@ void main() {
   ) async {
     final exchange = _Exchange();
     final settings = _Settings();
-    final exchangeCubit = _ExchangeCubit();
-    final exchangeState = _ExchangeState();
-    when(() => exchangeState.notLoggedIn).thenReturn(false);
-    when(() => exchangeState.hasUser).thenReturn(true);
-    when(() => exchangeCubit.state).thenReturn(exchangeState);
+    final exchangeCubit = _ExchangeBloc();
+    when(() => exchangeCubit.state)
+        .thenReturn(const ExchangeLoading(_testSession));
     when(() => settings.state).thenReturn(
       const SettingsState(
         storedSettings: SettingsEntity(
@@ -121,13 +122,13 @@ void main() {
         ),
       ),
     );
-    when(
-      () => exchange.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    when(() => exchange.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
     when(exchange.watch).thenAnswer((_) => const Stream.empty());
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
     addTearDown(() => locator.unregister<Exchange>());
     final settingsRoutes = SettingsRouter.childRoutes(
+      swapRecoveryRoutes: const [],
       accessRoutes: const [],
       addressRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(
@@ -181,7 +182,7 @@ void main() {
       MultiBlocProvider(
         providers: [
           BlocProvider<SettingsCubit>.value(value: settings),
-          BlocProvider<ExchangeCubit>.value(value: exchangeCubit),
+          BlocProvider<ExchangeBloc>.value(value: exchangeCubit),
         ],
         child: MaterialApp.router(
           routerConfig: router,

@@ -13,8 +13,10 @@ import 'package:go_router/go_router.dart';
 import 'package:swaps/swaps.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:swap_feature/src/ui/swap_router.dart';
-import 'package:swap_feature/src/ui/swap_transition_policy.dart';
+import 'package:transactions/payment_status.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/transactions.dart'
+    show SettlementPoll, SettlementSyncPoller;
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBottomSheet,
@@ -31,7 +33,10 @@ import 'package:bull_ui/bull_ui.dart'
         Gap;
 
 class SwapConfirmPage extends StatefulWidget {
-  const SwapConfirmPage({super.key});
+  const SwapConfirmPage({super.key, this.poll});
+
+  /// Refreshes the receiving wallet; no polling when absent.
+  final SettlementPoll? poll;
 
   @override
   State<SwapConfirmPage> createState() => _SwapConfirmPageState();
@@ -44,22 +49,56 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
   bool _showTransition = false;
   bool _statusOpen = false;
   bool _confirmArmed = false;
+  bool _awaitingDetails = false;
 
   void _confirm(TransferState state) {
-    if (_confirmArmed || state.isConfirming) return;
+    // The path (animation or details) depends on the preference.
+    if (_confirmArmed ||
+        state.isConfirming ||
+        state.showPaymentAnimations == null) {
+      return;
+    }
     _confirmArmed = true;
     final swap = state.swap;
-    if (!state.isSameChainTransfer && swap != null) {
+    if (!state.isSameChainTransfer &&
+        swap != null &&
+        state.showPaymentAnimations == false) {
+      // Without the transition the details open once the lockup is broadcast.
+      _awaitingDetails = true;
+    } else if (!state.isSameChainTransfer && swap != null) {
       setState(() {
         _attemptSwapId = swap.id;
         _attemptOrderId = state.orderSwap?.localId;
-        _network = swap.type == SwapType.bitcoinToLiquid
+        _network = _attemptOrderId == null
+            ? BullPaymentNetwork.boltz
+            : swap.type == SwapType.bitcoinToLiquid
             ? BullPaymentNetwork.liquid
             : BullPaymentNetwork.bitcoin;
         _showTransition = true;
       });
     }
     context.read<TransferBloc>().add(const TransferEvent.confirmed());
+  }
+
+  /// With payment animations off, opens the details once, as soon as the
+  /// funding broadcast gives the transfer a durable target.
+  void _openDetailsWithoutTransition(TransferState state) {
+    if (!_awaitingDetails || state.txId.isEmpty) return;
+    final swap = state.swap;
+    final orderId = state.orderSwap?.localId ?? _attemptOrderId;
+    final TransactionDetailsTarget? target = orderId != null
+        ? TransactionDetailsTarget.orderSwap(orderId)
+        : swap == null
+        ? null
+        : TransactionDetailsTarget.swap(swap.id, walletId: swap.walletId);
+    if (target == null) return;
+    _awaitingDetails = false;
+    TransactionsNavigation.goToDetails(
+      context,
+      target,
+      returnHome: true,
+      view: TransactionDetailsView.details,
+    );
   }
 
   Future<void> _openStatus() async {
@@ -78,6 +117,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
             context,
             TransactionDetailsTarget.orderSwap(orderId),
             returnHome: true,
+            view: TransactionDetailsView.details,
           );
         } else {
           context.goNamed(TransferRoute.inProgressSwap.name, extra: bloc);
@@ -87,6 +127,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
           context,
           TransactionDetailsTarget.orderSwap(orderId),
           returnHome: true,
+          view: TransactionDetailsView.details,
         );
       } else {
         await context.pushNamed<void>(
@@ -152,7 +193,36 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
             swap: currentSwap,
             order: state.orderSwap,
             fundingTxId: state.txId,
+            receiveTransaction: state.receiveTransaction,
           );
+    final copy = context.swapCopyForLocale;
+    final observable = swapReceiveObservable(currentSwap);
+    final progress = swapTransitionProgress(
+      swapId: attemptId ?? '',
+      orderId: _attemptOrderId,
+      swap: currentSwap,
+      order: state.orderSwap,
+      fundingTxId: state.txId,
+      receiveTransaction: state.receiveTransaction,
+      steps: _attemptOrderId == null
+          ? [
+              copy.paymentStepSendingLockup,
+              copy.paymentStepLockupSent,
+              copy.paymentStepClaimable,
+              copy.paymentStepClaimBroadcast,
+              if (observable) copy.paymentStepConfirmed,
+            ]
+          : [
+              copy.paymentStepSendingPayin,
+              copy.paymentStepPayinBroadcast,
+              copy.paymentStepPayoutInProgress,
+              if (observable) ...[
+                copy.paymentStepPayoutBroadcast,
+                copy.paymentStepConfirmed,
+              ] else
+                copy.paymentStepCompleted,
+            ],
+    );
     final completed = phase == BullPaymentPhase.success;
     final failed = phase == BullPaymentPhase.failed;
     final provisionalFailure =
@@ -173,7 +243,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
             (state.orderSwap?.localStatus ==
                     OrderSwapLocalStatus.broadcastUnknown &&
                 !canRetryRejectedPayin));
-    return BlocListener<TransferBloc, TransferState>(
+    final confirmPage = BlocListener<TransferBloc, TransferState>(
       listenWhen: (previous, current) =>
           previous.isConfirming && !current.isConfirming,
       listener: (context, state) {
@@ -181,8 +251,10 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
           _confirmArmed = false;
           if (state.txId.isEmpty) {
             _showTransition = false;
+            _awaitingDetails = false;
           }
         });
+        _openDetailsWithoutTransition(state);
       },
       child: PopScope<Object?>(
         canPop: !_showTransition && !requiresStatus,
@@ -450,6 +522,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
                                   : _confirmArmed ||
                                         isConfirming ||
                                         fromWallet == null ||
+                                        state.showPaymentAnimations == null ||
                                         !transferReady
                                   ? null
                                   : () => _confirm(state),
@@ -479,6 +552,29 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
                   child: BullPaymentTransition(
                     network: network,
                     phase: phase,
+                    descriptor: _attemptOrderId != null
+                        ? context.swapCopyForLocale.paymentExchangeDescriptor
+                        : null,
+                    statusTag: completed
+                        ? context.swapCopyForLocale.swapTransferCompletedTitle
+                        : sameAttempt &&
+                              (currentSwap?.refundTxid != null ||
+                                  currentSwap?.status == SwapStatus.refunded)
+                        ? context.swapCopyForLocale.swapTransferRefundedTitle
+                        : sameAttempt &&
+                              currentSwap?.status == SwapStatus.refundable
+                        ? context
+                              .swapCopyForLocale
+                              .swapTransferRefundInProgressTitle
+                        : sameAttempt &&
+                              currentSwap?.status == SwapStatus.expired
+                        ? context.swapCopyForLocale.transactionStatusSwapExpired
+                        : failed
+                        ? context.swapCopyForLocale.transactionStatusSwapFailed
+                        : sameAttempt && progress.completed > 0
+                        ? progress.steps[progress.completed]
+                        : context.swapCopyForLocale.swapTransferPendingTitle,
+                    progress: progress,
                     status: completed
                         ? context.swapCopyForLocale.swapTransferCompletedTitle
                         : sameAttempt &&
@@ -509,6 +605,27 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
           ],
         ),
       ),
+    );
+    final page = BlocListener<TransferBloc, TransferState>(
+      listenWhen: (previous, current) =>
+          previous.txId.isEmpty && current.txId.isNotEmpty,
+      listener: (_, state) => _openDetailsWithoutTransition(state),
+      child: confirmPage,
+    );
+    final poll = widget.poll;
+    if (poll == null) return page;
+    final receiveTxId = currentSwap?.receiveTxid;
+    final receiveTransaction = state.receiveTransaction;
+    return SettlementSyncPoller(
+      walletId: currentSwap?.receiveWalletId,
+      active:
+          _showTransition &&
+          (receiveTxId?.isNotEmpty ?? false) &&
+          !(receiveTransaction?.txId == receiveTxId &&
+              receiveTransaction?.isConfirmed == true),
+      isLiquid: currentSwap?.type == SwapType.bitcoinToLiquid,
+      poll: poll,
+      child: page,
     );
   }
 }

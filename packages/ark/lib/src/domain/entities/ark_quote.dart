@@ -36,6 +36,7 @@ sealed class ArkQuoteRequest {
     String? destination,
     FeeRate? feeRate,
     Sats? maxClaimFee,
+    ArkExitReserveFunding? reserveFunding,
   }) = ArkEmergencyExitQuoteRequest;
   factory ArkQuoteRequest.exitProgress({FeeRate? feeRate}) =
       ArkExitProgressQuoteRequest;
@@ -43,8 +44,12 @@ sealed class ArkQuoteRequest {
     required List<String> ids,
     required String destination,
     required Sats maxFee,
+    FeeRate? reserveSweepFeeRate,
   }) = ArkClaimQuoteRequest;
-  factory ArkQuoteRequest.board({required Sats amount}) = ArkBoardQuoteRequest;
+  factory ArkQuoteRequest.board({
+    required Sats amount,
+    ArkBoardChainAnchor? anchor,
+  }) = ArkBoardQuoteRequest;
 }
 
 final class ArkPaymentQuoteRequest extends ArkQuoteRequest {
@@ -73,11 +78,13 @@ final class ArkEmergencyExitQuoteRequest extends ArkQuoteRequest {
   final String? destination;
   final FeeRate? feeRate;
   final Sats? maxClaimFee;
+  final ArkExitReserveFunding? reserveFunding;
   ArkEmergencyExitQuoteRequest({
     required List<String> ids,
     this.destination,
     this.feeRate,
     this.maxClaimFee,
+    this.reserveFunding,
   }) : ids = validateIds(ids) {
     final destination = this.destination;
     if (destination != null &&
@@ -88,6 +95,22 @@ final class ArkEmergencyExitQuoteRequest extends ArkQuoteRequest {
     if (maximum != null && maximum.value <= BigInt.zero) {
       throw ArgumentError('Positive claim fee ceiling required');
     }
+    if (reserveFunding != null && destination == null) {
+      throw ArgumentError('Reserve funding requires an exit destination');
+    }
+  }
+}
+
+/// An existing BIP84 payment to the reserve, not authorization to send another.
+final class ArkExitReserveFunding {
+  final String txid;
+  final Sats amount;
+
+  ArkExitReserveFunding({required this.txid, required this.amount}) {
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(txid)) {
+      throw ArgumentError('Invalid reserve funding transaction');
+    }
+    requirePositive(amount);
   }
 }
 
@@ -103,10 +126,14 @@ final class ArkClaimQuoteRequest extends ArkQuoteRequest {
   final List<String> ids;
   final String destination;
   final Sats maxFee;
+
+  /// An explicit regtest sweep, not part of automatic exit maintenance.
+  final FeeRate? reserveSweepFeeRate;
   ArkClaimQuoteRequest({
     required List<String> ids,
     required this.destination,
     required this.maxFee,
+    this.reserveSweepFeeRate,
   }) : ids = validateIds(ids) {
     if (destination.isEmpty) throw ArgumentError('Missing claim destination');
   }
@@ -114,8 +141,41 @@ final class ArkClaimQuoteRequest extends ArkQuoteRequest {
 
 final class ArkBoardQuoteRequest extends ArkQuoteRequest {
   final Sats amount;
-  ArkBoardQuoteRequest({required this.amount}) {
+  final ArkBoardChainAnchor? anchor;
+  ArkBoardQuoteRequest({required this.amount, this.anchor}) {
     requirePositive(amount);
+  }
+}
+
+final class ArkBoardChainAnchor {
+  final int height;
+  final String hash;
+
+  ArkBoardChainAnchor({required this.height, required this.hash}) {
+    if (height < 0 ||
+        height > 0xffffffff ||
+        !RegExp(r'^[0-9a-f]{64}$').hasMatch(hash)) {
+      throw ArgumentError('Invalid board chain anchor');
+    }
+  }
+}
+
+/// Live board terms are independent of the wallet's cached VTXO inventory.
+final class ArkBoardQuoteEvidence {
+  final String serverKey;
+  final String tipHash;
+  final int requiredConfirmations;
+
+  ArkBoardQuoteEvidence({
+    required this.serverKey,
+    required this.tipHash,
+    required this.requiredConfirmations,
+  }) {
+    if (!RegExp(r'^(02|03)[0-9a-f]{64}$').hasMatch(serverKey) ||
+        !RegExp(r'^[0-9a-f]{64}$').hasMatch(tipHash) ||
+        requiredConfirmations < 0) {
+      throw ArgumentError('Invalid board quote evidence');
+    }
   }
 }
 
@@ -138,6 +198,7 @@ final class ArkQuote {
   final FeeRate? feeRate;
   final Sats? confirmedReserveExposure;
   final Sats? maxClaimFee;
+  final ArkBoardQuoteEvidence? boardEvidence;
 
   /// For an emergency exit, the estimated fee of the claim that later sends
   /// the recovered funds to [destination]; it comes out of [amount]. [fee] is
@@ -164,10 +225,18 @@ final class ArkQuote {
     this.confirmedReserveExposure,
     this.maxClaimFee,
     this.claimFee,
+    this.boardEvidence,
   }) : selectedIds = List.unmodifiable(selectedIds),
        reserveOutpoints = List.unmodifiable(reserveOutpoints) {
     if (id.isEmpty || generation < 0 || observedTip < 0) {
       throw ArgumentError('Invalid quote identity or observation');
+    }
+    if (boardEvidence != null &&
+        (kind != ArkOperationKind.board ||
+            account.network != BitcoinNetwork.regtest ||
+            net.value <= BigInt.zero ||
+            fee.value + net.value != amount.value)) {
+      throw ArgumentError('Invalid board quote with live evidence');
     }
   }
 }

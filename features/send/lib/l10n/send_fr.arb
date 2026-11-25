@@ -300,5 +300,21 @@
   "sendOpenCoins": "Ouvrir les UTXO",
   "sendSecureWalletDescription": "Portefeuille Bitcoin sécurisé",
   "sendErrorInvoiceExpiryTooShort": "Cette facture expire trop tôt. Demandez une nouvelle facture au destinataire.",
-  "closeDialogButton": "Fermer"
+  "closeDialogButton": "Fermer",
+  "paymentStepSigning": "Signature",
+  "paymentStepSendingPayin": "Envoi du paiement",
+  "paymentStepBroadcasted": "Diffusée",
+  "paymentStepConfirmed": "Confirmée",
+  "paymentStepSendingLockup": "Envoi du dépôt",
+  "paymentStepLockupSent": "Dépôt envoyé",
+  "paymentStepInvoicePaid": "Facture payée",
+  "paymentStepClaimable": "Récupérable",
+  "paymentStepRequested": "Demande envoyée",
+  "paymentStepProposed": "Proposition reçue",
+  "paymentStepPayinBroadcast": "Paiement diffusé",
+  "paymentStepCompleted": "Terminé",
+  "paymentStepClaimBroadcast": "Récupération diffusée",
+  "paymentStepPayoutInProgress": "Versement en cours",
+  "paymentPendingMempool": "En attente dans la mempool",
+  "paymentExchangeDescriptor": "ÉCHANGE // ORDRE"
 }

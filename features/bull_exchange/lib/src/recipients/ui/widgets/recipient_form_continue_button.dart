@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,11 +11,16 @@ class RecipientFormContinueButton extends StatelessWidget {
     required this.onPressed,
     this.hookError,
     this.formDisabled = false,
+    this.shownFields = const {},
   });
 
   final VoidCallback onPressed;
   final String? hookError;
   final bool formDisabled;
+
+  /// The fields the form marks itself when the exchange refuses them; the
+  /// message under the button names only the other refused fields.
+  final Set<RecipientField> shownFields;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +47,13 @@ class RecipientFormContinueButton extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
-              failedToAddRecipient.toTranslated(context),
+              switch (failedToAddRecipient) {
+                final RecipientsInvalidFieldsFailure refused => refused.summary(
+                  context,
+                  shownFields,
+                ),
+                final failure => failure.toTranslated(context),
+              },
               style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),
@@ -49,7 +61,12 @@ class RecipientFormContinueButton extends StatelessWidget {
           ),
         BullButton.primary(
           label: context.loc.recipientsContinue,
-          onPressed: (isLoading || formDisabled) ? null : onPressed,
+          onPressed:
+              (isLoading ||
+                  formDisabled ||
+                  failedToAddRecipient is RecipientsSaveOutcomeUnknownFailure)
+              ? null
+              : onPressed,
         ),
       ],
     );

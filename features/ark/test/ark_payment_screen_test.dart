@@ -97,6 +97,75 @@ ArkPaymentScreen page(
 );
 
 void main() {
+  testWidgets('preference read late: Confirm waits, then no transition', (
+    tester,
+  ) async {
+    final r = PaymentRig();
+    final read = Completer<bool>();
+    r.client.submitted = Ok(
+      ArkOperation(
+        id: 'payment-1',
+        kind: ArkOperationKind.payment,
+        status: ArkOperationStatus.pending,
+        chainSource: Uri.parse('http://localhost:3000'),
+        configGeneration: 1,
+      ),
+    );
+    await tester.pumpWidget(
+      app(
+        ArkPaymentScreen(
+          cubit: r.cubit,
+          initialDestination: destination,
+          onReconcile: () {},
+          readPaymentAnimations: () => read.future,
+        ),
+      ),
+    );
+    await r.ready();
+    await frame(tester);
+    action(tester, 'Confirm').onPressed();
+    await frame(tester);
+    expect(r.client.calls.where((call) => call == 'submit'), isEmpty);
+    expect(find.byType(BullPaymentTransition), findsNothing);
+    read.complete(false);
+    await frame(tester);
+    action(tester, 'Confirm').onPressed();
+    await frame(tester);
+    expect(find.byType(BullPaymentTransition), findsNothing);
+    expect(r.client.calls.where((call) => call == 'submit').length, 1);
+  });
+
+  testWidgets('payment animations off: confirming shows no transition', (
+    tester,
+  ) async {
+    final r = PaymentRig();
+    r.client.submitted = Ok(
+      ArkOperation(
+        id: 'payment-1',
+        kind: ArkOperationKind.payment,
+        status: ArkOperationStatus.pending,
+        chainSource: Uri.parse('http://localhost:3000'),
+        configGeneration: 1,
+      ),
+    );
+    await tester.pumpWidget(
+      app(
+        ArkPaymentScreen(
+          cubit: r.cubit,
+          initialDestination: destination,
+          onReconcile: () {},
+          readPaymentAnimations: () async => false,
+        ),
+      ),
+    );
+    await r.ready();
+    await frame(tester);
+    action(tester, 'Confirm').onPressed();
+    await frame(tester);
+    expect(find.byType(BullPaymentTransition), findsNothing);
+    expect(r.client.calls.where((call) => call == 'submit').length, 1);
+  });
+
   testWidgets('skipping a pending payment reveals status without details', (
     tester,
   ) async {

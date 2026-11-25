@@ -725,9 +725,7 @@ class MnemonicWord extends StatelessWidget {
       child: Row(
         children: [
           ListenableBuilder(
-            listenable: candidates == null
-                ? controller
-                : Listenable.merge([controller, ?candidates]),
+            listenable: Listenable.merge([controller, focusNode, ?candidates]),
             builder: (context, _) {
               final word = Bip39WordList.normalize(controller.text);
               // With a candidate pool (last field), acceptability means
@@ -741,7 +739,9 @@ class MnemonicWord extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: word.isEmpty
+                  // A half-typed word is not wrong yet: red only once the
+                  // field is left with a word that is not acceptable.
+                  color: word.isEmpty || (!isValid && focusNode.hasFocus)
                       ? context.bull.onSurface
                       : isValid
                       ? context.bull.success

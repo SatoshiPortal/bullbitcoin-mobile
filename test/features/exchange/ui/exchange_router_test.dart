@@ -20,12 +20,34 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:novlang/novlang.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Preferences extends Mock implements Preferences {}
 
-class _ExchangeCubit extends MockCubit<ExchangeState>
-    implements ExchangeCubit {}
+class _ExchangeBloc extends MockBloc<ExchangeEvent, ExchangeState>
+    implements ExchangeBloc {}
+
+class _UnreadBloc extends MockBloc<SupportUnreadEvent, SupportUnreadState>
+    implements SupportUnreadBloc {}
+
+/// The blocs ExchangeSessionScope provides above the exchange routes.
+Widget _scoped(_ExchangeBloc exchange, Widget child) {
+  final unread = _UnreadBloc();
+  when(() => unread.state).thenReturn(const UnreadSignedOut());
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider<ExchangeBloc>.value(value: exchange),
+      BlocProvider<SupportUnreadBloc>.value(value: unread),
+    ],
+    child: child,
+  );
+}
 
 BullExchangeFeature _mount({
   required Exchange Function() exchange,
@@ -74,9 +96,8 @@ void main() {
     tester,
   ) async {
     final lifecycle = _Access();
-    when(
-      () => lifecycle.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    when(() => lifecycle.current)
+        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     when(() => lifecycle.enable(forSupport: true))
         .thenAnswer((_) async => const Ok(null));
     final capability = exchangeForTesting(access: lifecycle);
@@ -161,14 +182,12 @@ void main() {
   pumpTrade(WidgetTester tester, {void Function(BuildContext)? onExit}) async {
     final exchange = _Access();
     final changes = StreamController<ExchangeAccess>.broadcast();
-    ExchangeAccess current = const ExchangeAccessEnabled(
-      ExchangeAccessSession.signedIn,
-    );
+    ExchangeAccess current = const ExchangeAccessSignedIn(_testSession);
     when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => changes.stream);
     final capability = exchangeForTesting(access: exchange);
-    final cubit = _ExchangeCubit();
-    when(() => cubit.state).thenReturn(const ExchangeState());
+    final cubit = _ExchangeBloc();
+    when(() => cubit.state).thenReturn(const ExchangeSignedOut());
     final router = GoRouter(
       initialLocation: BullExchangeNavigation.dashboardPath,
       routes: [
@@ -180,9 +199,9 @@ void main() {
     addTearDown(cubit.close);
     addTearDown(changes.close);
     await tester.pumpWidget(
-      BlocProvider<ExchangeCubit>.value(
-        value: cubit,
-        child: MaterialApp.router(
+      _scoped(
+        cubit,
+        MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
           localizationsDelegates: const [
@@ -236,17 +255,17 @@ void main() {
   testWidgets('an open Trade screen leaves for sign-in when the session ends', (
     tester,
   ) async {
-    const signedIn = ExchangeAccessEnabled(ExchangeAccessSession.signedIn);
-    const signedOut = ExchangeAccessEnabled(ExchangeAccessSession.signedOut);
+    const signedIn = ExchangeAccessSignedIn(_testSession);
+    const signedOut = ExchangeAccessSignedOut(ExchangeEnvironment.mainnet);
     final exchange = _Access();
     final changes = StreamController<ExchangeAccess>.broadcast();
     ExchangeAccess current = signedIn;
     when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => changes.stream);
     final capability = exchangeForTesting(access: exchange);
-    final cubit = _ExchangeCubit();
-    // The cubit resets to its empty state when the session ends.
-    when(() => cubit.state).thenReturn(const ExchangeState());
+    final cubit = _ExchangeBloc();
+    // The bloc is signed out once the session ends.
+    when(() => cubit.state).thenReturn(const ExchangeSignedOut());
     final router = GoRouter(
       initialLocation: BullExchangeNavigation.dashboardPath,
       routes: [
@@ -256,9 +275,9 @@ void main() {
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      BlocProvider<ExchangeCubit>.value(
-        value: cubit,
-        child: MaterialApp.router(
+      _scoped(
+        cubit,
+        MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
           localizationsDelegates: const [

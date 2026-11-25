@@ -435,5 +435,30 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง"
+  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง",
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "coreSwapsStatusCompleted": "สมบูรณ์",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "สิ้นสุด",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "จำนวน",
+  "swapRescueButton": "กู้คืน",
+  "swapRescueCreatedLabel": "สร้างเมื่อ",
+  "swapRescueIdLabel": "รหัส Swap",
+  "swapRescueRouteLabel": "เส้นทาง",
+  "swapRescueStatusLabel": "สถานะ",
+  "swapRescueSuccess": "กู้คืน Swap สำเร็จแล้ว — ระบบจะดำเนินการต่อ",
+  "swapRescueTitle": "กู้ Swap",
+  "swapRescueTypeLabel": "ประเภท",
+  "swapRescueWalletHint": "เลือกกระเป๋าสตางค์",
+  "swapRescueWalletLabel": "กู้คืนไปยังกระเป๋าสตางค์",
+  "swapRestoreActionable": "{count, plural, =0{ไม่มี Swap ที่สามารถกู้คืนได้} =1{คุณสามารถลองกู้คืน Swap ได้ 1 รายการ ซึ่งอาจอยู่ในสถานะสุดท้ายแล้วก็ได้} other{คุณสามารถลองกู้คืน Swap ได้ {count} รายการ โปรดทราบว่าบางรายการอาจอยู่ในสถานะสุดท้ายแล้ว}}",
+  "swapRestoreAllSection": "Swap ทั้งหมด",
+  "swapRestoreFailed": "ไม่สามารถกู้คืน Swap ได้",
+  "swapRestoreKindCrossChain": "ข้ามเชน (Cross Chain)",
+  "swapRestoreKindLightningReceive": "รับผ่าน Lightning",
+  "swapRestoreKindLightningSend": "ส่งผ่าน Lightning",
+  "swapRestoreNoSwaps": "ไม่พบ Swap ที่สามารถกู้คืนได้",
+  "swapRestoreRecoverableSection": "กู้คืนได้",
+  "swapRestoreTitle": "กู้คืน Swap"
 }

@@ -490,4 +490,46 @@ void main() {
       });
     }
   });
+
+  group('unread support messages', () {
+    test('a count is read as it is', () async {
+      final read = await _new(
+        _ChatHttp({
+          'getUnreadMessageCount': {'result': 3},
+        }),
+      ).readUnreadMessageCount();
+      expect(read, isA<ReadGot<int>>().having((r) => r.value, 'value', 3));
+    });
+
+    test('a negative count is malformed, never zero', () async {
+      final read = await _new(
+        _ChatHttp({
+          'getUnreadMessageCount': {'result': -1},
+        }),
+      ).readUnreadMessageCount();
+      expect(read, isA<ReadMalformed<int>>());
+    });
+
+    test('a refused read is unreachable, never zero', () async {
+      final read = await _new(_ChatHttp({'getUnreadMessageCount': _rpcError}))
+          .readUnreadMessageCount();
+      expect(read, isA<ReadUnreachable<int>>());
+    });
+
+    test('marking read is a write with a closed answer', () async {
+      expect(
+        await _new(
+          _ChatHttp({
+            'setAllMessagesAsRead': {'result': true},
+          }),
+        ).markAllMessagesRead(),
+        isA<WriteDone<void>>(),
+      );
+      expect(
+        await _new(_ChatHttp({'setAllMessagesAsRead': _rpcError}))
+            .markAllMessagesRead(),
+        isA<WriteRefused<void>>(),
+      );
+    });
+  });
 }

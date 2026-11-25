@@ -3,44 +3,38 @@ import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem;
 import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
 
+/// The fund jurisdictions. [value] is null when the account currency gives
+/// none: the hint asks the user to pick.
 class FundExchangeJurisdictionDropdown extends StatelessWidget {
-  final FundingJurisdiction value;
-  final void Function(FundingJurisdiction)? onChanged;
+  final Jurisdiction? value;
+  final void Function(Jurisdiction) onChanged;
   const FundExchangeJurisdictionDropdown({
     super.key,
     required this.value,
-    this.onChanged,
+    required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    return BullDropdown<FundingJurisdiction>(
+    return BullDropdown<Jurisdiction>(
       value: value,
+      hint: context.loc.fundExchangeJurisdictionHint,
       items: [
-        BullPickerItem(
-          value: FundingJurisdiction.canada,
-          label: context.loc.fundExchangeJurisdictionCanada,
-        ),
-        BullPickerItem(
-          value: FundingJurisdiction.europe,
-          label: context.loc.fundExchangeJurisdictionEurope,
-        ),
-        BullPickerItem(
-          value: FundingJurisdiction.mexico,
-          label: context.loc.fundExchangeJurisdictionMexico,
-        ),
-        BullPickerItem(
-          value: FundingJurisdiction.costaRica,
-          label: context.loc.fundExchangeJurisdictionCostaRica,
-        ),
-        BullPickerItem(
-          value: FundingJurisdiction.argentina,
-          label: context.loc.fundExchangeJurisdictionArgentina,
-        ),
-        BullPickerItem(
-          value: FundingJurisdiction.colombia,
-          label: context.loc.fundExchangeJurisdictionColombia,
-        ),
+        for (final jurisdiction in Jurisdiction.values)
+          BullPickerItem(
+            value: jurisdiction,
+            label: switch (jurisdiction) {
+              Jurisdiction.canada => context.loc.fundExchangeJurisdictionCanada,
+              Jurisdiction.europe => context.loc.fundExchangeJurisdictionEurope,
+              Jurisdiction.mexico => context.loc.fundExchangeJurisdictionMexico,
+              Jurisdiction.costaRica =>
+                context.loc.fundExchangeJurisdictionCostaRica,
+              Jurisdiction.argentina =>
+                context.loc.fundExchangeJurisdictionArgentina,
+              Jurisdiction.colombia =>
+                context.loc.fundExchangeJurisdictionColombia,
+            },
+          ),
       ],
       onChanged: onChanged,
     );

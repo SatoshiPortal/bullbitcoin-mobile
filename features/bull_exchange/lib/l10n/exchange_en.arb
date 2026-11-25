@@ -112,6 +112,10 @@
   "@exchangeFileUploadStatusInReview": {
     "description": "Status badge when files are under review"
   },
+  "exchangeFileUploadStatusUnknown": "Status unknown",
+  "@exchangeFileUploadStatusUnknown": {
+    "description": "Status badge when the exchange reports a file review status this app version does not know; no upload is offered"
+  },
   "exchangeFileUploadStatusRejectedBadge": "Rejected",
   "@exchangeFileUploadStatusRejectedBadge": {
     "description": "Short rejected-status badge shown next to a re-upload action in the secure file upload screen."
@@ -429,7 +433,11 @@
   },
   "exchangeSupportChatLogDraft": "Here are my logs",
   "@exchangeSupportChatLogDraft": {
-    "description": "Editable support chat draft after attaching diagnostic logs."
+    "description": "Line added to the support chat draft when diagnostic logs are attached (appended to what the user typed, CHAT-8)."
+  },
+  "exchangeSupportChatLoadOlder": "Load earlier messages",
+  "@exchangeSupportChatLoadOlder": {
+    "description": "Support chat: loads the previous page of the thread (CHAT-10: reachable even when the first page fits on screen)"
   },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -490,6 +498,14 @@
   "exchangeAccessRetryLogout": "Finish signing out",
   "@exchangeAccessRetryLogout": {
     "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessExpiring": "Your session expired. Signing you out on this device.",
+  "@exchangeAccessExpiring": {
+    "description": "Exchange access settings while an expired session is being signed out (INT-15)"
+  },
+  "exchangeLogoutDidNotFinish": "Sign out didn't finish on this device.",
+  "@exchangeLogoutDidNotFinish": {
+    "description": "Snackbar after a failed sign-out from exchange settings; its action opens the exchange access settings to finish it (B18)"
   },
   "fundExchangeTitle": "Funding",
   "@fundExchangeTitle": {
@@ -1263,9 +1279,41 @@
   "@exchangeBitcoinWalletsSaveFailed": {
     "description": "Error shown when a default wallet address cannot be saved"
   },
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "We could not tell whether this address was saved. Check it below before you save again.",
+  "@exchangeBitcoinWalletsSaveOutcomeUnknown": {
+    "description": "Shown on the exchange default wallets screen when saving an address failed after the request may have reached the server. The saved addresses were read again, so a new save updates the one that may have been created."
+  },
   "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
   "@exchangeBitcoinWalletsDeleteFailed": {
     "description": "Error shown when a default wallet address cannot be deleted"
+  },
+  "exchangeSettingsWriteBusy": "Another exchange request is still running. Try again in a moment.",
+  "@exchangeSettingsWriteBusy": {
+    "description": "Exchange settings: a preference save was refused because another exchange write runs or is unsettled"
+  },
+  "exchangeSettingsSignedOut": "You are no longer signed in to the exchange. Sign in again to change these settings.",
+  "@exchangeSettingsSignedOut": {
+    "description": "Exchange settings: the session ended or expired; a retry can't help (SET-3)"
+  },
+  "exchangeBitcoinWalletsBusy": "Another exchange request is still running. Try again in a moment.",
+  "@exchangeBitcoinWalletsBusy": {
+    "description": "Default wallets: a save or delete was refused because another exchange write runs or is unsettled"
+  },
+  "exchangeBitcoinWalletsUnsetSuccess": "Wallet address removed",
+  "@exchangeBitcoinWalletsUnsetSuccess": {
+    "description": "Default wallets: shown after an address is removed (DW-3; was the 'saved' message)"
+  },
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "We could not tell whether this address was removed. Check again before you change it.",
+  "@exchangeBitcoinWalletsUnsetOutcomeUnknown": {
+    "description": "Default wallets: the removal may have reached the exchange and the re-read failed"
+  },
+  "exchangeBitcoinWalletsCheckAgain": "Check again",
+  "@exchangeBitcoinWalletsCheckAgain": {
+    "description": "Default wallets: re-read the wallets after an unknown save or removal"
+  },
+  "exchangeBitcoinWalletsSessionEnded": "You are no longer signed in to the exchange. Sign in again to edit your default wallets.",
+  "@exchangeBitcoinWalletsSessionEnded": {
+    "description": "Default wallets: the exchange session the screen was opened for ended"
   },
   "destinationExpectedType": "Enter or scan a valid {type}.",
   "@destinationExpectedType": {
@@ -1350,14 +1398,6 @@
   "autoBuyInfoMessage": "Any amount added to your account will be converted to Bitcoin at the current exchange rate and sent to your wallet.",
   "@autoBuyInfoMessage": {
     "description": "Explanation on the AutoBuy confirmation screen"
-  },
-  "autoBuyAccountUnavailableError": "Your Bull Bitcoin account is not available. Try again later.",
-  "@autoBuyAccountUnavailableError": {
-    "description": "Error shown when AutoBuy cannot load the exchange account"
-  },
-  "autoBuyWalletRequiredError": "Add at least one default Bitcoin, Lightning, or Liquid address.",
-  "@autoBuyWalletRequiredError": {
-    "description": "Error shown when AutoBuy is enabled without a default wallet"
   },
   "autoBuyUpdateError": "Auto-buy could not be updated. Try again later.",
   "@autoBuyUpdateError": {
@@ -1885,10 +1925,6 @@
   "@recipientsFieldSecurityAnswerHint": {
     "description": "Hint text for the security answer field."
   },
-  "recipientsValidationSecurityQuestionMin": "Security question must be at least 10 characters",
-  "@recipientsValidationSecurityQuestionMin": {
-    "description": "Validation error shown when the security question is shorter than 10 characters."
-  },
   "recipientsCharCounter": "{count}/40 characters",
   "@recipientsCharCounter": {
     "description": "Character counter displayed below the security question field.",
@@ -1994,6 +2030,10 @@
   "@recipientsErrorSaveFailed": {
     "description": "Shown when creating a recipient fails."
   },
+  "recipientsErrorSaveOutcomeUnknown": "We could not tell whether this recipient was saved. Check your recipients before you add it again.",
+  "@recipientsErrorSaveOutcomeUnknown": {
+    "description": "Shown under the recipient form when the save request failed after it may have reached the server, so the recipient may exist. The form does not offer the save again."
+  },
   "recipientsErrorSinpeLookupFailed": "We could not verify this phone number. Please check it and try again.",
   "@recipientsErrorSinpeLookupFailed": {
     "description": "Shown when the SINPE phone number lookup fails."
@@ -2033,6 +2073,14 @@
   "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This may take a few minutes. We'll notify you when ready.",
   "@recipientsConfidentialSepaActivatingDescription": {
     "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaStatusUnknownTitle": "Activation status unknown",
+  "@recipientsConfidentialSepaStatusUnknownTitle": {
+    "description": "Title of the Confidential SEPA activation screen when the exchange reports a status this app version does not know"
+  },
+  "recipientsConfidentialSepaStatusUnknownDescription": "We couldn't read the activation status of this recipient. Please contact support before using it for Confidential SEPA.",
+  "@recipientsConfidentialSepaStatusUnknownDescription": {
+    "description": "Description of the Confidential SEPA activation screen when the exchange reports a status this app version does not know"
   },
   "recipientsConfidentialSepaNotActivatedTitle": "Recipient not activated for Confidential SEPA",
   "@recipientsConfidentialSepaNotActivatedTitle": {
@@ -2190,34 +2238,6 @@
   "@withdrawConfirmAmount": {
     "description": "Field label for withdrawal amount"
   },
-  "withdrawConfirmEmail": "Email",
-  "@withdrawConfirmEmail": {
-    "description": "Field label for email (Interac)"
-  },
-  "withdrawConfirmPayee": "Payee",
-  "@withdrawConfirmPayee": {
-    "description": "Field label for payee (Bill Payment)"
-  },
-  "withdrawConfirmAccount": "Account",
-  "@withdrawConfirmAccount": {
-    "description": "Field label for bank account"
-  },
-  "withdrawConfirmIban": "IBAN",
-  "@withdrawConfirmIban": {
-    "description": "Field label for IBAN"
-  },
-  "withdrawConfirmClabe": "CLABE",
-  "@withdrawConfirmClabe": {
-    "description": "Field label for CLABE (Mexico)"
-  },
-  "withdrawConfirmPhone": "Phone",
-  "@withdrawConfirmPhone": {
-    "description": "Field label for phone number"
-  },
-  "withdrawConfirmCard": "Card",
-  "@withdrawConfirmCard": {
-    "description": "Field label for debit card"
-  },
   "withdrawConfirmButton": "Confirm withdrawal",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
@@ -2233,46 +2253,6 @@
   "withdrawConfirmBankAccount": "Bank account",
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
-  },
-  "withdrawOwnershipQuestion": "Who does this account belong to?",
-  "@withdrawOwnershipQuestion": {
-    "description": "Question asking about account ownership"
-  },
-  "withdrawOwnershipMyAccount": "This is my account",
-  "@withdrawOwnershipMyAccount": {
-    "description": "Option indicating the account belongs to the user"
-  },
-  "withdrawOwnershipOtherAccount": "This is someone else's account",
-  "@withdrawOwnershipOtherAccount": {
-    "description": "Option indicating the account belongs to someone else"
-  },
-  "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
-  "@withdrawUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during withdraw"
-  },
-  "withdrawBelowMinAmountError": "Minimum amount is {amount} {currency}",
-  "@withdrawBelowMinAmountError": {
-    "description": "Shown when the withdrawal amount is under the account minimum. Names the bound the exchange reported so the user can correct the amount.",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "withdrawAboveMaxAmountError": "Maximum amount is {amount} {currency}",
-  "@withdrawAboveMaxAmountError": {
-    "description": "Shown when the withdrawal amount is over the account maximum. Names the bound the exchange reported so the user can correct the amount.",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currency": {
-        "type": "String"
-      }
-    }
   },
   "withdrawInteracSecurityDetailsTitle": "Transfer security details",
   "@withdrawInteracSecurityDetailsTitle": {
@@ -2294,13 +2274,13 @@
   "@withdrawInteracSecurityAnswerFormatError": {
     "description": "Validation error for unsupported Interac security answer characters."
   },
-  "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
-  "@withdrawUnexpectedError": {
-    "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
+  "withdrawConfirmOutcomeUnknownError": "We could not confirm whether your withdrawal went through. Check again before you start a new withdrawal.",
+  "@withdrawConfirmOutcomeUnknownError": {
+    "description": "Shown on the withdrawal confirmation when the confirm request failed in a way that may still have confirmed the order, and the order could not be re-read. The Confirm button is replaced by Check again."
   },
-  "withdrawConfidentialSepaNotActivatedError": "Please activate the confidential payment option for this SEPA recipient.",
-  "@withdrawConfidentialSepaNotActivatedError": {
-    "description": "Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered"
+  "withdrawConfirmCheckAgainButton": "Check again",
+  "@withdrawConfirmCheckAgainButton": {
+    "description": "Button on the withdrawal confirmation that re-reads the order after a confirmation whose outcome is unknown."
   },
   "limitOrdersTitle": "Limit orders",
   "@limitOrdersTitle": {
@@ -2413,7 +2393,11 @@
   },
   "limitOrderStatusFailed": "Failed",
   "@limitOrderStatusFailed": {
-    "description": "Failed or unknown Limit Order status"
+    "description": "Failed Limit Order status"
+  },
+  "limitOrderStatusUnknown": "Status unknown",
+  "@limitOrderStatusUnknown": {
+    "description": "Limit Order status this app version does not know yet; the order may still be open"
   },
   "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
   "@limitOrdersAccountUnavailableError": {
@@ -2522,10 +2506,6 @@
   "buyBitcoinAddressHint": "BC1QYL7J673H…6Y6ALV70M0",
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
-  },
-  "buyConfirmPurchase": "Confirm purchase",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
   },
   "buyYouBought": "You bought {amount} with {fiatAmount}",
   "@buyYouBought": {
@@ -2816,14 +2796,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "buyInputMinAmountError": "You should buy at least",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "You can't buy more than",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC ID Verification Pending",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -2892,37 +2864,69 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "buyUnauthenticatedError": "You are not authenticated. Please log in to continue.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
+  "buyPayoutAddressUnavailable": "Couldn't get a receive address from this wallet. Pick it again or choose another wallet.",
+  "@buyPayoutAddressUnavailable": {
+    "description": "Under the buy payout wallet dropdown when the picked app wallet gave no receive address; the wallet stays selected and nothing was ordered"
   },
-  "buyBelowMinAmountError": "You are trying to buy below the minimum amount.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
+  "buyPayoutFailed": "The exchange could not complete this payout. Open the order details or contact support.",
+  "@buyPayoutFailed": {
+    "description": "On the buy success page when the confirmed order was then cancelled or its payout failed"
   },
-  "buyAboveMaxAmountError": "You are trying to buy above the maximum amount.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
+  "buyPayoutStillPending": "Your payout is still on its way. You can follow it in the order details.",
+  "@buyPayoutStillPending": {
+    "description": "On the buy success page when the payout could not be read for a while or is taking longer than expected; the order is confirmed"
   },
-  "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
-  "@buyUnexpectedError": {
-    "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
+  "buyStepOrderPlaced": "Order placed",
+  "@buyStepOrderPlaced": {
+    "description": "Label of the first status of a buy payment rail: the order is confirmed and the payout has not started"
   },
-  "dcaAccountUnavailableError": "Could not load your account. Check your connection, make sure you are logged in, and try again.",
-  "@dcaAccountUnavailableError": {
-    "description": "Shown when the exchange account summary cannot be loaded, so DCA setup cannot start. Deliberately covers three causes the boundary cannot tell apart: not logged in, no connection, and a backend error."
+  "buyStepPayoutInProgress": "Payout in progress",
+  "@buyStepPayoutInProgress": {
+    "description": "Label of a buy payment rail status: the exchange is preparing the payout"
   },
-  "dcaLightningAddressRequiredError": "Enter a Lightning address to receive your purchases.",
-  "@dcaLightningAddressRequiredError": {
-    "description": "Shown when Lightning was chosen as the DCA payout network but no lightning address was provided."
+  "buyStepPayoutBroadcast": "Payout broadcast",
+  "@buyStepPayoutBroadcast": {
+    "description": "Label of an on-chain buy payment rail status: the payout transaction is on the network and waits for its confirmation"
   },
-  "dcaReceiveAddressError": "Could not prepare a receiving address in your wallet. Please try again.",
-  "@dcaReceiveAddressError": {
-    "description": "Shown when no default wallet exists for the chosen DCA network or generating a receive address failed."
+  "buyStepPayoutSent": "Payout sent",
+  "@buyStepPayoutSent": {
+    "description": "Label of the last status of an on-chain buy payment rail: the exchange reports the payout as completed and gave its transaction"
   },
-  "dcaOrderCreationError": "The recurring buy could not be created. Please try again later.",
-  "@dcaOrderCreationError": {
-    "description": "Shown when the exchange rejects creating the recurring buy order."
+  "buyStepPaid": "Paid",
+  "@buyStepPaid": {
+    "description": "Label of the last status of a Lightning buy payment rail: the exchange reports the payout as completed"
+  },
+  "dcaUseDefaultBitcoinWallet": "Use my default Bitcoin wallet",
+  "@dcaUseDefaultBitcoinWallet": {
+    "description": "Checkbox in recurring buy wallet selection: pay out to the Bitcoin address saved in the user's exchange default wallets."
+  },
+  "dcaUseDefaultLiquidWallet": "Use my default Liquid wallet",
+  "@dcaUseDefaultLiquidWallet": {
+    "description": "Checkbox in recurring buy wallet selection: pay out to the Liquid address saved in the user's exchange default wallets."
+  },
+  "dcaNoDefaultBitcoinWallet": "You have no default Bitcoin wallet on your Bull Bitcoin account. Set one, or enter a Bitcoin address below.",
+  "@dcaNoDefaultBitcoinWallet": {
+    "description": "Shown in recurring buy wallet selection when Bitcoin is chosen and the user's exchange account has no default Bitcoin wallet."
+  },
+  "dcaNoDefaultLiquidWallet": "You have no default Liquid wallet on your Bull Bitcoin account. Set one, or enter a Liquid address below.",
+  "@dcaNoDefaultLiquidWallet": {
+    "description": "Shown in recurring buy wallet selection when Liquid is chosen and the user's exchange account has no default Liquid wallet."
+  },
+  "dcaManageDefaultWallets": "Set default wallets",
+  "@dcaManageDefaultWallets": {
+    "description": "Button in recurring buy wallet selection that opens the exchange default wallets editor."
+  },
+  "dcaEnterBitcoinAddressLabel": "Enter Bitcoin address",
+  "@dcaEnterBitcoinAddressLabel": {
+    "description": "Label of the field where the user types the Bitcoin address that receives the recurring buys."
+  },
+  "dcaEnterLiquidAddressLabel": "Enter Liquid address",
+  "@dcaEnterLiquidAddressLabel": {
+    "description": "Label of the field where the user types the Liquid address that receives the recurring buys."
+  },
+  "dcaConfirmPayoutAddress": "Receiving address",
+  "@dcaConfirmPayoutAddress": {
+    "description": "Recurring buy confirmation row: the Bitcoin or Liquid address every purchase is sent to."
   },
   "payjoinInProgress": "Payjoin in progress",
   "@payjoinInProgress": {
@@ -2956,53 +2960,13 @@
   "@sellTitle": {
     "description": "AppBar title for sell screen"
   },
-  "sellSelectWallet": "Select Wallet",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
-  },
   "sellWhichWalletQuestion": "Which wallet do you want to sell from?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "sellExternalWallet": "External wallet",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "sellFromAnotherWallet": "Sell from another Bitcoin wallet",
   "@sellFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
-  },
-  "sellAboveMaxAmountError": "You are trying to sell above the maximum amount that can be sold with this wallet.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellBelowMinAmountError": "You are trying to sell below the minimum amount that can be sold with this wallet.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "sellInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this sell order.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellUnauthenticatedError": "You are not authenticated. Please log in to continue.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "sellOrderNotFoundError": "The sell order was not found. Please try again.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellOrderAlreadyConfirmedError": "This sell order has already been confirmed.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "sellSelectNetwork": "Select Network",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "sellHowToPayInvoice": "How do you want to pay this invoice?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
   },
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
@@ -3112,10 +3076,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellPleasePayInvoice": "Please pay this invoice",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
   "sellBitcoinAmount": "Bitcoin amount",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
@@ -3131,22 +3091,6 @@
   "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellNoInvoiceData": "No invoice data available",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellInProgress": "Sell in progress…",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
-  },
-  "sellGoHome": "Go home",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellOrderCompleted": "Order completed!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
   },
   "sellBalanceWillBeCredited": "Your account balance will be credited after your transaction receives 1 confirmation onchain.",
   "@sellBalanceWillBeCredited": {
@@ -3168,14 +3112,6 @@
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
-  "payDescriptionLabel": "Payment description (optional)",
-  "@payDescriptionLabel": {
-    "description": "Label for the optional payment description input in the pay flow"
-  },
-  "payDescriptionHint": "Add a note for this payment",
-  "@payDescriptionHint": {
-    "description": "Hint text for the optional payment description input in the pay flow"
-  },
   "payPaymentDescription": "Payment description",
   "@payPaymentDescription": {
     "description": "Label for the payment description on the pay confirmation screen"
@@ -3188,83 +3124,9 @@
   "@payRecipientName": {
     "description": "Label for recipient name"
   },
-  "payRecipientDetails": "Recipient details",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
-  },
-  "payNoDetailsAvailable": "No details available",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
-  },
-  "paySelectWallet": "Select Wallet",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
-  },
-  "payExternalWallet": "External wallet",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payAboveMaxAmountError": "The maximum you can pay with this wallet is {amount}.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "payBelowMinAmountError": "The minimum you can pay with this wallet is {amount}.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "payInsufficientBalanceError": "Insufficient balance in the selected wallet to complete this pay order.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "payUnauthenticatedError": "You are not authenticated. Please log in to continue.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "paySelectNetwork": "Select Network",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payHowToPayInvoice": "How do you want to pay this invoice?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "payConfirmPayment": "Confirm Payment",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
-  },
   "payOrderNumber": "Order number",
   "@payOrderNumber": {
     "description": "Label for order number"
-  },
-  "payPayinAmount": "Payin amount",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
-  "payPayoutAmount": "Payout amount",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
-  "payExchangeRate": "Exchange rate",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
   },
   "payPayFromWallet": "Pay from wallet",
   "@payPayFromWallet": {
@@ -3310,18 +3172,6 @@
   "@payContinue": {
     "description": "Button to continue to next step"
   },
-  "payPleasePayInvoice": "Please pay this invoice",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payBitcoinAmount": "Bitcoin amount",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
-  "payBitcoinPrice": "Bitcoin Price",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
-  },
   "payCopyInvoice": "Copy Invoice",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
@@ -3334,14 +3184,6 @@
   "@payQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "payNoInvoiceData": "No invoice data available",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "payInvalidState": "Invalid state",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
   "payViewDetails": "View details",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -3349,22 +3191,6 @@
   "paySinpeReceipt": "SINPE Receipt",
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
-  },
-  "payCompleted": "Payment Completed!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payCompletedDescriptionDetails": "The payment of {fiatAmount} to {recipient} has been completed.",
-  "@payCompletedDescriptionDetails": {
-    "description": "Description for payment completed, with the fiat amount and the recipient",
-    "placeholders": {
-      "fiatAmount": {
-        "type": "String"
-      },
-      "recipient": {
-        "type": "String"
-      }
-    }
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -3398,14 +3224,6 @@
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
   },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
-  },
-  "payPaymentInProgress": "Payment In Progress!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
-  },
   "payPaymentInProgressDescriptionDetails": "The payment of {fiatAmount} to {recipient} will be sent after your transaction receives 1 confirmation onchain.",
   "@payPaymentInProgressDescriptionDetails": {
     "description": "Description for payment in progress, before the payin transaction is confirmed onchain",
@@ -3434,14 +3252,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payWhichWallet": "Which wallet do you want to pay from?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
-  },
-  "payExternalWalletDescription": "Pay from another Bitcoin wallet",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "payRbfActivated": "Replace-by-fee activated",
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
@@ -3462,21 +3272,9 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "sellSendPaymentContinue": "Continue",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
-  "exchangeSendingPayment": "Sending payment…",
-  "@exchangeSendingPayment": {
-    "description": "In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast"
-  },
   "exchangePaymentSentRefreshingOrder": "Payment sent, refreshing your order…",
   "@exchangePaymentSentRefreshingOrder": {
     "description": "In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it"
-  },
-  "sellBitcoinPriceLabel": "Bitcoin Price",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
   },
   "sellViewDetailsButton": "View details",
   "@sellViewDetailsButton": {
@@ -3489,10 +3287,6 @@
   "sellKycPendingDescription": "You must complete ID verification first",
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
-  },
-  "sellLoadingGeneric": "Loading…",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
   },
   "viewerTapToCopy": "Tap to copy",
   "@viewerTapToCopy": {
@@ -3518,77 +3312,33 @@
   "@payDepositAddress": {
     "description": "Pay confirm screen: label of the row showing the exchange deposit address the payin is sent to"
   },
-  "sellDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
-  "@sellDepositAddressChangedError": {
-    "description": "Sell: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
-  },
-  "payDepositAddressChangedError": "The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.",
-  "@payDepositAddressChangedError": {
-    "description": "Pay: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused"
-  },
-  "sellUnexpectedError": "Your sell order could not be completed right now. Please try again or contact support.",
-  "@sellUnexpectedError": {
-    "description": "Generic catch-all shown for any unexpected sell failure. Deliberately does not include the raw reason: this arm previously returned the exception text verbatim to the user (#1895)."
-  },
-  "sellErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
-  "@sellErrorFeeBelowRelayFloor": {
-    "description": "Shown when the built sell payin fee falls under the network relay floor. Actionable: the user must raise the fee. Wording matches the send equivalent."
-  },
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
-  },
-  "payUnexpectedError": "Your payment could not be completed right now. Please try again or contact support.",
-  "@payUnexpectedError": {
-    "description": "Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895)."
-  },
-  "payErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
-  "@payErrorFeeBelowRelayFloor": {
-    "description": "Shown when a built pay payin's fee is under the network relay floor, so no node would accept it. Actionable: the user must raise the fee."
   },
   "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@payErrorFeesUnavailable": {
     "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
   },
-  "withdrawRecipientsPrompt": "Where and how should we send the money?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
   "copiedToClipboard": "Copied to clipboard",
   "@copiedToClipboard": {
     "description": "Generic toast message after copying a value to the clipboard"
-  },
-  "sellQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
-  "@sellQuoteExpiredError": {
-    "description": "Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid."
-  },
-  "exchangePaymentSentPastDeadline": "Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
-  "@exchangePaymentSentPastDeadline": {
-    "description": "Shown on the sell or pay confirmation after the payin was broadcast, when the exchange reports the order deadline expired before it saw the payment."
   },
   "exchangePaymentSentLeave": "Leave",
   "@exchangePaymentSentLeave": {
     "description": "Button that leaves the sell or pay confirmation once the exchange reports the payment arrived past the order deadline."
   },
-  "payQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
-  "@payQuoteExpiredError": {
-    "description": "Shown on the pay confirmation when the price lock expired before the payment was sent; nothing was paid."
+  "exchangePaymentOutcomeUnknownChecking": "Checking whether your payment was sent…",
+  "@exchangePaymentOutcomeUnknownChecking": {
+    "description": "In-flight status on the sell or pay confirmation when the payin broadcast failed in a way that may still have sent it; the app waits for the order to show the payment instead of offering to pay again."
   },
   "sellPayoutBalance": "Add to my account balance",
   "@sellPayoutBalance": {
     "description": "EUR Sell payout option matching BBX: credit the user's exchange account balance."
   },
-  "sellPayoutSepaDescription": "Withdrawals appear as sent by Leonod",
-  "@sellPayoutSepaDescription": {
-    "description": "EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod."
-  },
   "sellPayoutTitle": "Select recipient",
   "@sellPayoutTitle": {
     "description": "Title for the EUR Sell payout selection screen, matching BBX Select recipient."
-  },
-  "sellPayoutNewBadge": "NEW",
-  "@sellPayoutNewBadge": {
-    "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
   },
   "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
   "@walletSpendAwaitingObservation": {
@@ -3597,10 +3347,6 @@
   "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
   "@sendPayjoinSpendPaused": {
     "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
-  },
-  "exchangePayinNetworkMismatch": "The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.",
-  "@exchangePayinNetworkMismatch": {
-    "description": "Sell and Pay refuse to create the order when the selected wallet belongs to a different chain or environment."
   },
   "walletSpendBusy": "The wallet is busy. Try again in a moment.",
   "@walletSpendBusy": {
@@ -3770,10 +3516,6 @@
   "@limitOrderInvalidTargetError": {
     "description": "Shown for an invalid Limit Order target price"
   },
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
-  "@limitOrderInvalidAmountError": {
-    "description": "Shown for an invalid Limit Order fiat amount"
-  },
   "limitOrdersYourWalletsTitle": "Your wallets",
   "@limitOrdersYourWalletsTitle": {
     "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
@@ -3892,5 +3634,259 @@
   "exchangeErrorRequestingAccountDeletion": "Your account deletion request could not be sent. Please try again.",
   "@exchangeErrorRequestingAccountDeletion": {
     "description": "exchange user-facing failure message (#1895)."
+  },
+  "fundExchangeJurisdictionHint": "Select where you send money from",
+  "@fundExchangeJurisdictionHint": {
+    "description": "Hint of the fund screen's region picker when the account currency gives no region"
+  },
+  "fundExchangeScamConsentUnverified": "We could not confirm that your consent was recorded. Check your connection and try again.",
+  "@fundExchangeScamConsentUnverified": {
+    "description": "Shown in the fund consent sheet when the consent may have been sent but re-reading the account failed; Retry reads again"
+  },
+  "fundExchangeSessionEnded": "Your exchange session ended. Sign in again to fund your account.",
+  "@fundExchangeSessionEnded": {
+    "description": "Shown when the exchange session the fund flow opened with ended (signed out, switched environment or rejected by the server)"
+  },
+  "exchangePlatformNotAllowedError": "The exchange can't be turned on on this device.",
+  "@exchangePlatformNotAllowedError": {
+    "description": "Shown when platform policy does not allow turning the exchange on"
+  },
+  "exchangeStepReadFailed": "We couldn't load this from the exchange right now. Try again.",
+  "@exchangeStepReadFailed": {
+    "description": "A read the flow needs failed (server unreachable for another reason than the network, or an unreadable answer)"
+  },
+  "exchangeStepNotSent": "Nothing was sent to the exchange. Check your connection and try again.",
+  "@exchangeStepNotSent": {
+    "description": "A write never left the app (signed out, key unreadable, unreachable before sending)"
+  },
+  "exchangeStepNotApplied": "The exchange did not apply this request. You can try again.",
+  "@exchangeStepNotApplied": {
+    "description": "A re-read after an unknown write outcome showed the write did not take effect"
+  },
+  "exchangeStepWriteRefused": "The exchange refused this request.",
+  "@exchangeStepWriteRefused": {
+    "description": "The exchange refused a write without a more specific reason"
+  },
+  "exchangeOrderBelowMinimum": "Minimum amount is {amount} {currency}",
+  "@exchangeOrderBelowMinimum": {
+    "description": "The exchange refused an order below its minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeOrderAboveMaximum": "Maximum amount is {amount} {currency}",
+  "@exchangeOrderAboveMaximum": {
+    "description": "The exchange refused an order above its maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangePayeeInactive": "This recipient is not activated for Confidential SEPA yet.",
+  "@exchangePayeeInactive": {
+    "description": "The exchange refused a Confidential SEPA payout because the recipient's virtual payee is not active"
+  },
+  "exchangeWriteGateBusy": "Another exchange request is still in progress. Wait for it to finish, then try again.",
+  "@exchangeWriteGateBusy": {
+    "description": "The account's one-write-at-a-time gate refused a write because another one is in flight"
+  },
+  "exchangeWriteGateUnsettled": "An earlier exchange request is still being checked. Try again once it is settled.",
+  "@exchangeWriteGateUnsettled": {
+    "description": "The gate refused a write because an earlier money-moving write has an unknown outcome not yet settled"
+  },
+  "exchangeWriteGateJournalUnreadable": "We couldn't check your earlier exchange requests. Try again.",
+  "@exchangeWriteGateJournalUnreadable": {
+    "description": "The gate refused a write because the journal of unknown writes could not be read"
+  },
+  "exchangeStepUnverified": "We couldn't check whether the exchange received this. Check again before you start a new one.",
+  "@exchangeStepUnverified": {
+    "description": "A re-read after an unknown write outcome failed; the write may have taken effect"
+  },
+  "exchangeStepTimedOut": "This is taking longer than expected. You can check again or leave and come back later.",
+  "@exchangeStepTimedOut": {
+    "description": "A bounded wait (activation, payment watch) reached its limit"
+  },
+  "exchangeAmountNoRate": "The bitcoin price is not available right now. Try again.",
+  "@exchangeAmountNoRate": {
+    "description": "The amount step has no price for the chosen currency"
+  },
+  "exchangeAmountKycNeeded": "Complete your identity verification to use this amount.",
+  "@exchangeAmountKycNeeded": {
+    "description": "The amount needs a higher KYC level than the account has"
+  },
+  "exchangeStepVerifying": "Checking with the exchange…",
+  "@exchangeStepVerifying": {
+    "description": "A write's outcome is unknown and the flow is re-reading it"
+  },
+  "exchangeFlowSessionEnded": "Your exchange session ended. Sign in again to continue.",
+  "@exchangeFlowSessionEnded": {
+    "description": "A trading flow's exchange session ended (signed out, environment switched or rejected by the server)"
+  },
+  "withdrawNoFundedBalance": "You have no balance to withdraw.",
+  "@withdrawNoFundedBalance": {
+    "description": "Withdraw: the account has no funded fiat balance"
+  },
+  "exchangePayinNoFunds": "This wallet doesn't have enough funds for this payment and its network fee.",
+  "@exchangePayinNoFunds": {
+    "description": "Payin build: insufficient funds"
+  },
+  "exchangePayinFeeTooLow": "The network fee is below the network's minimum. Try again.",
+  "@exchangePayinFeeTooLow": {
+    "description": "Payin build: fee below relay floor"
+  },
+  "exchangePayinWalletBusy": "The wallet is busy syncing. Try again in a moment.",
+  "@exchangePayinWalletBusy": {
+    "description": "Payin: the wallet can't spend right now (busy/unavailable); nothing was sent"
+  },
+  "exchangePayinConsolidationRequired": "This wallet must consolidate its coins before it can pay this amount.",
+  "@exchangePayinConsolidationRequired": {
+    "description": "Payin build: Liquid wallet needs consolidation"
+  },
+  "exchangePayinSigningRefused": "The wallet could not sign the payment.",
+  "@exchangePayinSigningRefused": {
+    "description": "Payin build: signing refused"
+  },
+  "exchangePayinNotAuthorized": "This wallet is not authorized to send payments.",
+  "@exchangePayinNotAuthorized": {
+    "description": "Payin: developer/authorization refusal; nothing was sent"
+  },
+  "exchangePayinBuildFailed": "The payment could not be prepared. Nothing was sent.",
+  "@exchangePayinBuildFailed": {
+    "description": "Payin build failed for another reason"
+  },
+  "exchangePayinNodeRejected": "The network refused the transaction. Nothing was sent.",
+  "@exchangePayinNodeRejected": {
+    "description": "Payin send: node rejected the transaction"
+  },
+  "exchangePayinPayjoinNotStarted": "The payjoin payment could not start. Nothing was sent.",
+  "@exchangePayinPayjoinNotStarted": {
+    "description": "Payin send: payjoin session could not start and nothing is in flight"
+  },
+  "exchangePayinDeadlinePassed": "The order's payment window ended before the payment was sent. Nothing was sent.",
+  "@exchangePayinDeadlinePassed": {
+    "description": "Payin send: deadline passed right before sending"
+  },
+  "exchangePayinSending": "Sending your payment…",
+  "@exchangePayinSending": {
+    "description": "Payin: building or broadcasting"
+  },
+  "exchangePayinNotSent": "Payment not sent",
+  "@exchangePayinNotSent": {
+    "description": "Payin: the send failed and nothing left the wallet"
+  },
+  "exchangePayinPayjoinNegotiating": "Negotiating a payjoin with the exchange…",
+  "@exchangePayinPayjoinNegotiating": {
+    "description": "Payin: payjoin session negotiating"
+  },
+  "exchangePayinPayjoinPaused": "The payjoin is paused because the wallet is busy. Try again.",
+  "@exchangePayinPayjoinPaused": {
+    "description": "Payin: payjoin session paused by the wallet's spend gate"
+  },
+  "exchangePayinUnseen": "Neither the network nor the exchange shows this payment yet. You can send the same transaction again.",
+  "@exchangePayinUnseen": {
+    "description": "Payin: look-up worked and shows nothing; resend the same signed transaction"
+  },
+  "exchangePayinResend": "Send the same transaction again",
+  "@exchangePayinResend": {
+    "description": "Payin: resend the same signed bytes"
+  },
+  "exchangeStepCheckAgain": "Check again",
+  "@exchangeStepCheckAgain": {
+    "description": "Re-read whether a write or payment took effect"
+  },
+  "exchangePayinLeaveTitle": "Leave this payment?",
+  "@exchangePayinLeaveTitle": {
+    "description": "Payin from an external wallet: confirm leaving"
+  },
+  "exchangePayinLeaveMessage": "If you already paid, the exchange will still receive it. If not, the order expires at its deadline.",
+  "@exchangePayinLeaveMessage": {
+    "description": "Payin from an external wallet: leaving keeps the order; explains what happens"
+  },
+  "exchangePayinStay": "Stay",
+  "@exchangePayinStay": {
+    "description": "Payin from an external wallet: cancel leaving"
+  },
+  "exchangePayinExternalTitle": "Send exactly this amount to the address below",
+  "@exchangePayinExternalTitle": {
+    "description": "Payin from an external wallet: instruction"
+  },
+  "exchangePayinExternalWaiting": "Waiting for your payment…",
+  "@exchangePayinExternalWaiting": {
+    "description": "Payin from an external wallet: the order watch is running"
+  },
+  "exchangePayinRefusedByExchange": "The exchange did not accept this payment. Contact support with the order number.",
+  "@exchangePayinRefusedByExchange": {
+    "description": "Payin: the exchange refused the payin, or the order ended or moved its deposit after it went out; shows the reference and Leave"
+  },
+  "exchangePayinOrderEnded": "This order ended before your payment was sent. Nothing was sent.",
+  "@exchangePayinOrderEnded": {
+    "description": "Payin: the order ended before anything was sent"
+  },
+  "exchangePayinDepositRefused": "This order can't be paid from this wallet. Nothing was sent.",
+  "@exchangePayinDepositRefused": {
+    "description": "Payin: the order has no deposit on the source's rail (or moved it) before anything was sent"
+  },
+  "exchangePayinReceived": "The exchange received your payment",
+  "@exchangePayinReceived": {
+    "description": "Sell/pay done: the exchange saw the payin (not 'order completed')"
+  },
+  "exchangePayinCoinsUnavailable": "Your wallet's coins could not be loaded. Try again.",
+  "@exchangePayinCoinsUnavailable": {
+    "description": "Coin selection on the sell or pay review: the wallet could not list its coins"
+  },
+  "limitOrdersOverBalanceWarning": "This is more than your available balance. When the order executes, it buys with what is in your balance then.",
+  "@limitOrdersOverBalanceWarning": {
+    "description": "Limit order review: the amount is over the fiat balance; nothing is reserved, so this is a warning, not a block"
+  },
+  "autoBuyAlreadyActive": "Auto-Buy is already active on your account.",
+  "@autoBuyAlreadyActive": {
+    "description": "Auto-Buy review: the account already has Auto-Buy on, so there is nothing to activate"
+  },
+  "recipientsValidationEmailInvalid": "Enter a valid email address",
+  "@recipientsValidationEmailInvalid": {
+    "description": "Recipient form: the email field does not look like an email address"
+  },
+  "recipientsValidationClabeLength": "A CLABE has 18 digits",
+  "@recipientsValidationClabeLength": {
+    "description": "Recipient form (Mexico SPEI): the CLABE is not 18 digits"
+  },
+  "recipientsValidationClabeCheckDigit": "This CLABE is not valid. Check the number",
+  "@recipientsValidationClabeCheckDigit": {
+    "description": "Recipient form (Mexico SPEI): the CLABE has 18 digits but its last (check) digit does not match the others, so it was mistyped"
+  },
+  "recipientsValidationSpeiPhone": "Enter the 10-digit phone number, without the country code",
+  "@recipientsValidationSpeiPhone": {
+    "description": "Recipient form (Mexico SPEI by phone): the phone number is not 10 digits"
+  },
+  "recipientsValidationDebitCard": "A debit card number has 16 digits",
+  "@recipientsValidationDebitCard": {
+    "description": "Recipient form (Mexico SPEI by debit card): the card number is not 16 digits"
+  },
+  "recipientsErrorFieldRefused": "The exchange did not accept this value",
+  "@recipientsErrorFieldRefused": {
+    "description": "Recipient form: shown under a field the exchange refused when the recipient was saved (a wrong format or value)"
+  },
+  "recipientsErrorCheckFields": "Some details were not accepted. Check the fields marked above.",
+  "@recipientsErrorCheckFields": {
+    "description": "Recipient form: shown under the Continue button when the exchange refused fields that are each marked on the form"
+  },
+  "recipientsErrorFieldsRefused": "Some details were not accepted: {fields}",
+  "@recipientsErrorFieldsRefused": {
+    "description": "Recipient form: shown under the Continue button when the exchange refused fields the form does not mark; {fields} is a comma-separated list of the API field names (kept as they are, not translated)",
+    "placeholders": {
+      "fields": {
+        "type": "String",
+        "example": "email, lastname"
+      }
+    }
   }
 }

@@ -37,6 +37,8 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.isErrorReportingEnabled ?? false;
   bool get screenCaptureProtectionEnabled =>
       storedSettings?.screenCaptureProtectionEnabled ?? true;
+  bool get showPaymentAnimations =>
+      storedSettings?.showPaymentAnimations ?? true;
 
   /// Off until the policy loads, as the payjoin gates treat a missing policy.
   bool isPayjoinEnabled(PayjoinAction action) =>

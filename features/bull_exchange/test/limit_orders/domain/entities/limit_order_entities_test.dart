@@ -3,18 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LimitOrderStatus', () {
-    test('parses every known wire value', () {
-      expect(LimitOrderStatus.fromValue('ACTIVE'), LimitOrderStatus.active);
-      expect(LimitOrderStatus.fromValue('EXECUTED'), LimitOrderStatus.executed);
-      expect(
-        LimitOrderStatus.fromValue('CANCELLED'),
-        LimitOrderStatus.cancelled,
-      );
-      expect(LimitOrderStatus.fromValue('EXPIRED'), LimitOrderStatus.expired);
-    });
-
-    test('treats an unknown wire value as failed', () {
-      expect(LimitOrderStatus.fromValue('WAT'), LimitOrderStatus.failed);
+    test('only active and unknown orders are open', () {
+      for (final status in LimitOrderStatus.values) {
+        expect(
+          status.isTerminal,
+          status != LimitOrderStatus.active &&
+              status != LimitOrderStatus.unknown,
+          reason: '$status',
+        );
+        expect(
+          status.isFailed,
+          status == LimitOrderStatus.failed,
+          reason: '$status',
+        );
+        expect(status.isRejected, isFalse, reason: '$status');
+      }
     });
   });
 
@@ -23,7 +26,7 @@ void main() {
       final draft = LimitOrderDraft(
         limitPrice: 50000,
         fiatAmount: 100,
-        currencyCode: 'CAD',
+        currency: FiatCurrency.cad,
         address: 'bc1qexample',
       );
 
@@ -35,7 +38,7 @@ void main() {
         () => LimitOrderDraft(
           limitPrice: 50000,
           fiatAmount: 0,
-          currencyCode: 'CAD',
+          currency: FiatCurrency.cad,
           address: 'bc1qexample',
         ),
         throwsArgumentError,
@@ -47,7 +50,7 @@ void main() {
         () => LimitOrderDraft(
           limitPrice: 50000,
           fiatAmount: 100,
-          currencyCode: 'CAD',
+          currency: FiatCurrency.cad,
           address: '   ',
         ),
         throwsArgumentError,

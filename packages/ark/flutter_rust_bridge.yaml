@@ -1,0 +1,9 @@
+rust_input: rust/src/api/**/*.rs
+rust_root: rust/
+dart_output: lib/src/rust
+dart_entrypoint_class_name: ScuttleCore
+full_dep: true
+enable_lifetime: true
+web: false
+auto_upgrade_dependency: false
+stop_on_error: true

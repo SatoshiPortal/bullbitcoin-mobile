@@ -17,16 +17,39 @@ final class FixedAmountWalletChoicePolicy {
     PaymentRequest request,
     Iterable<SendSource> wallets,
   ) {
-    if (request is! Bip21PaymentRequest) return const [];
-    final amount = request.amountSat;
-    if (amount == null || amount <= 0) return const [];
+    return switch (request) {
+      Bip21PaymentRequest(:final network, :final amountSat?)
+          when amountSat > 0 =>
+        _funding(
+          wallets,
+          amountSat,
+          (wallet) => wallet.network == network && !wallet.isWatchOnly,
+        ),
+      // An invoice is paid through a swap, which only a local signer can fund,
+      // from either chain.
+      Bolt11PaymentRequest(:final amountSat, :final isTestnet)
+          when amountSat > 0 =>
+        _funding(
+          wallets,
+          amountSat,
+          (wallet) =>
+              wallet.signsLocally && !wallet.network.isMainnet == isTestnet,
+        ),
+      _ => const [],
+    };
+  }
+
+  List<SendSource> _funding(
+    Iterable<SendSource> wallets,
+    int amountSat,
+    bool Function(SendSource wallet) isCandidate,
+  ) {
     final eligible = <String, SendSource>{};
     for (final wallet in wallets) {
       final balance = wallet.balanceSat;
-      if (wallet.network == request.network &&
-          !wallet.isWatchOnly &&
+      if (isCandidate(wallet) &&
           balance != null &&
-          balance > BigInt.from(amount)) {
+          balance > BigInt.from(amountSat)) {
         eligible[wallet.id] = wallet;
       }
     }

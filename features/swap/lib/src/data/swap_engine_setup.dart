@@ -132,16 +132,6 @@ class SwapEngineSetup {
     locator.registerFactory<WatchSwapUsecase>(
       () => WatchSwapUsecase(locator<SwapStore>()),
     );
-    locator.registerFactory<RestoreSwapsUsecase>(
-      () => RestoreSwapsUsecase(locator<SwapResolver>(), locator<SwapStore>()),
-    );
-    locator.registerFactory<RescueSwapUsecase>(
-      () => RescueSwapUsecase(
-        locator<SwapResolver>(),
-        locator<SwapStore>(),
-        locator<SwapWatcher>(),
-      ),
-    );
     locator.registerFactory<RetrySwapUsecase>(
       () => RetrySwapUsecase(locator<SwapWatcher>()),
     );

@@ -3,13 +3,15 @@ library;
 
 export 'src/domain/ark_execution_policy.dart';
 export 'src/domain/ark_board_abandonment_port.dart';
+export 'src/domain/ark_exit_observer_port.dart';
 
 import 'ark.dart';
 import 'src/domain/ark_execution_policy.dart';
 import 'src/domain/ark_board_abandonment_port.dart';
+import 'src/domain/ark_exit_observer_port.dart';
 import 'src/data/bark_ark_client.dart';
-import 'src/data/bark_native_opener.dart';
 import 'src/data/ark_chain_preflight.dart';
+import 'src/data/scuttle_native_opener.dart';
 
 ArkClient createArkClient({
   required String storagePath,
@@ -17,6 +19,7 @@ ArkClient createArkClient({
   required ArkTransactionVerifierPort transactionVerifier,
   required ArkExecutionPolicyPort executionPolicy,
   ArkBoardAbandonmentPort? boardAbandonment,
+  ArkExitObserverPort? exitObserver,
   ArkExecutionMode executionMode = ArkExecutionMode.foreground,
   ArkStageBudget stageBudget = const ArkUnlimitedStageBudget(),
 }) => BarkArkClient(
@@ -25,8 +28,9 @@ ArkClient createArkClient({
   transactionVerifier: transactionVerifier,
   executionPolicy: executionPolicy,
   boardAbandonment: boardAbandonment,
+  exitObserver: exitObserver,
   executionMode: executionMode,
   stageBudget: stageBudget,
-  opener: const BarkNativeOpener(),
+  opener: const ScuttleNativeOpener(),
   preflight: const HttpArkChainPreflight(),
 );

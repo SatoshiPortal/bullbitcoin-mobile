@@ -46,6 +46,9 @@ class _MockSetErrorReportingUsecase extends Mock
 class _MockSetScreenCaptureProtectionUsecase extends Mock
     implements SetScreenCaptureProtectionUsecase {}
 
+class _MockSetShowPaymentAnimationsUsecase extends Mock
+    implements SetShowPaymentAnimationsUsecase {}
+
 class _MockSetExchangeTestnetBasicAuthUsecase extends Mock
     implements SetExchangeTestnetBasicAuthUsecase {}
 
@@ -91,6 +94,7 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setErrorReportingUsecase,
     required super.setScreenCaptureProtectionUsecase,
     required super.loadExchangeTestnetBasicAuthUsecase,
+    required super.setShowPaymentAnimationsUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
     required super.watchPayjoinPolicyUsecase,
@@ -111,6 +115,7 @@ void main() {
   late _MockSetBitcoinUnitUsecase setBitcoinUnit;
   late _MockSetScreenCaptureProtectionUsecase setScreenCapture;
   late _MockSetExchangeTestnetBasicAuthUsecase setBasicAuth;
+  late _MockSetShowPaymentAnimationsUsecase setShowPaymentAnimations;
   late _TestSettingsCubit cubit;
 
   setUp(() {
@@ -119,6 +124,7 @@ void main() {
     setBitcoinUnit = _MockSetBitcoinUnitUsecase();
     setScreenCapture = _MockSetScreenCaptureProtectionUsecase();
     setBasicAuth = _MockSetExchangeTestnetBasicAuthUsecase();
+    setShowPaymentAnimations = _MockSetShowPaymentAnimationsUsecase();
     final watchChanges = _MockWatchPayjoinPolicyUsecase();
     when(() => watchChanges.execute()).thenAnswer((_) => changes.stream);
     cubit = _TestSettingsCubit(
@@ -138,6 +144,7 @@ void main() {
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setScreenCaptureProtectionUsecase: setScreenCapture,
       loadExchangeTestnetBasicAuthUsecase: _loadBasicAuth(),
+      setShowPaymentAnimationsUsecase: setShowPaymentAnimations,
       setExchangeTestnetBasicAuthUsecase: setBasicAuth,
       setPayjoinEnabledUsecase: setPayjoinEnabled,
       watchPayjoinPolicyUsecase: watchChanges,
@@ -293,6 +300,32 @@ void main() {
       expect(ScreenCaptureProtection.instance.enabledByUser, isFalse);
       expect(cubit.state.failure, isA<SettingsStorageFailure>());
     });
+
+    test('payment animations toggle persists and updates the state', () async {
+      when(() => setShowPaymentAnimations.execute(any()))
+          .thenAnswer((_) async => const Ok(null));
+
+      await cubit.toggleShowPaymentAnimations(false);
+
+      verify(() => setShowPaymentAnimations.execute(false)).called(1);
+      expect(cubit.state.storedSettings?.showPaymentAnimations, isFalse);
+      expect(cubit.state.showPaymentAnimations, isFalse);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test(
+      'payment animations toggle keeps the stored value on a failed write',
+      () async {
+        when(() => setShowPaymentAnimations.execute(any())).thenAnswer(
+          (_) async => const Err(SettingsStorageFailure('drift write failed')),
+        );
+
+        await cubit.toggleShowPaymentAnimations(false);
+
+        expect(cubit.state.showPaymentAnimations, isTrue);
+        expect(cubit.state.failure, isA<SettingsStorageFailure>());
+      },
+    );
 
     test('clearFailure lets the next failure fire again', () async {
       when(() => setBitcoinUnit.execute(any())).thenAnswer(

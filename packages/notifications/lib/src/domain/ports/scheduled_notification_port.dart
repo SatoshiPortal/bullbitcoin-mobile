@@ -8,11 +8,13 @@ import '../notifications_failure.dart';
 /// The host assigns a stable, unique ID per reminder; scheduling replaces that
 /// ID atomically at the platform boundary, without cancelling first.
 abstract interface class ScheduledNotificationPort {
+  /// Disable [cancelExisting] only for an ID that never has a future alarm.
   @useResult
   Future<Result<void, NotificationsFailure>> schedule(
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   });
 
   @useResult

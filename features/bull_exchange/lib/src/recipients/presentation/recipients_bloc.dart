@@ -12,7 +12,6 @@ import 'package:bull_exchange/src/recipients/domain/usecases/get_confidential_se
 import 'package:bull_exchange/src/recipients/domain/entities/account_owner_name.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/cad_biller_view_model.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipient_view_model_mapper.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
@@ -58,6 +57,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
     on<RecipientsSelected>(_onSelected);
     on<RecipientsVirtualIbanActivated>(_onVirtualIbanActivated);
+    on<RecipientsNewRecipientFormChanged>(_onNewRecipientFormChanged);
     on<RecipientsSepaTypeChanged>(
       _onSepaTypeChanged,
       transformer: restartable(),
@@ -96,15 +96,15 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     }
     await _loadFirstPage(emit, clearList: true);
 
-    // Not surfaced as a failure: a missing preference only changes which
-    //  jurisdiction is offered first, and the default covers it. The reason
-    //  is logged inside the use-case.
-    final preferredJurisdictionCode =
-        switch (await _getPreferredJurisdictionUsecase.execute()) {
-          Ok(:final value) => value,
-          Err() => GetPreferredJurisdictionUsecase.defaultJurisdiction,
-        };
-    emit(state.copyWith(preferredJurisdiction: preferredJurisdictionCode));
+    // Not surfaced as a failure: a missing preference only means no
+    //  jurisdiction is offered first; the user picks one. The reason is
+    //  logged inside the use-case.
+    final preferredJurisdiction = switch (await _getPreferredJurisdictionUsecase
+        .execute()) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
+    emit(state.copyWith(preferredJurisdiction: preferredJurisdiction));
   }
 
   Future<void> _onMoreLoaded(
@@ -141,7 +141,12 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
           );
           emit(
             state.copyWith(
-              totalRecipients: value.totalRecipients,
+              // A page with no row this build can show ends the list: the
+              // server's total can count rows it never returns, and the
+              // list asks for more while it has none to show.
+              totalRecipients: value.recipients.isEmpty
+                  ? state.recipients!.length
+                  : value.totalRecipients,
               loadedPages: state.loadedPages + 1,
               recipients: [
                 ...state.recipients!,
@@ -314,33 +319,21 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     }
   }
 
-  List<RecipientType> _effectiveTypes(RecipientsState state) {
-    final hiddenSepaType = !state.canChooseSepaType
-        ? null
-        : state.sepaType == RecipientType.confidentialSepaEur
-        ? RecipientType.sepaEur
-        : RecipientType.confidentialSepaEur;
-    final jurisdiction = state.jurisdictionFilter;
-    return state.selectableRecipientTypes
-        .where(
-          (type) =>
-              type != hiddenSepaType &&
-              (jurisdiction == null || type.jurisdictionCode == jurisdiction),
-        )
-        .toList();
-  }
+  List<RecipientType> _effectiveTypes(RecipientsState state) =>
+      state.listedTypes.toList();
 
-  // No try/catch: toViewModel() is an exhaustive switch over the sealed
-  //  RecipientDetails that only copies fields, so it cannot throw. Tolerance
-  //  for rows this build cannot read belongs at the boundary, and already
-  //  lives in the repository, which skips elements that fail to parse from JSON.
   List<RecipientViewModel> _toViewModels(List<Recipient> recipients) =>
-      recipients.map((recipient) => recipient.toViewModel()).toList();
+      recipients.map(RecipientViewModel.new).toList();
 
   Future<void> _onAdded(
     RecipientsAdded event,
     Emitter<RecipientsState> emit,
   ) async {
+    // The last save may have created the recipient: never send another
+    // from this form.
+    if (state.failedToAddRecipient is RecipientsSaveOutcomeUnknownFailure) {
+      return;
+    }
     emit(state.copyWith(isAddingRecipient: true, failedToAddRecipient: null));
     log.info('Adding a recipient');
     switch (await _addRecipientUsecase.execute(
@@ -352,7 +345,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
           '${value.recipient.recipientId}',
         );
         final hookFailure = await _runSelectionHook(
-          value.recipient.toViewModel(),
+          RecipientViewModel(value.recipient),
           isNew: true,
         );
         if (hookFailure != null) {
@@ -368,8 +361,23 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         }
       case Err(:final failure):
         emit(state.copyWith(failedToAddRecipient: failure));
+        if (failure is RecipientsSaveOutcomeUnknownFailure) {
+          // The list says whether the recipient was saved.
+          add(const RecipientsEvent.refreshed());
+        }
     }
     emit(state.copyWith(isAddingRecipient: false));
+  }
+
+  /// A save failure belongs to the form it was shown under; another country
+  /// or payout method starts without one. Its outcome-unknown guard goes
+  /// too: the new form is a different recipient.
+  void _onNewRecipientFormChanged(
+    RecipientsNewRecipientFormChanged event,
+    Emitter<RecipientsState> emit,
+  ) {
+    if (state.failedToAddRecipient == null) return;
+    emit(state.copyWith(failedToAddRecipient: null));
   }
 
   void _onVirtualIbanActivated(

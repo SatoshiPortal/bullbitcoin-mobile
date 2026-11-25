@@ -188,6 +188,16 @@ void main() {
             .execute(false),
   );
 
+  expectsLift(
+    'setShowPaymentAnimations',
+    () =>
+        when(() => repository.setShowPaymentAnimations(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetShowPaymentAnimationsUsecase(settingsRepository: repository)
+            .execute(false),
+  );
+
   test('a successful write is forwarded as Ok', () async {
     when(() => repository.setCurrency(any()))
         .thenAnswer((_) async => const Ok(null));
