@@ -4,6 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/exit.dart';
+import 'api/payments.dart';
 import 'api/wallet.dart';
 
 import 'dart:async';
@@ -71,7 +72,7 @@ class ScuttleCore
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 1221239647;
+  int get rustContentHash => -1288264373;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -89,10 +90,20 @@ abstract class ScuttleCoreApi extends BaseApi {
     ScuttleBoardAnchor? anchor,
   });
 
+  Future<ScuttleClaimReport> crateApiWalletScuttleWalletClaimLightningReceives({
+    required ScuttleWallet that,
+  });
+
   Future<void> crateApiWalletScuttleWalletClose({required ScuttleWallet that});
 
   Future<List<ScuttleReserveCoin>> crateApiWalletScuttleWalletConfirmedReserve({
     required ScuttleWallet that,
+  });
+
+  Future<ScuttleLightningInvoice>
+  crateApiWalletScuttleWalletCreateLightningInvoice({
+    required ScuttleWallet that,
+    required BigInt amountSats,
   });
 
   Future<void> crateApiWalletScuttleWalletDeliverRegtestExitCpfp({
@@ -110,11 +121,40 @@ abstract class ScuttleCoreApi extends BaseApi {
     required List<String> vtxoIds,
   });
 
+  Future<ScuttleFeeEstimate> crateApiWalletScuttleWalletEstimateArkPaymentFee({
+    required ScuttleWallet that,
+    required BigInt amountSats,
+  });
+
   Future<ScuttleExitFeeEstimate> crateApiWalletScuttleWalletEstimateExit({
     required ScuttleWallet that,
     required List<String> vtxoIds,
     BigInt? feeRateSatPerVb,
     String? destination,
+  });
+
+  Future<ScuttleFeeEstimate>
+  crateApiWalletScuttleWalletEstimateLightningPaymentFee({
+    required ScuttleWallet that,
+    required String invoice,
+    required BigInt amountSats,
+  });
+
+  Future<ScuttleFeeEstimate>
+  crateApiWalletScuttleWalletEstimateLightningReceiveFee({
+    required ScuttleWallet that,
+    required BigInt amountSats,
+  });
+
+  Future<ScuttleFeeEstimate> crateApiWalletScuttleWalletEstimateOnchainSendFee({
+    required ScuttleWallet that,
+    required String address,
+    required BigInt amountSats,
+  });
+
+  Future<ScuttleFeeEstimate> crateApiWalletScuttleWalletEstimateRefreshFee({
+    required ScuttleWallet that,
+    required List<String> vtxoIds,
   });
 
   Future<List<ScuttleExit>> crateApiWalletScuttleWalletExitInventory({
@@ -133,6 +173,10 @@ abstract class ScuttleCoreApi extends BaseApi {
   });
 
   Future<String> crateApiWalletScuttleWalletFingerprint({
+    required ScuttleWallet that,
+  });
+
+  Future<List<ScuttleMovement>> crateApiWalletScuttleWalletHistory({
     required ScuttleWallet that,
   });
 
@@ -155,7 +199,17 @@ abstract class ScuttleCoreApi extends BaseApi {
     required ScuttleWallet that,
   });
 
+  Future<ScuttleLightningSendStatus>
+  crateApiWalletScuttleWalletLightningSendStatus({
+    required ScuttleWallet that,
+    required String paymentHash,
+  });
+
   Future<String> crateApiWalletScuttleWalletNewArkAddress({
+    required ScuttleWallet that,
+  });
+
+  Future<BigInt> crateApiWalletScuttleWalletNextRoundStartTime({
     required ScuttleWallet that,
   });
 
@@ -172,6 +226,30 @@ abstract class ScuttleCoreApi extends BaseApi {
     required String childMnemonic,
     required bool allowUnreachableServer,
   });
+
+  Future<ScuttlePaymentRequest> crateApiWalletScuttleWalletParsePaymentRequest({
+    required ScuttleWallet that,
+    required String payment,
+  });
+
+  Future<String> crateApiWalletScuttleWalletPayLightningInvoice({
+    required ScuttleWallet that,
+    required String invoice,
+    required BigInt amountSats,
+  });
+
+  Future<List<ScuttleLightningReceive>>
+  crateApiWalletScuttleWalletPendingLightningReceives({
+    required ScuttleWallet that,
+  });
+
+  Future<List<ScuttleLightningSend>>
+  crateApiWalletScuttleWalletPendingLightningSends({
+    required ScuttleWallet that,
+  });
+
+  Future<List<ScuttleRoundState>>
+  crateApiWalletScuttleWalletPendingRoundStates({required ScuttleWallet that});
 
   Future<ScuttleBoardFunding> crateApiWalletScuttleWalletPrepareBoard({
     required ScuttleWallet that,
@@ -209,12 +287,25 @@ abstract class ScuttleCoreApi extends BaseApi {
     required ScuttleExitProgressReview review,
   });
 
+  Future<void> crateApiWalletScuttleWalletProgressPendingRounds({
+    required ScuttleWallet that,
+  });
+
   Future<ScuttleRecoveryStatus> crateApiWalletScuttleWalletRecoveryStatus({
     required ScuttleWallet that,
   });
 
   Future<List<ScuttleExit>> crateApiWalletScuttleWalletRefreshExitInventory({
     required ScuttleWallet that,
+  });
+
+  Future<void> crateApiWalletScuttleWalletRefreshServer({
+    required ScuttleWallet that,
+  });
+
+  Future<int?> crateApiWalletScuttleWalletRefreshVtxosDelegated({
+    required ScuttleWallet that,
+    required List<String> vtxoIds,
   });
 
   Future<ScuttleBoardResult> crateApiWalletScuttleWalletRegisterBoard({
@@ -242,9 +333,23 @@ abstract class ScuttleCoreApi extends BaseApi {
     required BigInt amountSats,
   });
 
+  Future<ScuttleOnchainSend> crateApiWalletScuttleWalletSendOnchain({
+    required ScuttleWallet that,
+    required String address,
+    required BigInt amountSats,
+  });
+
   Future<void> crateApiWalletScuttleWalletStartExit({
     required ScuttleWallet that,
     required List<String> vtxoIds,
+  });
+
+  Future<void> crateApiWalletScuttleWalletSyncMailbox({
+    required ScuttleWallet that,
+  });
+
+  Future<void> crateApiWalletScuttleWalletSyncPendingBoards({
+    required ScuttleWallet that,
   });
 
   Future<ScuttleReserveCoin?>
@@ -253,6 +358,10 @@ abstract class ScuttleCoreApi extends BaseApi {
     required String txid,
     required String destination,
     required BigInt amountSats,
+  });
+
+  Future<List<String>> crateApiWalletScuttleWalletVtxosToRefresh({
+    required ScuttleWallet that,
   });
 
   RustArcIncrementStrongCountFnType
@@ -314,6 +423,41 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       );
 
   @override
+  Future<ScuttleClaimReport> crateApiWalletScuttleWalletClaimLightningReceives({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_claim_report,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletClaimLightningReceivesConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletClaimLightningReceivesConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_claim_lightning_receives",
+        argNames: ["that"],
+      );
+
+  @override
   Future<void> crateApiWalletScuttleWalletClose({required ScuttleWallet that}) {
     return handler.executeNormal(
       NormalTask(
@@ -372,6 +516,45 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       const TaskConstMeta(
         debugName: "ScuttleWallet_confirmed_reserve",
         argNames: ["that"],
+      );
+
+  @override
+  Future<ScuttleLightningInvoice>
+  crateApiWalletScuttleWalletCreateLightningInvoice({
+    required ScuttleWallet that,
+    required BigInt amountSats,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_u_64(amountSats);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice(
+                port_,
+                arg0,
+                arg1,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_lightning_invoice,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletCreateLightningInvoiceConstMeta,
+        argValues: [that, amountSats],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletCreateLightningInvoiceConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_create_lightning_invoice",
+        argNames: ["that", "amountSats"],
       );
 
   @override
@@ -477,6 +660,44 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       );
 
   @override
+  Future<ScuttleFeeEstimate> crateApiWalletScuttleWalletEstimateArkPaymentFee({
+    required ScuttleWallet that,
+    required BigInt amountSats,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_u_64(amountSats);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee(
+                port_,
+                arg0,
+                arg1,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_fee_estimate,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletEstimateArkPaymentFeeConstMeta,
+        argValues: [that, amountSats],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletEstimateArkPaymentFeeConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_estimate_ark_payment_fee",
+        argNames: ["that", "amountSats"],
+      );
+
+  @override
   Future<ScuttleExitFeeEstimate> crateApiWalletScuttleWalletEstimateExit({
     required ScuttleWallet that,
     required List<String> vtxoIds,
@@ -516,6 +737,167 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       const TaskConstMeta(
         debugName: "ScuttleWallet_estimate_exit",
         argNames: ["that", "vtxoIds", "feeRateSatPerVb", "destination"],
+      );
+
+  @override
+  Future<ScuttleFeeEstimate>
+  crateApiWalletScuttleWalletEstimateLightningPaymentFee({
+    required ScuttleWallet that,
+    required String invoice,
+    required BigInt amountSats,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_String(invoice);
+          var arg2 = cst_encode_u_64(amountSats);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee(
+                port_,
+                arg0,
+                arg1,
+                arg2,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_fee_estimate,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta:
+            kCrateApiWalletScuttleWalletEstimateLightningPaymentFeeConstMeta,
+        argValues: [that, invoice, amountSats],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletEstimateLightningPaymentFeeConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_estimate_lightning_payment_fee",
+        argNames: ["that", "invoice", "amountSats"],
+      );
+
+  @override
+  Future<ScuttleFeeEstimate>
+  crateApiWalletScuttleWalletEstimateLightningReceiveFee({
+    required ScuttleWallet that,
+    required BigInt amountSats,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_u_64(amountSats);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee(
+                port_,
+                arg0,
+                arg1,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_fee_estimate,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta:
+            kCrateApiWalletScuttleWalletEstimateLightningReceiveFeeConstMeta,
+        argValues: [that, amountSats],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletEstimateLightningReceiveFeeConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_estimate_lightning_receive_fee",
+        argNames: ["that", "amountSats"],
+      );
+
+  @override
+  Future<ScuttleFeeEstimate> crateApiWalletScuttleWalletEstimateOnchainSendFee({
+    required ScuttleWallet that,
+    required String address,
+    required BigInt amountSats,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_String(address);
+          var arg2 = cst_encode_u_64(amountSats);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee(
+                port_,
+                arg0,
+                arg1,
+                arg2,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_fee_estimate,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletEstimateOnchainSendFeeConstMeta,
+        argValues: [that, address, amountSats],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletEstimateOnchainSendFeeConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_estimate_onchain_send_fee",
+        argNames: ["that", "address", "amountSats"],
+      );
+
+  @override
+  Future<ScuttleFeeEstimate> crateApiWalletScuttleWalletEstimateRefreshFee({
+    required ScuttleWallet that,
+    required List<String> vtxoIds,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_list_String(vtxoIds);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee(
+                port_,
+                arg0,
+                arg1,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_fee_estimate,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletEstimateRefreshFeeConstMeta,
+        argValues: [that, vtxoIds],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletEstimateRefreshFeeConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_estimate_refresh_fee",
+        argNames: ["that", "vtxoIds"],
       );
 
   @override
@@ -660,6 +1042,39 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       );
 
   @override
+  Future<List<ScuttleMovement>> crateApiWalletScuttleWalletHistory({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire.wire__crate__api__wallet__ScuttleWallet_history(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_scuttle_movement,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletHistoryConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletHistoryConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_history",
+        argNames: ["that"],
+      );
+
+  @override
   Future<ScuttleReserveCoin?>
   crateApiWalletScuttleWalletImportConfirmedRegtestCpfpChange({
     required ScuttleWallet that,
@@ -782,6 +1197,44 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       );
 
   @override
+  Future<ScuttleLightningSendStatus>
+  crateApiWalletScuttleWalletLightningSendStatus({
+    required ScuttleWallet that,
+    required String paymentHash,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_String(paymentHash);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_lightning_send_status(
+                port_,
+                arg0,
+                arg1,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_lightning_send_status,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletLightningSendStatusConstMeta,
+        argValues: [that, paymentHash],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletLightningSendStatusConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_lightning_send_status",
+        argNames: ["that", "paymentHash"],
+      );
+
+  @override
   Future<String> crateApiWalletScuttleWalletNewArkAddress({
     required ScuttleWallet that,
   }) {
@@ -811,6 +1264,40 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   TaskConstMeta get kCrateApiWalletScuttleWalletNewArkAddressConstMeta =>
       const TaskConstMeta(
         debugName: "ScuttleWallet_new_ark_address",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<BigInt> crateApiWalletScuttleWalletNextRoundStartTime({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_next_round_start_time(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_u_64,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletNextRoundStartTimeConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletNextRoundStartTimeConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_next_round_start_time",
         argNames: ["that"],
       );
 
@@ -910,6 +1397,189 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
           "childMnemonic",
           "allowUnreachableServer",
         ],
+      );
+
+  @override
+  Future<ScuttlePaymentRequest> crateApiWalletScuttleWalletParsePaymentRequest({
+    required ScuttleWallet that,
+    required String payment,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_String(payment);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_parse_payment_request(
+                port_,
+                arg0,
+                arg1,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_payment_request,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletParsePaymentRequestConstMeta,
+        argValues: [that, payment],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletParsePaymentRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_parse_payment_request",
+        argNames: ["that", "payment"],
+      );
+
+  @override
+  Future<String> crateApiWalletScuttleWalletPayLightningInvoice({
+    required ScuttleWallet that,
+    required String invoice,
+    required BigInt amountSats,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_String(invoice);
+          var arg2 = cst_encode_u_64(amountSats);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice(
+                port_,
+                arg0,
+                arg1,
+                arg2,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_String,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletPayLightningInvoiceConstMeta,
+        argValues: [that, invoice, amountSats],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletPayLightningInvoiceConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_pay_lightning_invoice",
+        argNames: ["that", "invoice", "amountSats"],
+      );
+
+  @override
+  Future<List<ScuttleLightningReceive>>
+  crateApiWalletScuttleWalletPendingLightningReceives({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_scuttle_lightning_receive,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta:
+            kCrateApiWalletScuttleWalletPendingLightningReceivesConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletPendingLightningReceivesConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_pending_lightning_receives",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<List<ScuttleLightningSend>>
+  crateApiWalletScuttleWalletPendingLightningSends({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_scuttle_lightning_send,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletPendingLightningSendsConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletPendingLightningSendsConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_pending_lightning_sends",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<List<ScuttleRoundState>>
+  crateApiWalletScuttleWalletPendingRoundStates({required ScuttleWallet that}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_pending_round_states(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_scuttle_round_state,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletPendingRoundStatesConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletPendingRoundStatesConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_pending_round_states",
+        argNames: ["that"],
       );
 
   @override
@@ -1152,6 +1822,41 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       );
 
   @override
+  Future<void> crateApiWalletScuttleWalletProgressPendingRounds({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletProgressPendingRoundsConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletProgressPendingRoundsConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_progress_pending_rounds",
+        argNames: ["that"],
+      );
+
+  @override
   Future<ScuttleRecoveryStatus> crateApiWalletScuttleWalletRecoveryStatus({
     required ScuttleWallet that,
   }) {
@@ -1216,6 +1921,77 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       const TaskConstMeta(
         debugName: "ScuttleWallet_refresh_exit_inventory",
         argNames: ["that"],
+      );
+
+  @override
+  Future<void> crateApiWalletScuttleWalletRefreshServer({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire.wire__crate__api__wallet__ScuttleWallet_refresh_server(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletRefreshServerConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletRefreshServerConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_refresh_server",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<int?> crateApiWalletScuttleWalletRefreshVtxosDelegated({
+    required ScuttleWallet that,
+    required List<String> vtxoIds,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_list_String(vtxoIds);
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated(
+                port_,
+                arg0,
+                arg1,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_opt_box_autoadd_u_32,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletRefreshVtxosDelegatedConstMeta,
+        argValues: [that, vtxoIds],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletRefreshVtxosDelegatedConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_refresh_vtxos_delegated",
+        argNames: ["that", "vtxoIds"],
       );
 
   @override
@@ -1384,6 +2160,45 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       );
 
   @override
+  Future<ScuttleOnchainSend> crateApiWalletScuttleWalletSendOnchain({
+    required ScuttleWallet that,
+    required String address,
+    required BigInt amountSats,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          var arg1 = cst_encode_String(address);
+          var arg2 = cst_encode_u_64(amountSats);
+          return wire.wire__crate__api__wallet__ScuttleWallet_send_onchain(
+            port_,
+            arg0,
+            arg1,
+            arg2,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_scuttle_onchain_send,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletSendOnchainConstMeta,
+        argValues: [that, address, amountSats],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletSendOnchainConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_send_onchain",
+        argNames: ["that", "address", "amountSats"],
+      );
+
+  @override
   Future<void> crateApiWalletScuttleWalletStartExit({
     required ScuttleWallet that,
     required List<String> vtxoIds,
@@ -1417,6 +2232,73 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       const TaskConstMeta(
         debugName: "ScuttleWallet_start_exit",
         argNames: ["that", "vtxoIds"],
+      );
+
+  @override
+  Future<void> crateApiWalletScuttleWalletSyncMailbox({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire.wire__crate__api__wallet__ScuttleWallet_sync_mailbox(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletSyncMailboxConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletSyncMailboxConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_sync_mailbox",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<void> crateApiWalletScuttleWalletSyncPendingBoards({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_sync_pending_boards(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletSyncPendingBoardsConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletSyncPendingBoardsConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_sync_pending_boards",
+        argNames: ["that"],
       );
 
   @override
@@ -1463,6 +2345,39 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       const TaskConstMeta(
         debugName: "ScuttleWallet_verify_regtest_reserve_funding",
         argNames: ["that", "txid", "destination", "amountSats"],
+      );
+
+  @override
+  Future<List<String>> crateApiWalletScuttleWalletVtxosToRefresh({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire.wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh(
+            port_,
+            arg0,
+          );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_list_String,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta: kCrateApiWalletScuttleWalletVtxosToRefreshConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletScuttleWalletVtxosToRefreshConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_vtxos_to_refresh",
+        argNames: ["that"],
       );
 
   RustArcIncrementStrongCountFnType
@@ -1513,6 +2428,12 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  PlatformInt64 dco_decode_box_autoadd_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_i_64(raw);
+  }
+
+  @protected
   ScuttleBoardAnchor dco_decode_box_autoadd_scuttle_board_anchor(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_scuttle_board_anchor(raw);
@@ -1533,6 +2454,12 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  ScuttleServerInfo dco_decode_box_autoadd_scuttle_server_info(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_scuttle_server_info(raw);
+  }
+
+  @protected
   int dco_decode_box_autoadd_u_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
@@ -1548,6 +2475,12 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   int dco_decode_i_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
+  }
+
+  @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeI64(raw);
   }
 
   @protected
@@ -1603,9 +2536,51 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  List<ScuttleLightningReceive> dco_decode_list_scuttle_lightning_receive(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>)
+        .map(dco_decode_scuttle_lightning_receive)
+        .toList();
+  }
+
+  @protected
+  List<ScuttleLightningSend> dco_decode_list_scuttle_lightning_send(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>)
+        .map(dco_decode_scuttle_lightning_send)
+        .toList();
+  }
+
+  @protected
+  List<ScuttleMovement> dco_decode_list_scuttle_movement(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_scuttle_movement).toList();
+  }
+
+  @protected
+  List<ScuttlePaymentOption> dco_decode_list_scuttle_payment_option(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>)
+        .map(dco_decode_scuttle_payment_option)
+        .toList();
+  }
+
+  @protected
   List<ScuttleReserveCoin> dco_decode_list_scuttle_reserve_coin(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_scuttle_reserve_coin).toList();
+  }
+
+  @protected
+  List<ScuttleRoundState> dco_decode_list_scuttle_round_state(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_scuttle_round_state).toList();
   }
 
   @protected
@@ -1627,6 +2602,12 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  PlatformInt64? dco_decode_opt_box_autoadd_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_i_64(raw);
+  }
+
+  @protected
   ScuttleBoardAnchor? dco_decode_opt_box_autoadd_scuttle_board_anchor(
     dynamic raw,
   ) {
@@ -1644,6 +2625,14 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     return raw == null
         ? null
         : dco_decode_box_autoadd_scuttle_reserve_coin(raw);
+  }
+
+  @protected
+  ScuttleServerInfo? dco_decode_opt_box_autoadd_scuttle_server_info(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_scuttle_server_info(raw);
   }
 
   @protected
@@ -1719,6 +2708,18 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       grossSats: dco_decode_u_64(arr[4]),
       feeSats: dco_decode_u_64(arr[5]),
       netSats: dco_decode_u_64(arr[6]),
+    );
+  }
+
+  @protected
+  ScuttleClaimReport dco_decode_scuttle_claim_report(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ScuttleClaimReport(
+      settled: dco_decode_u_32(arr[0]),
+      pending: dco_decode_u_32(arr[1]),
     );
   }
 
@@ -1842,6 +2843,75 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  ScuttleFeeEstimate dco_decode_scuttle_fee_estimate(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return ScuttleFeeEstimate(
+      grossSats: dco_decode_u_64(arr[0]),
+      feeSats: dco_decode_u_64(arr[1]),
+      netSats: dco_decode_u_64(arr[2]),
+      vtxoIds: dco_decode_list_String(arr[3]),
+    );
+  }
+
+  @protected
+  ScuttleLightningInvoice dco_decode_scuttle_lightning_invoice(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ScuttleLightningInvoice(
+      invoice: dco_decode_String(arr[0]),
+      paymentHash: dco_decode_String(arr[1]),
+    );
+  }
+
+  @protected
+  ScuttleLightningReceive dco_decode_scuttle_lightning_receive(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return ScuttleLightningReceive(
+      paymentHash: dco_decode_String(arr[0]),
+      invoice: dco_decode_String(arr[1]),
+      amountSats: dco_decode_opt_box_autoadd_u_64(arr[2]),
+      stage: dco_decode_scuttle_lightning_receive_stage(arr[3]),
+    );
+  }
+
+  @protected
+  ScuttleLightningReceiveStage dco_decode_scuttle_lightning_receive_stage(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ScuttleLightningReceiveStage.values[raw as int];
+  }
+
+  @protected
+  ScuttleLightningSend dco_decode_scuttle_lightning_send(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return ScuttleLightningSend(
+      paymentHash: dco_decode_String(arr[0]),
+      amountSats: dco_decode_u_64(arr[1]),
+      feeSats: dco_decode_u_64(arr[2]),
+    );
+  }
+
+  @protected
+  ScuttleLightningSendStatus dco_decode_scuttle_lightning_send_status(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ScuttleLightningSendStatus.values[raw as int];
+  }
+
+  @protected
   ScuttleMixedClaim dco_decode_scuttle_mixed_claim(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1870,6 +2940,32 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  ScuttleMovement dco_decode_scuttle_movement(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
+    return ScuttleMovement(
+      id: dco_decode_u_32(arr[0]),
+      subsystem: dco_decode_String(arr[1]),
+      kind: dco_decode_String(arr[2]),
+      status: dco_decode_scuttle_movement_status(arr[3]),
+      intendedSats: dco_decode_i_64(arr[4]),
+      effectiveSats: dco_decode_i_64(arr[5]),
+      feeSats: dco_decode_u_64(arr[6]),
+      createdAt: dco_decode_i_64(arr[7]),
+      updatedAt: dco_decode_i_64(arr[8]),
+      completedAt: dco_decode_opt_box_autoadd_i_64(arr[9]),
+    );
+  }
+
+  @protected
+  ScuttleMovementStatus dco_decode_scuttle_movement_status(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ScuttleMovementStatus.values[raw as int];
+  }
+
+  @protected
   ScuttleNetwork dco_decode_scuttle_network(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ScuttleNetwork.values[raw as int];
@@ -1879,12 +2975,59 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   ScuttleObservation dco_decode_scuttle_observation(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
     return ScuttleObservation(
       tipHeight: dco_decode_u_32(arr[0]),
-      lastKnownSpendableSats: dco_decode_u_64(arr[1]),
-      vtxos: dco_decode_list_scuttle_vtxo(arr[2]),
+      spendableSats: dco_decode_u_64(arr[1]),
+      needsRefreshSats: dco_decode_u_64(arr[2]),
+      pendingSats: dco_decode_u_64(arr[3]),
+      pendingBoardSats: dco_decode_u_64(arr[4]),
+      confirmedReserveSats: dco_decode_u_64(arr[5]),
+      server: dco_decode_opt_box_autoadd_scuttle_server_info(arr[6]),
+      vtxos: dco_decode_list_scuttle_vtxo(arr[7]),
+    );
+  }
+
+  @protected
+  ScuttleOnchainSend dco_decode_scuttle_onchain_send(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ScuttleOnchainSend(
+      txid: dco_decode_String(arr[0]),
+      movementId: dco_decode_u_32(arr[1]),
+    );
+  }
+
+  @protected
+  ScuttlePaymentKind dco_decode_scuttle_payment_kind(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ScuttlePaymentKind.values[raw as int];
+  }
+
+  @protected
+  ScuttlePaymentOption dco_decode_scuttle_payment_option(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ScuttlePaymentOption(
+      kind: dco_decode_scuttle_payment_kind(arr[0]),
+      valid: dco_decode_bool(arr[1]),
+    );
+  }
+
+  @protected
+  ScuttlePaymentRequest dco_decode_scuttle_payment_request(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ScuttlePaymentRequest(
+      amountSats: dco_decode_opt_box_autoadd_u_64(arr[0]),
+      options: dco_decode_list_scuttle_payment_option(arr[1]),
     );
   }
 
@@ -1904,6 +3047,43 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       outpoint: dco_decode_String(arr[0]),
       amountSats: dco_decode_u_64(arr[1]),
       confirmationHeight: dco_decode_u_32(arr[2]),
+    );
+  }
+
+  @protected
+  ScuttleRoundFlow dco_decode_scuttle_round_flow(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ScuttleRoundFlow.values[raw as int];
+  }
+
+  @protected
+  ScuttleRoundState dco_decode_scuttle_round_state(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return ScuttleRoundState(
+      id: dco_decode_u_32(arr[0]),
+      flow: dco_decode_scuttle_round_flow(arr[1]),
+      inputVtxoIds: dco_decode_list_String(arr[2]),
+      inputSats: dco_decode_u_64(arr[3]),
+      pendingSats: dco_decode_u_64(arr[4]),
+    );
+  }
+
+  @protected
+  ScuttleServerInfo dco_decode_scuttle_server_info(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    return ScuttleServerInfo(
+      publicKey: dco_decode_String(arr[0]),
+      roundIntervalSecs: dco_decode_u_64(arr[1]),
+      vtxoLifetimeBlocks: dco_decode_u_32(arr[2]),
+      minBoardSats: dco_decode_u_64(arr[3]),
+      maxVtxoSats: dco_decode_opt_box_autoadd_u_64(arr[4]),
+      boardConfirmations: dco_decode_u_32(arr[5]),
     );
   }
 
@@ -2007,6 +3187,12 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  PlatformInt64 sse_decode_box_autoadd_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_i_64(deserializer));
+  }
+
+  @protected
   ScuttleBoardAnchor sse_decode_box_autoadd_scuttle_board_anchor(
     SseDeserializer deserializer,
   ) {
@@ -2031,6 +3217,14 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  ScuttleServerInfo sse_decode_box_autoadd_scuttle_server_info(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_scuttle_server_info(deserializer));
+  }
+
+  @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_u_32(deserializer));
@@ -2046,6 +3240,12 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   int sse_decode_i_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getInt32();
+  }
+
+  @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getPlatformInt64();
   }
 
   @protected
@@ -2129,6 +3329,62 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  List<ScuttleLightningReceive> sse_decode_list_scuttle_lightning_receive(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ScuttleLightningReceive>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_scuttle_lightning_receive(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ScuttleLightningSend> sse_decode_list_scuttle_lightning_send(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ScuttleLightningSend>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_scuttle_lightning_send(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ScuttleMovement> sse_decode_list_scuttle_movement(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ScuttleMovement>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_scuttle_movement(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ScuttlePaymentOption> sse_decode_list_scuttle_payment_option(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ScuttlePaymentOption>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_scuttle_payment_option(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   List<ScuttleReserveCoin> sse_decode_list_scuttle_reserve_coin(
     SseDeserializer deserializer,
   ) {
@@ -2138,6 +3394,20 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     var ans_ = <ScuttleReserveCoin>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
       ans_.add(sse_decode_scuttle_reserve_coin(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<ScuttleRoundState> sse_decode_list_scuttle_round_state(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ScuttleRoundState>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_scuttle_round_state(deserializer));
     }
     return ans_;
   }
@@ -2173,6 +3443,17 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  PlatformInt64? sse_decode_opt_box_autoadd_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_i_64(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   ScuttleBoardAnchor? sse_decode_opt_box_autoadd_scuttle_board_anchor(
     SseDeserializer deserializer,
   ) {
@@ -2193,6 +3474,19 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_box_autoadd_scuttle_reserve_coin(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  ScuttleServerInfo? sse_decode_opt_box_autoadd_scuttle_server_info(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_scuttle_server_info(deserializer));
     } else {
       return null;
     }
@@ -2296,6 +3590,16 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       feeSats: var_feeSats,
       netSats: var_netSats,
     );
+  }
+
+  @protected
+  ScuttleClaimReport sse_decode_scuttle_claim_report(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_settled = sse_decode_u_32(deserializer);
+    var var_pending = sse_decode_u_32(deserializer);
+    return ScuttleClaimReport(settled: var_settled, pending: var_pending);
   }
 
   @protected
@@ -2430,6 +3734,86 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  ScuttleFeeEstimate sse_decode_scuttle_fee_estimate(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_grossSats = sse_decode_u_64(deserializer);
+    var var_feeSats = sse_decode_u_64(deserializer);
+    var var_netSats = sse_decode_u_64(deserializer);
+    var var_vtxoIds = sse_decode_list_String(deserializer);
+    return ScuttleFeeEstimate(
+      grossSats: var_grossSats,
+      feeSats: var_feeSats,
+      netSats: var_netSats,
+      vtxoIds: var_vtxoIds,
+    );
+  }
+
+  @protected
+  ScuttleLightningInvoice sse_decode_scuttle_lightning_invoice(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_invoice = sse_decode_String(deserializer);
+    var var_paymentHash = sse_decode_String(deserializer);
+    return ScuttleLightningInvoice(
+      invoice: var_invoice,
+      paymentHash: var_paymentHash,
+    );
+  }
+
+  @protected
+  ScuttleLightningReceive sse_decode_scuttle_lightning_receive(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_paymentHash = sse_decode_String(deserializer);
+    var var_invoice = sse_decode_String(deserializer);
+    var var_amountSats = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_stage = sse_decode_scuttle_lightning_receive_stage(deserializer);
+    return ScuttleLightningReceive(
+      paymentHash: var_paymentHash,
+      invoice: var_invoice,
+      amountSats: var_amountSats,
+      stage: var_stage,
+    );
+  }
+
+  @protected
+  ScuttleLightningReceiveStage sse_decode_scuttle_lightning_receive_stage(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ScuttleLightningReceiveStage.values[inner];
+  }
+
+  @protected
+  ScuttleLightningSend sse_decode_scuttle_lightning_send(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_paymentHash = sse_decode_String(deserializer);
+    var var_amountSats = sse_decode_u_64(deserializer);
+    var var_feeSats = sse_decode_u_64(deserializer);
+    return ScuttleLightningSend(
+      paymentHash: var_paymentHash,
+      amountSats: var_amountSats,
+      feeSats: var_feeSats,
+    );
+  }
+
+  @protected
+  ScuttleLightningSendStatus sse_decode_scuttle_lightning_send_status(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ScuttleLightningSendStatus.values[inner];
+  }
+
+  @protected
   ScuttleMixedClaim sse_decode_scuttle_mixed_claim(
     SseDeserializer deserializer,
   ) {
@@ -2464,6 +3848,42 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  ScuttleMovement sse_decode_scuttle_movement(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_u_32(deserializer);
+    var var_subsystem = sse_decode_String(deserializer);
+    var var_kind = sse_decode_String(deserializer);
+    var var_status = sse_decode_scuttle_movement_status(deserializer);
+    var var_intendedSats = sse_decode_i_64(deserializer);
+    var var_effectiveSats = sse_decode_i_64(deserializer);
+    var var_feeSats = sse_decode_u_64(deserializer);
+    var var_createdAt = sse_decode_i_64(deserializer);
+    var var_updatedAt = sse_decode_i_64(deserializer);
+    var var_completedAt = sse_decode_opt_box_autoadd_i_64(deserializer);
+    return ScuttleMovement(
+      id: var_id,
+      subsystem: var_subsystem,
+      kind: var_kind,
+      status: var_status,
+      intendedSats: var_intendedSats,
+      effectiveSats: var_effectiveSats,
+      feeSats: var_feeSats,
+      createdAt: var_createdAt,
+      updatedAt: var_updatedAt,
+      completedAt: var_completedAt,
+    );
+  }
+
+  @protected
+  ScuttleMovementStatus sse_decode_scuttle_movement_status(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ScuttleMovementStatus.values[inner];
+  }
+
+  @protected
   ScuttleNetwork sse_decode_scuttle_network(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
@@ -2476,12 +3896,66 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_tipHeight = sse_decode_u_32(deserializer);
-    var var_lastKnownSpendableSats = sse_decode_u_64(deserializer);
+    var var_spendableSats = sse_decode_u_64(deserializer);
+    var var_needsRefreshSats = sse_decode_u_64(deserializer);
+    var var_pendingSats = sse_decode_u_64(deserializer);
+    var var_pendingBoardSats = sse_decode_u_64(deserializer);
+    var var_confirmedReserveSats = sse_decode_u_64(deserializer);
+    var var_server = sse_decode_opt_box_autoadd_scuttle_server_info(
+      deserializer,
+    );
     var var_vtxos = sse_decode_list_scuttle_vtxo(deserializer);
     return ScuttleObservation(
       tipHeight: var_tipHeight,
-      lastKnownSpendableSats: var_lastKnownSpendableSats,
+      spendableSats: var_spendableSats,
+      needsRefreshSats: var_needsRefreshSats,
+      pendingSats: var_pendingSats,
+      pendingBoardSats: var_pendingBoardSats,
+      confirmedReserveSats: var_confirmedReserveSats,
+      server: var_server,
       vtxos: var_vtxos,
+    );
+  }
+
+  @protected
+  ScuttleOnchainSend sse_decode_scuttle_onchain_send(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_txid = sse_decode_String(deserializer);
+    var var_movementId = sse_decode_u_32(deserializer);
+    return ScuttleOnchainSend(txid: var_txid, movementId: var_movementId);
+  }
+
+  @protected
+  ScuttlePaymentKind sse_decode_scuttle_payment_kind(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ScuttlePaymentKind.values[inner];
+  }
+
+  @protected
+  ScuttlePaymentOption sse_decode_scuttle_payment_option(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_kind = sse_decode_scuttle_payment_kind(deserializer);
+    var var_valid = sse_decode_bool(deserializer);
+    return ScuttlePaymentOption(kind: var_kind, valid: var_valid);
+  }
+
+  @protected
+  ScuttlePaymentRequest sse_decode_scuttle_payment_request(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_amountSats = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_options = sse_decode_list_scuttle_payment_option(deserializer);
+    return ScuttlePaymentRequest(
+      amountSats: var_amountSats,
+      options: var_options,
     );
   }
 
@@ -2506,6 +3980,53 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       outpoint: var_outpoint,
       amountSats: var_amountSats,
       confirmationHeight: var_confirmationHeight,
+    );
+  }
+
+  @protected
+  ScuttleRoundFlow sse_decode_scuttle_round_flow(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ScuttleRoundFlow.values[inner];
+  }
+
+  @protected
+  ScuttleRoundState sse_decode_scuttle_round_state(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_u_32(deserializer);
+    var var_flow = sse_decode_scuttle_round_flow(deserializer);
+    var var_inputVtxoIds = sse_decode_list_String(deserializer);
+    var var_inputSats = sse_decode_u_64(deserializer);
+    var var_pendingSats = sse_decode_u_64(deserializer);
+    return ScuttleRoundState(
+      id: var_id,
+      flow: var_flow,
+      inputVtxoIds: var_inputVtxoIds,
+      inputSats: var_inputSats,
+      pendingSats: var_pendingSats,
+    );
+  }
+
+  @protected
+  ScuttleServerInfo sse_decode_scuttle_server_info(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_publicKey = sse_decode_String(deserializer);
+    var var_roundIntervalSecs = sse_decode_u_64(deserializer);
+    var var_vtxoLifetimeBlocks = sse_decode_u_32(deserializer);
+    var var_minBoardSats = sse_decode_u_64(deserializer);
+    var var_maxVtxoSats = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_boardConfirmations = sse_decode_u_32(deserializer);
+    return ScuttleServerInfo(
+      publicKey: var_publicKey,
+      roundIntervalSecs: var_roundIntervalSecs,
+      vtxoLifetimeBlocks: var_vtxoLifetimeBlocks,
+      minBoardSats: var_minBoardSats,
+      maxVtxoSats: var_maxVtxoSats,
+      boardConfirmations: var_boardConfirmations,
     );
   }
 
@@ -2615,13 +4136,45 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  int cst_encode_scuttle_lightning_receive_stage(
+    ScuttleLightningReceiveStage raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
+  }
+
+  @protected
+  int cst_encode_scuttle_lightning_send_status(ScuttleLightningSendStatus raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
+  }
+
+  @protected
+  int cst_encode_scuttle_movement_status(ScuttleMovementStatus raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
+  }
+
+  @protected
   int cst_encode_scuttle_network(ScuttleNetwork raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_i_32(raw.index);
   }
 
   @protected
+  int cst_encode_scuttle_payment_kind(ScuttlePaymentKind raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
+  }
+
+  @protected
   int cst_encode_scuttle_recovery_status(ScuttleRecoveryStatus raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return cst_encode_i_32(raw.index);
+  }
+
+  @protected
+  int cst_encode_scuttle_round_flow(ScuttleRoundFlow raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_i_32(raw.index);
   }
@@ -2702,6 +4255,15 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  void sse_encode_box_autoadd_i_64(
+    PlatformInt64 self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_scuttle_board_anchor(
     ScuttleBoardAnchor self,
     SseSerializer serializer,
@@ -2729,6 +4291,15 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  void sse_encode_box_autoadd_scuttle_server_info(
+    ScuttleServerInfo self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_scuttle_server_info(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self, serializer);
@@ -2744,6 +4315,12 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   void sse_encode_i_32(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putInt32(self);
+  }
+
+  @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putPlatformInt64(self);
   }
 
   @protected
@@ -2826,6 +4403,54 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  void sse_encode_list_scuttle_lightning_receive(
+    List<ScuttleLightningReceive> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_scuttle_lightning_receive(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_scuttle_lightning_send(
+    List<ScuttleLightningSend> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_scuttle_lightning_send(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_scuttle_movement(
+    List<ScuttleMovement> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_scuttle_movement(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_scuttle_payment_option(
+    List<ScuttlePaymentOption> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_scuttle_payment_option(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_list_scuttle_reserve_coin(
     List<ScuttleReserveCoin> self,
     SseSerializer serializer,
@@ -2834,6 +4459,18 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_scuttle_reserve_coin(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_scuttle_round_state(
+    List<ScuttleRoundState> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_scuttle_round_state(item, serializer);
     }
   }
 
@@ -2866,6 +4503,19 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_i_64(
+    PlatformInt64? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_i_64(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_box_autoadd_scuttle_board_anchor(
     ScuttleBoardAnchor? self,
     SseSerializer serializer,
@@ -2888,6 +4538,19 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_box_autoadd_scuttle_reserve_coin(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_scuttle_server_info(
+    ScuttleServerInfo? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_scuttle_server_info(self, serializer);
     }
   }
 
@@ -2970,6 +4633,16 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     sse_encode_u_64(self.grossSats, serializer);
     sse_encode_u_64(self.feeSats, serializer);
     sse_encode_u_64(self.netSats, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_claim_report(
+    ScuttleClaimReport self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.settled, serializer);
+    sse_encode_u_32(self.pending, serializer);
   }
 
   @protected
@@ -3074,6 +4747,69 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  void sse_encode_scuttle_fee_estimate(
+    ScuttleFeeEstimate self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_64(self.grossSats, serializer);
+    sse_encode_u_64(self.feeSats, serializer);
+    sse_encode_u_64(self.netSats, serializer);
+    sse_encode_list_String(self.vtxoIds, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_lightning_invoice(
+    ScuttleLightningInvoice self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.invoice, serializer);
+    sse_encode_String(self.paymentHash, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_lightning_receive(
+    ScuttleLightningReceive self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.paymentHash, serializer);
+    sse_encode_String(self.invoice, serializer);
+    sse_encode_opt_box_autoadd_u_64(self.amountSats, serializer);
+    sse_encode_scuttle_lightning_receive_stage(self.stage, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_lightning_receive_stage(
+    ScuttleLightningReceiveStage self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_lightning_send(
+    ScuttleLightningSend self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.paymentHash, serializer);
+    sse_encode_u_64(self.amountSats, serializer);
+    sse_encode_u_64(self.feeSats, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_lightning_send_status(
+    ScuttleLightningSendStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
   void sse_encode_scuttle_mixed_claim(
     ScuttleMixedClaim self,
     SseSerializer serializer,
@@ -3098,6 +4834,33 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   }
 
   @protected
+  void sse_encode_scuttle_movement(
+    ScuttleMovement self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.id, serializer);
+    sse_encode_String(self.subsystem, serializer);
+    sse_encode_String(self.kind, serializer);
+    sse_encode_scuttle_movement_status(self.status, serializer);
+    sse_encode_i_64(self.intendedSats, serializer);
+    sse_encode_i_64(self.effectiveSats, serializer);
+    sse_encode_u_64(self.feeSats, serializer);
+    sse_encode_i_64(self.createdAt, serializer);
+    sse_encode_i_64(self.updatedAt, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.completedAt, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_movement_status(
+    ScuttleMovementStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
   void sse_encode_scuttle_network(
     ScuttleNetwork self,
     SseSerializer serializer,
@@ -3113,8 +4876,52 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.tipHeight, serializer);
-    sse_encode_u_64(self.lastKnownSpendableSats, serializer);
+    sse_encode_u_64(self.spendableSats, serializer);
+    sse_encode_u_64(self.needsRefreshSats, serializer);
+    sse_encode_u_64(self.pendingSats, serializer);
+    sse_encode_u_64(self.pendingBoardSats, serializer);
+    sse_encode_u_64(self.confirmedReserveSats, serializer);
+    sse_encode_opt_box_autoadd_scuttle_server_info(self.server, serializer);
     sse_encode_list_scuttle_vtxo(self.vtxos, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_onchain_send(
+    ScuttleOnchainSend self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.txid, serializer);
+    sse_encode_u_32(self.movementId, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_payment_kind(
+    ScuttlePaymentKind self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_payment_option(
+    ScuttlePaymentOption self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_scuttle_payment_kind(self.kind, serializer);
+    sse_encode_bool(self.valid, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_payment_request(
+    ScuttlePaymentRequest self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_box_autoadd_u_64(self.amountSats, serializer);
+    sse_encode_list_scuttle_payment_option(self.options, serializer);
   }
 
   @protected
@@ -3135,6 +4942,42 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     sse_encode_String(self.outpoint, serializer);
     sse_encode_u_64(self.amountSats, serializer);
     sse_encode_u_32(self.confirmationHeight, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_round_flow(
+    ScuttleRoundFlow self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_round_state(
+    ScuttleRoundState self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.id, serializer);
+    sse_encode_scuttle_round_flow(self.flow, serializer);
+    sse_encode_list_String(self.inputVtxoIds, serializer);
+    sse_encode_u_64(self.inputSats, serializer);
+    sse_encode_u_64(self.pendingSats, serializer);
+  }
+
+  @protected
+  void sse_encode_scuttle_server_info(
+    ScuttleServerInfo self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.publicKey, serializer);
+    sse_encode_u_64(self.roundIntervalSecs, serializer);
+    sse_encode_u_32(self.vtxoLifetimeBlocks, serializer);
+    sse_encode_u_64(self.minBoardSats, serializer);
+    sse_encode_opt_box_autoadd_u_64(self.maxVtxoSats, serializer);
+    sse_encode_u_32(self.boardConfirmations, serializer);
   }
 
   @protected
@@ -3216,6 +5059,12 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
     anchor: anchor,
   );
 
+  /// Drives every pending Lightning receive once without waiting.
+  Future<ScuttleClaimReport> claimLightningReceives() => ScuttleCore
+      .instance
+      .api
+      .crateApiWalletScuttleWalletClaimLightningReceives(that: this);
+
   /// Waits for an admitted operation to finish before dropping the wallet.
   Future<void> close() =>
       ScuttleCore.instance.api.crateApiWalletScuttleWalletClose(that: this);
@@ -3225,6 +5074,15 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
       .instance
       .api
       .crateApiWalletScuttleWalletConfirmedReserve(that: this);
+
+  /// Stores a fresh BOLT11 invoice and returns it; the claim happens in a later pass.
+  Future<ScuttleLightningInvoice> createLightningInvoice({
+    required BigInt amountSats,
+  }) => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletCreateLightningInvoice(
+        that: this,
+        amountSats: amountSats,
+      );
 
   /// Delivers only the exact child previously admitted by the host. A
   /// response error is not proof that the package failed to reach the chain.
@@ -3252,6 +5110,14 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
     vtxoIds: vtxoIds,
   );
 
+  Future<ScuttleFeeEstimate> estimateArkPaymentFee({
+    required BigInt amountSats,
+  }) =>
+      ScuttleCore.instance.api.crateApiWalletScuttleWalletEstimateArkPaymentFee(
+        that: this,
+        amountSats: amountSats,
+      );
+
   /// Estimates the selected exits at an optional exact integer sats/vB rate.
   Future<ScuttleExitFeeEstimate> estimateExit({
     required List<String> vtxoIds,
@@ -3262,6 +5128,41 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
     vtxoIds: vtxoIds,
     feeRateSatPerVb: feeRateSatPerVb,
     destination: destination,
+  );
+
+  Future<ScuttleFeeEstimate> estimateLightningPaymentFee({
+    required String invoice,
+    required BigInt amountSats,
+  }) => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletEstimateLightningPaymentFee(
+        that: this,
+        invoice: invoice,
+        amountSats: amountSats,
+      );
+
+  Future<ScuttleFeeEstimate> estimateLightningReceiveFee({
+    required BigInt amountSats,
+  }) => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletEstimateLightningReceiveFee(
+        that: this,
+        amountSats: amountSats,
+      );
+
+  Future<ScuttleFeeEstimate> estimateOnchainSendFee({
+    required String address,
+    required BigInt amountSats,
+  }) => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletEstimateOnchainSendFee(
+        that: this,
+        address: address,
+        amountSats: amountSats,
+      );
+
+  Future<ScuttleFeeEstimate> estimateRefreshFee({
+    required List<String> vtxoIds,
+  }) => ScuttleCore.instance.api.crateApiWalletScuttleWalletEstimateRefreshFee(
+    that: this,
+    vtxoIds: vtxoIds,
   );
 
   /// Returns persisted live and terminal exits. A missing VTXO fails the whole observation.
@@ -3287,6 +5188,10 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
 
   Future<String> fingerprint() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletFingerprint(that: this);
+
+  /// Movements ordered from newest to oldest, from the local database.
+  Future<List<ScuttleMovement>> history() =>
+      ScuttleCore.instance.api.crateApiWalletScuttleWalletHistory(that: this);
 
   /// Imports confirmed change from the host's exact journaled child. This
   /// updates only the reserve graph and never runs the native wallet sync.
@@ -3318,13 +5223,58 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
   Future<void> initialScan() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletInitialScan(that: this);
 
+  Future<ScuttleLightningSendStatus> lightningSendStatus({
+    required String paymentHash,
+  }) => ScuttleCore.instance.api.crateApiWalletScuttleWalletLightningSendStatus(
+    that: this,
+    paymentHash: paymentHash,
+  );
+
   /// Derives and stores a fresh full Ark mailbox address.
   Future<String> newArkAddress() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletNewArkAddress(that: this);
 
+  /// Unix seconds of the next round start announced by the server.
+  Future<BigInt> nextRoundStartTime() => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletNextRoundStartTime(that: this);
+
   /// Reads the chain source tip and cached native inventory without synchronizing it.
   Future<ScuttleObservation> observation() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletObservation(that: this);
+
+  /// Parses an Ark address, BOLT11 invoice, BIP321 URI or bitcoin address without contacting
+  /// the server.
+  Future<ScuttlePaymentRequest> parsePaymentRequest({
+    required String payment,
+  }) => ScuttleCore.instance.api.crateApiWalletScuttleWalletParsePaymentRequest(
+    that: this,
+    payment: payment,
+  );
+
+  /// Starts a BOLT11 payment without waiting for settlement and returns its payment hash. A
+  /// failure after native admission must be treated as an unknown outcome, not retried.
+  Future<String> payLightningInvoice({
+    required String invoice,
+    required BigInt amountSats,
+  }) => ScuttleCore.instance.api.crateApiWalletScuttleWalletPayLightningInvoice(
+    that: this,
+    invoice: invoice,
+    amountSats: amountSats,
+  );
+
+  Future<List<ScuttleLightningReceive>> pendingLightningReceives() =>
+      ScuttleCore.instance.api
+          .crateApiWalletScuttleWalletPendingLightningReceives(that: this);
+
+  Future<List<ScuttleLightningSend>> pendingLightningSends() => ScuttleCore
+      .instance
+      .api
+      .crateApiWalletScuttleWalletPendingLightningSends(that: this);
+
+  Future<List<ScuttleRoundState>> pendingRoundStates() => ScuttleCore
+      .instance
+      .api
+      .crateApiWalletScuttleWalletPendingRoundStates(that: this);
 
   /// Derives and persists a new Scuttle board key; requires server and chain access.
   Future<ScuttleBoardFunding> prepareBoard() => ScuttleCore.instance.api
@@ -3389,6 +5339,9 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
     review: review,
   );
 
+  Future<void> progressPendingRounds() => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletProgressPendingRounds(that: this);
+
   /// Reports the recovery callback from this particular open.
   Future<ScuttleRecoveryStatus> recoveryStatus() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletRecoveryStatus(that: this);
@@ -3398,6 +5351,18 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
   /// transaction is delivered through the host's admission journal.
   Future<List<ScuttleExit>> refreshExitInventory() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletRefreshExitInventory(that: this);
+
+  /// Reconnects to the Ark server and refreshes its parameters.
+  Future<void> refreshServer() => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletRefreshServer(that: this);
+
+  /// Joins the next round in delegated mode and returns the stored round id, or `None` when
+  /// nothing needed refreshing. A failure after native admission is an unknown outcome.
+  Future<int?> refreshVtxosDelegated({required List<String> vtxoIds}) =>
+      ScuttleCore.instance.api.crateApiWalletScuttleWalletRefreshVtxosDelegated(
+        that: this,
+        vtxoIds: vtxoIds,
+      );
 
   /// Admits only a wholly unsigned native-segwit PSBT. The host owns signing and broadcast.
   /// A failure after native admission must be treated as an unknown outcome, not retried.
@@ -3438,11 +5403,32 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
         amountSats: amountSats,
       );
 
+  /// Offboards `amount_sats` to a bitcoin address. A failure after native admission must be
+  /// treated as an unknown outcome, not retried.
+  Future<ScuttleOnchainSend> sendOnchain({
+    required String address,
+    required BigInt amountSats,
+  }) => ScuttleCore.instance.api.crateApiWalletScuttleWalletSendOnchain(
+    that: this,
+    address: address,
+    amountSats: amountSats,
+  );
+
   /// Starts only the selected currently spendable VTXOs; an error after admission is unknown.
   Future<void> startExit({required List<String> vtxoIds}) => ScuttleCore
       .instance
       .api
       .crateApiWalletScuttleWalletStartExit(that: this, vtxoIds: vtxoIds);
+
+  /// Processes mailbox messages: received VTXOs, round and Lightning updates.
+  /// An `Ok` does not prove every message was processed; a stalled message is
+  /// retried from the same checkpoint by the next call.
+  Future<void> syncMailbox() => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletSyncMailbox(that: this);
+
+  /// Advances registered boards from their funding confirmations.
+  Future<void> syncPendingBoards() => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletSyncPendingBoards(that: this);
 
   /// Verifies one host-journaled reserve funding transaction without running
   /// a wallet sync. This is not an import into BDK or spending authority.
@@ -3457,4 +5443,8 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
         destination: destination,
         amountSats: amountSats,
       );
+
+  /// Spendable VTXOs the wallet wants to refresh now.
+  Future<List<String>> vtxosToRefresh() => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletVtxosToRefresh(that: this);
 }

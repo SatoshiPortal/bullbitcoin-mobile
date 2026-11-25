@@ -40,7 +40,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1221239647;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1288264373;
 
 // Section: executor
 
@@ -92,6 +92,53 @@ fn wire__crate__api__wallet__ScuttleWallet_board_terms_impl(
                             api_anchor,
                         )
                         .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_claim_lightning_receives",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::claim_lightning_receives(
+                                &*api_that_guard,
+                            )
+                            .await?;
                         std::result::Result::Ok(output_ok)
                     })()
                     .await,
@@ -181,6 +228,56 @@ fn wire__crate__api__wallet__ScuttleWallet_confirmed_reserve_impl(
                         let output_ok =
                             crate::api::wallet::ScuttleWallet::confirmed_reserve(&*api_that_guard)
                                 .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    amount_sats: impl CstDecode<u64>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_create_lightning_invoice",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_amount_sats = amount_sats.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::create_lightning_invoice(
+                                &*api_that_guard,
+                                api_amount_sats,
+                            )
+                            .await?;
                         std::result::Result::Ok(output_ok)
                     })()
                     .await,
@@ -300,6 +397,56 @@ fn wire__crate__api__wallet__ScuttleWallet_due_regtest_exit_cpfp_impl(
         },
     )
 }
+fn wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    amount_sats: impl CstDecode<u64>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_estimate_ark_payment_fee",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_amount_sats = amount_sats.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::estimate_ark_payment_fee(
+                                &*api_that_guard,
+                                api_amount_sats,
+                            )
+                            .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__wallet__ScuttleWallet_estimate_exit_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     that: impl CstDecode<
@@ -345,6 +492,211 @@ fn wire__crate__api__wallet__ScuttleWallet_estimate_exit_impl(
                             api_vtxo_ids,
                             api_fee_rate_sat_per_vb,
                             api_destination,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    invoice: impl CstDecode<String>,
+    amount_sats: impl CstDecode<u64>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_estimate_lightning_payment_fee",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_invoice = invoice.cst_decode();
+            let api_amount_sats = amount_sats.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::estimate_lightning_payment_fee(
+                                &*api_that_guard,
+                                api_invoice,
+                                api_amount_sats,
+                            )
+                            .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    amount_sats: impl CstDecode<u64>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_estimate_lightning_receive_fee",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_amount_sats = amount_sats.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::estimate_lightning_receive_fee(
+                                &*api_that_guard,
+                                api_amount_sats,
+                            )
+                            .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    address: impl CstDecode<String>,
+    amount_sats: impl CstDecode<u64>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_estimate_onchain_send_fee",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_address = address.cst_decode();
+            let api_amount_sats = amount_sats.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::estimate_onchain_send_fee(
+                                &*api_that_guard,
+                                api_address,
+                                api_amount_sats,
+                            )
+                            .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    vtxo_ids: impl CstDecode<Vec<String>>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_estimate_refresh_fee",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_vtxo_ids = vtxo_ids.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::estimate_refresh_fee(
+                            &*api_that_guard,
+                            api_vtxo_ids,
                         )
                         .await?;
                         std::result::Result::Ok(output_ok)
@@ -543,6 +895,50 @@ fn wire__crate__api__wallet__ScuttleWallet_fingerprint_impl(
         },
     )
 }
+fn wire__crate__api__wallet__ScuttleWallet_history_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_history",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::history(&*api_that_guard).await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__wallet__ScuttleWallet_import_confirmed_regtest_cpfp_change_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     that: impl CstDecode<
@@ -635,6 +1031,55 @@ fn wire__crate__api__wallet__ScuttleWallet_initial_scan_impl(
         },
     )
 }
+fn wire__crate__api__wallet__ScuttleWallet_lightning_send_status_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    payment_hash: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_lightning_send_status",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_payment_hash = payment_hash.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::lightning_send_status(
+                            &*api_that_guard,
+                            api_payment_hash,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__wallet__ScuttleWallet_new_ark_address_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     that: impl CstDecode<
@@ -672,6 +1117,52 @@ fn wire__crate__api__wallet__ScuttleWallet_new_ark_address_impl(
                         let output_ok =
                             crate::api::wallet::ScuttleWallet::new_ark_address(&*api_that_guard)
                                 .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_next_round_start_time_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_next_round_start_time",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::next_round_start_time(
+                            &*api_that_guard,
+                        )
+                        .await?;
                         std::result::Result::Ok(output_ok)
                     })()
                     .await,
@@ -760,6 +1251,246 @@ fn wire__crate__api__wallet__ScuttleWallet_open_impl(
                             api_esplora_address,
                             api_child_mnemonic,
                             api_allow_unreachable_server,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_parse_payment_request_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    payment: impl CstDecode<String>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_parse_payment_request",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_payment = payment.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::parse_payment_request(
+                            &*api_that_guard,
+                            api_payment,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    invoice: impl CstDecode<String>,
+    amount_sats: impl CstDecode<u64>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_pay_lightning_invoice",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_invoice = invoice.cst_decode();
+            let api_amount_sats = amount_sats.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::pay_lightning_invoice(
+                            &*api_that_guard,
+                            api_invoice,
+                            api_amount_sats,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_pending_lightning_receives",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::pending_lightning_receives(
+                                &*api_that_guard,
+                            )
+                            .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_pending_lightning_sends",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::pending_lightning_sends(
+                            &*api_that_guard,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_pending_round_states_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_pending_round_states",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::pending_round_states(
+                            &*api_that_guard,
                         )
                         .await?;
                         std::result::Result::Ok(output_ok)
@@ -1043,6 +1774,52 @@ fn wire__crate__api__wallet__ScuttleWallet_progress_exits_impl(
         },
     )
 }
+fn wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_progress_pending_rounds",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::progress_pending_rounds(
+                            &*api_that_guard,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__wallet__ScuttleWallet_recovery_status_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     that: impl CstDecode<
@@ -1124,6 +1901,100 @@ fn wire__crate__api__wallet__ScuttleWallet_refresh_exit_inventory_impl(
                         let api_that_guard = api_that_guard.unwrap();
                         let output_ok = crate::api::wallet::ScuttleWallet::refresh_exit_inventory(
                             &*api_that_guard,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_refresh_server_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_refresh_server",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::refresh_server(&*api_that_guard)
+                                .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    vtxo_ids: impl CstDecode<Vec<String>>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_refresh_vtxos_delegated",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_vtxo_ids = vtxo_ids.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::refresh_vtxos_delegated(
+                            &*api_that_guard,
+                            api_vtxo_ids,
                         )
                         .await?;
                         std::result::Result::Ok(output_ok)
@@ -1342,6 +2213,58 @@ fn wire__crate__api__wallet__ScuttleWallet_send_ark_impl(
         },
     )
 }
+fn wire__crate__api__wallet__ScuttleWallet_send_onchain_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+    address: impl CstDecode<String>,
+    amount_sats: impl CstDecode<u64>,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_send_onchain",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            let api_address = address.cst_decode();
+            let api_amount_sats = amount_sats.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::send_onchain(
+                            &*api_that_guard,
+                            api_address,
+                            api_amount_sats,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__wallet__ScuttleWallet_start_exit_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     that: impl CstDecode<
@@ -1381,6 +2304,97 @@ fn wire__crate__api__wallet__ScuttleWallet_start_exit_impl(
                         let output_ok = crate::api::wallet::ScuttleWallet::start_exit(
                             &*api_that_guard,
                             api_vtxo_ids,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_sync_mailbox_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_sync_mailbox",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::sync_mailbox(&*api_that_guard)
+                                .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__wallet__ScuttleWallet_sync_pending_boards_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_sync_pending_boards",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::wallet::ScuttleWallet::sync_pending_boards(
+                            &*api_that_guard,
                         )
                         .await?;
                         std::result::Result::Ok(output_ok)
@@ -1447,6 +2461,51 @@ fn wire__crate__api__wallet__ScuttleWallet_verify_regtest_reserve_funding_impl(
         },
     )
 }
+fn wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_vtxos_to_refresh",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::vtxos_to_refresh(&*api_that_guard)
+                                .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 
 // Section: dart2rust
 
@@ -1459,6 +2518,12 @@ impl CstDecode<bool> for bool {
 impl CstDecode<i32> for i32 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> i32 {
+        self
+    }
+}
+impl CstDecode<i64> for i64 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> i64 {
         self
     }
 }
@@ -1489,6 +2554,41 @@ impl CstDecode<crate::api::exit::ScuttleExitState> for i32 {
         }
     }
 }
+impl CstDecode<crate::api::payments::ScuttleLightningReceiveStage> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> crate::api::payments::ScuttleLightningReceiveStage {
+        match self {
+            0 => crate::api::payments::ScuttleLightningReceiveStage::AwaitingPayment,
+            1 => crate::api::payments::ScuttleLightningReceiveStage::HtlcsReady,
+            2 => crate::api::payments::ScuttleLightningReceiveStage::PreimageRevealed,
+            3 => crate::api::payments::ScuttleLightningReceiveStage::Delivering,
+            _ => unreachable!("Invalid variant for ScuttleLightningReceiveStage: {}", self),
+        }
+    }
+}
+impl CstDecode<crate::api::payments::ScuttleLightningSendStatus> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> crate::api::payments::ScuttleLightningSendStatus {
+        match self {
+            0 => crate::api::payments::ScuttleLightningSendStatus::Unknown,
+            1 => crate::api::payments::ScuttleLightningSendStatus::InProgress,
+            2 => crate::api::payments::ScuttleLightningSendStatus::Paid,
+            _ => unreachable!("Invalid variant for ScuttleLightningSendStatus: {}", self),
+        }
+    }
+}
+impl CstDecode<crate::api::payments::ScuttleMovementStatus> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> crate::api::payments::ScuttleMovementStatus {
+        match self {
+            0 => crate::api::payments::ScuttleMovementStatus::Pending,
+            1 => crate::api::payments::ScuttleMovementStatus::Successful,
+            2 => crate::api::payments::ScuttleMovementStatus::Failed,
+            3 => crate::api::payments::ScuttleMovementStatus::Canceled,
+            _ => unreachable!("Invalid variant for ScuttleMovementStatus: {}", self),
+        }
+    }
+}
 impl CstDecode<crate::api::wallet::ScuttleNetwork> for i32 {
     // Codec=Cst (C-struct based), see doc to use other codecs
     fn cst_decode(self) -> crate::api::wallet::ScuttleNetwork {
@@ -1498,6 +2598,17 @@ impl CstDecode<crate::api::wallet::ScuttleNetwork> for i32 {
             2 => crate::api::wallet::ScuttleNetwork::Signet,
             3 => crate::api::wallet::ScuttleNetwork::Regtest,
             _ => unreachable!("Invalid variant for ScuttleNetwork: {}", self),
+        }
+    }
+}
+impl CstDecode<crate::api::payments::ScuttlePaymentKind> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> crate::api::payments::ScuttlePaymentKind {
+        match self {
+            0 => crate::api::payments::ScuttlePaymentKind::Ark,
+            1 => crate::api::payments::ScuttlePaymentKind::Bolt11,
+            2 => crate::api::payments::ScuttlePaymentKind::Bitcoin,
+            _ => unreachable!("Invalid variant for ScuttlePaymentKind: {}", self),
         }
     }
 }
@@ -1511,6 +2622,20 @@ impl CstDecode<crate::api::wallet::ScuttleRecoveryStatus> for i32 {
             3 => crate::api::wallet::ScuttleRecoveryStatus::Incomplete,
             4 => crate::api::wallet::ScuttleRecoveryStatus::Failed,
             _ => unreachable!("Invalid variant for ScuttleRecoveryStatus: {}", self),
+        }
+    }
+}
+impl CstDecode<crate::api::payments::ScuttleRoundFlow> for i32 {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    fn cst_decode(self) -> crate::api::payments::ScuttleRoundFlow {
+        match self {
+            0 => crate::api::payments::ScuttleRoundFlow::DelegatedPending,
+            1 => crate::api::payments::ScuttleRoundFlow::Pending,
+            2 => crate::api::payments::ScuttleRoundFlow::Ongoing,
+            3 => crate::api::payments::ScuttleRoundFlow::AwaitingConfirmations,
+            4 => crate::api::payments::ScuttleRoundFlow::Failed,
+            5 => crate::api::payments::ScuttleRoundFlow::Canceled,
+            _ => unreachable!("Invalid variant for ScuttleRoundFlow: {}", self),
         }
     }
 }
@@ -1592,6 +2717,13 @@ impl SseDecode for i32 {
     }
 }
 
+impl SseDecode for i64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_i64::<NativeEndian>().unwrap()
+    }
+}
+
 impl SseDecode for Vec<String> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1670,6 +2802,62 @@ impl SseDecode for Vec<crate::api::exit::ScuttleExitProgress> {
     }
 }
 
+impl SseDecode for Vec<crate::api::payments::ScuttleLightningReceive> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::payments::ScuttleLightningReceive>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::payments::ScuttleLightningSend> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::payments::ScuttleLightningSend>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::payments::ScuttleMovement> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::payments::ScuttleMovement>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::payments::ScuttlePaymentOption> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::payments::ScuttlePaymentOption>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<crate::api::exit::ScuttleReserveCoin> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1677,6 +2865,20 @@ impl SseDecode for Vec<crate::api::exit::ScuttleReserveCoin> {
         let mut ans_ = Vec::with_capacity(len_ as usize);
         for idx_ in 0..len_ {
             ans_.push(<crate::api::exit::ScuttleReserveCoin>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::api::payments::ScuttleRoundState> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::payments::ScuttleRoundState>::sse_decode(
                 deserializer,
             ));
         }
@@ -1719,6 +2921,17 @@ impl SseDecode for Option<String> {
     }
 }
 
+impl SseDecode for Option<i64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<i64>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<crate::api::wallet::ScuttleBoardAnchor> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1737,6 +2950,19 @@ impl SseDecode for Option<crate::api::exit::ScuttleReserveCoin> {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
             return Some(<crate::api::exit::ScuttleReserveCoin>::sse_decode(
+                deserializer,
+            ));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<crate::api::wallet::ScuttleServerInfo> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::api::wallet::ScuttleServerInfo>::sse_decode(
                 deserializer,
             ));
         } else {
@@ -1840,6 +3066,18 @@ impl SseDecode for crate::api::wallet::ScuttleBoardTerms {
             gross_sats: var_grossSats,
             fee_sats: var_feeSats,
             net_sats: var_netSats,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleClaimReport {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_settled = <u32>::sse_decode(deserializer);
+        let mut var_pending = <u32>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleClaimReport {
+            settled: var_settled,
+            pending: var_pending,
         };
     }
 }
@@ -1991,6 +3229,95 @@ impl SseDecode for crate::api::exit::ScuttleExitState {
     }
 }
 
+impl SseDecode for crate::api::payments::ScuttleFeeEstimate {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_grossSats = <u64>::sse_decode(deserializer);
+        let mut var_feeSats = <u64>::sse_decode(deserializer);
+        let mut var_netSats = <u64>::sse_decode(deserializer);
+        let mut var_vtxoIds = <Vec<String>>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleFeeEstimate {
+            gross_sats: var_grossSats,
+            fee_sats: var_feeSats,
+            net_sats: var_netSats,
+            vtxo_ids: var_vtxoIds,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleLightningInvoice {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_invoice = <String>::sse_decode(deserializer);
+        let mut var_paymentHash = <String>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleLightningInvoice {
+            invoice: var_invoice,
+            payment_hash: var_paymentHash,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleLightningReceive {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_paymentHash = <String>::sse_decode(deserializer);
+        let mut var_invoice = <String>::sse_decode(deserializer);
+        let mut var_amountSats = <Option<u64>>::sse_decode(deserializer);
+        let mut var_stage =
+            <crate::api::payments::ScuttleLightningReceiveStage>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleLightningReceive {
+            payment_hash: var_paymentHash,
+            invoice: var_invoice,
+            amount_sats: var_amountSats,
+            stage: var_stage,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleLightningReceiveStage {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::payments::ScuttleLightningReceiveStage::AwaitingPayment,
+            1 => crate::api::payments::ScuttleLightningReceiveStage::HtlcsReady,
+            2 => crate::api::payments::ScuttleLightningReceiveStage::PreimageRevealed,
+            3 => crate::api::payments::ScuttleLightningReceiveStage::Delivering,
+            _ => unreachable!(
+                "Invalid variant for ScuttleLightningReceiveStage: {}",
+                inner
+            ),
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleLightningSend {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_paymentHash = <String>::sse_decode(deserializer);
+        let mut var_amountSats = <u64>::sse_decode(deserializer);
+        let mut var_feeSats = <u64>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleLightningSend {
+            payment_hash: var_paymentHash,
+            amount_sats: var_amountSats,
+            fee_sats: var_feeSats,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleLightningSendStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::payments::ScuttleLightningSendStatus::Unknown,
+            1 => crate::api::payments::ScuttleLightningSendStatus::InProgress,
+            2 => crate::api::payments::ScuttleLightningSendStatus::Paid,
+            _ => unreachable!("Invalid variant for ScuttleLightningSendStatus: {}", inner),
+        };
+    }
+}
+
 impl SseDecode for crate::api::exit::ScuttleMixedClaim {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2024,6 +3351,49 @@ impl SseDecode for crate::api::exit::ScuttleMixedClaimReview {
     }
 }
 
+impl SseDecode for crate::api::payments::ScuttleMovement {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_id = <u32>::sse_decode(deserializer);
+        let mut var_subsystem = <String>::sse_decode(deserializer);
+        let mut var_kind = <String>::sse_decode(deserializer);
+        let mut var_status =
+            <crate::api::payments::ScuttleMovementStatus>::sse_decode(deserializer);
+        let mut var_intendedSats = <i64>::sse_decode(deserializer);
+        let mut var_effectiveSats = <i64>::sse_decode(deserializer);
+        let mut var_feeSats = <u64>::sse_decode(deserializer);
+        let mut var_createdAt = <i64>::sse_decode(deserializer);
+        let mut var_updatedAt = <i64>::sse_decode(deserializer);
+        let mut var_completedAt = <Option<i64>>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleMovement {
+            id: var_id,
+            subsystem: var_subsystem,
+            kind: var_kind,
+            status: var_status,
+            intended_sats: var_intendedSats,
+            effective_sats: var_effectiveSats,
+            fee_sats: var_feeSats,
+            created_at: var_createdAt,
+            updated_at: var_updatedAt,
+            completed_at: var_completedAt,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleMovementStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::payments::ScuttleMovementStatus::Pending,
+            1 => crate::api::payments::ScuttleMovementStatus::Successful,
+            2 => crate::api::payments::ScuttleMovementStatus::Failed,
+            3 => crate::api::payments::ScuttleMovementStatus::Canceled,
+            _ => unreachable!("Invalid variant for ScuttleMovementStatus: {}", inner),
+        };
+    }
+}
+
 impl SseDecode for crate::api::wallet::ScuttleNetwork {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2042,12 +3412,73 @@ impl SseDecode for crate::api::wallet::ScuttleObservation {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_tipHeight = <u32>::sse_decode(deserializer);
-        let mut var_lastKnownSpendableSats = <u64>::sse_decode(deserializer);
+        let mut var_spendableSats = <u64>::sse_decode(deserializer);
+        let mut var_needsRefreshSats = <u64>::sse_decode(deserializer);
+        let mut var_pendingSats = <u64>::sse_decode(deserializer);
+        let mut var_pendingBoardSats = <u64>::sse_decode(deserializer);
+        let mut var_confirmedReserveSats = <u64>::sse_decode(deserializer);
+        let mut var_server =
+            <Option<crate::api::wallet::ScuttleServerInfo>>::sse_decode(deserializer);
         let mut var_vtxos = <Vec<crate::api::wallet::ScuttleVtxo>>::sse_decode(deserializer);
         return crate::api::wallet::ScuttleObservation {
             tip_height: var_tipHeight,
-            last_known_spendable_sats: var_lastKnownSpendableSats,
+            spendable_sats: var_spendableSats,
+            needs_refresh_sats: var_needsRefreshSats,
+            pending_sats: var_pendingSats,
+            pending_board_sats: var_pendingBoardSats,
+            confirmed_reserve_sats: var_confirmedReserveSats,
+            server: var_server,
             vtxos: var_vtxos,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleOnchainSend {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_txid = <String>::sse_decode(deserializer);
+        let mut var_movementId = <u32>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleOnchainSend {
+            txid: var_txid,
+            movement_id: var_movementId,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttlePaymentKind {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::payments::ScuttlePaymentKind::Ark,
+            1 => crate::api::payments::ScuttlePaymentKind::Bolt11,
+            2 => crate::api::payments::ScuttlePaymentKind::Bitcoin,
+            _ => unreachable!("Invalid variant for ScuttlePaymentKind: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttlePaymentOption {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_kind = <crate::api::payments::ScuttlePaymentKind>::sse_decode(deserializer);
+        let mut var_valid = <bool>::sse_decode(deserializer);
+        return crate::api::payments::ScuttlePaymentOption {
+            kind: var_kind,
+            valid: var_valid,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttlePaymentRequest {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_amountSats = <Option<u64>>::sse_decode(deserializer);
+        let mut var_options =
+            <Vec<crate::api::payments::ScuttlePaymentOption>>::sse_decode(deserializer);
+        return crate::api::payments::ScuttlePaymentRequest {
+            amount_sats: var_amountSats,
+            options: var_options,
         };
     }
 }
@@ -2077,6 +3508,60 @@ impl SseDecode for crate::api::exit::ScuttleReserveCoin {
             outpoint: var_outpoint,
             amount_sats: var_amountSats,
             confirmation_height: var_confirmationHeight,
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleRoundFlow {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::payments::ScuttleRoundFlow::DelegatedPending,
+            1 => crate::api::payments::ScuttleRoundFlow::Pending,
+            2 => crate::api::payments::ScuttleRoundFlow::Ongoing,
+            3 => crate::api::payments::ScuttleRoundFlow::AwaitingConfirmations,
+            4 => crate::api::payments::ScuttleRoundFlow::Failed,
+            5 => crate::api::payments::ScuttleRoundFlow::Canceled,
+            _ => unreachable!("Invalid variant for ScuttleRoundFlow: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for crate::api::payments::ScuttleRoundState {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_id = <u32>::sse_decode(deserializer);
+        let mut var_flow = <crate::api::payments::ScuttleRoundFlow>::sse_decode(deserializer);
+        let mut var_inputVtxoIds = <Vec<String>>::sse_decode(deserializer);
+        let mut var_inputSats = <u64>::sse_decode(deserializer);
+        let mut var_pendingSats = <u64>::sse_decode(deserializer);
+        return crate::api::payments::ScuttleRoundState {
+            id: var_id,
+            flow: var_flow,
+            input_vtxo_ids: var_inputVtxoIds,
+            input_sats: var_inputSats,
+            pending_sats: var_pendingSats,
+        };
+    }
+}
+
+impl SseDecode for crate::api::wallet::ScuttleServerInfo {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_publicKey = <String>::sse_decode(deserializer);
+        let mut var_roundIntervalSecs = <u64>::sse_decode(deserializer);
+        let mut var_vtxoLifetimeBlocks = <u32>::sse_decode(deserializer);
+        let mut var_minBoardSats = <u64>::sse_decode(deserializer);
+        let mut var_maxVtxoSats = <Option<u64>>::sse_decode(deserializer);
+        let mut var_boardConfirmations = <u32>::sse_decode(deserializer);
+        return crate::api::wallet::ScuttleServerInfo {
+            public_key: var_publicKey,
+            round_interval_secs: var_roundIntervalSecs,
+            vtxo_lifetime_blocks: var_vtxoLifetimeBlocks,
+            min_board_sats: var_minBoardSats,
+            max_vtxo_sats: var_maxVtxoSats,
+            board_confirmations: var_boardConfirmations,
         };
     }
 }
@@ -2297,6 +3782,27 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::wallet::ScuttleBoardTerms>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleClaimReport {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.settled.into_into_dart().into_dart(),
+            self.pending.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleClaimReport
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleClaimReport>
+    for crate::api::payments::ScuttleClaimReport
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleClaimReport {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::exit::ScuttleExit {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -2505,6 +4011,140 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::exit::ScuttleExitState>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleFeeEstimate {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.gross_sats.into_into_dart().into_dart(),
+            self.fee_sats.into_into_dart().into_dart(),
+            self.net_sats.into_into_dart().into_dart(),
+            self.vtxo_ids.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleFeeEstimate
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleFeeEstimate>
+    for crate::api::payments::ScuttleFeeEstimate
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleFeeEstimate {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleLightningInvoice {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.invoice.into_into_dart().into_dart(),
+            self.payment_hash.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleLightningInvoice
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleLightningInvoice>
+    for crate::api::payments::ScuttleLightningInvoice
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleLightningInvoice {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleLightningReceive {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.payment_hash.into_into_dart().into_dart(),
+            self.invoice.into_into_dart().into_dart(),
+            self.amount_sats.into_into_dart().into_dart(),
+            self.stage.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleLightningReceive
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleLightningReceive>
+    for crate::api::payments::ScuttleLightningReceive
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleLightningReceive {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleLightningReceiveStage {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::AwaitingPayment => 0.into_dart(),
+            Self::HtlcsReady => 1.into_dart(),
+            Self::PreimageRevealed => 2.into_dart(),
+            Self::Delivering => 3.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleLightningReceiveStage
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleLightningReceiveStage>
+    for crate::api::payments::ScuttleLightningReceiveStage
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleLightningReceiveStage {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleLightningSend {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.payment_hash.into_into_dart().into_dart(),
+            self.amount_sats.into_into_dart().into_dart(),
+            self.fee_sats.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleLightningSend
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleLightningSend>
+    for crate::api::payments::ScuttleLightningSend
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleLightningSend {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleLightningSendStatus {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Unknown => 0.into_dart(),
+            Self::InProgress => 1.into_dart(),
+            Self::Paid => 2.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleLightningSendStatus
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleLightningSendStatus>
+    for crate::api::payments::ScuttleLightningSendStatus
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleLightningSendStatus {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::exit::ScuttleMixedClaim {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -2551,6 +4191,58 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::exit::ScuttleMixedClaimReview
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleMovement {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.id.into_into_dart().into_dart(),
+            self.subsystem.into_into_dart().into_dart(),
+            self.kind.into_into_dart().into_dart(),
+            self.status.into_into_dart().into_dart(),
+            self.intended_sats.into_into_dart().into_dart(),
+            self.effective_sats.into_into_dart().into_dart(),
+            self.fee_sats.into_into_dart().into_dart(),
+            self.created_at.into_into_dart().into_dart(),
+            self.updated_at.into_into_dart().into_dart(),
+            self.completed_at.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleMovement
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleMovement>
+    for crate::api::payments::ScuttleMovement
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleMovement {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleMovementStatus {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Pending => 0.into_dart(),
+            Self::Successful => 1.into_dart(),
+            Self::Failed => 2.into_dart(),
+            Self::Canceled => 3.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleMovementStatus
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleMovementStatus>
+    for crate::api::payments::ScuttleMovementStatus
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleMovementStatus {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::wallet::ScuttleNetwork {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
@@ -2578,7 +4270,12 @@ impl flutter_rust_bridge::IntoDart for crate::api::wallet::ScuttleObservation {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.tip_height.into_into_dart().into_dart(),
-            self.last_known_spendable_sats.into_into_dart().into_dart(),
+            self.spendable_sats.into_into_dart().into_dart(),
+            self.needs_refresh_sats.into_into_dart().into_dart(),
+            self.pending_sats.into_into_dart().into_dart(),
+            self.pending_board_sats.into_into_dart().into_dart(),
+            self.confirmed_reserve_sats.into_into_dart().into_dart(),
+            self.server.into_into_dart().into_dart(),
             self.vtxos.into_into_dart().into_dart(),
         ]
         .into_dart()
@@ -2592,6 +4289,91 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::wallet::ScuttleObservation>
     for crate::api::wallet::ScuttleObservation
 {
     fn into_into_dart(self) -> crate::api::wallet::ScuttleObservation {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleOnchainSend {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.txid.into_into_dart().into_dart(),
+            self.movement_id.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleOnchainSend
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleOnchainSend>
+    for crate::api::payments::ScuttleOnchainSend
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleOnchainSend {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttlePaymentKind {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Ark => 0.into_dart(),
+            Self::Bolt11 => 1.into_dart(),
+            Self::Bitcoin => 2.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttlePaymentKind
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttlePaymentKind>
+    for crate::api::payments::ScuttlePaymentKind
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttlePaymentKind {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttlePaymentOption {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.kind.into_into_dart().into_dart(),
+            self.valid.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttlePaymentOption
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttlePaymentOption>
+    for crate::api::payments::ScuttlePaymentOption
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttlePaymentOption {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttlePaymentRequest {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.amount_sats.into_into_dart().into_dart(),
+            self.options.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttlePaymentRequest
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttlePaymentRequest>
+    for crate::api::payments::ScuttlePaymentRequest
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttlePaymentRequest {
         self
     }
 }
@@ -2638,6 +4420,80 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::exit::ScuttleReserveCoin>
     for crate::api::exit::ScuttleReserveCoin
 {
     fn into_into_dart(self) -> crate::api::exit::ScuttleReserveCoin {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleRoundFlow {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::DelegatedPending => 0.into_dart(),
+            Self::Pending => 1.into_dart(),
+            Self::Ongoing => 2.into_dart(),
+            Self::AwaitingConfirmations => 3.into_dart(),
+            Self::Failed => 4.into_dart(),
+            Self::Canceled => 5.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleRoundFlow
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleRoundFlow>
+    for crate::api::payments::ScuttleRoundFlow
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleRoundFlow {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleRoundState {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.id.into_into_dart().into_dart(),
+            self.flow.into_into_dart().into_dart(),
+            self.input_vtxo_ids.into_into_dart().into_dart(),
+            self.input_sats.into_into_dart().into_dart(),
+            self.pending_sats.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::payments::ScuttleRoundState
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::payments::ScuttleRoundState>
+    for crate::api::payments::ScuttleRoundState
+{
+    fn into_into_dart(self) -> crate::api::payments::ScuttleRoundState {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::wallet::ScuttleServerInfo {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.public_key.into_into_dart().into_dart(),
+            self.round_interval_secs.into_into_dart().into_dart(),
+            self.vtxo_lifetime_blocks.into_into_dart().into_dart(),
+            self.min_board_sats.into_into_dart().into_dart(),
+            self.max_vtxo_sats.into_into_dart().into_dart(),
+            self.board_confirmations.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::wallet::ScuttleServerInfo
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::wallet::ScuttleServerInfo>
+    for crate::api::wallet::ScuttleServerInfo
+{
+    fn into_into_dart(self) -> crate::api::wallet::ScuttleServerInfo {
         self
     }
 }
@@ -2727,6 +4583,13 @@ impl SseEncode for i32 {
     }
 }
 
+impl SseEncode for i64 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_i64::<NativeEndian>(self).unwrap();
+    }
+}
+
 impl SseEncode for Vec<String> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2787,12 +4650,62 @@ impl SseEncode for Vec<crate::api::exit::ScuttleExitProgress> {
     }
 }
 
+impl SseEncode for Vec<crate::api::payments::ScuttleLightningReceive> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::payments::ScuttleLightningReceive>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::payments::ScuttleLightningSend> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::payments::ScuttleLightningSend>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::payments::ScuttleMovement> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::payments::ScuttleMovement>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::payments::ScuttlePaymentOption> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::payments::ScuttlePaymentOption>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<crate::api::exit::ScuttleReserveCoin> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <crate::api::exit::ScuttleReserveCoin>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::payments::ScuttleRoundState> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::payments::ScuttleRoundState>::sse_encode(item, serializer);
         }
     }
 }
@@ -2833,6 +4746,16 @@ impl SseEncode for Option<String> {
     }
 }
 
+impl SseEncode for Option<i64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <i64>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for Option<crate::api::wallet::ScuttleBoardAnchor> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2849,6 +4772,16 @@ impl SseEncode for Option<crate::api::exit::ScuttleReserveCoin> {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <crate::api::exit::ScuttleReserveCoin>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<crate::api::wallet::ScuttleServerInfo> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::api::wallet::ScuttleServerInfo>::sse_encode(value, serializer);
         }
     }
 }
@@ -2920,6 +4853,14 @@ impl SseEncode for crate::api::wallet::ScuttleBoardTerms {
         <u64>::sse_encode(self.gross_sats, serializer);
         <u64>::sse_encode(self.fee_sats, serializer);
         <u64>::sse_encode(self.net_sats, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleClaimReport {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u32>::sse_encode(self.settled, serializer);
+        <u32>::sse_encode(self.pending, serializer);
     }
 }
 
@@ -3025,6 +4966,78 @@ impl SseEncode for crate::api::exit::ScuttleExitState {
     }
 }
 
+impl SseEncode for crate::api::payments::ScuttleFeeEstimate {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u64>::sse_encode(self.gross_sats, serializer);
+        <u64>::sse_encode(self.fee_sats, serializer);
+        <u64>::sse_encode(self.net_sats, serializer);
+        <Vec<String>>::sse_encode(self.vtxo_ids, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleLightningInvoice {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.invoice, serializer);
+        <String>::sse_encode(self.payment_hash, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleLightningReceive {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.payment_hash, serializer);
+        <String>::sse_encode(self.invoice, serializer);
+        <Option<u64>>::sse_encode(self.amount_sats, serializer);
+        <crate::api::payments::ScuttleLightningReceiveStage>::sse_encode(self.stage, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleLightningReceiveStage {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::payments::ScuttleLightningReceiveStage::AwaitingPayment => 0,
+                crate::api::payments::ScuttleLightningReceiveStage::HtlcsReady => 1,
+                crate::api::payments::ScuttleLightningReceiveStage::PreimageRevealed => 2,
+                crate::api::payments::ScuttleLightningReceiveStage::Delivering => 3,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleLightningSend {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.payment_hash, serializer);
+        <u64>::sse_encode(self.amount_sats, serializer);
+        <u64>::sse_encode(self.fee_sats, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleLightningSendStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::payments::ScuttleLightningSendStatus::Unknown => 0,
+                crate::api::payments::ScuttleLightningSendStatus::InProgress => 1,
+                crate::api::payments::ScuttleLightningSendStatus::Paid => 2,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
 impl SseEncode for crate::api::exit::ScuttleMixedClaim {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -3042,6 +5055,40 @@ impl SseEncode for crate::api::exit::ScuttleMixedClaimReview {
         <Vec<crate::api::exit::ScuttleReserveCoin>>::sse_encode(self.reserve, serializer);
         <u64>::sse_encode(self.amount_sats, serializer);
         <u64>::sse_encode(self.fee_sats, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleMovement {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u32>::sse_encode(self.id, serializer);
+        <String>::sse_encode(self.subsystem, serializer);
+        <String>::sse_encode(self.kind, serializer);
+        <crate::api::payments::ScuttleMovementStatus>::sse_encode(self.status, serializer);
+        <i64>::sse_encode(self.intended_sats, serializer);
+        <i64>::sse_encode(self.effective_sats, serializer);
+        <u64>::sse_encode(self.fee_sats, serializer);
+        <i64>::sse_encode(self.created_at, serializer);
+        <i64>::sse_encode(self.updated_at, serializer);
+        <Option<i64>>::sse_encode(self.completed_at, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleMovementStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::payments::ScuttleMovementStatus::Pending => 0,
+                crate::api::payments::ScuttleMovementStatus::Successful => 1,
+                crate::api::payments::ScuttleMovementStatus::Failed => 2,
+                crate::api::payments::ScuttleMovementStatus::Canceled => 3,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
     }
 }
 
@@ -3067,8 +5114,54 @@ impl SseEncode for crate::api::wallet::ScuttleObservation {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u32>::sse_encode(self.tip_height, serializer);
-        <u64>::sse_encode(self.last_known_spendable_sats, serializer);
+        <u64>::sse_encode(self.spendable_sats, serializer);
+        <u64>::sse_encode(self.needs_refresh_sats, serializer);
+        <u64>::sse_encode(self.pending_sats, serializer);
+        <u64>::sse_encode(self.pending_board_sats, serializer);
+        <u64>::sse_encode(self.confirmed_reserve_sats, serializer);
+        <Option<crate::api::wallet::ScuttleServerInfo>>::sse_encode(self.server, serializer);
         <Vec<crate::api::wallet::ScuttleVtxo>>::sse_encode(self.vtxos, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleOnchainSend {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.txid, serializer);
+        <u32>::sse_encode(self.movement_id, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttlePaymentKind {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::payments::ScuttlePaymentKind::Ark => 0,
+                crate::api::payments::ScuttlePaymentKind::Bolt11 => 1,
+                crate::api::payments::ScuttlePaymentKind::Bitcoin => 2,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttlePaymentOption {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <crate::api::payments::ScuttlePaymentKind>::sse_encode(self.kind, serializer);
+        <bool>::sse_encode(self.valid, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttlePaymentRequest {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<u64>>::sse_encode(self.amount_sats, serializer);
+        <Vec<crate::api::payments::ScuttlePaymentOption>>::sse_encode(self.options, serializer);
     }
 }
 
@@ -3097,6 +5190,49 @@ impl SseEncode for crate::api::exit::ScuttleReserveCoin {
         <String>::sse_encode(self.outpoint, serializer);
         <u64>::sse_encode(self.amount_sats, serializer);
         <u32>::sse_encode(self.confirmation_height, serializer);
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleRoundFlow {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::payments::ScuttleRoundFlow::DelegatedPending => 0,
+                crate::api::payments::ScuttleRoundFlow::Pending => 1,
+                crate::api::payments::ScuttleRoundFlow::Ongoing => 2,
+                crate::api::payments::ScuttleRoundFlow::AwaitingConfirmations => 3,
+                crate::api::payments::ScuttleRoundFlow::Failed => 4,
+                crate::api::payments::ScuttleRoundFlow::Canceled => 5,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for crate::api::payments::ScuttleRoundState {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <u32>::sse_encode(self.id, serializer);
+        <crate::api::payments::ScuttleRoundFlow>::sse_encode(self.flow, serializer);
+        <Vec<String>>::sse_encode(self.input_vtxo_ids, serializer);
+        <u64>::sse_encode(self.input_sats, serializer);
+        <u64>::sse_encode(self.pending_sats, serializer);
+    }
+}
+
+impl SseEncode for crate::api::wallet::ScuttleServerInfo {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.public_key, serializer);
+        <u64>::sse_encode(self.round_interval_secs, serializer);
+        <u32>::sse_encode(self.vtxo_lifetime_blocks, serializer);
+        <u64>::sse_encode(self.min_board_sats, serializer);
+        <Option<u64>>::sse_encode(self.max_vtxo_sats, serializer);
+        <u32>::sse_encode(self.board_confirmations, serializer);
     }
 }
 
@@ -3217,6 +5353,12 @@ mod io {
             String::from_utf8(vec).unwrap()
         }
     }
+    impl CstDecode<i64> for *mut i64 {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> i64 {
+            unsafe { *flutter_rust_bridge::for_generated::box_from_leak_ptr(self) }
+        }
+    }
     impl CstDecode<crate::api::wallet::ScuttleBoardAnchor> for *mut wire_cst_scuttle_board_anchor {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> crate::api::wallet::ScuttleBoardAnchor {
@@ -3238,6 +5380,13 @@ mod io {
         fn cst_decode(self) -> crate::api::exit::ScuttleReserveCoin {
             let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
             CstDecode::<crate::api::exit::ScuttleReserveCoin>::cst_decode(*wrap).into()
+        }
+    }
+    impl CstDecode<crate::api::wallet::ScuttleServerInfo> for *mut wire_cst_scuttle_server_info {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::wallet::ScuttleServerInfo {
+            let wrap = unsafe { flutter_rust_bridge::for_generated::box_from_leak_ptr(self) };
+            CstDecode::<crate::api::wallet::ScuttleServerInfo>::cst_decode(*wrap).into()
         }
     }
     impl CstDecode<u32> for *mut u32 {
@@ -3326,11 +5475,69 @@ mod io {
             vec.into_iter().map(CstDecode::cst_decode).collect()
         }
     }
+    impl CstDecode<Vec<crate::api::payments::ScuttleLightningReceive>>
+        for *mut wire_cst_list_scuttle_lightning_receive
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::payments::ScuttleLightningReceive> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::payments::ScuttleLightningSend>>
+        for *mut wire_cst_list_scuttle_lightning_send
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::payments::ScuttleLightningSend> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::payments::ScuttleMovement>> for *mut wire_cst_list_scuttle_movement {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::payments::ScuttleMovement> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::payments::ScuttlePaymentOption>>
+        for *mut wire_cst_list_scuttle_payment_option
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::payments::ScuttlePaymentOption> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
     impl CstDecode<Vec<crate::api::exit::ScuttleReserveCoin>>
         for *mut wire_cst_list_scuttle_reserve_coin
     {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> Vec<crate::api::exit::ScuttleReserveCoin> {
+            let vec = unsafe {
+                let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
+                flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
+            };
+            vec.into_iter().map(CstDecode::cst_decode).collect()
+        }
+    }
+    impl CstDecode<Vec<crate::api::payments::ScuttleRoundState>>
+        for *mut wire_cst_list_scuttle_round_state
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> Vec<crate::api::payments::ScuttleRoundState> {
             let vec = unsafe {
                 let wrap = flutter_rust_bridge::for_generated::box_from_leak_ptr(self);
                 flutter_rust_bridge::for_generated::vec_from_leak_ptr(wrap.ptr, wrap.len)
@@ -3389,6 +5596,15 @@ mod io {
                 gross_sats: self.gross_sats.cst_decode(),
                 fee_sats: self.fee_sats.cst_decode(),
                 net_sats: self.net_sats.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttleClaimReport> for wire_cst_scuttle_claim_report {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleClaimReport {
+            crate::api::payments::ScuttleClaimReport {
+                settled: self.settled.cst_decode(),
+                pending: self.pending.cst_decode(),
             }
         }
     }
@@ -3483,6 +5699,51 @@ mod io {
             }
         }
     }
+    impl CstDecode<crate::api::payments::ScuttleFeeEstimate> for wire_cst_scuttle_fee_estimate {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleFeeEstimate {
+            crate::api::payments::ScuttleFeeEstimate {
+                gross_sats: self.gross_sats.cst_decode(),
+                fee_sats: self.fee_sats.cst_decode(),
+                net_sats: self.net_sats.cst_decode(),
+                vtxo_ids: self.vtxo_ids.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttleLightningInvoice>
+        for wire_cst_scuttle_lightning_invoice
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleLightningInvoice {
+            crate::api::payments::ScuttleLightningInvoice {
+                invoice: self.invoice.cst_decode(),
+                payment_hash: self.payment_hash.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttleLightningReceive>
+        for wire_cst_scuttle_lightning_receive
+    {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleLightningReceive {
+            crate::api::payments::ScuttleLightningReceive {
+                payment_hash: self.payment_hash.cst_decode(),
+                invoice: self.invoice.cst_decode(),
+                amount_sats: self.amount_sats.cst_decode(),
+                stage: self.stage.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttleLightningSend> for wire_cst_scuttle_lightning_send {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleLightningSend {
+            crate::api::payments::ScuttleLightningSend {
+                payment_hash: self.payment_hash.cst_decode(),
+                amount_sats: self.amount_sats.cst_decode(),
+                fee_sats: self.fee_sats.cst_decode(),
+            }
+        }
+    }
     impl CstDecode<crate::api::exit::ScuttleMixedClaim> for wire_cst_scuttle_mixed_claim {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> crate::api::exit::ScuttleMixedClaim {
@@ -3505,13 +5766,62 @@ mod io {
             }
         }
     }
+    impl CstDecode<crate::api::payments::ScuttleMovement> for wire_cst_scuttle_movement {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleMovement {
+            crate::api::payments::ScuttleMovement {
+                id: self.id.cst_decode(),
+                subsystem: self.subsystem.cst_decode(),
+                kind: self.kind.cst_decode(),
+                status: self.status.cst_decode(),
+                intended_sats: self.intended_sats.cst_decode(),
+                effective_sats: self.effective_sats.cst_decode(),
+                fee_sats: self.fee_sats.cst_decode(),
+                created_at: self.created_at.cst_decode(),
+                updated_at: self.updated_at.cst_decode(),
+                completed_at: self.completed_at.cst_decode(),
+            }
+        }
+    }
     impl CstDecode<crate::api::wallet::ScuttleObservation> for wire_cst_scuttle_observation {
         // Codec=Cst (C-struct based), see doc to use other codecs
         fn cst_decode(self) -> crate::api::wallet::ScuttleObservation {
             crate::api::wallet::ScuttleObservation {
                 tip_height: self.tip_height.cst_decode(),
-                last_known_spendable_sats: self.last_known_spendable_sats.cst_decode(),
+                spendable_sats: self.spendable_sats.cst_decode(),
+                needs_refresh_sats: self.needs_refresh_sats.cst_decode(),
+                pending_sats: self.pending_sats.cst_decode(),
+                pending_board_sats: self.pending_board_sats.cst_decode(),
+                confirmed_reserve_sats: self.confirmed_reserve_sats.cst_decode(),
+                server: self.server.cst_decode(),
                 vtxos: self.vtxos.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttleOnchainSend> for wire_cst_scuttle_onchain_send {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleOnchainSend {
+            crate::api::payments::ScuttleOnchainSend {
+                txid: self.txid.cst_decode(),
+                movement_id: self.movement_id.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttlePaymentOption> for wire_cst_scuttle_payment_option {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttlePaymentOption {
+            crate::api::payments::ScuttlePaymentOption {
+                kind: self.kind.cst_decode(),
+                valid: self.valid.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttlePaymentRequest> for wire_cst_scuttle_payment_request {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttlePaymentRequest {
+            crate::api::payments::ScuttlePaymentRequest {
+                amount_sats: self.amount_sats.cst_decode(),
+                options: self.options.cst_decode(),
             }
         }
     }
@@ -3522,6 +5832,31 @@ mod io {
                 outpoint: self.outpoint.cst_decode(),
                 amount_sats: self.amount_sats.cst_decode(),
                 confirmation_height: self.confirmation_height.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::payments::ScuttleRoundState> for wire_cst_scuttle_round_state {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::payments::ScuttleRoundState {
+            crate::api::payments::ScuttleRoundState {
+                id: self.id.cst_decode(),
+                flow: self.flow.cst_decode(),
+                input_vtxo_ids: self.input_vtxo_ids.cst_decode(),
+                input_sats: self.input_sats.cst_decode(),
+                pending_sats: self.pending_sats.cst_decode(),
+            }
+        }
+    }
+    impl CstDecode<crate::api::wallet::ScuttleServerInfo> for wire_cst_scuttle_server_info {
+        // Codec=Cst (C-struct based), see doc to use other codecs
+        fn cst_decode(self) -> crate::api::wallet::ScuttleServerInfo {
+            crate::api::wallet::ScuttleServerInfo {
+                public_key: self.public_key.cst_decode(),
+                round_interval_secs: self.round_interval_secs.cst_decode(),
+                vtxo_lifetime_blocks: self.vtxo_lifetime_blocks.cst_decode(),
+                min_board_sats: self.min_board_sats.cst_decode(),
+                max_vtxo_sats: self.max_vtxo_sats.cst_decode(),
+                board_confirmations: self.board_confirmations.cst_decode(),
             }
         }
     }
@@ -3592,6 +5927,19 @@ mod io {
         }
     }
     impl Default for wire_cst_scuttle_board_terms {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_claim_report {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                settled: Default::default(),
+                pending: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_claim_report {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
@@ -3715,6 +6063,63 @@ mod io {
             Self::new_with_null_ptr()
         }
     }
+    impl NewWithNullPtr for wire_cst_scuttle_fee_estimate {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                gross_sats: Default::default(),
+                fee_sats: Default::default(),
+                net_sats: Default::default(),
+                vtxo_ids: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_fee_estimate {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_lightning_invoice {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                invoice: core::ptr::null_mut(),
+                payment_hash: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_lightning_invoice {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_lightning_receive {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                payment_hash: core::ptr::null_mut(),
+                invoice: core::ptr::null_mut(),
+                amount_sats: core::ptr::null_mut(),
+                stage: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_lightning_receive {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_lightning_send {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                payment_hash: core::ptr::null_mut(),
+                amount_sats: Default::default(),
+                fee_sats: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_lightning_send {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
     impl NewWithNullPtr for wire_cst_scuttle_mixed_claim {
         fn new_with_null_ptr() -> Self {
             Self {
@@ -3745,16 +6150,81 @@ mod io {
             Self::new_with_null_ptr()
         }
     }
+    impl NewWithNullPtr for wire_cst_scuttle_movement {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                id: Default::default(),
+                subsystem: core::ptr::null_mut(),
+                kind: core::ptr::null_mut(),
+                status: Default::default(),
+                intended_sats: Default::default(),
+                effective_sats: Default::default(),
+                fee_sats: Default::default(),
+                created_at: Default::default(),
+                updated_at: Default::default(),
+                completed_at: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_movement {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
     impl NewWithNullPtr for wire_cst_scuttle_observation {
         fn new_with_null_ptr() -> Self {
             Self {
                 tip_height: Default::default(),
-                last_known_spendable_sats: Default::default(),
+                spendable_sats: Default::default(),
+                needs_refresh_sats: Default::default(),
+                pending_sats: Default::default(),
+                pending_board_sats: Default::default(),
+                confirmed_reserve_sats: Default::default(),
+                server: core::ptr::null_mut(),
                 vtxos: core::ptr::null_mut(),
             }
         }
     }
     impl Default for wire_cst_scuttle_observation {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_onchain_send {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                txid: core::ptr::null_mut(),
+                movement_id: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_onchain_send {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_payment_option {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                kind: Default::default(),
+                valid: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_payment_option {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_payment_request {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                amount_sats: core::ptr::null_mut(),
+                options: core::ptr::null_mut(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_payment_request {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
@@ -3769,6 +6239,39 @@ mod io {
         }
     }
     impl Default for wire_cst_scuttle_reserve_coin {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_round_state {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                id: Default::default(),
+                flow: Default::default(),
+                input_vtxo_ids: core::ptr::null_mut(),
+                input_sats: Default::default(),
+                pending_sats: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_round_state {
+        fn default() -> Self {
+            Self::new_with_null_ptr()
+        }
+    }
+    impl NewWithNullPtr for wire_cst_scuttle_server_info {
+        fn new_with_null_ptr() -> Self {
+            Self {
+                public_key: core::ptr::null_mut(),
+                round_interval_secs: Default::default(),
+                vtxo_lifetime_blocks: Default::default(),
+                min_board_sats: Default::default(),
+                max_vtxo_sats: core::ptr::null_mut(),
+                board_confirmations: Default::default(),
+            }
+        }
+    }
+    impl Default for wire_cst_scuttle_server_info {
         fn default() -> Self {
             Self::new_with_null_ptr()
         }
@@ -3800,6 +6303,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_close(
         port_: i64,
         that: usize,
@@ -3813,6 +6324,19 @@ mod io {
         that: usize,
     ) {
         wire__crate__api__wallet__ScuttleWallet_confirmed_reserve_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice(
+        port_: i64,
+        that: usize,
+        amount_sats: u64,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice_impl(
+            port_,
+            that,
+            amount_sats,
+        )
     }
 
     #[unsafe(no_mangle)]
@@ -3846,6 +6370,19 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee(
+        port_: i64,
+        that: usize,
+        amount_sats: u64,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee_impl(
+            port_,
+            that,
+            amount_sats,
+        )
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_exit(
         port_: i64,
         that: usize,
@@ -3860,6 +6397,58 @@ mod io {
             fee_rate_sat_per_vb,
             destination,
         )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee(
+        port_: i64,
+        that: usize,
+        invoice: *mut wire_cst_list_prim_u_8_strict,
+        amount_sats: u64,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee_impl(
+            port_,
+            that,
+            invoice,
+            amount_sats,
+        )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee(
+        port_: i64,
+        that: usize,
+        amount_sats: u64,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee_impl(
+            port_,
+            that,
+            amount_sats,
+        )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee(
+        port_: i64,
+        that: usize,
+        address: *mut wire_cst_list_prim_u_8_strict,
+        amount_sats: u64,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee_impl(
+            port_,
+            that,
+            address,
+            amount_sats,
+        )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee(
+        port_: i64,
+        that: usize,
+        vtxo_ids: *mut wire_cst_list_String,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee_impl(port_, that, vtxo_ids)
     }
 
     #[unsafe(no_mangle)]
@@ -3905,6 +6494,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_history(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_history_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_import_confirmed_regtest_cpfp_change(
         port_: i64,
         that: usize,
@@ -3945,11 +6542,32 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_lightning_send_status(
+        port_: i64,
+        that: usize,
+        payment_hash: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_lightning_send_status_impl(
+            port_,
+            that,
+            payment_hash,
+        )
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_new_ark_address(
         port_: i64,
         that: usize,
     ) {
         wire__crate__api__wallet__ScuttleWallet_new_ark_address_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_next_round_start_time(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_next_round_start_time_impl(port_, that)
     }
 
     #[unsafe(no_mangle)]
@@ -3981,6 +6599,54 @@ mod io {
             child_mnemonic,
             allow_unreachable_server,
         )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_parse_payment_request(
+        port_: i64,
+        that: usize,
+        payment: *mut wire_cst_list_prim_u_8_strict,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_parse_payment_request_impl(port_, that, payment)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice(
+        port_: i64,
+        that: usize,
+        invoice: *mut wire_cst_list_prim_u_8_strict,
+        amount_sats: u64,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice_impl(
+            port_,
+            that,
+            invoice,
+            amount_sats,
+        )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pending_round_states(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_pending_round_states_impl(port_, that)
     }
 
     #[unsafe(no_mangle)]
@@ -4060,6 +6726,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_recovery_status(
         port_: i64,
         that: usize,
@@ -4073,6 +6747,23 @@ mod io {
         that: usize,
     ) {
         wire__crate__api__wallet__ScuttleWallet_refresh_exit_inventory_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_refresh_server(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_refresh_server_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated(
+        port_: i64,
+        that: usize,
+        vtxo_ids: *mut wire_cst_list_String,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated_impl(port_, that, vtxo_ids)
     }
 
     #[unsafe(no_mangle)]
@@ -4128,12 +6819,38 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_send_onchain(
+        port_: i64,
+        that: usize,
+        address: *mut wire_cst_list_prim_u_8_strict,
+        amount_sats: u64,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_send_onchain_impl(port_, that, address, amount_sats)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_start_exit(
         port_: i64,
         that: usize,
         vtxo_ids: *mut wire_cst_list_String,
     ) {
         wire__crate__api__wallet__ScuttleWallet_start_exit_impl(port_, that, vtxo_ids)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_sync_mailbox(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_sync_mailbox_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_sync_pending_boards(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_sync_pending_boards_impl(port_, that)
     }
 
     #[unsafe(no_mangle)]
@@ -4154,6 +6871,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh_impl(port_, that)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
         ptr: *const std::ffi::c_void,
     ) {
@@ -4169,6 +6894,11 @@ mod io {
         unsafe {
             StdArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>::decrement_strong_count(ptr as _);
         }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_cst_new_box_autoadd_i_64(value: i64) -> *mut i64 {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
@@ -4192,6 +6922,14 @@ mod io {
     ) -> *mut wire_cst_scuttle_reserve_coin {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_scuttle_reserve_coin::new_with_null_ptr(),
+        )
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_cst_new_box_autoadd_scuttle_server_info(
+    ) -> *mut wire_cst_scuttle_server_info {
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(
+            wire_cst_scuttle_server_info::new_with_null_ptr(),
         )
     }
 
@@ -4296,12 +7034,82 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_cst_new_list_scuttle_lightning_receive(
+        len: i32,
+    ) -> *mut wire_cst_list_scuttle_lightning_receive {
+        let wrap = wire_cst_list_scuttle_lightning_receive {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_scuttle_lightning_receive>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_cst_new_list_scuttle_lightning_send(
+        len: i32,
+    ) -> *mut wire_cst_list_scuttle_lightning_send {
+        let wrap = wire_cst_list_scuttle_lightning_send {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_scuttle_lightning_send>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_cst_new_list_scuttle_movement(
+        len: i32,
+    ) -> *mut wire_cst_list_scuttle_movement {
+        let wrap = wire_cst_list_scuttle_movement {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_scuttle_movement>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_cst_new_list_scuttle_payment_option(
+        len: i32,
+    ) -> *mut wire_cst_list_scuttle_payment_option {
+        let wrap = wire_cst_list_scuttle_payment_option {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_scuttle_payment_option>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
     pub extern "C" fn frbgen_ark_cst_new_list_scuttle_reserve_coin(
         len: i32,
     ) -> *mut wire_cst_list_scuttle_reserve_coin {
         let wrap = wire_cst_list_scuttle_reserve_coin {
             ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
                 <wire_cst_scuttle_reserve_coin>::new_with_null_ptr(),
+                len,
+            ),
+            len,
+        };
+        flutter_rust_bridge::for_generated::new_leak_box_ptr(wrap)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_cst_new_list_scuttle_round_state(
+        len: i32,
+    ) -> *mut wire_cst_list_scuttle_round_state {
+        let wrap = wire_cst_list_scuttle_round_state {
+            ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
+                <wire_cst_scuttle_round_state>::new_with_null_ptr(),
                 len,
             ),
             len,
@@ -4367,8 +7175,38 @@ mod io {
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_list_scuttle_lightning_receive {
+        ptr: *mut wire_cst_scuttle_lightning_receive,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_scuttle_lightning_send {
+        ptr: *mut wire_cst_scuttle_lightning_send,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_scuttle_movement {
+        ptr: *mut wire_cst_scuttle_movement,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_scuttle_payment_option {
+        ptr: *mut wire_cst_scuttle_payment_option,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_list_scuttle_reserve_coin {
         ptr: *mut wire_cst_scuttle_reserve_coin,
+        len: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_list_scuttle_round_state {
+        ptr: *mut wire_cst_scuttle_round_state,
         len: i32,
     }
     #[repr(C)]
@@ -4408,6 +7246,12 @@ mod io {
         gross_sats: u64,
         fee_sats: u64,
         net_sats: u64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_claim_report {
+        settled: u32,
+        pending: u32,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
@@ -4474,6 +7318,35 @@ mod io {
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_fee_estimate {
+        gross_sats: u64,
+        fee_sats: u64,
+        net_sats: u64,
+        vtxo_ids: *mut wire_cst_list_String,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_lightning_invoice {
+        invoice: *mut wire_cst_list_prim_u_8_strict,
+        payment_hash: *mut wire_cst_list_prim_u_8_strict,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_lightning_receive {
+        payment_hash: *mut wire_cst_list_prim_u_8_strict,
+        invoice: *mut wire_cst_list_prim_u_8_strict,
+        amount_sats: *mut u64,
+        stage: i32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_lightning_send {
+        payment_hash: *mut wire_cst_list_prim_u_8_strict,
+        amount_sats: u64,
+        fee_sats: u64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_scuttle_mixed_claim {
         signed_psbt: *mut wire_cst_list_prim_u_8_strict,
         raw_transaction: *mut wire_cst_list_prim_u_8_strict,
@@ -4490,10 +7363,47 @@ mod io {
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_movement {
+        id: u32,
+        subsystem: *mut wire_cst_list_prim_u_8_strict,
+        kind: *mut wire_cst_list_prim_u_8_strict,
+        status: i32,
+        intended_sats: i64,
+        effective_sats: i64,
+        fee_sats: u64,
+        created_at: i64,
+        updated_at: i64,
+        completed_at: *mut i64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub struct wire_cst_scuttle_observation {
         tip_height: u32,
-        last_known_spendable_sats: u64,
+        spendable_sats: u64,
+        needs_refresh_sats: u64,
+        pending_sats: u64,
+        pending_board_sats: u64,
+        confirmed_reserve_sats: u64,
+        server: *mut wire_cst_scuttle_server_info,
         vtxos: *mut wire_cst_list_scuttle_vtxo,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_onchain_send {
+        txid: *mut wire_cst_list_prim_u_8_strict,
+        movement_id: u32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_payment_option {
+        kind: i32,
+        valid: bool,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_payment_request {
+        amount_sats: *mut u64,
+        options: *mut wire_cst_list_scuttle_payment_option,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
@@ -4501,6 +7411,25 @@ mod io {
         outpoint: *mut wire_cst_list_prim_u_8_strict,
         amount_sats: u64,
         confirmation_height: u32,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_round_state {
+        id: u32,
+        flow: i32,
+        input_vtxo_ids: *mut wire_cst_list_String,
+        input_sats: u64,
+        pending_sats: u64,
+    }
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct wire_cst_scuttle_server_info {
+        public_key: *mut wire_cst_list_prim_u_8_strict,
+        round_interval_secs: u64,
+        vtxo_lifetime_blocks: u32,
+        min_board_sats: u64,
+        max_vtxo_sats: *mut u64,
+        board_confirmations: u32,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]

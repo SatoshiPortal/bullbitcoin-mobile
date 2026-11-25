@@ -4,6 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/exit.dart';
+import 'api/payments.dart';
 import 'api/wallet.dart';
 
 import 'dart:async';
@@ -51,6 +52,9 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
+  PlatformInt64 dco_decode_box_autoadd_i_64(dynamic raw);
+
+  @protected
   ScuttleBoardAnchor dco_decode_box_autoadd_scuttle_board_anchor(dynamic raw);
 
   @protected
@@ -62,6 +66,9 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   ScuttleReserveCoin dco_decode_box_autoadd_scuttle_reserve_coin(dynamic raw);
 
   @protected
+  ScuttleServerInfo dco_decode_box_autoadd_scuttle_server_info(dynamic raw);
+
+  @protected
   int dco_decode_box_autoadd_u_32(dynamic raw);
 
   @protected
@@ -69,6 +76,9 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
 
   @protected
   int dco_decode_i_32(dynamic raw);
+
+  @protected
+  PlatformInt64 dco_decode_i_64(dynamic raw);
 
   @protected
   List<String> dco_decode_list_String(dynamic raw);
@@ -94,7 +104,28 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   List<ScuttleExitProgress> dco_decode_list_scuttle_exit_progress(dynamic raw);
 
   @protected
+  List<ScuttleLightningReceive> dco_decode_list_scuttle_lightning_receive(
+    dynamic raw,
+  );
+
+  @protected
+  List<ScuttleLightningSend> dco_decode_list_scuttle_lightning_send(
+    dynamic raw,
+  );
+
+  @protected
+  List<ScuttleMovement> dco_decode_list_scuttle_movement(dynamic raw);
+
+  @protected
+  List<ScuttlePaymentOption> dco_decode_list_scuttle_payment_option(
+    dynamic raw,
+  );
+
+  @protected
   List<ScuttleReserveCoin> dco_decode_list_scuttle_reserve_coin(dynamic raw);
+
+  @protected
+  List<ScuttleRoundState> dco_decode_list_scuttle_round_state(dynamic raw);
 
   @protected
   List<ScuttleVtxo> dco_decode_list_scuttle_vtxo(dynamic raw);
@@ -106,12 +137,20 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   String? dco_decode_opt_String(dynamic raw);
 
   @protected
+  PlatformInt64? dco_decode_opt_box_autoadd_i_64(dynamic raw);
+
+  @protected
   ScuttleBoardAnchor? dco_decode_opt_box_autoadd_scuttle_board_anchor(
     dynamic raw,
   );
 
   @protected
   ScuttleReserveCoin? dco_decode_opt_box_autoadd_scuttle_reserve_coin(
+    dynamic raw,
+  );
+
+  @protected
+  ScuttleServerInfo? dco_decode_opt_box_autoadd_scuttle_server_info(
     dynamic raw,
   );
 
@@ -137,6 +176,9 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
 
   @protected
   ScuttleBoardTerms dco_decode_scuttle_board_terms(dynamic raw);
+
+  @protected
+  ScuttleClaimReport dco_decode_scuttle_claim_report(dynamic raw);
 
   @protected
   ScuttleExit dco_decode_scuttle_exit(dynamic raw);
@@ -168,10 +210,38 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   ScuttleExitState dco_decode_scuttle_exit_state(dynamic raw);
 
   @protected
+  ScuttleFeeEstimate dco_decode_scuttle_fee_estimate(dynamic raw);
+
+  @protected
+  ScuttleLightningInvoice dco_decode_scuttle_lightning_invoice(dynamic raw);
+
+  @protected
+  ScuttleLightningReceive dco_decode_scuttle_lightning_receive(dynamic raw);
+
+  @protected
+  ScuttleLightningReceiveStage dco_decode_scuttle_lightning_receive_stage(
+    dynamic raw,
+  );
+
+  @protected
+  ScuttleLightningSend dco_decode_scuttle_lightning_send(dynamic raw);
+
+  @protected
+  ScuttleLightningSendStatus dco_decode_scuttle_lightning_send_status(
+    dynamic raw,
+  );
+
+  @protected
   ScuttleMixedClaim dco_decode_scuttle_mixed_claim(dynamic raw);
 
   @protected
   ScuttleMixedClaimReview dco_decode_scuttle_mixed_claim_review(dynamic raw);
+
+  @protected
+  ScuttleMovement dco_decode_scuttle_movement(dynamic raw);
+
+  @protected
+  ScuttleMovementStatus dco_decode_scuttle_movement_status(dynamic raw);
 
   @protected
   ScuttleNetwork dco_decode_scuttle_network(dynamic raw);
@@ -180,10 +250,31 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   ScuttleObservation dco_decode_scuttle_observation(dynamic raw);
 
   @protected
+  ScuttleOnchainSend dco_decode_scuttle_onchain_send(dynamic raw);
+
+  @protected
+  ScuttlePaymentKind dco_decode_scuttle_payment_kind(dynamic raw);
+
+  @protected
+  ScuttlePaymentOption dco_decode_scuttle_payment_option(dynamic raw);
+
+  @protected
+  ScuttlePaymentRequest dco_decode_scuttle_payment_request(dynamic raw);
+
+  @protected
   ScuttleRecoveryStatus dco_decode_scuttle_recovery_status(dynamic raw);
 
   @protected
   ScuttleReserveCoin dco_decode_scuttle_reserve_coin(dynamic raw);
+
+  @protected
+  ScuttleRoundFlow dco_decode_scuttle_round_flow(dynamic raw);
+
+  @protected
+  ScuttleRoundState dco_decode_scuttle_round_state(dynamic raw);
+
+  @protected
+  ScuttleServerInfo dco_decode_scuttle_server_info(dynamic raw);
 
   @protected
   ScuttleVtxo dco_decode_scuttle_vtxo(dynamic raw);
@@ -231,6 +322,9 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  PlatformInt64 sse_decode_box_autoadd_i_64(SseDeserializer deserializer);
+
+  @protected
   ScuttleBoardAnchor sse_decode_box_autoadd_scuttle_board_anchor(
     SseDeserializer deserializer,
   );
@@ -246,6 +340,11 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   );
 
   @protected
+  ScuttleServerInfo sse_decode_box_autoadd_scuttle_server_info(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
 
   @protected
@@ -253,6 +352,9 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
 
   @protected
   int sse_decode_i_32(SseDeserializer deserializer);
+
+  @protected
+  PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
 
   @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
@@ -282,7 +384,32 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   );
 
   @protected
+  List<ScuttleLightningReceive> sse_decode_list_scuttle_lightning_receive(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ScuttleLightningSend> sse_decode_list_scuttle_lightning_send(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ScuttleMovement> sse_decode_list_scuttle_movement(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ScuttlePaymentOption> sse_decode_list_scuttle_payment_option(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<ScuttleReserveCoin> sse_decode_list_scuttle_reserve_coin(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ScuttleRoundState> sse_decode_list_scuttle_round_state(
     SseDeserializer deserializer,
   );
 
@@ -296,12 +423,20 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   String? sse_decode_opt_String(SseDeserializer deserializer);
 
   @protected
+  PlatformInt64? sse_decode_opt_box_autoadd_i_64(SseDeserializer deserializer);
+
+  @protected
   ScuttleBoardAnchor? sse_decode_opt_box_autoadd_scuttle_board_anchor(
     SseDeserializer deserializer,
   );
 
   @protected
   ScuttleReserveCoin? sse_decode_opt_box_autoadd_scuttle_reserve_coin(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleServerInfo? sse_decode_opt_box_autoadd_scuttle_server_info(
     SseDeserializer deserializer,
   );
 
@@ -333,6 +468,11 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
 
   @protected
   ScuttleBoardTerms sse_decode_scuttle_board_terms(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleClaimReport sse_decode_scuttle_claim_report(
     SseDeserializer deserializer,
   );
 
@@ -376,12 +516,50 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   ScuttleExitState sse_decode_scuttle_exit_state(SseDeserializer deserializer);
 
   @protected
+  ScuttleFeeEstimate sse_decode_scuttle_fee_estimate(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleLightningInvoice sse_decode_scuttle_lightning_invoice(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleLightningReceive sse_decode_scuttle_lightning_receive(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleLightningReceiveStage sse_decode_scuttle_lightning_receive_stage(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleLightningSend sse_decode_scuttle_lightning_send(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleLightningSendStatus sse_decode_scuttle_lightning_send_status(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ScuttleMixedClaim sse_decode_scuttle_mixed_claim(
     SseDeserializer deserializer,
   );
 
   @protected
   ScuttleMixedClaimReview sse_decode_scuttle_mixed_claim_review(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleMovement sse_decode_scuttle_movement(SseDeserializer deserializer);
+
+  @protected
+  ScuttleMovementStatus sse_decode_scuttle_movement_status(
     SseDeserializer deserializer,
   );
 
@@ -394,12 +572,45 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   );
 
   @protected
+  ScuttleOnchainSend sse_decode_scuttle_onchain_send(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttlePaymentKind sse_decode_scuttle_payment_kind(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttlePaymentOption sse_decode_scuttle_payment_option(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttlePaymentRequest sse_decode_scuttle_payment_request(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ScuttleRecoveryStatus sse_decode_scuttle_recovery_status(
     SseDeserializer deserializer,
   );
 
   @protected
   ScuttleReserveCoin sse_decode_scuttle_reserve_coin(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleRoundFlow sse_decode_scuttle_round_flow(SseDeserializer deserializer);
+
+  @protected
+  ScuttleRoundState sse_decode_scuttle_round_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ScuttleServerInfo sse_decode_scuttle_server_info(
     SseDeserializer deserializer,
   );
 
@@ -428,6 +639,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   ffi.Pointer<wire_cst_list_prim_u_8_strict> cst_encode_String(String raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return cst_encode_list_prim_u_8_strict(utf8.encoder.convert(raw));
+  }
+
+  @protected
+  ffi.Pointer<ffi.Int64> cst_encode_box_autoadd_i_64(PlatformInt64 raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return wire.cst_new_box_autoadd_i_64(cst_encode_i_64(raw));
   }
 
   @protected
@@ -460,6 +677,15 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_scuttle_server_info>
+  cst_encode_box_autoadd_scuttle_server_info(ScuttleServerInfo raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ptr = wire.cst_new_box_autoadd_scuttle_server_info();
+    cst_api_fill_to_wire_scuttle_server_info(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<ffi.Uint32> cst_encode_box_autoadd_u_32(int raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return wire.cst_new_box_autoadd_u_32(cst_encode_u_32(raw));
@@ -469,6 +695,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   ffi.Pointer<ffi.Uint64> cst_encode_box_autoadd_u_64(BigInt raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     return wire.cst_new_box_autoadd_u_64(cst_encode_u_64(raw));
+  }
+
+  @protected
+  int cst_encode_i_64(PlatformInt64 raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw.toInt();
   }
 
   @protected
@@ -547,12 +779,68 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   }
 
   @protected
+  ffi.Pointer<wire_cst_list_scuttle_lightning_receive>
+  cst_encode_list_scuttle_lightning_receive(List<ScuttleLightningReceive> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_scuttle_lightning_receive(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_scuttle_lightning_receive(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_scuttle_lightning_send>
+  cst_encode_list_scuttle_lightning_send(List<ScuttleLightningSend> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_scuttle_lightning_send(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_scuttle_lightning_send(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_scuttle_movement> cst_encode_list_scuttle_movement(
+    List<ScuttleMovement> raw,
+  ) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_scuttle_movement(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_scuttle_movement(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_scuttle_payment_option>
+  cst_encode_list_scuttle_payment_option(List<ScuttlePaymentOption> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_scuttle_payment_option(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_scuttle_payment_option(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
   ffi.Pointer<wire_cst_list_scuttle_reserve_coin>
   cst_encode_list_scuttle_reserve_coin(List<ScuttleReserveCoin> raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
     final ans = wire.cst_new_list_scuttle_reserve_coin(raw.length);
     for (var i = 0; i < raw.length; ++i) {
       cst_api_fill_to_wire_scuttle_reserve_coin(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_list_scuttle_round_state>
+  cst_encode_list_scuttle_round_state(List<ScuttleRoundState> raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    final ans = wire.cst_new_list_scuttle_round_state(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      cst_api_fill_to_wire_scuttle_round_state(raw[i], ans.ref.ptr[i]);
     }
     return ans;
   }
@@ -578,6 +866,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   }
 
   @protected
+  ffi.Pointer<ffi.Int64> cst_encode_opt_box_autoadd_i_64(PlatformInt64? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null ? ffi.nullptr : cst_encode_box_autoadd_i_64(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_cst_scuttle_board_anchor>
   cst_encode_opt_box_autoadd_scuttle_board_anchor(ScuttleBoardAnchor? raw) {
     // Codec=Cst (C-struct based), see doc to use other codecs
@@ -593,6 +887,15 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
     return raw == null
         ? ffi.nullptr
         : cst_encode_box_autoadd_scuttle_reserve_coin(raw);
+  }
+
+  @protected
+  ffi.Pointer<wire_cst_scuttle_server_info>
+  cst_encode_opt_box_autoadd_scuttle_server_info(ScuttleServerInfo? raw) {
+    // Codec=Cst (C-struct based), see doc to use other codecs
+    return raw == null
+        ? ffi.nullptr
+        : cst_encode_box_autoadd_scuttle_server_info(raw);
   }
 
   @protected
@@ -653,6 +956,14 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_box_autoadd_scuttle_server_info(
+    ScuttleServerInfo apiObj,
+    ffi.Pointer<wire_cst_scuttle_server_info> wireObj,
+  ) {
+    cst_api_fill_to_wire_scuttle_server_info(apiObj, wireObj.ref);
+  }
+
+  @protected
   void cst_api_fill_to_wire_scuttle_board_anchor(
     ScuttleBoardAnchor apiObj,
     wire_cst_scuttle_board_anchor wireObj,
@@ -696,6 +1007,15 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
     wireObj.gross_sats = cst_encode_u_64(apiObj.grossSats);
     wireObj.fee_sats = cst_encode_u_64(apiObj.feeSats);
     wireObj.net_sats = cst_encode_u_64(apiObj.netSats);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_claim_report(
+    ScuttleClaimReport apiObj,
+    wire_cst_scuttle_claim_report wireObj,
+  ) {
+    wireObj.settled = cst_encode_u_32(apiObj.settled);
+    wireObj.pending = cst_encode_u_32(apiObj.pending);
   }
 
   @protected
@@ -800,6 +1120,47 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_scuttle_fee_estimate(
+    ScuttleFeeEstimate apiObj,
+    wire_cst_scuttle_fee_estimate wireObj,
+  ) {
+    wireObj.gross_sats = cst_encode_u_64(apiObj.grossSats);
+    wireObj.fee_sats = cst_encode_u_64(apiObj.feeSats);
+    wireObj.net_sats = cst_encode_u_64(apiObj.netSats);
+    wireObj.vtxo_ids = cst_encode_list_String(apiObj.vtxoIds);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_lightning_invoice(
+    ScuttleLightningInvoice apiObj,
+    wire_cst_scuttle_lightning_invoice wireObj,
+  ) {
+    wireObj.invoice = cst_encode_String(apiObj.invoice);
+    wireObj.payment_hash = cst_encode_String(apiObj.paymentHash);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_lightning_receive(
+    ScuttleLightningReceive apiObj,
+    wire_cst_scuttle_lightning_receive wireObj,
+  ) {
+    wireObj.payment_hash = cst_encode_String(apiObj.paymentHash);
+    wireObj.invoice = cst_encode_String(apiObj.invoice);
+    wireObj.amount_sats = cst_encode_opt_box_autoadd_u_64(apiObj.amountSats);
+    wireObj.stage = cst_encode_scuttle_lightning_receive_stage(apiObj.stage);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_lightning_send(
+    ScuttleLightningSend apiObj,
+    wire_cst_scuttle_lightning_send wireObj,
+  ) {
+    wireObj.payment_hash = cst_encode_String(apiObj.paymentHash);
+    wireObj.amount_sats = cst_encode_u_64(apiObj.amountSats);
+    wireObj.fee_sats = cst_encode_u_64(apiObj.feeSats);
+  }
+
+  @protected
   void cst_api_fill_to_wire_scuttle_mixed_claim(
     ScuttleMixedClaim apiObj,
     wire_cst_scuttle_mixed_claim wireObj,
@@ -824,15 +1185,66 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_scuttle_movement(
+    ScuttleMovement apiObj,
+    wire_cst_scuttle_movement wireObj,
+  ) {
+    wireObj.id = cst_encode_u_32(apiObj.id);
+    wireObj.subsystem = cst_encode_String(apiObj.subsystem);
+    wireObj.kind = cst_encode_String(apiObj.kind);
+    wireObj.status = cst_encode_scuttle_movement_status(apiObj.status);
+    wireObj.intended_sats = cst_encode_i_64(apiObj.intendedSats);
+    wireObj.effective_sats = cst_encode_i_64(apiObj.effectiveSats);
+    wireObj.fee_sats = cst_encode_u_64(apiObj.feeSats);
+    wireObj.created_at = cst_encode_i_64(apiObj.createdAt);
+    wireObj.updated_at = cst_encode_i_64(apiObj.updatedAt);
+    wireObj.completed_at = cst_encode_opt_box_autoadd_i_64(apiObj.completedAt);
+  }
+
+  @protected
   void cst_api_fill_to_wire_scuttle_observation(
     ScuttleObservation apiObj,
     wire_cst_scuttle_observation wireObj,
   ) {
     wireObj.tip_height = cst_encode_u_32(apiObj.tipHeight);
-    wireObj.last_known_spendable_sats = cst_encode_u_64(
-      apiObj.lastKnownSpendableSats,
+    wireObj.spendable_sats = cst_encode_u_64(apiObj.spendableSats);
+    wireObj.needs_refresh_sats = cst_encode_u_64(apiObj.needsRefreshSats);
+    wireObj.pending_sats = cst_encode_u_64(apiObj.pendingSats);
+    wireObj.pending_board_sats = cst_encode_u_64(apiObj.pendingBoardSats);
+    wireObj.confirmed_reserve_sats = cst_encode_u_64(
+      apiObj.confirmedReserveSats,
+    );
+    wireObj.server = cst_encode_opt_box_autoadd_scuttle_server_info(
+      apiObj.server,
     );
     wireObj.vtxos = cst_encode_list_scuttle_vtxo(apiObj.vtxos);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_onchain_send(
+    ScuttleOnchainSend apiObj,
+    wire_cst_scuttle_onchain_send wireObj,
+  ) {
+    wireObj.txid = cst_encode_String(apiObj.txid);
+    wireObj.movement_id = cst_encode_u_32(apiObj.movementId);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_payment_option(
+    ScuttlePaymentOption apiObj,
+    wire_cst_scuttle_payment_option wireObj,
+  ) {
+    wireObj.kind = cst_encode_scuttle_payment_kind(apiObj.kind);
+    wireObj.valid = cst_encode_bool(apiObj.valid);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_payment_request(
+    ScuttlePaymentRequest apiObj,
+    wire_cst_scuttle_payment_request wireObj,
+  ) {
+    wireObj.amount_sats = cst_encode_opt_box_autoadd_u_64(apiObj.amountSats);
+    wireObj.options = cst_encode_list_scuttle_payment_option(apiObj.options);
   }
 
   @protected
@@ -843,6 +1255,31 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
     wireObj.outpoint = cst_encode_String(apiObj.outpoint);
     wireObj.amount_sats = cst_encode_u_64(apiObj.amountSats);
     wireObj.confirmation_height = cst_encode_u_32(apiObj.confirmationHeight);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_round_state(
+    ScuttleRoundState apiObj,
+    wire_cst_scuttle_round_state wireObj,
+  ) {
+    wireObj.id = cst_encode_u_32(apiObj.id);
+    wireObj.flow = cst_encode_scuttle_round_flow(apiObj.flow);
+    wireObj.input_vtxo_ids = cst_encode_list_String(apiObj.inputVtxoIds);
+    wireObj.input_sats = cst_encode_u_64(apiObj.inputSats);
+    wireObj.pending_sats = cst_encode_u_64(apiObj.pendingSats);
+  }
+
+  @protected
+  void cst_api_fill_to_wire_scuttle_server_info(
+    ScuttleServerInfo apiObj,
+    wire_cst_scuttle_server_info wireObj,
+  ) {
+    wireObj.public_key = cst_encode_String(apiObj.publicKey);
+    wireObj.round_interval_secs = cst_encode_u_64(apiObj.roundIntervalSecs);
+    wireObj.vtxo_lifetime_blocks = cst_encode_u_32(apiObj.vtxoLifetimeBlocks);
+    wireObj.min_board_sats = cst_encode_u_64(apiObj.minBoardSats);
+    wireObj.max_vtxo_sats = cst_encode_opt_box_autoadd_u_64(apiObj.maxVtxoSats);
+    wireObj.board_confirmations = cst_encode_u_32(apiObj.boardConfirmations);
   }
 
   @protected
@@ -887,10 +1324,27 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   int cst_encode_scuttle_exit_state(ScuttleExitState raw);
 
   @protected
+  int cst_encode_scuttle_lightning_receive_stage(
+    ScuttleLightningReceiveStage raw,
+  );
+
+  @protected
+  int cst_encode_scuttle_lightning_send_status(ScuttleLightningSendStatus raw);
+
+  @protected
+  int cst_encode_scuttle_movement_status(ScuttleMovementStatus raw);
+
+  @protected
   int cst_encode_scuttle_network(ScuttleNetwork raw);
 
   @protected
+  int cst_encode_scuttle_payment_kind(ScuttlePaymentKind raw);
+
+  @protected
   int cst_encode_scuttle_recovery_status(ScuttleRecoveryStatus raw);
+
+  @protected
+  int cst_encode_scuttle_round_flow(ScuttleRoundFlow raw);
 
   @protected
   int cst_encode_scuttle_vtxo_state(ScuttleVtxoState raw);
@@ -932,6 +1386,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_i_64(
+    PlatformInt64 self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_scuttle_board_anchor(
     ScuttleBoardAnchor self,
     SseSerializer serializer,
@@ -950,6 +1410,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_scuttle_server_info(
+    ScuttleServerInfo self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
 
   @protected
@@ -957,6 +1423,9 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
@@ -995,8 +1464,38 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   );
 
   @protected
+  void sse_encode_list_scuttle_lightning_receive(
+    List<ScuttleLightningReceive> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_scuttle_lightning_send(
+    List<ScuttleLightningSend> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_scuttle_movement(
+    List<ScuttleMovement> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_scuttle_payment_option(
+    List<ScuttlePaymentOption> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_scuttle_reserve_coin(
     List<ScuttleReserveCoin> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_scuttle_round_state(
+    List<ScuttleRoundState> self,
     SseSerializer serializer,
   );
 
@@ -1013,6 +1512,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   void sse_encode_opt_String(String? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_box_autoadd_i_64(
+    PlatformInt64? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_scuttle_board_anchor(
     ScuttleBoardAnchor? self,
     SseSerializer serializer,
@@ -1021,6 +1526,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   @protected
   void sse_encode_opt_box_autoadd_scuttle_reserve_coin(
     ScuttleReserveCoin? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_scuttle_server_info(
+    ScuttleServerInfo? self,
     SseSerializer serializer,
   );
 
@@ -1057,6 +1568,12 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   @protected
   void sse_encode_scuttle_board_terms(
     ScuttleBoardTerms self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_claim_report(
+    ScuttleClaimReport self,
     SseSerializer serializer,
   );
 
@@ -1112,6 +1629,42 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   );
 
   @protected
+  void sse_encode_scuttle_fee_estimate(
+    ScuttleFeeEstimate self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_lightning_invoice(
+    ScuttleLightningInvoice self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_lightning_receive(
+    ScuttleLightningReceive self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_lightning_receive_stage(
+    ScuttleLightningReceiveStage self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_lightning_send(
+    ScuttleLightningSend self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_lightning_send_status(
+    ScuttleLightningSendStatus self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_scuttle_mixed_claim(
     ScuttleMixedClaim self,
     SseSerializer serializer,
@@ -1120,6 +1673,18 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   @protected
   void sse_encode_scuttle_mixed_claim_review(
     ScuttleMixedClaimReview self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_movement(
+    ScuttleMovement self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_movement_status(
+    ScuttleMovementStatus self,
     SseSerializer serializer,
   );
 
@@ -1136,6 +1701,30 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   );
 
   @protected
+  void sse_encode_scuttle_onchain_send(
+    ScuttleOnchainSend self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_payment_kind(
+    ScuttlePaymentKind self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_payment_option(
+    ScuttlePaymentOption self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_payment_request(
+    ScuttlePaymentRequest self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_scuttle_recovery_status(
     ScuttleRecoveryStatus self,
     SseSerializer serializer,
@@ -1144,6 +1733,24 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
   @protected
   void sse_encode_scuttle_reserve_coin(
     ScuttleReserveCoin self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_round_flow(
+    ScuttleRoundFlow self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_round_state(
+    ScuttleRoundState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_scuttle_server_info(
+    ScuttleServerInfo self,
     SseSerializer serializer,
   );
 
@@ -1198,6 +1805,17 @@ class ScuttleCoreWire implements BaseWire {
     ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
   ) : _lookup = lookup;
 
+  ffi.Pointer<ffi.Int64> cst_new_box_autoadd_i_64(int value) {
+    return _cst_new_box_autoadd_i_64(value);
+  }
+
+  late final _cst_new_box_autoadd_i_64Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Int64> Function(ffi.Int64)>>(
+        'frbgen_ark_cst_new_box_autoadd_i_64',
+      );
+  late final _cst_new_box_autoadd_i_64 = _cst_new_box_autoadd_i_64Ptr
+      .asFunction<ffi.Pointer<ffi.Int64> Function(int)>();
+
   ffi.Pointer<wire_cst_scuttle_board_anchor>
   cst_new_box_autoadd_scuttle_board_anchor() {
     return _cst_new_box_autoadd_scuttle_board_anchor();
@@ -1244,6 +1862,19 @@ class ScuttleCoreWire implements BaseWire {
   late final _cst_new_box_autoadd_scuttle_reserve_coin =
       _cst_new_box_autoadd_scuttle_reserve_coinPtr
           .asFunction<ffi.Pointer<wire_cst_scuttle_reserve_coin> Function()>();
+
+  ffi.Pointer<wire_cst_scuttle_server_info>
+  cst_new_box_autoadd_scuttle_server_info() {
+    return _cst_new_box_autoadd_scuttle_server_info();
+  }
+
+  late final _cst_new_box_autoadd_scuttle_server_infoPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Pointer<wire_cst_scuttle_server_info> Function()>
+      >('frbgen_ark_cst_new_box_autoadd_scuttle_server_info');
+  late final _cst_new_box_autoadd_scuttle_server_info =
+      _cst_new_box_autoadd_scuttle_server_infoPtr
+          .asFunction<ffi.Pointer<wire_cst_scuttle_server_info> Function()>();
 
   ffi.Pointer<ffi.Uint32> cst_new_box_autoadd_u_32(int value) {
     return _cst_new_box_autoadd_u_32(value);
@@ -1376,6 +2007,74 @@ class ScuttleCoreWire implements BaseWire {
             ffi.Pointer<wire_cst_list_scuttle_exit_progress> Function(int)
           >();
 
+  ffi.Pointer<wire_cst_list_scuttle_lightning_receive>
+  cst_new_list_scuttle_lightning_receive(int len) {
+    return _cst_new_list_scuttle_lightning_receive(len);
+  }
+
+  late final _cst_new_list_scuttle_lightning_receivePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_scuttle_lightning_receive> Function(
+            ffi.Int32,
+          )
+        >
+      >('frbgen_ark_cst_new_list_scuttle_lightning_receive');
+  late final _cst_new_list_scuttle_lightning_receive =
+      _cst_new_list_scuttle_lightning_receivePtr
+          .asFunction<
+            ffi.Pointer<wire_cst_list_scuttle_lightning_receive> Function(int)
+          >();
+
+  ffi.Pointer<wire_cst_list_scuttle_lightning_send>
+  cst_new_list_scuttle_lightning_send(int len) {
+    return _cst_new_list_scuttle_lightning_send(len);
+  }
+
+  late final _cst_new_list_scuttle_lightning_sendPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_scuttle_lightning_send> Function(ffi.Int32)
+        >
+      >('frbgen_ark_cst_new_list_scuttle_lightning_send');
+  late final _cst_new_list_scuttle_lightning_send =
+      _cst_new_list_scuttle_lightning_sendPtr
+          .asFunction<
+            ffi.Pointer<wire_cst_list_scuttle_lightning_send> Function(int)
+          >();
+
+  ffi.Pointer<wire_cst_list_scuttle_movement> cst_new_list_scuttle_movement(
+    int len,
+  ) {
+    return _cst_new_list_scuttle_movement(len);
+  }
+
+  late final _cst_new_list_scuttle_movementPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_scuttle_movement> Function(ffi.Int32)
+        >
+      >('frbgen_ark_cst_new_list_scuttle_movement');
+  late final _cst_new_list_scuttle_movement = _cst_new_list_scuttle_movementPtr
+      .asFunction<ffi.Pointer<wire_cst_list_scuttle_movement> Function(int)>();
+
+  ffi.Pointer<wire_cst_list_scuttle_payment_option>
+  cst_new_list_scuttle_payment_option(int len) {
+    return _cst_new_list_scuttle_payment_option(len);
+  }
+
+  late final _cst_new_list_scuttle_payment_optionPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_scuttle_payment_option> Function(ffi.Int32)
+        >
+      >('frbgen_ark_cst_new_list_scuttle_payment_option');
+  late final _cst_new_list_scuttle_payment_option =
+      _cst_new_list_scuttle_payment_optionPtr
+          .asFunction<
+            ffi.Pointer<wire_cst_list_scuttle_payment_option> Function(int)
+          >();
+
   ffi.Pointer<wire_cst_list_scuttle_reserve_coin>
   cst_new_list_scuttle_reserve_coin(int len) {
     return _cst_new_list_scuttle_reserve_coin(len);
@@ -1391,6 +2090,23 @@ class ScuttleCoreWire implements BaseWire {
       _cst_new_list_scuttle_reserve_coinPtr
           .asFunction<
             ffi.Pointer<wire_cst_list_scuttle_reserve_coin> Function(int)
+          >();
+
+  ffi.Pointer<wire_cst_list_scuttle_round_state>
+  cst_new_list_scuttle_round_state(int len) {
+    return _cst_new_list_scuttle_round_state(len);
+  }
+
+  late final _cst_new_list_scuttle_round_statePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Pointer<wire_cst_list_scuttle_round_state> Function(ffi.Int32)
+        >
+      >('frbgen_ark_cst_new_list_scuttle_round_state');
+  late final _cst_new_list_scuttle_round_state =
+      _cst_new_list_scuttle_round_statePtr
+          .asFunction<
+            ffi.Pointer<wire_cst_list_scuttle_round_state> Function(int)
           >();
 
   ffi.Pointer<wire_cst_list_scuttle_vtxo> cst_new_list_scuttle_vtxo(int len) {
@@ -1498,6 +2214,24 @@ class ScuttleCoreWire implements BaseWire {
             )
           >();
 
+  void wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_claim_lightning_receivesPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_claim_lightning_receives =
+      _wire__crate__api__wallet__ScuttleWallet_claim_lightning_receivesPtr
+          .asFunction<void Function(int, int)>();
+
   void wire__crate__api__wallet__ScuttleWallet_close(int port_, int that) {
     return _wire__crate__api__wallet__ScuttleWallet_close(port_, that);
   }
@@ -1527,6 +2261,30 @@ class ScuttleCoreWire implements BaseWire {
   late final _wire__crate__api__wallet__ScuttleWallet_confirmed_reserve =
       _wire__crate__api__wallet__ScuttleWallet_confirmed_reservePtr
           .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice(
+    int port_,
+    int that,
+    int amount_sats,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice(
+      port_,
+      that,
+      amount_sats,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_create_lightning_invoicePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.UintPtr, ffi.Uint64)
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_create_lightning_invoice =
+      _wire__crate__api__wallet__ScuttleWallet_create_lightning_invoicePtr
+          .asFunction<void Function(int, int, int)>();
 
   void wire__crate__api__wallet__ScuttleWallet_deliver_regtest_exit_cpfp(
     int port_,
@@ -1608,6 +2366,30 @@ class ScuttleCoreWire implements BaseWire {
             void Function(int, int, ffi.Pointer<wire_cst_list_String>)
           >();
 
+  void wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee(
+    int port_,
+    int that,
+    int amount_sats,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee(
+      port_,
+      that,
+      amount_sats,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_feePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.UintPtr, ffi.Uint64)
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_fee =
+      _wire__crate__api__wallet__ScuttleWallet_estimate_ark_payment_feePtr
+          .asFunction<void Function(int, int, int)>();
+
   void wire__crate__api__wallet__ScuttleWallet_estimate_exit(
     int port_,
     int that,
@@ -1646,6 +2428,136 @@ class ScuttleCoreWire implements BaseWire {
               ffi.Pointer<ffi.Uint64>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             )
+          >();
+
+  void wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> invoice,
+    int amount_sats,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee(
+      port_,
+      that,
+      invoice,
+      amount_sats,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_feePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Uint64,
+          )
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_fee =
+      _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_payment_feePtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              int,
+            )
+          >();
+
+  void wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee(
+    int port_,
+    int that,
+    int amount_sats,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee(
+      port_,
+      that,
+      amount_sats,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_feePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.UintPtr, ffi.Uint64)
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_fee =
+      _wire__crate__api__wallet__ScuttleWallet_estimate_lightning_receive_feePtr
+          .asFunction<void Function(int, int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> address,
+    int amount_sats,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee(
+      port_,
+      that,
+      address,
+      amount_sats,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_feePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Uint64,
+          )
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_fee =
+      _wire__crate__api__wallet__ScuttleWallet_estimate_onchain_send_feePtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              int,
+            )
+          >();
+
+  void wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_String> vtxo_ids,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee(
+      port_,
+      that,
+      vtxo_ids,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_refresh_feePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_String>,
+          )
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_estimate_refresh_fee =
+      _wire__crate__api__wallet__ScuttleWallet_estimate_refresh_feePtr
+          .asFunction<
+            void Function(int, int, ffi.Pointer<wire_cst_list_String>)
           >();
 
   void wire__crate__api__wallet__ScuttleWallet_exit_inventory(
@@ -1730,6 +2642,18 @@ class ScuttleCoreWire implements BaseWire {
       );
   late final _wire__crate__api__wallet__ScuttleWallet_fingerprint =
       _wire__crate__api__wallet__ScuttleWallet_fingerprintPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_history(int port_, int that) {
+    return _wire__crate__api__wallet__ScuttleWallet_history(port_, that);
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_historyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_history',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_history =
+      _wire__crate__api__wallet__ScuttleWallet_historyPtr
           .asFunction<void Function(int, int)>();
 
   void
@@ -1829,6 +2753,36 @@ class ScuttleCoreWire implements BaseWire {
       _wire__crate__api__wallet__ScuttleWallet_initial_scanPtr
           .asFunction<void Function(int, int)>();
 
+  void wire__crate__api__wallet__ScuttleWallet_lightning_send_status(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> payment_hash,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_lightning_send_status(
+      port_,
+      that,
+      payment_hash,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_lightning_send_statusPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_lightning_send_status',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_lightning_send_status =
+      _wire__crate__api__wallet__ScuttleWallet_lightning_send_statusPtr
+          .asFunction<
+            void Function(int, int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
   void wire__crate__api__wallet__ScuttleWallet_new_ark_address(
     int port_,
     int that,
@@ -1845,6 +2799,24 @@ class ScuttleCoreWire implements BaseWire {
       );
   late final _wire__crate__api__wallet__ScuttleWallet_new_ark_address =
       _wire__crate__api__wallet__ScuttleWallet_new_ark_addressPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_next_round_start_time(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_next_round_start_time(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_next_round_start_timePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_next_round_start_time',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_next_round_start_time =
+      _wire__crate__api__wallet__ScuttleWallet_next_round_start_timePtr
           .asFunction<void Function(int, int)>();
 
   void wire__crate__api__wallet__ScuttleWallet_observation(
@@ -1913,6 +2885,128 @@ class ScuttleCoreWire implements BaseWire {
               bool,
             )
           >();
+
+  void wire__crate__api__wallet__ScuttleWallet_parse_payment_request(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> payment,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_parse_payment_request(
+      port_,
+      that,
+      payment,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_parse_payment_requestPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+          )
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_parse_payment_request',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_parse_payment_request =
+      _wire__crate__api__wallet__ScuttleWallet_parse_payment_requestPtr
+          .asFunction<
+            void Function(int, int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+          >();
+
+  void wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> invoice,
+    int amount_sats,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice(
+      port_,
+      that,
+      invoice,
+      amount_sats,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoicePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Uint64,
+          )
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoice =
+      _wire__crate__api__wallet__ScuttleWallet_pay_lightning_invoicePtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              int,
+            )
+          >();
+
+  void wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_pending_lightning_receivesPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_pending_lightning_receives =
+      _wire__crate__api__wallet__ScuttleWallet_pending_lightning_receivesPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_pending_lightning_sendsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_pending_lightning_sends =
+      _wire__crate__api__wallet__ScuttleWallet_pending_lightning_sendsPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_pending_round_states(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_pending_round_states(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_pending_round_statesPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_pending_round_states',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_pending_round_states =
+      _wire__crate__api__wallet__ScuttleWallet_pending_round_statesPtr
+          .asFunction<void Function(int, int)>();
 
   void wire__crate__api__wallet__ScuttleWallet_prepare_board(
     int port_,
@@ -2103,6 +3197,24 @@ class ScuttleCoreWire implements BaseWire {
             )
           >();
 
+  void wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_progress_pending_roundsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds =
+      _wire__crate__api__wallet__ScuttleWallet_progress_pending_roundsPtr
+          .asFunction<void Function(int, int)>();
+
   void wire__crate__api__wallet__ScuttleWallet_recovery_status(
     int port_,
     int that,
@@ -2138,6 +3250,51 @@ class ScuttleCoreWire implements BaseWire {
   late final _wire__crate__api__wallet__ScuttleWallet_refresh_exit_inventory =
       _wire__crate__api__wallet__ScuttleWallet_refresh_exit_inventoryPtr
           .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_refresh_server(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_refresh_server(port_, that);
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_refresh_serverPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_refresh_server',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_refresh_server =
+      _wire__crate__api__wallet__ScuttleWallet_refresh_serverPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_String> vtxo_ids,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated(
+      port_,
+      that,
+      vtxo_ids,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegatedPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_String>,
+          )
+        >
+      >(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegated =
+      _wire__crate__api__wallet__ScuttleWallet_refresh_vtxos_delegatedPtr
+          .asFunction<
+            void Function(int, int, ffi.Pointer<wire_cst_list_String>)
+          >();
 
   void wire__crate__api__wallet__ScuttleWallet_register_board(
     int port_,
@@ -2275,6 +3432,42 @@ class ScuttleCoreWire implements BaseWire {
             )
           >();
 
+  void wire__crate__api__wallet__ScuttleWallet_send_onchain(
+    int port_,
+    int that,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> address,
+    int amount_sats,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_send_onchain(
+      port_,
+      that,
+      address,
+      amount_sats,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_send_onchainPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.UintPtr,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Uint64,
+          )
+        >
+      >('frbgen_ark_wire__crate__api__wallet__ScuttleWallet_send_onchain');
+  late final _wire__crate__api__wallet__ScuttleWallet_send_onchain =
+      _wire__crate__api__wallet__ScuttleWallet_send_onchainPtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              int,
+            )
+          >();
+
   void wire__crate__api__wallet__ScuttleWallet_start_exit(
     int port_,
     int that,
@@ -2302,6 +3495,39 @@ class ScuttleCoreWire implements BaseWire {
           .asFunction<
             void Function(int, int, ffi.Pointer<wire_cst_list_String>)
           >();
+
+  void wire__crate__api__wallet__ScuttleWallet_sync_mailbox(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_sync_mailbox(port_, that);
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_sync_mailboxPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_sync_mailbox',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_sync_mailbox =
+      _wire__crate__api__wallet__ScuttleWallet_sync_mailboxPtr
+          .asFunction<void Function(int, int)>();
+
+  void wire__crate__api__wallet__ScuttleWallet_sync_pending_boards(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_sync_pending_boards(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_sync_pending_boardsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_sync_pending_boards',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_sync_pending_boards =
+      _wire__crate__api__wallet__ScuttleWallet_sync_pending_boardsPtr
+          .asFunction<void Function(int, int)>();
 
   void wire__crate__api__wallet__ScuttleWallet_verify_regtest_reserve_funding(
     int port_,
@@ -2344,6 +3570,24 @@ class ScuttleCoreWire implements BaseWire {
               int,
             )
           >();
+
+  void wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_vtxos_to_refreshPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_vtxos_to_refresh =
+      _wire__crate__api__wallet__ScuttleWallet_vtxos_to_refreshPtr
+          .asFunction<void Function(int, int)>();
 }
 
 typedef DartPort = ffi.Int64;
@@ -2464,6 +3708,66 @@ final class wire_cst_list_scuttle_exit_progress extends ffi.Struct {
     ..ref.len = len;
 }
 
+final class wire_cst_list_scuttle_lightning_receive extends ffi.Struct {
+  external ffi.Pointer<wire_cst_scuttle_lightning_receive> ptr;
+
+  @ffi.Int32()
+  external int len;
+
+  static ffi.Pointer<wire_cst_list_scuttle_lightning_receive> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_scuttle_lightning_receive> ptr,
+    required int len,
+  }) => $allocator<wire_cst_list_scuttle_lightning_receive>()
+    ..ref.ptr = ptr
+    ..ref.len = len;
+}
+
+final class wire_cst_list_scuttle_lightning_send extends ffi.Struct {
+  external ffi.Pointer<wire_cst_scuttle_lightning_send> ptr;
+
+  @ffi.Int32()
+  external int len;
+
+  static ffi.Pointer<wire_cst_list_scuttle_lightning_send> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_scuttle_lightning_send> ptr,
+    required int len,
+  }) => $allocator<wire_cst_list_scuttle_lightning_send>()
+    ..ref.ptr = ptr
+    ..ref.len = len;
+}
+
+final class wire_cst_list_scuttle_movement extends ffi.Struct {
+  external ffi.Pointer<wire_cst_scuttle_movement> ptr;
+
+  @ffi.Int32()
+  external int len;
+
+  static ffi.Pointer<wire_cst_list_scuttle_movement> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_scuttle_movement> ptr,
+    required int len,
+  }) => $allocator<wire_cst_list_scuttle_movement>()
+    ..ref.ptr = ptr
+    ..ref.len = len;
+}
+
+final class wire_cst_list_scuttle_payment_option extends ffi.Struct {
+  external ffi.Pointer<wire_cst_scuttle_payment_option> ptr;
+
+  @ffi.Int32()
+  external int len;
+
+  static ffi.Pointer<wire_cst_list_scuttle_payment_option> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_scuttle_payment_option> ptr,
+    required int len,
+  }) => $allocator<wire_cst_list_scuttle_payment_option>()
+    ..ref.ptr = ptr
+    ..ref.len = len;
+}
+
 final class wire_cst_list_scuttle_reserve_coin extends ffi.Struct {
   external ffi.Pointer<wire_cst_scuttle_reserve_coin> ptr;
 
@@ -2475,6 +3779,21 @@ final class wire_cst_list_scuttle_reserve_coin extends ffi.Struct {
     required ffi.Pointer<wire_cst_scuttle_reserve_coin> ptr,
     required int len,
   }) => $allocator<wire_cst_list_scuttle_reserve_coin>()
+    ..ref.ptr = ptr
+    ..ref.len = len;
+}
+
+final class wire_cst_list_scuttle_round_state extends ffi.Struct {
+  external ffi.Pointer<wire_cst_scuttle_round_state> ptr;
+
+  @ffi.Int32()
+  external int len;
+
+  static ffi.Pointer<wire_cst_list_scuttle_round_state> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_scuttle_round_state> ptr,
+    required int len,
+  }) => $allocator<wire_cst_list_scuttle_round_state>()
     ..ref.ptr = ptr
     ..ref.len = len;
 }
@@ -2589,6 +3908,22 @@ final class wire_cst_scuttle_board_terms extends ffi.Struct {
     ..ref.gross_sats = gross_sats
     ..ref.fee_sats = fee_sats
     ..ref.net_sats = net_sats;
+}
+
+final class wire_cst_scuttle_claim_report extends ffi.Struct {
+  @ffi.Uint32()
+  external int settled;
+
+  @ffi.Uint32()
+  external int pending;
+
+  static ffi.Pointer<wire_cst_scuttle_claim_report> $allocate(
+    ffi.Allocator $allocator, {
+    required int settled,
+    required int pending,
+  }) => $allocator<wire_cst_scuttle_claim_report>()
+    ..ref.settled = settled
+    ..ref.pending = pending;
 }
 
 final class wire_cst_scuttle_exit extends ffi.Struct {
@@ -2768,6 +4103,88 @@ final class wire_cst_scuttle_exit_progress_review extends ffi.Struct {
     ..ref.confirmed_coins = confirmed_coins;
 }
 
+final class wire_cst_scuttle_fee_estimate extends ffi.Struct {
+  @ffi.Uint64()
+  external int gross_sats;
+
+  @ffi.Uint64()
+  external int fee_sats;
+
+  @ffi.Uint64()
+  external int net_sats;
+
+  external ffi.Pointer<wire_cst_list_String> vtxo_ids;
+
+  static ffi.Pointer<wire_cst_scuttle_fee_estimate> $allocate(
+    ffi.Allocator $allocator, {
+    required int gross_sats,
+    required int fee_sats,
+    required int net_sats,
+    required ffi.Pointer<wire_cst_list_String> vtxo_ids,
+  }) => $allocator<wire_cst_scuttle_fee_estimate>()
+    ..ref.gross_sats = gross_sats
+    ..ref.fee_sats = fee_sats
+    ..ref.net_sats = net_sats
+    ..ref.vtxo_ids = vtxo_ids;
+}
+
+final class wire_cst_scuttle_lightning_invoice extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> invoice;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> payment_hash;
+
+  static ffi.Pointer<wire_cst_scuttle_lightning_invoice> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> invoice,
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> payment_hash,
+  }) => $allocator<wire_cst_scuttle_lightning_invoice>()
+    ..ref.invoice = invoice
+    ..ref.payment_hash = payment_hash;
+}
+
+final class wire_cst_scuttle_lightning_receive extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> payment_hash;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> invoice;
+
+  external ffi.Pointer<ffi.Uint64> amount_sats;
+
+  @ffi.Int32()
+  external int stage;
+
+  static ffi.Pointer<wire_cst_scuttle_lightning_receive> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> payment_hash,
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> invoice,
+    required ffi.Pointer<ffi.Uint64> amount_sats,
+    required int stage,
+  }) => $allocator<wire_cst_scuttle_lightning_receive>()
+    ..ref.payment_hash = payment_hash
+    ..ref.invoice = invoice
+    ..ref.amount_sats = amount_sats
+    ..ref.stage = stage;
+}
+
+final class wire_cst_scuttle_lightning_send extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> payment_hash;
+
+  @ffi.Uint64()
+  external int amount_sats;
+
+  @ffi.Uint64()
+  external int fee_sats;
+
+  static ffi.Pointer<wire_cst_scuttle_lightning_send> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> payment_hash,
+    required int amount_sats,
+    required int fee_sats,
+  }) => $allocator<wire_cst_scuttle_lightning_send>()
+    ..ref.payment_hash = payment_hash
+    ..ref.amount_sats = amount_sats
+    ..ref.fee_sats = fee_sats;
+}
+
 final class wire_cst_scuttle_mixed_claim extends ffi.Struct {
   external ffi.Pointer<wire_cst_list_prim_u_8_strict> signed_psbt;
 
@@ -2815,24 +4232,146 @@ final class wire_cst_scuttle_mixed_claim_review extends ffi.Struct {
     ..ref.fee_sats = fee_sats;
 }
 
+final class wire_cst_scuttle_movement extends ffi.Struct {
+  @ffi.Uint32()
+  external int id;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> subsystem;
+
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> kind;
+
+  @ffi.Int32()
+  external int status;
+
+  @ffi.Int64()
+  external int intended_sats;
+
+  @ffi.Int64()
+  external int effective_sats;
+
+  @ffi.Uint64()
+  external int fee_sats;
+
+  @ffi.Int64()
+  external int created_at;
+
+  @ffi.Int64()
+  external int updated_at;
+
+  external ffi.Pointer<ffi.Int64> completed_at;
+
+  static ffi.Pointer<wire_cst_scuttle_movement> $allocate(
+    ffi.Allocator $allocator, {
+    required int id,
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> subsystem,
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> kind,
+    required int status,
+    required int intended_sats,
+    required int effective_sats,
+    required int fee_sats,
+    required int created_at,
+    required int updated_at,
+    required ffi.Pointer<ffi.Int64> completed_at,
+  }) => $allocator<wire_cst_scuttle_movement>()
+    ..ref.id = id
+    ..ref.subsystem = subsystem
+    ..ref.kind = kind
+    ..ref.status = status
+    ..ref.intended_sats = intended_sats
+    ..ref.effective_sats = effective_sats
+    ..ref.fee_sats = fee_sats
+    ..ref.created_at = created_at
+    ..ref.updated_at = updated_at
+    ..ref.completed_at = completed_at;
+}
+
 final class wire_cst_scuttle_observation extends ffi.Struct {
   @ffi.Uint32()
   external int tip_height;
 
   @ffi.Uint64()
-  external int last_known_spendable_sats;
+  external int spendable_sats;
+
+  @ffi.Uint64()
+  external int needs_refresh_sats;
+
+  @ffi.Uint64()
+  external int pending_sats;
+
+  @ffi.Uint64()
+  external int pending_board_sats;
+
+  @ffi.Uint64()
+  external int confirmed_reserve_sats;
+
+  external ffi.Pointer<wire_cst_scuttle_server_info> server;
 
   external ffi.Pointer<wire_cst_list_scuttle_vtxo> vtxos;
 
   static ffi.Pointer<wire_cst_scuttle_observation> $allocate(
     ffi.Allocator $allocator, {
     required int tip_height,
-    required int last_known_spendable_sats,
+    required int spendable_sats,
+    required int needs_refresh_sats,
+    required int pending_sats,
+    required int pending_board_sats,
+    required int confirmed_reserve_sats,
+    required ffi.Pointer<wire_cst_scuttle_server_info> server,
     required ffi.Pointer<wire_cst_list_scuttle_vtxo> vtxos,
   }) => $allocator<wire_cst_scuttle_observation>()
     ..ref.tip_height = tip_height
-    ..ref.last_known_spendable_sats = last_known_spendable_sats
+    ..ref.spendable_sats = spendable_sats
+    ..ref.needs_refresh_sats = needs_refresh_sats
+    ..ref.pending_sats = pending_sats
+    ..ref.pending_board_sats = pending_board_sats
+    ..ref.confirmed_reserve_sats = confirmed_reserve_sats
+    ..ref.server = server
     ..ref.vtxos = vtxos;
+}
+
+final class wire_cst_scuttle_onchain_send extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> txid;
+
+  @ffi.Uint32()
+  external int movement_id;
+
+  static ffi.Pointer<wire_cst_scuttle_onchain_send> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> txid,
+    required int movement_id,
+  }) => $allocator<wire_cst_scuttle_onchain_send>()
+    ..ref.txid = txid
+    ..ref.movement_id = movement_id;
+}
+
+final class wire_cst_scuttle_payment_option extends ffi.Struct {
+  @ffi.Int32()
+  external int kind;
+
+  @ffi.Bool()
+  external bool valid;
+
+  static ffi.Pointer<wire_cst_scuttle_payment_option> $allocate(
+    ffi.Allocator $allocator, {
+    required int kind,
+    required bool valid,
+  }) => $allocator<wire_cst_scuttle_payment_option>()
+    ..ref.kind = kind
+    ..ref.valid = valid;
+}
+
+final class wire_cst_scuttle_payment_request extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint64> amount_sats;
+
+  external ffi.Pointer<wire_cst_list_scuttle_payment_option> options;
+
+  static ffi.Pointer<wire_cst_scuttle_payment_request> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<ffi.Uint64> amount_sats,
+    required ffi.Pointer<wire_cst_list_scuttle_payment_option> options,
+  }) => $allocator<wire_cst_scuttle_payment_request>()
+    ..ref.amount_sats = amount_sats
+    ..ref.options = options;
 }
 
 final class wire_cst_scuttle_reserve_coin extends ffi.Struct {
@@ -2853,6 +4392,70 @@ final class wire_cst_scuttle_reserve_coin extends ffi.Struct {
     ..ref.outpoint = outpoint
     ..ref.amount_sats = amount_sats
     ..ref.confirmation_height = confirmation_height;
+}
+
+final class wire_cst_scuttle_round_state extends ffi.Struct {
+  @ffi.Uint32()
+  external int id;
+
+  @ffi.Int32()
+  external int flow;
+
+  external ffi.Pointer<wire_cst_list_String> input_vtxo_ids;
+
+  @ffi.Uint64()
+  external int input_sats;
+
+  @ffi.Uint64()
+  external int pending_sats;
+
+  static ffi.Pointer<wire_cst_scuttle_round_state> $allocate(
+    ffi.Allocator $allocator, {
+    required int id,
+    required int flow,
+    required ffi.Pointer<wire_cst_list_String> input_vtxo_ids,
+    required int input_sats,
+    required int pending_sats,
+  }) => $allocator<wire_cst_scuttle_round_state>()
+    ..ref.id = id
+    ..ref.flow = flow
+    ..ref.input_vtxo_ids = input_vtxo_ids
+    ..ref.input_sats = input_sats
+    ..ref.pending_sats = pending_sats;
+}
+
+final class wire_cst_scuttle_server_info extends ffi.Struct {
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> public_key;
+
+  @ffi.Uint64()
+  external int round_interval_secs;
+
+  @ffi.Uint32()
+  external int vtxo_lifetime_blocks;
+
+  @ffi.Uint64()
+  external int min_board_sats;
+
+  external ffi.Pointer<ffi.Uint64> max_vtxo_sats;
+
+  @ffi.Uint32()
+  external int board_confirmations;
+
+  static ffi.Pointer<wire_cst_scuttle_server_info> $allocate(
+    ffi.Allocator $allocator, {
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> public_key,
+    required int round_interval_secs,
+    required int vtxo_lifetime_blocks,
+    required int min_board_sats,
+    required ffi.Pointer<ffi.Uint64> max_vtxo_sats,
+    required int board_confirmations,
+  }) => $allocator<wire_cst_scuttle_server_info>()
+    ..ref.public_key = public_key
+    ..ref.round_interval_secs = round_interval_secs
+    ..ref.vtxo_lifetime_blocks = vtxo_lifetime_blocks
+    ..ref.min_board_sats = min_board_sats
+    ..ref.max_vtxo_sats = max_vtxo_sats
+    ..ref.board_confirmations = board_confirmations;
 }
 
 final class wire_cst_scuttle_vtxo extends ffi.Struct {

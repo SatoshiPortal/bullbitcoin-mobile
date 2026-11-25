@@ -8,6 +8,8 @@ import 'exit.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+import 'payments.dart';
+
 // These functions are ignored because they are not marked as `pub`: `child_account_id`, `decode_funding`, `encode_funding`, `map_recovery`, `validate_unsigned_board`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ScuttleSession`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `deref`, `eq`, `eq`, `fmt`, `fmt`
@@ -20,11 +22,19 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
     ScuttleBoardAnchor? anchor,
   });
 
+  /// Drives every pending Lightning receive once without waiting.
+  Future<ScuttleClaimReport> claimLightningReceives();
+
   /// Waits for an admitted operation to finish before dropping the wallet.
   Future<void> close();
 
   /// Verifies the locally known confirmed reserve outputs without syncing or broadcasting.
   Future<List<ScuttleReserveCoin>> confirmedReserve();
+
+  /// Stores a fresh BOLT11 invoice and returns it; the claim happens in a later pass.
+  Future<ScuttleLightningInvoice> createLightningInvoice({
+    required BigInt amountSats,
+  });
 
   /// Delivers only the exact child previously admitted by the host. A
   /// response error is not proof that the package failed to reach the chain.
@@ -41,11 +51,33 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
     required List<String> vtxoIds,
   });
 
+  Future<ScuttleFeeEstimate> estimateArkPaymentFee({
+    required BigInt amountSats,
+  });
+
   /// Estimates the selected exits at an optional exact integer sats/vB rate.
   Future<ScuttleExitFeeEstimate> estimateExit({
     required List<String> vtxoIds,
     BigInt? feeRateSatPerVb,
     String? destination,
+  });
+
+  Future<ScuttleFeeEstimate> estimateLightningPaymentFee({
+    required String invoice,
+    required BigInt amountSats,
+  });
+
+  Future<ScuttleFeeEstimate> estimateLightningReceiveFee({
+    required BigInt amountSats,
+  });
+
+  Future<ScuttleFeeEstimate> estimateOnchainSendFee({
+    required String address,
+    required BigInt amountSats,
+  });
+
+  Future<ScuttleFeeEstimate> estimateRefreshFee({
+    required List<String> vtxoIds,
   });
 
   /// Returns persisted live and terminal exits. A missing VTXO fails the whole observation.
@@ -62,6 +94,9 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
   Future<String?> finalizeRegtestBoard({required String fundingTxid});
 
   Future<String> fingerprint();
+
+  /// Movements ordered from newest to oldest, from the local database.
+  Future<List<ScuttleMovement>> history();
 
   /// Imports confirmed change from the host's exact journaled child. This
   /// updates only the reserve graph and never runs the native wallet sync.
@@ -81,8 +116,15 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
   /// Performs the native initial scan, which can also rebroadcast stored transactions.
   Future<void> initialScan();
 
+  Future<ScuttleLightningSendStatus> lightningSendStatus({
+    required String paymentHash,
+  });
+
   /// Derives and stores a fresh full Ark mailbox address.
   Future<String> newArkAddress();
+
+  /// Unix seconds of the next round start announced by the server.
+  Future<BigInt> nextRoundStartTime();
 
   /// Reads the chain source tip and cached native inventory without synchronizing it.
   Future<ScuttleObservation> observation();
@@ -105,6 +147,23 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
     childMnemonic: childMnemonic,
     allowUnreachableServer: allowUnreachableServer,
   );
+
+  /// Parses an Ark address, BOLT11 invoice, BIP321 URI or bitcoin address without contacting
+  /// the server.
+  Future<ScuttlePaymentRequest> parsePaymentRequest({required String payment});
+
+  /// Starts a BOLT11 payment without waiting for settlement and returns its payment hash. A
+  /// failure after native admission must be treated as an unknown outcome, not retried.
+  Future<String> payLightningInvoice({
+    required String invoice,
+    required BigInt amountSats,
+  });
+
+  Future<List<ScuttleLightningReceive>> pendingLightningReceives();
+
+  Future<List<ScuttleLightningSend>> pendingLightningSends();
+
+  Future<List<ScuttleRoundState>> pendingRoundStates();
 
   /// Derives and persists a new Scuttle board key; requires server and chain access.
   Future<ScuttleBoardFunding> prepareBoard();
@@ -144,6 +203,8 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
     required ScuttleExitProgressReview review,
   });
 
+  Future<void> progressPendingRounds();
+
   /// Reports the recovery callback from this particular open.
   Future<ScuttleRecoveryStatus> recoveryStatus();
 
@@ -151,6 +212,13 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
   /// Never broadcasts, rebroadcasts, evicts or creates a CPFP: every
   /// transaction is delivered through the host's admission journal.
   Future<List<ScuttleExit>> refreshExitInventory();
+
+  /// Reconnects to the Ark server and refreshes its parameters.
+  Future<void> refreshServer();
+
+  /// Joins the next round in delegated mode and returns the stored round id, or `None` when
+  /// nothing needed refreshing. A failure after native admission is an unknown outcome.
+  Future<int?> refreshVtxosDelegated({required List<String> vtxoIds});
 
   /// Admits only a wholly unsigned native-segwit PSBT. The host owns signing and broadcast.
   /// A failure after native admission must be treated as an unknown outcome, not retried.
@@ -174,8 +242,23 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
   /// A failure after native admission must be treated as an unknown outcome, not retried.
   Future<int> sendArk({required String address, required BigInt amountSats});
 
+  /// Offboards `amount_sats` to a bitcoin address. A failure after native admission must be
+  /// treated as an unknown outcome, not retried.
+  Future<ScuttleOnchainSend> sendOnchain({
+    required String address,
+    required BigInt amountSats,
+  });
+
   /// Starts only the selected currently spendable VTXOs; an error after admission is unknown.
   Future<void> startExit({required List<String> vtxoIds});
+
+  /// Processes mailbox messages: received VTXOs, round and Lightning updates.
+  /// An `Ok` does not prove every message was processed; a stalled message is
+  /// retried from the same checkpoint by the next call.
+  Future<void> syncMailbox();
+
+  /// Advances registered boards from their funding confirmations.
+  Future<void> syncPendingBoards();
 
   /// Verifies one host-journaled reserve funding transaction without running
   /// a wallet sync. This is not an import into BDK or spending authority.
@@ -184,6 +267,9 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
     required String destination,
     required BigInt amountSats,
   });
+
+  /// Spendable VTXOs the wallet wants to refresh now.
+  Future<List<String>> vtxosToRefresh();
 }
 
 enum OpenMode { new_, existing }
@@ -308,21 +394,39 @@ class ScuttleBoardTerms {
 
 enum ScuttleNetwork { bitcoin, testnet, signet, regtest }
 
-/// Local inventory and chain tip, not proof of a complete or current sync.
+/// Local inventory and chain tip. Freshness comes from the sync stages the
+/// host ran before reading it, not from this read.
 class ScuttleObservation {
   final int tipHeight;
-  final BigInt lastKnownSpendableSats;
+  final BigInt spendableSats;
+  final BigInt needsRefreshSats;
+  final BigInt pendingSats;
+  final BigInt pendingBoardSats;
+  final BigInt confirmedReserveSats;
+  final ScuttleServerInfo? server;
   final List<ScuttleVtxo> vtxos;
 
   const ScuttleObservation({
     required this.tipHeight,
-    required this.lastKnownSpendableSats,
+    required this.spendableSats,
+    required this.needsRefreshSats,
+    required this.pendingSats,
+    required this.pendingBoardSats,
+    required this.confirmedReserveSats,
+    this.server,
     required this.vtxos,
   });
 
   @override
   int get hashCode =>
-      tipHeight.hashCode ^ lastKnownSpendableSats.hashCode ^ vtxos.hashCode;
+      tipHeight.hashCode ^
+      spendableSats.hashCode ^
+      needsRefreshSats.hashCode ^
+      pendingSats.hashCode ^
+      pendingBoardSats.hashCode ^
+      confirmedReserveSats.hashCode ^
+      server.hashCode ^
+      vtxos.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -330,12 +434,56 @@ class ScuttleObservation {
       other is ScuttleObservation &&
           runtimeType == other.runtimeType &&
           tipHeight == other.tipHeight &&
-          lastKnownSpendableSats == other.lastKnownSpendableSats &&
+          spendableSats == other.spendableSats &&
+          needsRefreshSats == other.needsRefreshSats &&
+          pendingSats == other.pendingSats &&
+          pendingBoardSats == other.pendingBoardSats &&
+          confirmedReserveSats == other.confirmedReserveSats &&
+          server == other.server &&
           vtxos == other.vtxos;
 }
 
 /// Outcome reported by this open only, not a durable recovery receipt.
 enum ScuttleRecoveryStatus { unknown, notRun, complete, incomplete, failed }
+
+class ScuttleServerInfo {
+  final String publicKey;
+  final BigInt roundIntervalSecs;
+  final int vtxoLifetimeBlocks;
+  final BigInt minBoardSats;
+  final BigInt? maxVtxoSats;
+  final int boardConfirmations;
+
+  const ScuttleServerInfo({
+    required this.publicKey,
+    required this.roundIntervalSecs,
+    required this.vtxoLifetimeBlocks,
+    required this.minBoardSats,
+    this.maxVtxoSats,
+    required this.boardConfirmations,
+  });
+
+  @override
+  int get hashCode =>
+      publicKey.hashCode ^
+      roundIntervalSecs.hashCode ^
+      vtxoLifetimeBlocks.hashCode ^
+      minBoardSats.hashCode ^
+      maxVtxoSats.hashCode ^
+      boardConfirmations.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ScuttleServerInfo &&
+          runtimeType == other.runtimeType &&
+          publicKey == other.publicKey &&
+          roundIntervalSecs == other.roundIntervalSecs &&
+          vtxoLifetimeBlocks == other.vtxoLifetimeBlocks &&
+          minBoardSats == other.minBoardSats &&
+          maxVtxoSats == other.maxVtxoSats &&
+          boardConfirmations == other.boardConfirmations;
+}
 
 class ScuttleVtxo {
   final String id;
