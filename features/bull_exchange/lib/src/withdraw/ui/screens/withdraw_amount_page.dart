@@ -77,7 +77,15 @@ class _WithdrawAmountPageState extends State<WithdrawAmountPage> {
     final problem = editing.problem;
     final quote = editing.quote;
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.withdrawAmountTitle)),
+      appBar: AppBar(
+        // The flow's first page: its navigator can't pop it, so Back is
+        // the flow's event, never implied.
+        automaticallyImplyLeading: false,
+        leading: BackButton(
+          onPressed: () => widget.onEvent(const WithdrawBackPressed()),
+        ),
+        title: Text(context.loc.withdrawAmountTitle),
+      ),
       body: SafeArea(
         child: BullKeyboardActions(
           doneText: context.loc.doneButton,

@@ -77,7 +77,14 @@ class WithdrawReviewPage extends StatelessWidget {
       ConfirmLeft() => context.loc.withdrawConfirmButton,
     };
     return Scaffold(
-      appBar: AppBar(title: Image.asset(brandAsset, height: 32, width: 32)),
+      appBar: AppBar(
+        // The review is the only page of its state: Back is the flow's.
+        automaticallyImplyLeading: false,
+        leading: BackButton(
+          onPressed: () => onEvent(const WithdrawBackPressed()),
+        ),
+        title: Image.asset(brandAsset, height: 32, width: 32),
+      ),
       body: SafeArea(
         child: Column(
           children: [

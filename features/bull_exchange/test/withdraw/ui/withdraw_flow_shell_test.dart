@@ -150,4 +150,21 @@ void main() {
     await tester.tap(find.text(labels.retry));
     expect(events.single, isA<WithdrawRetryPressed>());
   });
+
+  // The flow's first pages sit alone in the flow's navigator, where nothing
+  // can pop: each shows a back that is the flow's event.
+  for (final (name, state) in [
+    ('loading', withdrawFlowStart(withdrawSession).state),
+    ('amount', withdrawAmountState),
+    ('review', withdrawReviewState),
+  ]) {
+    testWidgets('the $name page has a back that sends WithdrawBackPressed', (
+      tester,
+    ) async {
+      final events = <WithdrawFlowEvent>[];
+      await _pump(tester, state, events: events);
+      await tester.tap(find.byTooltip('Back'));
+      expect(events.single, isA<WithdrawBackPressed>());
+    });
+  }
 }
