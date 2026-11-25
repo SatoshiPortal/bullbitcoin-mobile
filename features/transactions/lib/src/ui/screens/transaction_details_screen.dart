@@ -30,11 +30,10 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullErrorState,
         BullFadingLinearProgress,
-        BullIcons,
         BullPaymentTransition,
+        BullPaymentViewSwitch,
         BullShimmerLine,
         BullSnackBar,
-        BullToolButton,
         BullTransactionDetailsPage,
         Gap;
 import 'package:go_router/go_router.dart';
@@ -140,7 +139,14 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
     final switcher = animation == null
         ? null
-        : _ViewSwitch(view: view, onChanged: _show);
+        : BullPaymentViewSwitch(
+            showingStatus: view == TransactionDetailsView.status,
+            statusLabel: context.loc.paymentStatusViewStatus,
+            detailsLabel: context.loc.paymentStatusViewDetails,
+            semanticsLabel: context.loc.paymentStatusViewsLabel,
+            onStatus: () => _show(TransactionDetailsView.status),
+            onDetails: () => _show(TransactionDetailsView.details),
+          );
     final target = statusState.settlementTarget;
 
     return BlocListener<TransactionDetailsCubit, TransactionDetailsState>(
@@ -353,56 +359,6 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
           ),
         ?switcher,
       ],
-    );
-  }
-}
-
-/// Status | Details: the two views of a transaction with a payment status.
-class _ViewSwitch extends StatelessWidget {
-  final TransactionDetailsView view;
-  final ValueChanged<TransactionDetailsView> onChanged;
-
-  const _ViewSwitch({required this.view, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    Widget button(TransactionDetailsView target, String label, IconData icon) {
-      final selected = view == target;
-      // One node per view: the selected state belongs to the button itself.
-      return MergeSemantics(
-        child: Semantics(
-          selected: selected,
-          button: true,
-          child: BullToolButton(
-            label: label,
-            icon: icon,
-            primary: selected,
-            onPressed: () => onChanged(target),
-          ),
-        ),
-      );
-    }
-
-    return Semantics(
-      container: true,
-      explicitChildNodes: true,
-      label: context.loc.paymentStatusViewsLabel,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          button(
-            TransactionDetailsView.status,
-            context.loc.paymentStatusViewStatus,
-            BullIcons.showChart,
-          ),
-          const SizedBox(width: 8),
-          button(
-            TransactionDetailsView.details,
-            context.loc.paymentStatusViewDetails,
-            BullIcons.receiptLong,
-          ),
-        ],
-      ),
     );
   }
 }
