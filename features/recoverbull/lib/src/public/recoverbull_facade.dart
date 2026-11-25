@@ -35,6 +35,7 @@ final class RecoverBullFacade {
     Fingerprint,
   )?
   _backupProjection;
+  final Future<Result<bool, RecoverBullFailure>> Function()? _backupWarning;
 
   @internal
   const RecoverBullFacade(
@@ -48,7 +49,14 @@ final class RecoverBullFacade {
     this._settings,
     this._recoverServer,
     this._backupProjection,
+    this._backupWarning,
   ]);
+
+  /// Whether the active foreground defaults need a backup warning.
+  @useResult
+  Future<Result<bool, RecoverBullFailure>> backupWarningNeeded() =>
+      _backupWarning?.call() ??
+      Future.value(const Err(RecoverBullJournalFailure()));
 
   Future<Result<SecretBackupProjection, RecoverBullFailure>> backupProjection(
     Fingerprint fingerprint,
