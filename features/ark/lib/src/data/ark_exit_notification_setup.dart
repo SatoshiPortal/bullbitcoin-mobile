@@ -7,14 +7,19 @@ import 'package:primitives/primitives.dart';
 
 import '../../ark_notification_setup.dart';
 import 'ark_exit_notifier.dart';
+import 'ark_payment_observer.dart';
 
 final class OwnedArkExitNotifier {
   final ArkExitNotifier observer;
+
+  /// Exit claims plus incoming payments: what the client observes.
+  final ArkPaymentObserver combined;
   final LifecycleHandle _observerHandle;
   final LifecycleHandle _allocatorHandle;
 
   OwnedArkExitNotifier(
     this.observer,
+    this.combined,
     this._observerHandle,
     this._allocatorHandle,
   );
@@ -57,7 +62,13 @@ Future<OwnedArkExitNotifier> openForegroundArkExitNotifier({
     );
     try {
       final handle = admission.track(() async => observer.close());
-      return OwnedArkExitNotifier(observer, handle, allocatorHandle);
+      final combined = ArkPaymentObserver(
+        notifications: outbox,
+        exits: observer,
+        foreground: true,
+        copy: PaymentNotifications.copy(locale),
+      );
+      return OwnedArkExitNotifier(observer, combined, handle, allocatorHandle);
     } catch (_) {
       observer.close();
       rethrow;

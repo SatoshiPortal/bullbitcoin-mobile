@@ -265,7 +265,9 @@ void main() {
         arkUrl: Uri.parse('http://ark.regtest'),
         primaryEsploraUrl: Uri.parse('http://chain.regtest'),
         initializeNew: true,
+        dispatcher: dispatcher,
       );
+      expect(locator<ArkForegroundHost>().dispatcher, same(dispatcher));
       expect(
         File('${directory.path}/ark/accounts.sqlite').existsSync(),
         isFalse,
@@ -593,3 +595,5 @@ void main() {
     );
   });
 }
+
+void dispatcher() {}

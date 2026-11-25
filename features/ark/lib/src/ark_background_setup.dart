@@ -24,6 +24,7 @@ import 'package:notifications/notifications.dart'
     show ScheduledNotificationPort;
 
 import 'data/ark_exit_notifier.dart';
+import 'data/ark_payment_observer.dart';
 
 /// Only existing stores are opened. Every resource remains alive until the
 /// admitted native work has completed and the runner closes its resources.
@@ -166,7 +167,7 @@ final class _BackgroundExitObserver implements native.ArkExitObserverPort {
   final ScheduledNotificationPort notifications;
   final native.ArkStageBudget budget;
   final List<Future<void> Function()> _cleanup = [];
-  Future<ArkExitNotifier>? _opening;
+  Future<native.ArkExitObserverPort>? _opening;
   bool failed = false;
 
   _BackgroundExitObserver({
@@ -177,7 +178,7 @@ final class _BackgroundExitObserver implements native.ArkExitObserverPort {
     required this.budget,
   });
 
-  Future<ArkExitNotifier> _open() => _opening ??= () async {
+  Future<native.ArkExitObserverPort> _open() => _opening ??= () async {
     final allocator = await PaymentNotifications.initializeBackground(
       documents,
       locale,
@@ -197,7 +198,12 @@ final class _BackgroundExitObserver implements native.ArkExitObserverPort {
       body: copy.body,
     );
     _cleanup.add(() async => observer.close());
-    return observer;
+    return ArkPaymentObserver(
+      notifications: allocator,
+      exits: observer,
+      foreground: false,
+      copy: PaymentNotifications.copy(locale),
+    );
   }();
 
   Future<void> close() async {
