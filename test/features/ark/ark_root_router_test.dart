@@ -409,6 +409,7 @@ void main() {
           syncStarted: () => const Stream.empty(),
           syncFinished: () => const Stream.empty(),
           orderSwaps: () => throw StateError('Unexpected swap history read'),
+          pollSettlement: (_, {required isActive}) async {},
           actions: transactionUiActions,
           scope: (child) => child,
         ),
