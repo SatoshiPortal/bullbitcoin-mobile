@@ -14,7 +14,7 @@ class _InspectingHandler extends BaseHandler {
   Future<S> executeNormal<S, E extends Object>(NormalTask<S, E> task) {
     if (task.constMeta.debugName == 'ScuttleWallet_open') {
       sawOpen = true;
-      expect(task.argMap['childSeed'], isNull);
+      expect(task.argMap['childMnemonic'], isNull);
     }
     return super.executeNormal(task);
   }
@@ -47,7 +47,7 @@ void main() {
         datadir: dir.path,
         serverAddress: 'http://127.0.0.1:1',
         esploraAddress: 'http://127.0.0.1:${server.port}',
-        childSeed: List<int>.filled(64, 0),
+        childMnemonic: '${'abandon ' * 11}about',
         allowUnreachableServer: true,
       );
       final wallet = await open(OpenMode.new_);
