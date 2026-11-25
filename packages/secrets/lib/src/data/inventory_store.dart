@@ -52,10 +52,8 @@ final class InventoryStore {
           published = true;
           return Ok(InventoryStore._(selected, handle));
       }
-    } on SqliteException {
-      return const Err(
-        DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
-      );
+    } on SqliteException catch (error) {
+      return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
     } finally {
       settled.complete();
       if (!published) await handle.close();
