@@ -224,7 +224,15 @@ class AccelerateFeePage extends StatelessWidget {
     final fee = quote.fee;
     final problem = this.problem;
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.buyConfirmExpressWithdrawal)),
+      appBar: AppBar(
+        // The route can be opened with nothing under it: Back is the
+        // flow's event, never implied.
+        automaticallyImplyLeading: false,
+        leading: BackButton(
+          onPressed: () => onEvent(const AccelerateBackPressed()),
+        ),
+        title: Text(context.loc.buyConfirmExpressWithdrawal),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
