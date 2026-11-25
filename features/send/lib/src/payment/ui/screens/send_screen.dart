@@ -556,7 +556,10 @@ class _SendScreenState extends State<SendScreen> {
                 onSkip: _openTransitionDetails,
                 onBackdropTap: _dismissTransition,
                 onDone: () {
-                  if (_terminalPhase(context.read<SendCubit>().state) != null) {
+                  // Success stays on screen until the user leaves it (back or
+                  // View details); only a failure dismisses on its own.
+                  final phase = _terminalPhase(context.read<SendCubit>().state);
+                  if (phase != null && phase != BullPaymentPhase.success) {
                     _dismissTransition();
                   }
                 },
