@@ -310,7 +310,8 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
       controller: _popupController,
       overlayChildBuilder: _buildPopup,
       child: Material(
-        color: context.bullKeypad.panel,
+        color: context.bull.background,
+        shape: Border(top: BorderSide(color: context.bull.border)),
         child: SizedBox(
           height: height,
           child: SafeArea(
@@ -518,6 +519,7 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
   }
 
   Widget _letterKey(String value, BullKeypadMetrics metrics) {
+    final colors = context.bull;
     final keypad = context.bullKeypad;
     final enabled = widget.enabledLetters.contains(value);
     final variants = _accentPage
@@ -534,13 +536,15 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
         onTap: () => _type(value),
         height: metrics.keyHeight,
         suppressAnimation: widget.shuffleActive,
-        // A letter that cannot continue the word loses its key: no fill, so
-        // it sinks into the panel, and a faint glyph.
-        fill: enabled ? keypad.key : context.bull.transparent,
+        // A soft fill on the page background. A letter that cannot continue
+        // the word loses its fill and keeps a faint glyph in its place.
+        fill: enabled ? colors.surfaceContainer : colors.transparent,
+        pressedColor: colors.surfaceContainerHighest,
         child: BullKeyGlyph(
           BullMnemonicKeyboard.keyLabel(value),
           size: metrics.glyphSize,
-          color: enabled ? keypad.onKey : keypad.disabledGlyph,
+          weight: FontWeight.w500,
+          color: enabled ? colors.text : keypad.disabledGlyph,
         ),
       ),
     );
@@ -925,8 +929,9 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
   }
 }
 
-/// Backspace, enter, scramble, page and language share one look, distinct
-/// from the letters: the function key fill, or the accent while [active].
+/// Backspace, enter, scramble, page and language: the same fill as the
+/// letters, an icon or short label instead of a letter, in the accent while
+/// [active].
 class _FunctionKey extends StatelessWidget {
   final bool enabled;
   final bool active;
@@ -946,18 +951,18 @@ class _FunctionKey extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final keypad = context.bullKeypad;
     return BullKeyCap(
       enabled: enabled,
       onTap: onTap,
       height: metrics.keyHeight,
-      fill: active ? colors.primary : keypad.functionKey,
+      fill: colors.surfaceContainer,
+      pressedColor: colors.surfaceContainerHighest,
       child: child(
         !enabled
-            ? keypad.onFunctionKeyDisabled
+            ? context.bullKeypad.disabledGlyph
             : active
-            ? colors.onPrimary
-            : keypad.onFunctionKey,
+            ? colors.primary
+            : colors.text,
       ),
     );
   }
