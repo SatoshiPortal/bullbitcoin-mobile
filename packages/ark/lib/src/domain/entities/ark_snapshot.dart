@@ -52,6 +52,9 @@ final class ArkMovement {
   final String id;
   final ArkMovementKind kind;
   final ArkMovementStatus status;
+
+  /// Native movement direction; incoming does not prove an external sender.
+  final ArkMovementDirection direction;
   final Sats? amount;
   final Sats? fee;
   final DateTime? createdAt;
@@ -71,6 +74,7 @@ final class ArkMovement {
     required this.id,
     required this.kind,
     required this.status,
+    this.direction = ArkMovementDirection.unknown,
     this.amount,
     this.fee,
     this.createdAt,
@@ -279,3 +283,5 @@ enum ArkMovementKind {
 }
 
 enum ArkMovementStatus { pending, successful, failed, unknown }
+
+enum ArkMovementDirection { incoming, outgoing, unknown }

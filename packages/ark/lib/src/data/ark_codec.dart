@@ -68,6 +68,7 @@ Map<String, Object?> movementToJson(ArkMovement v) => {
   'id': v.id,
   'kind': v.kind.name,
   'status': v.status.name,
+  'direction': v.direction.name,
   'amount': v.amount?.toString(),
   'fee': v.fee?.toString(),
   'createdAt': v.createdAt?.toIso8601String(),
@@ -83,6 +84,9 @@ ArkMovement movementFromJson(Map<String, Object?> m) => _decode(
     id: m['id'] as String,
     kind: ArkMovementKind.values.byName(m['kind'] as String),
     status: ArkMovementStatus.values.byName(m['status'] as String),
+    direction: m['direction'] == null
+        ? ArkMovementDirection.unknown
+        : ArkMovementDirection.values.byName(m['direction'] as String),
     amount: nullableSats(m['amount']),
     fee: nullableSats(m['fee']),
     createdAt: m['createdAt'] == null

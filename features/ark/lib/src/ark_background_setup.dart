@@ -19,6 +19,11 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:notifications/payment_store.dart';
+import 'package:notifications/notifications.dart'
+    show ScheduledNotificationPort;
+
+import 'data/ark_exit_notifier.dart';
 
 /// Only existing stores are opened. Every resource remains alive until the
 /// admitted native work has completed and the runner closes its resources.
@@ -108,6 +113,14 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     reminderFailure = true;
   }
   final budget = ArkBackgroundStageBudget(() => resources.mayAdmitNextStage);
+  final exitNotifier = _BackgroundExitObserver(
+    documents: documents.path,
+    directory: directory,
+    locale: locale,
+    notifications: notification,
+    budget: budget,
+  );
+  resources.onClose(exitNotifier.close);
   final secrets = Secrets(
     scratchDirectory: () async => (await getTemporaryDirectory()).path,
   );
@@ -128,6 +141,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
         executionPolicy: policy,
         executionMode: native.ArkExecutionMode.backgroundExisting,
         stageBudget: budget,
+        exitObserver: exitNotifier,
       );
   resources.onClose(client.close);
   final handler = ArkMaintenance(
@@ -138,10 +152,90 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   ).backgroundHandler();
   return () async {
     final result = await handler();
-    return reminderFailure
+    return reminderFailure || exitNotifier.failed
         ? const BackgroundTaskExecutionResult.retry()
         : result;
   };
+}
+
+/// Saved claims run before opening the notification ledger.
+final class _BackgroundExitObserver implements native.ArkExitObserverPort {
+  final String documents;
+  final String directory;
+  final Locale locale;
+  final ScheduledNotificationPort notifications;
+  final native.ArkStageBudget budget;
+  final List<Future<void> Function()> _cleanup = [];
+  Future<ArkExitNotifier>? _opening;
+  bool failed = false;
+
+  _BackgroundExitObserver({
+    required this.documents,
+    required this.directory,
+    required this.locale,
+    required this.notifications,
+    required this.budget,
+  });
+
+  Future<ArkExitNotifier> _open() => _opening ??= () async {
+    final allocator = await PaymentNotifications.initializeBackground(
+      documents,
+      locale,
+      _cleanup.add,
+    );
+    if (allocator == null) {
+      throw const FormatException('Notification store unavailable');
+    }
+    final copy = arkExitClaimableCopy(locale);
+    final observer = ArkExitNotifier.open(
+      path: '$directory/exit-notices.sqlite',
+      foreground: false,
+      allocator: allocator,
+      notifications: notifications,
+      budget: budget,
+      title: copy.title,
+      body: copy.body,
+    );
+    _cleanup.add(() async => observer.close());
+    return observer;
+  }();
+
+  Future<void> close() async {
+    Object? failure;
+    StackTrace? trace;
+    for (var index = _cleanup.length - 1; index >= 0; index--) {
+      try {
+        await _cleanup[index]();
+        _cleanup.removeAt(index);
+      } catch (error, stack) {
+        failure ??= error;
+        trace ??= stack;
+      }
+    }
+    if (failure != null && trace != null) {
+      Error.throwWithStackTrace(failure, trace);
+    }
+  }
+
+  @override
+  Future<void> observe(ArkPassOutcome outcome) async {
+    try {
+      await (await _open()).observe(outcome);
+    } on Exception {
+      failed = true;
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> claimAdmitted(ArkAccountId account, ArkOperation claim) async {
+    try {
+      await (await _open()).claimAdmitted(account, claim);
+    } on Exception {
+      failed = true;
+      rethrow;
+    }
+  }
 }
 
 final class _RegtestBackgroundPolicy implements native.ArkExecutionPolicyPort {
