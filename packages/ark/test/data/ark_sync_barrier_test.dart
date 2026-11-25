@@ -56,6 +56,32 @@ void main() {
     await client.close();
     temp.deleteSync(recursive: true);
   });
+  test('holds writer admission until native close finishes', () async {
+    final closing = Completer<void>();
+    final releaseClose = Completer<void>();
+    native.beforeClose = () {
+      closing.complete();
+      return releaseClose.future;
+    };
+    final first = client.synchronize(account, renew: false);
+    await closing.future;
+    native.beforeClose = null;
+    try {
+      final competing = await client.synchronize(account, renew: false);
+      expect(
+        competing,
+        isA<Err<ArkPassOutcome, ArkWalletFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ArkWriterBusyFailure>(),
+        ),
+      );
+    } finally {
+      releaseClose.complete();
+      await first;
+    }
+    requireOk(await client.synchronize(account, renew: false));
+  });
   Future<void> failOnchain() async {
     native.failingStage = 'onchain';
     final pass = requireOk(await client.synchronize(account, renew: false));
