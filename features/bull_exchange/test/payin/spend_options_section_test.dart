@@ -1,6 +1,5 @@
-import 'fake_address_viewer.dart';
-
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
@@ -9,9 +8,11 @@ import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:fees/fees.dart';
 import 'package:fees_feature/fee_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sync/sync.dart' show BitcoinCoin, Keychain;
+
+import 'fake_address_viewer.dart';
 
 const _fees = FeeOptions(
   fastest: RelativeFee(2500),
@@ -57,25 +58,23 @@ Future<ExchangeLocalizations> _pump(
   Stream<SpendOptionsState>? changes,
 }) async {
   await tester.pumpWidget(
-    RepositoryProvider.value(
-      value: _ui,
-      child: MaterialApp(
-        theme: ThemeData(extensions: testBullExtensions),
-        localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
-        supportedLocales: ExchangeLocalizations.supportedLocales,
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: SpendOptionsSection(
-              spend: spend,
-              changes: changes ?? const Stream.empty(),
-              current: () => spend,
-              labels: _labels,
-              payjoinOffered: payjoin,
-              amountSat: 20000,
-              exchangeRate: 50000,
-              fiatCurrency: 'CAD',
-              onEvent: events.add,
-            ),
+    MaterialApp(
+      theme: ThemeData(extensions: testBullExtensions),
+      localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+      supportedLocales: ExchangeLocalizations.supportedLocales,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: SpendOptionsSection(
+            spend: spend,
+            changes: changes ?? const Stream.empty(),
+            current: () => spend,
+            labels: _labels,
+            payjoinOffered: payjoin,
+            amountSat: 20000,
+            exchangeRate: 50000,
+            fiatCurrency: 'CAD',
+            onEvent: events.add,
+            ui: _ui,
           ),
         ),
       ),
@@ -157,6 +156,35 @@ void main() {
       tester.element(find.byType(Scaffold).first),
     );
     expect(find.text(labels.exchangePayinCoinsUnavailable), findsOneWidget);
+    await changes.close();
+  });
+
+  testWidgets('the picked coins sheet shows each coin with its address', (
+    tester,
+  ) async {
+    final changes = StreamController<SpendOptionsState>.broadcast();
+    await _pump(tester, _ready, [], changes: changes.stream);
+    await tester.tap(find.text('Advanced Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Select coins manually'));
+    await tester.pump();
+    changes.add(
+      _ready.copyWith(
+        coins: SpendCoinsLoaded([
+          BitcoinCoin(
+            outpoint: (txId: 'c1', vout: 0),
+            amountSat: BigInt.from(50000),
+            scriptPubkey: Uint8List(0),
+            address: 'tb1qcoin',
+            keychain: Keychain.external,
+            confirmations: 3,
+          ),
+        ]),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('tb1qcoin'), findsOneWidget);
     await changes.close();
   });
 

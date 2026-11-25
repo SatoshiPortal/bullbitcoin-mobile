@@ -313,6 +313,7 @@ List<Page<void>> payPagesFor(
                   instantPayments: context.loc.payInstantPayments,
                 ),
                 SpendOptionsSection(
+                  ui: ui,
                   spend: spend,
                   changes: states.map(spendOf),
                   current: () => spendOf(current?.call() ?? state),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/payin/payin_coin_selection.dart';
+import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -49,6 +50,7 @@ class SpendOptionsSection extends StatelessWidget {
     required this.exchangeRate,
     required this.fiatCurrency,
     required this.onEvent,
+    required this.ui,
   });
 
   final SpendOptionsState spend;
@@ -61,6 +63,10 @@ class SpendOptionsSection extends StatelessWidget {
   final int amountSat;
   final double? exchangeRate;
   final String fiatCurrency;
+
+  /// Passed down rather than read from the tree: the advanced options and
+  /// coin sheets are their own routes, above any provider the page has.
+  final ExchangePayinUi ui;
   final void Function(SpendOptionsEvent event) onEvent;
 
   @override
@@ -140,6 +146,7 @@ class SpendOptionsSection extends StatelessWidget {
               BullBottomSheet.show<void>(
                 context: context,
                 child: _AdvancedOptionsSheet(
+                  ui: ui,
                   changes: changes,
                   current: current,
                   labels: labels,
@@ -259,6 +266,7 @@ final class SpendFeeModalPort
 
 class _AdvancedOptionsSheet extends StatelessWidget {
   const _AdvancedOptionsSheet({
+    required this.ui,
     required this.changes,
     required this.current,
     required this.labels,
@@ -268,6 +276,7 @@ class _AdvancedOptionsSheet extends StatelessWidget {
     required this.onEvent,
   });
 
+  final ExchangePayinUi ui;
   final Stream<SpendOptionsState> changes;
   final SpendOptionsState Function() current;
   final SpendOptionsLabels labels;
@@ -353,6 +362,7 @@ class _AdvancedOptionsSheet extends StatelessWidget {
                           BullBottomSheet.show<void>(
                             context: context,
                             child: _CoinsSheet(
+                              ui: ui,
                               changes: changes,
                               current: current,
                               amountSat: amountSat,
@@ -382,6 +392,7 @@ class _AdvancedOptionsSheet extends StatelessWidget {
 /// they load a spinner, a failed read says so with Retry.
 class _CoinsSheet extends StatelessWidget {
   const _CoinsSheet({
+    required this.ui,
     required this.changes,
     required this.current,
     required this.amountSat,
@@ -390,6 +401,7 @@ class _CoinsSheet extends StatelessWidget {
     required this.onEvent,
   });
 
+  final ExchangePayinUi ui;
   final Stream<SpendOptionsState> changes;
   final SpendOptionsState Function() current;
   final int amountSat;
@@ -408,6 +420,7 @@ class _CoinsSheet extends StatelessWidget {
         return switch (state.coins) {
           SpendCoinsLoaded(:final coins) => payinCoinSelection(
             context: context,
+            addressViewer: ui.addressViewer,
             bitcoinUnit: BitcoinUnit.sats,
             exchangeRate: exchangeRate,
             fiatCurrency: fiatCurrency,
