@@ -640,6 +640,33 @@ void main() {
     expect(find.textContaining('left'), findsNothing);
   });
 
+  for (final refund in BullPaymentRefund.values) {
+    testWidgets('rail never paints a $refund refund red', (tester) async {
+      await tester.pumpWidget(
+        host(
+          transition(
+            phase: refund == BullPaymentRefund.done
+                ? BullPaymentPhase.failed
+                : BullPaymentPhase.sending,
+            progress: BullPaymentProgress(
+              steps: steps,
+              completed: 1,
+              failedAt: 1,
+              refund: refund,
+            ),
+          ),
+        ),
+      );
+      final red = find.byWidgetPredicate(
+        (widget) =>
+            widget is Container &&
+            widget.color == PaymentAnimationPalette.standard.failure,
+      );
+      expect(find.byType(BullPaymentStepRail), findsOneWidget);
+      expect(red, findsNothing);
+    });
+  }
+
   testWidgets('a transition without progress shows no rail', (tester) async {
     await tester.pumpWidget(host(transition()));
     expect(find.textContaining('Step '), findsNothing);
