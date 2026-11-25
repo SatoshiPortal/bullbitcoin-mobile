@@ -124,8 +124,9 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
             quote.net.value > BigInt.zero &&
             DateTime.now().toUtc().isBefore(quote.validUntil),
       );
+      final evidence = quote.boardEvidence;
       final context = jsonEncode({
-        'version': 1,
+        'version': evidence == null ? 1 : 2,
         'account': config.id.canonical,
         'quoteId': quote.id,
         'amount': quote.amount.value.toString(),
@@ -138,6 +139,12 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         'arkUrl': config.arkUrl.toString(),
         'primary': config.primaryEsploraUrl.toString(),
         'fallback': config.fallbackEsploraUrl?.toString(),
+        if (evidence != null) ...{
+          'observedTip': quote.observedTip,
+          'tipHash': evidence.tipHash,
+          'serverKey': evidence.serverKey,
+          'requiredConfirmations': evidence.requiredConfirmations,
+        },
       });
       final pinned = await _custody.runExclusive<void>(parent, (lease) async {
         if (lease.readState() case Ok(value: ParentCustodyState.ready)) {
@@ -177,7 +184,8 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
             operation.chainSource == quote.chainSource &&
             operation.configGeneration == quote.configGeneration,
       );
-      if (funding == null) {
+      if (funding == null ||
+          (funding.scuttleToken != null) != (evidence != null)) {
         throw const _HostFailure(ArkServiceUnavailableFailure());
       }
       final built = _sync(
@@ -226,20 +234,23 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           jsonEncode({
             'request': context,
             'address': funding.address,
-            'keypairIndex': funding.keypairIndex,
+            'keypairIndex': ?funding.keypairIndex,
+            if (funding.scuttleToken case final token?)
+              'scuttleTokenDigest': _fundingTokenDigest(token),
             'expiryHeight': funding.expiryHeight,
             'minerFee': facts.feeSat,
           }),
         ),
       );
-      // Registration invalidates the stored snapshot. Refresh it before issuing
-      // a review; never weaken the trusted read's stale-snapshot refusal.
-      final pass = _ark(await _client.synchronize(config.id, renew: false));
-      _require(
-        pass.failedStages.isEmpty &&
-            !pass.snapshot.stale &&
-            pass.snapshot.account == config.id,
-      );
+      if (evidence == null) {
+        // Preserve Bark's complete inventory barrier.
+        final pass = _ark(await _client.synchronize(config.id, renew: false));
+        _require(
+          pass.failedStages.isEmpty &&
+              !pass.snapshot.stale &&
+              pass.snapshot.account == config.id,
+        );
+      }
       return switch (await _read(config.id, id)) {
         Ok(:final value) => Ok(value),
         Err() => Err(ArkSubmissionUncertainFailure(id)),
@@ -302,9 +313,13 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         review.display.fundingAmount,
         ownership,
       );
-      final snapshot = _ark(await _client.read(account));
-      _packageOperation(snapshot, review);
-      _require(!snapshot.stale);
+      if (review.boardEvidence == null) {
+        final snapshot = _ark(await _client.read(account));
+        _packageOperation(snapshot, review);
+        _require(!snapshot.stale);
+      } else {
+        await _fresh(review);
+      }
       _unexpired(review);
       return Ok(review.display);
     } catch (error) {
@@ -654,6 +669,38 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
   /// ([quoteLifetime] false): it is priced afresh here and must match.
   Future<void> _fresh(_Review review, {bool quoteLifetime = true}) async {
     if (quoteLifetime) _unexpired(review);
+    if (review.boardEvidence case final evidence?) {
+      final fresh = _ark(
+        await _client.quote(
+          review.account,
+          ArkQuoteRequest.board(
+            amount: review.display.fundingAmount,
+            anchor: ArkBoardChainAnchor(
+              height: review.observedTip,
+              hash: evidence.tipHash,
+            ),
+          ),
+        ),
+      );
+      final observed = fresh.boardEvidence;
+      _require(
+        fresh.account == review.account &&
+            fresh.kind == ArkOperationKind.board &&
+            fresh.validUntil.isAfter(DateTime.now().toUtc()) &&
+            fresh.observedTip >= review.observedTip &&
+            (fresh.observedTip != review.observedTip ||
+                observed?.tipHash == evidence.tipHash) &&
+            observed?.serverKey == evidence.serverKey &&
+            observed?.requiredConfirmations == evidence.requiredConfirmations &&
+            _sameBoardTerms(fresh, review),
+      );
+      if (review.display.expiryHeight - fresh.observedTip < 6) {
+        throw const _HostFailure(ArkReviewExpiredFailure());
+      }
+      _packageOperation(_ark(await _client.read(review.account)), review);
+      if (quoteLifetime) _unexpired(review);
+      return;
+    }
     final pass = _ark(await _client.synchronize(review.account, renew: false));
     final snapshot = pass.snapshot;
     final tip = snapshot.tipHeight;
@@ -683,15 +730,16 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         ArkQuoteRequest.board(amount: review.display.fundingAmount),
       ),
     );
-    _require(
-      fresh.chainSource == review.display.chainSource &&
-          fresh.configGeneration == review.display.configGeneration &&
-          fresh.fee == review.display.arkFee &&
-          fresh.net == review.display.net &&
-          fresh.amount == review.display.fundingAmount,
-    );
+    _require(_sameBoardTerms(fresh, review));
     if (quoteLifetime) _unexpired(review);
   }
+
+  bool _sameBoardTerms(ArkQuote fresh, _Review review) =>
+      fresh.chainSource == review.display.chainSource &&
+      fresh.configGeneration == review.display.configGeneration &&
+      fresh.fee == review.display.arkFee &&
+      fresh.net == review.display.net &&
+      fresh.amount == review.display.fundingAmount;
 
   ArkOperation _packageOperation(ArkSnapshot snapshot, _Review review) {
     final matches = snapshot.operations
@@ -712,9 +760,12 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     if (funding == null) {
       throw const _HostFailure(ArkServiceUnavailableFailure());
     }
+    final token = funding.scuttleToken;
     _require(
       funding.address == review.address &&
           funding.keypairIndex == review.keypairIndex &&
+          (token == null ? null : _fundingTokenDigest(token)) ==
+              review.scuttleTokenDigest &&
           funding.expiryHeight == review.display.expiryHeight,
     );
     return operation;
@@ -874,6 +925,9 @@ final class _HostFailure implements Exception {
   const _HostFailure(this.failure);
 }
 
+String _fundingTokenDigest(String token) =>
+    sha256.convert(utf8.encode(token)).toString();
+
 final class _Review {
   final ArkBoardJournalEntry entry;
   final ArkAccountId account;
@@ -882,16 +936,37 @@ final class _Review {
     jsonDecode(entry.binding.context),
   );
   late final String address = _text(_payload['address']);
-  late final int keypairIndex = _number(_payload['keypairIndex']);
+  late final int? keypairIndex = _payload.containsKey('keypairIndex')
+      ? _number(_payload['keypairIndex'])
+      : null;
+  late final String? scuttleTokenDigest =
+      _payload.containsKey('scuttleTokenDigest')
+      ? _text(_payload['scuttleTokenDigest'])
+      : null;
+  late final int observedTip = _number(_request['observedTip']);
+  late final ArkBoardQuoteEvidence? boardEvidence = _request['version'] == 2
+      ? ArkBoardQuoteEvidence(
+          serverKey: _text(_request['serverKey']),
+          tipHash: _text(_request['tipHash']),
+          requiredConfirmations: _number(_request['requiredConfirmations']),
+        )
+      : null;
   late final ArkBoardPreparation display = _display();
 
   _Review(this.entry, this.account);
 
   ArkBoardPreparation _display() {
+    final version = _request['version'];
+    final digest = scuttleTokenDigest;
     if (entry.binding.accountIdentity != account.canonical ||
         _payload['request'] != entry.binding.context ||
-        _request['version'] is! int ||
-        _request['version'] != 1 ||
+        version is! int ||
+        (version != 1 && version != 2) ||
+        (version == 1 && (keypairIndex == null || digest != null)) ||
+        (version == 2 &&
+            (keypairIndex != null ||
+                digest == null ||
+                !RegExp(r'^[0-9a-f]{64}$').hasMatch(digest))) ||
         _request['account'] != account.canonical ||
         account.network != BitcoinNetwork.regtest) {
       throw const FormatException('Board review scope');

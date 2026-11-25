@@ -1017,10 +1017,14 @@ final class SqliteArkFundingReservations
         context is! Map<String, dynamic> ||
         payload['request'] != binding.context ||
         context['version'] is! int ||
-        context['version'] != 1 ||
+        (context['version'] != 1 && context['version'] != 2) ||
         context['account'] != accountIdentity) {
       _storage();
     }
+    // The Bark-specific abandonment proof contains a derivation index. A
+    // Scuttle reservation can be safely released by the same host CAS, but
+    // cannot be translated into this package-facing proof.
+    if (context['version'] == 2) return null;
     final address = payload['address'],
         index = payload['keypairIndex'],
         expiry = payload['expiryHeight'],
@@ -1112,7 +1116,7 @@ final class SqliteArkFundingReservations
     if (request is! Map<String, dynamic> ||
         payload is! Map<String, dynamic> ||
         request['version'] is! int ||
-        request['version'] != 1 ||
+        (request['version'] != 1 && request['version'] != 2) ||
         request['account'] != binding.accountIdentity ||
         payload['request'] != binding.context ||
         request['validUntil'] is! String) {
