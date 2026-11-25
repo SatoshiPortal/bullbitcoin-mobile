@@ -388,6 +388,18 @@
   "@settingsScreenPrivacyDisabledMessage": {
     "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
   },
+  "settingsPaymentAnimationsTitle": "Payment animations",
+  "@settingsPaymentAnimationsTitle": {
+    "description": "Settings entry title for the toggle that enables payment progress animations"
+  },
+  "settingsPaymentAnimationsSubtitle": "Show the payment progress animation; when off, open the transaction details directly.",
+  "@settingsPaymentAnimationsSubtitle": {
+    "description": "Subtitle of the payment animations toggle: when off, the app opens the transaction details directly"
+  },
+  "settingsSearchPaymentAnimationsKeywords": "payment animation|animation|progress animation|transaction details|reduce motion",
+  "@settingsSearchPaymentAnimationsKeywords": {
+    "description": "Pipe-separated search keywords for the payment animations setting"
+  },
   "settingsSearchHint": "Search settings",
   "@settingsSearchHint": {
     "description": "Placeholder for the settings search field"
