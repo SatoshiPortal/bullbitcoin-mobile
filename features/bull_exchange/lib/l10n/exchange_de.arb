@@ -969,5 +969,9 @@
   "buyPayoutStillPending": "Deine Auszahlung ist noch unterwegs. Du kannst sie in den Auftragsdetails verfolgen.",
   "limitOrdersOverBalanceWarning": "Das ist mehr als dein verfügbares Guthaben. Wird der Auftrag ausgeführt, kauft er mit dem, was dann auf deinem Guthaben ist.",
   "autoBuyAlreadyActive": "Automatischer Kauf ist für dein Konto bereits aktiv.",
-  "recipientsValidationEmailInvalid": "Geben Sie eine gültige E-Mail-Adresse ein"
+  "recipientsValidationEmailInvalid": "Geben Sie eine gültige E-Mail-Adresse ein",
+  "recipientsValidationClabeLength": "Eine CLABE hat 18 Ziffern",
+  "recipientsValidationClabeCheckDigit": "Diese CLABE ist ungültig. Bitte überprüfen Sie die Nummer",
+  "recipientsValidationSpeiPhone": "Geben Sie die 10-stellige Telefonnummer ohne Ländervorwahl ein",
+  "recipientsValidationDebitCard": "Eine Debitkartennummer hat 16 Ziffern"
 }

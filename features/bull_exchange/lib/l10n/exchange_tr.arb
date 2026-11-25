@@ -1461,5 +1461,9 @@
   "buyPayoutStillPending": "Ödemeniz hâlâ yolda. Emir ayrıntılarından takip edebilirsiniz.",
   "limitOrdersOverBalanceWarning": "Bu, kullanılabilir bakiyenizden fazla. Emir gerçekleştiğinde, o anda bakiyenizde ne varsa onunla alım yapar.",
   "autoBuyAlreadyActive": "Otomatik Alım hesabınızda zaten etkin.",
-  "recipientsValidationEmailInvalid": "Geçerli bir e-posta adresi girin"
+  "recipientsValidationEmailInvalid": "Geçerli bir e-posta adresi girin",
+  "recipientsValidationClabeLength": "CLABE 18 haneden oluşur",
+  "recipientsValidationClabeCheckDigit": "Bu CLABE geçerli değil. Numarayı kontrol edin",
+  "recipientsValidationSpeiPhone": "Ülke kodu olmadan 10 haneli telefon numarasını girin",
+  "recipientsValidationDebitCard": "Banka kartı numarası 16 haneden oluşur"
 }

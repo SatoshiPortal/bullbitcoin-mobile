@@ -1461,5 +1461,9 @@
   "buyPayoutStillPending": "Vaše výplata je stále na cestě. Můžete ji sledovat v detailu objednávky.",
   "limitOrdersOverBalanceWarning": "To je více než váš dostupný zůstatek. Až se objednávka provede, nakoupí za to, co v té chvíli na zůstatku bude.",
   "autoBuyAlreadyActive": "Automatický nákup už je na vašem účtu aktivní.",
-  "recipientsValidationEmailInvalid": "Zadejte platnou e-mailovou adresu"
+  "recipientsValidationEmailInvalid": "Zadejte platnou e-mailovou adresu",
+  "recipientsValidationClabeLength": "CLABE má 18 číslic",
+  "recipientsValidationClabeCheckDigit": "Tato CLABE není platná. Zkontrolujte číslo",
+  "recipientsValidationSpeiPhone": "Zadejte 10místné telefonní číslo bez předvolby země",
+  "recipientsValidationDebitCard": "Číslo debetní karty má 16 číslic"
 }

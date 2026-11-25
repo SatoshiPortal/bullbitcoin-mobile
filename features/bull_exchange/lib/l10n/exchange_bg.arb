@@ -1282,5 +1282,9 @@
   "buyPayoutStillPending": "Плащането ви все още е на път. Можете да го следите в детайлите на поръчката.",
   "limitOrdersOverBalanceWarning": "Това е повече от наличния ви баланс. Когато поръчката се изпълни, тя купува с наличното тогава в баланса ви.",
   "autoBuyAlreadyActive": "Автоматичната покупка вече е активна за профила ви.",
-  "recipientsValidationEmailInvalid": "Въведете валиден имейл адрес"
+  "recipientsValidationEmailInvalid": "Въведете валиден имейл адрес",
+  "recipientsValidationClabeLength": "CLABE се състои от 18 цифри",
+  "recipientsValidationClabeCheckDigit": "Тази CLABE не е валидна. Проверете номера",
+  "recipientsValidationSpeiPhone": "Въведете 10-цифрения телефонен номер без кода на държавата",
+  "recipientsValidationDebitCard": "Номерът на дебитната карта се състои от 16 цифри"
 }

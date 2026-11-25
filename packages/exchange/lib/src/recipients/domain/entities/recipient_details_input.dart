@@ -182,6 +182,14 @@ class RecipientDetailsInput {
     );
   }
 
+  /// Throws [ArgumentError] when a new recipient's SPEI field has a
+  /// [problem]. A stored recipient is kept as the server has it.
+  void _checkSpei(SpeiProblem? problem, {required bool stored}) {
+    if (!stored && problem != null) {
+      throw ArgumentError('Invalid SPEI field: ${problem.name}');
+    }
+  }
+
   RecipientDetails _toDomain({required bool stored}) {
     final def = isDefault ?? false;
 
@@ -279,6 +287,7 @@ class RecipientDetailsInput {
         if (name == null) {
           throw StateError('name is required for SPEI_CLABE_MXN.');
         }
+        _checkSpei(speiClabeProblem(clabe!), stored: stored);
         return SpeiClabeMxnDetails.create(
           label: label,
           isDefault: def,
@@ -297,6 +306,7 @@ class RecipientDetailsInput {
         if (name == null) {
           throw StateError('name is required for SPEI_SMS_MXN.');
         }
+        _checkSpei(speiPhoneProblem(phone!), stored: stored);
         return SpeiSmsMxnDetails.create(
           label: label,
           isDefault: def,
@@ -316,6 +326,7 @@ class RecipientDetailsInput {
         if (name == null) {
           throw StateError('name is required for SPEI_CARD_MXN.');
         }
+        _checkSpei(speiDebitCardProblem(debitcard!), stored: stored);
         return SpeiCardMxnDetails.create(
           label: label,
           isDefault: def,

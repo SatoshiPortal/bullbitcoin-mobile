@@ -1461,5 +1461,9 @@
   "buyPayoutStillPending": "การจ่ายเงินของคุณยังอยู่ระหว่างทาง คุณติดตามได้ในรายละเอียดคำสั่ง",
   "limitOrdersOverBalanceWarning": "จำนวนนี้มากกว่ายอดคงเหลือที่ใช้ได้ของคุณ เมื่อคำสั่งทำงาน จะซื้อด้วยยอดที่มีในขณะนั้น",
   "autoBuyAlreadyActive": "ซื้ออัตโนมัติเปิดใช้งานในบัญชีของคุณอยู่แล้ว",
-  "recipientsValidationEmailInvalid": "กรอกที่อยู่อีเมลที่ถูกต้อง"
+  "recipientsValidationEmailInvalid": "กรอกที่อยู่อีเมลที่ถูกต้อง",
+  "recipientsValidationClabeLength": "CLABE มี 18 หลัก",
+  "recipientsValidationClabeCheckDigit": "CLABE นี้ไม่ถูกต้อง โปรดตรวจสอบหมายเลข",
+  "recipientsValidationSpeiPhone": "กรอกหมายเลขโทรศัพท์ 10 หลัก โดยไม่ต้องใส่รหัสประเทศ",
+  "recipientsValidationDebitCard": "หมายเลขบัตรเดบิตมี 16 หลัก"
 }

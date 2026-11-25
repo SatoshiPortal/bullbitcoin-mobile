@@ -895,5 +895,9 @@
   "buyPayoutStillPending": "თქვენი გადახდა ჯერ კიდევ გზაშია. შეგიძლიათ თვალი ადევნოთ შეკვეთის დეტალებში.",
   "limitOrdersOverBalanceWarning": "ეს აღემატება თქვენს ხელმისაწვდომ ბალანსს. შეკვეთის შესრულებისას ის იყიდის იმით, რაც იმ დროს ბალანსზე იქნება.",
   "autoBuyAlreadyActive": "ავტომატური ყიდვა უკვე აქტიურია თქვენს ანგარიშზე.",
-  "recipientsValidationEmailInvalid": "შეიყვანეთ სწორი ელფოსტის მისამართი"
+  "recipientsValidationEmailInvalid": "შეიყვანეთ სწორი ელფოსტის მისამართი",
+  "recipientsValidationClabeLength": "CLABE შედგება 18 ციფრისგან",
+  "recipientsValidationClabeCheckDigit": "ეს CLABE არასწორია. შეამოწმეთ ნომერი",
+  "recipientsValidationSpeiPhone": "შეიყვანეთ 10-ნიშნა ტელეფონის ნომერი ქვეყნის კოდის გარეშე",
+  "recipientsValidationDebitCard": "სადებეტო ბარათის ნომერი შედგება 16 ციფრისგან"
 }

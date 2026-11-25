@@ -895,5 +895,9 @@
   "buyPayoutStillPending": "Khoản thanh toán của bạn vẫn đang trên đường. Bạn có thể theo dõi trong chi tiết lệnh.",
   "limitOrdersOverBalanceWarning": "Số này lớn hơn số dư khả dụng của bạn. Khi lệnh khớp, nó sẽ mua bằng số dư bạn có lúc đó.",
   "autoBuyAlreadyActive": "Mua tự động đã được bật trên tài khoản của bạn.",
-  "recipientsValidationEmailInvalid": "Nhập địa chỉ email hợp lệ"
+  "recipientsValidationEmailInvalid": "Nhập địa chỉ email hợp lệ",
+  "recipientsValidationClabeLength": "Số CLABE gồm 18 chữ số",
+  "recipientsValidationClabeCheckDigit": "Số CLABE này không hợp lệ. Vui lòng kiểm tra lại",
+  "recipientsValidationSpeiPhone": "Nhập số điện thoại 10 chữ số, không kèm mã quốc gia",
+  "recipientsValidationDebitCard": "Số thẻ ghi nợ gồm 16 chữ số"
 }

@@ -947,5 +947,9 @@
   "buyPayoutStillPending": "Ваша виплата ще в дорозі. Відстежити її можна в деталях замовлення.",
   "limitOrdersOverBalanceWarning": "Це більше за ваш доступний баланс. Коли замовлення виконається, купівля відбудеться на ту суму, що буде на балансі тоді.",
   "autoBuyAlreadyActive": "Автоматична купівля вже активна у вашому акаунті.",
-  "recipientsValidationEmailInvalid": "Введіть дійсну адресу електронної пошти"
+  "recipientsValidationEmailInvalid": "Введіть дійсну адресу електронної пошти",
+  "recipientsValidationClabeLength": "CLABE складається з 18 цифр",
+  "recipientsValidationClabeCheckDigit": "Цей CLABE недійсний. Перевірте номер",
+  "recipientsValidationSpeiPhone": "Введіть 10-значний номер телефону без коду країни",
+  "recipientsValidationDebitCard": "Номер дебетової картки складається з 16 цифр"
 }

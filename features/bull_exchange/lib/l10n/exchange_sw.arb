@@ -895,5 +895,9 @@
   "buyPayoutStillPending": "Malipo yako bado yako njiani. Unaweza kuyafuatilia kwenye maelezo ya agizo.",
   "limitOrdersOverBalanceWarning": "Hii ni zaidi ya salio lako linalopatikana. Agizo likitekelezwa, litanunua kwa kilichopo kwenye salio lako wakati huo.",
   "autoBuyAlreadyActive": "Ununuzi wa Kiotomatiki tayari umewashwa kwenye akaunti yako.",
-  "recipientsValidationEmailInvalid": "Weka anwani sahihi ya barua pepe"
+  "recipientsValidationEmailInvalid": "Weka anwani sahihi ya barua pepe",
+  "recipientsValidationClabeLength": "CLABE ina tarakimu 18",
+  "recipientsValidationClabeCheckDigit": "CLABE hii si sahihi. Angalia nambari",
+  "recipientsValidationSpeiPhone": "Weka nambari ya simu ya tarakimu 10, bila msimbo wa nchi",
+  "recipientsValidationDebitCard": "Nambari ya kadi ya debit ina tarakimu 16"
 }

@@ -947,5 +947,9 @@
   "buyPayoutStillPending": "O seu pagamento ainda está a caminho. Pode acompanhá-lo nos detalhes da ordem.",
   "limitOrdersOverBalanceWarning": "Isto é mais do que o seu saldo disponível. Quando a ordem for executada, compra com o que estiver no seu saldo nesse momento.",
   "autoBuyAlreadyActive": "A compra automática já está ativa na sua conta.",
-  "recipientsValidationEmailInvalid": "Introduza um endereço de e-mail válido"
+  "recipientsValidationEmailInvalid": "Introduza um endereço de e-mail válido",
+  "recipientsValidationClabeLength": "Uma CLABE tem 18 dígitos",
+  "recipientsValidationClabeCheckDigit": "Esta CLABE não é válida. Verifique o número",
+  "recipientsValidationSpeiPhone": "Introduza o número de telefone de 10 dígitos, sem o indicativo do país",
+  "recipientsValidationDebitCard": "Um número de cartão de débito tem 16 dígitos"
 }

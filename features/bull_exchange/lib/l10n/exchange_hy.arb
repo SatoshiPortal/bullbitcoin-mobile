@@ -895,5 +895,9 @@
   "buyPayoutStillPending": "Ձեր վճարումը դեռ ճանապարհին է։ Կարող եք հետևել դրան պատվերի մանրամասներում։",
   "limitOrdersOverBalanceWarning": "Սա գերազանցում է ձեր հասանելի մնացորդը։ Երբ պատվերը կատարվի, այն կգնի այն գումարով, որը այդ պահին կլինի ձեր մնացորդում։",
   "autoBuyAlreadyActive": "Ավտոմատ գնումն արդեն ակտիվ է ձեր հաշվում։",
-  "recipientsValidationEmailInvalid": "Մուտքագրեք վավեր էլ. փոստի հասցե"
+  "recipientsValidationEmailInvalid": "Մուտքագրեք վավեր էլ. փոստի հասցե",
+  "recipientsValidationClabeLength": "CLABE-ն ունի 18 թվանշան",
+  "recipientsValidationClabeCheckDigit": "Այս CLABE-ն վավեր չէ։ Ստուգեք համարը",
+  "recipientsValidationSpeiPhone": "Մուտքագրեք 10 թվանշանանոց հեռախոսահամարը՝ առանց երկրի կոդի",
+  "recipientsValidationDebitCard": "Դեբետային քարտի համարն ունի 16 թվանշան"
 }

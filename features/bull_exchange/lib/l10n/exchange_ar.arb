@@ -1461,5 +1461,9 @@
   "buyPayoutStillPending": "دفعتك لا تزال في الطريق. يمكنك متابعتها في تفاصيل الطلب.",
   "limitOrdersOverBalanceWarning": "هذا أكثر من رصيدك المتاح. عند تنفيذ الطلب، سيتم الشراء بما يكون في رصيدك حينها.",
   "autoBuyAlreadyActive": "الشراء التلقائي مفعّل بالفعل في حسابك.",
-  "recipientsValidationEmailInvalid": "أدخل عنوان بريد إلكتروني صالحًا"
+  "recipientsValidationEmailInvalid": "أدخل عنوان بريد إلكتروني صالحًا",
+  "recipientsValidationClabeLength": "يتكون رقم CLABE من 18 رقمًا",
+  "recipientsValidationClabeCheckDigit": "رقم CLABE هذا غير صالح. تحقق من الرقم",
+  "recipientsValidationSpeiPhone": "أدخل رقم الهاتف المكوّن من 10 أرقام، بدون رمز الدولة",
+  "recipientsValidationDebitCard": "يتكون رقم بطاقة الخصم من 16 رقمًا"
 }

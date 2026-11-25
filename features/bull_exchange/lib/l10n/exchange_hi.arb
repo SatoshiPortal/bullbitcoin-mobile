@@ -1464,5 +1464,9 @@
   "buyPayoutStillPending": "आपका भुगतान अभी रास्ते में है। आप इसे ऑर्डर विवरण में देख सकते हैं।",
   "limitOrdersOverBalanceWarning": "यह आपके उपलब्ध बैलेंस से अधिक है। ऑर्डर पूरा होने पर उस समय बैलेंस में जितना होगा, उतने से खरीदा जाएगा।",
   "autoBuyAlreadyActive": "आपके खाते पर स्वचालित खरीद पहले से सक्रिय है।",
-  "recipientsValidationEmailInvalid": "एक मान्य ईमेल पता दर्ज करें"
+  "recipientsValidationEmailInvalid": "एक मान्य ईमेल पता दर्ज करें",
+  "recipientsValidationClabeLength": "CLABE में 18 अंक होते हैं",
+  "recipientsValidationClabeCheckDigit": "यह CLABE मान्य नहीं है। नंबर जाँचें",
+  "recipientsValidationSpeiPhone": "देश कोड के बिना 10 अंकों का फ़ोन नंबर दर्ज करें",
+  "recipientsValidationDebitCard": "डेबिट कार्ड नंबर में 16 अंक होते हैं"
 }

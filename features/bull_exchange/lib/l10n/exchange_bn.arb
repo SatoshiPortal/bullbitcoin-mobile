@@ -1464,5 +1464,9 @@
   "buyPayoutStillPending": "আপনার পেমেন্ট এখনও পথে আছে। অর্ডারের বিবরণে এটি দেখতে পারবেন।",
   "limitOrdersOverBalanceWarning": "এটি আপনার উপলব্ধ ব্যালেন্সের চেয়ে বেশি। অর্ডার কার্যকর হলে তখন ব্যালেন্সে যা থাকবে তা দিয়েই কেনা হবে।",
   "autoBuyAlreadyActive": "আপনার অ্যাকাউন্টে স্বয়ংক্রিয় ক্রয় ইতিমধ্যে চালু আছে।",
-  "recipientsValidationEmailInvalid": "একটি বৈধ ইমেইল ঠিকানা লিখুন"
+  "recipientsValidationEmailInvalid": "একটি বৈধ ইমেইল ঠিকানা লিখুন",
+  "recipientsValidationClabeLength": "CLABE-তে 18টি অঙ্ক থাকে",
+  "recipientsValidationClabeCheckDigit": "এই CLABE বৈধ নয়। নম্বরটি যাচাই করুন",
+  "recipientsValidationSpeiPhone": "দেশের কোড ছাড়া 10 অঙ্কের ফোন নম্বর লিখুন",
+  "recipientsValidationDebitCard": "ডেবিট কার্ড নম্বরে 16টি অঙ্ক থাকে"
 }

@@ -947,5 +947,9 @@
   "buyPayoutStillPending": "Ваша выплата ещё в пути. Отслеживать её можно в деталях заявки.",
   "limitOrdersOverBalanceWarning": "Это больше вашего доступного баланса. Когда заявка исполнится, покупка пройдёт на ту сумму, что будет на балансе в тот момент.",
   "autoBuyAlreadyActive": "Автопокупка уже включена в вашем аккаунте.",
-  "recipientsValidationEmailInvalid": "Введите действительный адрес электронной почты"
+  "recipientsValidationEmailInvalid": "Введите действительный адрес электронной почты",
+  "recipientsValidationClabeLength": "CLABE состоит из 18 цифр",
+  "recipientsValidationClabeCheckDigit": "Этот CLABE недействителен. Проверьте номер",
+  "recipientsValidationSpeiPhone": "Введите 10-значный номер телефона без кода страны",
+  "recipientsValidationDebitCard": "Номер дебетовой карты состоит из 16 цифр"
 }

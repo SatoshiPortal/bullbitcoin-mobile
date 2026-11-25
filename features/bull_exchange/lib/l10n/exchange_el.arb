@@ -1461,5 +1461,9 @@
   "buyPayoutStillPending": "Η πληρωμή σας είναι ακόμα καθ' οδόν. Μπορείτε να την παρακολουθήσετε στις λεπτομέρειες της εντολής.",
   "limitOrdersOverBalanceWarning": "Αυτό υπερβαίνει το διαθέσιμο υπόλοιπό σας. Όταν εκτελεστεί η εντολή, αγοράζει με ό,τι υπάρχει τότε στο υπόλοιπό σας.",
   "autoBuyAlreadyActive": "Η αυτόματη αγορά είναι ήδη ενεργή στον λογαριασμό σας.",
-  "recipientsValidationEmailInvalid": "Εισαγάγετε μια έγκυρη διεύθυνση email"
+  "recipientsValidationEmailInvalid": "Εισαγάγετε μια έγκυρη διεύθυνση email",
+  "recipientsValidationClabeLength": "Ένα CLABE έχει 18 ψηφία",
+  "recipientsValidationClabeCheckDigit": "Αυτό το CLABE δεν είναι έγκυρο. Ελέγξτε τον αριθμό",
+  "recipientsValidationSpeiPhone": "Εισαγάγετε τον 10ψήφιο αριθμό τηλεφώνου, χωρίς τον κωδικό χώρας",
+  "recipientsValidationDebitCard": "Ο αριθμός χρεωστικής κάρτας έχει 16 ψηφία"
 }

@@ -1461,5 +1461,9 @@
   "buyPayoutStillPending": "지급이 아직 진행 중입니다. 주문 상세에서 확인할 수 있습니다.",
   "limitOrdersOverBalanceWarning": "사용 가능한 잔액보다 많습니다. 주문이 체결될 때 그 시점의 잔액으로 매수합니다.",
   "autoBuyAlreadyActive": "자동 매수가 이미 계정에서 활성화되어 있습니다.",
-  "recipientsValidationEmailInvalid": "올바른 이메일 주소를 입력하세요"
+  "recipientsValidationEmailInvalid": "올바른 이메일 주소를 입력하세요",
+  "recipientsValidationClabeLength": "CLABE는 18자리 숫자입니다",
+  "recipientsValidationClabeCheckDigit": "유효하지 않은 CLABE입니다. 번호를 확인하세요",
+  "recipientsValidationSpeiPhone": "국가 코드 없이 10자리 전화번호를 입력하세요",
+  "recipientsValidationDebitCard": "직불카드 번호는 16자리 숫자입니다"
 }

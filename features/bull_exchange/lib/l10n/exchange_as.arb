@@ -1193,5 +1193,9 @@
   "buyPayoutStillPending": "আপোনাৰ পেমেণ্ট এতিয়াও আহি আছে। অৰ্ডাৰৰ বিৱৰণত ইয়াক চাব পাৰিব।",
   "limitOrdersOverBalanceWarning": "এইটো আপোনাৰ উপলব্ধ বেলেঞ্চতকৈ বেছি। অৰ্ডাৰ সম্পন্ন হোৱাৰ সময়ত বেলেঞ্চত যিমান থাকিব, সিমানেৰেই কিনা হ'ব।",
   "autoBuyAlreadyActive": "আপোনাৰ একাউণ্টত স্বয়ংক্ৰিয় ক্ৰয় ইতিমধ্যে সক্ৰিয় হৈ আছে।",
-  "recipientsValidationEmailInvalid": "এটা বৈধ ইমেইল ঠিকনা দিয়ক"
+  "recipientsValidationEmailInvalid": "এটা বৈধ ইমেইল ঠিকনা দিয়ক",
+  "recipientsValidationClabeLength": "CLABE ত 18টা অংক থাকে",
+  "recipientsValidationClabeCheckDigit": "এই CLABE বৈধ নহয়। নম্বৰটো পৰীক্ষা কৰক",
+  "recipientsValidationSpeiPhone": "দেশৰ ক'ড অবিহনে 10 অংকৰ ফোন নম্বৰটো দিয়ক",
+  "recipientsValidationDebitCard": "ডেবিট কাৰ্ডৰ নম্বৰত 16টা অংক থাকে"
 }

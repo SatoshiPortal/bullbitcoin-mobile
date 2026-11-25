@@ -947,5 +947,9 @@
   "buyPayoutStillPending": "Maksusi on vielä matkalla. Voit seurata sitä tilauksen tiedoissa.",
   "limitOrdersOverBalanceWarning": "Tämä ylittää käytettävissä olevan saldosi. Kun tilaus toteutuu, se ostaa sillä, mitä saldollasi silloin on.",
   "autoBuyAlreadyActive": "Automaattinen osto on jo käytössä tililläsi.",
-  "recipientsValidationEmailInvalid": "Anna kelvollinen sähköpostiosoite"
+  "recipientsValidationEmailInvalid": "Anna kelvollinen sähköpostiosoite",
+  "recipientsValidationClabeLength": "CLABE-numerossa on 18 numeroa",
+  "recipientsValidationClabeCheckDigit": "Tämä CLABE ei ole kelvollinen. Tarkista numero",
+  "recipientsValidationSpeiPhone": "Anna 10-numeroinen puhelinnumero ilman maatunnusta",
+  "recipientsValidationDebitCard": "Debit-kortin numerossa on 16 numeroa"
 }

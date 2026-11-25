@@ -1461,5 +1461,9 @@
   "buyPayoutStillPending": "پرداخت شما هنوز در راه است. می‌توانید آن را در جزئیات سفارش دنبال کنید.",
   "limitOrdersOverBalanceWarning": "این مبلغ بیشتر از موجودی در دسترس شماست. وقتی سفارش اجرا شود، با موجودی همان لحظه خرید می‌کند.",
   "autoBuyAlreadyActive": "خرید خودکار از قبل در حساب شما فعال است.",
-  "recipientsValidationEmailInvalid": "یک آدرس ایمیل معتبر وارد کنید"
+  "recipientsValidationEmailInvalid": "یک آدرس ایمیل معتبر وارد کنید",
+  "recipientsValidationClabeLength": "شماره CLABE از ۱۸ رقم تشکیل شده است",
+  "recipientsValidationClabeCheckDigit": "این CLABE معتبر نیست. شماره را بررسی کنید",
+  "recipientsValidationSpeiPhone": "شماره تلفن ۱۰ رقمی را بدون کد کشور وارد کنید",
+  "recipientsValidationDebitCard": "شماره کارت دبیت ۱۶ رقم دارد"
 }

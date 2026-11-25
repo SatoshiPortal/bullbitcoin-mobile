@@ -947,5 +947,9 @@
   "buyPayoutStillPending": "你的付款仍在途中。你可以在订单详情中查看进度。",
   "limitOrdersOverBalanceWarning": "这超过了你的可用余额。订单执行时，将使用届时余额中的资金买入。",
   "autoBuyAlreadyActive": "你的账户已开启自动买入。",
-  "recipientsValidationEmailInvalid": "请输入有效的电子邮箱地址"
+  "recipientsValidationEmailInvalid": "请输入有效的电子邮箱地址",
+  "recipientsValidationClabeLength": "CLABE 为 18 位数字",
+  "recipientsValidationClabeCheckDigit": "此 CLABE 无效，请检查号码",
+  "recipientsValidationSpeiPhone": "请输入 10 位电话号码，不含国家代码",
+  "recipientsValidationDebitCard": "借记卡号为 16 位数字"
 }

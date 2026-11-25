@@ -1464,5 +1464,9 @@
   "buyPayoutStillPending": "Aapka payout abhi raaste mein hai. Aap ise order details mein dekh sakte hain.",
   "limitOrdersOverBalanceWarning": "Yeh aapke available balance se zyada hai. Order execute hone par us waqt balance mein jitna hoga, utne se kharida jayega.",
   "autoBuyAlreadyActive": "Aapke account par Auto Buy pehle se active hai.",
-  "recipientsValidationEmailInvalid": "Ek valid email address daalein"
+  "recipientsValidationEmailInvalid": "Ek valid email address daalein",
+  "recipientsValidationClabeLength": "CLABE mein 18 digits hote hain",
+  "recipientsValidationClabeCheckDigit": "Yah CLABE valid nahin hai. Number check karein",
+  "recipientsValidationSpeiPhone": "Country code ke bina 10 digit ka phone number daalein",
+  "recipientsValidationDebitCard": "Debit card number mein 16 digits hote hain"
 }

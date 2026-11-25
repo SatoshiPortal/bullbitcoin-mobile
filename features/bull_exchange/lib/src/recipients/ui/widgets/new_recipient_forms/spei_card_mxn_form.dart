@@ -3,6 +3,8 @@ import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart'
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
+import 'package:bull_exchange/src/recipients/presentation/spei_problem_l10n.dart';
+import 'package:exchange/exchange.dart' show speiDebitCardProblem;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -81,9 +83,7 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             focusNode: _debitCardFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
+            validator: speiFieldValidator(context, speiDebitCardProblem),
             onChanged: (value) {
               setState(() {
                 _debitCard = value;
