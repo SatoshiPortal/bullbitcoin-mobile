@@ -270,6 +270,44 @@ void main() {
       );
     });
 
+    test('a message with attachments has no send timeout and reports '
+        'progress (INT-10)', () async {
+      final http = FakeHttp(body: {'result': null});
+      final progress = <(int, int)>[];
+      valueOf(
+        await bbx(
+          http,
+          timeouts: BbxTimeouts.standard,
+        ).commcenter.sendMessageToSupport(
+          text: 'Hi',
+          source: 'BULL Mobile',
+          attachments: const [
+            NewSupportAttachment(fileData: [1, 2, 3]),
+          ],
+          onProgress: (sent, total) => progress.add((sent, total)),
+        ),
+      );
+
+      expect(http.requests.single.sendTimeout, Duration.zero);
+      expect(progress, isNotEmpty);
+    });
+
+    test('a message without attachments keeps the send timeout', () async {
+      final http = FakeHttp(body: {'result': null});
+      valueOf(
+        await bbx(
+          http,
+          timeouts: BbxTimeouts.standard,
+        ).commcenter.sendMessageToSupport(
+          text: 'Hi',
+          source: 'BULL Mobile',
+          attachments: const [],
+        ),
+      );
+
+      expect(http.requests.single.sendTimeout, const Duration(seconds: 30));
+    });
+
     test('a JSON-RPC error is a failure', () async {
       final http = FakeHttp(
         body: {

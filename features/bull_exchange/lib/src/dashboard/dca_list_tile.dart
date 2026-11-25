@@ -144,7 +144,7 @@ class DcaSettingsContent extends StatelessWidget {
   final double amount;
   final FiatCurrency currency;
   final DcaBuyFrequency frequency;
-  final DcaNetwork network;
+  final BtcNetwork network;
   final String address;
 
   @override
@@ -156,14 +156,14 @@ class DcaSettingsContent extends StatelessWidget {
       DcaBuyFrequency.monthly => context.loc.exchangeDcaFrequencyMonth,
     };
     final network = switch (this.network) {
-      DcaNetwork.bitcoin => context.loc.exchangeDcaNetworkBitcoin,
-      DcaNetwork.lightning => context.loc.exchangeDcaNetworkLightning,
-      DcaNetwork.liquid => context.loc.exchangeDcaNetworkLiquid,
+      BtcNetwork.bitcoin => context.loc.exchangeDcaNetworkBitcoin,
+      BtcNetwork.lightning => context.loc.exchangeDcaNetworkLightning,
+      BtcNetwork.liquid => context.loc.exchangeDcaNetworkLiquid,
     };
     final addressLabel = switch (this.network) {
-      DcaNetwork.bitcoin => context.loc.exchangeDcaAddressLabelBitcoin,
-      DcaNetwork.lightning => context.loc.exchangeDcaAddressLabelLightning,
-      DcaNetwork.liquid => context.loc.exchangeDcaAddressLabelLiquid,
+      BtcNetwork.bitcoin => context.loc.exchangeDcaAddressLabelBitcoin,
+      BtcNetwork.lightning => context.loc.exchangeDcaAddressLabelLightning,
+      BtcNetwork.liquid => context.loc.exchangeDcaAddressLabelLiquid,
     };
 
     return Column(

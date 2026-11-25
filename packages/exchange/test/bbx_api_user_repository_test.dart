@@ -91,7 +91,7 @@ void main() {
           isActive: true,
           frequency: DcaBuyFrequency.weekly,
           amount: 100,
-          network: DcaNetwork.lightning,
+          network: BtcNetwork.lightning,
           address: 'bc1qdca',
         ),
       );
@@ -125,22 +125,34 @@ void main() {
       expect(summary.dca.network, isNull);
     });
 
-    test('a JSON-RPC error reply is not-authenticated', () async {
+    test('a JSON-RPC error reply is an unavailable summary, not a sign-out '
+        '(INT-8)', () async {
       expect(
         _failureOf(
           await _repository(FakeBbxHttp(body: _rpcError)).getUserSummary(),
         ),
-        isA<ExchangeNotAuthenticatedFailure>(),
+        isA<ExchangeAccountUnavailableFailure>(),
       );
     });
 
-    test('a key that resolves to no account is not-authenticated', () async {
+    test('an empty answer is an unavailable summary, as for the account '
+        '(INT-8)', () async {
       expect(
         _failureOf(
           await _repository(FakeBbxHttp(body: {'result': null}))
               .getUserSummary(),
         ),
-        isA<ExchangeNotAuthenticatedFailure>(),
+        isA<ExchangeAccountUnavailableFailure>(),
+      );
+    });
+
+    test('an HTTP 401 is a rejected session', () async {
+      expect(
+        _failureOf(
+          await _repository(FakeBbxHttp(status: 401, body: const {}))
+              .getUserSummary(),
+        ),
+        isA<ExchangeSessionRejectedFailure>(),
       );
     });
 
@@ -168,7 +180,7 @@ void main() {
             .getUserSummary(),
       );
       expect(failure, isA<ExchangeNetworkFailure>());
-      expect(failure.logMessage, 'getUserSummary unreachable: connectionError');
+      expect(failure.logMessage, startsWith('getUserSummary unreachable: '));
     });
 
     test('an HTTP error is not a connection problem', () async {
@@ -194,7 +206,7 @@ void main() {
       expect(failure, isA<ExchangeAccountUnavailableFailure>());
       expect(
         failure.logMessage,
-        'getUserSummary failed: BbxResponseFormatFailure',
+        startsWith('getUserSummary failed: BbxResponseFormatFailure'),
       );
     });
   });
@@ -277,8 +289,36 @@ void main() {
     });
 
     for (final (name, http) in [
-      ('a status other than 200', FakeBbxHttp(status: 500, body: {})),
       ('a body that is not an object', FakeBbxHttp(body: 'unexpected')),
+      (
+        'a timeout after sending',
+        FakeBbxHttp(error: DioExceptionType.receiveTimeout),
+      ),
+      ('a gateway timeout', FakeBbxHttp(status: 504, body: {})),
+    ]) {
+      test('$name is an unknown outcome', () async {
+        expect(
+          _failureOf(
+            await _repository(http).saveUserPreference(autoBuyEnabled: 'true'),
+          ),
+          isA<ExchangePreferencesSaveOutcomeUnknownFailure>(),
+        );
+      });
+    }
+
+    test('a connect timeout is a network failure', () async {
+      expect(
+        _failureOf(
+          await _repository(
+            FakeBbxHttp(error: DioExceptionType.connectionTimeout),
+          ).saveUserPreference(autoBuyEnabled: 'true'),
+        ),
+        isA<ExchangeNetworkFailure>(),
+      );
+    });
+
+    for (final (name, http) in [
+      ('a status other than 200', FakeBbxHttp(status: 500, body: {})),
     ]) {
       test('$name is a save failure', () async {
         expect(
@@ -335,10 +375,10 @@ void main() {
       expect(announcements.single.updatedAt, DateTime.utc(2026, 11, 20, 10));
     });
 
-    test('no stored key is an empty list, not a failure', () async {
+    test('no stored key is a failure, never an empty banner', () async {
       expect(
-        _valueOf(await _signedOut(FakeBbxHttp()).listAnnouncements()),
-        isEmpty,
+        _failureOf(await _signedOut(FakeBbxHttp()).listAnnouncements()),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
     });
 

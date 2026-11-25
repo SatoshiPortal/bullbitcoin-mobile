@@ -21,12 +21,17 @@ class ExchangeSupportLoginScreen extends StatefulWidget {
   final String Function(BuildContext) loginLabel;
   final String Function(BuildContext, ExchangeFailure) failureMessage;
 
+  /// Leaves the screen. The route can be opened with nothing under it, so
+  /// its host decides where Back goes.
+  final VoidCallback onBack;
+
   const ExchangeSupportLoginScreen({
     super.key,
     required this.enable,
     required this.onLogin,
     required this.loginLabel,
     required this.failureMessage,
+    required this.onBack,
   });
 
   @override
@@ -61,6 +66,11 @@ class _ExchangeSupportLoginScreenState
     return Scaffold(
       backgroundColor: context.bull.background,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: BackButton(
+          color: context.bull.onSurface,
+          onPressed: widget.onBack,
+        ),
         title: BullText(
           loc.exchangeSupportChatTitle,
           style: context.bullType.subtitle.copyWith(

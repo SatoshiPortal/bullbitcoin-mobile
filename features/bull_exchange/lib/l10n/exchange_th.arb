@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "เริ่มต้นใช้การซื้ออัตโนมัติ",
   "autoBuyConfirmTitle": "ยืนยันการซื้ออัตโนมัติ",
   "autoBuyInfoMessage": "จำนวนเงินใดก็ตามที่เพิ่มเข้าบัญชีของคุณจะถูกแปลงเป็น Bitcoin ตามอัตราแลกเปลี่ยนปัจจุบันและส่งไปยังกระเป๋าเงินของคุณ",
-  "autoBuyAccountUnavailableError": "บัญชี Bull Bitcoin ของคุณไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง",
-  "autoBuyWalletRequiredError": "เพิ่มที่อยู่เริ่มต้นของ Bitcoin, Lightning หรือ Liquid อย่างน้อยหนึ่งรายการ",
   "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง",
   "exchangeAuthLoginFailedMessage": "ข้อผิดพลาดเกิดขึ้นโปรดลองบล็อกในอีกครั้ง.",
   "exchangeAuthLoginFailedOkButton": "ตกลง",
@@ -432,7 +430,6 @@
   "recipientsFieldSecurityQuestionHint": "กรอกคำถามความปลอดภัย (10-40 ตัวอักษร)",
   "recipientsFieldSecurityAnswer": "คำตอบความปลอดภัย",
   "recipientsFieldSecurityAnswerHint": "กรอกคำตอบความปลอดภัย",
-  "recipientsValidationSecurityQuestionMin": "คำถามความปลอดภัยต้องมีอย่างน้อย 10 ตัวอักษร",
   "recipientsCharCounter": "{count}/40 ตัวอักษร",
   "recipientsFieldInstitutionCode": "รหัสสถาบัน",
   "recipientsFieldInstitutionCodeHint": "กรอกรหัสสถาบัน",
@@ -501,35 +498,20 @@
   "recipientsConfidentialSepaNameMustMatchHint": "ชื่อในบัญชีธนาคารและบัญชี IBAN เสมือนของคุณต้องตรงกัน มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ",
   "recipientsFieldBankAccountIban": "หมายเลขบัญชีธนาคาร (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "รายการถอนเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ",
-  "withdrawOwnershipQuestion": "ใครเป็นบัญชีนี้?",
-  "withdrawOwnershipOtherAccount": "นี่คือบัญชีอื่น ๆ",
-  "withdrawAboveMaxAmountError": "จำนวนสูงสุดคือ {amount} {currency}",
-  "withdrawConfirmCard": "บัตรบัตร",
-  "withdrawBelowMinAmountError": "จำนวนขั้นต่ำคือ {amount} {currency}",
-  "withdrawConfirmPhone": "โทรศัพท์",
   "withdrawAmountContinue": "อ่านต่อ",
-  "withdrawUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
   "withdrawConfirmTitle": "การถอนเงิน",
   "withdrawConfirmAmount": "จํานวน",
-  "withdrawConfirmEmail": "อีเมล",
   "withdrawConfirmButton": "การถอนเงิน",
-  "withdrawOwnershipMyAccount": "นี่คือบัญชีของฉัน",
   "withdrawAmountTitle": "ถอน",
-  "withdrawConfirmClabe": "ชั้น",
-  "withdrawConfirmPayee": "ชําระเงิน",
   "withdrawConfirmRecipientName": "ชื่อ",
-  "withdrawConfirmAccount": "บัญชี",
   "withdrawSuccessOrderDetails": "รายละเอียด",
   "withdrawSuccessTitle": "การถอนเงิน",
-  "withdrawConfirmIban": "ฉัน",
   "withdrawConfirmBankAccount": "บัญชีธนาคาร",
   "withdrawInteracSecurityDetailsTitle": "รายละเอียดความปลอดภัยของการโอน",
   "withdrawInteracSaveAsDefault": "บันทึกรายละเอียดเหล่านี้เป็นค่าเริ่มต้น",
   "withdrawInteracSecurityQuestionLengthError": "คำถามความปลอดภัยต้องมี 3–40 อักขระ",
   "withdrawInteracSecurityAnswerLengthError": "คำตอบความปลอดภัยต้องมี 3–40 อักขระ",
   "withdrawInteracSecurityAnswerFormatError": "ใช้ตัวอักษร ตัวเลข หรือยัติภังค์โดยไม่เว้นวรรค",
-  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
-  "withdrawConfidentialSepaNotActivatedError": "โปรดเปิดใช้งานตัวเลือกการชำระเงินแบบเป็นความลับสำหรับผู้รับเงิน SEPA รายนี้",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -544,7 +526,7 @@
   "limitOrdersFiatAmount": "Amount",
   "limitOrdersEstimatedBuyPrice": "Estimated buy price",
   "limitOrderDetailsTitle": "Limit order details",
-  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsStatus": "สถานะ",
   "limitOrderDetailsNumber": "Order number",
   "limitOrderDetailsAddress": "Payout address",
   "limitOrderDetailsCreated": "Created",
@@ -605,14 +587,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "คุณพยายามที่จะซื้อข้างต้น.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "คุณพยายามที่จะซื้อขั้นต่ํา.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "กระเป๋าเงินรับการจ่าย",
   "buyPayoutMethodLiquid": "L-BTC บน Liquid",
   "buyPayoutMethodBitcoin": "BTC บนเชน Bitcoin",
@@ -645,7 +619,6 @@
       }
     }
   },
-  "buyUnexpectedError": "ไม่สามารถสร้างคำสั่งซื้อของคุณได้ในขณะนี้ กรุณาลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "dcaConfirmPaymentMethod": "วิธีการชําระเงิน",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -817,14 +790,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "ยืนยัน",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "คุณสามารถซื้อมากกว่า",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "ค่าธรรมเนียมเครือข่าย",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -948,14 +913,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "คุณควรซื้ออย่างน้อย",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "ใช้ช่องหมุนของฉัน.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -980,18 +937,6 @@
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
   },
-  "dcaAccountUnavailableError": "ไม่สามารถโหลดบัญชีของคุณได้ ตรวจสอบการเชื่อมต่อและการเข้าสู่ระบบของคุณ แล้วลองอีกครั้ง",
-  "dcaLightningAddressRequiredError": "ป้อนที่อยู่ Lightning เพื่อรับการซื้อของคุณ",
-  "dcaReceiveAddressError": "ไม่สามารถเตรียมที่อยู่รับในกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
-  "dcaOrderCreationError": "ไม่สามารถสร้างการซื้อแบบประจำได้ โปรดลองอีกครั้งภายหลัง",
-  "payPleasePayInvoice": "กรุณาชําระเงิน",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "จํานวนเงิน",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1008,25 +953,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "จํานวนเงิน",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "ค่าธรรมเนียมเครือข่าย",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "จำนวนเงินสูงสุดที่คุณสามารถชำระด้วยกระเป๋าเงินนี้คือ {amount}",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "โหลด ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "การชําระเงินในความคืบหน้า!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "สมบูรณ์แบบ",
   "@sellCompleteKYC": {
@@ -1036,49 +965,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "เครือข่ายไร้สาย",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "กระเป๋าภายนอก",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "ตามกฎ",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "คุณพยายามที่จะขายด้านล่างขั้นต่ําที่สามารถขายกับกระเป๋าสตางค์นี้.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "EUR สมดุล",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "เลือกเครือข่าย",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "ไม่มีข้อมูล",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "จํานวน",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "การขายนี้ได้รับการยืนยัน.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "รายละเอียด",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "แสดงรหัส QR",
   "@sellShowQrCode": {
@@ -1104,25 +1001,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "สั่งซื้อ!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "กรุณาชําระเงิน",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "เลือกเครือข่าย",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "CAD สมดุล",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "ยอดคงเหลือไม่เพียงพอในกระเป๋าเงินที่เลือก.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "ราคาจะผ่อนคลาย ",
   "@sellPriceWillRefreshIn": {
@@ -1144,10 +1025,6 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
-  "payExchangeRate": "อัตราแลกเปลี่ยน",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "copyDialogButton": "คัดลอก",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -1168,10 +1045,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellSendPaymentContinue": "อ่านต่อ",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "sellBitcoinOnChain": "Bitcoin บนโซ่",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1184,17 +1057,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "ไม่มีข้อมูล",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "วิธีที่คุณต้องการชําระเงินนี้?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "ชําระเงิน",
-  "payDescriptionLabel": "รายละเอียดการชำระเงิน (ไม่บังคับ)",
-  "payDescriptionHint": "เพิ่มหมายเหตุสำหรับการชำระเงินนี้",
   "payPaymentDescription": "รายละเอียดการชำระเงิน",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1202,18 +1065,6 @@
   "sellQrCode": "รหัส QR",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "กลับบ้าน",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "สมดุลไม่เพียงพอในกระเป๋าเงินที่เลือกเสร็จสมบูรณ์.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "เลือกกระเป๋าสตางค์",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "อ่านต่อ",
   "@payContinue": {
@@ -1227,10 +1078,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "ชําระเงินจากกระเป๋าสตางค์ Bitcoin",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "ค่าธรรมเนียม",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1239,17 +1086,9 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "sellBitcoinPriceLabel": "ราคา",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "closeDialogButton": "ปิด",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payBitcoinPrice": "ราคา",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "LTC สมดุล",
   "@sellMxnBalance": {
@@ -1271,16 +1110,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "วิธีที่คุณต้องการชําระเงินนี้?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "กระเป๋าเงินที่คุณต้องการจ่ายจาก?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "รวดเร็ว",
   "@sellFastest": {
@@ -1302,10 +1133,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "จํานวน Bitcoin",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "อัตราแลกเปลี่ยน",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1313,10 +1140,6 @@
   "sellTitle": "ขาย Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "USD สมดุล",
   "@sellUsdBalance": {
@@ -1334,21 +1157,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "จำนวนเงินขั้นต่ำที่คุณสามารถชำระด้วยกระเป๋าเงินนี้คือ {amount}",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "ผู้รับชําระเงิน",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "เครือข่ายของเหลว",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "เลือกกระเป๋าสตางค์",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "รายการ",
   "@paySinpeNumeroComprobante": {
@@ -1361,10 +1172,6 @@
   "payRecipientName": "ชื่อ",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "ยืนยันการชําระเงิน",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "ยืนยันการชําระเงิน",
   "@sellConfirmPayment": {
@@ -1382,49 +1189,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "กระเป๋าภายนอก",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "รายละเอียด",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "คุณพยายามที่จะขายข้างต้นจํานวนสูงสุดที่สามารถขายกับกระเป๋าสตางค์นี้.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "เครือข่ายของเหลว",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "ราคาขายไม่ได้ กรุณาลองอีกครั้ง.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "รายละเอียดรายละเอียด",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "ราคา",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "อย่าลืม",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "ขายในความคืบหน้า ...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "การตั้งค่าขั้นสูง",
   "@payAdvancedSettings": {
@@ -1433,14 +1216,6 @@
   "sellSendPaymentNetworkFees": "ค่าธรรมเนียมเครือข่าย",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "ชําระเงิน!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Bitcoin บนโซ่",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "การตั้งค่าขั้นสูง",
   "@sellAdvancedSettings": {
@@ -1453,14 +1228,10 @@
   "viewerTapToCopy": "แตะเพื่อคัดลอก",
   "invoiceViewerTitle": "ใบแจ้งหนี้",
   "paySinpeReceipt": "ใบเสร็จ SINPE",
-  "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
-  "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
   "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
   "sellPayoutBalance": "เพิ่มไปยังยอดคงเหลือในบัญชีของฉัน",
-  "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
   "sellPayoutTitle": "เลือกผู้รับเงิน",
-  "sellPayoutNewBadge": "ใหม่",
   "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
   "sendSelectedUtxosInsufficient": "เลือก utxos ไม่ได้ครอบคลุมจํานวน",
   "@sendSelectedUtxosInsufficient": {
@@ -1521,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "สมดุล",
   "limitOrdersInsufficientBalanceMessage": "คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.",
   "limitOrdersFundAccount": "บัญชีบัญชีของคุณ",
@@ -1579,5 +1349,124 @@
   },
   "exchangeErrorSigningOut": "ไม่สามารถออกจากระบบได้อย่างสมบูรณ์ โปรดลองอีกครั้ง",
   "exchangeErrorLoadingAnnouncements": "ไม่สามารถโหลดประกาศได้",
-  "exchangeErrorRequestingAccountDeletion": "ไม่สามารถส่งคำขอลบบัญชีของคุณได้ โปรดลองอีกครั้ง"
+  "exchangeErrorRequestingAccountDeletion": "ไม่สามารถส่งคำขอลบบัญชีของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeFileUploadStatusUnknown": "ไม่ทราบสถานะ",
+  "exchangeSupportChatAttachFileTooltip": "แนบไฟล์",
+  "exchangeSupportChatAttachLogsTooltip": "แนบบันทึก",
+  "exchangeSupportChatSendTooltip": "ส่งข้อความ",
+  "exchangeSupportChatLogDraft": "นี่คือบันทึกของฉัน",
+  "exchangeSupportChatLoadOlder": "โหลดข้อความก่อนหน้า",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "ฟีเจอร์แพลตฟอร์มซื้อขาย",
+  "exchangeAccessSettingsOffHint": "เปิดเพื่อเข้าสู่ระบบหรือสร้างบัญชี Bull Bitcoin",
+  "exchangeAccessSettingsOnHint": "เปิดใช้ฟีเจอร์แพลตฟอร์มซื้อขายแล้ว",
+  "exchangeAccessSignIn": "เข้าสู่ระบบหรือสร้างบัญชี",
+  "exchangeAccessDisableTitle": "ปิดฟีเจอร์แพลตฟอร์มซื้อขายหรือไม่?",
+  "exchangeAccessDisableBody": "การดำเนินการนี้จะออกจากระบบบนอุปกรณ์นี้ คำสั่งที่มีอยู่ AutoBuy และการซื้อแบบประจำจะไม่ถูกยกเลิก",
+  "exchangeAccessDisableConfirm": "ออกจากระบบและปิด",
+  "exchangeTradingRetry": "ลองอีกครั้ง",
+  "exchangeAccessUnreadable": "ไม่สามารถอ่านสิทธิ์เข้าถึงแพลตฟอร์มซื้อขายได้ โปรดลองอีกครั้งหรือรีเซ็ต",
+  "exchangeAccessReset": "รีเซ็ตสิทธิ์เข้าถึงแพลตฟอร์มซื้อขาย",
+  "exchangeAccessLogoutIncomplete": "การออกจากระบบยังไม่เสร็จสมบูรณ์ โปรดออกจากระบบให้เสร็จก่อนเปิดแพลตฟอร์มซื้อขาย",
+  "exchangeAccessRetryLogout": "ออกจากระบบให้เสร็จ",
+  "exchangeAccessExpiring": "เซสชันของคุณหมดอายุแล้ว กำลังออกจากระบบบนอุปกรณ์นี้",
+  "exchangeLogoutDidNotFinish": "การออกจากระบบบนอุปกรณ์นี้ยังไม่เสร็จสมบูรณ์",
+  "networkFeatureUnavailable": "ฟีเจอร์นี้ไม่พร้อมใช้งานบนเครือข่ายที่เลือก",
+  "exchangeBitcoinWalletsLoadFailed": "โหลดกระเป๋าเงินเริ่มต้นไม่สำเร็จ",
+  "exchangeBitcoinWalletsAddressEmpty": "ที่อยู่ต้องไม่ว่างเปล่า",
+  "exchangeBitcoinWalletsSaveFailed": "บันทึกที่อยู่กระเป๋าเงินไม่สำเร็จ",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "เราไม่ทราบว่าที่อยู่นี้ถูกบันทึกแล้วหรือไม่ โปรดตรวจสอบด้านล่างก่อนบันทึกอีกครั้ง",
+  "exchangeBitcoinWalletsDeleteFailed": "ลบที่อยู่กระเป๋าเงินไม่สำเร็จ",
+  "exchangeSettingsWriteBusy": "คำขออื่นไปยังแพลตฟอร์มซื้อขายยังดำเนินการอยู่ โปรดลองอีกครั้งในอีกสักครู่",
+  "exchangeSettingsSignedOut": "คุณไม่ได้เข้าสู่ระบบแพลตฟอร์มซื้อขายแล้ว โปรดเข้าสู่ระบบอีกครั้งเพื่อเปลี่ยนการตั้งค่าเหล่านี้",
+  "exchangeBitcoinWalletsBusy": "คำขออื่นไปยังแพลตฟอร์มซื้อขายยังดำเนินการอยู่ โปรดลองอีกครั้งในอีกสักครู่",
+  "exchangeBitcoinWalletsUnsetSuccess": "ลบที่อยู่กระเป๋าเงินแล้ว",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "เราไม่ทราบว่าที่อยู่นี้ถูกลบแล้วหรือไม่ โปรดตรวจสอบอีกครั้งก่อนเปลี่ยนแปลง",
+  "exchangeBitcoinWalletsCheckAgain": "ตรวจสอบอีกครั้ง",
+  "exchangeBitcoinWalletsSessionEnded": "คุณไม่ได้เข้าสู่ระบบแพลตฟอร์มซื้อขายแล้ว โปรดเข้าสู่ระบบอีกครั้งเพื่อแก้ไขกระเป๋าเงินเริ่มต้น",
+  "destinationExpectedType": "ป้อนหรือสแกน {type} ที่ถูกต้อง",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "ซื้อ ขาย และชำระเงินด้วย Bull Bitcoin ได้โดยตรงจากกระเป๋าเงินของคุณ",
+  "exchangeTradingUnavailable": "ไม่สามารถซื้อขายได้ในขณะนี้",
+  "priceChartShowTooltip": "แสดงกราฟราคา",
+  "recipientsErrorSaveOutcomeUnknown": "เราไม่ทราบว่าผู้รับเงินรายนี้ถูกบันทึกแล้วหรือไม่ โปรดตรวจสอบรายชื่อผู้รับเงินก่อนเพิ่มอีกครั้ง",
+  "recipientsConfidentialSepaStatusUnknownTitle": "ไม่ทราบสถานะการเปิดใช้งาน",
+  "recipientsConfidentialSepaStatusUnknownDescription": "เราไม่สามารถอ่านสถานะการเปิดใช้งานของผู้รับเงินรายนี้ได้ โปรดติดต่อฝ่ายสนับสนุนก่อนใช้กับ SEPA แบบเป็นความลับ",
+  "recipientsReturnHome": "กลับหน้าหลัก",
+  "withdrawConfirmOutcomeUnknownError": "เราไม่สามารถยืนยันได้ว่าการถอนเงินของคุณสำเร็จหรือไม่ โปรดตรวจสอบอีกครั้งก่อนเริ่มการถอนเงินใหม่",
+  "withdrawConfirmCheckAgainButton": "ตรวจสอบอีกครั้ง",
+  "limitOrderStatusUnknown": "ไม่ทราบสถานะ",
+  "dcaUseDefaultBitcoinWallet": "ใช้กระเป๋าเงิน Bitcoin เริ่มต้นของฉัน",
+  "dcaUseDefaultLiquidWallet": "ใช้กระเป๋าเงิน Liquid เริ่มต้นของฉัน",
+  "dcaNoDefaultBitcoinWallet": "บัญชี Bull Bitcoin ของคุณไม่มีกระเป๋าเงิน Bitcoin เริ่มต้น โปรดตั้งค่า หรือป้อนที่อยู่ Bitcoin ด้านล่าง",
+  "dcaNoDefaultLiquidWallet": "บัญชี Bull Bitcoin ของคุณไม่มีกระเป๋าเงิน Liquid เริ่มต้น โปรดตั้งค่า หรือป้อนที่อยู่ Liquid ด้านล่าง",
+  "dcaManageDefaultWallets": "ตั้งค่ากระเป๋าเงินเริ่มต้น",
+  "dcaEnterBitcoinAddressLabel": "ป้อนที่อยู่ Bitcoin",
+  "dcaEnterLiquidAddressLabel": "ป้อนที่อยู่ Liquid",
+  "dcaConfirmPayoutAddress": "ที่อยู่รับเงิน",
+  "exchangePaymentOutcomeUnknownChecking": "กำลังตรวจสอบว่าการชำระเงินของคุณถูกส่งแล้วหรือไม่…",
+  "walletSpendAwaitingObservation": "ไม่สามารถใช้จ่ายได้จนกว่ากระเป๋าเงินนี้จะซิงค์และเห็นการชำระเงินก่อนหน้าบนเครือข่าย โปรดรีเฟรชกระเป๋าเงินหรือใช้ สแกนหาธุรกรรมที่หายไป แล้วลองอีกครั้ง",
+  "sendPayjoinSpendPaused": "การชำระเงิน Payjoin นี้ถูกหยุดชั่วคราวเนื่องจากกระเป๋าเงินไม่สามารถดำเนินการต่อได้อย่างปลอดภัย อินพุตยังคงถูกจองไว้ โปรดรีเฟรชกระเป๋าเงินหรือใช้ สแกนหาธุรกรรมที่หายไป แล้วลองข้อเสนอนี้อีกครั้งขณะที่ยังใช้ได้ หากหมดอายุแล้ว โปรดตรวจสอบการชำระเงินในธุรกรรมก่อนดำเนินการใด ๆ เพิ่มเติม",
+  "walletSpendBusy": "กระเป๋าเงินไม่ว่าง โปรดลองอีกครั้งในอีกสักครู่",
+  "fundExchangeJurisdictionHint": "เลือกประเทศหรือภูมิภาคที่คุณส่งเงินจาก",
+  "fundExchangeScamConsentUnverified": "เราไม่สามารถยืนยันได้ว่าความยินยอมของคุณถูกบันทึกแล้ว โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "fundExchangeSessionEnded": "เซสชันแพลตฟอร์มซื้อขายของคุณสิ้นสุดแล้ว โปรดเข้าสู่ระบบอีกครั้งเพื่อเติมเงินเข้าบัญชี",
+  "exchangePlatformNotAllowedError": "ไม่สามารถเปิดแพลตฟอร์มซื้อขายบนอุปกรณ์นี้ได้",
+  "exchangeStepReadFailed": "ไม่สามารถโหลดข้อมูลนี้จากแพลตฟอร์มซื้อขายได้ในขณะนี้ โปรดลองอีกครั้ง",
+  "exchangeStepNotSent": "ไม่มีสิ่งใดถูกส่งไปยังแพลตฟอร์มซื้อขาย โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "exchangeStepNotApplied": "แพลตฟอร์มซื้อขายไม่ได้ดำเนินการตามคำขอนี้ คุณสามารถลองอีกครั้งได้",
+  "exchangeStepWriteRefused": "แพลตฟอร์มซื้อขายปฏิเสธคำขอนี้",
+  "exchangeOrderBelowMinimum": "จำนวนขั้นต่ำคือ {amount} {currency}",
+  "exchangeOrderAboveMaximum": "จำนวนสูงสุดคือ {amount} {currency}",
+  "exchangePayeeInactive": "ผู้รับเงินรายนี้ยังไม่ได้เปิดใช้งาน SEPA แบบเป็นความลับ",
+  "exchangeWriteGateBusy": "คำขออื่นไปยังแพลตฟอร์มซื้อขายยังดำเนินการอยู่ โปรดรอให้เสร็จสิ้นแล้วลองอีกครั้ง",
+  "exchangeWriteGateUnsettled": "คำขอก่อนหน้าไปยังแพลตฟอร์มซื้อขายยังอยู่ระหว่างการตรวจสอบ โปรดลองอีกครั้งเมื่อดำเนินการเสร็จสิ้น",
+  "exchangeWriteGateJournalUnreadable": "เราไม่สามารถตรวจสอบคำขอก่อนหน้าของคุณไปยังแพลตฟอร์มซื้อขายได้ โปรดลองอีกครั้ง",
+  "exchangeStepUnverified": "เราไม่สามารถตรวจสอบได้ว่าแพลตฟอร์มซื้อขายได้รับคำขอนี้หรือไม่ โปรดตรวจสอบอีกครั้งก่อนเริ่มรายการใหม่",
+  "exchangeStepTimedOut": "ใช้เวลานานกว่าที่คาดไว้ คุณสามารถตรวจสอบอีกครั้ง หรือออกไปแล้วกลับมาใหม่ภายหลัง",
+  "exchangeAmountNoRate": "ไม่มีราคา bitcoin ในขณะนี้ โปรดลองอีกครั้ง",
+  "exchangeAmountKycNeeded": "โปรดยืนยันตัวตนให้เสร็จสิ้นเพื่อใช้จำนวนเงินนี้",
+  "exchangeStepVerifying": "กำลังตรวจสอบกับแพลตฟอร์มซื้อขาย…",
+  "exchangeFlowSessionEnded": "เซสชันแพลตฟอร์มซื้อขายของคุณสิ้นสุดแล้ว โปรดเข้าสู่ระบบอีกครั้งเพื่อดำเนินการต่อ",
+  "withdrawNoFundedBalance": "คุณไม่มียอดเงินที่จะถอน",
+  "exchangePayinNoFunds": "กระเป๋าเงินนี้มีเงินไม่พอสำหรับการชำระเงินนี้และค่าธรรมเนียมเครือข่าย",
+  "exchangePayinFeeTooLow": "ค่าธรรมเนียมเครือข่ายต่ำกว่าขั้นต่ำของเครือข่าย โปรดลองอีกครั้ง",
+  "exchangePayinWalletBusy": "กระเป๋าเงินกำลังซิงค์ โปรดลองอีกครั้งในอีกสักครู่",
+  "exchangePayinConsolidationRequired": "กระเป๋าเงินนี้ต้องรวมเหรียญก่อนจึงจะชำระจำนวนเงินนี้ได้",
+  "exchangePayinSigningRefused": "กระเป๋าเงินไม่สามารถลงนามการชำระเงินได้",
+  "exchangePayinNotAuthorized": "กระเป๋าเงินนี้ไม่ได้รับอนุญาตให้ส่งการชำระเงิน",
+  "exchangePayinBuildFailed": "ไม่สามารถเตรียมการชำระเงินได้ ไม่มีสิ่งใดถูกส่ง",
+  "exchangePayinNodeRejected": "เครือข่ายปฏิเสธธุรกรรม ไม่มีสิ่งใดถูกส่ง",
+  "exchangePayinPayjoinNotStarted": "ไม่สามารถเริ่มการชำระเงิน payjoin ได้ ไม่มีสิ่งใดถูกส่ง",
+  "exchangePayinDeadlinePassed": "ช่วงเวลาชำระเงินของคำสั่งสิ้นสุดก่อนที่จะส่งการชำระเงิน ไม่มีสิ่งใดถูกส่ง",
+  "exchangePayinSending": "กำลังส่งการชำระเงินของคุณ…",
+  "exchangePayinNotSent": "ไม่ได้ส่งการชำระเงิน",
+  "exchangePayinPayjoinNegotiating": "กำลังเจรจา payjoin กับแพลตฟอร์มซื้อขาย…",
+  "exchangePayinPayjoinPaused": "payjoin ถูกหยุดชั่วคราวเนื่องจากกระเป๋าเงินไม่ว่าง โปรดลองอีกครั้ง",
+  "exchangePayinUnseen": "ทั้งเครือข่ายและแพลตฟอร์มซื้อขายยังไม่แสดงการชำระเงินนี้ คุณสามารถส่งธุรกรรมเดิมอีกครั้งได้",
+  "exchangePayinResend": "ส่งธุรกรรมเดิมอีกครั้ง",
+  "exchangeStepCheckAgain": "ตรวจสอบอีกครั้ง",
+  "exchangePayinLeaveTitle": "ออกจากการชำระเงินนี้หรือไม่?",
+  "exchangePayinLeaveMessage": "หากคุณชำระเงินแล้ว แพลตฟอร์มซื้อขายจะยังคงได้รับเงิน หากยังไม่ได้ชำระ คำสั่งจะหมดอายุเมื่อถึงกำหนดเวลา",
+  "exchangePayinStay": "อยู่ต่อ",
+  "exchangePayinExternalTitle": "ส่งจำนวนเงินนี้ให้ตรงทุกหน่วยไปยังที่อยู่ด้านล่าง",
+  "exchangePayinExternalWaiting": "กำลังรอการชำระเงินของคุณ…",
+  "exchangePayinRefusedByExchange": "แพลตฟอร์มซื้อขายไม่รับการชำระเงินนี้ โปรดติดต่อฝ่ายสนับสนุนพร้อมหมายเลขคำสั่ง",
+  "exchangePayinOrderEnded": "คำสั่งนี้สิ้นสุดก่อนที่จะส่งการชำระเงินของคุณ ไม่มีสิ่งใดถูกส่ง",
+  "exchangePayinDepositRefused": "ไม่สามารถชำระคำสั่งนี้จากกระเป๋าเงินนี้ได้ ไม่มีสิ่งใดถูกส่ง",
+  "exchangePayinReceived": "แพลตฟอร์มซื้อขายได้รับการชำระเงินของคุณแล้ว",
+  "exchangePayinCoinsUnavailable": "ไม่สามารถโหลดเหรียญในกระเป๋าเงินของคุณได้ ลองอีกครั้ง",
+  "buyPayoutAddressUnavailable": "ไม่สามารถรับที่อยู่สำหรับรับจากกระเป๋านี้ได้ เลือกอีกครั้งหรือเลือกกระเป๋าอื่น",
+  "buyPayoutFailed": "ตลาดแลกเปลี่ยนไม่สามารถดำเนินการจ่ายเงินนี้ให้เสร็จได้ เปิดรายละเอียดคำสั่งหรือติดต่อฝ่ายสนับสนุน",
+  "buyPayoutStillPending": "การจ่ายเงินของคุณยังอยู่ระหว่างทาง คุณติดตามได้ในรายละเอียดคำสั่ง",
+  "limitOrdersOverBalanceWarning": "จำนวนนี้มากกว่ายอดคงเหลือที่ใช้ได้ของคุณ เมื่อคำสั่งทำงาน จะซื้อด้วยยอดที่มีในขณะนั้น",
+  "autoBuyAlreadyActive": "ซื้ออัตโนมัติเปิดใช้งานในบัญชีของคุณอยู่แล้ว",
+  "recipientsValidationEmailInvalid": "กรอกที่อยู่อีเมลที่ถูกต้อง",
+  "recipientsValidationClabeLength": "CLABE มี 18 หลัก",
+  "recipientsValidationClabeCheckDigit": "CLABE นี้ไม่ถูกต้อง โปรดตรวจสอบหมายเลข",
+  "recipientsValidationSpeiPhone": "กรอกหมายเลขโทรศัพท์ 10 หลัก โดยไม่ต้องใส่รหัสประเทศ",
+  "recipientsValidationDebitCard": "หมายเลขบัตรเดบิตมี 16 หลัก",
+  "recipientsErrorFieldRefused": "แพลตฟอร์มซื้อขายไม่ยอมรับค่านี้",
+  "recipientsErrorCheckFields": "ข้อมูลบางส่วนไม่ได้รับการยอมรับ โปรดตรวจสอบช่องที่ทำเครื่องหมายไว้ด้านบน",
+  "recipientsErrorFieldsRefused": "ข้อมูลบางส่วนไม่ได้รับการยอมรับ: {fields}"
 }

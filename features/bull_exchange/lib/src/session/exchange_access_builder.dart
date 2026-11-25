@@ -2,9 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 
 /// Whether the access decision has a signed-in Exchange session.
-bool exchangeSignedIn(ExchangeAccess access) =>
-    access is ExchangeAccessEnabled &&
-    access.session == ExchangeAccessSession.signedIn;
+bool exchangeSignedIn(ExchangeAccess access) => access.isSignedIn;
 
 /// Rebuilds account entry points as the access/session decision changes.
 class ExchangeAccessBuilder extends StatelessWidget {

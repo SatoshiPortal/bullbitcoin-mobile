@@ -1,4 +1,5 @@
 import 'package:bbx_api/src/bbx_failure.dart';
+import 'package:bbx_api/src/bbx_timeouts.dart';
 import 'package:bbx_api/src/bbx_transport.dart';
 import 'package:bbx_api/src/commcenter/announcement.dart';
 import 'package:bbx_api/src/commcenter/commcenter_wire.dart';
@@ -56,13 +57,20 @@ final class CommcenterApi {
 
   /// Sends [text] to support from [source]. A `null` [attachments] is sent
   /// as `null`.
+  ///
+  /// A message with attachments is an upload: sending it has no time limit,
+  /// and [onProgress] reports the bytes sent.
   Future<Result<void, BbxFailure>> sendMessageToSupport({
     required String text,
     required String source,
     List<NewSupportAttachment>? attachments,
+    BbxProgress? onProgress,
   }) => _transport.request(
     endpoint,
     'sendMessageToSupport',
+    onUploadProgress: attachments != null && attachments.isNotEmpty
+        ? onProgress ?? _ignoreProgress
+        : null,
     params: {
       'element': {
         'text': text,
@@ -106,3 +114,5 @@ final class CommcenterApi {
         parseSupportAttachment(read<Map<String, dynamic>>(result, 'result')),
   );
 }
+
+void _ignoreProgress(int sent, int total) {}

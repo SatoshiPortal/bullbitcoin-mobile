@@ -1,7 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:exchange/exchange.dart';
-import 'package:bull_exchange/src/recipients/ui/widgets/recipient_type_text.dart';
+import 'package:bull_exchange/src/recipients/presentation/payout_rail_l10n.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
 
 class RecipientsListTile extends StatelessWidget {
@@ -58,75 +57,12 @@ class RecipientsListTile extends StatelessWidget {
                   ],
                 ),
                 const Gap(8),
-                RecipientTypeText(
-                  recipientType: recipient.type,
+                Text(
+                  recipient.rail.label(context),
                   style: context.bullType.body,
                 ),
-                switch (recipient.type) {
-                  RecipientType.interacEmailCad => _InfoRow(
-                    label: context.loc.recipientsInfoEmail,
-                    value: recipient.email,
-                  ),
-                  RecipientType.billPaymentCad => Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      _InfoRow(
-                        label: context.loc.recipientsInfoPayee,
-                        value: recipient.payeeName,
-                      ),
-                      _InfoRow(
-                        label: context.loc.recipientsFieldAccountNumber,
-                        value: recipient.payeeAccountNumber,
-                      ),
-                    ],
-                  ),
-                  RecipientType.bankTransferCad => _InfoRow(
-                    label: context.loc.recipientsInfoAccount,
-                    value:
-                        '${recipient.institutionNumber ?? ''}-${recipient.transitNumber ?? ''}-${recipient.accountNumber ?? ''}',
-                  ),
-                  RecipientType.sepaEur ||
-                  RecipientType.confidentialSepaEur => _InfoRow(
-                    label: context.loc.recipientsFieldIban,
-                    value: recipient.iban,
-                  ),
-                  RecipientType.speiClabeMxn => _InfoRow(
-                    label: context.loc.recipientsFieldClabe,
-                    value: recipient.clabe,
-                  ),
-                  RecipientType.speiSmsMxn => _InfoRow(
-                    label: context.loc.recipientsInfoPhone,
-                    value: recipient.phoneNumber,
-                  ),
-                  RecipientType.speiCardMxn => _InfoRow(
-                    label: context.loc.recipientsInfoCard,
-                    value: recipient.debitcard,
-                  ),
-                  RecipientType.sinpeIbanUsd => _InfoRow(
-                    label: context.loc.recipientsFieldIban,
-                    value: recipient.iban,
-                  ),
-                  RecipientType.sinpeIbanCrc => _InfoRow(
-                    label: context.loc.recipientsFieldIban,
-                    value: recipient.iban,
-                  ),
-                  RecipientType.sinpeMovilCrc => _InfoRow(
-                    label: context.loc.recipientsInfoPhone,
-                    value: recipient.phoneNumber,
-                  ),
-                  RecipientType.bankAccountArgentina => _InfoRow(
-                    label: context.loc.recipientsFieldCvuCbu,
-                    value: recipient.bankAccount,
-                  ),
-                  RecipientType.pseColombia => _InfoRow(
-                    label: context.loc.recipientsFieldAccountNumber,
-                    value: recipient.bankAccount,
-                  ),
-                  RecipientType.nequiColombia => _InfoRow(
-                    label: context.loc.recipientsInfoPhone,
-                    value: recipient.phoneNumber,
-                  ),
-                },
+                for (final row in recipient.accountRows)
+                  _InfoRow(label: row.field.label(context), value: row.value),
                 if (recipient.label != null)
                   _InfoRow(
                     label: context.loc.recipientsInfoLabel,

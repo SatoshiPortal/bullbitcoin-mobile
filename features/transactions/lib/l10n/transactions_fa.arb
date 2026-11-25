@@ -239,7 +239,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "Retry",
+  "retry": "تلاش مجدد",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -726,5 +726,6 @@
   "transactionPayjoinBroadcastFailed": "تراکنش اصلی منتشر نشد. لطفاً دوباره تلاش کنید.",
   "transactionPayjoinOriginalUnavailable": "تراکنش اصلی دیگر برای انتشار در دسترس نیست.",
   "transactionLabelLimitReached": "حداکثر می‌توانید ۱۰ برچسب داشته باشید.",
-  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد",
+  "transactionListExchangeOrdersUnavailable": "بارگذاری سفارش‌های صرافی ممکن نشد."
 }

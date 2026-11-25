@@ -1,8 +1,11 @@
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_error.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
+import 'package:bull_exchange/src/recipients/presentation/spei_problem_l10n.dart';
+import 'package:exchange/exchange.dart' show RecipientField, speiPhoneProblem;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -60,6 +63,9 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
         children: [
           BBTextFormField(
             labelText: context.loc.recipientsFieldInstitutionCode,
+            errorText: context.recipientServerFieldError(
+              RecipientField.institutionCode,
+            ),
             hintText: context.loc.recipientsFieldInstitutionCodeHint,
             focusNode: _institutionCodeFocusNode,
             autofocus: true,
@@ -77,13 +83,12 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsFieldPhoneNumber,
+            errorText: context.recipientServerFieldError(RecipientField.phone),
             hintText: context.loc.recipientsFieldPhoneNumberHint,
             focusNode: _phoneNumberFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
+            validator: speiFieldValidator(context, speiPhoneProblem),
             onChanged: (value) {
               setState(() {
                 _phoneNumber = value;
@@ -93,6 +98,7 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsFieldName,
+            errorText: context.recipientServerFieldError(RecipientField.name),
             hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
@@ -109,6 +115,7 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsLabelOptional,
+            errorText: context.recipientServerFieldError(RecipientField.label),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -124,6 +131,12 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            shownFields: const {
+              RecipientField.institutionCode,
+              RecipientField.phone,
+              RecipientField.name,
+              RecipientField.label,
+            },
           ),
         ],
       ),

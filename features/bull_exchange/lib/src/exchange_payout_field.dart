@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 /// Host bridge for the existing destination input, scanner, and parser.
 typedef ExchangePayoutField = Widget Function({
-  required WalletAddressType type,
+  required BtcNetwork type,
   required String value,
   required String label,
   required String hint,

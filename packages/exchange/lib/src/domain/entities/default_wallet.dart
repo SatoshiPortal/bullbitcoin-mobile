@@ -1,36 +1,9 @@
-/// Payment rail for an Exchange payout destination.
-enum WalletAddressType {
-  bitcoin,
-  lightning,
-  liquid;
-
-  String get displayName {
-    switch (this) {
-      case WalletAddressType.bitcoin:
-        return 'Bitcoin';
-      case WalletAddressType.lightning:
-        return 'Lightning';
-      case WalletAddressType.liquid:
-        return 'Liquid';
-    }
-  }
-
-  String get addressHint {
-    switch (this) {
-      case WalletAddressType.bitcoin:
-        return 'bc1...';
-      case WalletAddressType.lightning:
-        return 'user@domain.com or lnurl...';
-      case WalletAddressType.liquid:
-        return 'lq1...';
-    }
-  }
-}
+import 'btc_network.dart';
 
 /// A default Exchange payout destination, not a local wallet.
 class DefaultWallet {
   final String? recipientId;
-  final WalletAddressType walletType;
+  final BtcNetwork walletType;
   final String address;
   final bool isDefault;
 
@@ -46,7 +19,7 @@ class DefaultWallet {
 
   DefaultWallet copyWith({
     String? recipientId,
-    WalletAddressType? walletType,
+    BtcNetwork? walletType,
     String? address,
     bool? isDefault,
   }) {
@@ -89,13 +62,13 @@ class DefaultWallets {
       lightningAddress.isNotEmpty ||
       liquidAddress.isNotEmpty;
 
-  DefaultWallet? getWallet(WalletAddressType type) {
+  DefaultWallet? getWallet(BtcNetwork type) {
     switch (type) {
-      case WalletAddressType.bitcoin:
+      case BtcNetwork.bitcoin:
         return bitcoin;
-      case WalletAddressType.lightning:
+      case BtcNetwork.lightning:
         return lightning;
-      case WalletAddressType.liquid:
+      case BtcNetwork.liquid:
         return liquid;
     }
   }

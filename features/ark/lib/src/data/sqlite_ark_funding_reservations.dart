@@ -158,6 +158,110 @@ final class SqliteArkFundingReservations
     exclusiveAccount: true,
   );
 
+  /// Claims the initial reserve request exactly once, including across restarts
+  /// and terminal states. Retrying callers must read, not prepare another spend.
+  @useResult
+  Future<Result<void, SyncFailure>> beginExitReserveRequest({
+    required String operationId,
+    required String accountIdentity,
+    required Fingerprint sourceParent,
+    required WalletKey key,
+    required int generation,
+    required String context,
+  }) async {
+    if (operationId.isEmpty ||
+        operationId.length > 512 ||
+        accountIdentity.isEmpty ||
+        key.id.isEmpty ||
+        key.network != BitcoinNetwork.regtest ||
+        generation < 0 ||
+        utf8.encode(context).length > 4096 ||
+        !_isExitReserveContext(context, account: accountIdentity)) {
+      return const Err(SyncSpendRefusedFailure());
+    }
+    return _run(() {
+      _inventory();
+      for (final row in _db.select(
+        'SELECT * FROM ark_funding_operations WHERE account=? OR operation=?',
+        [accountIdentity, operationId],
+      )) {
+        if (row['operation'] == operationId ||
+            (row['account'] == accountIdentity &&
+                (_isExitReserveContext(row['context']) ||
+                    !_terminal.contains(_state(row))))) {
+          _refuse();
+        }
+      }
+      _db.execute(
+        'INSERT INTO ark_funding_operations(operation,account,parent,wallet,network,generation,context,state) VALUES(?,?,?,?,?,?,?,?)',
+        [
+          operationId,
+          accountIdentity,
+          sourceParent.hex,
+          key.id,
+          BitcoinNetwork.regtest.name,
+          generation,
+          context,
+          'requested',
+        ],
+      );
+      _db.execute(
+        "INSERT INTO ark_funding_authority(operation,protocol,signing) VALUES(?,1,'never_started')",
+        [operationId],
+      );
+    }, write: true);
+  }
+
+  /// Returns signed bytes for exact-byte redelivery. Confirmation requires the
+  /// validated source observation receipt, not merely a terminal state label.
+  @useResult
+  Future<Result<ArkExitReserveRequest?, SyncFailure>> readExitReserveRequest(
+    String operationId,
+  ) async => _run(() {
+    _inventory();
+    final rows = _db.select(
+      'SELECT * FROM ark_funding_operations WHERE operation=?',
+      [operationId],
+    );
+    if (rows.isEmpty) return null;
+    final row = rows.single;
+    final context = row['context'];
+    if (context is! String ||
+        !_isExitReserveContext(context, account: row['account'] as String)) {
+      _refuse();
+    }
+    final state = _state(row);
+    final txid = row['txid'];
+    final signed = row['signed_psbt'];
+    if ((txid != null && (txid is! String || !_txid.hasMatch(txid))) ||
+        (signed != null && signed is! String)) {
+      _storage();
+    }
+    final confirmed = state == 'confirmed' && _closedProof(row);
+    if (state == 'confirmed' && !confirmed) _storage();
+    return (
+      state: state,
+      signedPsbt: signed as String?,
+      txid: txid as String?,
+      context: context,
+      confirmed: confirmed,
+    );
+  });
+
+  static bool _isExitReserveContext(Object? raw, {String? account}) {
+    if (raw is! String) return false;
+    try {
+      final value = jsonDecode(raw);
+      return value is Map<String, dynamic> &&
+          value['type'] == 'exitReserve' &&
+          value['version'] == 1 &&
+          value['account'] is String &&
+          (account == null || value['account'] == account);
+    } on FormatException {
+      return false;
+    }
+  }
+
   Future<Result<void, SyncFailure>> _beginRequest({
     required String operationId,
     required String accountIdentity,
@@ -703,7 +807,8 @@ final class SqliteArkFundingReservations
   }) async => _run(() {
     _inventory();
     final row = _operation(expected.operationId);
-    if (_state(row) != 'requested' ||
+    if (_isExitReserveContext(row['context']) ||
+        _state(row) != 'requested' ||
         _authority(row)?['signing'] != 'never_started' ||
         _authority(row)?['settlement'] != null ||
         _requestFacts(row) != expected ||
@@ -865,9 +970,34 @@ final class SqliteArkFundingReservations
     required WalletRevision admittedRevision,
   }) async => _run(() {
     final row = _match(expected, admittedRevision);
-    if (_terminal.contains(_state(row))) _refuse();
+    if (_isExitReserveContext(row['context']) ||
+        _terminal.contains(_state(row))) {
+      _refuse();
+    }
     final signing = _authority(row)?['signing'];
     if (signing != 'never_started' && signing != 'started') _refuse();
+    _db.execute(
+      "UPDATE ark_funding_authority SET signing='started' WHERE operation=?",
+      [expected.operationId],
+    );
+  }, write: true);
+
+  /// A single signer admission under the source spend gate. Once sealed, a
+  /// crash is ambiguous and may only be recovered using existing signed bytes.
+  @useResult
+  Future<Result<void, SyncFailure>> admitExitReserveSigning({
+    required ArkFundingBinding expected,
+    required WalletRevision admittedRevision,
+  }) async => _run(() {
+    final row = _match(expected, admittedRevision);
+    if (!_isExitReserveContext(
+          row['context'],
+          account: expected.accountIdentity,
+        ) ||
+        _state(row) != 'reserved' ||
+        _authority(row)?['signing'] != 'never_started') {
+      _refuse();
+    }
     _db.execute(
       "UPDATE ark_funding_authority SET signing='started' WHERE operation=?",
       [expected.operationId],
@@ -881,7 +1011,8 @@ final class SqliteArkFundingReservations
   }) async => _run(() {
     final row = _match(expected, admittedRevision);
     if (_state(row) == 'tombstoned' && _closedProof(row)) return;
-    if (_terminal.contains(_state(row)) ||
+    if (_isExitReserveContext(row['context']) ||
+        _terminal.contains(_state(row)) ||
         _authority(row)?['signing'] != 'never_started' ||
         row['signed_psbt'] != null) {
       _refuse();
@@ -1017,10 +1148,14 @@ final class SqliteArkFundingReservations
         context is! Map<String, dynamic> ||
         payload['request'] != binding.context ||
         context['version'] is! int ||
-        context['version'] != 1 ||
+        (context['version'] != 1 && context['version'] != 2) ||
         context['account'] != accountIdentity) {
       _storage();
     }
+    // The Bark-specific abandonment proof contains a derivation index. A
+    // Scuttle reservation can be safely released by the same host CAS, but
+    // cannot be translated into this package-facing proof.
+    if (context['version'] == 2) return null;
     final address = payload['address'],
         index = payload['keypairIndex'],
         expiry = payload['expiryHeight'],
@@ -1112,7 +1247,7 @@ final class SqliteArkFundingReservations
     if (request is! Map<String, dynamic> ||
         payload is! Map<String, dynamic> ||
         request['version'] is! int ||
-        request['version'] != 1 ||
+        (request['version'] != 1 && request['version'] != 2) ||
         request['account'] != binding.accountIdentity ||
         payload['request'] != binding.context ||
         request['validUntil'] is! String) {
@@ -1133,7 +1268,8 @@ final class SqliteArkFundingReservations
   ) async => _run(() {
     _inventory();
     final row = _operation(operationId);
-    if (_state(row) != 'reserved' ||
+    if (_isExitReserveContext(row['context']) ||
+        _state(row) != 'reserved' ||
         _authority(row)?['signing'] != 'never_started' ||
         row['signed_psbt'] != null) {
       return false;
@@ -1151,7 +1287,8 @@ final class SqliteArkFundingReservations
     required WalletRevision admittedRevision,
   }) async => _run(() {
     final row = _match(expected, admittedRevision);
-    if (_state(row) != 'reserved' ||
+    if (_isExitReserveContext(row['context']) ||
+        _state(row) != 'reserved' ||
         _authority(row)?['signing'] != 'never_started' ||
         _boardReview(expected.operationId)['phase'] != 'prepared') {
       _refuse();
@@ -1680,6 +1817,14 @@ typedef ArkFundingRequest = ({
   WalletKey key,
   int generation,
   String context,
+});
+
+typedef ArkExitReserveRequest = ({
+  String state,
+  String? signedPsbt,
+  String? txid,
+  String context,
+  bool confirmed,
 });
 
 /// Wallet-data evidence only; neither PSBTs nor a source signing capability.

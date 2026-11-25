@@ -7,8 +7,9 @@ sealed class RecipientsEvent with _$RecipientsEvent {
   const factory RecipientsEvent.refreshed() = RecipientsRefreshed;
   const factory RecipientsEvent.confidentialSepaAvailabilityRetried() =
       RecipientsConfidentialSepaAvailabilityRetried;
-  const factory RecipientsEvent.jurisdictionChanged(String? jurisdiction) =
-      RecipientsJurisdictionChanged;
+  const factory RecipientsEvent.jurisdictionChanged(
+    Jurisdiction? jurisdiction,
+  ) = RecipientsJurisdictionChanged;
   const factory RecipientsEvent.searchChanged(String query) =
       RecipientsSearchChanged;
   const factory RecipientsEvent.added(RecipientFormDataModel recipient) =
@@ -23,4 +24,9 @@ sealed class RecipientsEvent with _$RecipientsEvent {
       RecipientsVirtualIbanActivated;
   const factory RecipientsEvent.sepaTypeChanged(RecipientType sepaType) =
       RecipientsSepaTypeChanged;
+
+  /// The new-recipient form now shows another country or payout method:
+  /// the last save's failure was about the form that is gone.
+  const factory RecipientsEvent.newRecipientFormChanged() =
+      RecipientsNewRecipientFormChanged;
 }

@@ -1,27 +1,14 @@
-import '../setup/exchange_access_lifecycle.dart';
-
-import 'package:preferences/preferences.dart';
-
-import 'read_exchange_environment.dart';
-
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
-import 'package:meta/meta.dart';
 
-/// The notification socket, as the cubit needs it.
+/// The account changes the notification socket reports.
 ///
-/// The socket is best-effort and the cubit deliberately does not surface its
-/// failures. Session access still governs when it is allowed to connect.
+/// The socket itself is an effect of the signed-in access state: the access
+/// lifecycle opens it when a session starts and closes it when it ends.
 class WatchExchangeNotificationsUsecase {
-  final Preferences _settingsRepository;
   final Exchange _exchange;
-  final ExchangeAccessLifecycle _access;
 
-  const WatchExchangeNotificationsUsecase({
-    required this._exchange,
-    required this._settingsRepository,
-    required this._access,
-  });
+  const WatchExchangeNotificationsUsecase({required this._exchange});
 
   /// Emits whenever the server says the account may have changed.
   Stream<NotificationMessage> accountChanges() =>
@@ -33,10 +20,15 @@ class WatchExchangeNotificationsUsecase {
                 NotificationMessageKind.group ||
                 NotificationMessageKind.kyc ||
                 NotificationMessageKind.userPreferences => true,
-                _ => false,
+                NotificationMessageKind.message ||
+                NotificationMessageKind.order ||
+                NotificationMessageKind.limitOrder ||
+                NotificationMessageKind.user ||
+                NotificationMessageKind.recipient ||
+                NotificationMessageKind.unknown => false,
               } =>
             [message],
-          _ => const [],
+          Ok() || Err() => const [],
         },
       );
 
@@ -47,48 +39,7 @@ class WatchExchangeNotificationsUsecase {
           Ok(value: final message)
               when message.kind == NotificationMessageKind.message =>
             [message],
-          _ => const [],
+          Ok() || Err() => const [],
         },
       );
-
-  /// The handshake stays outside the access queue so it cannot delay sign-out
-  /// or trading. Sign-out, reconciliation and expiry disconnect, but an attempt
-  /// may start after that disconnect (the service first reads settings), so a
-  /// stale attempt closes the socket unless a new session is signed in.
-  Future<Result<void, ExchangeFailure>> _open({required bool reconnect}) async {
-    final token = _access.epoch;
-    if (!_signedIn) return const Err(ExchangeNotAuthenticatedFailure());
-    final allowed = await readExchangeEnvironment(
-      _settingsRepository,
-      ExchangeNotificationsUnavailableFailure.new,
-    );
-    if (token != _access.epoch || !_signedIn) {
-      return const Err(ExchangeOperationStaleFailure());
-    }
-    if (allowed case Err(:final failure)) {
-      _exchange.disconnectNotifications();
-      return Err(failure);
-    }
-    final result = reconnect
-        ? await _exchange.reconnectNotifications()
-        : await _exchange.connectNotifications();
-    if (token != _access.epoch) {
-      if (!_signedIn) _exchange.disconnectNotifications();
-      return const Err(ExchangeOperationStaleFailure());
-    }
-    return result;
-  }
-
-  bool get _signedIn => switch (_access.current) {
-    ExchangeAccessEnabled(session: ExchangeAccessSession.signedIn) => true,
-    _ => false,
-  };
-
-  @useResult
-  Future<Result<void, ExchangeFailure>> connect() => _open(reconnect: false);
-
-  @useResult
-  Future<Result<void, ExchangeFailure>> reconnect() => _open(reconnect: true);
-
-  void disconnect() => _exchange.disconnectNotifications();
 }

@@ -23,18 +23,24 @@ void main() {
     final exchange = exchangeWithTransportForTesting(
       readSession: () => readLegacyExchangeSession(
         preferences: settings,
-        readEpoch: () => 0,
+        readSession: () => null,
         readKey: ({required isTestnet}) async => fail('unexpected key read'),
       ),
       openClient: (_, _) => fail('unexpected HTTP request'),
     );
 
     expect(
-      await exchange.funding.registerResponsibilityConsent(),
-      isA<Err<void, ExchangeFailure>>().having(
-        (result) => result.failure,
-        'failure',
-        isA<ExchangeUnsupportedNetworkFailure>(),
+      await exchange.funding.consent(
+        const ExchangeSession(
+          environment: ExchangeEnvironment.testnet,
+          epoch: 0,
+          sessionId: 'session',
+        ),
+      ),
+      isA<WriteNotSent<void>>().having(
+        (result) => result.reason,
+        'reason',
+        ExchangeNotSentReason.unreachable,
       ),
     );
   });

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 abstract final class ExchangeSupportChatNavigation {
   static const routeName = 'supportChat';
+  static const path = '/exchange/support-chat';
 
   /// Opens the support chat, pre-filled with [initialMessage] when given.
   /// Leaving the chat returns to the screen that opened it.

@@ -16,7 +16,7 @@ class RecipientTypeSelector extends StatelessWidget {
     required this.onTypeSelected,
   });
 
-  final String? selectedJurisdiction;
+  final Jurisdiction? selectedJurisdiction;
   final RecipientType? selectedType;
   final Function(RecipientType) onTypeSelected;
 

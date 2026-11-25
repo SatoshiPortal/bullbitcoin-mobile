@@ -187,7 +187,7 @@
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
   },
-  "retry": "Retry",
+  "retry": "Повторить",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -225,5 +225,6 @@
   "transactionPayjoinBroadcastFailed": "Не удалось отправить исходную транзакцию. Пожалуйста, попробуйте снова.",
   "transactionPayjoinOriginalUnavailable": "Исходная транзакция больше недоступна для отправки.",
   "transactionLabelLimitReached": "Можно добавить не более 10 меток.",
-  "copiedToClipboard": "Скопировано в буфер обмена"
+  "copiedToClipboard": "Скопировано в буфер обмена",
+  "transactionListExchangeOrdersUnavailable": "Не удалось загрузить ордера биржи."
 }

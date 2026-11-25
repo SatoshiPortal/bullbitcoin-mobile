@@ -291,5 +291,6 @@
   "transactionPayjoinBroadcastFailed": "საწყისი ტრანზაქციის გავრცელება ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "transactionPayjoinOriginalUnavailable": "საწყისი ტრანზაქცია აღარ არის ხელმისაწვდომი გასავრცელებლად.",
   "transactionLabelLimitReached": "შეგიძლიათ გქონდეთ მაქსიმუმ 10 იარლიყი.",
-  "copiedToClipboard": "დაკოპირდა ბუფერში"
+  "copiedToClipboard": "დაკოპირდა ბუფერში",
+  "transactionListExchangeOrdersUnavailable": "ბირჟის შეკვეთების ჩატვირთვა ვერ მოხერხდა."
 }

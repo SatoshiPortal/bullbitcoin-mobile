@@ -1,6 +1,7 @@
 import '../../../exchange_l10n.dart';
 import '../../domain/entities/account_info.dart';
 import '../../presentation/account_info_cubit.dart';
+import '../../domain/exchange_settings_failure.dart';
 import '../../presentation/account_info_state.dart';
 import '../../presentation/exchange_settings_failure_l10n.dart';
 
@@ -58,21 +59,28 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     }
 
     if (accountInfo == null) {
+      // A retry can't help once the session ended (SET-3).
+      final signedOut =
+          state.failure is ExchangeSettingsNotAuthenticatedFailure;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BullText(
-              state.failure?.toTranslated(context) ??
-                  context.loc.exchangeAccountInfoLoadErrorMessage,
+              signedOut
+                  ? context.loc.exchangeSettingsSignedOut
+                  : state.failure?.toTranslated(context) ??
+                        context.loc.exchangeAccountInfoLoadErrorMessage,
               style: context.bullType.body.copyWith(color: context.bull.error),
             ),
-            const Gap(BullSpacing.md),
-            BullButton.secondary(
-              label: context.loc.retry,
-              onPressed: () =>
-                  context.read<AccountInfoCubit>().loadAccountInfo(),
-            ),
+            if (!signedOut) ...[
+              const Gap(BullSpacing.md),
+              BullButton.secondary(
+                label: context.loc.retry,
+                onPressed: () =>
+                    context.read<AccountInfoCubit>().loadAccountInfo(),
+              ),
+            ],
           ],
         ),
       );

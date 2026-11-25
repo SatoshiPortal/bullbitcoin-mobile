@@ -31,6 +31,7 @@ extension ExchangeSettingsFailureL10n on ExchangeSettingsFailure {
     ExchangeSettingsDocumentUploadFailure() =>
       context.loc.exchangeSettingsErrorUploadingDocument,
     // Never `logMessage`.
+    ExchangeSettingsWriteBusyFailure() => context.loc.exchangeSettingsWriteBusy,
     ExchangeSettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

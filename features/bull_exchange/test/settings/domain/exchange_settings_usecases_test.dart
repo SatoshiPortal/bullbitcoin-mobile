@@ -42,11 +42,9 @@ abstract interface class _Upload {
 class _MockUploadKycDocument extends Mock implements _Upload {}
 
 abstract interface class _SavePreferences {
-  Future<Result<void, ExchangeFailure>> savePreferences({
-    String? language,
-    String? currency,
-    bool? emailNotificationsEnabled,
-  });
+  Future<Result<void, ExchangeFailure>> savePreferences(
+    ExchangePreferencesPatch patch,
+  );
 }
 
 class _MockExchangeFacade extends Mock implements _SavePreferences {}
@@ -142,7 +140,7 @@ void main() {
     test('maps the user summary to the account info', () async {
       final core = _MockGetUserSummary();
       when(core.execute).thenAnswer(
-        (_) async => Ok(_summary(groups: ['KYC_LIGHT_VERIFICATION'])),
+        (_) async => Ok(_summary(groups: ['KYC_CANADA_LIGHT_VERIFICATION'])),
       );
 
       final result = await GetAccountInfoUsecase(exchange: _withSummary(core))
@@ -205,6 +203,25 @@ void main() {
       expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
       _expectSanitized(failure);
     });
+
+    for (final failure in const <ExchangeFailure>[
+      ExchangeNotAuthenticatedFailure(),
+      ExchangeSessionRejectedFailure(),
+    ]) {
+      test('${failure.runtimeType} is signed out, not a retryable error '
+          '(SET-3)', () async {
+        final core = _MockGetUserSummary();
+        when(core.execute).thenAnswer((_) async => Err(failure));
+
+        final result = await GetAccountInfoUsecase(exchange: _withSummary(core))
+            .execute();
+
+        expect(
+          (result as Err).failure,
+          isA<ExchangeSettingsNotAuthenticatedFailure>(),
+        );
+      });
+    }
   });
 
   group('GetExchangePreferencesUsecase', () {
@@ -240,81 +257,111 @@ void main() {
         _expectSanitized(failure);
       },
     );
+
+    for (final failure in const <ExchangeFailure>[
+      ExchangeNotAuthenticatedFailure(),
+      ExchangeSessionRejectedFailure(),
+    ]) {
+      test('${failure.runtimeType} is signed out, not a retryable error '
+          '(SET-3)', () async {
+        final core = _MockGetUserSummary();
+        when(core.execute).thenAnswer((_) async => Err(failure));
+
+        final result = await GetExchangePreferencesUsecase(
+          exchange: _withSummary(core),
+        ).execute();
+
+        expect(
+          (result as Err).failure,
+          isA<ExchangeSettingsNotAuthenticatedFailure>(),
+        );
+      });
+    }
   });
 
   group('UpdateExchangePreferencesUsecase', () {
-    const preferences = ExchangePreferences(
-      language: 'FR',
-      currency: 'EUR',
+    const loaded = ExchangePreferences(
+      language: 'EN',
+      currency: 'CAD',
       emailNotificationsEnabled: true,
     );
 
+    setUpAll(() => registerFallbackValue(const ExchangePreferencesPatch()));
+
     void stubSave(_MockExchangeFacade facade, Result<void, ExchangeFailure> r) {
-      when(
-        () => facade.savePreferences(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer((_) async => r);
+      when(() => facade.savePreferences(any())).thenAnswer((_) async => r);
     }
 
-    test('passes the edited preferences to the exchange', () async {
-      final facade = _MockExchangeFacade();
-      stubSave(facade, const Ok(null));
+    Future<Result<void, ExchangeSettingsFailure>> save(
+      _MockExchangeFacade facade,
+      ExchangePreferences edited,
+    ) =>
+        UpdateExchangePreferencesUsecase(save: facade.savePreferences)
+            .execute(loaded: loaded, edited: edited);
 
-      final result = await UpdateExchangePreferencesUsecase(
-        save: facade.savePreferences,
-      ).execute(preferences);
-
-      expect(result, isA<Ok<void, ExchangeSettingsFailure>>());
-      verify(
-        () => facade.savePreferences(
+    for (final (name, edited, patch) in [
+      ('nothing edited', loaded, const ExchangePreferencesPatch()),
+      (
+        'the language only',
+        loaded.copyWith(language: 'FR'),
+        const ExchangePreferencesPatch(language: 'FR'),
+      ),
+      (
+        'the currency only',
+        loaded.copyWith(currency: 'EUR'),
+        const ExchangePreferencesPatch(currency: 'EUR'),
+      ),
+      (
+        'the email notifications only',
+        loaded.copyWith(emailNotificationsEnabled: false),
+        const ExchangePreferencesPatch(emailNotificationsEnabled: false),
+      ),
+      (
+        'everything',
+        const ExchangePreferences(
           language: 'FR',
           currency: 'EUR',
-          emailNotificationsEnabled: true,
+          emailNotificationsEnabled: false,
         ),
-      ).called(1);
-    });
+        const ExchangePreferencesPatch(
+          language: 'FR',
+          currency: 'EUR',
+          emailNotificationsEnabled: false,
+        ),
+      ),
+    ]) {
+      test('$name sends only that (B17, INT-17)', () async {
+        final facade = _MockExchangeFacade();
+        stubSave(facade, const Ok(null));
 
-    test('a network failure stays a network failure', () async {
-      final facade = _MockExchangeFacade();
-      stubSave(facade, const Err(ExchangeNetworkFailure('offline')));
+        expect(
+          await save(facade, edited),
+          isA<Ok<void, ExchangeSettingsFailure>>(),
+        );
+        verify(() => facade.savePreferences(patch)).called(1);
+      });
+    }
 
-      final result = await UpdateExchangePreferencesUsecase(
-        save: facade.savePreferences,
-      ).execute(preferences);
+    for (final (failure, expected) in [
+      (const ExchangeNetworkFailure('offline'), ExchangeSettingsNetworkFailure),
+      (
+        const ExchangeNotAuthenticatedFailure('expired'),
+        ExchangeSettingsNotAuthenticatedFailure,
+      ),
+      (
+        const ExchangePreferencesSaveFailure('rejected'),
+        ExchangeSettingsPreferencesSaveFailure,
+      ),
+    ]) {
+      test('${failure.runtimeType} becomes $expected', () async {
+        final facade = _MockExchangeFacade();
+        stubSave(facade, Err(failure));
 
-      expect((result as Err).failure, isA<ExchangeSettingsNetworkFailure>());
-    });
+        final result = await save(facade, loaded.copyWith(language: 'FR'));
 
-    test('a missing session stays a not-authenticated failure', () async {
-      final facade = _MockExchangeFacade();
-      stubSave(facade, const Err(ExchangeNotAuthenticatedFailure('expired')));
-
-      final result = await UpdateExchangePreferencesUsecase(
-        save: facade.savePreferences,
-      ).execute(preferences);
-
-      expect(
-        (result as Err).failure,
-        isA<ExchangeSettingsNotAuthenticatedFailure>(),
-      );
-    });
-
-    test('any other exchange failure becomes a save failure', () async {
-      final facade = _MockExchangeFacade();
-      stubSave(facade, const Err(ExchangePreferencesSaveFailure('rejected')));
-
-      final result = await UpdateExchangePreferencesUsecase(
-        save: facade.savePreferences,
-      ).execute(preferences);
-
-      expect(
-        (result as Err).failure,
-        isA<ExchangeSettingsPreferencesSaveFailure>(),
-      );
-    });
+        expect((result as Err).failure.runtimeType, expected);
+      });
+    }
   });
 
   group('GetSecureFileUploadStatusUsecase', () {

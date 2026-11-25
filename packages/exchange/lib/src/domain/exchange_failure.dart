@@ -50,9 +50,22 @@ final class ExchangeSessionClearFailure extends ExchangeFailure {
   const ExchangeSessionClearFailure([super.logMessage]);
 }
 
+/// The platform policy does not let the exchange be turned on here.
+final class ExchangePlatformNotAllowedFailure extends ExchangeFailure {
+  const ExchangePlatformNotAllowedFailure([super.logMessage]);
+}
+
 /// Language, currency, notification or DCA preferences could not be saved.
 final class ExchangePreferencesSaveFailure extends ExchangeFailure {
   const ExchangePreferencesSaveFailure([super.logMessage]);
+}
+
+/// The preference save may have reached the exchange without a readable
+/// answer. A save replaces the whole set with the same values, so saving
+/// again can't duplicate anything; callers treat it like a failed save.
+final class ExchangePreferencesSaveOutcomeUnknownFailure
+    extends ExchangeFailure {
+  const ExchangePreferencesSaveOutcomeUnknownFailure([super.logMessage]);
 }
 
 /// The notification socket could not be opened. Non-blocking: the exchange is
@@ -170,6 +183,10 @@ final class ExchangeChatLoadAttachmentFailure extends ExchangeFailure {
 enum ExchangeLimitOrderProblem {
   load,
   create,
+
+  /// The create may have reached the exchange without a readable answer: the
+  /// limit order may exist, so it is never offered again.
+  createOutcomeUnknown,
   cancel,
   maximumActive,
   notFound,

@@ -14,6 +14,7 @@ export 'src/data/models/wallet_transaction_model.dart';
 export 'src/data/wallet_history_datasource.dart';
 export 'src/data/wallet_transaction_repository_impl.dart';
 export 'src/domain/entities/transaction.dart';
+export 'src/domain/entities/transaction_history.dart';
 export 'src/domain/entities/transaction_output.dart';
 export 'src/domain/entities/wallet_transaction.dart';
 export 'src/domain/repositories/wallet_transaction_repository.dart';

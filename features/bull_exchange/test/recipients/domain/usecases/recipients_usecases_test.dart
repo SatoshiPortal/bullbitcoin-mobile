@@ -265,22 +265,39 @@ void main() {
         exchangeForTesting(getUserSummary: (_) => summary.execute()),
       ).execute();
 
-      expect((result as Ok<String, RecipientsFailure>).value, 'CR');
+      expect(
+        (result as Ok<Jurisdiction?, RecipientsFailure>).value,
+        Jurisdiction.costaRica,
+      );
     });
 
-    test('an unknown currency falls back rather than failing', () async {
+    test('USD maps to Costa Rica, where its rails are', () async {
       when(() => summary.execute())
-          .thenAnswer((_) async => Ok(_summaryWith('JPY')));
+          .thenAnswer((_) async => Ok(_summaryWith('USD')));
 
       final result = await GetPreferredJurisdictionUsecase(
         exchangeForTesting(getUserSummary: (_) => summary.execute()),
       ).execute();
 
       expect(
-        (result as Ok<String, RecipientsFailure>).value,
-        GetPreferredJurisdictionUsecase.defaultJurisdiction,
+        (result as Ok<Jurisdiction?, RecipientsFailure>).value,
+        Jurisdiction.costaRica,
       );
     });
+
+    test(
+      'an unknown currency gives no preference rather than Canada',
+      () async {
+        when(() => summary.execute())
+            .thenAnswer((_) async => Ok(_summaryWith('JPY')));
+
+        final result = await GetPreferredJurisdictionUsecase(
+          exchangeForTesting(getUserSummary: (_) => summary.execute()),
+        ).execute();
+
+        expect((result as Ok<Jurisdiction?, RecipientsFailure>).value, isNull);
+      },
+    );
 
     test('a refused summary read becomes a typed failure instead of escaping '
         'into the bloc', () async {

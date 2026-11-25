@@ -219,5 +219,6 @@
   "transactionPayjoinBroadcastFailed": "Muamala asili haukuweza kutangazwa. Tafadhali jaribu tena.",
   "transactionPayjoinOriginalUnavailable": "Muamala asili haupatikani tena kwa kutangazwa.",
   "transactionLabelLimitReached": "Unaweza kuwa na lebo 10 pekee.",
-  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili"
+  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili",
+  "transactionListExchangeOrdersUnavailable": "Imeshindwa kupakia oda za exchange."
 }

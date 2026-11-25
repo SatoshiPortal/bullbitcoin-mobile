@@ -17,6 +17,8 @@ import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../recipient_fixture.dart';
+
 class _MockGetRecipients extends Mock implements GetRecipientsUsecase {}
 
 class _MockAddRecipient extends Mock implements AddRecipientUsecase {}
@@ -34,9 +36,9 @@ class _MockGetAccountOwnerName extends Mock
 class _MockGetPreferredJurisdiction extends Mock
     implements GetPreferredJurisdictionUsecase {}
 
-const _recipient = RecipientViewModel(
-  id: 'r1',
-  type: RecipientType.sinpeMovilCrc,
+final _recipient = recipientFixture(
+  'r1',
+  RecipientType.sinpeMovilCrc,
   phoneNumber: '8888-8888',
 );
 
@@ -82,10 +84,8 @@ void main() {
     registerFallbackValue(CheckSinpeParams(phoneNumber: '8888-8888'));
     registerFallbackValue(ListCadBillersParams(searchTerm: 'hydro'));
 
-    when(() => getPreferredJurisdiction.execute()).thenAnswer(
-      (_) async =>
-          const Ok(GetPreferredJurisdictionUsecase.defaultJurisdiction),
-    );
+    when(() => getPreferredJurisdiction.execute())
+        .thenAnswer((_) async => const Ok(Jurisdiction.canada));
     when(() => getRecipients.execute(any()))
         .thenAnswer((_) async => const Err(RecipientsLoadFailure()));
     when(() => getAccountOwnerName.execute()).thenAnswer(
@@ -350,6 +350,32 @@ void main() {
     expect(bloc.state.isAddingRecipient, isFalse);
   });
 
+  test(
+    'an unknown save outcome re-reads the list and never saves again',
+    () async {
+      when(() => addRecipient.execute(any())).thenAnswer(
+        (_) async => const Err(RecipientsSaveOutcomeUnknownFailure()),
+      );
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const RecipientsStarted());
+      await pumpEventQueue();
+      clearInteractions(getRecipients);
+
+      bloc.add(RecipientsAdded(_formData()));
+      await pumpEventQueue();
+      bloc.add(RecipientsAdded(_formData()));
+      await pumpEventQueue();
+
+      expect(
+        bloc.state.failedToAddRecipient,
+        isA<RecipientsSaveOutcomeUnknownFailure>(),
+      );
+      verify(() => addRecipient.execute(any())).called(1);
+      verify(() => getRecipients.execute(any())).called(1);
+    },
+  );
+
   // Both of these were set by the bloc but rendered by no widget, so their
   // localized messages were dead code. They are wired up now — the SINPE one
   // under the phone field, the biller one under the search field — and these
@@ -387,6 +413,32 @@ void main() {
 
   // _runSelectionHook is the only catch left in this bloc, and the code it
   // guards belongs to another feature.
+  group('switching the new-recipient form', () {
+    for (final failure in <RecipientsFailure>[
+      const RecipientsSaveFailure(),
+      const RecipientsSaveOutcomeUnknownFailure(),
+      RecipientsInvalidFieldsFailure.fromFieldErrors(const {
+        'clabe': 'ERR_VALIDATION_FORMAT',
+      })!,
+    ]) {
+      test('clears the last save failure (${failure.runtimeType})', () async {
+        when(() => addRecipient.execute(any()))
+            .thenAnswer((_) async => Err(failure));
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(RecipientsEvent.added(_formData()));
+        await pumpEventQueue();
+        expect(bloc.state.failedToAddRecipient, same(failure));
+
+        bloc.add(const RecipientsEvent.newRecipientFormChanged());
+        await pumpEventQueue();
+
+        expect(bloc.state.failedToAddRecipient, isNull);
+      });
+    }
+  });
+
   group('the caller-supplied hook is contained', () {
     test('a throwing hook becomes a typed failure instead of escaping the '
         'handler', () async {
@@ -396,7 +448,7 @@ void main() {
       );
       addTearDown(bloc.close);
 
-      bloc.add(const RecipientsSelected(_recipient));
+      bloc.add(RecipientsSelected(_recipient));
       await pumpEventQueue();
 
       expect(
@@ -434,10 +486,38 @@ void main() {
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
-      bloc.add(const RecipientsSelected(_recipient));
+      bloc.add(RecipientsSelected(_recipient));
       await pumpEventQueue();
 
       expect(bloc.state.failedToSelectRecipient, isNull);
     });
+  });
+
+  test('a page with no row ends the list, so loading more stops', () async {
+    var calls = 0;
+    when(() => getRecipients.execute(any())).thenAnswer((invocation) async {
+      calls++;
+      final params =
+          invocation.positionalArguments.single as GetRecipientsParams;
+      // The server counts 120 but returns nothing past the first page.
+      return Ok(
+        GetRecipientsResult(
+          recipients: params.page == 1 ? [_recipientEntity()] : const [],
+          totalRecipients: 120,
+        ),
+      );
+    });
+    when(() => getConfidentialSepaAvailability.execute())
+        .thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
+    final bloc = buildBloc();
+    addTearDown(bloc.close);
+    bloc.add(const RecipientsEvent.started());
+    await pumpEventQueue();
+    expect(bloc.state.hasMoreRecipientsToLoad, isTrue);
+    bloc.add(const RecipientsEvent.moreLoaded());
+    await pumpEventQueue();
+    expect(bloc.state.hasMoreRecipientsToLoad, isFalse);
+    expect(bloc.state.isLoadingRecipients, isFalse);
+    expect(calls, 2);
   });
 }

@@ -736,5 +736,6 @@
   "transactionPayjoinBroadcastFailed": "मूल लेन-देन प्रसारित नहीं किया जा सका। कृपया पुनः प्रयास करें।",
   "transactionPayjoinOriginalUnavailable": "मूल लेन-देन अब प्रसारण के लिए उपलब्ध नहीं है।",
   "transactionLabelLimitReached": "आप अधिकतम 10 लेबल रख सकते हैं।",
-  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया"
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+  "transactionListExchangeOrdersUnavailable": "एक्सचेंज ऑर्डर लोड नहीं हो सके।"
 }

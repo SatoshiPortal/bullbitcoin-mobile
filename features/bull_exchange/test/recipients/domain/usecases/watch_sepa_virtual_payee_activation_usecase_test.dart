@@ -50,6 +50,9 @@ const _pending = Ok<SepaVirtualPayeeStatus?, RecipientsFailure>(
 const _active = Ok<SepaVirtualPayeeStatus?, RecipientsFailure>(
   SepaVirtualPayeeStatus.active,
 );
+const _unknown = Ok<SepaVirtualPayeeStatus?, RecipientsFailure>(
+  SepaVirtualPayeeStatus.unknown,
+);
 
 void main() {
   late _MockGetRecipientsEnvironmentUsecase environment;
@@ -118,6 +121,22 @@ void main() {
       SepaVirtualPayeeStatus.pending,
       SepaVirtualPayeeStatus.active,
     ]);
+  });
+
+  test('an unknown status is the last event: no more polls, no activation '
+      '(RCP-11)', () async {
+    final repository = _FakeSepaVirtualPayeeRepository(
+      findResults: [_pending, _unknown, _active],
+    );
+
+    final events = await run(repository);
+
+    expect(statuses(events), [
+      SepaVirtualPayeeStatus.pending,
+      SepaVirtualPayeeStatus.unknown,
+    ]);
+    expect(repository.finds, 2);
+    expect(repository.activations, 0);
   });
 
   test('a failed activation is the last event', () async {
