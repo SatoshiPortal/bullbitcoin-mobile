@@ -8,8 +8,7 @@ import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/settings/domain/manage_exchange_access_usecase.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_bloc.dart';
 import 'package:bull_exchange/src/settings/ui/screens/exchange_access_settings_screen.dart';
-import 'package:bull_exchange/bull_exchange.dart'
-    hide WatchExchangeAccessUsecase;
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:material_ui/material_ui.dart';
