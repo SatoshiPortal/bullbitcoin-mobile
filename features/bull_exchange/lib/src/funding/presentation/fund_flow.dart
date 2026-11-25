@@ -584,10 +584,17 @@ FundFlowNext _askConsent(FundOpen open, FundingRail rail) {
   final start = consentGateStart(alreadyGiven: open.account.consented);
   return switch (start.state) {
     ConsentGateGiven(:final given) => _afterConsent(open, rail, given),
-    final required => _consentNext(
+    ConsentRequired() ||
+    ConsentAsking() ||
+    ConsentSubmitting() ||
+    ConsentVerifying() ||
+    ConsentFailed() ||
+    ConsentUnverified() ||
+    ConsentDeclined() ||
+    ConsentSessionEnded() => _consentNext(
       open,
       rail,
-      transitionConsentGate(required, const ConsentStartPressed()),
+      transitionConsentGate(start.state, const ConsentStartPressed()),
     ),
   };
 }

@@ -148,7 +148,8 @@ final class BuyContext {
     return switch (liquidDefaults) {
       [final wallet] => wallet,
       [] => wallets.isEmpty ? null : wallets.first,
-      _ => null,
+      // Two Liquid defaults: no single one to preselect.
+      [_, _, ...] => null,
     };
   }
 
