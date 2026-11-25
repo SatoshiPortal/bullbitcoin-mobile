@@ -10,5 +10,6 @@ ImportWatchOnlyFailure importWatchOnlyFailure(
   WalletProvisioningInvalidFailure() => const InvalidFormatFailure(),
   WalletProvisioningUnsupportedFailure() ||
   WalletProvisioningSecretFailure() ||
+  WalletProvisioningBackupRequiredFailure() ||
   WalletProvisioningStorageFailure() => const ImportFailedFailure(),
 };

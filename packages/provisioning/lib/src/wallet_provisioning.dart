@@ -404,6 +404,8 @@ final class _WalletProvisioning implements WalletProvisioning {
         break;
       case Err(failure: WalletAlreadyRegisteredFailure()):
         return const Err(WalletProvisioningConflictFailure());
+      case Err(failure: BackupRequiredFailure()):
+        return const Err(WalletProvisioningBackupRequiredFailure());
       case Err():
         return const Err(WalletProvisioningStorageFailure());
     }

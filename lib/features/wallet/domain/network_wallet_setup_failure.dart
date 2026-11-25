@@ -26,3 +26,8 @@ final class NetworkWalletSetupUnavailableFailure
     extends NetworkWalletSetupFailure {
   const NetworkWalletSetupUnavailableFailure();
 }
+
+final class NetworkWalletSetupBackupRequiredFailure
+    extends NetworkWalletSetupFailure {
+  const NetworkWalletSetupBackupRequiredFailure();
+}

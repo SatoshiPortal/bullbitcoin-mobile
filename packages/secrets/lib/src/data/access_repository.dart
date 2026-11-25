@@ -7,10 +7,9 @@ import 'package:primitives/primitives.dart';
 import '../crypto/access_verifier.dart';
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
-import '../domain/inventory_backup_verification.dart';
+import 'backup_guard.dart';
 import 'boundary.dart';
 import 'inventory_import.dart';
-import 'inventory_repository.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
 
@@ -20,11 +19,12 @@ final class AccessRepository {
   static const _attemptIncrementMs = 30000;
 
   final SecretsDatabase _database;
+  final BackupGuard _guard;
   final Stopwatch _cooldown = Stopwatch();
   ({int attempts, int? until})? _cooldownState;
 
   @internal
-  AccessRepository(this._database);
+  AccessRepository(this._database, this._guard);
 
   Future<Result<bool, SecretFailure>> isProtected() => boundary(
     () async => (await _credential()) != null,
@@ -84,74 +84,79 @@ final class AccessRepository {
         orElse: StoreSecretFailure.new,
       );
 
-  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    InventoryBackupVerification verification,
-  ) async {
-    final view = await boundary(_defaultView, orElse: FetchSecretFailure.new);
-    return switch (view) {
-      Ok(:final value) => _checkBackups(value, verification),
+  /// The secrets of the active view that still lack a tested backup. Read only:
+  /// a decision to protect is taken again under the write lock.
+  Future<Result<List<Fingerprint>, SecretFailure>> unbackedSecrets() async {
+    final secrets = await boundary(
+      () => viewSecrets(_database, defaultViewId),
+      orElse: FetchSecretFailure.new,
+    );
+    return switch (secrets) {
+      Ok(:final value) => _guard.missing(value),
       Err(:final failure) => Err(failure),
     };
   }
 
-  Future<Result<void, SecretFailure>> replaceCredential(
-    String? next, {
-    InventoryBackupVerification? backupVerification,
-  }) => boundary(
-    () => _database.transaction(() async {
-      final state = await _stateForUpdate();
-      final view = await _defaultView();
-      final existing = await _credential();
-      if (next != null) {
-        if (backupVerification == null) throw const _InvalidAccessState();
-        final backup = await _checkBackups(view, backupVerification);
-        if (backup is! Ok<bool, SecretFailure> || !backup.value) {
-          throw const _ValidBackupRequired();
-        }
-        final salt = AccessVerifier.newSalt();
-        await _database
-            .into(_database.credentials)
-            .insertOnConflictUpdate(
-              CredentialsCompanion.insert(
-                id: initialCredentialId,
-                scheme: AccessVerifier.scheme,
-                salt: salt,
-                params: AccessVerifier.params,
-                verifier: await AccessVerifier.derive(next, salt),
-              ),
-            );
-      }
-      final viewUpdate = _database.update(_database.views)
-        ..where((v) => v.id.equals(view.id));
-      await viewUpdate.write(
-        ViewsCompanion(
-          credentialId: Value(next == null ? null : initialCredentialId),
-        ),
-      );
-      if (existing != null && next == null) {
-        await (_database.delete(
-          _database.credentials,
-        )..where((c) => c.id.equals(existing.id))).go();
-      }
-      final reset = state.copyWith(
-        failedAttempts: 0,
-        lockedUntil: const Value(null),
-      );
-      await _database.update(_database.accessState).replace(reset);
-      _remaining(reset);
-    }),
-    orElse: StoreSecretFailure.new,
-  );
+  /// Protects the view or replaces its PIN. Either every write commits or none
+  /// does, so a refusal keeps the old verifier, counter and protection.
+  Future<Result<void, SecretFailure>> replaceCredential(String? next) async {
+    SecretFailure? refused;
+    final result = await boundary(
+      () => inventoryWriteTransaction(_database, () async {
+        refused = await _replace(next);
+      }),
+      orElse: StoreSecretFailure.new,
+    );
+    final refusal = refused;
+    return refusal == null ? result : Err(refusal);
+  }
 
-  Future<Result<bool, SecretFailure>> _checkBackups(
-    AccessViewRow view,
-    InventoryBackupVerification verification,
-  ) async {
-    final defaults = await InventoryRepository(_database).listDefaults(view.id);
-    return switch (defaults) {
-      Ok(:final value) => verification.hasVerifiedBackups(value),
-      Err(:final failure) => Err(failure),
-    };
+  Future<SecretFailure?> _replace(String? next) async {
+    final state = await _stateForUpdate();
+    final view = await _defaultView();
+    final existing = await _credential();
+    if (next != null) {
+      // D66 gates protection, not a change of PIN: a view that already has a
+      // verifier (a migrated one never proved its seeds) rotates it without
+      // adding a secret. Only no PIN -> PIN is judged.
+      if (existing == null) {
+        final refusal = await _guard.require(
+          await viewSecrets(_database, view.id),
+        );
+        if (refusal != null) return refusal;
+      }
+      final salt = AccessVerifier.newSalt();
+      await _database
+          .into(_database.credentials)
+          .insertOnConflictUpdate(
+            CredentialsCompanion.insert(
+              id: initialCredentialId,
+              scheme: AccessVerifier.scheme,
+              salt: salt,
+              params: AccessVerifier.params,
+              verifier: await AccessVerifier.derive(next, salt),
+            ),
+          );
+    }
+    final viewUpdate = _database.update(_database.views)
+      ..where((v) => v.id.equals(view.id));
+    await viewUpdate.write(
+      ViewsCompanion(
+        credentialId: Value(next == null ? null : initialCredentialId),
+      ),
+    );
+    if (existing != null && next == null) {
+      await (_database.delete(
+        _database.credentials,
+      )..where((c) => c.id.equals(existing.id))).go();
+    }
+    final reset = state.copyWith(
+      failedAttempts: 0,
+      lockedUntil: const Value(null),
+    );
+    await _database.update(_database.accessState).replace(reset);
+    _remaining(reset);
+    return null;
   }
 
   Future<AccessStateRow> _state() async {
@@ -163,9 +168,7 @@ final class AccessRepository {
   }
 
   Future<AccessStateRow> _stateForUpdate() async {
-    await _database.customStatement(
-      'UPDATE access_state SET singleton = singleton WHERE singleton = 1',
-    );
+    await serializeInventoryWrites(_database);
     return _state();
   }
 
@@ -234,8 +237,4 @@ final class AccessRepository {
 
 final class _InvalidAccessState implements Exception {
   const _InvalidAccessState();
-}
-
-final class _ValidBackupRequired implements Exception {
-  const _ValidBackupRequired();
 }

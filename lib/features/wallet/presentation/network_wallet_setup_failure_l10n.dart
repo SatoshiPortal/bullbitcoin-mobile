@@ -15,5 +15,7 @@ extension NetworkWalletSetupFailureL10n on NetworkWalletSetupFailure {
       context,
     ),
     NetworkWalletSetupUnavailableFailure() => context.loc.walletLoadFailed,
+    NetworkWalletSetupBackupRequiredFailure() =>
+      context.loc.networkWalletBackupRequired,
   };
 }

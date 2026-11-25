@@ -10324,5 +10324,9 @@
   "sendErrorInvoiceExpiryTooShort": "This invoice expires too soon. Ask the recipient for a new invoice.",
   "@sendErrorInvoiceExpiryTooShort": {
     "description": "Error shown when Boltz rejects a Lightning invoice with too little time before expiry"
+  },
+  "networkWalletBackupRequired": "A PIN protects this view. Remove the PIN, create the wallet, verify its recovery phrase backup, then set the PIN again.",
+  "@networkWalletBackupRequired": {
+    "description": "Explains why a new seed cannot be added to a PIN-protected view"
   }
 }

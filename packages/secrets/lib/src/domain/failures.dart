@@ -16,6 +16,28 @@ sealed class SecretFailure extends Failure {
   const SecretFailure([super.logMessage]);
 }
 
+/// Protecting a view, or adding a secret to a protected view, needs a tested
+/// backup of every secret in [missing]. Nothing was changed.
+final class BackupRequiredFailure extends SecretFailure {
+  final List<Fingerprint> missing;
+
+  BackupRequiredFailure(Iterable<Fingerprint> missing)
+    : missing = List.unmodifiable(missing),
+      super('backup required');
+}
+
+/// No store could prove a backup and at least one could not be read. Distinct
+/// from [BackupRequiredFailure]: the state is unknown, not absent.
+final class BackupStateUnavailableFailure extends SecretFailure {
+  const BackupStateUnavailableFailure() : super('backup state unavailable');
+}
+
+/// The inventory was opened without a backup verifier, so it cannot judge a
+/// backup. A composition error: it refuses instead of assuming a proof.
+final class BackupVerifierUnboundFailure extends SecretFailure {
+  const BackupVerifierUnboundFailure() : super('backup verifier unbound');
+}
+
 final class SecretNotFoundFailure extends SecretFailure {
   const SecretNotFoundFailure([super.logMessage]);
 }

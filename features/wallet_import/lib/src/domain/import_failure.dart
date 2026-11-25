@@ -57,6 +57,12 @@ final class ImportMnemonicCustodyMetadataFailure extends ImportMnemonicFailure {
   const ImportMnemonicCustodyMetadataFailure();
 }
 
+/// The view is protected by a PIN and these words have no tested backup, so the
+/// wallet was not attached. The words stay stored and a later import resumes.
+final class ImportMnemonicBackupRequiredFailure extends ImportMnemonicFailure {
+  const ImportMnemonicBackupRequiredFailure();
+}
+
 final class ImportMnemonicDuplicateFailure extends ImportMnemonicFailure {
   const ImportMnemonicDuplicateFailure();
 }

@@ -328,17 +328,10 @@ class AppLocator {
         catalog: SpendCatalog.fromInventory(inventory),
       ),
     );
-    final backupVerification = locator<InventoryBackupVerification>();
     locator.registerSingleton<AccessFeature>(
       AccessFeature.mount(
         services: locator,
         inventory: inventory,
-        backupVerification: backupVerification,
-        hasVerifiedBackup: () async =>
-            switch (await inventory.hasVerifiedBackups(backupVerification)) {
-              Ok(:final value) => value,
-              Err() => false,
-            },
         onUnlocked: (context) async {
           await startWalletsAfterUnlock(locator);
           if (!context.mounted) return;

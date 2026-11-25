@@ -71,6 +71,8 @@ final class CreateNetworkWalletUsecase {
         secret: secret,
         expectedNetwork: network,
       )) {
+        case Err(failure: DefaultWalletBackupRequiredFailure()):
+          return const Err(NetworkWalletSetupBackupRequiredFailure());
         case Err():
           return const Err(NetworkWalletSetupUnavailableFailure());
         case Ok():
