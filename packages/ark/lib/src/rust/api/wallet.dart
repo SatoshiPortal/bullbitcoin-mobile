@@ -87,14 +87,14 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
   /// Reads the chain source tip and cached native inventory without synchronizing it.
   Future<ScuttleObservation> observation();
 
-  /// The seed is child-only material; the caller remains responsible for its copy.
+  /// The mnemonic is child-only material; the caller remains responsible for its copy.
   static Future<ScuttleWallet> open({
     required ScuttleNetwork network,
     required OpenMode mode,
     required String datadir,
     required String serverAddress,
     required String esploraAddress,
-    required List<int> childSeed,
+    required String childMnemonic,
     required bool allowUnreachableServer,
   }) => ScuttleCore.instance.api.crateApiWalletScuttleWalletOpen(
     network: network,
@@ -102,7 +102,7 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
     datadir: datadir,
     serverAddress: serverAddress,
     esploraAddress: esploraAddress,
-    childSeed: childSeed,
+    childMnemonic: childMnemonic,
     allowUnreachableServer: allowUnreachableServer,
   );
 

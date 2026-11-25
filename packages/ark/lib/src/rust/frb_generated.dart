@@ -169,7 +169,7 @@ abstract class ScuttleCoreApi extends BaseApi {
     required String datadir,
     required String serverAddress,
     required String esploraAddress,
-    required List<int> childSeed,
+    required String childMnemonic,
     required bool allowUnreachableServer,
   });
 
@@ -854,7 +854,7 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     required String datadir,
     required String serverAddress,
     required String esploraAddress,
-    required List<int> childSeed,
+    required String childMnemonic,
     required bool allowUnreachableServer,
   }) {
     return handler.executeNormal(
@@ -865,7 +865,7 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
           var arg2 = cst_encode_String(datadir);
           var arg3 = cst_encode_String(serverAddress);
           var arg4 = cst_encode_String(esploraAddress);
-          var arg5 = cst_encode_list_prim_u_8_loose(childSeed);
+          var arg5 = cst_encode_String(childMnemonic);
           var arg6 = cst_encode_bool(allowUnreachableServer);
           return wire.wire__crate__api__wallet__ScuttleWallet_open(
             port_,
@@ -907,7 +907,7 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
           "datadir",
           "serverAddress",
           "esploraAddress",
-          "childSeed",
+          "childMnemonic",
           "allowUnreachableServer",
         ],
       );

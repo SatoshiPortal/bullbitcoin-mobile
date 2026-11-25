@@ -732,7 +732,7 @@ fn wire__crate__api__wallet__ScuttleWallet_open_impl(
     datadir: impl CstDecode<String>,
     server_address: impl CstDecode<String>,
     esplora_address: impl CstDecode<String>,
-    child_seed: impl CstDecode<Vec<u8>>,
+    child_mnemonic: impl CstDecode<String>,
     allow_unreachable_server: impl CstDecode<bool>,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
@@ -747,7 +747,7 @@ fn wire__crate__api__wallet__ScuttleWallet_open_impl(
             let api_datadir = datadir.cst_decode();
             let api_server_address = server_address.cst_decode();
             let api_esplora_address = esplora_address.cst_decode();
-            let api_child_seed = child_seed.cst_decode();
+            let api_child_mnemonic = child_mnemonic.cst_decode();
             let api_allow_unreachable_server = allow_unreachable_server.cst_decode();
             move |context| async move {
                 transform_result_dco::<_, _, String>(
@@ -758,7 +758,7 @@ fn wire__crate__api__wallet__ScuttleWallet_open_impl(
                             api_datadir,
                             api_server_address,
                             api_esplora_address,
-                            api_child_seed,
+                            api_child_mnemonic,
                             api_allow_unreachable_server,
                         )
                         .await?;
@@ -3968,7 +3968,7 @@ mod io {
         datadir: *mut wire_cst_list_prim_u_8_strict,
         server_address: *mut wire_cst_list_prim_u_8_strict,
         esplora_address: *mut wire_cst_list_prim_u_8_strict,
-        child_seed: *mut wire_cst_list_prim_u_8_loose,
+        child_mnemonic: *mut wire_cst_list_prim_u_8_strict,
         allow_unreachable_server: bool,
     ) {
         wire__crate__api__wallet__ScuttleWallet_open_impl(
@@ -3978,7 +3978,7 @@ mod io {
             datadir,
             server_address,
             esplora_address,
-            child_seed,
+            child_mnemonic,
             allow_unreachable_server,
         )
     }

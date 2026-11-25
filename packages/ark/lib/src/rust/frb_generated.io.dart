@@ -1869,7 +1869,7 @@ class ScuttleCoreWire implements BaseWire {
     ffi.Pointer<wire_cst_list_prim_u_8_strict> datadir,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> server_address,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> esplora_address,
-    ffi.Pointer<wire_cst_list_prim_u_8_loose> child_seed,
+    ffi.Pointer<wire_cst_list_prim_u_8_strict> child_mnemonic,
     bool allow_unreachable_server,
   ) {
     return _wire__crate__api__wallet__ScuttleWallet_open(
@@ -1879,7 +1879,7 @@ class ScuttleCoreWire implements BaseWire {
       datadir,
       server_address,
       esplora_address,
-      child_seed,
+      child_mnemonic,
       allow_unreachable_server,
     );
   }
@@ -1894,7 +1894,7 @@ class ScuttleCoreWire implements BaseWire {
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
-            ffi.Pointer<wire_cst_list_prim_u_8_loose>,
+            ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Bool,
           )
         >
@@ -1909,7 +1909,7 @@ class ScuttleCoreWire implements BaseWire {
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
-              ffi.Pointer<wire_cst_list_prim_u_8_loose>,
+              ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               bool,
             )
           >();
