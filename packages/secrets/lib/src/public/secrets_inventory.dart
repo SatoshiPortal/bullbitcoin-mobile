@@ -374,6 +374,54 @@ extension MetadataBackupInventory on SecretsInventory {
   });
 }
 
+/// Metadata backup operations that cannot reach a seed or a descriptor
+/// outside the projection above.
+extension MetadataBackupRestore on SecretsInventory {
+  /// An opaque token for the view this session reads. A caller that keeps
+  /// state per view uses it as the partition key, and compares it again
+  /// before it publishes or applies anything.
+  @useResult
+  Future<Result<String, SecretFailure>> backupViewScope() =>
+      _inSession((_) async => const Ok(defaultViewId));
+
+  /// The visible wallet whose network and two public descriptors equal the
+  /// given ones. Never matched by identifier.
+  @useResult
+  Future<Result<String, SecretFailure>> matchPublicWallet({
+    required BitcoinNetwork network,
+    required String external,
+    required String internal,
+  }) => _inSession(
+    (_) => _wallets.matchPublicWallet(
+      view: defaultViewId,
+      network: network,
+      external: external,
+      internal: internal,
+    ),
+  );
+
+  /// Attaches a label and a birthday to the matching public wallet, only
+  /// where the wallet has none. Signer, device and default flag are untouched.
+  @useResult
+  Future<Result<({bool label, bool birthday}), SecretFailure>>
+  restorePublicWalletProperties({
+    required BitcoinNetwork network,
+    required String external,
+    required String internal,
+    required String? label,
+    required DateTime? birthday,
+  }) => _inSession(
+    (_) => _wallets.restorePublicProperties(
+      view: defaultViewId,
+      network: network,
+      external: external,
+      internal: internal,
+      label: label,
+      birthday: birthday,
+    ),
+  );
+}
+
 /// Scope for background sync. Only descriptors in views with an active
 /// background grant can leave this capability. It cannot read seeds or PINs.
 final class BackgroundWalletDescriptors {

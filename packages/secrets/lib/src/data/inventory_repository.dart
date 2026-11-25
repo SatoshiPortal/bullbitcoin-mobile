@@ -35,11 +35,15 @@ final class InventoryRepository {
   MetadataBackupWallet _metadataBackupWallet(QueryRow row) {
     final id = row.read<String>('id');
     final registration = decodeWalletRegistration(row.data);
-    final secret = registration?.secretFingerprint;
-    if (registration == null || secret == null) {
+    if (registration == null) return MetadataBackupWallet(id: id);
+    final secret = registration.secretFingerprint;
+    final watchOnly = registration.signer != WalletSigner.local;
+    // A signing wallet needs its seed reference; a watch-only one has none.
+    if (secret == null && !watchOnly) return MetadataBackupWallet(id: id);
+    final network = registration.network;
+    if (watchOnly && network is! BitcoinNetwork) {
       return MetadataBackupWallet(id: id);
     }
-    final network = registration.network;
     final descriptors = <String>[];
     if (network is BitcoinNetwork) {
       final external = row.read<String>('external_descriptor');
@@ -56,8 +60,106 @@ final class InventoryRepository {
       secret: secret,
       label: registration.label,
       isDefault: registration.isDefault,
+      isWatchOnly: watchOnly,
+      scriptType: registration.scriptType,
+      birthday: registration.birthday,
       bitcoinPublicDescriptors: descriptors,
     );
+  }
+
+  /// The one visible Bitcoin wallet whose network and both public descriptors
+  /// equal the given ones, ignoring descriptor checksums. An identifier is
+  /// never a match: only the public material is. No match is
+  /// [WalletRegistrationNotFoundFailure]; several are [UnreadableWalletFailure].
+  Future<Result<String, SecretFailure>> matchPublicWallet({
+    required String view,
+    required BitcoinNetwork network,
+    required String external,
+    required String internal,
+  }) async {
+    final matched = await boundary(
+      () async => _matches(
+        await _listRows(view, networkCode: storedWalletNetwork(network)),
+        external,
+        internal,
+      ).map((row) => row.read<String>('id')).toList(),
+      orElse: FetchSecretFailure.new,
+    );
+    return switch (matched) {
+      Ok(value: [final id]) => Ok(id),
+      Ok(value: []) => const Err(WalletRegistrationNotFoundFailure()),
+      Ok() => const Err(UnreadableWalletFailure()),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  /// Attaches a label and a birthday to the matching public wallet without
+  /// replacing anything the user already has. Signer, device and default
+  /// flag are never touched.
+  Future<Result<({bool label, bool birthday}), SecretFailure>>
+  restorePublicProperties({
+    required String view,
+    required BitcoinNetwork network,
+    required String external,
+    required String internal,
+    required String? label,
+    required DateTime? birthday,
+  }) async {
+    final applied = await boundary<({bool label, bool birthday})?>(
+      () => _database.transaction(() async {
+        final matches = _matches(
+          await _listRows(view, networkCode: storedWalletNetwork(network)),
+          external,
+          internal,
+        );
+        if (matches.length != 1) return null;
+        final row = matches.single;
+        final id = row.read<String>('id');
+        final localLabel = row.read<String?>('label');
+        final localBirthday = row.read<String?>('birthday');
+        final newLabel =
+            label != null &&
+            label.trim().isNotEmpty &&
+            (localLabel == null || localLabel.trim().isEmpty);
+        final newBirthday = birthday != null && localBirthday == null;
+        if (newLabel || newBirthday) {
+          await (_database.update(
+            _database.wallets,
+          )..where((wallet) => wallet.id.equals(id))).write(
+            WalletsCompanion(
+              label: newLabel ? Value(label) : const Value.absent(),
+              birthday: newBirthday
+                  ? Value(birthday.toIso8601String())
+                  : const Value.absent(),
+            ),
+          );
+        }
+        return (label: newLabel, birthday: newBirthday);
+      }),
+      orElse: StoreSecretFailure.new,
+    );
+    return switch (applied) {
+      Ok(value: final report?) => Ok(report),
+      Ok() => const Err(WalletRegistrationNotFoundFailure()),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  List<QueryRow> _matches(
+    List<QueryRow> rows,
+    String external,
+    String internal,
+  ) {
+    String canonical(String descriptor) => descriptor.trim().split('#').first;
+    return [
+      for (final row in rows)
+        if (decodeWalletRegistration(row.data) != null &&
+            canonical(row.read<String>('external_descriptor')) ==
+                canonical(external) &&
+            canonical(row.read<String>('internal_descriptor')) ==
+                canonical(internal))
+          row,
+    ];
   }
 
   Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints(
