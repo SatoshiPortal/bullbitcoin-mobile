@@ -173,10 +173,9 @@ final class _PreparedExchange implements PreparedOwner {
     );
   }
 
-  /// PENDING PRODUCT DECISION, the only place that decides it: whether an API
-  /// key found under a marker kept from a fresh install is imported or ignored.
-  /// Today it is ignored (iOS residue of an earlier install), never read nor
-  /// deleted, while the Settings rows are always imported.
+  /// An API key found under a marker kept from a fresh install is ignored
+  /// (D103): it is never read nor deleted, Exchange starts signed out and the
+  /// user signs in again. The Settings rows are always imported.
   Future<Result<_Records, LegacyImportFailure>> _recordsToImport(
     LegacySource source,
   ) async =>
