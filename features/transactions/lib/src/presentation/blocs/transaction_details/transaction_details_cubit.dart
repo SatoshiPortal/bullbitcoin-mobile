@@ -90,6 +90,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   WalletTransaction? _pendingOrderSwapWalletTransaction;
   int _orderSwapTransactionWatchGeneration = 0;
 
+  // Bumped by every init entry point. A post-await subscription only installs
+  // while its generation is still current and the cubit is open.
+  int _initGeneration = 0;
+  String? _watchedSwapId;
+
+  bool _superseded(int generation) => isClosed || generation != _initGeneration;
+
   // The payjoin id _payjoinSubscription is currently listening to on the
   // by-wallet-tx path, so reloads triggered by its own events don't
   // needlessly cancel and re-create the same subscription.
@@ -125,11 +132,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     // resolves to a wallet tx delegates here, and reloading the wallet tx also
     // refetches the order.
     _reload ??= () => _loadDetailsByWalletTxId(txId, walletId: walletId);
+    final generation = ++_initGeneration;
 
     // An order-id entry whose order only later gains a transactionId re-enters
     // here on every refresh, so drop the previous watcher instead of leaking a
     // live one that keeps fetching per wallet-tx event.
     await _walletTransactionSubscription?.cancel();
+    if (_superseded(generation)) return;
 
     // Start monitoring the wallet transaction for updates.
     _walletTransactionSubscription = _watchWalletTransactionByTxIdUsecase
@@ -138,8 +147,36 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
     // Load the initial details of the transaction.
     await _loadDetailsByWalletTxId(txId, walletId: walletId);
+    if (_superseded(generation)) return;
+
+    // Boltz updates must reach the screen whichever way it was opened: watch
+    // the swap this transaction resolved to, as the swap-id entry does.
+    final swap = state.transaction?.swap;
+    if (swap != null && _watchedSwapId != swap.id) {
+      _watchedSwapId = swap.id;
+      final previous = _swapSubscription;
+      _swapSubscription = null;
+      await previous?.cancel();
+      if (_superseded(generation)) return;
+      _swapSubscription = _watchTransactionSwapUsecase.execute(swap.id).listen((
+        result,
+      ) {
+        if (isClosed) return;
+        switch (result) {
+          case Ok():
+            unawaited(_loadDetailsByWalletTxId(txId, walletId: walletId));
+          case Err(:final failure):
+            _onWatchFailure(failure, 'swap watch');
+        }
+      });
+    }
+
     final orderSwap = state.transaction?.orderSwap;
     if (orderSwap != null) {
+      final previous = _orderSwapSubscription;
+      _orderSwapSubscription = null;
+      await previous?.cancel();
+      if (_superseded(generation)) return;
       _orderSwapSubscription = _watchTransactionOrderSwapUsecase
           .execute(orderSwap.localId)
           .listen((result) {
@@ -156,7 +193,11 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
   Future<void> initByOrderSwapLocalId(String localId) async {
     _reload = () => _loadDetailsByOrderSwapLocalId(localId);
+    final generation = ++_initGeneration;
     await _loadDetailsByOrderSwapLocalId(localId);
+    if (_superseded(generation)) return;
+    await _orderSwapSubscription?.cancel();
+    if (_superseded(generation)) return;
     _orderSwapSubscription = _watchTransactionOrderSwapUsecase
         .execute(localId)
         .listen((result) {
@@ -537,6 +578,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   Future<void> initBySwapId(String swapId, {required String walletId}) async {
+    final generation = ++_initGeneration;
+    _watchedSwapId = swapId;
+    await _swapSubscription?.cancel();
+    if (_superseded(generation)) return;
     _swapSubscription = _watchTransactionSwapUsecase.execute(swapId).listen((
       result,
     ) {
@@ -551,6 +596,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
     // Load the initial details of the swap.
     await _loadDetailsBySwapId(swapId, walletId: walletId);
+    if (_superseded(generation)) return;
 
     // Only when the swap didn't resolve to a wallet tx, which sets its own
     // reload without re-subscribing the watchers.
@@ -561,6 +607,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     String swapId, {
     required String walletId,
   }) async {
+    final generation = _initGeneration;
     final Swap swap;
     switch (await _getTransactionSwapUsecase.execute(swapId)) {
       case Ok(:final value):
@@ -583,7 +630,30 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
 
     if (txId != null) {
-      await _swapSubscription?.cancel();
+      // The swap resolved to its wallet transaction, which now owns the
+      // screen. Keep following the swap, retargeted to reload that
+      // transaction: the claim (settlement) transaction only shows up on the
+      // swap later, and the status view needs it to confirm the payment.
+      final resolvedTxId = txId;
+      if (_superseded(generation)) return;
+      final previous = _swapSubscription;
+      _swapSubscription = null;
+      await previous?.cancel();
+      if (_superseded(generation)) return;
+      _watchedSwapId = swapId;
+      _swapSubscription = _watchTransactionSwapUsecase.execute(swapId).listen((
+        result,
+      ) {
+        if (isClosed) return;
+        switch (result) {
+          case Ok():
+            unawaited(
+              _loadDetailsByWalletTxId(resolvedTxId, walletId: walletId),
+            );
+          case Err(:final failure):
+            _onWatchFailure(failure, 'swap watch');
+        }
+      });
       await initByWalletTxId(txId, walletId: walletId);
       return;
     }

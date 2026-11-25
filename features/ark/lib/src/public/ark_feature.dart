@@ -26,6 +26,11 @@ import '../domain/repositories/ark_repository.dart';
 import '../domain/usecases/load_ark_settings_usecase.dart';
 import '../domain/usecases/read_ark_usecase.dart';
 import '../domain/usecases/enable_ark_usecase.dart';
+import '../domain/usecases/read_ark_payment_animations_usecase.dart';
+
+import 'package:preferences/preferences.dart'
+    show PaymentAnimationPreferencesReader;
+
 import '../domain/usecases/set_ark_enabled_usecase.dart';
 import '../domain/usecases/quote_ark_operation_usecase.dart';
 import '../domain/usecases/confirm_ark_operation_usecase.dart';
@@ -139,6 +144,7 @@ final class ArkFeature {
 
   /// The app's confirmation arrow, so Ark's confirm screens match Send's.
   final Widget? _confirmIcon;
+  final ReadArkPaymentAnimationsUsecase? _readPaymentAnimations;
   final ArkRepositoryImpl _repository;
   final ArkFacade facade;
   final _ownerListeners = <VoidCallback>{};
@@ -175,7 +181,11 @@ final class ArkFeature {
     this._exitFunding,
     this._fundInitialExit,
     this._savedExitDestination,
-  }) : _client = client,
+    PaymentAnimationPreferencesReader? paymentAnimations,
+  }) : _readPaymentAnimations = paymentAnimations == null
+           ? null
+           : ReadArkPaymentAnimationsUsecase(paymentAnimations),
+       _client = client,
        _preferences = preferences,
        _provisioning = provisioning,
        _boardFunding = boardFunding,
@@ -666,6 +676,7 @@ class _ArkPageState extends State<_ArkPage> {
       ArkExitsScreen(
         snapshot: snapshot,
         waitingForFunds: waitingForFunds,
+        readPaymentAnimations: widget.feature._readPaymentAnimations?.execute,
         onRefresh: () {
           if (_live(owner)) unawaited(owner.refresh());
         },
@@ -894,6 +905,7 @@ class _ArkPageState extends State<_ArkPage> {
         onViewDetails: (reference) =>
             unawaited(_paymentDetails(owner, reference)),
         confirmIcon: widget.feature._confirmIcon,
+        readPaymentAnimations: widget.feature._readPaymentAnimations?.execute,
       ),
       ArkReceiveCubit() => ArkReceiveScreen(
         cubit: owner,
@@ -906,6 +918,7 @@ class _ArkPageState extends State<_ArkPage> {
         onViewDetails: (txid) => unawaited(_boardDetails(owner, txid)),
         onClose: _home,
         confirmIcon: widget.feature._confirmIcon,
+        readPaymentAnimations: widget.feature._readPaymentAnimations?.execute,
       ),
       ArkOperationCubit() => ArkOperationReviewScreen(
         cubit: owner,

@@ -23,6 +23,8 @@ class OwnerSettings extends Table {
       boolean().withDefault(const Constant(false))();
   BoolColumn get screenCaptureProtectionEnabled =>
       boolean().withDefault(const Constant(true))();
+  BoolColumn get showPaymentAnimations =>
+      boolean().withDefault(const Constant(true))();
 
   @override
   String get tableName => 'settings';

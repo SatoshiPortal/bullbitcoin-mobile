@@ -22,6 +22,7 @@ class SettingsModel {
   final AppThemeMode themeMode;
   final bool isErrorReportingEnabled;
   final bool screenCaptureProtectionEnabled;
+  final bool showPaymentAnimations;
 
   const SettingsModel({
     required this.id,
@@ -40,6 +41,7 @@ class SettingsModel {
     required this.themeMode,
     required this.isErrorReportingEnabled,
     required this.screenCaptureProtectionEnabled,
+    this.showPaymentAnimations = true,
   });
 
   factory SettingsModel.fromSqlite(OwnerSettingsRow row) {
@@ -67,6 +69,7 @@ class SettingsModel {
       themeMode: AppThemeMode.fromName(row.themeMode),
       isErrorReportingEnabled: row.isErrorReportingEnabled,
       screenCaptureProtectionEnabled: row.screenCaptureProtectionEnabled,
+      showPaymentAnimations: row.showPaymentAnimations,
     );
   }
 }

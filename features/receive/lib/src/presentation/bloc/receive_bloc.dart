@@ -34,6 +34,7 @@ import 'package:receive/src/domain/usecases/create_boltz_receive_swap_usecase.da
 import 'package:receive/src/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:receive/src/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:receive/src/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:receive/src/domain/usecases/read_receive_payment_animations_usecase.dart';
 import 'package:receive/src/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_order_swap_usecase.dart';
@@ -81,7 +82,27 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     this._wallet,
     bool pollAmountQuotes = true,
     this._getReceiveSwapLimitsUsecase,
-  }) : super(const ReceiveState()) {
+    ReadReceivePaymentAnimationsUsecase? readPaymentAnimationsUsecase,
+  }) : _readPaymentAnimationsUsecase = readPaymentAnimationsUsecase,
+       super(
+         ReceiveState(
+           showPaymentAnimations: readPaymentAnimationsUsecase == null
+               ? true
+               : null,
+         ),
+       ) {
+    final readAnimations = _readPaymentAnimationsUsecase;
+    if (readAnimations != null) {
+      unawaited(
+        readAnimations.execute().then((enabled) {
+          if (!isClosed) add(ReceivePaymentAnimationsRead(enabled));
+        }),
+      );
+    }
+    on<ReceivePaymentAnimationsRead>(
+      (event, emit) =>
+          emit(state.copyWith(showPaymentAnimations: event.enabled)),
+    );
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
@@ -156,6 +177,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   }
 
   final Receive _receive;
+  final ReadReceivePaymentAnimationsUsecase? _readPaymentAnimationsUsecase;
   Timer? _amountQuoteTimer;
   final GetReceiveSwapLimitsUsecase? _getReceiveSwapLimitsUsecase;
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;

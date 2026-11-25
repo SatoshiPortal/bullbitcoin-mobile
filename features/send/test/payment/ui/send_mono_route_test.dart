@@ -37,8 +37,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:transactions/routes.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
 class _Cubit extends Mock implements SendCubit {}
+
+class _OrderRecord extends Mock implements OrderSwapRecord {}
 
 class _DuplicateFeeLabels extends SendLocalizationsEn {
   @override
@@ -128,6 +133,7 @@ void main() {
     SendState value, {
     Stream<SendState>? updates,
     GoRouter? router,
+    bool animations = true,
     Locale? locale,
     LocalizationsDelegate<SendLocalizations>? localizationOverride,
   }) async {
@@ -143,6 +149,7 @@ void main() {
     );
     if (subscription != null) addTearDown(subscription.cancel);
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => animations);
     when(() => cubit.preparedMaxAmountSat)
         .thenReturn(value.isMaxSend ? 80000 : null);
     when(() => cubit.customFeesChanged(any())).thenAnswer((_) async {});
@@ -668,6 +675,305 @@ void main() {
     pending.complete();
     await tester.pump();
     expect(find.byType(BullPaymentTransition), findsNothing);
+  });
+
+  testWidgets(
+    'payment animations off: no transition and one navigation to the details',
+    (tester) async {
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final detailsViews = <String>[];
+      final router = GoRouter(
+        routes: [
+          GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+          GoRoute(
+            name: TransactionsRoute.transactionDetails.name,
+            path: TransactionsRoute.transactionDetails.path,
+            builder: (_, routeState) {
+              detailsViews.add(routeState.uri.toString());
+              return const Scaffold(body: Text('Details'));
+            },
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      final cubit = await pump(
+        tester,
+        state(step: SendStep.confirm).copyWith(sendType: SendType.bitcoin),
+        updates: updates.stream,
+        router: router,
+        animations: false,
+      );
+      final pending = Completer<void>();
+      when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+      tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+      await tester.pump();
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      verify(cubit.onConfirmTransactionClicked).called(1);
+
+      updates.add(
+        state(step: SendStep.confirm)
+            .copyWith(sendType: SendType.bitcoin, txId: 'broadcast-tx'),
+      );
+      await tester.pumpAndSettle();
+      pending.complete();
+      await tester.pumpAndSettle();
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      expect(find.text('Details'), findsOneWidget);
+      expect(detailsViews, hasLength(1));
+      expect(detailsViews.single, contains('view=details'));
+    },
+  );
+
+  group('payment animations off: handoff gating', () {
+    OrderSwapRecord order({String? payin}) {
+      final record = _OrderRecord();
+      when(() => record.localId).thenReturn('order-1');
+      when(() => record.localPayinTransactionId).thenReturn(payin);
+      when(() => record.localStatus).thenReturn(
+        payin == null
+            ? OrderSwapLocalStatus.readyToBroadcast
+            : OrderSwapLocalStatus.payinBroadcast,
+      );
+      when(() => record.hasFundsMoved).thenReturn(payin != null);
+      when(() => record.outNetwork).thenReturn(OrderSwapNetwork.bitcoin);
+      when(() => record.order).thenReturn(null);
+      return record;
+    }
+
+    GoRouter routerFor(List<String> opened) => GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.orderSwapTransactionDetails.name,
+          path: TransactionsRoute.orderSwapTransactionDetails.path,
+          builder: (_, routeState) {
+            opened.add(routeState.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+        GoRoute(
+          path: '/other',
+          builder: (_, _) => const Scaffold(body: Text('Other')),
+        ),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, routeState) {
+            opened.add(routeState.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+
+    testWidgets('a pre-existing order and a signing failure stay in the flow', (
+      tester,
+    ) async {
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final opened = <String>[];
+      final router = routerFor(opened);
+      addTearDown(router.dispose);
+      final base = state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.bitcoin, lightningOrder: order());
+      final cubit = await pump(
+        tester,
+        base,
+        updates: updates.stream,
+        router: router,
+        animations: false,
+      );
+      final pending = Completer<void>();
+      when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+      tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+      await tester.pump();
+      updates.add(base.copyWith(signingTransaction: true));
+      await tester.pump();
+      updates.add(
+        base.copyWith(
+          signingTransaction: false,
+          failure: const SendTransactionConfirmationFailure(),
+        ),
+      );
+      await tester.pump();
+      pending.complete();
+      await tester.pumpAndSettle();
+      expect(opened, isEmpty);
+      expect(find.text('Details'), findsNothing);
+      expect(find.byType(SendScreen), findsOneWidget);
+    });
+
+    testWidgets('an order whose payin broadcast now opens details once', (
+      tester,
+    ) async {
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final opened = <String>[];
+      final router = routerFor(opened);
+      addTearDown(router.dispose);
+      final base = state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.bitcoin, lightningOrder: order());
+      final cubit = await pump(
+        tester,
+        base,
+        updates: updates.stream,
+        router: router,
+        animations: false,
+      );
+      final pending = Completer<void>();
+      when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+      tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+      await tester.pump();
+      updates.add(base.copyWith(signingTransaction: true));
+      await tester.pump();
+      expect(opened, isEmpty);
+      updates.add(base.copyWith(lightningOrder: order(payin: 'payin-tx')));
+      await tester.pumpAndSettle();
+      pending.complete();
+      await tester.pumpAndSettle();
+      expect(opened, hasLength(1));
+      expect(opened.single, contains('view=details'));
+    });
+
+    testWidgets('leaving the route while confirming never navigates later', (
+      tester,
+    ) async {
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final opened = <String>[];
+      final router = routerFor(opened);
+      addTearDown(router.dispose);
+      final base = state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.bitcoin);
+      final cubit = await pump(
+        tester,
+        base,
+        updates: updates.stream,
+        router: router,
+        animations: false,
+      );
+      final pending = Completer<void>();
+      when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+      tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+      await tester.pump();
+      unawaited(router.push('/other'));
+      await tester.pumpAndSettle();
+      expect(find.text('Other'), findsOneWidget);
+      updates.add(base.copyWith(txId: 'broadcast-tx'));
+      await tester.pumpAndSettle();
+      pending.complete();
+      await tester.pumpAndSettle();
+      expect(opened, isEmpty);
+      expect(find.text('Details'), findsNothing);
+    });
+
+    PayjoinSenderSession sender(PayjoinStatus status, {String? txId}) =>
+        PayjoinSenderSession(
+          status: status,
+          uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
+          network: BitcoinNetwork.mainnet,
+          walletId: 'w1',
+          originalTransactionId: 'orig-tx',
+          amount: Sats.fromInt(10000),
+          createdAt: DateTime(2026),
+          expiresAt: DateTime.now().add(const Duration(hours: 5)),
+          transactionId: txId,
+        );
+
+    testWidgets('Payjoin shows plain progress and hands off once settled', (
+      tester,
+    ) async {
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final opened = <String>[];
+      final router = routerFor(opened);
+      addTearDown(router.dispose);
+      final base = state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.bitcoin);
+      final cubit = await pump(
+        tester,
+        base.copyWith(payjoinSender: sender(PayjoinStatus.started)),
+        updates: updates.stream,
+        router: router,
+        animations: false,
+      );
+      final pending = Completer<void>();
+      when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+      tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+      await tester.pump();
+      updates.add(
+        base.copyWith(
+          step: SendStep.sending,
+          txId: 'orig-tx',
+          payjoinSender: sender(PayjoinStatus.requested),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(BullPaymentAnimation), findsNothing);
+      expect(find.byType(BullPaymentTransition), findsNothing);
+      expect(opened, isEmpty);
+      updates.add(
+        base.copyWith(
+          step: SendStep.success,
+          txId: 'final-tx',
+          payjoinSender: sender(PayjoinStatus.completed, txId: 'final-tx'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      pending.complete();
+      await tester.pumpAndSettle();
+      expect(opened, hasLength(1));
+      expect(opened.single, contains('view=details'));
+    });
+  });
+
+  testWidgets('payment animations on: View details opens the details view', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast();
+    addTearDown(updates.close);
+    final opened = <String>[];
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, routeState) {
+            opened.add(routeState.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final cubit = await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(sendType: SendType.bitcoin),
+      updates: updates.stream,
+      router: router,
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+    await tester.pump();
+    expect(find.byType(BullPaymentTransition), findsOneWidget);
+    updates.add(
+      state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.bitcoin, txId: 'broadcast-tx'),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(opened, isEmpty);
+    tester
+        .widget<BullPaymentTransition>(find.byType(BullPaymentTransition))
+        .onSkip!();
+    await tester.pumpAndSettle();
+    expect(opened, hasLength(1));
+    expect(opened.single, contains('view=details'));
+    pending.complete();
+    await tester.pumpAndSettle();
   });
 
   testWidgets('mono MAX review shows the actual drain recipient amount', (

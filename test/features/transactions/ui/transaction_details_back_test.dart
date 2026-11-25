@@ -16,6 +16,9 @@ import 'package:mocktail/mocktail.dart';
 class _MockTransactionDetailsCubit extends Mock
     implements TransactionDetailsCubit {}
 
+class _MockTransactionStatusCubit extends Mock
+    implements TransactionStatusCubit {}
+
 /// Shaped like the real router for the routes that matter here: the details
 /// screen is a top-level route, so a flow that `go`es to it on completion
 /// leaves it alone on the stack with nothing to pop.
@@ -24,6 +27,12 @@ GoRouter _router({required String initialLocation}) {
   when(() => cubit.state).thenReturn(const TransactionDetailsState());
   when(() => cubit.stream).thenAnswer(
     (_) => StreamController<TransactionDetailsState>.broadcast().stream,
+  );
+
+  final status = _MockTransactionStatusCubit();
+  when(() => status.state).thenReturn(const TransactionStatusState());
+  when(() => status.stream).thenAnswer(
+    (_) => StreamController<TransactionStatusState>.broadcast().stream,
   );
 
   return GoRouter(
@@ -37,11 +46,16 @@ GoRouter _router({required String initialLocation}) {
       GoRoute(
         name: TransactionsRoute.orderSwapTransactionDetails.name,
         path: TransactionsRoute.orderSwapTransactionDetails.path,
-        builder: (context, state) =>
-            BlocProvider<TransactionDetailsCubit>.value(
-              value: cubit,
-              child: TransactionDetailsScreen(actions: transactionUiActions),
-            ),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider<TransactionDetailsCubit>.value(value: cubit),
+            BlocProvider<TransactionStatusCubit>.value(value: status),
+          ],
+          child: TransactionDetailsScreen(
+            actions: transactionUiActions,
+            pollSettlement: (_, {required isActive}) async {},
+          ),
+        ),
       ),
     ],
   );

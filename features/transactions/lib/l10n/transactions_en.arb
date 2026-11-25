@@ -911,5 +911,137 @@
   "transactionListExchangeOrdersUnavailable": "Exchange orders could not be loaded.",
   "@transactionListExchangeOrdersUnavailable": {
     "description": "Notice on the transaction history when the exchange orders could not be read; wallet transactions are still listed. Shown with a Retry button."
+  },
+  "paymentStatusViewStatus": "Status",
+  "@paymentStatusViewStatus": {
+    "description": "Label of the switch showing the animated status of a payment"
+  },
+  "paymentStatusViewDetails": "Details",
+  "@paymentStatusViewDetails": {
+    "description": "Label of the switch showing the details of a payment"
+  },
+  "paymentStatusViewsLabel": "Transaction view",
+  "@paymentStatusViewsLabel": {
+    "description": "Accessible label of the Status and Details switch"
+  },
+  "paymentStatusSigning": "Signing",
+  "@paymentStatusSigning": {
+    "description": "Payment status: the transaction is being signed"
+  },
+  "paymentStatusBroadcasted": "Broadcasted",
+  "@paymentStatusBroadcasted": {
+    "description": "Payment status: the transaction is on the network"
+  },
+  "paymentStatusConfirmed": "Confirmed",
+  "@paymentStatusConfirmed": {
+    "description": "Payment status: the transaction is confirmed"
+  },
+  "paymentStatusDetected": "Detected",
+  "@paymentStatusDetected": {
+    "description": "Payment status: an incoming on-chain payment is detected"
+  },
+  "paymentStatusPendingMempool": "Pending in the mempool",
+  "@paymentStatusPendingMempool": {
+    "description": "Status line while a broadcast transaction waits for its confirmation"
+  },
+  "paymentStatusSendingPayin": "Sending payin",
+  "@paymentStatusSendingPayin": {
+    "description": "Exchange swap status: the payin is being sent"
+  },
+  "paymentStatusPayinBroadcast": "Payin broadcast",
+  "@paymentStatusPayinBroadcast": {
+    "description": "Exchange swap status: the payin is on the network"
+  },
+  "paymentStatusPayoutInProgress": "Payout in progress",
+  "@paymentStatusPayoutInProgress": {
+    "description": "Exchange swap status: the payout is in progress"
+  },
+  "paymentStatusPayoutBroadcast": "Payout broadcast",
+  "@paymentStatusPayoutBroadcast": {
+    "description": "Exchange swap status: the payout is on the network"
+  },
+  "paymentStatusCompleted": "Completed",
+  "@paymentStatusCompleted": {
+    "description": "Payment status: completed"
+  },
+  "paymentStatusSendingLockup": "Sending lockup",
+  "@paymentStatusSendingLockup": {
+    "description": "Boltz swap status: the lockup is being sent"
+  },
+  "paymentStatusLockupSent": "Lockup sent",
+  "@paymentStatusLockupSent": {
+    "description": "Boltz swap status: the lockup was sent"
+  },
+  "paymentStatusInvoicePaid": "Invoice paid",
+  "@paymentStatusInvoicePaid": {
+    "description": "Boltz swap status: the Lightning invoice is paid"
+  },
+  "paymentStatusClaimable": "Claimable",
+  "@paymentStatusClaimable": {
+    "description": "Boltz swap status: funds are claimable"
+  },
+  "paymentStatusClaimBroadcast": "Claim broadcast",
+  "@paymentStatusClaimBroadcast": {
+    "description": "Boltz swap status: the claim is on the network"
+  },
+  "paymentStatusRequested": "Requested",
+  "@paymentStatusRequested": {
+    "description": "Payjoin send status: the request was sent"
+  },
+  "paymentStatusProposed": "Proposed",
+  "@paymentStatusProposed": {
+    "description": "Payjoin send status: a proposal was received"
+  },
+  "paymentStatusOriginalReceived": "Original received",
+  "@paymentStatusOriginalReceived": {
+    "description": "Payjoin receive status: the original transaction was received"
+  },
+  "paymentStatusProposalSent": "Proposal sent",
+  "@paymentStatusProposalSent": {
+    "description": "Payjoin receive status: the proposal was sent"
+  },
+  "paymentStatusPaymentDetected": "Payment detected",
+  "@paymentStatusPaymentDetected": {
+    "description": "Receive status: the payment is detected"
+  },
+  "paymentStatusBoltzLockup": "Boltz lockup",
+  "@paymentStatusBoltzLockup": {
+    "description": "Lightning receive status: Boltz locked the funds"
+  },
+  "paymentStatusOrderPlaced": "Order placed",
+  "@paymentStatusOrderPlaced": {
+    "description": "Buy order status: the order was placed"
+  },
+  "paymentStatusBuyPayoutInProgress": "Payout in progress",
+  "@paymentStatusBuyPayoutInProgress": {
+    "description": "Buy order status: the payout is in progress"
+  },
+  "paymentStatusBuyPayoutBroadcast": "Payout broadcast",
+  "@paymentStatusBuyPayoutBroadcast": {
+    "description": "Buy order status: the payout is on the network"
+  },
+  "paymentStatusBuyPayoutSent": "Payout sent",
+  "@paymentStatusBuyPayoutSent": {
+    "description": "Buy order status: the payout was sent"
+  },
+  "paymentStatusPaid": "Paid",
+  "@paymentStatusPaid": {
+    "description": "Buy order status: a Lightning payout was paid"
+  },
+  "paymentStatusFailed": "Failed",
+  "@paymentStatusFailed": {
+    "description": "Payment status: failed"
+  },
+  "paymentStatusExpired": "Expired",
+  "@paymentStatusExpired": {
+    "description": "Payment status: expired"
+  },
+  "paymentStatusRefundInProgress": "Refund in progress",
+  "@paymentStatusRefundInProgress": {
+    "description": "Payment status: the refund is in progress"
+  },
+  "paymentStatusRefunded": "Refunded",
+  "@paymentStatusRefunded": {
+    "description": "Payment status: refunded"
   }
 }

@@ -1,3 +1,4 @@
+import 'package:bull_exchange/src/buy/domain/read_buy_payment_animations_usecase.dart';
 import 'package:bull_exchange/src/buy/presentation/buy_accelerate_bloc.dart';
 import 'package:bull_exchange/src/buy/presentation/buy_flow_bloc.dart';
 import 'package:bull_exchange/src/buy/ui/buy_accelerate_shell.dart';
@@ -51,6 +52,9 @@ List<RouteBase> mountBuy(ExchangePurchaseHost host) => [
           payoutField: host.payoutField,
           bitcoinAsset: host.bitcoinAsset,
           openOrder: host.openOrder,
+          showPaymentAnimations: ReadBuyPaymentAnimationsUsecase(
+            host.preferences(),
+          ).execute,
         ),
       ),
     ),

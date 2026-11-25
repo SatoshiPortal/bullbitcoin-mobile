@@ -41,7 +41,10 @@ import 'package:transactions/src/domain/usecases/watch_transaction_swap_usecase.
 import 'package:swaps/order_swaps.dart';
 import 'package:transactions/src/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:transactions/src/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:transactions/src/presentation/blocs/transaction_status/transaction_status_cubit.dart';
 import 'package:transactions/src/presentation/blocs/transactions_cubit.dart';
+import 'package:transactions/src/domain/usecases/read_transaction_payment_animations_usecase.dart';
+import 'package:transactions/src/domain/usecases/watch_settlement_transaction_usecase.dart';
 import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -211,6 +214,21 @@ class TransactionsLocator {
             locator<RefreshTransactionLabelsUsecase>(),
         watchStartedWalletSyncsUsecase: started(),
         watchFinishedWalletSyncsUsecase: finished(),
+      ),
+    );
+    locator.registerFactory<ReadTransactionPaymentAnimationsUsecase>(
+      () => ReadTransactionPaymentAnimationsUsecase(locator<Preferences>()),
+    );
+    locator.registerFactory<WatchSettlementTransactionUsecase>(
+      () => WatchSettlementTransactionUsecase(
+        locator<GetWalletTransactionUsecase>(),
+        locator<WatchWalletTransactionByTxIdUsecase>(),
+      ),
+    );
+    locator.registerFactory<TransactionStatusCubit>(
+      () => TransactionStatusCubit(
+        readAnimations: locator<ReadTransactionPaymentAnimationsUsecase>(),
+        watchSettlement: locator<WatchSettlementTransactionUsecase>(),
       ),
     );
     locator.registerFactory<ExportTransactionsCubit>(

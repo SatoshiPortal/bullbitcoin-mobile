@@ -5,7 +5,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/src/presentation/bloc/receive_bloc.dart';
 import 'package:receive/src/presentation/receive_failure_l10n.dart';
-import 'package:receive/src/presentation/receive_payment_progress.dart';
+import 'package:transactions/payment_status.dart';
 import 'package:transactions/routes.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:material_ui/material_ui.dart';
@@ -34,16 +34,23 @@ class ReceivePayjoinInProgressScreen extends StatefulWidget {
       _ReceivePayjoinInProgressScreenState();
 }
 
+bool _isSettled(ReceiveState state) =>
+    state.payjoin?.isCompleted == true && state.showPaymentAnimations != null;
+
 class _ReceivePayjoinInProgressScreenState
     extends State<ReceivePayjoinInProgressScreen> {
   String? _completedId;
 
-  void _showDetails(String id) {
+  void _showDetails(
+    String id, {
+    TransactionDetailsView view = TransactionDetailsView.status,
+  }) {
     if (!mounted) return;
     TransactionsNavigation.goToDetails(
       context,
       TransactionDetailsTarget.payjoin(id),
       returnHome: true,
+      view: view,
     );
   }
 
@@ -70,13 +77,15 @@ class _ReceivePayjoinInProgressScreenState
     // `expired`: it still offers the manual "receive payment normally"
     // fallback below.
     return BlocListener<ReceiveBloc, ReceiveState>(
+      // An unknown preference waits: completion hands off once it is read.
       listenWhen: (previous, current) =>
-          previous.payjoin?.isCompleted != true &&
-          current.payjoin?.isCompleted == true,
+          !_isSettled(previous) && _isSettled(current),
       listener: (context, state) {
         final payjoin = state.payjoin;
         if (payjoin == null) return;
-        if (MediaQuery.disableAnimationsOf(context) ||
+        if (state.showPaymentAnimations == false) {
+          _showDetails(payjoin.id, view: TransactionDetailsView.details);
+        } else if (MediaQuery.disableAnimationsOf(context) ||
             MediaQuery.reduceMotionOf(context)) {
           _showDetails(payjoin.id);
         } else {
@@ -130,7 +139,10 @@ class PayjoinInProgressPage extends StatelessWidget {
     final confirmed = context.select(
       (ReceiveBloc bloc) => bloc.state.settlementConfirmed,
     );
-    final progress = payjoin == null
+    final showAnimation = context.select(
+      (ReceiveBloc bloc) => bloc.state.showPaymentAnimations == true,
+    );
+    final progress = payjoin == null || !showAnimation
         ? null
         : receivePayjoinProgress(
             steps: [
@@ -436,6 +448,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                         context,
                         TransactionDetailsTarget.payjoin(payjoinId),
                         returnHome: true,
+                        view: TransactionDetailsView.details,
                       ),
                     )
                   else if (canManuallyBroadcastOriginal)

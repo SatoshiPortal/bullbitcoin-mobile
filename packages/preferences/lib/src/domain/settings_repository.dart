@@ -73,6 +73,13 @@ abstract interface class RuntimeDisplayPreferencesReader {
   Stream<Result<String, PreferencesFailure>> get currencyChangeStream;
 }
 
+/// Whether the app plays payment progress animations. When false, consumers
+/// skip them and open the transaction details directly.
+abstract interface class PaymentAnimationPreferencesReader {
+  @useResult
+  Future<Result<bool, PreferencesFailure>> readShowPaymentAnimations();
+}
+
 abstract interface class AmountInputPreferences {
   @useResult
   Future<Result<void, PreferencesFailure>> setStartAmountsInFiat(bool fiat);
@@ -88,7 +95,8 @@ abstract interface class SettingsRepository
         DeveloperEnvironmentReader,
         TorProxyPreferencesReader,
         RuntimeDisplayPreferencesReader,
-        ExchangeTestnetBasicAuthPreferences {
+        ExchangeTestnetBasicAuthPreferences,
+        PaymentAnimationPreferencesReader {
   /// The environment after each successful [setEnvironment].
   Stream<Result<Environment, PreferencesFailure>> get environmentChangeStream;
 
@@ -148,6 +156,11 @@ abstract interface class SettingsRepository
 
   @useResult
   Future<Result<void, PreferencesFailure>> setScreenCaptureProtectionEnabled(
+    bool enabled,
+  );
+
+  @useResult
+  Future<Result<void, PreferencesFailure>> setShowPaymentAnimations(
     bool enabled,
   );
 }

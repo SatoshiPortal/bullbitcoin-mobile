@@ -9,6 +9,7 @@ import '../../domain/send_amount_conversion.dart';
 
 import 'package:send/src/payment/domain/fixed_amount_wallet_choice_policy.dart';
 import 'package:send/src/payment/domain/usecases/prepare_internal_recipient_usecase.dart';
+import 'package:send/src/payment/domain/usecases/read_send_payment_animations_usecase.dart';
 import 'package:send/src/payment/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:send/src/payment/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -106,6 +107,7 @@ class SendCubit extends Cubit<SendState>
     implements FeeModalActionsPort, FeeModalStatePort {
   SendCubit({
     this._prepareInternalRecipientUsecase,
+    this._readPaymentAnimationsUsecase,
     this._readAmountQuotes,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._walletKey,
@@ -193,6 +195,7 @@ class SendCubit extends Cubit<SendState>
   final WalletKey? _walletKey;
   SendSource? _wallet;
   final PrepareInternalRecipientUsecase? _prepareInternalRecipientUsecase;
+  final ReadSendPaymentAnimationsUsecase? _readPaymentAnimationsUsecase;
   int _internalRecipientGeneration = 0;
   final SendMode mode;
   bool get isSpMode => mode is SendModeSp;
@@ -210,6 +213,10 @@ class SendCubit extends Cubit<SendState>
     }
     return state.unsignedPsbt == null ? null : state.maxSpendableBalanceSat;
   }
+
+  /// Whether the payment transition is played; read once per flow.
+  Future<bool> readShowPaymentAnimations() async =>
+      await _readPaymentAnimationsUsecase?.execute() ?? true;
 
   final LoadSendLabelSuggestionsUsecase _loadSendLabelSuggestions;
   final StoreSendTransactionLabelUsecase _storeSendTransactionLabel;

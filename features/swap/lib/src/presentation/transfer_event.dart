@@ -25,6 +25,8 @@ sealed class TransferEvent with _$TransferEvent {
   }) = TransferAmountEntryChanged;
   const factory TransferEvent.swapCreated(String amount) = TransferSwapCreated;
   const factory TransferEvent.confirmed() = TransferConfirmed;
+  const factory TransferEvent.paymentAnimationsRead(bool enabled) =
+      TransferPaymentAnimationsRead;
   const factory TransferEvent.sendToExternalToggled(bool enabled) =
       TransferSendToExternalToggled;
   const factory TransferEvent.externalAddressChanged(String address) =

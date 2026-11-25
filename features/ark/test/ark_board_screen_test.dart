@@ -45,6 +45,7 @@ class Rig {
   int refreshes = 0;
   final viewed = <String>[];
   int closes = 0;
+  Future<bool> Function()? readAnimations;
   Rig() {
     final preferences = Preferences();
     cubit = ArkBoardCubit(
@@ -58,6 +59,7 @@ class Rig {
   }
   ArkBoardScreen get screen => ArkBoardScreen(
     cubit: cubit,
+    readPaymentAnimations: readAnimations,
     onReconcile: () => refreshes++,
     onViewDetails: viewed.add,
     onClose: () => closes++,
@@ -459,6 +461,48 @@ void main() {
     expect(find.text('Confirm board'), findsOneWidget);
     expect(button(tester, 'Confirm').disabled, true);
     expect(find.byType(BullLoader), findsNothing);
+    gate.complete();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('payment animations off: no transition, existing review stays', (
+    tester,
+  ) async {
+    final rig = Rig()..readAnimations = () async => false;
+    await tester.pumpWidget(app(rig.screen));
+    await tester.pumpAndSettle();
+    tester
+        .widget<ArkBoardAmountScreen>(find.byType(ArkBoardAmountScreen))
+        .onReviewRequest
+        ?.call(rig.cubit.config, Sats.fromInt(1000));
+    await tester.pumpAndSettle();
+    final gate = rig.funding.gate = Completer<void>();
+    button(tester, 'Confirm').onPressed();
+    await tester.pump();
+    await tester.pump();
+    expect(rig.cubit.state, isA<ArkBoardBusy>());
+    expect(find.byType(BullPaymentTransition), findsNothing);
+    expect(find.text('Confirm board'), findsOneWidget);
+    gate.complete();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('payment animations on: the transition plays as before', (
+    tester,
+  ) async {
+    final rig = Rig()..readAnimations = () async => true;
+    await tester.pumpWidget(app(rig.screen));
+    await tester.pumpAndSettle();
+    tester
+        .widget<ArkBoardAmountScreen>(find.byType(ArkBoardAmountScreen))
+        .onReviewRequest
+        ?.call(rig.cubit.config, Sats.fromInt(1000));
+    await tester.pumpAndSettle();
+    final gate = rig.funding.gate = Completer<void>();
+    button(tester, 'Confirm').onPressed();
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(BullPaymentTransition), findsOneWidget);
     gate.complete();
     await tester.pumpAndSettle();
   });

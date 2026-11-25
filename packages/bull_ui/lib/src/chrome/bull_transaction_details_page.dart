@@ -24,6 +24,7 @@ class BullTransactionDetailsPage extends StatelessWidget {
     this.onRefresh,
     this.errorContent,
     this.canPopBack = true,
+    this.handlesBack = true,
   });
 
   final String title;
@@ -49,6 +50,10 @@ class BullTransactionDetailsPage extends StatelessWidget {
   /// False while this screen is the only route, so the system back gesture
   /// runs [onClose] instead of popping to nothing.
   final bool canPopBack;
+
+  /// False when a parent already owns the route-level back handler, so only
+  /// one [PopScope] runs the close action.
+  final bool handlesBack;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +107,20 @@ class BullTransactionDetailsPage extends StatelessWidget {
       ],
     );
 
+    final page = Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: BullTopBar(title: title, onAction: onClose),
+        bottom: appBarBottom,
+      ),
+      body: SafeArea(
+        child: onRefresh == null
+            ? scroll
+            : BullRefreshIndicator(onRefresh: onRefresh!, child: scroll),
+      ),
+    );
+    if (!handlesBack) return page;
     return PopScope(
       canPop: canPopBack,
       onPopInvokedWithResult: (didPop, _) {
@@ -109,19 +128,7 @@ class BullTransactionDetailsPage extends StatelessWidget {
 
         onClose();
       },
-      child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: BullTopBar(title: title, onAction: onClose),
-          bottom: appBarBottom,
-        ),
-        body: SafeArea(
-          child: onRefresh == null
-              ? scroll
-              : BullRefreshIndicator(onRefresh: onRefresh!, child: scroll),
-        ),
-      ),
+      child: page,
     );
   }
 }

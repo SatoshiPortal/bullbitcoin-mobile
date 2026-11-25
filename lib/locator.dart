@@ -482,6 +482,8 @@ class AppLocator {
         syncStarted: () => electrumSync.started.map((key) => key.id),
         syncFinished: () => electrumSync.finished.map((event) => event.key.id),
         orderSwaps: () => locator<OrderSwaps>(),
+        pollSettlement: (id, {required isActive}) =>
+            overviewSync().coordinator.pollWallet(id, isActive: isActive),
         actions: TransactionUiActions(
           openExchange: (context) =>
               context.goNamed(BullExchangeNavigation.dashboardName),
