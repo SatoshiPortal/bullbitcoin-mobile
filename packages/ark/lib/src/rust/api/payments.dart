@@ -159,6 +159,7 @@ class ScuttleMovement {
   final PlatformInt64 createdAt;
   final PlatformInt64 updatedAt;
   final PlatformInt64? completedAt;
+  final String? offboardTxid;
 
   const ScuttleMovement({
     required this.id,
@@ -171,6 +172,7 @@ class ScuttleMovement {
     required this.createdAt,
     required this.updatedAt,
     this.completedAt,
+    this.offboardTxid,
   });
 
   @override
@@ -184,7 +186,8 @@ class ScuttleMovement {
       feeSats.hashCode ^
       createdAt.hashCode ^
       updatedAt.hashCode ^
-      completedAt.hashCode;
+      completedAt.hashCode ^
+      offboardTxid.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -200,7 +203,8 @@ class ScuttleMovement {
           feeSats == other.feeSats &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt &&
-          completedAt == other.completedAt;
+          completedAt == other.completedAt &&
+          offboardTxid == other.offboardTxid;
 }
 
 enum ScuttleMovementStatus { pending, successful, failed, canceled }

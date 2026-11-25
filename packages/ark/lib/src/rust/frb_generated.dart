@@ -72,7 +72,7 @@ class ScuttleCore
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => -1288264373;
+  int get rustContentHash => 419204090;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -285,6 +285,10 @@ abstract class ScuttleCoreApi extends BaseApi {
   Future<List<ScuttleExitProgress>?> crateApiWalletScuttleWalletProgressExits({
     required ScuttleWallet that,
     required ScuttleExitProgressReview review,
+  });
+
+  Future<void> crateApiWalletScuttleWalletProgressPendingOffboards({
+    required ScuttleWallet that,
   });
 
   Future<void> crateApiWalletScuttleWalletProgressPendingRounds({
@@ -1822,6 +1826,42 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       );
 
   @override
+  Future<void> crateApiWalletScuttleWalletProgressPendingOffboards({
+    required ScuttleWallet that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          var arg0 =
+              cst_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerScuttleWallet(
+                that,
+              );
+          return wire
+              .wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards(
+                port_,
+                arg0,
+              );
+        },
+        codec: DcoCodec(
+          decodeSuccessData: dco_decode_unit,
+          decodeErrorData: dco_decode_String,
+        ),
+        constMeta:
+            kCrateApiWalletScuttleWalletProgressPendingOffboardsConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiWalletScuttleWalletProgressPendingOffboardsConstMeta =>
+      const TaskConstMeta(
+        debugName: "ScuttleWallet_progress_pending_offboards",
+        argNames: ["that"],
+      );
+
+  @override
   Future<void> crateApiWalletScuttleWalletProgressPendingRounds({
     required ScuttleWallet that,
   }) {
@@ -2943,8 +2983,8 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
   ScuttleMovement dco_decode_scuttle_movement(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 10)
-      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
+    if (arr.length != 11)
+      throw Exception('unexpected arr length: expect 11 but see ${arr.length}');
     return ScuttleMovement(
       id: dco_decode_u_32(arr[0]),
       subsystem: dco_decode_String(arr[1]),
@@ -2956,6 +2996,7 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       createdAt: dco_decode_i_64(arr[7]),
       updatedAt: dco_decode_i_64(arr[8]),
       completedAt: dco_decode_opt_box_autoadd_i_64(arr[9]),
+      offboardTxid: dco_decode_opt_String(arr[10]),
     );
   }
 
@@ -3860,6 +3901,7 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     var var_createdAt = sse_decode_i_64(deserializer);
     var var_updatedAt = sse_decode_i_64(deserializer);
     var var_completedAt = sse_decode_opt_box_autoadd_i_64(deserializer);
+    var var_offboardTxid = sse_decode_opt_String(deserializer);
     return ScuttleMovement(
       id: var_id,
       subsystem: var_subsystem,
@@ -3871,6 +3913,7 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
       createdAt: var_createdAt,
       updatedAt: var_updatedAt,
       completedAt: var_completedAt,
+      offboardTxid: var_offboardTxid,
     );
   }
 
@@ -4849,6 +4892,7 @@ class ScuttleCoreApiImpl extends ScuttleCoreApiImplPlatform
     sse_encode_i_64(self.createdAt, serializer);
     sse_encode_i_64(self.updatedAt, serializer);
     sse_encode_opt_box_autoadd_i_64(self.completedAt, serializer);
+    sse_encode_opt_String(self.offboardTxid, serializer);
   }
 
   @protected
@@ -5242,8 +5286,8 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
   Future<ScuttleObservation> observation() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletObservation(that: this);
 
-  /// Parses an Ark address, BOLT11 invoice, BIP321 URI or bitcoin address without contacting
-  /// the server.
+  /// Parses a payment request and keeps only Ark, BOLT11 and bitcoin options. The native
+  /// parser may resolve other forms (LNURL, Lightning address) over the network.
   Future<ScuttlePaymentRequest> parsePaymentRequest({
     required String payment,
   }) => ScuttleCore.instance.api.crateApiWalletScuttleWalletParsePaymentRequest(
@@ -5338,6 +5382,10 @@ class ScuttleWalletImpl extends RustOpaque implements ScuttleWallet {
     that: this,
     review: review,
   );
+
+  /// Resumes only the native offboard checkpoints from admitted payments.
+  Future<void> progressPendingOffboards() => ScuttleCore.instance.api
+      .crateApiWalletScuttleWalletProgressPendingOffboards(that: this);
 
   Future<void> progressPendingRounds() => ScuttleCore.instance.api
       .crateApiWalletScuttleWalletProgressPendingRounds(that: this);

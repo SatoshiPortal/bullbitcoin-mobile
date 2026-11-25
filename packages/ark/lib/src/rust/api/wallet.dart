@@ -148,8 +148,8 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
     allowUnreachableServer: allowUnreachableServer,
   );
 
-  /// Parses an Ark address, BOLT11 invoice, BIP321 URI or bitcoin address without contacting
-  /// the server.
+  /// Parses a payment request and keeps only Ark, BOLT11 and bitcoin options. The native
+  /// parser may resolve other forms (LNURL, Lightning address) over the network.
   Future<ScuttlePaymentRequest> parsePaymentRequest({required String payment});
 
   /// Starts a BOLT11 payment without waiting for settlement and returns its payment hash. A
@@ -202,6 +202,9 @@ abstract class ScuttleWallet implements RustOpaqueInterface {
   Future<List<ScuttleExitProgress>?> progressExits({
     required ScuttleExitProgressReview review,
   });
+
+  /// Resumes only the native offboard checkpoints from admitted payments.
+  Future<void> progressPendingOffboards();
 
   Future<void> progressPendingRounds();
 

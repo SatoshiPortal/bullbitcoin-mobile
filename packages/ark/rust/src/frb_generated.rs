@@ -40,7 +40,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueNom,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1288264373;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 419204090;
 
 // Section: executor
 
@@ -1774,6 +1774,53 @@ fn wire__crate__api__wallet__ScuttleWallet_progress_exits_impl(
         },
     )
 }
+fn wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    that: impl CstDecode<
+        RustOpaqueNom<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ScuttleWallet>>,
+    >,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::DcoCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ScuttleWallet_progress_pending_offboards",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.cst_decode();
+            move |context| async move {
+                transform_result_dco::<_, _, String>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok =
+                            crate::api::wallet::ScuttleWallet::progress_pending_offboards(
+                                &*api_that_guard,
+                            )
+                            .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     that: impl CstDecode<
@@ -3365,6 +3412,7 @@ impl SseDecode for crate::api::payments::ScuttleMovement {
         let mut var_createdAt = <i64>::sse_decode(deserializer);
         let mut var_updatedAt = <i64>::sse_decode(deserializer);
         let mut var_completedAt = <Option<i64>>::sse_decode(deserializer);
+        let mut var_offboardTxid = <Option<String>>::sse_decode(deserializer);
         return crate::api::payments::ScuttleMovement {
             id: var_id,
             subsystem: var_subsystem,
@@ -3376,6 +3424,7 @@ impl SseDecode for crate::api::payments::ScuttleMovement {
             created_at: var_createdAt,
             updated_at: var_updatedAt,
             completed_at: var_completedAt,
+            offboard_txid: var_offboardTxid,
         };
     }
 }
@@ -4204,6 +4253,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::payments::ScuttleMovement {
             self.created_at.into_into_dart().into_dart(),
             self.updated_at.into_into_dart().into_dart(),
             self.completed_at.into_into_dart().into_dart(),
+            self.offboard_txid.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -5071,6 +5121,7 @@ impl SseEncode for crate::api::payments::ScuttleMovement {
         <i64>::sse_encode(self.created_at, serializer);
         <i64>::sse_encode(self.updated_at, serializer);
         <Option<i64>>::sse_encode(self.completed_at, serializer);
+        <Option<String>>::sse_encode(self.offboard_txid, serializer);
     }
 }
 
@@ -5780,6 +5831,7 @@ mod io {
                 created_at: self.created_at.cst_decode(),
                 updated_at: self.updated_at.cst_decode(),
                 completed_at: self.completed_at.cst_decode(),
+                offboard_txid: self.offboard_txid.cst_decode(),
             }
         }
     }
@@ -6163,6 +6215,7 @@ mod io {
                 created_at: Default::default(),
                 updated_at: Default::default(),
                 completed_at: core::ptr::null_mut(),
+                offboard_txid: core::ptr::null_mut(),
             }
         }
     }
@@ -6723,6 +6776,14 @@ mod io {
         review: *mut wire_cst_scuttle_exit_progress_review,
     ) {
         wire__crate__api__wallet__ScuttleWallet_progress_exits_impl(port_, that, review)
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_ark_wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards(
+        port_: i64,
+        that: usize,
+    ) {
+        wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards_impl(port_, that)
     }
 
     #[unsafe(no_mangle)]
@@ -7374,6 +7435,7 @@ mod io {
         created_at: i64,
         updated_at: i64,
         completed_at: *mut i64,
+        offboard_txid: *mut wire_cst_list_prim_u_8_strict,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]

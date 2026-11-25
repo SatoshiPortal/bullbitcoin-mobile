@@ -1199,6 +1199,7 @@ abstract class ScuttleCoreApiImplPlatform extends BaseApiImpl<ScuttleCoreWire> {
     wireObj.created_at = cst_encode_i_64(apiObj.createdAt);
     wireObj.updated_at = cst_encode_i_64(apiObj.updatedAt);
     wireObj.completed_at = cst_encode_opt_box_autoadd_i_64(apiObj.completedAt);
+    wireObj.offboard_txid = cst_encode_opt_String(apiObj.offboardTxid);
   }
 
   @protected
@@ -3197,6 +3198,24 @@ class ScuttleCoreWire implements BaseWire {
             )
           >();
 
+  void wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards(
+    int port_,
+    int that,
+  ) {
+    return _wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire__crate__api__wallet__ScuttleWallet_progress_pending_offboardsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.UintPtr)>>(
+        'frbgen_ark_wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards',
+      );
+  late final _wire__crate__api__wallet__ScuttleWallet_progress_pending_offboards =
+      _wire__crate__api__wallet__ScuttleWallet_progress_pending_offboardsPtr
+          .asFunction<void Function(int, int)>();
+
   void wire__crate__api__wallet__ScuttleWallet_progress_pending_rounds(
     int port_,
     int that,
@@ -4260,6 +4279,8 @@ final class wire_cst_scuttle_movement extends ffi.Struct {
 
   external ffi.Pointer<ffi.Int64> completed_at;
 
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> offboard_txid;
+
   static ffi.Pointer<wire_cst_scuttle_movement> $allocate(
     ffi.Allocator $allocator, {
     required int id,
@@ -4272,6 +4293,7 @@ final class wire_cst_scuttle_movement extends ffi.Struct {
     required int created_at,
     required int updated_at,
     required ffi.Pointer<ffi.Int64> completed_at,
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> offboard_txid,
   }) => $allocator<wire_cst_scuttle_movement>()
     ..ref.id = id
     ..ref.subsystem = subsystem
@@ -4282,7 +4304,8 @@ final class wire_cst_scuttle_movement extends ffi.Struct {
     ..ref.fee_sats = fee_sats
     ..ref.created_at = created_at
     ..ref.updated_at = updated_at
-    ..ref.completed_at = completed_at;
+    ..ref.completed_at = completed_at
+    ..ref.offboard_txid = offboard_txid;
 }
 
 final class wire_cst_scuttle_observation extends ffi.Struct {
