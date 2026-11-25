@@ -226,5 +226,6 @@
   "copiedToClipboard": "Copié dans le presse-papiers",
   "transactionOrderTypeSellUsdt": "Vendre des USDT",
   "transactionOrderTypeFiatPayment": "Paiement fiat",
-  "transactionOrderTypeBalanceAdjustment": "Ajustement de solde"
+  "transactionOrderTypeBalanceAdjustment": "Ajustement de solde",
+  "transactionListExchangeOrdersUnavailable": "Impossible de charger les ordres de la plateforme d'échange."
 }

@@ -907,5 +907,9 @@
   "transactionOrderTypeBalanceAdjustment": "Balance Adjustment",
   "@transactionOrderTypeBalanceAdjustment": {
     "description": "Order type of an exchange balance adjustment"
+  },
+  "transactionListExchangeOrdersUnavailable": "Exchange orders could not be loaded.",
+  "@transactionListExchangeOrdersUnavailable": {
+    "description": "Notice on the transaction history when the exchange orders could not be read; wallet transactions are still listed. Shown with a Retry button."
   }
 }

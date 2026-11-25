@@ -751,5 +751,6 @@
   "transactionPayjoinBroadcastFailed": "মূল লেনদেনটি সম্প্রচার করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটি আর সম্প্রচারের জন্য উপলব্ধ নয়।",
   "transactionLabelLimitReached": "আপনি সর্বাধিক ১০টি লেবেল রাখতে পারেন।",
-  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে"
+  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
+  "transactionListExchangeOrdersUnavailable": "এক্সচেঞ্জের অর্ডার লোড করা যায়নি।"
 }

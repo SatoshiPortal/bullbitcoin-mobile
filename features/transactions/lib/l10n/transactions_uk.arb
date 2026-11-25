@@ -222,5 +222,6 @@
   "transactionPayjoinBroadcastFailed": "Не вдалося опублікувати початкову транзакцію. Будь ласка, спробуйте ще раз.",
   "transactionPayjoinOriginalUnavailable": "Початкова транзакція більше недоступна для публікації.",
   "transactionLabelLimitReached": "Ви можете мати щонайбільше 10 міток.",
-  "copiedToClipboard": "Скопійовано в буфер обміну"
+  "copiedToClipboard": "Скопійовано в буфер обміну",
+  "transactionListExchangeOrdersUnavailable": "Не вдалося завантажити ордери біржі."
 }

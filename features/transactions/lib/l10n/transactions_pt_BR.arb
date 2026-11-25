@@ -726,5 +726,6 @@
   "transactionPayjoinBroadcastFailed": "Não foi possível transmitir a transação original. Por favor, tente novamente.",
   "transactionPayjoinOriginalUnavailable": "A transação original não está mais disponível para transmissão.",
   "transactionLabelLimitReached": "Você pode ter no máximo 10 etiquetas.",
-  "copiedToClipboard": "Copiado para a área de transferência"
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "transactionListExchangeOrdersUnavailable": "Não foi possível carregar as ordens da exchange."
 }

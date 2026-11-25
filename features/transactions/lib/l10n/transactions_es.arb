@@ -235,5 +235,6 @@
   "viewerViewInExplorerDisclosePayjoin": "Ver en el explorador (revela el Payjoin)",
   "transactionOrderTypeSellUsdt": "Vender USDT",
   "transactionOrderTypeFiatPayment": "Pago en fiat",
-  "transactionOrderTypeBalanceAdjustment": "Ajuste de saldo"
+  "transactionOrderTypeBalanceAdjustment": "Ajuste de saldo",
+  "transactionListExchangeOrdersUnavailable": "No se pudieron cargar las órdenes del exchange."
 }
