@@ -108,7 +108,14 @@ void main() {
           walletId: any(named: 'walletId'),
           sync: any(named: 'sync'),
         ),
-      ).thenAnswer((_) async => Ok([freshlySynced]));
+      ).thenAnswer(
+        (_) async => Ok(
+          TransactionHistory(
+            transactions: [freshlySynced],
+            exchangeOrders: const ExchangeOrdersMerged(),
+          ),
+        ),
+      );
 
       final refresh = cubit.refreshLabels();
       await cubit.loadTxs();

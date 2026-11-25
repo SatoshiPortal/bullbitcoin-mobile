@@ -62,11 +62,15 @@ class _CountingList<T> extends ListBase<T> {
 }
 
 /// Unwraps a successful Result; a failure here is a test-setup mistake.
-List<Transaction> unwrap(bb.Result<List<Transaction>, TransactionFailure> r) =>
-    switch (r) {
-      bb.Ok(:final value) => value,
-      bb.Err(:final failure) => fail('expected transactions, got $failure'),
-    };
+List<Transaction> unwrap(bb.Result<TransactionHistory, TransactionFailure> r) =>
+    historyOf(r).transactions;
+
+TransactionHistory historyOf(
+  bb.Result<TransactionHistory, TransactionFailure> r,
+) => switch (r) {
+  bb.Ok(:final value) => value,
+  bb.Err(:final failure) => fail('expected transactions, got $failure'),
+};
 
 void main() {
   late _MockSettingsRepository settingsRepository;
@@ -171,7 +175,11 @@ void main() {
         environment: Environment.regtest,
       ),
     ).thenAnswer((_) async => Ok([walletTx]));
-    final rows = unwrap(await usecase.execute(walletId: 'regtest-wallet'));
+    final history = historyOf(
+      await usecase.execute(walletId: 'regtest-wallet'),
+    );
+    final rows = history.transactions;
+    expect(history.exchangeOrders, isA<ExchangeOrdersNotOffered>());
     expect(rows.single.walletTransaction, walletTx);
     expect(rows.single.supportsPublicExplorer, false);
     verifyZeroInteractions(mainnetOrderRepository);
@@ -203,11 +211,38 @@ void main() {
       when(
         () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
       ).thenAnswer((_) async {});
-      final transactions = unwrap(await usecase.execute());
-      expect(transactions, hasLength(1));
-      expect(transactions.single.walletTransaction?.txId, 'wallet-tx');
+      final history = historyOf(await usecase.execute());
+      expect(history.transactions, hasLength(1));
+      expect(history.transactions.single.walletTransaction?.txId, 'wallet-tx');
+      expect(
+        history.exchangeOrders,
+        isA<ExchangeOrdersUnavailable>().having(
+          (read) => read.failure,
+          'failure',
+          isA<ExchangeCredentialReadFailure>(),
+        ),
+        reason: 'a failed order read is shown, never an empty order list',
+      );
+      verifyNever(
+        () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
+      );
     },
   );
+
+  test('no stored exchange account is no account, not a failure', () async {
+    when(() => mainnetOrderRepository.getOrders())
+        .thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
+
+    final history = historyOf(await usecase.execute());
+
+    expect(history.exchangeOrders, isA<ExchangeOrdersNoAccount>());
+  });
+
+  test('a read order list is merged', () async {
+    final history = historyOf(await usecase.execute());
+
+    expect(history.exchangeOrders, isA<ExchangeOrdersMerged>());
+  });
 
   test(
     'hides an aborted Payjoin until its original wallet tx is synced',

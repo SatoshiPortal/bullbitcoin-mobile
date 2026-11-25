@@ -29,7 +29,7 @@ class ExportTransactionsCsvUsecase {
     final List<Transaction> transactions;
     switch (await _getTransactionsUsecase.execute()) {
       case Ok(:final value):
-        transactions = value;
+        transactions = value.transactions;
       case Err(:final failure):
         return Err(failure);
     }

@@ -44,7 +44,12 @@ void main() {
     var reads = 0;
     when(() => read.execute(walletId: 'a')).thenAnswer((_) async {
       reads++;
-      return const Ok([]);
+      return const Ok(
+        TransactionHistory(
+          transactions: [],
+          exchangeOrders: ExchangeOrdersMerged(),
+        ),
+      );
     });
     final cubit = TransactionsCubit(
       walletId: 'a',
@@ -106,8 +111,14 @@ void main() {
     );
     when(() => a.id).thenReturn('a');
     when(() => b.id).thenReturn('b');
-    when(() => wallets.execute(onlyBitcoin: true))
-        .thenAnswer((_) async => Ok([a, b]));
+    when(() => wallets.execute(onlyBitcoin: true)).thenAnswer(
+      (_) async => Ok(
+        TransactionHistory(
+          transactions: [a, b],
+          exchangeOrders: const ExchangeOrdersMerged(),
+        ),
+      ),
+    );
     var walletRuns = 0;
     for (final entry in [(a, first), (b, second)]) {
       when(
@@ -132,7 +143,12 @@ void main() {
     when(() => read.execute(walletId: any(named: 'walletId')))
         .thenAnswer((_) async {
           reads++;
-          return const Ok([]);
+          return const Ok(
+            TransactionHistory(
+              transactions: [],
+              exchangeOrders: ExchangeOrdersMerged(),
+            ),
+          );
         });
     final cubit = TransactionsCubit(
       getTransactionsUsecase: read,
