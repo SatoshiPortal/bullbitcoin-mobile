@@ -225,6 +225,14 @@ class _MockLabels extends Mock implements Labels {}
 
 class _MockTransactions extends Mock implements WalletTransactionRepository {}
 
+class _DelayedAnimations implements PaymentAnimationPreferencesReader {
+  final read = Completer<Result<bool, PreferencesFailure>>();
+
+  @override
+  Future<Result<bool, PreferencesFailure>> readShowPaymentAnimations() =>
+      read.future;
+}
+
 void main() {
   late _MockReceive receive;
   late _MockGetReceiveWalletsUsecase getWallets;
@@ -259,6 +267,7 @@ void main() {
     Preferences? settings,
     Future<Result<ReceiveWallet, ReceiveFailure>> Function(ReceiveWallet)?
     resolveEntry,
+    ReadReceivePaymentAnimationsUsecase? readPaymentAnimations,
   }) {
     if (settings != null) {
       final operations = Receive.open(
@@ -306,6 +315,7 @@ void main() {
       getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
       setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
       wallet: withPresetWallet ? (wallet ?? _testWallet()) : null,
+      readPaymentAnimationsUsecase: readPaymentAnimations,
     );
   }
 
@@ -413,6 +423,27 @@ void main() {
   tearDown(() async {
     await payjoinEnabledChangeController.close();
     await payjoinMinAmountChangeController.close();
+  });
+
+  test(
+    'the animations preference is unknown until read, then emitted',
+    () async {
+      final reader = _DelayedAnimations();
+      final bloc = buildBloc(
+        readPaymentAnimations: ReadReceivePaymentAnimationsUsecase(reader),
+      );
+      addTearDown(bloc.close);
+      expect(bloc.state.showPaymentAnimations, isNull);
+      reader.read.complete(const Ok(false));
+      await bloc.stream.firstWhere((s) => s.showPaymentAnimations != null);
+      expect(bloc.state.showPaymentAnimations, isFalse);
+    },
+  );
+
+  test('without a reader the animations stay on from the start', () {
+    final bloc = buildBloc();
+    addTearDown(bloc.close);
+    expect(bloc.state.showPaymentAnimations, isTrue);
   });
 
   test(
