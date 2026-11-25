@@ -4,7 +4,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullCountdown,
         BullFadingLinearProgress,
-        BullScrollableColumn,
         BullTypographyX,
         Gap;
 import 'package:exchange/steps.dart';
@@ -63,52 +62,63 @@ class QuoteReviewPage extends StatelessWidget {
               foregroundColor: context.appColors.primary,
             ),
             Expanded(
-              child: BullScrollableColumn(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                children: [
-                  const Gap(16),
-                  if ((deadline, refreshLabel) case (
-                    final deadline?,
-                    final refreshLabel?,
-                  ))
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          refreshLabel,
-                          style: context.bullType.body.copyWith(
-                            color: context.appColors.outline,
-                          ),
-                        ),
-                        BullCountdown(until: deadline),
-                      ],
-                    ),
-                  for (final (label, value) in rows)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Gap(16),
+                    if ((deadline, refreshLabel) case (
+                      final deadline?,
+                      final refreshLabel?,
+                    ))
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            label,
+                            refreshLabel,
                             style: context.bullType.body.copyWith(
-                              color: context.appColors.onSurfaceVariant,
+                              color: context.appColors.outline,
                             ),
                           ),
-                          const Gap(12),
-                          Expanded(
-                            child: Text(
-                              value,
-                              textAlign: TextAlign.end,
-                              maxLines: 2,
-                              style: context.bullType.body,
-                            ),
-                          ),
+                          BullCountdown(until: deadline),
                         ],
                       ),
-                    ),
-                  ...details,
-                  const Spacer(),
+                    for (final (label, value) in rows)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              label,
+                              style: context.bullType.body.copyWith(
+                                color: context.appColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const Gap(12),
+                            Expanded(
+                              child: Text(
+                                value,
+                                textAlign: TextAlign.end,
+                                maxLines: 2,
+                                style: context.bullType.body,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ...details,
+                    const Gap(16),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                   if (status is QuoteUnavailable) ...[
                     Text(
                       context.loc.exchangeQuoteUnavailableError,

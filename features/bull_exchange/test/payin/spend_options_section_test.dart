@@ -1,3 +1,5 @@
+import 'fake_address_viewer.dart';
+
 import 'dart:async';
 
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
@@ -39,8 +41,7 @@ const SpendOptionsLabels _labels = (
 
 final ExchangePayinUi _ui = (
   walletCards: (context, onSelected) => const SizedBox(),
-  addressViewer: (context, text, {style, color, textAlign}) =>
-      Text(text, style: style),
+  addressViewer: fakeAddressViewer,
   openWalletHome: (context) {},
   openOrder: (context, orderId, {required returnToExchange}) {},
   openPayjoinTransaction: (context, txid) {},

@@ -17,12 +17,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
 
+import '../../payin/fake_address_viewer.dart';
 import '../sell_fixtures.dart';
 
 final ExchangePayinUi _ui = (
   walletCards: (context, onSelected) => const SizedBox(key: Key('wallets')),
-  addressViewer: (context, text, {style, color, textAlign}) =>
-      Text(text, style: style),
+  addressViewer: fakeAddressViewer,
   openWalletHome: (context) {},
   openOrder: (context, orderId, {required returnToExchange}) {},
   openPayjoinTransaction: (context, txid) {},

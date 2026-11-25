@@ -14,7 +14,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullCountdown,
         BullQrCode,
-        BullScrollableColumn,
         BullSnackBar,
         BullText,
         BullTypographyX,
@@ -249,76 +248,89 @@ class _ExternalPayin extends StatelessWidget {
         leading: BackButton(onPressed: onBack),
       ),
       body: SafeArea(
-        child: BullScrollableColumn(
-          padding: const EdgeInsets.all(24),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              context.loc.exchangePayinExternalTitle,
-              style: context.bullType.subtitle,
-            ),
-            if (order.confirmationDeadline case final deadline?)
-              Row(
-                children: [
-                  Text(
-                    labels.refreshIn,
-                    style: context.bullType.body.copyWith(
-                      color: context.appColors.outline,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      context.loc.exchangePayinExternalTitle,
+                      style: context.bullType.subtitle,
                     ),
-                  ),
-                  BullCountdown(until: deadline),
-                ],
-              ),
-            const Gap(16),
-            Text(
-              '${order.payinAmount} ${order.payinCurrency}',
-              style: context.bullType.headline,
-            ),
-            const Gap(16),
-            ui.addressViewer(context, deposit),
-            const Gap(16),
-            Text(
-              context.loc.exchangePayinExternalWaiting,
-              style: context.bullType.body,
-            ),
-            const Gap(24),
-            Row(
-              children: [
-                Expanded(
-                  child: BullButton.secondary(
-                    label: labels.copyInvoice,
-                    onPressed: () {
-                      unawaited(
-                        Clipboard.setData(ClipboardData(text: _invoice)),
-                      );
-                      BullSnackBar.show(
-                        context,
-                        message: context.loc.copiedToClipboard,
-                      );
-                    },
-                  ),
-                ),
-                const Gap(16),
-                Expanded(
-                  child: BullButton.secondary(
-                    label: labels.showQr,
-                    onPressed: () => unawaited(
-                      BullBottomSheet.show<void>(
-                        context: context,
-                        child: _PayinQrSheet(
-                          title: labels.qrTitle,
-                          data: _invoice,
-                        ),
+                    if (order.confirmationDeadline case final deadline?)
+                      Row(
+                        children: [
+                          Text(
+                            labels.refreshIn,
+                            style: context.bullType.body.copyWith(
+                              color: context.appColors.outline,
+                            ),
+                          ),
+                          BullCountdown(until: deadline),
+                        ],
                       ),
+                    const Gap(16),
+                    Text(
+                      '${order.payinAmount} ${order.payinCurrency}',
+                      style: context.bullType.headline,
                     ),
-                  ),
+                    const Gap(16),
+                    ui.addressViewer(context, deposit),
+                    const Gap(16),
+                    Text(
+                      context.loc.exchangePayinExternalWaiting,
+                      style: context.bullType.body,
+                    ),
+                    const Gap(24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: BullButton.secondary(
+                            label: labels.copyInvoice,
+                            onPressed: () {
+                              unawaited(
+                                Clipboard.setData(
+                                  ClipboardData(text: _invoice),
+                                ),
+                              );
+                              BullSnackBar.show(
+                                context,
+                                message: context.loc.copiedToClipboard,
+                              );
+                            },
+                          ),
+                        ),
+                        const Gap(16),
+                        Expanded(
+                          child: BullButton.secondary(
+                            label: labels.showQr,
+                            onPressed: () => unawaited(
+                              BullBottomSheet.show<void>(
+                                context: context,
+                                child: _PayinQrSheet(
+                                  title: labels.qrTitle,
+                                  data: _invoice,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-            const Spacer(),
-            BullButton.secondary(
-              label: context.loc.exchangePaymentSentLeave,
-              onPressed: onBack,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: BullButton.secondary(
+                label: context.loc.exchangePaymentSentLeave,
+                onPressed: onBack,
+              ),
             ),
           ],
         ),
