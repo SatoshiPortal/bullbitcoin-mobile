@@ -899,5 +899,8 @@
   "recipientsValidationClabeLength": "Số CLABE gồm 18 chữ số",
   "recipientsValidationClabeCheckDigit": "Số CLABE này không hợp lệ. Vui lòng kiểm tra lại",
   "recipientsValidationSpeiPhone": "Nhập số điện thoại 10 chữ số, không kèm mã quốc gia",
-  "recipientsValidationDebitCard": "Số thẻ ghi nợ gồm 16 chữ số"
+  "recipientsValidationDebitCard": "Số thẻ ghi nợ gồm 16 chữ số",
+  "recipientsErrorFieldRefused": "Sàn giao dịch không chấp nhận giá trị này",
+  "recipientsErrorCheckFields": "Một số thông tin không được chấp nhận. Vui lòng kiểm tra các trường được đánh dấu ở trên.",
+  "recipientsErrorFieldsRefused": "Một số thông tin không được chấp nhận: {fields}"
 }

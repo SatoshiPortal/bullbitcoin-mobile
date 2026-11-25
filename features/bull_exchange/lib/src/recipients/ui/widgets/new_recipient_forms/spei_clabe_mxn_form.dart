@@ -1,10 +1,11 @@
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_error.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/presentation/spei_problem_l10n.dart';
-import 'package:exchange/exchange.dart' show speiClabeProblem;
+import 'package:exchange/exchange.dart' show RecipientField, speiClabeProblem;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -58,6 +59,7 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
         children: [
           BBTextFormField(
             labelText: context.loc.recipientsFieldClabe,
+            errorText: context.recipientServerFieldError(RecipientField.clabe),
             hintText: context.loc.recipientsFieldClabeHint,
             focusNode: _clabeFocusNode,
             autofocus: true,
@@ -73,6 +75,7 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsFieldName,
+            errorText: context.recipientServerFieldError(RecipientField.name),
             hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
@@ -89,6 +92,7 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsLabelOptional,
+            errorText: context.recipientServerFieldError(RecipientField.label),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -104,6 +108,11 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            shownFields: const {
+              RecipientField.clabe,
+              RecipientField.name,
+              RecipientField.label,
+            },
           ),
         ],
       ),

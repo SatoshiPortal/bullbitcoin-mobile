@@ -978,6 +978,56 @@ void main() {
       expect(_failureOf(result), isA<RecipientsLoadFailure>());
     });
 
+    test('a save refused for named fields says which fields', () async {
+      final repository = _repository(
+        FakeBbxHttp(
+          body: {
+            'error': {
+              'code': -32602,
+              'message': 'Validation error',
+              'data': {
+                'apiError': {
+                  'code': 'ERR_API_400',
+                  'fields': {
+                    'element': {
+                      'email': [
+                        {'code': 'ERR_VALIDATION_REQUIRED', 'message': 'x'},
+                      ],
+                      'documentType': [
+                        {'code': 'ERR_VALIDATION_ENUM', 'message': 'x'},
+                      ],
+                      'somethingNew': [
+                        {'code': 'ERR_VALIDATION_REQUIRED', 'message': 'x'},
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ),
+      );
+
+      final result = await repository.saveRecipient(
+        _newRecipients.first,
+        isTestnet: false,
+      );
+
+      final failure = _failureOf(result) as RecipientsInvalidFieldsFailure;
+      expect(failure.fields, {
+        RecipientField.email: RecipientFieldProblem.missing,
+        RecipientField.documentType: RecipientFieldProblem.invalid,
+      });
+      expect(failure.otherFields, ['somethingNew']);
+    });
+
+    test('a save refused without fields is a save failure', () async {
+      final result = await _repository(FakeBbxHttp(body: _errorBody))
+          .saveRecipient(_newRecipients.first, isTestnet: false);
+
+      expect(_failureOf(result), isA<RecipientsSaveFailure>());
+    });
+
     test('refusal logs omit the payload', () async {
       final directory = await Directory.systemTemp.createTemp('recipient-log-');
       await initializeLogging(directory: directory, background: true);

@@ -1197,5 +1197,8 @@
   "recipientsValidationClabeLength": "CLABE ত 18টা অংক থাকে",
   "recipientsValidationClabeCheckDigit": "এই CLABE বৈধ নহয়। নম্বৰটো পৰীক্ষা কৰক",
   "recipientsValidationSpeiPhone": "দেশৰ ক'ড অবিহনে 10 অংকৰ ফোন নম্বৰটো দিয়ক",
-  "recipientsValidationDebitCard": "ডেবিট কাৰ্ডৰ নম্বৰত 16টা অংক থাকে"
+  "recipientsValidationDebitCard": "ডেবিট কাৰ্ডৰ নম্বৰত 16টা অংক থাকে",
+  "recipientsErrorFieldRefused": "Exchange-এ এই মানটো গ্ৰহণ নকৰিলে",
+  "recipientsErrorCheckFields": "কিছুমান তথ্য গ্ৰহণ কৰা নহ'ল। ওপৰত চিহ্নিত ক্ষেত্ৰসমূহ পৰীক্ষা কৰক।",
+  "recipientsErrorFieldsRefused": "কিছুমান তথ্য গ্ৰহণ কৰা নহ'ল: {fields}"
 }

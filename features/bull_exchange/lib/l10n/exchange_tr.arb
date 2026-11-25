@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "CLABE 18 haneden oluşur",
   "recipientsValidationClabeCheckDigit": "Bu CLABE geçerli değil. Numarayı kontrol edin",
   "recipientsValidationSpeiPhone": "Ülke kodu olmadan 10 haneli telefon numarasını girin",
-  "recipientsValidationDebitCard": "Banka kartı numarası 16 haneden oluşur"
+  "recipientsValidationDebitCard": "Banka kartı numarası 16 haneden oluşur",
+  "recipientsErrorFieldRefused": "Borsa bu değeri kabul etmedi",
+  "recipientsErrorCheckFields": "Bazı bilgiler kabul edilmedi. Yukarıda işaretlenen alanları kontrol edin.",
+  "recipientsErrorFieldsRefused": "Bazı bilgiler kabul edilmedi: {fields}"
 }

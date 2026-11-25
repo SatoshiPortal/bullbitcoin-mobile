@@ -951,5 +951,8 @@
   "recipientsValidationClabeLength": "CLABE состоит из 18 цифр",
   "recipientsValidationClabeCheckDigit": "Этот CLABE недействителен. Проверьте номер",
   "recipientsValidationSpeiPhone": "Введите 10-значный номер телефона без кода страны",
-  "recipientsValidationDebitCard": "Номер дебетовой карты состоит из 16 цифр"
+  "recipientsValidationDebitCard": "Номер дебетовой карты состоит из 16 цифр",
+  "recipientsErrorFieldRefused": "Биржа не приняла это значение",
+  "recipientsErrorCheckFields": "Некоторые данные не были приняты. Проверьте отмеченные выше поля.",
+  "recipientsErrorFieldsRefused": "Некоторые данные не были приняты: {fields}"
 }

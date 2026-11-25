@@ -1468,5 +1468,8 @@
   "recipientsValidationClabeLength": "CLABE-তে 18টি অঙ্ক থাকে",
   "recipientsValidationClabeCheckDigit": "এই CLABE বৈধ নয়। নম্বরটি যাচাই করুন",
   "recipientsValidationSpeiPhone": "দেশের কোড ছাড়া 10 অঙ্কের ফোন নম্বর লিখুন",
-  "recipientsValidationDebitCard": "ডেবিট কার্ড নম্বরে 16টি অঙ্ক থাকে"
+  "recipientsValidationDebitCard": "ডেবিট কার্ড নম্বরে 16টি অঙ্ক থাকে",
+  "recipientsErrorFieldRefused": "এক্সচেঞ্জ এই মানটি গ্রহণ করেনি",
+  "recipientsErrorCheckFields": "কিছু তথ্য গ্রহণ করা হয়নি। উপরে চিহ্নিত ক্ষেত্রগুলো যাচাই করুন।",
+  "recipientsErrorFieldsRefused": "কিছু তথ্য গ্রহণ করা হয়নি: {fields}"
 }

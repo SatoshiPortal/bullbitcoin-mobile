@@ -11,11 +11,16 @@ class RecipientFormContinueButton extends StatelessWidget {
     required this.onPressed,
     this.hookError,
     this.formDisabled = false,
+    this.shownFields = const {},
   });
 
   final VoidCallback onPressed;
   final String? hookError;
   final bool formDisabled;
+
+  /// The fields the form marks itself when the exchange refuses them; the
+  /// message under the button names only the other refused fields.
+  final Set<RecipientField> shownFields;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +47,13 @@ class RecipientFormContinueButton extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
-              failedToAddRecipient.toTranslated(context),
+              switch (failedToAddRecipient) {
+                final RecipientsInvalidFieldsFailure refused => refused.summary(
+                  context,
+                  shownFields,
+                ),
+                final failure => failure.toTranslated(context),
+              },
               style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),

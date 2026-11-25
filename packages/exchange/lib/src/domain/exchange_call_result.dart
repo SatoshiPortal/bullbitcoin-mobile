@@ -19,12 +19,17 @@ final class ExchangeRefusal {
   /// virtual payee is not active.
   final bool payeeInactive;
 
+  /// The request fields the exchange's validation refused: each field path
+  /// to its `ERR_VALIDATION_` code. Never a value.
+  final Map<String, String> fieldErrors;
+
   const ExchangeRefusal({
     this.rpcCode,
     this.apiCode,
     this.httpStatus,
     this.orderLimit,
     this.payeeInactive = false,
+    this.fieldErrors = const {},
   });
 
   @override
@@ -34,17 +39,28 @@ final class ExchangeRefusal {
       other.apiCode == apiCode &&
       other.httpStatus == httpStatus &&
       other.orderLimit == orderLimit &&
-      other.payeeInactive == payeeInactive;
+      other.payeeInactive == payeeInactive &&
+      other.fieldErrors.length == fieldErrors.length &&
+      fieldErrors.entries.every((e) => other.fieldErrors[e.key] == e.value);
 
   @override
-  int get hashCode =>
-      Object.hash(rpcCode, apiCode, httpStatus, orderLimit, payeeInactive);
+  int get hashCode => Object.hash(
+    rpcCode,
+    apiCode,
+    httpStatus,
+    orderLimit,
+    payeeInactive,
+    Object.hashAllUnordered(
+      fieldErrors.entries.map((e) => Object.hash(e.key, e.value)),
+    ),
+  );
 
   @override
   String toString() =>
       'ExchangeRefusal(rpcCode: $rpcCode, apiCode: $apiCode, '
       'httpStatus: $httpStatus, orderLimit: $orderLimit, '
-      'payeeInactive: $payeeInactive)';
+      'payeeInactive: $payeeInactive'
+      '${fieldErrors.isEmpty ? '' : ', fields: ${fieldErrors.keys.toList()}'})';
 }
 
 /// The order amount bound the exchange refused an order for.

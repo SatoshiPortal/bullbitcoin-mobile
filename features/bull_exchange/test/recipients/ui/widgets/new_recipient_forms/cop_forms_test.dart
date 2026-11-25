@@ -32,14 +32,16 @@ void main() {
 
   Future<(_MockRecipientsBloc, ExchangeLocalizations)> pumpForm(
     WidgetTester tester,
-    Widget form,
-  ) async {
+    Widget form, {
+    RecipientsFailure? failedToAddRecipient,
+  }) async {
     final bloc = _MockRecipientsBloc();
     whenListen(
       bloc,
       const Stream<RecipientsState>.empty(),
       initialState: RecipientsState(
         allowedRecipientFilters: RecipientFilterCriteria(),
+        failedToAddRecipient: failedToAddRecipient,
       ),
     );
     await tester.pumpWidget(
@@ -174,6 +176,42 @@ void main() {
         'corporateName',
         'ACME SAS',
       ),
+    );
+  });
+
+  testWidgets('the fields the exchange refused are marked under each field', (
+    tester,
+  ) async {
+    final (_, loc) = await pumpForm(
+      tester,
+      const NequiCopForm(),
+      failedToAddRecipient: RecipientsInvalidFieldsFailure.fromFieldErrors(
+        const {
+          'email': 'ERR_VALIDATION_EMAIL',
+          'lastname': 'ERR_VALIDATION_REQUIRED',
+          'bankCode': 'ERR_VALIDATION_REQUIRED',
+        },
+      ),
+    );
+
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('copEmail')),
+        matching: find.text(loc.recipientsErrorFieldRefused),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('copLastName')),
+        matching: find.text(loc.recipientsValidationFieldRequired),
+      ),
+      findsOneWidget,
+    );
+    // Nequi has no bank code field, so the message under Continue names it.
+    expect(
+      find.text(loc.recipientsErrorFieldsRefused('bankCode')),
+      findsOneWidget,
     );
   });
 }

@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "يتكون رقم CLABE من 18 رقمًا",
   "recipientsValidationClabeCheckDigit": "رقم CLABE هذا غير صالح. تحقق من الرقم",
   "recipientsValidationSpeiPhone": "أدخل رقم الهاتف المكوّن من 10 أرقام، بدون رمز الدولة",
-  "recipientsValidationDebitCard": "يتكون رقم بطاقة الخصم من 16 رقمًا"
+  "recipientsValidationDebitCard": "يتكون رقم بطاقة الخصم من 16 رقمًا",
+  "recipientsErrorFieldRefused": "لم تقبل المنصة هذه القيمة",
+  "recipientsErrorCheckFields": "لم تُقبل بعض البيانات. تحقق من الحقول المحددة أعلاه.",
+  "recipientsErrorFieldsRefused": "لم تُقبل بعض البيانات: {fields}"
 }

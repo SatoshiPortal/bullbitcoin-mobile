@@ -48,9 +48,14 @@ ExchangeWrite<T> writeOf<T>(bbx.BbxFailure failure) => switch (failure) {
   bbx.BbxHttpFailure(:final status) => WriteRefused(
     ExchangeRefusal(httpStatus: status),
   ),
-  bbx.BbxRpcFailure(:final code, :final apiCode) => WriteRefused(
-    ExchangeRefusal(rpcCode: code, apiCode: apiCode),
-  ),
+  bbx.BbxRpcFailure(:final code, :final apiCode, :final fieldErrors) =>
+    WriteRefused(
+      ExchangeRefusal(
+        rpcCode: code,
+        apiCode: apiCode,
+        fieldErrors: fieldErrors,
+      ),
+    ),
   bbx.BbxOrderLimitFailure(
     :final code,
     :final apiCode,

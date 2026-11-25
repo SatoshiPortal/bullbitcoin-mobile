@@ -951,5 +951,8 @@
   "recipientsValidationClabeLength": "CLABE 为 18 位数字",
   "recipientsValidationClabeCheckDigit": "此 CLABE 无效，请检查号码",
   "recipientsValidationSpeiPhone": "请输入 10 位电话号码，不含国家代码",
-  "recipientsValidationDebitCard": "借记卡号为 16 位数字"
+  "recipientsValidationDebitCard": "借记卡号为 16 位数字",
+  "recipientsErrorFieldRefused": "交易平台未接受此值",
+  "recipientsErrorCheckFields": "部分信息未被接受，请检查上方标出的字段。",
+  "recipientsErrorFieldsRefused": "部分信息未被接受：{fields}"
 }

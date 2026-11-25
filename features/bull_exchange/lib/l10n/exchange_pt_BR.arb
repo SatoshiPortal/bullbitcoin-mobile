@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "Uma CLABE tem 18 dígitos",
   "recipientsValidationClabeCheckDigit": "Esta CLABE não é válida. Verifique o número",
   "recipientsValidationSpeiPhone": "Insira o número de telefone de 10 dígitos, sem o código do país",
-  "recipientsValidationDebitCard": "Um número de cartão de débito tem 16 dígitos"
+  "recipientsValidationDebitCard": "Um número de cartão de débito tem 16 dígitos",
+  "recipientsErrorFieldRefused": "A exchange não aceitou este valor",
+  "recipientsErrorCheckFields": "Alguns dados não foram aceitos. Verifique os campos marcados acima.",
+  "recipientsErrorFieldsRefused": "Alguns dados não foram aceitos: {fields}"
 }

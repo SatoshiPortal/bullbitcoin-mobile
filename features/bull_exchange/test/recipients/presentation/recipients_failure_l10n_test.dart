@@ -35,6 +35,10 @@ final _everyFailure = <RecipientsFailure>[
   const RecipientsVirtualIbanNotAvailableFailure(_rawReason),
   const RecipientsEuResidencyRequiredFailure(_rawReason),
   const RecipientsUnexpectedFailure(_rawReason),
+  RecipientsInvalidFieldsFailure.fromFieldErrors(const {
+    'email': 'ERR_VALIDATION_REQUIRED',
+    'iban': 'ERR_VALIDATION_FORMAT',
+  })!,
 ];
 
 Future<String> _translate(
@@ -123,6 +127,53 @@ void main() {
       // "check your connection" and "could not load" call for different
       // actions, so they must not collapse into one message.
       expect(network, isNot(load));
+    });
+  });
+
+  group('RecipientsInvalidFieldsFailure', () {
+    final failure = RecipientsInvalidFieldsFailure.fromFieldErrors(const {
+      'email': 'ERR_VALIDATION_REQUIRED',
+      'lastname': 'ERR_VALIDATION_STRING',
+      'element.extra': 'ERR_VALIDATION_UNEXPECTED',
+    })!;
+
+    test('maps known fields and keeps the names of the others', () {
+      expect(failure.fields, {
+        RecipientField.email: RecipientFieldProblem.missing,
+        RecipientField.lastname: RecipientFieldProblem.invalid,
+      });
+      expect(failure.otherFields, ['element.extra']);
+      expect(RecipientsInvalidFieldsFailure.fromFieldErrors(const {}), isNull);
+    });
+
+    testWidgets('the summary names only the fields the form does not mark', (
+      tester,
+    ) async {
+      late String partly;
+      late String all;
+      late ExchangeLocalizations loc;
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+          supportedLocales: ExchangeLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) {
+              loc = ExchangeLocalizations.of(context);
+              partly = failure.summary(context, const {RecipientField.email});
+              all = RecipientsInvalidFieldsFailure.fromFieldErrors(const {
+                'email': 'ERR_VALIDATION_REQUIRED',
+              })!.summary(context, const {RecipientField.email});
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+
+      expect(
+        partly,
+        loc.recipientsErrorFieldsRefused('lastname, element.extra'),
+      );
+      expect(all, loc.recipientsErrorCheckFields);
     });
   });
 }

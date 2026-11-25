@@ -1,3 +1,5 @@
+import 'package:exchange/exchange.dart' show RecipientField;
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_error.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_document_type_label.dart';
@@ -151,6 +153,9 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsFieldBankAccountNumber,
+            errorText: context.recipientServerFieldError(
+              RecipientField.bankAccount,
+            ),
             hintText: context.loc.recipientsFieldBankAccountNumberHint,
             focusNode: _accountNumberFocusNode,
             autofocus: true,
@@ -199,6 +204,9 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
               _documentType,
             ),
             hintText: context.loc.recipientsFieldDocumentNumberHint,
+            errorText: context.recipientServerFieldError(
+              RecipientField.documentId,
+            ),
             focusNode: _documentIdFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -222,6 +230,7 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsLabelOptional,
+            errorText: context.recipientServerFieldError(RecipientField.label),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -237,6 +246,15 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            shownFields: const {
+              RecipientField.bankAccount,
+              RecipientField.documentId,
+              RecipientField.label,
+              RecipientField.name,
+              RecipientField.lastname,
+              RecipientField.corporateName,
+              RecipientField.email,
+            },
           ),
         ],
       ),

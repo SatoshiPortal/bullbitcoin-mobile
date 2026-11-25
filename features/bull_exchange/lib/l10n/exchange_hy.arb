@@ -899,5 +899,8 @@
   "recipientsValidationClabeLength": "CLABE-ն ունի 18 թվանշան",
   "recipientsValidationClabeCheckDigit": "Այս CLABE-ն վավեր չէ։ Ստուգեք համարը",
   "recipientsValidationSpeiPhone": "Մուտքագրեք 10 թվանշանանոց հեռախոսահամարը՝ առանց երկրի կոդի",
-  "recipientsValidationDebitCard": "Դեբետային քարտի համարն ունի 16 թվանշան"
+  "recipientsValidationDebitCard": "Դեբետային քարտի համարն ունի 16 թվանշան",
+  "recipientsErrorFieldRefused": "Բորսան չընդունեց այս արժեքը",
+  "recipientsErrorCheckFields": "Որոշ տվյալներ չընդունվեցին։ Ստուգեք վերևում նշված դաշտերը։",
+  "recipientsErrorFieldsRefused": "Որոշ տվյալներ չընդունվեցին՝ {fields}"
 }

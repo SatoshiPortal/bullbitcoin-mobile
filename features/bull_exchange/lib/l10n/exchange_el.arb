@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "Ένα CLABE έχει 18 ψηφία",
   "recipientsValidationClabeCheckDigit": "Αυτό το CLABE δεν είναι έγκυρο. Ελέγξτε τον αριθμό",
   "recipientsValidationSpeiPhone": "Εισαγάγετε τον 10ψήφιο αριθμό τηλεφώνου, χωρίς τον κωδικό χώρας",
-  "recipientsValidationDebitCard": "Ο αριθμός χρεωστικής κάρτας έχει 16 ψηφία"
+  "recipientsValidationDebitCard": "Ο αριθμός χρεωστικής κάρτας έχει 16 ψηφία",
+  "recipientsErrorFieldRefused": "Το ανταλλακτήριο δεν δέχτηκε αυτή την τιμή",
+  "recipientsErrorCheckFields": "Ορισμένα στοιχεία δεν έγιναν δεκτά. Ελέγξτε τα επισημασμένα πεδία παραπάνω.",
+  "recipientsErrorFieldsRefused": "Ορισμένα στοιχεία δεν έγιναν δεκτά: {fields}"
 }

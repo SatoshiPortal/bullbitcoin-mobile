@@ -1,8 +1,9 @@
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_error.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_ui/bull_ui.dart' show BullLowerCaseTextFormatter, Gap;
-import 'package:exchange/exchange.dart' show emailLooksValid;
+import 'package:exchange/exchange.dart' show RecipientField, emailLooksValid;
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -78,6 +79,9 @@ class _CopHolderFieldsState extends State<CopHolderFields> {
           BBTextFormField(
             key: const ValueKey('copCorporateName'),
             labelText: context.loc.recipientsFieldCorporateName,
+            errorText: context.recipientServerFieldError(
+              RecipientField.corporateName,
+            ),
             hintText: context.loc.recipientsFieldCorporateNameHint,
             textInputAction: .next,
             onFieldSubmitted: (_) => _emailFocusNode.requestFocus(),
@@ -88,6 +92,7 @@ class _CopHolderFieldsState extends State<CopHolderFields> {
           BBTextFormField(
             key: const ValueKey('copFirstName'),
             labelText: context.loc.recipientsFieldFirstName,
+            errorText: context.recipientServerFieldError(RecipientField.name),
             hintText: context.loc.recipientsFieldFirstNameHint,
             textInputAction: .next,
             onFieldSubmitted: (_) => _lastNameFocusNode.requestFocus(),
@@ -98,6 +103,9 @@ class _CopHolderFieldsState extends State<CopHolderFields> {
           BBTextFormField(
             key: const ValueKey('copLastName'),
             labelText: context.loc.recipientsFieldLastName,
+            errorText: context.recipientServerFieldError(
+              RecipientField.lastname,
+            ),
             hintText: context.loc.recipientsFieldLastNameHint,
             focusNode: _lastNameFocusNode,
             textInputAction: .next,
@@ -110,6 +118,7 @@ class _CopHolderFieldsState extends State<CopHolderFields> {
         BBTextFormField(
           key: const ValueKey('copEmail'),
           labelText: context.loc.recipientsFieldEmailAddress,
+          errorText: context.recipientServerFieldError(RecipientField.email),
           hintText: context.loc.recipientsFieldEmailAddressHint,
           focusNode: _emailFocusNode,
           inputFormatters: [

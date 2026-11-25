@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "CLABE má 18 číslic",
   "recipientsValidationClabeCheckDigit": "Tato CLABE není platná. Zkontrolujte číslo",
   "recipientsValidationSpeiPhone": "Zadejte 10místné telefonní číslo bez předvolby země",
-  "recipientsValidationDebitCard": "Číslo debetní karty má 16 číslic"
+  "recipientsValidationDebitCard": "Číslo debetní karty má 16 číslic",
+  "recipientsErrorFieldRefused": "Burza tuto hodnotu nepřijala",
+  "recipientsErrorCheckFields": "Některé údaje nebyly přijaty. Zkontrolujte označená pole výše.",
+  "recipientsErrorFieldsRefused": "Některé údaje nebyly přijaty: {fields}"
 }

@@ -43,7 +43,10 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
       _toRecipient,
     )) {
       WriteDone(:final value) => Ok(value),
-      WriteRefused() => const Err(RecipientsSaveFailure()),
+      WriteRefused(:final reason) => Err(
+        RecipientsInvalidFieldsFailure.fromFieldErrors(reason.fieldErrors) ??
+            const RecipientsSaveFailure(),
+      ),
       WriteNotSent(reason: ExchangeNotSentReason.signedOut) ||
       WriteSessionRejected() => const Err(RecipientsNotAuthenticatedFailure()),
       WriteNotSent(reason: ExchangeNotSentReason.unreachable) => const Err(

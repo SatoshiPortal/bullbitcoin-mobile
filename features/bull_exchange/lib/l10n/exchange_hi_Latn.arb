@@ -1468,5 +1468,8 @@
   "recipientsValidationClabeLength": "CLABE mein 18 digits hote hain",
   "recipientsValidationClabeCheckDigit": "Yah CLABE valid nahin hai. Number check karein",
   "recipientsValidationSpeiPhone": "Country code ke bina 10 digit ka phone number daalein",
-  "recipientsValidationDebitCard": "Debit card number mein 16 digits hote hain"
+  "recipientsValidationDebitCard": "Debit card number mein 16 digits hote hain",
+  "recipientsErrorFieldRefused": "Exchange ne yeh value accept nahi ki",
+  "recipientsErrorCheckFields": "Kuch details accept nahi hui. Upar mark kiye gaye fields check karein.",
+  "recipientsErrorFieldsRefused": "Kuch details accept nahi hui: {fields}"
 }

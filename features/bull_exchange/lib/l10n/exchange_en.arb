@@ -3850,5 +3850,23 @@
   "recipientsValidationDebitCard": "A debit card number has 16 digits",
   "@recipientsValidationDebitCard": {
     "description": "Recipient form (Mexico SPEI by debit card): the card number is not 16 digits"
+  },
+  "recipientsErrorFieldRefused": "The exchange did not accept this value",
+  "@recipientsErrorFieldRefused": {
+    "description": "Recipient form: shown under a field the exchange refused when the recipient was saved (a wrong format or value)"
+  },
+  "recipientsErrorCheckFields": "Some details were not accepted. Check the fields marked above.",
+  "@recipientsErrorCheckFields": {
+    "description": "Recipient form: shown under the Continue button when the exchange refused fields that are each marked on the form"
+  },
+  "recipientsErrorFieldsRefused": "Some details were not accepted: {fields}",
+  "@recipientsErrorFieldsRefused": {
+    "description": "Recipient form: shown under the Continue button when the exchange refused fields the form does not mark; {fields} is a comma-separated list of the API field names (kept as they are, not translated)",
+    "placeholders": {
+      "fields": {
+        "type": "String",
+        "example": "email, lastname"
+      }
+    }
   }
 }

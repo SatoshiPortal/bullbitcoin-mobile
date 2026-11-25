@@ -973,5 +973,8 @@
   "recipientsValidationClabeLength": "Eine CLABE hat 18 Ziffern",
   "recipientsValidationClabeCheckDigit": "Diese CLABE ist ungültig. Bitte überprüfen Sie die Nummer",
   "recipientsValidationSpeiPhone": "Geben Sie die 10-stellige Telefonnummer ohne Ländervorwahl ein",
-  "recipientsValidationDebitCard": "Eine Debitkartennummer hat 16 Ziffern"
+  "recipientsValidationDebitCard": "Eine Debitkartennummer hat 16 Ziffern",
+  "recipientsErrorFieldRefused": "Die Börse hat diesen Wert nicht akzeptiert",
+  "recipientsErrorCheckFields": "Einige Angaben wurden nicht akzeptiert. Bitte prüfen Sie die oben markierten Felder.",
+  "recipientsErrorFieldsRefused": "Einige Angaben wurden nicht akzeptiert: {fields}"
 }

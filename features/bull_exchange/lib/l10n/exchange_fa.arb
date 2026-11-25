@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "شماره CLABE از ۱۸ رقم تشکیل شده است",
   "recipientsValidationClabeCheckDigit": "این CLABE معتبر نیست. شماره را بررسی کنید",
   "recipientsValidationSpeiPhone": "شماره تلفن ۱۰ رقمی را بدون کد کشور وارد کنید",
-  "recipientsValidationDebitCard": "شماره کارت دبیت ۱۶ رقم دارد"
+  "recipientsValidationDebitCard": "شماره کارت دبیت ۱۶ رقم دارد",
+  "recipientsErrorFieldRefused": "صرافی این مقدار را نپذیرفت",
+  "recipientsErrorCheckFields": "برخی اطلاعات پذیرفته نشد. فیلدهای مشخص‌شده در بالا را بررسی کنید.",
+  "recipientsErrorFieldsRefused": "برخی اطلاعات پذیرفته نشد: {fields}"
 }

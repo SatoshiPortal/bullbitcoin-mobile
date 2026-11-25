@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "CLABE는 18자리 숫자입니다",
   "recipientsValidationClabeCheckDigit": "유효하지 않은 CLABE입니다. 번호를 확인하세요",
   "recipientsValidationSpeiPhone": "국가 코드 없이 10자리 전화번호를 입력하세요",
-  "recipientsValidationDebitCard": "직불카드 번호는 16자리 숫자입니다"
+  "recipientsValidationDebitCard": "직불카드 번호는 16자리 숫자입니다",
+  "recipientsErrorFieldRefused": "거래소에서 이 값을 받아들이지 않았습니다",
+  "recipientsErrorCheckFields": "일부 정보가 받아들여지지 않았습니다. 위에 표시된 항목을 확인하세요.",
+  "recipientsErrorFieldsRefused": "일부 정보가 받아들여지지 않았습니다: {fields}"
 }

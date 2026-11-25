@@ -899,5 +899,8 @@
   "recipientsValidationClabeLength": "CLABE ina tarakimu 18",
   "recipientsValidationClabeCheckDigit": "CLABE hii si sahihi. Angalia nambari",
   "recipientsValidationSpeiPhone": "Weka nambari ya simu ya tarakimu 10, bila msimbo wa nchi",
-  "recipientsValidationDebitCard": "Nambari ya kadi ya debit ina tarakimu 16"
+  "recipientsValidationDebitCard": "Nambari ya kadi ya debit ina tarakimu 16",
+  "recipientsErrorFieldRefused": "Exchange haikukubali thamani hii",
+  "recipientsErrorCheckFields": "Baadhi ya maelezo hayakukubaliwa. Angalia sehemu zilizowekwa alama hapo juu.",
+  "recipientsErrorFieldsRefused": "Baadhi ya maelezo hayakukubaliwa: {fields}"
 }

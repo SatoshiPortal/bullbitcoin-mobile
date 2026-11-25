@@ -1,3 +1,5 @@
+import 'package:exchange/exchange.dart' show RecipientField;
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_error.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_document_type_label.dart';
@@ -71,6 +73,9 @@ class NequiCopFormState extends State<NequiCopForm> {
           // Phone Number
           BBTextFormField(
             labelText: context.loc.recipientsFieldPhoneNumber,
+            errorText: context.recipientServerFieldError(
+              RecipientField.bankAccount,
+            ),
             hintText: context.loc.recipientsFieldPhoneNumberHint,
             autofocus: true,
             prefixText: '+57',
@@ -118,6 +123,9 @@ class NequiCopFormState extends State<NequiCopForm> {
               _documentType,
             ),
             hintText: context.loc.recipientsFieldDocumentNumberHint,
+            errorText: context.recipientServerFieldError(
+              RecipientField.documentId,
+            ),
             textInputAction: .next,
             onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
@@ -140,6 +148,7 @@ class NequiCopFormState extends State<NequiCopForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: context.loc.recipientsLabelOptional,
+            errorText: context.recipientServerFieldError(RecipientField.label),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -155,6 +164,15 @@ class NequiCopFormState extends State<NequiCopForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            shownFields: const {
+              RecipientField.bankAccount,
+              RecipientField.documentId,
+              RecipientField.label,
+              RecipientField.name,
+              RecipientField.lastname,
+              RecipientField.corporateName,
+              RecipientField.email,
+            },
           ),
         ],
       ),

@@ -1286,5 +1286,8 @@
   "recipientsValidationClabeLength": "CLABE се състои от 18 цифри",
   "recipientsValidationClabeCheckDigit": "Тази CLABE не е валидна. Проверете номера",
   "recipientsValidationSpeiPhone": "Въведете 10-цифрения телефонен номер без кода на държавата",
-  "recipientsValidationDebitCard": "Номерът на дебитната карта се състои от 16 цифри"
+  "recipientsValidationDebitCard": "Номерът на дебитната карта се състои от 16 цифри",
+  "recipientsErrorFieldRefused": "Борсата не прие тази стойност",
+  "recipientsErrorCheckFields": "Някои данни не бяха приети. Проверете отбелязаните по-горе полета.",
+  "recipientsErrorFieldsRefused": "Някои данни не бяха приети: {fields}"
 }

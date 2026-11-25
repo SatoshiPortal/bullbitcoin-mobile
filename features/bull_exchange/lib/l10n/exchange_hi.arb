@@ -1468,5 +1468,8 @@
   "recipientsValidationClabeLength": "CLABE में 18 अंक होते हैं",
   "recipientsValidationClabeCheckDigit": "यह CLABE मान्य नहीं है। नंबर जाँचें",
   "recipientsValidationSpeiPhone": "देश कोड के बिना 10 अंकों का फ़ोन नंबर दर्ज करें",
-  "recipientsValidationDebitCard": "डेबिट कार्ड नंबर में 16 अंक होते हैं"
+  "recipientsValidationDebitCard": "डेबिट कार्ड नंबर में 16 अंक होते हैं",
+  "recipientsErrorFieldRefused": "एक्सचेंज ने यह मान स्वीकार नहीं किया",
+  "recipientsErrorCheckFields": "कुछ जानकारी स्वीकार नहीं की गई। ऊपर चिह्नित फ़ील्ड जाँचें।",
+  "recipientsErrorFieldsRefused": "कुछ जानकारी स्वीकार नहीं की गई: {fields}"
 }

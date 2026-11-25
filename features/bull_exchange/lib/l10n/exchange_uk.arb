@@ -951,5 +951,8 @@
   "recipientsValidationClabeLength": "CLABE складається з 18 цифр",
   "recipientsValidationClabeCheckDigit": "Цей CLABE недійсний. Перевірте номер",
   "recipientsValidationSpeiPhone": "Введіть 10-значний номер телефону без коду країни",
-  "recipientsValidationDebitCard": "Номер дебетової картки складається з 16 цифр"
+  "recipientsValidationDebitCard": "Номер дебетової картки складається з 16 цифр",
+  "recipientsErrorFieldRefused": "Біржа не прийняла це значення",
+  "recipientsErrorCheckFields": "Деякі дані не прийнято. Перевірте позначені вище поля.",
+  "recipientsErrorFieldsRefused": "Деякі дані не прийнято: {fields}"
 }

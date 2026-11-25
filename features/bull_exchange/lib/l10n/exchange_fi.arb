@@ -951,5 +951,8 @@
   "recipientsValidationClabeLength": "CLABE-numerossa on 18 numeroa",
   "recipientsValidationClabeCheckDigit": "Tämä CLABE ei ole kelvollinen. Tarkista numero",
   "recipientsValidationSpeiPhone": "Anna 10-numeroinen puhelinnumero ilman maatunnusta",
-  "recipientsValidationDebitCard": "Debit-kortin numerossa on 16 numeroa"
+  "recipientsValidationDebitCard": "Debit-kortin numerossa on 16 numeroa",
+  "recipientsErrorFieldRefused": "Pörssi ei hyväksynyt tätä arvoa",
+  "recipientsErrorCheckFields": "Joitakin tietoja ei hyväksytty. Tarkista yllä merkityt kentät.",
+  "recipientsErrorFieldsRefused": "Joitakin tietoja ei hyväksytty: {fields}"
 }

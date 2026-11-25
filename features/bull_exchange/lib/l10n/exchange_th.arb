@@ -1465,5 +1465,8 @@
   "recipientsValidationClabeLength": "CLABE มี 18 หลัก",
   "recipientsValidationClabeCheckDigit": "CLABE นี้ไม่ถูกต้อง โปรดตรวจสอบหมายเลข",
   "recipientsValidationSpeiPhone": "กรอกหมายเลขโทรศัพท์ 10 หลัก โดยไม่ต้องใส่รหัสประเทศ",
-  "recipientsValidationDebitCard": "หมายเลขบัตรเดบิตมี 16 หลัก"
+  "recipientsValidationDebitCard": "หมายเลขบัตรเดบิตมี 16 หลัก",
+  "recipientsErrorFieldRefused": "แพลตฟอร์มซื้อขายไม่ยอมรับค่านี้",
+  "recipientsErrorCheckFields": "ข้อมูลบางส่วนไม่ได้รับการยอมรับ โปรดตรวจสอบช่องที่ทำเครื่องหมายไว้ด้านบน",
+  "recipientsErrorFieldsRefused": "ข้อมูลบางส่วนไม่ได้รับการยอมรับ: {fields}"
 }

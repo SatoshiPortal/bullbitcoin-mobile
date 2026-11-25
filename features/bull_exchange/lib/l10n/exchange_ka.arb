@@ -899,5 +899,8 @@
   "recipientsValidationClabeLength": "CLABE შედგება 18 ციფრისგან",
   "recipientsValidationClabeCheckDigit": "ეს CLABE არასწორია. შეამოწმეთ ნომერი",
   "recipientsValidationSpeiPhone": "შეიყვანეთ 10-ნიშნა ტელეფონის ნომერი ქვეყნის კოდის გარეშე",
-  "recipientsValidationDebitCard": "სადებეტო ბარათის ნომერი შედგება 16 ციფრისგან"
+  "recipientsValidationDebitCard": "სადებეტო ბარათის ნომერი შედგება 16 ციფრისგან",
+  "recipientsErrorFieldRefused": "ბირჟამ ეს მნიშვნელობა არ მიიღო",
+  "recipientsErrorCheckFields": "ზოგიერთი მონაცემი არ იქნა მიღებული. შეამოწმეთ ზემოთ მონიშნული ველები.",
+  "recipientsErrorFieldsRefused": "ზოგიერთი მონაცემი არ იქნა მიღებული: {fields}"
 }

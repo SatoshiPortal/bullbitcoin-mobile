@@ -976,5 +976,8 @@
   "recipientsValidationClabeLength": "Una CLABE ha 18 cifre",
   "recipientsValidationClabeCheckDigit": "Questa CLABE non è valida. Controlla il numero",
   "recipientsValidationSpeiPhone": "Inserisci il numero di telefono di 10 cifre, senza prefisso internazionale",
-  "recipientsValidationDebitCard": "Il numero di una carta di debito ha 16 cifre"
+  "recipientsValidationDebitCard": "Il numero di una carta di debito ha 16 cifre",
+  "recipientsErrorFieldRefused": "L'exchange non ha accettato questo valore",
+  "recipientsErrorCheckFields": "Alcuni dati non sono stati accettati. Controlla i campi evidenziati sopra.",
+  "recipientsErrorFieldsRefused": "Alcuni dati non sono stati accettati: {fields}"
 }
