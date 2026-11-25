@@ -1655,7 +1655,15 @@ class SendCubit extends Cubit<SendState>
 
       if (paymentRequest is Bolt11PaymentRequest) {
         final invoice = paymentRequest;
-        if (invoice.amountSat == 0) {
+        // Several wallets can fund the swap: let the user pick the source
+        // before a swap is created, since Boltz holds one swap per invoice.
+        if (invoice.amountSat == 0 ||
+            const FixedAmountWalletChoicePolicy().requiresChoice(
+              request: invoice,
+              wallets: state.wallets,
+              hasFixedSource:
+                  presetWallet != null || state.usesSelectedInputsOnly,
+            )) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
           return;
         }
@@ -2562,7 +2570,7 @@ class SendCubit extends Cubit<SendState>
       }
       if (!await loadSendSwapQuote(
         wallet: state.selectedBitcoinWallet!,
-        amountSat: BigInt.from(state.inputAmountSat),
+        amountSat: BigInt.from(state.effectiveAmountSat),
       )) {
         emit(state.copyWith(amountConfirmedClicked: false));
         return;
