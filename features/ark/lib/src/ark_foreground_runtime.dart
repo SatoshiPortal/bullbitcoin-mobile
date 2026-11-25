@@ -280,7 +280,9 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     // An exit's fees come from Secure Bitcoin, at its start and when it
     // needs more. Built on first use: opening Ark never needs the send stack.
     final send = services.send;
-    final exitTopUp = send == null
+    // The legacy top-up does not journal a stable exit identity or preserve
+    // the signed transaction on an ambiguous broadcast.
+    final exitTopUp = send == null || native.scuttleRegtestSmoke
         ? null
         : WalletArkReserveTopUp(
             sourceWallet: selection.displaySourceWalletId,
