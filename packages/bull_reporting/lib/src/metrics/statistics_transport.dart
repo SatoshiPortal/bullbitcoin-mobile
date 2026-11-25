@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:bull_logger/bull_logger.dart' show log;
+
 import 'sentry_endpoint.dart';
 
 /// Best-effort statistics transport independent of the error-reporting SDK.
@@ -110,6 +112,12 @@ final class StatisticsTransport {
         const Duration(seconds: 4),
       );
       await response.drain<void>().timeout(const Duration(seconds: 4));
+      final status = response.statusCode;
+      if (status < 200 || status >= 300) {
+        // Best effort: no retry. Only the status code is recorded, never the
+        // endpoint, key, response body or payload.
+        log.warning('Statistics delivery rejected, status $status');
+      }
     } on Exception {
       request?.abort();
       // Statistics must not interfere with the wallet.
