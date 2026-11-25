@@ -127,6 +127,10 @@ rust-bindings-codegen:
 onion-codegen:
 	@bash packages/onion/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
 
+.PHONY: scuttle-codegen
+scuttle-codegen:
+	@bash packages/ark/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
