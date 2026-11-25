@@ -1131,14 +1131,16 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   const Gap(8),
                                   ColoredBox(
                                     color: context.appColors.background,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0,
-                                      ),
-                                      child:
-                                          state.usesSelectedInputsOnly ||
-                                              pickableWallet == null
-                                          ? ConstrainedBox(
+                                    // The dropdown draws its own border, aligned with
+                                    // the recipient tile; only bare text is inset.
+                                    child:
+                                        state.usesSelectedInputsOnly ||
+                                            pickableWallet == null
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0,
+                                            ),
+                                            child: ConstrainedBox(
                                               constraints: const BoxConstraints(
                                                 minHeight: 48,
                                               ),
@@ -1160,28 +1162,28 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                       TextOverflow.ellipsis,
                                                 ),
                                               ),
-                                            )
-                                          : BullDropdown<String>(
-                                              value: selectedWallet.id,
-                                              items: [
-                                                for (final w in wallets)
-                                                  BullPickerItem(
-                                                    value: w.id,
-                                                    label: w.displayLabel(
-                                                      context,
-                                                    ),
-                                                  ),
-                                              ],
-                                              onChanged: (walletId) => context
-                                                  .read<SendCubit>()
-                                                  .updateSelectedWallet(
-                                                    wallets.firstWhere(
-                                                      (wallet) =>
-                                                          wallet.id == walletId,
-                                                    ),
-                                                  ),
                                             ),
-                                    ),
+                                          )
+                                        : BullDropdown<String>(
+                                            value: selectedWallet.id,
+                                            items: [
+                                              for (final w in wallets)
+                                                BullPickerItem(
+                                                  value: w.id,
+                                                  label: w.displayLabel(
+                                                    context,
+                                                  ),
+                                                ),
+                                            ],
+                                            onChanged: (walletId) => context
+                                                .read<SendCubit>()
+                                                .updateSelectedWallet(
+                                                  wallets.firstWhere(
+                                                    (wallet) =>
+                                                        wallet.id == walletId,
+                                                  ),
+                                                ),
+                                          ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(

@@ -1,9 +1,6 @@
 import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:send/src/payment/domain/send_source.dart';
-import 'package:primitives/primitives.dart'
-    as primitives
-    show BitcoinNetwork, LiquidNetwork, Network;
 import 'package:send/src/payment/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -41,42 +38,36 @@ class SelectBestWalletUsecase {
     int? amountSat,
   }) {
     switch (request) {
-      case BitcoinPaymentRequest():
+      case BitcoinPaymentRequest(:final isTestnet):
         return _selectBestWallet(
           amountSat ?? 0,
-          request.isTestnet
-              ? primitives.BitcoinNetwork.testnet
-              : primitives.BitcoinNetwork.mainnet,
+          (wallet) => wallet.isBitcoin && _isOnEnvironment(wallet, isTestnet),
           wallets,
         );
-      case LiquidPaymentRequest():
+      case LiquidPaymentRequest(:final isTestnet):
         return _selectBestWallet(
           amountSat ?? 0,
-          request.isTestnet
-              ? primitives.LiquidNetwork.testnet
-              : primitives.LiquidNetwork.mainnet,
+          (wallet) => wallet.isLiquid && _isOnEnvironment(wallet, isTestnet),
           wallets,
         );
-      case Bip21PaymentRequest():
+      case Bip21PaymentRequest(:final network):
         return _selectBestWallet(
           amountSat ?? request.amountSat ?? 0,
-          request.network,
+          (wallet) => wallet.network == network,
           wallets,
         );
-      case Bolt11PaymentRequest():
+      case Bolt11PaymentRequest(:final amountSat, :final isTestnet):
         // Liquid first for the cheaper swap; fall back to Bitcoin when Liquid
         // cannot cover it.
         return _selectLiquidThenBitcoin(
-          request.amountSat,
-          isTestnet: request.isTestnet,
-          wallets: wallets,
+          amountSat,
+          (wallet) => _isOnEnvironment(wallet, isTestnet),
+          wallets,
         );
       case LnAddressPaymentRequest():
-        return _selectLiquidThenBitcoin(
-          amountSat ?? 0,
-          isTestnet: false,
-          wallets: wallets,
-        );
+        // A Lightning address names no network; the wallets are already
+        // those of the active environment.
+        return _selectLiquidThenBitcoin(amountSat ?? 0, (_) => true, wallets);
       case PsbtPaymentRequest():
         return const Err(
           SendInvalidPaymentRequestFailure(
@@ -86,31 +77,32 @@ class SelectBestWalletUsecase {
     }
   }
 
+  /// A legacy request only knows whether it is a test network, which covers
+  /// both testnet and regtest wallets.
+  static bool _isOnEnvironment(SendSource wallet, bool isTestnet) =>
+      !wallet.network.isMainnet == isTestnet;
+
   Result<SendSource, SendFailure> _selectLiquidThenBitcoin(
-    int amountSat, {
-    required bool isTestnet,
-    required List<SendSource> wallets,
-  }) {
+    int amountSat,
+    bool Function(SendSource wallet) isOnEnvironment,
+    List<SendSource> wallets,
+  ) {
     final liquid = _selectBestWallet(
       amountSat,
-      isTestnet
-          ? primitives.LiquidNetwork.testnet
-          : primitives.LiquidNetwork.mainnet,
+      (wallet) => wallet.isLiquid && isOnEnvironment(wallet),
       wallets,
     );
     if (liquid case Ok()) return liquid;
     return _selectBestWallet(
       amountSat,
-      isTestnet
-          ? primitives.BitcoinNetwork.testnet
-          : primitives.BitcoinNetwork.mainnet,
+      (wallet) => wallet.isBitcoin && isOnEnvironment(wallet),
       wallets,
     );
   }
 
   Result<SendSource, SendFailure> _selectBestWallet(
     int satoshis,
-    primitives.Network network,
+    bool Function(SendSource wallet) isCandidate,
     List<SendSource> wallets,
   ) {
     // Default first
@@ -118,7 +110,7 @@ class SelectBestWalletUsecase {
       final balance = w.balanceSat;
       if (balance == null) continue;
       if (w.isDefault &&
-          w.network == network &&
+          isCandidate(w) &&
           w.signsLocally &&
           balance.toInt() > satoshis &&
           balance.toInt() != 0) {
@@ -130,9 +122,7 @@ class SelectBestWalletUsecase {
     for (final w in wallets) {
       final balance = w.balanceSat;
       if (balance == null) continue;
-      if (w.network == network &&
-          balance.toInt() > satoshis &&
-          w.signsLocally) {
+      if (isCandidate(w) && balance.toInt() > satoshis && w.signsLocally) {
         return Ok(w);
       }
     }
