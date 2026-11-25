@@ -1,14 +1,13 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:coins/coins.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show Coin, BitcoinCoin, Keychain;
 
 import '../exchange_l10n.dart';
-import 'exchange_payin_ui.dart';
 
 Widget payinCoinSelection({
   required BuildContext context,
-  required AddressViewerBuilder addressViewer,
   required BitcoinUnit bitcoinUnit,
   required double? exchangeRate,
   required String fiatCurrency,
@@ -53,7 +52,7 @@ Widget payinCoinSelection({
       button: true,
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
-        child: addressViewer(context, address, style: style, color: color),
+        child: AddressViewer(address, style: style, color: color),
       ),
     ),
     onDone: (selection) =>
