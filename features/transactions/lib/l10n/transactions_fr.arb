@@ -234,7 +234,7 @@
   "paymentStatusSigning": "Signature",
   "paymentStatusBroadcasted": "Diffusée",
   "paymentStatusConfirmed": "Confirmée",
-  "paymentStatusDetected": "Détecté",
+  "paymentStatusReceivedConfirmed": "Confirmé",
   "paymentStatusPendingMempool": "En attente dans la mempool",
   "paymentStatusSendingPayin": "Envoi du paiement",
   "paymentStatusPayinBroadcast": "Paiement diffusé",

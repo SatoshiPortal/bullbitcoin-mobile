@@ -936,9 +936,9 @@
   "@paymentStatusConfirmed": {
     "description": "Payment status: the transaction is confirmed"
   },
-  "paymentStatusDetected": "Detected",
-  "@paymentStatusDetected": {
-    "description": "Payment status: an incoming on-chain payment is detected"
+  "paymentStatusReceivedConfirmed": "Confirmed",
+  "@paymentStatusReceivedConfirmed": {
+    "description": "Payment status: an incoming payment is confirmed. Same wording as the receive flow"
   },
   "paymentStatusPendingMempool": "Pending in the mempool",
   "@paymentStatusPendingMempool": {
