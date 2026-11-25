@@ -93,7 +93,7 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                       const Gap(24),
                       BullButton.primary(
                         label: context.loc.swapRescueButton,
-                        onPressed: (!swap.recoverable || !state.canRescue)
+                        onPressed: (!restorable.isRescuable || !state.canRescue)
                             ? null
                             : () => context.read<SwapRescueCubit>().rescue(),
                       ),
