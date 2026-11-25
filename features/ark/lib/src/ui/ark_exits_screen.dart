@@ -9,6 +9,7 @@ import '../presentation/ark_l10n.dart';
 import 'ark_amount.dart';
 import 'ark_short_id.dart';
 import 'ark_exit_steps.dart';
+import 'ark_exit_animation_policy.dart';
 
 /// Observation and navigation only. Foreground reviews recheck spending rules.
 class ArkExitsScreen extends StatefulWidget {
@@ -372,6 +373,7 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     final l10n = arkLocalizationsOf(context);
     final colors = context.bull;
     final steps = _steps(context, exit);
+    final animationPhase = arkExitAnimationPhase(exit.status);
     return [
       if (exit.status == ArkExitStatus.pending) ...[
         ..._waiting(context),
@@ -401,6 +403,29 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
         ),
       ),
       const Gap(BullSpacing.md),
+      if (animationPhase != null) ...[
+        SizedBox(
+          height: 200,
+          child: IgnorePointer(
+            child: BullPaymentAnimation(
+              network: BullPaymentNetwork.arkExit,
+              phase: animationPhase,
+              progress: arkExitAnimationProgress(
+                exit,
+                steps: [
+                  l10n.exitProgressUnrolling,
+                  l10n.exitStepDelay,
+                  l10n.exitStatusClaimable,
+                  l10n.exitProgressClaimBroadcast,
+                  l10n.exitProgressConfirmed,
+                ],
+              ),
+              statusTag: arkExitStatusLabel(l10n, exit.status),
+            ),
+          ),
+        ),
+        const Gap(BullSpacing.md),
+      ],
       if (steps == null)
         // The app's error card, as on its exchange screens.
         BullInfoCard(
