@@ -49,23 +49,19 @@ final class ExchangeCredentialImport
     '.retire-pending',
   ].any((suffix) => File('${_file.path}$suffix').existsSync());
 
-  /// Checks both fixed records before a new source marker may be published.
-  /// A keychain-only legacy state is not supported and cannot become fresh.
+  /// A keychain record without a legacy database is iOS residue of an earlier
+  /// install. It is never read, written or deleted, so there is nothing to
+  /// refuse: the coordinator records the owner as fresh and Exchange starts
+  /// signed out.
+  @override
+  bool get freshWhenInitialFresh => true;
+
   @override
   Future<Result<void, LegacyImportFailure>> verifyInitialSource(
     ExclusiveAdmission admission, {
     required bool legacySqlitePresent,
-  }) async {
-    if (!admission.isOpen) return const Err(LegacyImportDeferred());
-    return switch (await _readRecords(_legacy)) {
-      Err(:final failure) => Err(failure),
-      Ok(:final value)
-          when !legacySqlitePresent &&
-              (value.mainnet != null || value.testnet != null) =>
-        const Err(LegacyImportVerificationFailed()),
-      Ok() => const Ok(null),
-    };
-  }
+  }) async =>
+      admission.isOpen ? const Ok(null) : const Err(LegacyImportDeferred());
 
   Future<Result<ExchangeStore, LegacyImportFailure>> _open(
     LifecycleAdmission admission, {
@@ -89,15 +85,6 @@ final class ExchangeCredentialImport
     ExclusiveAdmission admission,
     OwnerOrigin origin,
   ) async {
-    // Refuse inconsistent fresh provenance before provisioning a missing
-    // owner file. A retained record must not be treated as a fresh install.
-    if (origin == OwnerOrigin.fresh && !await hasState()) {
-      final verified = await verifyInitialSource(
-        admission,
-        legacySqlitePresent: false,
-      );
-      if (verified case Err(:final failure)) return Err(failure);
-    }
     return (await _open(
       admission,
       existing: false,
@@ -203,14 +190,7 @@ final class _PreparedExchange implements PreparedOwner {
       case Ok(value: OwnerReadiness.pending):
         break;
     }
-    switch (await _readRecords(_legacy)) {
-      case Ok(value: _emptyRecords):
-        break;
-      case Ok():
-        return const Err(LegacyImportVerificationFailed());
-      case Err(:final failure):
-        return Err(failure);
-    }
+    // The keychain is not consulted: any record there is ignored residue.
     try {
       await _db.transaction(() async {
         if (!await _isEmpty() ||
