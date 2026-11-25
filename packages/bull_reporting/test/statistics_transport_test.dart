@@ -21,7 +21,8 @@ void main() {
     transport = StatisticsTransport(
       'http://public@127.0.0.1:${server.port}/1',
       '6.16.0+220',
-      'regtest',
+      'mainnet',
+      () async => true,
     );
   });
 
@@ -71,7 +72,7 @@ void main() {
     expect(item['trace_id'], matches(RegExp(r'^[0-9a-f]{32}$')));
     expect(item['attributes'], {
       'sentry.release': {'type': 'string', 'value': '6.16.0+220'},
-      'sentry.environment': {'type': 'string', 'value': 'regtest'},
+      'sentry.environment': {'type': 'string', 'value': 'mainnet'},
     });
   });
 
@@ -80,10 +81,24 @@ void main() {
       'http://example.com/1',
       '1+1',
       'unknown',
+      () async => true,
     );
     expect(invalid.available, isFalse);
     invalid.updateConsent(true);
     invalid.installationActive(DateTime.now());
+  });
+
+  test('non-mainnet observations are never sent', () async {
+    final nonMainnet = StatisticsTransport(
+      'http://public@127.0.0.1:${server.port}/1',
+      '6.16.0+220',
+      'regtest',
+      () async => true,
+    );
+    nonMainnet.updateConsent(true);
+    nonMainnet.installationActive(DateTime.utc(2026, 11, 25));
+    await nonMainnet.flush();
+    expect(requests, isEmpty);
   });
 
   test('revocation terminates a request awaiting a response', () async {
@@ -104,7 +119,8 @@ void main() {
     transport = StatisticsTransport(
       'http://public@127.0.0.1:${server.port}/1',
       '6.16.0+220',
-      'regtest',
+      'mainnet',
+      () async => true,
     );
     transport.updateConsent(true);
     transport.installationActive(DateTime.utc(2026, 11, 25));
