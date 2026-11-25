@@ -344,7 +344,19 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
       final progress = arkPaymentProgress(
         operation?.status,
         pendingState: BullPaymentStepState.broadcast,
-        steps: [l10n.operationFundingSent, l10n.operationCompleted],
+        // Until an operation exists the funding is still being sent, and an
+        // unknown outcome is not evidence of a broadcast.
+        steps: [
+          switch (operation?.status) {
+            ArkOperationStatus.pending ||
+            ArkOperationStatus.succeeded ||
+            ArkOperationStatus.failed ||
+            ArkOperationStatus.conflicted => l10n.operationFundingSent,
+            ArkOperationStatus.outcomeUnknown => l10n.operationFundingUnknown,
+            _ => l10n.operationSendingFunding,
+          },
+          l10n.operationCompleted,
+        ],
       );
       return BullPaymentTransition(
         network: BullPaymentNetwork.ark,
