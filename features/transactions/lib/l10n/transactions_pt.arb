@@ -184,7 +184,7 @@
   "transactionSwapDescLnReceiveClaimable": "A transação em cadeia foi confirmada. Estamos agora a reivindicar os fundos para completar a sua troca.",
   "transactionNotesLabel": "Notas de transação",
   "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
-  "retry": "Repito",
+  "retry": "Tentar novamente",
   "@retry": {
     "description": "Generic retry button label"
   },

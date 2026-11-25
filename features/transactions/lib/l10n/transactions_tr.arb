@@ -323,7 +323,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "Retry",
+  "retry": "Tekrar dene",
   "@retry": {
     "description": "Generic retry button label"
   },

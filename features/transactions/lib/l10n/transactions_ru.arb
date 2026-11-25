@@ -187,7 +187,7 @@
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
   },
-  "retry": "Retry",
+  "retry": "Повторить",
   "@retry": {
     "description": "Generic retry button label"
   },

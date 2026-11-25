@@ -184,7 +184,7 @@
   "transactionSwapDescLnReceiveClaimable": "链式交易得到了确认。 我们现在要求这些资金来完成你们的交换.",
   "transactionNotesLabel": "交易说明",
   "transactionDetailLabelRecipientAddress": "客户地址",
-  "retry": "学历",
+  "retry": "重试",
   "@retry": {
     "description": "Generic retry button label"
   },

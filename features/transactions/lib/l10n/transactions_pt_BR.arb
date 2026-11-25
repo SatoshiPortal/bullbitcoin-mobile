@@ -299,7 +299,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "Repito",
+  "retry": "Tentar novamente",
   "@retry": {
     "description": "Generic retry button label"
   },

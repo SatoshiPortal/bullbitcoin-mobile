@@ -184,7 +184,7 @@
     "description": "Message shown when start date is after end date"
   },
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
-  "retry": "Птиця",
+  "retry": "Повторити",
   "@retry": {
     "description": "Generic retry button label"
   },
