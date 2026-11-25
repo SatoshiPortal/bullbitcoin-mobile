@@ -114,7 +114,12 @@ android {
             minifyEnabled false
             shrinkResources false
             signingConfig signingConfigs.debug
-            applicationIdSuffix ".debug"
+            applicationIdSuffix providers.gradleProperty("scuttleSmoke")
+                .map {
+                    if (it == "funded") return ".scuttle.funded.debug"
+                    return it == "true" ? ".scuttle.debug" : ".debug"
+                }
+                .getOrElse(".debug")
         }
         release {
             minifyEnabled false

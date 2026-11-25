@@ -57,7 +57,10 @@ abstract interface class ArkNativeSession {
   Future<List<String>> renewalCandidates();
   Future<String> reserveAddress();
   Future<ArkBoardFundingDetails> boardFunding();
-  Future<String> registerBoard(ArkRegisterBoard submission);
+  Future<String> registerBoard(
+    ArkRegisterBoard submission,
+    ArkBoardFundingDetails funding,
+  );
   Future<ArkClaimTransaction> prepareClaim(ArkQuote quote);
   Future<String> broadcast(String rawTransaction);
   Future<ArkReceiveDestination> receive(ArkReceiveRequest request);
@@ -66,7 +69,47 @@ abstract interface class ArkNativeSession {
   /// itself; each call is a live server request.
   Future<DateTime> nextRoundStart();
   Future<ArkOperation?> reconcile(ArkOperation operation);
-  void close();
+
+  /// Releases all native handles before the account writer can be released.
+  Future<void> close();
+}
+
+/// Native backend that can price a board independently of VTXO freshness.
+abstract interface class ArkNativeLiveBoardSession
+    implements ArkNativeSession {}
+
+/// Imports one existing payment into the dedicated regtest exit reserve.
+abstract interface class ArkNativeExitReserveSession
+    implements ArkNativeSession {
+  Future<bool> verifyInitialExitReserve(
+    ArkExitReserveFunding funding,
+    String reserveAddress,
+  );
+  Future<bool> importInitialExitReserve(
+    ArkExitReserveFunding funding,
+    String reserveAddress,
+  );
+}
+
+typedef ArkExitCpfpEvidence = ({String txid, String raw, Sats fee});
+typedef ArkExitCpfpStep = ({String vtxoId, String parentTxid});
+typedef ArkExitCpfpCandidate = ({
+  ArkExitCpfpEvidence evidence,
+  List<String> reserveInputs,
+});
+
+abstract interface class ArkNativeExitCpfpSession implements ArkNativeSession {
+  Future<List<ArkExitCpfpStep>> dueExitCpfp(List<String> exitIds);
+  Future<ArkExitCpfpCandidate> prepareExitCpfp(
+    ArkExitCpfpStep step,
+    FeeRate rate,
+    Sats remainingFee,
+  );
+  Future<void> deliverExitCpfp(
+    ArkExitCpfpStep step,
+    ArkExitCpfpEvidence evidence,
+  );
+  Future<bool> importExitCpfpChange(ArkExitCpfpEvidence evidence);
 }
 
 final class ArkClaimTransaction {

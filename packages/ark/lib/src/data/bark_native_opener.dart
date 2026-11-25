@@ -846,15 +846,24 @@ final class BarkNativeSession implements ArkNativeSession {
   }
 
   @override
-  Future<String> registerBoard(ArkRegisterBoard submission) async =>
-      (await _run(
-        'register-board',
-        () => _wallet.boardPsbt(
-          psbtBase64: submission.unfinalisedPsbt,
-          keypairIndex: submission.keypairIndex,
-          expiryHeight: submission.expiryHeight,
-        ),
-      )).txid;
+  Future<String> registerBoard(
+    ArkRegisterBoard submission,
+    ArkBoardFundingDetails funding,
+  ) async {
+    final keypairIndex = funding.keypairIndex;
+    if (keypairIndex == null) {
+      throw const ArkBoundaryException(ArkValidationFailure());
+    }
+    return (await _run(
+      'register-board',
+      () => _wallet.boardPsbt(
+        psbtBase64: submission.unfinalisedPsbt,
+        keypairIndex: keypairIndex,
+        expiryHeight: submission.expiryHeight,
+      ),
+    )).txid;
+  }
+
   @override
   Future<ArkClaimTransaction> prepareClaim(ArkQuote quote) async {
     final destination = quote.destination;
@@ -1153,7 +1162,7 @@ final class BarkNativeSession implements ArkNativeSession {
   }
 
   @override
-  void close() {
+  Future<void> close() async {
     try {
       _wallet.dispose();
     } finally {

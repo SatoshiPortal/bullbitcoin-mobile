@@ -29,6 +29,7 @@ final class BarkArkClient implements ArkClient {
   final ArkStageBudget stageBudget;
   final ArkBoardAbandonmentPort? boardAbandonment;
   final ArkNativeOpener opener;
+  final String nativeVersion;
   final ArkChainPreflight preflight;
   final DateTime Function() now;
   final HttpArkClaimDelivery claimDelivery;
@@ -46,6 +47,7 @@ final class BarkArkClient implements ArkClient {
     required this.stageBudget,
     required this.opener,
     required this.preflight,
+    this.nativeVersion = '0.27.0+bark-0.8.1',
     this.boardAbandonment,
     DateTime Function()? clock,
     this.claimDelivery = const HttpArkClaimDelivery(),
@@ -159,7 +161,7 @@ final class BarkArkClient implements ArkClient {
       final snapshot = await _observe(store, session, config.id, source);
       store.put('lifecycle', {
         'state': 'ready',
-        'nativeVersion': '0.27.0+bark-0.8.1',
+        'nativeVersion': nativeVersion,
       });
       return Ok(snapshot);
     }, allowCreate: store.get('lifecycle')?['state'] == 'creating');
@@ -437,7 +439,7 @@ final class BarkArkClient implements ArkClient {
     }
     if (executionMode == ArkExecutionMode.backgroundExisting &&
         (store.get('lifecycle')?['state'] != 'ready' ||
-            store.get('lifecycle')?['nativeVersion'] != '0.27.0+bark-0.8.1')) {
+            store.get('lifecycle')?['nativeVersion'] != nativeVersion)) {
       return const Err(
         ArkUnavailableFailure(ArkFailureReason.storeIncompatible),
       );
@@ -542,7 +544,7 @@ final class BarkArkClient implements ArkClient {
         );
         return await action(session, source, stages);
       } finally {
-        session?.close();
+        await session?.close();
       }
     });
   }
@@ -1162,7 +1164,15 @@ final class BarkArkClient implements ArkClient {
       return const Err(ArkUnavailableFailure());
     }
     return _session(store, path, account, (session, source, stages) async {
-      if (request is ArkBoardQuoteRequest) {
+      final liveBoard =
+          request is ArkBoardQuoteRequest &&
+          session is ArkNativeLiveBoardSession;
+      if (request is ArkBoardQuoteRequest &&
+          request.anchor != null &&
+          !liveBoard) {
+        return const Err(ArkUnavailableFailure());
+      }
+      if (request is ArkBoardQuoteRequest && !liveBoard) {
         await session.synchronizeStage('server');
       }
       final snapshot = await _observe(store, session, account, source);
@@ -1170,8 +1180,8 @@ final class BarkArkClient implements ArkClient {
           request is! ArkExitProgressQuoteRequest &&
           request is! ArkClaimQuoteRequest &&
           (snapshot.recovery != ArkRecoveryStatus.complete ||
-              snapshot.stale ||
-              !snapshot.vtxoInventoryComplete)) {
+              (!liveBoard &&
+                  (snapshot.stale || !snapshot.vtxoInventoryComplete)))) {
         return const Err(ArkRecoveryRequiredFailure());
       }
       var needsClaimAuthority = false;
@@ -1179,18 +1189,53 @@ final class BarkArkClient implements ArkClient {
         :final ids,
         :final destination,
         :final maxFee,
+        :final reserveSweepFeeRate,
       )) {
         needsClaimAuthority =
             store.claimAuthority(ids, destination, maxFee) == null;
+        if (reserveSweepFeeRate != null &&
+            (session is! ArkNativeExitReserveSession || needsClaimAuthority)) {
+          return const Err(ArkUnavailableFailure());
+        }
       }
-      final quote = await session.estimate(
+      final quoteId = _id();
+      Future<ArkQuote> price() => session.estimate(
         snapshot: snapshot,
         request: request,
-        id: _id(),
+        id: quoteId,
         chainSource: source,
         configGeneration: 1,
         now: now(),
       );
+      if (request case ArkEmergencyExitQuoteRequest(
+        reserveFunding: final funding?,
+      )) {
+        if (session is! ArkNativeExitReserveSession ||
+            snapshot.exits != ArkExitStatus.none) {
+          return const Err(ArkUnavailableFailure());
+        }
+        final reserveAddress = snapshot.reserveAddress;
+        if (reserveAddress == null || reserveAddress.isEmpty) {
+          return const Err(ArkUnavailableFailure());
+        }
+        final unfinanced = await price();
+        if (funding.amount.value < unfinanced.fee.value ||
+            !await session.verifyInitialExitReserve(funding, reserveAddress)) {
+          return const Err(ArkUnavailableFailure());
+        }
+        if (!store.bindInitialExitReserve(
+              quote: unfinanced,
+              reserveAddress: reserveAddress,
+              funding: funding,
+            ) ||
+            !await session.importInitialExitReserve(funding, reserveAddress)) {
+          return const Err(ArkUnavailableFailure());
+        }
+      }
+      final quote = await price();
+      if (liveBoard && quote.boardEvidence == null) {
+        return const Err(ArkUnavailableFailure());
+      }
       store.saveQuote(quote, claimAuthorityRequired: needsClaimAuthority);
       return Ok(quote);
     });
@@ -1259,6 +1304,11 @@ final class BarkArkClient implements ArkClient {
         !quote.validUntil.isAfter(now())) {
       return const Err(ArkStaleQuoteFailure());
     }
+    if (quote.boardEvidence != null &&
+        submission is! ArkBoardFunding &&
+        submission is! ArkRegisterBoard) {
+      return const Err(ArkValidationFailure());
+    }
     if (existing == null &&
         store.operations.any(
           (op) =>
@@ -1276,10 +1326,14 @@ final class BarkArkClient implements ArkClient {
       return const Err(ArkUnavailableFailure());
     }
     return _session(store, path, account, (session, source, stages) async {
+      if (quote.boardEvidence != null && source != quote.chainSource) {
+        return const Err(ArkStaleQuoteFailure());
+      }
       if (submission case ArkRegisterBoard()) {
         if (existing == null) return const Err(ArkValidationFailure());
         final funding = existing.operation.boardFunding;
         if (funding == null ||
+            (funding.scuttleToken != null) != (quote.boardEvidence != null) ||
             funding.keypairIndex != submission.keypairIndex ||
             funding.expiryHeight != submission.expiryHeight) {
           return const Err(ArkValidationFailure());
@@ -1297,10 +1351,8 @@ final class BarkArkClient implements ArkClient {
         if (existing.operation.status != ArkOperationStatus.prepared) {
           return Ok(existing.operation);
         }
-        final current = await _revalidate(store, session, quote);
-        if (current.tipHeight == null ||
-            funding.expiryHeight <=
-                (current.tipHeight ?? funding.expiryHeight)) {
+        final currentTip = await _revalidate(store, session, quote);
+        if (currentTip == null || funding.expiryHeight <= currentTip) {
           return const Err(ArkStaleQuoteFailure());
         }
         final inspected = await transactionVerifier.inspectBoardPsbt(
@@ -1331,7 +1383,7 @@ final class BarkArkClient implements ArkClient {
         };
         store.saveOperation(admitted, quoteId, evidence: evidence);
         try {
-          final txid = await session.registerBoard(submission);
+          final txid = await session.registerBoard(submission, funding);
           if (txid != facts.unsignedTxid) {
             throw const ArkBoundaryException(ArkValidationFailure());
           }
@@ -1379,7 +1431,8 @@ final class BarkArkClient implements ArkClient {
           );
           return Err(ArkOutcomeUnknownFailure(operationId));
         }
-        if (funding.expiryHeight <= quote.observedTip) {
+        if (funding.expiryHeight <= quote.observedTip ||
+            (funding.scuttleToken != null) != (quote.boardEvidence != null)) {
           store.saveOperation(
             _operation(quote, operationId, ArkOperationStatus.failed),
             quoteId,
@@ -1422,6 +1475,10 @@ final class BarkArkClient implements ArkClient {
     final verified = await _verifiedOperation(store, account, record.operation);
     if (verified.claimRecovery == null) {
       return const Err(ArkValidationFailure());
+    }
+    if (executionMode == ArkExecutionMode.backgroundExisting &&
+        (store.quote(record.binding)?.reserveOutpoints.isNotEmpty ?? false)) {
+      return const Err(ArkUnavailableFailure());
     }
     bool settled(ArkOperation value) =>
         value.status == ArkOperationStatus.succeeded ||
@@ -1483,16 +1540,52 @@ final class BarkArkClient implements ArkClient {
     }
   }
 
-  Future<ArkSnapshot> _revalidate(
+  Future<int?> _revalidate(
     ArkStore store,
     ArkNativeSession session,
     ArkQuote quote,
   ) async {
     final previous = store.snapshot;
     if (previous == null ||
-        _SyncFailures.load(store, quote.account).causes.isNotEmpty ||
         previous.revision != quote.generation ||
         !quote.validUntil.isAfter(now())) {
+      throw const ArkBoundaryException(ArkStaleQuoteFailure());
+    }
+    if (quote.boardEvidence != null) {
+      // This check authorizes only preparing or registering an unsigned
+      // board. It does not mark the inventory fresh or authorize signing.
+      if (session is! ArkNativeLiveBoardSession ||
+          _storedRecovery(store, previous) != ArkRecoveryStatus.complete) {
+        throw const ArkBoundaryException(ArkStaleQuoteFailure());
+      }
+      await _reprice(storeSnapshot: previous, session: session, quote: quote);
+      return quote.observedTip;
+    }
+    if (quote.kind == ArkOperationKind.claim &&
+        quote.reserveOutpoints.isNotEmpty &&
+        session is ArkNativeExitReserveSession) {
+      // Repricing independently proves this exact sweep against the active
+      // chain; it confers no freshness on the rest of the wallet.
+      await _reprice(storeSnapshot: previous, session: session, quote: quote);
+      return quote.observedTip;
+    }
+    if (quote.kind == ArkOperationKind.emergencyExit &&
+        session is ArkNativeExitReserveSession) {
+      final reserve = store.initialExitReserve(quote);
+      if (reserve == null ||
+          previous.reserveAddress != reserve.address ||
+          previous.exits != ArkExitStatus.none ||
+          quote.confirmedReserveExposure != reserve.funding.amount ||
+          !await session.verifyInitialExitReserve(
+            reserve.funding,
+            reserve.address,
+          )) {
+        throw const ArkBoundaryException(ArkStaleQuoteFailure());
+      }
+      await _reprice(storeSnapshot: previous, session: session, quote: quote);
+      return quote.observedTip;
+    }
+    if (_SyncFailures.load(store, quote.account).causes.isNotEmpty) {
       throw const ArkBoundaryException(ArkStaleQuoteFailure());
     }
     if (quote.kind == ArkOperationKind.board) {
@@ -1520,10 +1613,18 @@ final class BarkArkClient implements ArkClient {
         (previous.serverInfo?.publicKey != fresh.serverInfo?.publicKey)) {
       throw const ArkBoundaryException(ArkStaleQuoteFailure());
     }
-    final request = _request(quote);
+    await _reprice(storeSnapshot: fresh, session: session, quote: quote);
+    return fresh.tipHeight;
+  }
+
+  Future<void> _reprice({
+    required ArkSnapshot storeSnapshot,
+    required ArkNativeSession session,
+    required ArkQuote quote,
+  }) async {
     final renewed = await session.estimate(
-      snapshot: fresh,
-      request: request,
+      snapshot: storeSnapshot,
+      request: _request(quote),
       id: quote.id,
       chainSource: quote.chainSource,
       configGeneration: quote.configGeneration,
@@ -1531,10 +1632,10 @@ final class BarkArkClient implements ArkClient {
     );
     final oldJson = quoteToJson(quote)..remove('until');
     final nextJson = quoteToJson(renewed)..remove('until');
-    if (jsonEncode(oldJson) != jsonEncode(nextJson)) {
+    if (!quote.validUntil.isAfter(now()) ||
+        jsonEncode(oldJson) != jsonEncode(nextJson)) {
       throw const ArkBoundaryException(ArkStaleQuoteFailure());
     }
-    return fresh;
   }
 
   ArkQuoteRequest _request(ArkQuote quote) {
@@ -1573,6 +1674,9 @@ final class BarkArkClient implements ArkClient {
           ids: quote.selectedIds,
           destination: destination,
           maxFee: maxClaimFee,
+          reserveSweepFeeRate: quote.reserveOutpoints.isEmpty
+              ? null
+              : quote.feeRate,
         ),
       _ => throw const ArkBoundaryException(ArkValidationFailure()),
     };
@@ -1591,7 +1695,11 @@ final class BarkArkClient implements ArkClient {
       actualIds: quote.selectedIds,
     );
     if (quote.kind == ArkOperationKind.emergencyExit) {
-      if (!store.admitExit(quote, admitted)) {
+      if (!store.admitExit(
+        quote,
+        admitted,
+        requireInitialReserve: session is ArkNativeExitReserveSession,
+      )) {
         throw const ArkBoundaryException(ArkValidationFailure());
       }
     } else {
@@ -1628,6 +1736,12 @@ final class BarkArkClient implements ArkClient {
     if (!_mayRun(quote.account)) {
       return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
     }
+    if (session is ArkNativeExitReserveSession &&
+        (quote.reserveOutpoints.isEmpty ||
+            store.claimAuthority(quote.selectedIds, destination, maximum) ==
+                null)) {
+      return const Err(ArkUnavailableFailure());
+    }
     final authority = store.admitClaim(
       quote,
       _operation(
@@ -1656,6 +1770,7 @@ final class BarkArkClient implements ArkClient {
               .isNotEmpty) {
         throw const ArkBoundaryException(ArkValidationFailure());
       }
+      final expected = ArkSavedClaim.expectedInputs(quote, actual, skipped);
       final inspected = await transactionVerifier.inspectTransaction(
         transactionHex: claim.rawTransaction,
         signedPsbt: claim.signedPsbt,
@@ -1673,17 +1788,23 @@ final class BarkArkClient implements ArkClient {
         (sum, input) => sum + input.amount.value,
       );
       if (facts.txid != facts.psbtTxid ||
-          inputs.length != actual.length ||
+          inputs.length != expected.length ||
           inputs.map((v) => v.outpoint).toSet().length != inputs.length ||
           !inputs.every(
             (v) =>
-                actual.contains(v.outpoint) &&
+                expected.contains(v.outpoint) &&
                 v.finalWitness &&
                 claim.inputAmounts[v.outpoint] == v.amount.toString(),
           ) ||
           outputs.length != 1 ||
           outputs.single.address != destination ||
           outputs.single.amount.value + facts.fee.value != total ||
+          !ArkSavedClaim.matchesMixedReview(
+            quote,
+            total,
+            facts.fee,
+            outputs.single.amount,
+          ) ||
           facts.fee.value > maximum.value ||
           facts.fee.toString() != claim.fee ||
           !RegExp(r'^[0-9a-f]{64}$').hasMatch(facts.txid)) {
@@ -1718,7 +1839,23 @@ final class BarkArkClient implements ArkClient {
           summary: summary,
         ),
       );
-      final txid = await session.broadcast(claim.rawTransaction);
+      final String txid;
+      if (session is ArkNativeExitReserveSession) {
+        store.beginClaimDelivery(pending, quote.id, now().toUtc());
+        if (!_mayRun(quote.account)) {
+          throw const ArkBoundaryException(
+            ArkUnavailableFailure(ArkFailureReason.budgetExhausted),
+          );
+        }
+        await claimDelivery.post(
+          quote.chainSource,
+          claim.rawTransaction,
+          facts.txid,
+        );
+        txid = facts.txid;
+      } else {
+        txid = await session.broadcast(claim.rawTransaction);
+      }
       if (txid != facts.txid) {
         throw const ArkBoundaryException(ArkValidationFailure());
       }
