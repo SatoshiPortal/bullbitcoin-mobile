@@ -10,6 +10,7 @@ import 'package:backup_metadata/backup_metadata.dart';
 import 'package:backup_metadata/setup.dart';
 import 'package:backup_metadata/src/data/backup_metadata_repository_impl.dart';
 import 'package:backup_metadata/src/domain/usecases/apply_restore_usecase.dart';
+import 'package:backup_metadata/src/domain/usecases/preview_restore_usecase.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -505,6 +506,216 @@ void main() {
     expect(report.isPartial, isTrue);
     expect(report.labelsFailure, isA<BackupMetadataStalePlanFailure>());
     expect(report.secrets, isNotNull);
+  });
+
+  test('a lost journal deletes nothing it did not record', () async {
+    await enable();
+    await run();
+    final earlier = storage.objects.keys.single;
+    // The journal is lost: a new installation of the module, same destination.
+    for (final suffix in ['', '-wal', '-shm', '.guard']) {
+      final file = File('$path$suffix');
+      if (file.existsSync()) file.deleteSync();
+    }
+    await enable();
+    await run();
+    expect(storage.objects.keys, hasLength(2));
+
+    expect(
+      await repository().configure(
+        destination: null,
+        groups: {},
+        deleteOwnedFiles: true,
+      ),
+      isA<Ok<void, BackupMetadataFailure>>(),
+    );
+    expect(storage.objects.keys, [earlier], reason: 'a name is no proof');
+  });
+
+  test(
+    'an unreadable journal stops every operation without deleting',
+    () async {
+      await enable();
+      await run();
+      final bytes = File(path).readAsBytesSync();
+      File(path).writeAsBytesSync([...bytes.take(100), ...List.filled(200, 7)]);
+      final result = await repository().configure(
+        destination: null,
+        groups: {},
+        deleteOwnedFiles: true,
+      );
+      expect(result, isA<Err<void, BackupMetadataFailure>>());
+      expect(storage.deleted, isEmpty);
+      expect(storage.objects, hasLength(1));
+    },
+  );
+
+  test('without its key the journal is never opened or created', () async {
+    final unkeyed = BackupMetadataRepositoryImpl(
+      store: BackupMetadataStore(path: path, key: () async => null),
+      inventory: inventory,
+      labels: labels,
+      secrets: secrets,
+      codec: const _Codec(),
+      storages: [storage],
+    );
+    expect(
+      await unkeyed.run(),
+      isA<Err<BackupRunStatus, BackupMetadataFailure>>(),
+    );
+    expect(File(path).existsSync(), isFalse);
+  });
+
+  test('each view keeps its own destination, groups and lineage', () async {
+    await enable();
+    await run();
+    expect(storage.created, 1);
+
+    secrets.scope = 'other-view';
+    final status = (await repository().status()).fold(
+      (value) => value,
+      (failure) => throw StateError('$failure'),
+    );
+    expect(status.destination, isNull, reason: 'no choice made in this view');
+    final other = await repository().run();
+    expect(
+      other.fold((value) => value.groups.single.included, (_) => true),
+      isFalse,
+    );
+    expect(storage.created, 1, reason: 'nothing is published for it');
+
+    await enable();
+    await run();
+    expect(storage.created, 2);
+    final lineages = await Future.wait([
+      for (final view in ['scope', 'other-view'])
+        BackupMetadataStore(
+          path: path,
+          key: testJournalKey,
+        ).locked((state) async => state.selection.lineage, view: view),
+    ]);
+    expect(lineages.first, isNot(lineages.last));
+
+    // Turning the second view off, with deletion, leaves the first alone.
+    expect(
+      await repository().configure(
+        destination: null,
+        groups: {},
+        deleteOwnedFiles: true,
+      ),
+      isA<Ok<void, BackupMetadataFailure>>(),
+    );
+    expect(storage.deleted, hasLength(1));
+    expect(storage.objects, hasLength(1));
+    secrets.scope = 'scope';
+    expect((await run()).included, isTrue);
+  });
+
+  test('a view change during a run publishes nothing', () async {
+    await enable();
+    labels.onCapture = () => secrets.scope = 'other-view';
+    final status = await run();
+    expect(status.failure, isA<BackupMetadataScopeChangedFailure>());
+    expect(storage.created, 0);
+  });
+
+  test('restore is bound to the view it was discovered in', () async {
+    await enable();
+    await run();
+    final backup = (await repository().discover(
+      storage.destination,
+    )).fold((value) => value.single, (failure) => throw StateError('$failure'));
+    expect(backup.scope, 'scope');
+    secrets.scope = 'other-view';
+    final plan = MergePlan(
+      groupId: 'group',
+      baseDigest: 'x',
+      additions: [],
+      unchanged: 0,
+      conflicts: [],
+      freezes: [],
+    );
+    expect(
+      await PreviewRestoreUsecase(labels, secrets).execute(backup),
+      isA<Err<MergePlan, BackupMetadataFailure>>().having(
+        (error) => error.failure,
+        'failure',
+        isA<BackupMetadataScopeChangedFailure>(),
+      ),
+    );
+    final applied = await ApplyRestoreUsecase(
+      labels,
+      secrets,
+    ).execute(backup, plan, MergeChoices({}));
+    expect(
+      applied.fold((_) => null, (failure) => failure),
+      isA<BackupMetadataScopeChangedFailure>(),
+    );
+    expect(secrets.restored, isEmpty);
+    expect(labels.applied, 0);
+  });
+
+  test('an ambiguous group is neither offered nor applied', () async {
+    inventory.ambiguous = true;
+    await enable();
+    await run();
+    final discovered = await repository().discover(storage.destination);
+    expect(discovered.fold((value) => value, (_) => null), isEmpty);
+    final group = (await inventory.read()).fold(
+      (value) => value.groups.single,
+      (_) => throw StateError('read'),
+    );
+    final backup = DiscoveredBackup(
+      group: group,
+      destination: storage.destination,
+      storedAt: null,
+      content: _content(0),
+      scope: 'scope',
+    );
+    expect(
+      await PreviewRestoreUsecase(labels, secrets).execute(backup),
+      isA<Err<MergePlan, BackupMetadataFailure>>(),
+    );
+  });
+
+  test('applying again completes what an interruption left undone', () async {
+    final group = (await inventory.read()).fold(
+      (value) => value.groups.single,
+      (_) => throw StateError('read'),
+    );
+    final backup = DiscoveredBackup(
+      group: group,
+      destination: storage.destination,
+      storedAt: null,
+      content: _content(0),
+      scope: 'scope',
+    );
+    final plan = MergePlan(
+      groupId: 'group',
+      baseDigest: 'x',
+      additions: [],
+      unchanged: 0,
+      conflicts: [],
+      freezes: [],
+    );
+    final usecase = ApplyRestoreUsecase(labels, secrets);
+    labels.failApply = true;
+    final first = (await usecase.execute(
+      backup,
+      plan,
+      MergeChoices({}),
+    )).fold((value) => value, (failure) => throw StateError('$failure'));
+    expect(first.isPartial, isTrue);
+    expect(first.secrets, isNotNull, reason: 'the Secrets part is done');
+
+    labels.failApply = false;
+    final second = (await usecase.execute(
+      backup,
+      plan,
+      MergeChoices({}),
+    )).fold((value) => value, (failure) => throw StateError('$failure'));
+    expect(second.isPartial, isFalse);
+    expect(secrets.restored, hasLength(2), reason: 'idempotent, run again');
   });
 
   test('separate isolates serialize access to the same state path', () async {

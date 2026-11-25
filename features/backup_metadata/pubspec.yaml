@@ -32,6 +32,7 @@ dependencies:
   sqlite3: ^3.5.2
 
 dev_dependencies:
+  legacy_storage:
   material_ui: ^1.11.0
   flutter_test:
     sdk: flutter

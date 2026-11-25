@@ -279,7 +279,7 @@ flowchart TD
 | [`address_view`](features/address_view/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_ui`, `labels`, `mempool`, `preferences`, `primitives`, `satoshifier`, `secrets`, `sync` | — |
 | [`all_seed_view`](features/all_seed_view/pubspec.yaml) | `bull_logger`, `bull_ui`, `preferences`, `primitives`, `screen_privacy`, `secrets`, `swaps` | — |
 | [`announcements`](features/announcements/pubspec.yaml) | `bull_ui`, `legacy_storage`, `primitives`, `secrets` | — |
-| [`backup_metadata`](features/backup_metadata/pubspec.yaml) | `backup_storage`, `bull_ui`, `labels`, `primitives`, `rust_bindings`, `secrets` | — |
+| [`backup_metadata`](features/backup_metadata/pubspec.yaml) | `backup_storage`, `bull_ui`, `labels`, `primitives`, `rust_bindings`, `secrets` | `legacy_storage` |
 | [`backups`](features/backups/pubspec.yaml) | `bull_logger`, `bull_ui`, `preferences`, `primitives`, `screen_privacy`, `secrets` | — |
 | [`bip85`](features/bip85/pubspec.yaml) | `bull_ui`, `preferences`, `primitives`, `screen_privacy`, `secrets` | — |
 | [`bitcoin_price`](features/bitcoin_price/pubspec.yaml) | `bull_logger`, `bull_pricer`, `bull_ui`, `preferences`, `primitives` | — |
