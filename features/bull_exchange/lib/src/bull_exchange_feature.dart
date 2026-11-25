@@ -162,6 +162,7 @@ final class BullExchangeFeature {
               openOrder: (context, id) => TransactionsNavigation.openDetails(
                 context,
                 TransactionDetailsTarget.order(id),
+                view: TransactionDetailsView.details,
               ),
             ),
       payins: payins,

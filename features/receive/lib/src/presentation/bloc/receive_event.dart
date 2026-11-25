@@ -6,6 +6,8 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveBitcoinStarted;
   const factory ReceiveEvent.receiveLightningStarted() =
       ReceiveLightningStarted;
+  const factory ReceiveEvent.receivePaymentAnimationsRead(bool enabled) =
+      ReceivePaymentAnimationsRead;
   const factory ReceiveEvent.receiveLiquidStarted() = ReceiveLiquidStarted;
   const factory ReceiveEvent.receiveAddressRetried() = ReceiveAddressRetried;
   const factory ReceiveEvent.receiveAmountCurrencyChanged(String currencyCode) =

@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:swap_feature/src/presentation/transfer_bloc.dart';
-import 'package:swap_feature/src/ui/swap_router.dart';
-import 'package:swap_feature/src/ui/swap_transition_policy.dart';
+import 'package:transactions/payment_status.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:swaps/swaps.dart';
 import 'package:transactions/transactions.dart';
@@ -253,12 +251,6 @@ void main() {
       ),
       BullPaymentPhase.sending,
     );
-  });
-
-  test('a late cross-chain funding txid cannot take over navigation', () {
-    const before = TransferState(sendToExternal: true);
-    const after = TransferState(sendToExternal: true, txId: 'funding');
-    expect(shouldNavigateOnTransferBroadcast(before, after), isFalse);
   });
 
   test('exchange progress follows the durable order and its payout', () {

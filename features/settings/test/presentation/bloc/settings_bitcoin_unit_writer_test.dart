@@ -45,6 +45,9 @@ class _MockSetErrorReportingUsecase extends Mock
 class _MockSetScreenCaptureProtectionUsecase extends Mock
     implements SetScreenCaptureProtectionUsecase {}
 
+class _MockSetShowPaymentAnimationsUsecase extends Mock
+    implements SetShowPaymentAnimationsUsecase {}
+
 class _MockSetExchangeTestnetBasicAuthUsecase extends Mock
     implements SetExchangeTestnetBasicAuthUsecase {}
 
@@ -79,6 +82,7 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.checkSpWalletSetupUsecase,
     required super.setErrorReportingUsecase,
     required super.setScreenCaptureProtectionUsecase,
+    required super.setShowPaymentAnimationsUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
     required super.watchPayjoinPolicyUsecase,
@@ -98,6 +102,7 @@ void main() {
   late _MockSetPayjoinEnabledUsecase setPayjoinEnabled;
   late _MockSetBitcoinUnitUsecase setBitcoinUnit;
   late _MockSetScreenCaptureProtectionUsecase setScreenCapture;
+  late _MockSetShowPaymentAnimationsUsecase setShowPaymentAnimations;
   late _TestSettingsCubit cubit;
 
   setUp(() {
@@ -105,6 +110,7 @@ void main() {
     setPayjoinEnabled = _MockSetPayjoinEnabledUsecase();
     setBitcoinUnit = _MockSetBitcoinUnitUsecase();
     setScreenCapture = _MockSetScreenCaptureProtectionUsecase();
+    setShowPaymentAnimations = _MockSetShowPaymentAnimationsUsecase();
     final watchChanges = _MockWatchPayjoinPolicyUsecase();
     when(() => watchChanges.execute()).thenAnswer((_) => changes.stream);
     cubit = _TestSettingsCubit(
@@ -123,6 +129,7 @@ void main() {
       checkSpWalletSetupUsecase: _MockCheckSpWalletSetupForSettingsUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setScreenCaptureProtectionUsecase: setScreenCapture,
+      setShowPaymentAnimationsUsecase: setShowPaymentAnimations,
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),
       setPayjoinEnabledUsecase: setPayjoinEnabled,

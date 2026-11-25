@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:receive/src/presentation/receive_payment_progress.dart';
+import 'package:transactions/payment_status.dart';
 
 class ReceiveOnchainTransition extends StatelessWidget {
   final BullPaymentNetwork network;
