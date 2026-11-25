@@ -98,6 +98,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:send/src/payment/domain/usecases/load_send_label_suggestions_usecase.dart';
 import 'package:send/src/payment/domain/usecases/store_send_transaction_label_usecase.dart';
+import 'package:send/src/payment/domain/usecases/watch_send_settlement_usecase.dart';
 
 part 'send_mono_actions.dart';
 
@@ -139,7 +140,7 @@ class SendCubit extends Cubit<SendState>
     required this._getSwapLimitsAndFeesUsecase,
     required this._createBitcoinToLiquidSwapUsecase,
     required this._createLiquidToBitcoinSwapUsecase,
-    required this._transactions,
+    required this._watchSettlement,
     required this._verifyChainSwapAmountSendUsecase,
     required this._verifyExchangePayinUsecase,
     required this._consolidation,
@@ -266,7 +267,7 @@ class SendCubit extends Cubit<SendState>
   final CreateBitcoinToLiquidSwapUsecase _createBitcoinToLiquidSwapUsecase;
   final CreateLiquidToBitcoinSwapUsecase _createLiquidToBitcoinSwapUsecase;
 
-  final Transactions _transactions;
+  final WatchSendSettlementUsecase _watchSettlement;
 
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final VerifyExchangePayinUsecase _verifyExchangePayinUsecase;
@@ -5048,9 +5049,10 @@ class SendCubit extends Cubit<SendState>
   }) {
     // Cancel the previous subscription if it exists
     _txSubscription?.cancel();
-    _txSubscription = _transactions
-        .watchWalletTransactionByTxId(walletId: walletId, txId: txId)
+    _txSubscription = _watchSettlement
+        .execute(walletId: walletId, txId: txId)
         .listen((tx) {
+          if (isClosed) return;
           // log.info(
           //   '[SendBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
           // );

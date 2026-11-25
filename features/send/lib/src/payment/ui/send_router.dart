@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:send/src/send_localizations.dart';
 import 'package:swaps/order_swaps.dart' show OrderSwapRecord;
 import 'package:sync/sync.dart' show WalletKey;
+import 'package:transactions/transactions.dart' show SettlementPoll;
 
 import '../presentation/bloc/send_cubit.dart';
 import '../presentation/send_ark_cubit.dart';
@@ -22,6 +23,7 @@ GoRoute paymentRoute({
   required Widget Function(OrderSwapRecord) orderUnderReview,
   required ImageProvider arrowImage,
   required ImageProvider successImage,
+  required SettlementPoll pollSettlement,
 }) => GoRoute(
   name: SendRoute.send.name,
   path: SendRoute.send.path,
@@ -48,7 +50,7 @@ GoRoute paymentRoute({
         successImage: successImage,
         child: SendPsbtHandoff(
           openReader: openSignedTransactionReader,
-          child: const SendScreen(),
+          child: SendScreen(poll: pollSettlement),
         ),
       ),
     );

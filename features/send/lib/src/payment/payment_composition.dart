@@ -1,4 +1,7 @@
 import 'package:send/src/payment/domain/usecases/load_send_display_preferences_usecase.dart';
+
+import 'domain/usecases/watch_send_settlement_usecase.dart';
+
 import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
@@ -135,7 +138,7 @@ SendCubit createPaymentCubit({
       d.payjoin.sessions,
     ),
     retryPayjoinProposalUsecase: RetryPayjoinProposalUsecase(d.payjoin.sender),
-    transactions: d.transactions,
+    watchSettlement: WatchSendSettlementUsecase(d.transactions),
     verifyChainSwapAmountSendUsecase: VerifyChainSwapAmountSendUsecase(
       recipientAmount: recipientAmount,
     ),

@@ -53,6 +53,8 @@ import 'package:send/src/payment/ui/widgets/multi_recipient_transaction_review.d
 import 'package:send/src/payment/ui/widgets/recipient_fields.dart';
 import 'package:send/src/payment/ui/widgets/send_info_row.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/transactions.dart'
+    show SettlementPoll, SettlementSyncPoller;
 import 'package:send/send.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:material_ui/material_ui.dart';
@@ -111,7 +113,11 @@ String _sendFlowTitle(BuildContext context) {
 }
 
 class SendScreen extends StatefulWidget {
-  const SendScreen({super.key});
+  const SendScreen({super.key, this.poll});
+
+  /// Refreshes the wallet holding the settlement transaction; no polling when
+  /// absent.
+  final SettlementPoll? poll;
 
   @override
   State<SendScreen> createState() => _SendScreenState();
@@ -393,7 +399,15 @@ class _SendScreenState extends State<SendScreen> {
               SendType.liquid => BullPaymentNetwork.liquid,
             },
           };
-    return PopScope<Object?>(
+    final settlementWallet = state.selectedWallet;
+    final poll = widget.poll;
+    final settlementPending =
+        showTransition &&
+        poll != null &&
+        settlementWallet is SendWalletBitcoin &&
+        (state.txId?.isNotEmpty ?? false) &&
+        state.walletTransaction?.isConfirmed != true;
+    final transitionScreen = PopScope<Object?>(
       canPop: !showTransition,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop && showTransition) _dismissTransition();
@@ -432,6 +446,14 @@ class _SendScreenState extends State<SendScreen> {
             ),
         ],
       ),
+    );
+    if (poll == null) return transitionScreen;
+    return SettlementSyncPoller(
+      walletId: settlementWallet?.id,
+      active: settlementPending,
+      isLiquid: settlementWallet?.isLiquid ?? false,
+      poll: poll,
+      child: transitionScreen,
     );
   }
 
