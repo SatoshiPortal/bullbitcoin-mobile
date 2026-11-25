@@ -25,7 +25,7 @@ typedef PayFlowCalls = ({
   Future<ExchangeRead<Order>> Function(PayRequest request, DateTime sentAt)
   findCreated,
   Future<ExchangeRead<Order>> Function(Order order) refresh,
-  PayoutRequirementsCalls requirements,
+  PayoutRequirementsUsecases requirements,
   PayinCalls payin,
   SpendOptionsCalls spend,
   ExchangeWriteGate gate,
@@ -95,7 +95,7 @@ PayFlowCalls payFlowCallsOf(
         },
     refresh: (order) async =>
         readOfResult(await orders.refreshPayOrder(order.orderId)),
-    requirements: payoutRequirementsCallsOf(exchange, session),
+    requirements: PayoutRequirementsUsecases.of(exchange),
     payin: payinCallsOf(exchange, session, wallets),
     spend: spendOptionsCallsOf(session, wallets),
     gate: exchange.writeGate,
@@ -141,7 +141,9 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
     on<PayFlowEvent>(_onEvent, transformer: sequential());
     final calls = _calls;
     if (calls != null && session != null) {
-      _requirements = PayoutRequirementsRunner(calls.requirements, (event) {
+      _requirements = PayoutRequirementsRunner(calls.requirements, session, (
+        event,
+      ) {
         if (!isClosed) add(PayRequirementsChanged(event));
       });
       _payin = PayinRunner(calls.payin, calls.gate, session, (event) {

@@ -8,18 +8,13 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../payout/payout_requirements_fakes.dart';
 import '../pay_fixtures.dart';
 
 final class _Calls {
   final log = <String>[];
 
-  PayoutRequirementsCalls get requirements => (
-    loadVirtualIban: () => throw StateError('no virtual IBAN in this test'),
-    createVirtualIban: () => throw StateError('no virtual IBAN in this test'),
-    findVirtualIban: () => throw StateError('no virtual IBAN in this test'),
-    payeeStatus: (_) => throw StateError('no payee in this test'),
-    activatePayee: (_) => throw StateError('no payee in this test'),
-  );
+  PayoutRequirementsUsecases get requirements => unusedPayoutRequirements();
 
   PayinCalls get payin => (
     build: (effect) async {
