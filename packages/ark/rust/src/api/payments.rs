@@ -124,6 +124,7 @@ pub struct ScuttleMovement {
     pub created_at: i64,
     pub updated_at: i64,
     pub completed_at: Option<i64>,
+    pub offboard_txid: Option<String>,
 }
 
 impl ScuttleWallet {
@@ -258,6 +259,16 @@ impl ScuttleWallet {
                 movement_id: result.movement_id.0,
             })
             .map_err(|_| "Payment outcome unknown".into())
+    }
+
+    /// Resumes only the native offboard checkpoints from admitted payments.
+    pub async fn progress_pending_offboards(&self) -> Result<(), String> {
+        let guard = self.wallet.lock().await;
+        let wallet = guard.as_ref().ok_or("Wallet closed")?;
+        wallet
+            .sync_pending_offboards()
+            .await
+            .map_err(|_| "Cannot progress offboards".into())
     }
 
     /// Stores a fresh BOLT11 invoice and returns it; the claim happens in a later pass.
@@ -560,6 +571,12 @@ fn project_movement(movement: &Movement) -> ScuttleMovement {
         created_at: movement.time.created_at.timestamp(),
         updated_at: movement.time.updated_at.timestamp(),
         completed_at: movement.time.completed_at.map(|t| t.timestamp()),
+        offboard_txid: movement
+            .metadata
+            .get("offboard_txid")
+            .and_then(|value| value.as_str())
+            .and_then(|txid| bitcoin::Txid::from_str(txid).ok())
+            .map(|txid| txid.to_string()),
     }
 }
 

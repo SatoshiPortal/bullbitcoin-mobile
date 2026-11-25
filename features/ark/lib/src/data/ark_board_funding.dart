@@ -56,6 +56,264 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     Sats amount,
   ) => _prepare(config, amount);
 
+  static String _exitReserveId(ArkAccountId account) =>
+      'exit-reserve-${sha256.convert(utf8.encode(account.canonical))}';
+
+  Future<Result<String?, ArkFailure>> readInitialExitDestination(
+    ArkAccountId account,
+    List<String> selectedIds,
+  ) => _track(() async {
+    try {
+      final entry = _sync(
+        await _authority.readExitReserveRequest(_exitReserveId(account)),
+      );
+      if (entry == null) return const Ok(null);
+      final saved = jsonDecode(entry.context);
+      final ids = selectedIds.toList()..sort();
+      if (saved is Map<String, dynamic> &&
+          saved['account'] == account.canonical &&
+          jsonEncode(saved['ids']) == jsonEncode(ids)) {
+        if (saved['destination'] case final String destination) {
+          return Ok(destination);
+        }
+      }
+      return const Ok(null);
+    } on FormatException {
+      return const Err(ArkFeatureStorageFailure());
+    } on _HostFailure catch (error) {
+      return Err(error.failure);
+    }
+  });
+
+  Future<Result<ArkExitReserveFunding, ArkFailure>> fundInitialExit(
+    ArkQuote quote,
+    String? reserveAddress, {
+    required bool Function() isCurrent,
+  }) => _track(() async {
+    final account = quote.account;
+    final destination = quote.destination;
+    if (quote.kind != ArkOperationKind.emergencyExit ||
+        destination == null ||
+        reserveAddress == null ||
+        reserveAddress.isEmpty ||
+        quote.fee.value <= BigInt.zero) {
+      return const Err(ArkInvalidRequestFailure());
+    }
+    if (!_preparing.add(account)) return const Err(ArkOperationBusyFailure());
+    final id = _exitReserveId(account);
+    try {
+      final metadata = await _eligible(await _sourceWalletId(account));
+      final parent = metadata.secretFingerprint;
+      if (parent == null || parent != account.parent) {
+        return const Err(ArkAccountRecoveryFailure());
+      }
+      final key = sync.WalletKey(id: metadata.id, network: metadata.network);
+      final ids = quote.selectedIds.toList()..sort();
+      final terms = {
+        'version': 1,
+        'type': 'exitReserve',
+        'account': account.canonical,
+        'ids': ids,
+        'destination': destination,
+        'reserveAddress': reserveAddress,
+        'chainSource': quote.chainSource.toString(),
+      };
+      var entry = _sync(await _authority.readExitReserveRequest(id));
+      // The CPFP output must remain spendable after the last fee debit.
+      var amount = Sats(quote.fee.value + BigInt.from(1000));
+      var context = jsonEncode({...terms, 'sats': amount.value.toString()});
+      if (entry == null) {
+        if (!DateTime.now().toUtc().isBefore(quote.validUntil)) {
+          return const Err(ArkReviewExpiredFailure());
+        }
+        final handle = _sync(await _runtime.wallet(key));
+        final pinned = await _custody.runExclusive<void>(parent, (lease) async {
+          if (lease.readState() case Ok(value: ParentCustodyState.ready)) {
+            if (await _secrets.fetch(parent) case Ok(:final value)
+                when value.info.isMnemonic) {
+              return switch (await _authority.beginExitReserveRequest(
+                operationId: id,
+                accountIdentity: account.canonical,
+                sourceParent: parent,
+                key: key,
+                generation: handle.generation,
+                context: context,
+              )) {
+                Ok() => const Ok(null),
+                Err() => const Err(ParentCustodyStorageFailure()),
+              };
+            }
+          }
+          return const Err(ParentCustodyStateFailure());
+        });
+        if (pinned is Err) return const Err(ArkAccountRecoveryFailure());
+        entry = _sync(await _authority.readExitReserveRequest(id));
+      }
+      if (entry == null) return const Err(ArkFeatureStorageFailure());
+      final saved = jsonDecode(entry.context);
+      if (saved is! Map<String, dynamic> || saved['sats'] is! String) {
+        return const Err(ArkFeatureStorageFailure());
+      }
+      final sats = BigInt.tryParse(saved['sats'] as String);
+      if (sats == null || sats < quote.fee.value) {
+        return Err(ArkSubmissionUncertainFailure(id));
+      }
+      amount = Sats(sats);
+      context = jsonEncode({...terms, 'sats': sats.toString()});
+      if (entry.context != context ||
+          entry.state == 'conflicted' ||
+          entry.state == 'tombstoned') {
+        return Err(ArkSubmissionUncertainFailure(id));
+      }
+      if (entry.confirmed) {
+        final binding = _sync(await _authority.readBinding(id));
+        final txid = entry.txid;
+        if (txid == null ||
+            txid != binding.unsignedTxid ||
+            binding.key != key ||
+            binding.sourceParent != parent ||
+            binding.context != context) {
+          return const Err(ArkFeatureStorageFailure());
+        }
+        // Scuttle verifies the output against the active chain at quote time.
+        return Ok(ArkExitReserveFunding(txid: txid, amount: amount));
+      }
+      _sync(await _refreshSource(metadata));
+      final handle = _sync(await _runtime.wallet(key));
+      if (entry.state == 'requested') {
+        final fastest = switch (await _fees.estimate(metadata.network)) {
+          Ok(:final value) => value.fastest,
+          Err() => throw const _HostFailure(ArkNetworkUnavailableFailure()),
+        };
+        if (fastest is! RelativeFee || fastest.satPerKwu <= 0) {
+          return const Err(ArkNetworkUnavailableFailure());
+        }
+        _sync(
+          await handle.tx.prepareFunding(
+            sync.BitcoinSpendRequest(
+              recipients: [
+                sync.SpendRecipient(reserveAddress, amountSat: sats.toInt()),
+              ],
+              fee: sync.SpendFeeRate(fastest.satPerKwu),
+              owner: sync.SpendOwner(protocol: 'ark', session: id),
+            ),
+            context: context,
+          ),
+        );
+      }
+      final binding = _sync(await _authority.readBinding(id));
+      _require(
+        binding.key == key &&
+            binding.sourceParent == parent &&
+            binding.context == context,
+      );
+      final loaded = _sync(await handle.load());
+      final history = handle.history.now;
+      if (history.revision == loaded &&
+          history.status == sync.ValueStatus.ready) {
+        final transactions = history.data?.whereType<sync.BitcoinTransaction>();
+        if (transactions != null) {
+          for (final tx in transactions) {
+            if (tx.txid != binding.unsignedTxid) continue;
+            if ((tx.confirmationTime ?? 0) > 0) {
+              final gate = _sync(await _runtime.foreground()).stores.spendGate;
+              final lease = await gate.acquire(key);
+              if (lease is! BitcoinSpendAdmission) {
+                return const Err(ArkOperationBusyFailure());
+              }
+              try {
+                _require(lease.revision == loaded);
+                _sync(
+                  await _authority.observe(
+                    key,
+                    history,
+                    admittedRevision: lease.revision,
+                  ),
+                );
+              } finally {
+                lease.close();
+              }
+              final settled = _sync(
+                await _authority.readExitReserveRequest(id),
+              );
+              if (settled?.confirmed != true || settled?.txid != tx.txid) {
+                return const Err(ArkFeatureStorageFailure());
+              }
+              return Ok(ArkExitReserveFunding(txid: tx.txid, amount: amount));
+            }
+            return const Err(ArkOperationBusyFailure());
+          }
+        }
+      }
+      if (!isCurrent()) return const Err(ArkServiceUnavailableFailure());
+      final String signed;
+      if (entry.signedPsbt case final String savedSigned) {
+        signed = savedSigned;
+      } else {
+        final ownership = _sync(await handle.ownership());
+        _require(ownership.revision == loaded);
+        _checkOutputs(
+          _sync(sync.inspectBitcoinPsbt(binding.unsignedPsbt)),
+          reserveAddress,
+          amount,
+          ownership,
+        );
+        final gate = _sync(await _runtime.foreground()).stores.spendGate;
+        final lease = await gate.acquire(key);
+        if (lease is! BitcoinSpendAdmission) {
+          return const Err(ArkOperationBusyFailure());
+        }
+        try {
+          _require(lease.revision == loaded);
+          _sync(
+            await _authority.admitExitReserveSigning(
+              expected: binding,
+              admittedRevision: lease.revision,
+            ),
+          );
+        } finally {
+          lease.close();
+        }
+        final secret = _secret(await _secrets.fetch(parent));
+        _require(secret.info.isMnemonic);
+        final candidate = _secret(
+          await secret.sign.psbt(
+            binding.unsignedPsbt,
+            network: BitcoinNetwork.regtest,
+            scriptType: metadata.scriptType,
+          ),
+        );
+        signed = candidate;
+        _sync(await _authority.recordSigned(id, signed));
+      }
+      if (!isCurrent()) return const Err(ArkServiceUnavailableFailure());
+      final receipt = _sync(
+        await _runtime.broadcast(
+          key,
+          sync.SignedPsbt(signed),
+          network: BitcoinNetwork.regtest,
+          built: sync.UnsignedSpend(
+            revision: binding.revision,
+            encoded: binding.unsignedPsbt,
+            inputs: binding.inputs,
+            owner: sync.SpendOwner(protocol: 'ark', session: id),
+          ),
+        ),
+      );
+      _require(
+        receipt.durable &&
+            receipt.guarded &&
+            receipt.txid == binding.unsignedTxid,
+      );
+      return const Err(ArkOperationBusyFailure());
+    } catch (error) {
+      if (error is Error) rethrow;
+      return Err(_failure(error));
+    } finally {
+      _preparing.remove(account);
+    }
+  });
+
   @override
   Future<Result<ArkBoardPreparation, ArkFailure>> prepareFrom(
     ArkAccountConfig config,

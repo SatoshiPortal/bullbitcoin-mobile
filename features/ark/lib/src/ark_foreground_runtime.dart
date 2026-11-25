@@ -349,7 +349,25 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         boardFunding: board,
         displayData: displayData,
         exitFunding: exitFunding,
-        exitTopUp: exitTopUp,
+        savedExitDestination: switch (board) {
+          WalletArkBoardFunding actor => (
+            ids,
+          ) => actor.readInitialExitDestination(config.id, ids),
+          _ => null,
+        },
+        fundInitialExit: switch (board) {
+          WalletArkBoardFunding actor => (quote, address) async {
+            if (!policy.active || quote.account != config.id) {
+              return const Err(ArkServiceUnavailableFailure());
+            }
+            return actor.fundInitialExit(
+              quote,
+              address,
+              isCurrent: () => policy.active,
+            );
+          },
+          _ => null,
+        },
         exitDestination: switch (services.nextReceiveAddress) {
           final nextAddress? => WalletArkExitDestination(
             sourceWallet: selection.displaySourceWalletId,

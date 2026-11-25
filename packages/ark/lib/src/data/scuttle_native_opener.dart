@@ -99,6 +99,7 @@ Never _unsupported() =>
 final class _ScuttleSession
     implements
         ArkNativeLiveBoardSession,
+        ArkNativeOffboardSession,
         ArkNativeExitReserveSession,
         ArkNativeExitCpfpSession {
   final scuttle.ScuttleWallet _wallet;
@@ -132,6 +133,8 @@ final class _ScuttleSession
         await _stages.run(name, _wallet.claimLightningReceives);
       case 'rounds':
         await _stages.run(name, _wallet.progressPendingRounds);
+      case 'offboards':
+        await _stages.run(name, _wallet.progressPendingOffboards);
       case 'boards':
         await _stages.run(name, _wallet.syncPendingBoards);
       case 'exits-observe':

@@ -25,11 +25,11 @@ ArkMovementStatus scuttleMovementStatus(scuttle.ScuttleMovementStatus status) =>
       scuttle.ScuttleMovementStatus.canceled => ArkMovementStatus.failed,
     };
 
-/// The bridge exposes neither VTXO ids nor metadata nor addresses of a
-/// movement, so those fields stay empty. Timestamps are unix seconds.
+/// Includes the native Bitcoin transaction ID for offboards.
 ArkMovement projectScuttleMovement(scuttle.ScuttleMovement movement) =>
     ArkMovement(
       id: movement.id.toString(),
+      transactionId: movement.offboardTxid,
       kind: scuttleMovementKind(movement.subsystem),
       status: scuttleMovementStatus(movement.status),
       amount: Sats.fromInt(movement.effectiveSats.abs()),

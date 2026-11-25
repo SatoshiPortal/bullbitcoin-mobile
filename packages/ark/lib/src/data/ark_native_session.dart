@@ -74,6 +74,9 @@ abstract interface class ArkNativeSession {
   Future<void> close();
 }
 
+/// Native backend with independently resumable offboard checkpoints.
+abstract interface class ArkNativeOffboardSession implements ArkNativeSession {}
+
 /// Native backend that can price a board independently of VTXO freshness.
 abstract interface class ArkNativeLiveBoardSession
     implements ArkNativeSession {}
