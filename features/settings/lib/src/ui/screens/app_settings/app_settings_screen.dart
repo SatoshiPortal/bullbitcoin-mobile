@@ -11,6 +11,7 @@ import 'package:settings/src/ui/widgets/dev_mode_switch.dart';
 import 'package:settings/src/ui/widgets/error_reporting_switch.dart';
 import 'package:settings/src/ui/widgets/screen_capture_protection_switch.dart';
 import 'package:settings/src/ui/widgets/testnet_mode_switch.dart';
+import 'package:settings/src/ui/widgets/statistics_consent_switch.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_pricer/bull_pricer.dart' show SupportedCurrency;
 import 'package:bull_ui/bull_ui.dart'
@@ -117,6 +118,7 @@ class AppSettingsScreen extends StatelessWidget {
                     if (item.id == SettingsItemId.currency)
                       const AmountInputModeSetting(),
                   ],
+                  const StatisticsConsentSwitch(),
                 ],
               ),
             ),

@@ -186,5 +186,9 @@
   "permissionsTitle": "Autorisations",
   "settingsSearchPermissionsKeywords": "notifications|tâches en arrière-plan|batterie|alertes",
   "amountInputBitcoin": "Bitcoin",
-  "amountInputTitle": "Saisir les montants en"
+  "amountInputTitle": "Saisir les montants en",
+  "statisticsConsentTitle": "Partager les statistiques d’utilisation",
+  "statisticsConsentDescription": "Partager une observation quotidienne d’activité avec la version de l’application et l’environnement, sans identifiant d’installation permanent. Vous pouvez modifier ce choix à tout moment.",
+  "statisticsConsentWriteFailed": "Impossible d’enregistrer ce choix. Le choix précédent peut revenir au redémarrage. Veuillez réessayer.",
+  "statisticsConsentRetry": "Réessayer"
 }

@@ -679,5 +679,13 @@
   "amountInputBitcoin": "Bitcoin",
   "@amountInputBitcoin": {},
   "amountInputTitle": "Enter amounts in",
-  "@amountInputTitle": {}
+  "@amountInputTitle": {},
+  "statisticsConsentTitle": "Share usage statistics",
+  "@statisticsConsentTitle": {},
+  "statisticsConsentDescription": "Share one daily activity observation with the app version and environment, without a persistent installation identifier. You can change this at any time.",
+  "@statisticsConsentDescription": {},
+  "statisticsConsentWriteFailed": "Could not save this choice. The previous choice may return after restart. Please retry.",
+  "@statisticsConsentWriteFailed": {},
+  "statisticsConsentRetry": "Retry",
+  "@statisticsConsentRetry": {}
 }
