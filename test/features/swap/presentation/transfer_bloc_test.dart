@@ -48,6 +48,7 @@ import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart'
     show MaterialApp, Builder, SizedBox, Locale;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:transactions/transactions.dart' show Transactions;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
@@ -82,6 +83,8 @@ abstract interface class PrepareBitcoinSendUsecase {
 }
 
 class _MockGetSettings extends Mock implements Preferences {}
+
+class _MockTransactions extends Mock implements Transactions {}
 
 class _MockGetWallets extends Mock implements LoadSwapWalletsUsecase {}
 
@@ -232,6 +235,7 @@ void main() {
   }) {
     late final TransferBloc flow;
     flow = TransferBloc(
+      transactions: _MockTransactions(),
       loadPreferencesUsecase: LoadTransferPreferencesUsecase(getSettings),
       getSwapAmountQuotesUsecase: amountQuotes,
       getWalletsUsecase: getWallets,
