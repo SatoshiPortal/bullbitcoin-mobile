@@ -22,8 +22,15 @@ class BullPaymentTransition extends StatefulWidget {
   /// Translated top-left descriptor replacing the network's own.
   final String? descriptor;
   final String status;
-  final String skipLabel;
+
+  /// Label of the skip button. The button shows only when both [skipLabel] and
+  /// [onSkip] are set and [bottom] is null.
+  final String? skipLabel;
   final VoidCallback? onSkip;
+
+  /// Replaces the skip button, in its slot under the step rail, with an owner
+  /// supplied control (for example a view switch).
+  final Widget? bottom;
   final VoidCallback? onBackdropTap;
   final VoidCallback? onBack;
   final VoidCallback onDone;
@@ -37,8 +44,9 @@ class BullPaymentTransition extends StatefulWidget {
     this.statusTag,
     this.descriptor,
     required this.status,
-    required this.skipLabel,
-    required this.onSkip,
+    this.skipLabel,
+    this.onSkip,
+    this.bottom,
     this.onBackdropTap,
     this.onBack,
     required this.onDone,
@@ -112,6 +120,7 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
         Theme.of(context).extension<PaymentAnimationPalette>() ??
         PaymentAnimationPalette.standard;
     final onSkip = widget.onSkip;
+    final skipLabel = widget.skipLabel;
     final successful = !showIntro && widget.phase == BullPaymentPhase.success;
     final headline = successful
         ? widget.progress?.steps.last ?? widget.status
@@ -199,14 +208,16 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
                             palette: palette,
                             reduced: _reduced,
                           ),
-                        if (onSkip != null)
+                        if (widget.bottom case final bottom?)
+                          bottom
+                        else if (onSkip != null && skipLabel != null)
                           TextButton(
                             style: TextButton.styleFrom(
                               foregroundColor: palette.foreground,
                               minimumSize: const Size(48, 48),
                             ),
                             onPressed: onSkip,
-                            child: Text(widget.skipLabel),
+                            child: Text(skipLabel),
                           ),
                       ],
                     ),
