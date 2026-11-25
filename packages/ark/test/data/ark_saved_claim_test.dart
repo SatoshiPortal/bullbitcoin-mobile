@@ -115,6 +115,49 @@ void main() {
     expect(child.calls, children);
     expect(native.broadcasts, 1);
   });
+
+  test('committed mixed claim recovers one output without consuming a reserve ID as a VTXO', () async {
+    final reserve = '${'e' * 64}:3';
+    native.claimReserveInputs = [reserve];
+    verifier.claimInputs = [FakeOpener.firstId, reserve];
+    await signedClaim();
+    final read = await client.read(account);
+    final snapshot = (read as Ok<ArkSnapshot, ArkWalletFailure>).value;
+    final claim = snapshot.operations.singleWhere((op) => op.id == 'claim');
+    expect(claim.claimRecovery?.net, Sats.fromInt(19990));
+    expect(claim.actualIds, [FakeOpener.firstId]);
+    expect(native.broadcasts, 1);
+  });
+
+  test(
+    'mixed claim refuses a substituted reserve input before broadcast',
+    () async {
+      native.claimReserveInputs = ['${'e' * 64}:3'];
+      verifier.claimInputs = [FakeOpener.firstId, '${'e' * 64}:4'];
+      await signedClaim(succeeds: false);
+      expect(native.broadcasts, 0);
+    },
+  );
+  test(
+    'mixed claim refuses a different fee even below the absolute cap',
+    () async {
+      final reserve = '${'e' * 64}:3';
+      native.claimReserveInputs = [reserve];
+      native.claimFee = 11;
+      verifier.claimInputs = [FakeOpener.firstId, reserve];
+      verifier.fee = 12;
+      native.claimPreparer = (quote) async => ArkClaimTransaction(
+        rawTransaction: 'raw-public',
+        signedPsbt: 'signed-public',
+        actualIds: [FakeOpener.firstId],
+        skippedIds: [],
+        inputAmounts: {FakeOpener.firstId: '10000', reserve: '10000'},
+        fee: '12',
+      );
+      await signedClaim(succeeds: false);
+      expect(native.broadcasts, 0);
+    },
+  );
   for (final field in [
     'raw',
     'signedPsbt',

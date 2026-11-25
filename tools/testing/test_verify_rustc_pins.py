@@ -176,6 +176,20 @@ class VerifyRustcPinsTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Tracked Rust library in unexpected ABI", result.stderr)
 
+    def test_scuttle_uses_the_sdk_compiler_pin(self):
+        library = "lib/arm64-v8a/librust_lib_scuttle.so"
+        correct = self.check_apk(changed={library: f"rustc version {SDK_RUST}\n".encode()})
+        self.assertEqual(correct.returncode, 0, correct.stderr)
+        self.assertIn(f"librust_lib_scuttle.so: rustc {SDK_RUST}", correct.stdout)
+        wrong = self.check_apk(changed={library: b"rustc version 1.90.0\n"})
+        self.assertNotEqual(wrong.returncode, 0)
+        self.assertIn("Unexpected rustc markers", wrong.stderr)
+
+    def test_rejects_extra_abi_scuttle_without_marker(self):
+        result = self.check_apk(changed={"lib/x86_64/librust_lib_scuttle.so": b"no version"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Tracked Rust library in unexpected ABI", result.stderr)
+
     def test_rejects_unknown_library_with_bark_compiler(self):
         result = self.check_apk(changed={"lib/arm64-v8a/libother.so": b"rustc version 1.90.0\n"})
         self.assertNotEqual(result.returncode, 0)
