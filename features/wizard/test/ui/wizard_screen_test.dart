@@ -21,6 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
+import 'package:settings/settings.dart' show SettingsLocalizations;
 
 import 'test_branding.dart';
 
@@ -96,6 +97,7 @@ Future<void> _pump(WidgetTester tester, Widget home) async {
       localizationsDelegates: [
         ...WizardLocalizations.localizationsDelegates,
         ExchangeLocalizations.delegate,
+        SettingsLocalizations.delegate,
       ],
       supportedLocales: WizardLocalizations.supportedLocales,
       home: home,
