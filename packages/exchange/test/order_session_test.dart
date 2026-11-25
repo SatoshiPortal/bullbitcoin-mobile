@@ -217,6 +217,53 @@ void main() {
     });
   }
 
+  test(
+    'a recipient write with an unknown answer survives a session change',
+    () async {
+      var epoch = 0;
+      final http = _HeldResponse();
+      final exchange = exchangeWithTransportForTesting(
+        readSession: () async => Ok((
+          environment: ExchangeEnvironment.testnet,
+          epoch: epoch,
+          apiKey: 'synthetic-session-key',
+        )),
+        openClient: (endpoint, readKey) => bbxForTesting(
+          endpoint: endpoint.toString(),
+          adapter: http,
+          readActiveApiKey: readKey,
+        ),
+      );
+      final pending = exchange.recipients.saveRecipient(
+        InteracEmailCadDetails.create(
+          email: 'test@example.invalid',
+          name: 'Test Recipient',
+        ),
+        isTestnet: true,
+      );
+      await http.started.future;
+      epoch++;
+      http.response.complete(
+        ResponseBody.fromString(
+          '{"error":{"code":-32603}}',
+          502,
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
+        ),
+      );
+      expect(
+        await pending,
+        isA<Err<Recipient, RecipientsFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<RecipientsSaveOutcomeUnknownFailure>(),
+        ),
+      );
+      expect(http.requests, hasLength(1));
+    },
+  );
+
   for (final changeSession in [false, true]) {
     test('confirmed withdrawal preserves success when the Interac update '
         '${changeSession ? 'would cross a session' : 'is refused'}', () async {

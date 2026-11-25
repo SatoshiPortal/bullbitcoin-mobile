@@ -382,19 +382,28 @@ void main() {
         (unknown.effects.single as WithdrawOrderEffect).effect,
         isA<OrderFindCreated<WithdrawRequest>>(),
       );
-      // The re-read found no such order: the create did not apply, so the
-      // step offers it again (OrderCreate's NotApplied), never blindly.
+      // The re-read found no such order: that cannot prove the create did not
+      // apply, so the step stays unverified and Retry re-reads, never creates
+      // again.
       final missing = transitionWithdrawFlow(
         unknown.state,
         const WithdrawOrderChanged(OrderFindAnswered(1, ReadMissing())),
       );
       expect(
         (missing.state as WithdrawOrdering).order,
-        isA<OrderCreateFailed<WithdrawRequest, WithdrawOrder>>().having(
+        isA<OrderUnverified<WithdrawRequest, WithdrawOrder>>().having(
           (o) => o.problem,
           'problem',
-          isA<WriteProblemNotApplied>(),
+          isA<ReadProblemMissing>(),
         ),
+      );
+      final retried = transitionWithdrawFlow(
+        missing.state,
+        const WithdrawRetryPressed(),
+      );
+      expect(
+        (retried.effects.single as WithdrawOrderEffect).effect,
+        isA<OrderFindCreated<WithdrawRequest>>(),
       );
       expect(
         transitionWithdrawFlow(

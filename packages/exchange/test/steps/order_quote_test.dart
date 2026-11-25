@@ -147,7 +147,7 @@ final _table = <_S, Map<int, _Next>>{
   },
   _verifying: {
     7: _toLive,
-    8: const _Next(OrderCreateFailed(_req, 1, WriteProblemNotApplied())),
+    8: const _Next(OrderUnverified(_req, 1, ReadProblemMissing())),
     9: const _Next(_unverified),
     10: const _Next(_ended),
   },
@@ -245,6 +245,20 @@ void main() {
       ),
       const _Next(_unavailable),
     );
+  });
+
+  test('a re-read that finds no order never sends the create again', () {
+    final read = transitionOrderStep(_policy, _verifying, _events[8]);
+    final retry = transitionOrderStep(_policy, read.state, _events[19]);
+    expect(
+      retry.effects.whereType<OrderSendCreate<String>>(),
+      isEmpty,
+      reason:
+          'a ReadMissing re-read after an unknown outcome cannot prove '
+          'the order was not created',
+    );
+    expect(read.state, isA<OrderUnverified<String, _Order>>());
+    expect(retry.effects, [const OrderFindCreated<String>(_req, 1)]);
   });
 
   test('every state is reachable from the start', () {
