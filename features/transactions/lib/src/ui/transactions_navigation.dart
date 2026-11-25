@@ -17,6 +17,20 @@ enum TransactionsRoute {
   final String path;
 }
 
+/// The view the transaction details open on. [status] is the payment status
+/// (shown only when the transaction has one); [details] the transaction
+/// details. Carried as the `view=details` query parameter, absent for status.
+enum TransactionDetailsView {
+  status,
+  details;
+
+  static const queryParameter = 'view';
+
+  /// The view named by the `view` query parameter, [status] when absent.
+  static TransactionDetailsView fromQuery(Map<String, String> query) =>
+      query[queryParameter] == details.name ? details : status;
+}
+
 final class TransactionDetailsTarget {
   final TransactionsRoute _route;
   final String _parameter;
@@ -60,8 +74,11 @@ final class TransactionDetailsTarget {
   Map<String, String> _query({
     required bool returnHome,
     required bool returnToExchange,
+    required TransactionDetailsView view,
   }) => {
     'walletId': ?_walletId,
+    if (view == TransactionDetailsView.details)
+      TransactionDetailsView.queryParameter: view.name,
     if (returnHome) 'returnHome': 'true',
     if (returnToExchange) 'returnToExchange': 'true',
   };
@@ -86,12 +103,14 @@ abstract final class TransactionsNavigation {
     TransactionDetailsTarget target, {
     bool returnHome = false,
     bool returnToExchange = false,
+    TransactionDetailsView view = TransactionDetailsView.status,
   }) => context.pushNamed<void>(
     target._route.name,
     pathParameters: {target._parameter: target._id},
     queryParameters: target._query(
       returnHome: returnHome,
       returnToExchange: returnToExchange,
+      view: view,
     ),
   );
 
@@ -100,12 +119,14 @@ abstract final class TransactionsNavigation {
     TransactionDetailsTarget target, {
     bool returnHome = false,
     bool returnToExchange = false,
+    TransactionDetailsView view = TransactionDetailsView.status,
   }) => context.goNamed(
     target._route.name,
     pathParameters: {target._parameter: target._id},
     queryParameters: target._query(
       returnHome: returnHome,
       returnToExchange: returnToExchange,
+      view: view,
     ),
   );
 }
