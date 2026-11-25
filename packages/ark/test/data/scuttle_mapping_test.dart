@@ -1,5 +1,6 @@
 import 'package:ark/ark.dart';
 import 'package:ark/src/data/ark_native_session.dart';
+import 'package:ark/src/data/ark_codec.dart';
 import 'package:ark/src/data/scuttle_mapping.dart';
 import 'package:ark/src/rust/api/payments.dart';
 import 'package:ark/src/rust/api/wallet.dart';
@@ -90,6 +91,40 @@ void main() {
       scuttleMovementStatus(ScuttleMovementStatus.pending),
       ArkMovementStatus.pending,
     );
+  });
+
+  test('native payment direction survives projection and persistence', () {
+    final incoming = projectScuttleMovement(
+      _movement(kind: 'receive', effective: 1000),
+    );
+    expect(incoming.id, '1');
+    expect(incoming.direction, ArkMovementDirection.incoming);
+    expect(
+      movementFromJson(movementToJson(incoming)).direction,
+      ArkMovementDirection.incoming,
+    );
+    expect(
+      projectScuttleMovement(_movement()).direction,
+      ArkMovementDirection.outgoing,
+    );
+    expect(
+      projectScuttleMovement(
+        _movement(subsystem: 'bark.board', kind: 'board', effective: 1000),
+      ).direction,
+      ArkMovementDirection.unknown,
+    );
+    expect(
+      projectScuttleMovement(
+        _movement(
+          subsystem: 'bark.lightning_receive',
+          kind: 'receive',
+          effective: 1000,
+        ),
+      ).direction,
+      ArkMovementDirection.incoming,
+    );
+    final legacy = movementToJson(incoming)..remove('direction');
+    expect(movementFromJson(legacy).direction, ArkMovementDirection.unknown);
   });
 
   test('a movement projects absolute amounts and UTC seconds', () {

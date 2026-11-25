@@ -12,6 +12,7 @@ ArkClient createArkNativeClient({
   required native.ArkExecutionMode executionMode,
   required native.ArkStageBudget stageBudget,
   native.ArkBoardAbandonmentPort? boardAbandonment,
+  native.ArkExitObserverPort? exitObserver,
 }) => native.createArkClient(
   storagePath: storagePath,
   childProvider: childProvider,
@@ -20,4 +21,5 @@ ArkClient createArkNativeClient({
   executionMode: executionMode,
   stageBudget: stageBudget,
   boardAbandonment: boardAbandonment,
+  exitObserver: exitObserver,
 );

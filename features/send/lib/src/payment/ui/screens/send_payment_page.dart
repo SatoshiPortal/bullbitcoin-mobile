@@ -31,6 +31,7 @@ class SendPaymentPage extends StatelessWidget {
     this.isBusy = false,
     this.showMax = true,
     this.showSettings = true,
+    this.extra,
   });
 
   final String title;
@@ -59,6 +60,7 @@ class SendPaymentPage extends StatelessWidget {
   final bool isBusy;
   final bool showMax;
   final bool showSettings;
+  final Widget? extra;
 
   @override
   Widget build(BuildContext context) => BullScaffold(
@@ -159,6 +161,10 @@ class SendPaymentPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (extra case final widget?) ...[
+                      const Gap(BullSpacing.md),
+                      widget,
+                    ],
                   ] else
                     Container(
                       padding: const EdgeInsets.all(BullSpacing.md),
