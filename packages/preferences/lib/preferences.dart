@@ -14,4 +14,5 @@ export 'src/domain/settings_repository.dart'
         ExchangeWebPreferences,
         ExchangeTestnetBasicAuthPreferences,
         RuntimeDisplayPreferencesReader,
+        PaymentAnimationPreferencesReader,
         AmountInputPreferences;

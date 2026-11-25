@@ -248,6 +248,16 @@ class PreferencesDao extends DatabaseAccessor<GeneratedDatabase>
           ),
     );
   }
+
+  Future<void> setShowPaymentAnimations(bool enabled) async {
+    await _requireUpdated(
+      managers.ownerSettings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(id: const Value(1), showPaymentAnimations: Value(enabled)),
+          ),
+    );
+  }
 }
 
 final class PreferencesMissingRowException implements Exception {
