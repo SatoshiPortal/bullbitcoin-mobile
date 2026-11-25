@@ -55,16 +55,9 @@ final class RecoverBullWalletBackups {
     return row == null ? null : backupUsageFromRow(row);
   });
 
-  @useResult
-  Future<Result<void, RecoverBullFailure>> write(WalletBackupUsage usage) =>
-      _result(() async {
-        await _database
-            .into(_database.recoverbullWalletBackups)
-            .insertOnConflictUpdate(backupUsageCompanion(usage));
-      });
-
   /// Claims a wallet usage without changing evidence for another identity.
   /// Existing members retain the evidence for their already-authorized seed.
+  @internal
   Future<Result<void, RecoverBullFailure>> prepare(
     WalletBackupUsage usage, {
     required bool preserveVerified,
@@ -129,14 +122,6 @@ final class RecoverBullWalletBackups {
   }
 
   @useResult
-  Future<Result<void, RecoverBullFailure>> remove(String walletId) =>
-      _result(() async {
-        await (_database.delete(
-          _database.recoverbullWalletBackups,
-        )..where((row) => row.walletId.equals(walletId))).go();
-      });
-
-  @useResult
   Future<Result<SecretBackupProjection, RecoverBullFailure>> projection(
     Fingerprint fingerprint, {
     String? excludingWalletId,
@@ -160,3 +145,22 @@ final class RecoverBullWalletBackups {
 
   Future<void> close() => _store.handle.close();
 }
+
+/// Fixture-only access; exposed exclusively from the testing library.
+Future<Result<void, RecoverBullFailure>> writeWalletBackupForTesting(
+  RecoverBullWalletBackups backups,
+  WalletBackupUsage usage,
+) => backups._result(() async {
+  await backups._database
+      .into(backups._database.recoverbullWalletBackups)
+      .insertOnConflictUpdate(backupUsageCompanion(usage));
+});
+
+Future<Result<void, RecoverBullFailure>> removeWalletBackupForTesting(
+  RecoverBullWalletBackups backups,
+  String walletId,
+) => backups._result(() async {
+  await (backups._database.delete(
+    backups._database.recoverbullWalletBackups,
+  )..where((row) => row.walletId.equals(walletId))).go();
+});

@@ -76,6 +76,7 @@ custody-check:
 	@fvm dart packages/secrets/tool/key_material_gate.dart
 
 # Native stores have exactly one writer; readers and signers have scoped exceptions.
+# RecoverBull backup preparation is confined to the inventory callback.
 # BDK/LWK stay in packages/sync, plus a shrinking list of legacy files.
 native-write-check:
 	@fvm dart packages/sync/tool/native_write_gate.dart
