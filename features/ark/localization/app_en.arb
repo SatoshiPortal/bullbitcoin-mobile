@@ -1375,5 +1375,17 @@
   "receiveTabArk": "Ark",
   "receiveTabLightning": "Lightning",
   "receiveAddressLabel": "Address",
-  "receiveInvoiceLabel": "Invoice"
+  "receiveInvoiceLabel": "Invoice",
+  "exitViewStatus": "Status",
+  "@exitViewStatus": {
+    "description": "Switch to the payment animation of an emergency exit"
+  },
+  "exitViewDetails": "Details",
+  "@exitViewDetails": {
+    "description": "Switch to the details of an emergency exit"
+  },
+  "exitViewsLabel": "Exit views",
+  "@exitViewsLabel": {
+    "description": "Accessible name of the Status and Details switch on an emergency exit"
+  }
 }

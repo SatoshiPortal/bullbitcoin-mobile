@@ -4,6 +4,7 @@ import 'package:swap_feature/src/domain/swap_environment.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:address_view/address_view.dart';
 import 'package:swap_feature/src/domain/usecases/load_transfer_preferences_usecase.dart';
+import 'package:swap_feature/src/domain/usecases/read_transfer_payment_animations_usecase.dart';
 import 'package:spend/fee_preview.dart';
 import 'package:spend/spend.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -85,7 +86,27 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._dropPendingSwapLockupUsecase,
     required this._watchSwapUsecase,
     required this._watchSettlement,
-  }) : super(const TransferState()) {
+    ReadTransferPaymentAnimationsUsecase? readPaymentAnimationsUsecase,
+  }) : _readPaymentAnimationsUsecase = readPaymentAnimationsUsecase,
+       super(
+         TransferState(
+           showPaymentAnimations: readPaymentAnimationsUsecase == null
+               ? true
+               : null,
+         ),
+       ) {
+    final readAnimations = _readPaymentAnimationsUsecase;
+    if (readAnimations != null) {
+      unawaited(
+        readAnimations.execute().then((enabled) {
+          if (!isClosed) add(TransferEvent.paymentAnimationsRead(enabled));
+        }),
+      );
+    }
+    on<TransferPaymentAnimationsRead>(
+      (event, emit) =>
+          emit(state.copyWith(showPaymentAnimations: event.enabled)),
+    );
     on<TransferStarted>(_onStarted);
     on<TransferWalletsChanged>(_onWalletsChanged);
     on<TransferAmountChanged>(_onAmountChanged);
@@ -191,6 +212,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final WatchSwapUsecase _watchSwapUsecase;
   StreamSubscription<Swap>? _boltzSwapSubscription;
   final WatchTransferSettlementUsecase _watchSettlement;
+  final ReadTransferPaymentAnimationsUsecase? _readPaymentAnimationsUsecase;
   StreamSubscription<WalletTransaction>? _receiveSubscription;
   String? _watchedReceiveTxId;
   int _transactionGeneration = 0;

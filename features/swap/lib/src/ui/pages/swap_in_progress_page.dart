@@ -4,7 +4,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:swap_feature/src/swap_l10n.dart';
 import 'package:swap_feature/src/presentation/transfer_bloc.dart';
 import 'package:swap_feature/src/presentation/swap_failure_l10n.dart';
-import 'package:swap_feature/src/ui/swap_transition_policy.dart';
+import 'package:transactions/payment_status.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'

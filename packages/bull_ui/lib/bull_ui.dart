@@ -11,6 +11,7 @@ export 'src/payments/bull_payment_animation.dart';
 export 'src/payments/bull_payment_progress.dart';
 export 'src/payments/bull_payment_step_rail.dart';
 export 'src/payments/bull_payment_transition.dart';
+export 'src/payments/bull_payment_view_switch.dart';
 
 export 'package:flutter/services.dart'
     show SmartDashesType, SmartQuotesType, HapticFeedback;

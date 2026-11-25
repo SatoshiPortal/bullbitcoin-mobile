@@ -118,13 +118,17 @@ class ReceiveDetailsButton extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: BullButton.secondary(
         label: context.loc.receiveDetails,
-        onPressed: () => openReceiveDetails(context),
+        onPressed: () =>
+            openReceiveDetails(context, view: TransactionDetailsView.details),
       ),
     );
   }
 }
 
-void openReceiveDetails(BuildContext context) {
+void openReceiveDetails(
+  BuildContext context, {
+  TransactionDetailsView view = TransactionDetailsView.status,
+}) {
   final target = receiveDetailsTarget(context.read<ReceiveBloc>().state);
   if (target == null) return;
   switch (target.kind) {
@@ -133,24 +137,28 @@ void openReceiveDetails(BuildContext context) {
         TransactionsNavigation.openDetails(
           context,
           TransactionDetailsTarget.wallet(target.id, walletId: walletId),
+          view: view,
         );
       }
     case ReceiveDetailsTargetKind.orderSwap:
       TransactionsNavigation.openDetails(
         context,
         TransactionDetailsTarget.orderSwap(target.id),
+        view: view,
       );
     case ReceiveDetailsTargetKind.swap:
       if (target.walletId case final walletId?) {
         TransactionsNavigation.openDetails(
           context,
           TransactionDetailsTarget.swap(target.id, walletId: walletId),
+          view: view,
         );
       }
     case ReceiveDetailsTargetKind.payjoin:
       TransactionsNavigation.openDetails(
         context,
         TransactionDetailsTarget.payjoin(target.id),
+        view: view,
       );
   }
 }

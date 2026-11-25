@@ -65,6 +65,9 @@ abstract class ReceiveState with _$ReceiveState {
     WalletTransaction? settlementTx,
     ReceiveFailure? failure,
     @Default(false) bool creatingSwap,
+    // The payment animations preference. Null until it has been read: a
+    // payment seen before that must neither animate nor navigate.
+    bool? showPaymentAnimations,
   }) = _ReceiveState;
   const ReceiveState._();
 

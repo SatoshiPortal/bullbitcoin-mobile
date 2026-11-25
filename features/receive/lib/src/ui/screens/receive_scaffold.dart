@@ -11,6 +11,15 @@ import 'package:go_router/go_router.dart';
 import 'package:receive/src/ui/widgets/receive_onchain_transition.dart';
 import 'package:transactions/routes.dart';
 
+/// A detected on-chain payment opens the details directly when the transition
+/// is skipped, and only once the preference is known.
+bool _opensDetails(ReceiveState state, bool reduced) =>
+    state.showPaymentAnimations != null &&
+    (reduced || state.showPaymentAnimations == false) &&
+    state.isPaymentReceived &&
+    (state.type == ReceiveType.bitcoin || state.type == ReceiveType.liquid) &&
+    !state.isPayjoinFlowOwningNavigation;
+
 class ReceiveScaffold extends StatelessWidget {
   const ReceiveScaffold({
     super.key,
@@ -78,14 +87,16 @@ class ReceiveScaffold extends StatelessWidget {
         ? selectedWallet
         : entryWallet;
     final transaction = context.select((ReceiveBloc bloc) => bloc.state.tx);
-    // Reduced motion keeps develop's behaviour: no transition, the details
-    // open as soon as the payment is detected (see the listener below).
+    // Reduced motion and the payment animations preference both skip the
+    // transition: the details open as soon as the payment is detected (see
+    // the listener below).
     final reduced =
         MediaQuery.disableAnimationsOf(context) ||
         MediaQuery.reduceMotionOf(context);
     final showTransition = context.select(
       (ReceiveBloc bloc) =>
           !reduced &&
+          bloc.state.showPaymentAnimations == true &&
           bloc.state.tx != null &&
           (bloc.state.type == ReceiveType.bitcoin ||
               bloc.state.type == ReceiveType.liquid) &&
@@ -95,19 +106,18 @@ class ReceiveScaffold extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.settlementConfirmed,
     );
     return BlocListener<ReceiveBloc, ReceiveState>(
+      // Unknown preference: wait for it before navigating.
       listenWhen: (previous, current) =>
-          reduced &&
-          previous.isPaymentReceived != true &&
-          current.isPaymentReceived == true &&
-          (current.type == ReceiveType.bitcoin ||
-              current.type == ReceiveType.liquid) &&
-          !current.isPayjoinFlowOwningNavigation,
+          !_opensDetails(previous, reduced) && _opensDetails(current, reduced),
       listener: (context, state) {
         final walletId = state.wallet?.id;
         if (walletId == null) return;
         TransactionsNavigation.goToDetails(
           context,
           TransactionDetailsTarget.wallet(state.txId, walletId: walletId),
+          view: state.showPaymentAnimations == false
+              ? TransactionDetailsView.details
+              : TransactionDetailsView.status,
         );
       },
       child: Stack(
@@ -168,6 +178,7 @@ class ReceiveScaffold extends StatelessWidget {
                   transaction.txId,
                   walletId: transaction.walletId,
                 ),
+                view: TransactionDetailsView.details,
               ),
             ),
         ],

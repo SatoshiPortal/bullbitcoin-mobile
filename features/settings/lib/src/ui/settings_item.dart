@@ -71,6 +71,7 @@ enum SettingsItemId {
   sourceCode,
   tor,
   screenPrivacy,
+  paymentAnimations,
   devMode,
   testnetCredentials,
   arkDebugNotification,
@@ -105,6 +106,9 @@ class SettingsItem {
   final bool isSuperuser;
   final bool isInlineControl;
 
+  /// Optional secondary line under [title].
+  final String? subtitle;
+
   /// SVG asset drawn instead of [icon], for a glyph no icon font has.
   final String? iconAsset;
   final OpenSettingsItem _open;
@@ -119,6 +123,7 @@ class SettingsItem {
     this.keywords = const [],
     this.isSuperuser = false,
     this.isInlineControl = false,
+    this.subtitle,
     this.iconAsset,
   }) : _open = open; // ignore: prefer_initializing_formals
 
@@ -164,6 +169,7 @@ class SettingsItem {
       iconColor: iconColor,
       textColor: textColor,
       title: title,
+      subtitle: subtitle,
       isSuperUser: isSuperuser,
       trailing: trailing,
       onTap: isInlineControl ? null : () => open(context),
@@ -753,6 +759,24 @@ List<SettingsItem> buildSettingsItems({
         localization.settingsSearchScreenPrivacyKeywords,
         english.settingsSearchScreenPrivacyKeywords,
         [english.settingsScreenPrivacyTitle],
+      ),
+      isInlineControl: true,
+    ),
+    SettingsItem(
+      id: SettingsItemId.paymentAnimations,
+      section: SettingsItemSection.app,
+      title: localization.settingsPaymentAnimationsTitle,
+      subtitle: localization.settingsPaymentAnimationsSubtitle,
+      path: path(
+        SettingsItemSection.app,
+        localization.settingsPaymentAnimationsTitle,
+      ),
+      icon: Icons.animation,
+      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
+      keywords: _keywords(
+        localization.settingsSearchPaymentAnimationsKeywords,
+        english.settingsSearchPaymentAnimationsKeywords,
+        [english.settingsPaymentAnimationsTitle],
       ),
       isInlineControl: true,
     ),

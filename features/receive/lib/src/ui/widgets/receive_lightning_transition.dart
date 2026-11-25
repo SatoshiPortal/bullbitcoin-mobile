@@ -1,10 +1,11 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:receive/src/presentation/bloc/receive_bloc.dart';
-import 'package:receive/src/presentation/receive_payment_progress.dart';
+import 'package:transactions/payment_status.dart';
 import 'package:receive/src/ui/receive_localizations.dart';
 import 'package:receive/src/ui/screens/receive_payment_received_screen.dart';
 import 'package:swaps/swaps.dart' show SwapStatus;
+import 'package:transactions/routes.dart' show TransactionDetailsView;
 
 class ReceiveLightningTransition extends StatelessWidget {
   const ReceiveLightningTransition({super.key});
@@ -57,7 +58,8 @@ class ReceiveLightningTransition extends StatelessWidget {
               SwapStatus.canCoop => context.loc.receiveStatusCooperative,
             },
       skipLabel: context.loc.receiveViewDetails,
-      onSkip: () => openReceiveDetails(context),
+      onSkip: () =>
+          openReceiveDetails(context, view: TransactionDetailsView.details),
       onDone: () {},
     );
   }

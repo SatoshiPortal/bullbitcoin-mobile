@@ -1,7 +1,8 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:swaps/swaps.dart';
-import 'package:transactions/transactions.dart' show WalletTransaction;
+
+import '../domain/entities/wallet_transaction.dart';
 
 /// Whether the swap pays a wallet of this app. Only then can the app observe
 /// the confirmation of the transaction that lands there, which makes

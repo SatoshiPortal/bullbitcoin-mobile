@@ -1,6 +1,8 @@
 import 'package:transactions/src/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:transactions/src/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:transactions/src/presentation/blocs/transaction_status/transaction_status_cubit.dart';
 import 'package:transactions/src/presentation/blocs/transactions_cubit.dart';
+import 'package:transactions/src/ui/widgets/settlement_sync_poller.dart';
 import 'package:transactions/src/ui/screens/export_transactions_screen.dart';
 import 'package:transactions/src/ui/screens/transaction_details_screen.dart';
 import 'package:transactions/src/ui/screens/transactions_screen.dart';
@@ -18,8 +20,26 @@ import 'transactions_navigation.dart';
 class TransactionsRouter {
   final GetIt locator;
   final TransactionUiActions actions;
+  final SettlementPoll pollSettlement;
 
-  const TransactionsRouter(this.locator, this.actions);
+  const TransactionsRouter(this.locator, this.actions, this.pollSettlement);
+
+  /// The details screen with its own status cubit, next to the details cubit
+  /// [create] starts.
+  Widget _details(TransactionDetailsCubit Function() create) =>
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => create()),
+          BlocProvider(
+            create: (context) =>
+                locator<TransactionStatusCubit>()..loadPreference(),
+          ),
+        ],
+        child: TransactionDetailsScreen(
+          actions: actions,
+          pollSettlement: pollSettlement,
+        ),
+      );
 
   GoRoute transactionsRoute({required Widget Function(Widget) scope}) =>
       GoRoute(
@@ -64,11 +84,10 @@ class TransactionsRouter {
         final txId = state.pathParameters['txId'];
         final walletId = state.uri.queryParameters['walletId'];
         if (txId == null || walletId == null) return const SizedBox.shrink();
-        return BlocProvider(
-          create: (context) =>
+        return _details(
+          () =>
               locator<TransactionDetailsCubit>()
                 ..initByWalletTxId(txId, walletId: walletId),
-          child: TransactionDetailsScreen(actions: actions),
         );
       },
     ),
@@ -78,10 +97,8 @@ class TransactionsRouter {
       builder: (context, state) {
         final txId = state.pathParameters['txId'];
         if (txId == null) return const SizedBox.shrink();
-        return BlocProvider(
-          create: (context) =>
-              locator<TransactionDetailsCubit>()..initByPayjoinTxId(txId),
-          child: TransactionDetailsScreen(actions: actions),
+        return _details(
+          () => locator<TransactionDetailsCubit>()..initByPayjoinTxId(txId),
         );
       },
     ),
@@ -92,11 +109,10 @@ class TransactionsRouter {
         final swapId = state.pathParameters['swapId'];
         final walletId = state.uri.queryParameters['walletId'];
         if (swapId == null || walletId == null) return const SizedBox.shrink();
-        return BlocProvider(
-          create: (context) =>
+        return _details(
+          () =>
               locator<TransactionDetailsCubit>()
                 ..initBySwapId(swapId, walletId: walletId),
-          child: TransactionDetailsScreen(actions: actions),
         );
       },
     ),
@@ -106,10 +122,8 @@ class TransactionsRouter {
       builder: (context, state) {
         final payjoinId = state.pathParameters['payjoinId'];
         if (payjoinId == null) return const SizedBox.shrink();
-        return BlocProvider(
-          create: (context) =>
-              locator<TransactionDetailsCubit>()..initByPayjoinId(payjoinId),
-          child: TransactionDetailsScreen(actions: actions),
+        return _details(
+          () => locator<TransactionDetailsCubit>()..initByPayjoinId(payjoinId),
         );
       },
     ),
@@ -119,11 +133,10 @@ class TransactionsRouter {
       builder: (context, state) {
         final localId = state.pathParameters['localId'];
         if (localId == null) return const SizedBox.shrink();
-        return BlocProvider(
-          create: (context) =>
+        return _details(
+          () =>
               locator<TransactionDetailsCubit>()
                 ..initByOrderSwapLocalId(localId),
-          child: TransactionDetailsScreen(actions: actions),
         );
       },
     ),
@@ -133,10 +146,8 @@ class TransactionsRouter {
       builder: (context, state) {
         final orderId = state.pathParameters['orderId'];
         if (orderId == null) return const SizedBox.shrink();
-        return BlocProvider(
-          create: (context) =>
-              locator<TransactionDetailsCubit>()..initByOrderId(orderId),
-          child: TransactionDetailsScreen(actions: actions),
+        return _details(
+          () => locator<TransactionDetailsCubit>()..initByOrderId(orderId),
         );
       },
     ),

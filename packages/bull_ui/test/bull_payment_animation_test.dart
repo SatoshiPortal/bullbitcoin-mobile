@@ -151,6 +151,30 @@ void main() {
     expect(done, 0);
   });
 
+  testWidgets('bottom replaces the skip button in its slot', (tester) async {
+    var skipped = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.dark),
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: BullPaymentTransition(
+            network: BullPaymentNetwork.lightning,
+            phase: BullPaymentPhase.sending,
+            status: 'Payment pending',
+            skipLabel: 'View details',
+            onSkip: () => skipped++,
+            bottom: const Text('Switch'),
+            onDone: () {},
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Switch'), findsOneWidget);
+    expect(find.text('View details'), findsNothing);
+    expect(skipped, 0);
+  });
+
   testWidgets('fast completion keeps the intro then plays one terminal phase', (
     tester,
   ) async {

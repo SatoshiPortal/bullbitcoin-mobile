@@ -41,6 +41,7 @@ import 'domain/usecases/load_internal_ark_transfer_usecase.dart';
 import 'domain/usecases/load_swap_wallets_usecase.dart';
 import 'domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'domain/usecases/load_transfer_preferences_usecase.dart';
+import 'domain/usecases/read_transfer_payment_animations_usecase.dart';
 import 'domain/usecases/read_swap_coins_usecase.dart';
 import 'domain/usecases/refresh_order_swaps_usecase.dart';
 import 'domain/usecases/review_internal_ark_transfer_usecase.dart';
@@ -192,6 +193,9 @@ abstract interface class SwapFeature implements SwapActivity {
           dropPendingSwapLockupUsecase: dropPending,
           watchSwapUsecase: WatchSwapUsecase(swaps.store),
           watchSettlement: WatchTransferSettlementUsecase(transactions),
+          readPaymentAnimationsUsecase: ReadTransferPaymentAnimationsUsecase(
+            preferences,
+          ),
         ),
         createArk: () => InternalArkTransferCubit(
           loadArk,
