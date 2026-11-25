@@ -247,7 +247,7 @@ final class _SendPaymentSession {
         null => context.bull.secondary,
       },
       walletActionLabel: context.loc.sendFrom,
-      maxLabel: 'MAX',
+      maxLabel: context.loc.swapMax,
       settingsLabel: context.loc.sendAdvancedSettings,
       feeSummary: feeName(context, state.selectedFeeOption),
       continueLabel: context.loc.sendContinue,

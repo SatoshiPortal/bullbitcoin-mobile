@@ -22,6 +22,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmountUnitToggle,
         BullAmountInput,
         BullButton,
+        BullFieldAction,
         BullDropdown,
         bullUiLocalizationsDelegate;
 import 'package:send/src/payment/domain/send_failure.dart';
@@ -318,7 +319,7 @@ void main() {
     );
     expect(find.byType(BullDropdown<String>), findsNothing);
 
-    await tester.tap(find.byType(Switch));
+    await tester.tap(find.widgetWithText(BullFieldAction, 'MAX'));
     verify(() => cubit.amountChanged(amount: null, isMax: true)).called(1);
   });
 
@@ -564,7 +565,20 @@ void main() {
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('Send remaining balance'), findsNothing);
 
-    await tester.tap(find.byType(Switch));
+    expect(
+      tester.getSemantics(find.widgetWithText(BullFieldAction, 'MAX')),
+      matchesSemantics(
+        label: 'MAX',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasTapAction: true,
+        isFocusable: true,
+        hasToggledState: true,
+        isToggled: true,
+      ),
+    );
+    await tester.tap(find.widgetWithText(BullFieldAction, 'MAX'));
     verify(() => cubit.amountChanged(amount: '999000', isMax: false)).called(1);
   });
 
