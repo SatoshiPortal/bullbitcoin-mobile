@@ -30,6 +30,9 @@ class ArkBoardScreen extends StatefulWidget {
   /// The app's confirmation arrow, for the review header.
   final Widget? confirmIcon;
 
+  /// Reads once whether payment transitions play; they do when absent.
+  final Future<bool> Function()? readPaymentAnimations;
+
   const ArkBoardScreen({
     super.key,
     this.displayData,
@@ -38,6 +41,7 @@ class ArkBoardScreen extends StatefulWidget {
     this.onViewDetails,
     this.onClose,
     this.confirmIcon,
+    this.readPaymentAnimations,
   });
   @override
   State<ArkBoardScreen> createState() => _ArkBoardScreenState();
@@ -127,9 +131,29 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
     });
   }
 
+  // Null until the preference is read: confirming waits for it, so a payment
+  // can never take the animation path against a stored "off".
+  bool? _animations;
+
+  Future<void> _readAnimations() async {
+    final read = widget.readPaymentAnimations;
+    if (read == null) {
+      _animations = true;
+      return;
+    }
+    bool value;
+    try {
+      value = await read();
+    } on Object {
+      value = true;
+    }
+    if (mounted) setState(() => _animations = value);
+  }
+
   @override
   void initState() {
     super.initState();
+    unawaited(_readAnimations());
     _listen();
   }
 
@@ -211,7 +235,7 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
               ? arkLocalizationsOf(context).retry
               : arkLocalizationsOf(context).confirm,
           height: 56,
-          onPressed: busy
+          onPressed: busy || _animations == null
               ? null
               : () {
                   if (_current(owner, reviewed)) {
@@ -220,7 +244,7 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
                         reviewed.failure is! ArkReviewExpiredFailure) {
                       setState(() {
                         _transitionId = reviewed.preparation.operationId;
-                        _showTransition = true;
+                        _showTransition = _animations == true;
                       });
                     }
                     unawaited(submission);
