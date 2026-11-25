@@ -26,6 +26,14 @@ Primary and optional fallback Esplora endpoints are configured explicitly. Only 
 
 Use the repository's pinned FVM toolchain and make targets for integrated checks. The package tests cover public contracts, real SQLite persistence/exclusion across processes, abrupt process death, lifecycle admission through a native fake, quote/idempotency/claim policies and local HTTP fallback discrimination. Native-fake tests do not establish actual bark signing, persistence or network behavior. Native runtime and end-to-end board/payment/renewal/exit proof remain separate integration gates, as do Android background and iOS lifecycle validation. Bark's hook requires its own pinned Rust 1.90.0 and protoc; another dependency's Rust environment override must not replace that compiler.
 
+### Scuttle bridge
+
+The Native Assets hook builds `rust_lib_scuttle` from a separate locked Cargo graph, keeping Scuttle's SQLite dependency out of `rust_lib_bull_sdk`. The exact Scuttle revision and Rust toolchain are recorded in `rust/Cargo.toml` and `rust/rust-toolchain.toml`. Use `make scuttle-codegen` with flutter_rust_bridge_codegen 2.13.0 and libclang after changing the Rust API.
+
+`BULL_ARK_SCUTTLE_SMOKE=true` selects the experimental adapter in a debug build only. It rejects non-regtest accounts, isolates its native and session stores from Bark, and never falls back to Bark. Use a disposable account and do not send funds to its address: the smoke adapter opens a wallet, runs initial recovery and scan, and derives an Ark address, but does not support spending, claims or ongoing synchronization.
+
+`fvm dart test test/scuttle_bridge_test.dart` from `packages/ark` exercises native loading and the wallet lifecycle against a local genesis response. It does not establish interoperability with a live Scuttle server or constitute mobile packaging validation.
+
 ## Already signed claim delivery
 
 `rebroadcastClaim(operationId, expectedTxid)` may run automatically in foreground or `backgroundExisting` for an existing verified signed claim. It uses the account writer and captured Esplora directly, without child derivation, Secrets access, a native wallet, new signing, quote freshness or another authority debit. Other background submissions remain refused. The host runs this lane independently of keyed renewal and supplies protected existing-account admission even when new Ark routing is off.
