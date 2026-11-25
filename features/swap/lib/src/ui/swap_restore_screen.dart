@@ -107,12 +107,15 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: BullText(
-        label.toUpperCase(),
-        style: context.bullType.caption,
-        color: context.bull.textMuted,
+    return Semantics(
+      header: true,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+        child: BullText(
+          label.toUpperCase(),
+          style: context.bullType.caption,
+          color: context.bull.textMuted,
+        ),
       ),
     );
   }
@@ -154,6 +157,16 @@ class _SwapRow extends StatelessWidget {
     // Only swaps with locked, unresolved funds that aren't already stored can be
     // rescued; resolved/expired-unfunded swaps are display-only.
     final canRescue = restorable.isRescuable;
+    final detail = restorable.swap.amountSat > 0
+        ? '${FormatAmount.sats(restorable.swap.amountSat)} · '
+              '${_formatDate(restorable.swap.createdAt)}'
+        : _formatDate(restorable.swap.createdAt);
+    final name = [
+      _kindLabel(context),
+      shortId,
+      detail,
+      if (!canRescue) _statusLabel(context),
+    ].join(', ');
 
     final row = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -206,12 +219,29 @@ class _SwapRow extends StatelessWidget {
       ),
     );
 
-    if (!canRescue) return row;
-    return GestureDetector(
-      // Make the whole row tappable, not just its painted children.
-      behavior: HitTestBehavior.opaque,
-      onTap: () => SwapNavigation.openRescue(context, restorable),
-      child: row,
+    // One named element per row: a button when it can be rescued, plain
+    // read-only text otherwise. The painted children are not exposed twice.
+    if (!canRescue) {
+      return Semantics(
+        container: true,
+        label: name,
+        child: ExcludeSemantics(child: row),
+      );
+    }
+    void open() => SwapNavigation.openRescue(context, restorable);
+    return Semantics(
+      container: true,
+      button: true,
+      label: name,
+      onTap: open,
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          // Make the whole row tappable, not just its painted children.
+          behavior: HitTestBehavior.opaque,
+          onTap: open,
+          child: row,
+        ),
+      ),
     );
   }
 }
