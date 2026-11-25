@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 

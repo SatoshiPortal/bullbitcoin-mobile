@@ -1,7 +1,7 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/presentation/payout_rail_l10n.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
-import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
