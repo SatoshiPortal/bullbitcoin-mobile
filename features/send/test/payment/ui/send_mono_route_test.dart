@@ -4,7 +4,7 @@ import 'package:send/generated/l10n/send_localizations.dart'
 import '../testing/send_test_localizations.dart';
 
 import 'package:send/setup.dart' show SendLocalizations;
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 
 import '../testing/send_source_fixture.dart';
 
@@ -15,6 +15,7 @@ import 'dart:async';
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_payment_page.dart';
 import 'package:send/src/payment/ui/screens/send_screen.dart';
+import 'package:send/src/payment/ui/screens/send_payment_review.dart';
 import 'package:send/src/payment/ui/send_payment_ui.dart';
 import 'package:sync/sync.dart' show WalletKey;
 
@@ -189,6 +190,124 @@ void main() {
     await tester.pumpAndSettle();
     return cubit;
   }
+
+  SendState liquidState({SendStep step = SendStep.amount}) {
+    final liquid = sendSourceFixture(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(1000000),
+    );
+    return state(step: step).copyWith(
+      sendType: SendType.liquid,
+      selectedWallet: SendWalletBitcoin(liquid),
+      wallets: [liquid],
+      paymentRequest: const PaymentRequest.liquid(
+        address: 'ex1qfixture',
+        isTestnet: false,
+      ),
+      liquidAbsoluteFees: 100,
+      recipientDrafts: [],
+      recipientAmountsSat: [],
+    );
+  }
+
+  testWidgets(
+    'direct Liquid uses the new amount page and existing MAX action',
+    (tester) async {
+      final cubit = await pump(tester, liquidState());
+      when(() => cubit.amountChanged(isMax: true)).thenAnswer((_) async {});
+      expect(find.byType(SendPaymentPage), findsOneWidget);
+      await tester.tap(find.text('MAX'));
+      verify(() => cubit.amountChanged(isMax: true)).called(1);
+    },
+  );
+
+  testWidgets('direct Liquid review uses Liquid fee and warns about privacy', (
+    tester,
+  ) async {
+    await pump(tester, liquidState(step: SendStep.confirm));
+    expect(find.byType(SendPaymentReview), findsOneWidget);
+    expect(find.text('Public amount'), findsOneWidget);
+    expect(find.text('100 sats'), findsOneWidget);
+    expect(find.text('10,100 sats'), findsOneWidget);
+    expect(find.byType(BullAdvancedOptionsLink), findsOneWidget);
+  });
+
+  testWidgets('Liquid advanced settings retain manual coin selection', (
+    tester,
+  ) async {
+    await pump(tester, liquidState());
+    await tester.tap(find.byType(BullSettingsEntryTile));
+    await tester.pumpAndSettle();
+    expect(find.text('Select coins manually'), findsOneWidget);
+  });
+
+  testWidgets('confidential Liquid review does not show the public warning', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      liquidState(step: SendStep.confirm).copyWith(
+        paymentRequest: const PaymentRequest.liquid(
+          address: 'lq1fixture',
+          isTestnet: false,
+        ),
+      ),
+    );
+    expect(find.byType(SendPaymentReview), findsOneWidget);
+    expect(find.text('Public amount'), findsNothing);
+  });
+
+  testWidgets('Liquid source to Bitcoin destination stays on legacy flow', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    await pump(
+      tester,
+      liquidState().copyWith(
+        sendType: SendType.bitcoin,
+        paymentRequest: const PaymentRequest.bitcoin(
+          address: 'bc1qfixture',
+          isTestnet: false,
+        ),
+      ),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+    expect(find.byType(SendAmountScreen), findsOneWidget);
+  });
+
+  testWidgets('amount stays synchronized while moving from legacy to Liquid', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    final updates = StreamController<SendState>.broadcast(sync: true);
+    addTearDown(updates.close);
+    final liquid = liquidState().copyWith(amount: '25000');
+    await pump(
+      tester,
+      liquid.copyWith(
+        sendType: SendType.bitcoin,
+        paymentRequest: const PaymentRequest.bitcoin(
+          address: 'bc1qfixture',
+          isTestnet: false,
+        ),
+        amount: '10000',
+      ),
+      updates: updates.stream,
+    );
+    expect(find.byType(SendAmountScreen), findsOneWidget);
+    updates.add(liquid);
+    await tester.pumpAndSettle();
+    expect(find.byType(SendPaymentPage), findsOneWidget);
+    expect(
+      tester
+          .widget<BullAmountInput>(find.byType(BullAmountInput))
+          .amountController
+          .text,
+      '25000',
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('a bare regtest address uses the redesigned Send page', (
     tester,

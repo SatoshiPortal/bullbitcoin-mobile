@@ -29,6 +29,7 @@ class SendPaymentPage extends StatelessWidget {
     required this.onContinue,
     this.recipientReady = false,
     this.isBusy = false,
+    this.extra,
   });
 
   final String title;
@@ -55,6 +56,7 @@ class SendPaymentPage extends StatelessWidget {
   final VoidCallback? onContinue;
   final bool recipientReady;
   final bool isBusy;
+  final Widget? extra;
 
   @override
   Widget build(BuildContext context) => BullScaffold(
@@ -152,6 +154,10 @@ class SendPaymentPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (extra case final widget?) ...[
+                      const Gap(BullSpacing.md),
+                      widget,
+                    ],
                   ] else
                     Container(
                       padding: const EdgeInsets.all(BullSpacing.md),

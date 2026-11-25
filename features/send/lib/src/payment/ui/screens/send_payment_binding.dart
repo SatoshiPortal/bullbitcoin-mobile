@@ -30,13 +30,20 @@ final class _SendPaymentSession {
         state.usesSelectedInputsOnly ||
         state.hasMultipleRecipients ||
         state.hasFixedRequestAmount ||
-        state.selectedWallet?.isLiquid == true ||
         state.selectedWallet?.isHardwareWallet == true ||
         state.selectedWallet?.signsLocally == false ||
         state.isPayjoinAvailable) {
       return false;
     }
     final request = state.paymentRequest;
+    final liquidRequest =
+        request is LiquidPaymentRequest ||
+        (request is Bip21PaymentRequest &&
+            request.network is chains.LiquidNetwork);
+    if (state.step == SendStep.address && liquidRequest) return true;
+    if (state.selectedWallet?.isLiquid == true) {
+      return state.sendType == SendType.liquid && liquidRequest;
+    }
     return request == null ||
         const BitcoinRecipientListPolicy().isPlainAddress(request);
   }
@@ -215,6 +222,7 @@ final class _SendPaymentSession {
             isValid: entry.isValid,
             isEdit: entry.isEdit,
           ),
+          isLiquid: wallet?.isLiquid == true,
           isMax: state.isMaxSend,
           maxLoading: state.isMaxSend && cubit.preparedMaxAmountSat == null,
           maxAmountSat: switch (cubit.preparedMaxAmountSat) {
@@ -250,7 +258,18 @@ final class _SendPaymentSession {
       walletActionLabel: context.loc.sendFrom,
       maxLabel: context.loc.swapMax,
       settingsLabel: context.loc.sendAdvancedSettings,
-      feeSummary: feeName(context, state.selectedFeeOption),
+      feeSummary: wallet?.isLiquid == true
+          ? ''
+          : feeName(context, state.selectedFeeOption),
+      extra: state.consolidationRequired && wallet != null
+          ? BullAlertCard(
+              title: context.loc.consolidationRequiredTitle,
+              onTap: () => context.pushNamed(
+                ConsolidationRoute.consolidation.name,
+                pathParameters: {'walletId': wallet.id},
+              ),
+            )
+          : null,
       continueLabel: context.loc.sendContinue,
       recipientReady: ready,
       isBusy: state.loadingBestWallet || state.buildingTransaction,
@@ -261,8 +280,17 @@ final class _SendPaymentSession {
           context.pop();
         }
       },
-      onSettings: () => settings(context),
-      onMax: ready ? () => max(context) : null,
+      onSettings: () => wallet?.isLiquid == true
+          ? liquidSettings(context)
+          : settings(context),
+      onMax: ready
+          ? wallet?.isLiquid == true
+                ? () => cubit.amountChanged(
+                    amount: state.isMaxSend ? amountController.text : null,
+                    isMax: !state.isMaxSend,
+                  )
+                : () => max(context)
+          : null,
       onWallet: ready ? () => wallets(context) : null,
       onContinue:
           ready &&
@@ -281,9 +309,13 @@ final class _SendPaymentSession {
 
   Future<void> wallets(BuildContext context) async {
     amountFocus.unfocus();
-    final wallets = cubit.state.wallets
-        .where((wallet) => !wallet.isLiquid && wallet.signerDevice == null)
-        .toList();
+    final wallets = cubit.state.selectedWallet?.isLiquid == true
+        ? cubit.state.selectableWallets
+        : cubit.state.wallets
+              .where(
+                (wallet) => !wallet.isLiquid && wallet.signerDevice == null,
+              )
+              .toList();
     final selected = await BullBottomSheet.show<SendSource>(
       context: context,
       child: BullPickerSheet<SendSource>(
@@ -306,6 +338,17 @@ final class _SendPaymentSession {
     if (!_disposed && selected != null) {
       await cubit.updateSelectedWallet(selected);
     }
+  }
+
+  void liquidSettings(BuildContext context) {
+    amountFocus.unfocus();
+    BullBottomSheet.show(
+      context: context,
+      child: BlocProvider.value(
+        value: cubit,
+        child: const AdvancedOptionsBottomSheet(),
+      ),
+    );
   }
 
   Future<void> max(BuildContext context) async {
@@ -672,7 +715,7 @@ final class _SendPaymentSession {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '${context.loc.sendTo} · ${context.loc.exchangeDcaAddressLabelBitcoin}',
+              '${context.loc.sendTo} · ${state.selectedWallet?.isLiquid == true ? context.loc.exchangeDcaAddressLabelLiquid : context.loc.exchangeDcaAddressLabelBitcoin}',
               style: context.bullType.label.copyWith(
                 color: context.bull.textMuted,
                 fontWeight: FontWeight.w400,
@@ -705,10 +748,12 @@ final class _SendPaymentSession {
           : state.label,
       feeLabel: context.loc.sendNetworkFees,
       fee: fee == null ? const BullLoader.small() : money(context, fee),
-      feeDetail: [
-        feeName(context, state.selectedFeeOption),
-        feeDescription(context, state, confirmed: true),
-      ].where((part) => part.isNotEmpty).join(' · '),
+      feeDetail: state.selectedWallet?.isLiquid == true
+          ? ''
+          : [
+              feeName(context, state.selectedFeeOption),
+              feeDescription(context, state, confirmed: true),
+            ].where((part) => part.isNotEmpty).join(' · '),
       totalLabel: context.loc.sendTotalDebited,
       total: fee == null
           ? const BullLoader.small()
@@ -721,8 +766,28 @@ final class _SendPaymentSession {
             ),
       totalEquivalent: fee == null ? null : fiat(state, sats + fee),
       error: state.failure == null ? null : const _SendError(),
-      feeWarning: state.showFeeWarning
-          ? _HighFeeWarning(state.getFeeAsPercentOfAmount())
+      feeWarning:
+          state.isUnconfidentialLiquidDestination || state.showFeeWarning
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (state.isUnconfidentialLiquidDestination)
+                  const _UnconfidentialLiquidWarning(),
+                if (state.showFeeWarning)
+                  _HighFeeWarning(state.getFeeAsPercentOfAmount()),
+              ],
+            )
+          : null,
+      extra: state.selectedWallet?.isLiquid == true
+          ? BullAdvancedOptionsLink(
+              label: context.loc.sendAdvancedSettings,
+              onPressed:
+                  state.buildingTransaction ||
+                      state.signingTransaction ||
+                      state.broadcastingTransaction
+                  ? null
+                  : () => liquidSettings(context),
+            )
           : null,
       confirmLabel: context.loc.sendConfirm,
       onBack: cubit.backClicked,
