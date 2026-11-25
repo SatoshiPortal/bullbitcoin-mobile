@@ -4,7 +4,7 @@ import 'package:send/generated/l10n/send_localizations.dart'
 import '../testing/send_test_localizations.dart';
 
 import 'package:send/setup.dart' show SendLocalizations;
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 
 import '../testing/send_source_fixture.dart';
 
@@ -14,6 +14,8 @@ import 'dart:async';
 
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_screen.dart';
+import 'package:send/src/payment/ui/screens/send_payment_review.dart';
+import 'package:send/src/payment/ui/screens/send_payment_page.dart';
 import 'package:send/src/payment/ui/send_payment_ui.dart';
 import 'package:sync/sync.dart' show WalletKey;
 
@@ -144,7 +146,7 @@ void main() {
                 GoRouter.of(context)
                     .pushReplacementNamed('coins', extra: wallet),
             orderUnderReview: (_) => const SizedBox.shrink(),
-            arrowImage: const AssetImage('unused-arrow'),
+            arrowImage: const AssetImage('assets/logos/bitcoin.png'),
             successImage: const AssetImage('unused-success'),
             child: child ?? const SizedBox.shrink(),
           ),
@@ -177,6 +179,141 @@ void main() {
     await tester.pumpAndSettle();
     return cubit;
   }
+
+  testWidgets('fixed invoice offers eligible sources before continuing', (
+    tester,
+  ) async {
+    final bitcoin = sendSourceFixture(
+      id: 'bitcoin-source',
+      label: 'Bitcoin source',
+      balanceSat: BigInt.from(100000),
+    );
+    final liquid = sendSourceFixture(
+      id: 'liquid-source',
+      label: 'Liquid source',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(100000),
+    );
+    final wrongNetwork = sendSourceFixture(
+      id: 'wrong-network',
+      label: 'Wrong network',
+      network: BitcoinNetwork.testnet,
+      balanceSat: BigInt.from(100000),
+    );
+    final invoice = PaymentRequest.bolt11(
+      invoice: 'lnbc1invoice',
+      amountSat: 50000,
+      paymentHash: 'hash',
+      expiresAt: 0,
+      isTestnet: false,
+    );
+    final cubit = await pump(
+      tester,
+      SendState(
+        step: SendStep.amount,
+        sendType: SendType.lightning,
+        paymentRequest: invoice,
+        selectedWallet: SendWalletBitcoin(bitcoin),
+        wallets: [bitcoin, liquid, wrongNetwork],
+        bitcoinUnit: BitcoinUnit.sats,
+      ),
+    );
+    when(() => cubit.updateSelectedWallet(liquid)).thenAnswer((_) async {});
+    when(() => cubit.onAmountConfirmed()).thenAnswer((_) async {});
+
+    expect(find.byType(BullAmountInput), findsNothing);
+    expect(find.textContaining('50,000'), findsOneWidget);
+    expect(find.text('MAX'), findsNothing);
+    expect(find.byType(BullSettingsEntryTile), findsNothing);
+    verifyNever(() => cubit.onAmountConfirmed());
+    await tester.tap(find.text('Bitcoin source'));
+    await tester.pumpAndSettle();
+    expect(find.text('Liquid source'), findsOneWidget);
+    expect(find.text('Wrong network'), findsNothing);
+    await tester.tap(find.text('Liquid source'));
+    await tester.pumpAndSettle();
+    verify(() => cubit.updateSelectedWallet(liquid)).called(1);
+    verifyNever(() => cubit.onAmountConfirmed());
+    await tester.tap(find.text('Continue'));
+    await tester.pump();
+    verify(() => cubit.onAmountConfirmed()).called(1);
+  });
+
+  testWidgets('fixed invoice keeps the existing Lightning confirmation', (
+    tester,
+  ) async {
+    final invoice = PaymentRequest.bolt11(
+      invoice: 'lnbc1invoice',
+      amountSat: 50000,
+      paymentHash: 'hash',
+      expiresAt: 0,
+      isTestnet: false,
+    );
+    await pump(
+      tester,
+      state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.lightning, paymentRequest: invoice),
+    );
+    expect(find.byType(SendConfirmScreen), findsOneWidget);
+    expect(find.byType(SendPaymentReview), findsNothing);
+  });
+
+  testWidgets('fixed invoice locks source and continuation while creating', (
+    tester,
+  ) async {
+    final invoice = PaymentRequest.bolt11(
+      invoice: 'lnbc1invoice',
+      amountSat: 50000,
+      paymentHash: 'hash',
+      expiresAt: 0,
+      isTestnet: false,
+    );
+    final cubit = await pump(
+      tester,
+      SendState(
+        step: SendStep.amount,
+        sendType: SendType.lightning,
+        paymentRequest: invoice,
+        selectedWallet: SendWalletBitcoin(wallet),
+        wallets: [wallet],
+        creatingSwap: true,
+      ),
+    );
+    final page = tester.widget<SendPaymentPage>(find.byType(SendPaymentPage));
+    expect(page.onWallet, isNull);
+    expect(page.onContinue, isNull);
+    expect(page.isBusy, isTrue);
+    verifyNever(() => cubit.onAmountConfirmed());
+  });
+
+  testWidgets('fixed invoice cannot continue with an ineligible source', (
+    tester,
+  ) async {
+    final lowBalance = sendSourceFixture(
+      id: 'low-balance',
+      balanceSat: BigInt.from(50000),
+    );
+    final invoice = PaymentRequest.bolt11(
+      invoice: 'lnbc1invoice',
+      amountSat: 50000,
+      paymentHash: 'hash',
+      expiresAt: 0,
+      isTestnet: false,
+    );
+    await pump(
+      tester,
+      SendState(
+        step: SendStep.amount,
+        sendType: SendType.lightning,
+        paymentRequest: invoice,
+        selectedWallet: SendWalletBitcoin(lowBalance),
+        wallets: [lowBalance, wallet],
+      ),
+    );
+    final page = tester.widget<SendPaymentPage>(find.byType(SendPaymentPage));
+    expect(page.onContinue, isNull);
+    expect(page.onWallet, isNotNull);
+  });
 
   testWidgets('identical fee labels keep distinct preset actions', (
     tester,
