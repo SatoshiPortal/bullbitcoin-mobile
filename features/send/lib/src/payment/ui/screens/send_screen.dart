@@ -39,7 +39,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:send/src/send_localizations.dart';
 import 'package:send/src/payment/presentation/onchain_send_labels_l10n.dart';
 import 'package:satoshifier/payment_request.dart'
-    show Bip21PaymentRequest, BitcoinPaymentRequest;
+    show Bip21PaymentRequest, BitcoinPaymentRequest, LiquidPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:label_editor/label_editor.dart';
@@ -291,7 +291,10 @@ class _SendScreenState extends State<SendScreen> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SendCubit>().state;
-    final content = _content(context, state);
+    final content = BlocListener<SendCubit, SendState>(
+      listener: (_, state) => _payment.update(state),
+      child: _content(context, state),
+    );
     final terminal = _terminalPhase(state);
     final showTransition =
         _transitionVisible &&
@@ -351,10 +354,7 @@ class _SendScreenState extends State<SendScreen> {
         (step == SendStep.address ||
             step == SendStep.amount ||
             step == SendStep.confirm)) {
-      return BlocListener<SendCubit, SendState>(
-        listener: (_, state) => _payment.update(state),
-        child: _payment.build(context, state),
-      );
+      return _payment.build(context, state);
     }
     switch (step) {
       case SendStep.address:
