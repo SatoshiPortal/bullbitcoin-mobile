@@ -13,8 +13,8 @@ import 'package:go_router/go_router.dart';
 import 'dart:async';
 
 // The legacy screen already has a public shell import target.
-import 'package:send/src/payment/ui/screens/send_screen.dart';
 import 'package:send/src/payment/ui/screens/send_payment_page.dart';
+import 'package:send/src/payment/ui/screens/send_screen.dart';
 import 'package:send/src/payment/ui/screens/send_payment_review.dart';
 import 'package:send/src/payment/ui/send_payment_ui.dart';
 import 'package:sync/sync.dart' show WalletKey;
@@ -74,44 +74,54 @@ void main() {
     signerDevice: null,
     balanceSat: BigInt.from(1000000),
   );
-  SendState state({SendStep step = SendStep.amount, bool max = false}) =>
-      SendState(
-        step: step,
-        selectedWallet: SendWalletBitcoin(wallet),
-        paymentRequest: const PaymentRequest.bitcoin(
-          address: 'bc1qfixture',
-          isTestnet: false,
-        ),
-        bitcoinUnit: BitcoinUnit.sats,
-        inputAmountCurrencyCode: 'sats',
+  final regtestWallet = sendSourceFixture(
+    id: 'mono-regtest',
+    network: BitcoinNetwork.regtest,
+    signerDevice: null,
+    balanceSat: BigInt.from(1000000),
+  );
+  SendState state({
+    SendStep step = SendStep.amount,
+    bool max = false,
+    bool regtest = false,
+    PaymentRequest request = const PaymentRequest.bitcoin(
+      address: 'bc1qfixture',
+      isTestnet: false,
+    ),
+  }) => SendState(
+    step: step,
+    selectedWallet: SendWalletBitcoin(regtest ? regtestWallet : wallet),
+    paymentRequest: request,
+    bitcoinUnit: BitcoinUnit.sats,
+    inputAmountCurrencyCode: 'sats',
+    amount: '10000',
+    confirmedAmountSat: 10000,
+    bitcoinAbsoluteFeesSat: 200,
+    bitcoinFeesList: const FeeOptions(
+      fastest: RelativeFee(500),
+      economic: RelativeFee(250),
+      slow: RelativeFee(125),
+      minRelay: RelativeFee(25),
+    ),
+    feePreviewCache: const BitcoinFeePreviewCache(
+      fastest: BitcoinFeePreviewSlot(
+        feeSat: 200,
+        txSize: 140,
+        unsignedPsbt: 'current',
+        recipientAmountsSat: [10000],
+      ),
+    ),
+    recipientDrafts: [
+      (
+        id: 0,
+        address: regtest ? 'bcrt1qfixture' : 'bc1qfixture',
         amount: '10000',
-        confirmedAmountSat: 10000,
-        bitcoinAbsoluteFeesSat: 200,
-        bitcoinFeesList: const FeeOptions(
-          fastest: RelativeFee(500),
-          economic: RelativeFee(250),
-          slow: RelativeFee(125),
-          minRelay: RelativeFee(25),
-        ),
-        feePreviewCache: const BitcoinFeePreviewCache(
-          fastest: BitcoinFeePreviewSlot(
-            feeSat: 200,
-            txSize: 140,
-            unsignedPsbt: 'current',
-            recipientAmountsSat: [10000],
-          ),
-        ),
-        recipientDrafts: [
-          (
-            id: 0,
-            address: 'bc1qfixture',
-            amount: '10000',
-            receivesRemainder: max,
-            isValid: true,
-          ),
-        ],
-        recipientAmountsSat: max ? [80000] : [10000],
-      );
+        receivesRemainder: max,
+        isValid: true,
+      ),
+    ],
+    recipientAmountsSat: max ? [80000] : [10000],
+  );
 
   Future<_Cubit> pump(
     WidgetTester tester,
@@ -297,6 +307,45 @@ void main() {
       '25000',
     );
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a bare regtest address uses the redesigned Send page', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      state(
+        regtest: true,
+        request: const PaymentRequest.bip21(
+          network: BitcoinNetwork.regtest,
+          uri: 'bcrt1qfixture',
+          address: 'bcrt1qfixture',
+        ),
+      ),
+    );
+
+    expect(find.byType(SendPaymentPage), findsOneWidget);
+  });
+
+  testWidgets('a regtest payment URI keeps the legacy Send page', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    await pump(
+      tester,
+      state(
+        regtest: true,
+        request: const PaymentRequest.bip21(
+          network: BitcoinNetwork.regtest,
+          uri: 'bitcoin:bcrt1qfixture?label=shop',
+          address: 'bcrt1qfixture',
+          label: 'shop',
+        ),
+      ),
+    );
+
+    expect(find.byType(SendPaymentPage), findsNothing);
+    expect(find.byType(SendAmountScreen), findsOneWidget);
   });
 
   testWidgets('identical fee labels keep distinct preset actions', (

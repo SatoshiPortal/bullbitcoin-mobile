@@ -44,7 +44,8 @@ final class _SendPaymentSession {
     if (state.selectedWallet?.isLiquid == true) {
       return state.sendType == SendType.liquid && liquidRequest;
     }
-    return request == null || request is BitcoinPaymentRequest;
+    return request == null ||
+        const BitcoinRecipientListPolicy().isPlainAddress(request);
   }
 
   void update(SendState state) {
@@ -255,7 +256,7 @@ final class _SendPaymentSession {
         null => context.bull.secondary,
       },
       walletActionLabel: context.loc.sendFrom,
-      maxLabel: 'MAX',
+      maxLabel: context.loc.swapMax,
       settingsLabel: context.loc.sendAdvancedSettings,
       feeSummary: wallet?.isLiquid == true
           ? ''

@@ -1,10 +1,62 @@
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:satoshifier/payment_request.dart';
 import 'package:send/src/payment/domain/bitcoin_recipient_list_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const policy = BitcoinRecipientListPolicy();
+
+  group('plain address', () {
+    test('a legacy Bitcoin address is plain', () {
+      expect(
+        policy.isPlainAddress(
+          const PaymentRequest.bitcoin(address: 'tb1qplain', isTestnet: true),
+        ),
+        isTrue,
+      );
+    });
+
+    test('a bare regtest address detected as BIP21 is plain', () {
+      expect(
+        policy.isPlainAddress(
+          const PaymentRequest.bip21(
+            network: BitcoinNetwork.regtest,
+            uri: 'bcrt1qplain',
+            address: 'bcrt1qplain',
+          ),
+        ),
+        isTrue,
+      );
+    });
+
+    test('a URI, another network or Liquid is not plain', () {
+      for (final request in const [
+        PaymentRequest.bip21(
+          network: BitcoinNetwork.regtest,
+          uri: 'bitcoin:bcrt1qplain',
+          address: 'bcrt1qplain',
+        ),
+        PaymentRequest.bip21(
+          network: BitcoinNetwork.regtest,
+          uri: 'bitcoin:bcrt1qplain?label=shop',
+          address: 'bcrt1qplain',
+          label: 'shop',
+        ),
+        PaymentRequest.bip21(
+          network: BitcoinNetwork.mainnet,
+          uri: 'bc1qplain',
+          address: 'bc1qplain',
+        ),
+        PaymentRequest.bip21(
+          network: LiquidNetwork.regtest,
+          uri: 'el1qplain',
+          address: 'el1qplain',
+        ),
+      ]) {
+        expect(policy.isPlainAddress(request), isFalse, reason: '$request');
+      }
+    });
+  });
 
   test('supports only amountless Bitcoin requests', () {
     expect(
