@@ -2,7 +2,6 @@ import 'package:address_view/address_view.dart';
 import 'package:labels/labels.dart';
 import 'package:receive/receive.dart';
 import 'package:preferences/preferences.dart';
-import 'package:send/send.dart';
 import 'package:swap_feature/testing.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +16,7 @@ void main() {
   final at = DateTime.utc(2026, 11, 19, 14, 32);
   for (final environment in Environment.values) {
     test(
-      'amount quote boundaries capture $environment and preserve the quote time',
+      'Receive and Swap capture $environment and preserve the quote time',
       () async {
         final settings = _Settings();
         when(settings.fetch).thenAnswer(
@@ -43,7 +42,6 @@ void main() {
         }
 
         final boundaries = [
-          Send.open(preferences: settings, readPrices: read).amountQuotes,
           Receive.open(
             addresses: _ReceiveAddressView(),
             labels: _Labels(),
@@ -63,7 +61,7 @@ void main() {
         }
         expect(
           networks,
-          List.filled(3, switch (environment) {
+          List.filled(2, switch (environment) {
             Environment.mainnet => BitcoinNetwork.mainnet,
             Environment.testnet => BitcoinNetwork.testnet,
             Environment.regtest => BitcoinNetwork.regtest,

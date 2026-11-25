@@ -9,9 +9,9 @@ import 'package:ark/funding.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:fees/fees.dart';
-import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
@@ -119,11 +119,7 @@ void main() {
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      inventoryFixture = await InventoryFixture.open(
-        directory,
-        withSignerDevices: true,
-      );
-      inventoryFixture.register(locator);
+      inventoryFixture = await InventoryFixture.compose(directory, locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
@@ -256,11 +252,12 @@ void main() {
           authority: locator<SqliteArkFundingReservations>(),
           runtime: locator<WalletNativeRuntime>(),
           inventory: locator<SecretsInventory>(),
-          synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
-            key,
-            locator<WalletCatalogPort>(),
-            reason: SyncReason.manual,
-          ),
+          synchronize: (key) =>
+              locator<ForegroundWalletSynchronization>().executeKey(
+                key,
+                locator<WalletCatalogPort>(),
+                reason: SyncReason.manual,
+              ),
           secrets: locator<Secrets>(),
           fees: locator<Fees>(),
           custody: locator<ParentCustodyAdmissionPort>(),
@@ -428,11 +425,10 @@ void main() {
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      final inventoryFixture = await InventoryFixture.open(
+      final inventoryFixture = await InventoryFixture.compose(
         directory,
-        withSignerDevices: true,
+        locator,
       );
-      inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
       addTearDown(() async {
@@ -530,11 +526,7 @@ void main() {
     final electrumDatabase = ElectrumTestDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
     registerTestOwnerDatabases(locator);
-    final inventoryFixture = await InventoryFixture.open(
-      directory,
-      withSignerDevices: true,
-    );
-    inventoryFixture.register(locator);
+    final inventoryFixture = await InventoryFixture.compose(directory, locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
       await locator.reset();

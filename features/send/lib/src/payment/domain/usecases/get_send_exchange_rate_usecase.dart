@@ -1,7 +1,5 @@
 import 'package:preferences/preferences.dart';
-
-import '../send_failure.dart';
-
+import 'package:send/src/payment/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';

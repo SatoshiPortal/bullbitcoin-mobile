@@ -103,6 +103,76 @@ bdk.Transaction _rawTx({
   return bdk.Transaction(transactionBytes: bytes.toBytes());
 }
 
+/// A spend of wallet-owned outpoints signed with the test wallet's key. bdk
+/// drops an unconfirmed transaction whose owned inputs fail script
+/// verification, so only the funding (which spends a foreign outpoint) may
+/// stay hand-built. The inputs must cover the outputs plus [_feeSat] exactly,
+/// so the builder adds no change of its own.
+bdk.Transaction _signedSpend(
+  bdk.Wallet wallet, {
+  required List<({String txId, int vout})> inputs,
+  required List<({bdk.Script script, int amountSat})> outputs,
+}) {
+  final mnemonic = bdk.Mnemonic.fromString(mnemonic: _testMnemonic);
+  final secretKey = bdk.DescriptorSecretKey(
+    networkKind: bdk.NetworkKind.test,
+    mnemonic: mnemonic,
+    password: null,
+  );
+  final signers = [
+    for (final keychain in [
+      bdk.KeychainKind.external_,
+      bdk.KeychainKind.internal,
+    ])
+      bdk.SignersContainer.fromDescriptor(
+        descriptor: bdk.Descriptor.newBip84(
+          secretKey: secretKey,
+          keychainKind: keychain,
+          networkKind: bdk.NetworkKind.test,
+        ),
+      ),
+  ];
+  try {
+    final psbt = bdk.TxBuilder()
+        .addUtxos(
+          outpoints: [
+            for (final input in inputs)
+              bdk.OutPoint(
+                txid: bdk.Txid.fromString(hex: input.txId),
+                vout: input.vout,
+              ),
+          ],
+        )
+        .manuallySelectedOnly()
+        .setRecipients(
+          recipients: [
+            for (final output in outputs)
+              bdk.ScriptAmount(
+                script: output.script,
+                amount: bdk.Amount.fromSat(satoshi: output.amountSat),
+              ),
+          ],
+        )
+        .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: _feeSat))
+        .finish(wallet: wallet);
+    try {
+      expect(
+        wallet.signWithSigners(psbt: psbt, signers: signers, signOptions: null),
+        isTrue,
+      );
+      return psbt.extractTx();
+    } finally {
+      psbt.dispose();
+    }
+  } finally {
+    for (final signer in signers) {
+      signer.dispose();
+    }
+    secretKey.dispose();
+    mnemonic.dispose();
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -258,7 +328,8 @@ void main() {
     List<int> spendingVouts = const [0],
   }) async {
     final wallet = await BdkTestStore.createWallet(walletModel);
-    final tx = _rawTx(
+    final tx = _signedSpend(
+      wallet,
       inputs: [
         for (final vout in spendingVouts) (txId: fundingTxId, vout: vout),
       ],

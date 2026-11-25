@@ -7,6 +7,8 @@ import 'package:legacy_storage/wallet_column_projection.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart'
+    show WalletPropertyDraft, WalletPropertyStore;
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import '../signer_device.dart';
@@ -71,7 +73,7 @@ WalletColumnProjection<SignerDevicesDatabase> _projection(
       ),
 );
 
-final class SignerDevices {
+final class SignerDevices implements WalletPropertyStore {
   final SignerDevicesDatabase _database;
 
   const SignerDevices._(this._database);
@@ -85,6 +87,23 @@ final class SignerDevices {
       (await _projection(file, keys).openRuntime(admission))
           .map(SignerDevices._)
           .mapErr((_) => const SignerDeviceUnavailable());
+
+  /// Records the device chosen at import, or clears a stale association.
+  @override
+  Future<Result<void, Failure>> prepareWallet(
+    WalletPropertyDraft wallet,
+  ) async {
+    final name = wallet.signerDevice;
+    final device = name == null
+        ? null
+        : SignerDevice.values
+              .where((device) => device.name == name)
+              .firstOrNull;
+    if (name != null && device == null) {
+      return const Err(SignerDeviceUnavailable());
+    }
+    return (await write(wallet.id, device)).mapErr((failure) => failure);
+  }
 
   @useResult
   Future<Result<SignerDevice?, SignerDeviceFailure>> read(

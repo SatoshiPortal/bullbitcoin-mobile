@@ -710,10 +710,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "ОК",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "Общо такси",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -741,10 +737,6 @@
   "sendErrorInsufficientFundsForFees": "Нямате достатъчно средства, за да покриете сумата и таксите",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "Тип адрес",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupTapWordsInOrder": "Докоснете думите за възстановяване в правилния ред",
   "@testBackupTapWordsInOrder": {
@@ -802,10 +794,6 @@
   "languageSettingsLabel": "Език",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "walletDeletionFailedTitle": "Изтриването не успя",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "Плати от портфейла",
   "@payPayFromWallet": {
@@ -1182,10 +1170,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "Отказ",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "Няма намерени получатели за плащане.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1510,10 +1494,6 @@
   "swapValidationInsufficientBalance": "Недостатъчен баланс",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "walletDeletionConfirmationTitle": "Изтриване на портфейл",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "Такси за мрежата",
   "@sendNetworkFees": {
@@ -2219,10 +2199,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "Път на деривация",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Адрес на Bitcoin",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2380,10 +2356,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "Не се поддържа",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "backupWalletEncryptedVaultTitle": "Шифиран сейф",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2411,10 +2383,6 @@
   "sendSelectNetworkFee": "Изберете такса за мрежата",
   "@sendSelectNetworkFee": {
     "description": "Label for selecting the network fee in the send flow"
-  },
-  "walletDeletionErrorGeneric": "Неуспях да изтрия портфейла, моля опитайте отново.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "Код за превод (добавете това като описание на плащането)",
   "@fundExchangeLabelTransferCode": {
@@ -2586,10 +2554,6 @@
   "sellQrCode": "QR код",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "walletDetailsUnnamedWalletFallback": "Безименен портфейл",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "Използвайте само за транзакции над €20 000. За по-малки транзакции използвайте опцията Instant SEPA.",
   "@fundExchangeRegularSepaInfo": {
@@ -3545,10 +3509,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "walletDetailsDeletingMessage": "Изтриване на портфейл...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "receiveUnableToVerifyAddress": "Не може да се потвърди адресът: липсва информация за портфейла или адреса",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
@@ -4454,10 +4414,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "Подписвач",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "addressLabel": "Адрес: ",
   "@addressLabel": {
     "description": "Label for UTXO address in coin selection tile"
@@ -4560,10 +4516,6 @@
   "addressViewChangeType": "Промяна",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "Изтрий",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "Потвърди излизане.",
   "@confirmLogoutTitle": {
@@ -5009,10 +4961,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "Сигурни ли сте, че искате да изтриете този портфейл?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "Замени с такса.",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -5221,10 +5169,6 @@
   "fundExchangeWarningTitle": "Внимавайте за измамници",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "Дескриптор",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "Филтрирай по тип",
   "@payFilterByType": {
@@ -5511,10 +5455,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "Устройство за подписване",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "testBackupEnterKeyManually": "Въведете ключ за резервно копие ръчно >>",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
@@ -5616,10 +5556,6 @@
   "payAdvancedSettings": "Разширени настройки",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "Публичен ключ",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "Ще бъде потвърдена след няколко секунди.",
   "@receiveConfirmedInFewSeconds": {
@@ -5743,10 +5679,6 @@
   "autoswapRecipientWalletDefaultLabel": "Bitcoin портфейл",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
-  },
-  "walletDetailsNetworkLabel": "Мрежа",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "receivePayjoinActivated": "Payjoin активиран",
   "@receivePayjoinActivated": {

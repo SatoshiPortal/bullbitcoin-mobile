@@ -1,6 +1,6 @@
 import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:primitives/primitives.dart' show BitcoinNetwork, BitcoinUnit;
 
 import 'dart:async';
@@ -8,7 +8,8 @@ import 'dart:async';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:transactions/testing.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:sync/sync.dart'
+    show WalletKey, WalletLifecycle, WalletRevision, WalletRevisionState;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

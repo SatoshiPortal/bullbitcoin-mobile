@@ -1,13 +1,19 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
-import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
+import 'package:sync/storage.dart' show SyncFreshness;
 
 import 'dart:async';
 
 import 'package:ark/funding.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show AccelerateTransactionListTile, BuyRoute, showSinpeReceiptBottomSheet;
+    show
+        AccelerateTransactionListTile,
+        BullExchangeNavigation,
+        BuyRoute,
+        showSinpeReceiptBottomSheet;
 
 import 'package:backups/backups.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotifications;
@@ -42,7 +48,7 @@ import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:primitives/primitives.dart' show Err, Failure, Ok;
+import 'package:primitives/primitives.dart' show Err, Failure, NetworkEnv, Ok;
 import 'package:electrum/setup.dart'
     show
         ElectrumDefaultsProvisioner,
@@ -51,8 +57,8 @@ import 'package:electrum/setup.dart'
         RegtestElectrumProfile;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
+import 'package:bb_mobile/native_runtime_setup.dart';
 import 'package:settings/setup.dart' show SettingsRecoverBullBindings;
-import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
@@ -61,7 +67,6 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:settings/settings.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,21 +80,16 @@ import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app_wallet;
-import 'package:bb_mobile/features/send/public/send_route_args.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/onboarding/wallet_bindings.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/send/legacy_send_flow.dart';
-import 'package:send/send.dart' show ReplaceByFee, SendRoute;
+import 'package:send/send.dart' show ReplaceByFee, SendNavigation;
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/features/wallet/public/boltz_swaps_setup.dart';
+import 'package:swap_feature/setup.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -106,6 +106,7 @@ import 'package:sync/sync.dart'
         SyncFailure,
         SyncStorageFailure,
         WalletConnectionPort,
+        WalletKey,
         WalletCatalogPort;
 
 final GetIt locator = GetIt.instance;
@@ -129,11 +130,7 @@ class AppLocator {
       locator<SecretsInventory>(),
       locator<DeveloperEnvironmentReader>(),
       locator<Secrets>(),
-      (secret, network) => WalletRecoverBullBindings.restoreDefaults(
-        locator<DefaultWalletProvisioning>(),
-        secret,
-        network,
-      ),
+      locator<DefaultWalletProvisioning>(),
     );
     locator.registerSingleton<RecoverBullWalletPort>(wallets);
     final family = settings.path == databasePath ? null : 'regtest';
@@ -300,7 +297,10 @@ class AppLocator {
       );
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
-    final swaps = await BoltzSwapsSetup.setup(locator);
+    final swaps = await SwapEngineSetup.open(
+      locator,
+      inventory: locator<SecretsInventory>(),
+    );
     if (swaps case Err()) return swaps;
     CoreLocator.registerUsecases(locator);
     mountPayjoin(locator, startRecovery: false);
@@ -312,7 +312,7 @@ class AppLocator {
         inventory: inventory,
         environment: locator<ActiveEnvironmentReader>(),
         catalog: () => locator<WalletCatalogPort>(),
-        synchronize: locator<ForegroundWalletSync>().synchronizeDescriptor,
+        synchronize: locator<ForegroundWalletSynchronization>().execute,
         refreshRevisions: locator<WalletNativeRuntime>().refreshAll,
         swaps: () => locator<SwapActivity>(),
         silent: () => locator<Silent>(),
@@ -365,11 +365,12 @@ class AppLocator {
         swapStartup: locator<SwapStartup>(),
       ),
     );
-    locator.registerLazySingleton(() {
-      final wallets = bindOnboardingWallets(locator);
-      return OnboardingFeature.mount(
-        createWallet: wallets.create,
-        recoverWallet: wallets.recover,
+    locator.registerLazySingleton(
+      () => OnboardingFeature.mount(
+        defaultWallets: locator<DefaultWalletProvisioning>(),
+        records: (network) => locator<RecoverBullWalletBackups>(
+          instanceName: network.env == NetworkEnv.regtest ? 'regtest' : null,
+        ),
         walletImport: locator<ImportFeature>(),
         onWalletReady: (context) {
           context.read<WalletBloc>().add(const WalletStarted());
@@ -384,8 +385,8 @@ class AppLocator {
         background: AssetImage(Assets.backgrounds.bgLong.path),
         encryptedBackupIcon: AssetImage(Assets.misc.encryptedVault.path),
         physicalBackupIcon: AssetImage(Assets.misc.physicalBackup.path),
-      );
-    });
+      ),
+    );
     final bip85 = inventory.bip85(locator<Secrets>());
     locator.registerSingleton<Bip85Derivations>(bip85);
     locator.registerSingleton(
@@ -394,6 +395,10 @@ class AppLocator {
         inventory: inventory,
         preferences: locator<ActiveEnvironmentReader>(),
       ),
+    );
+    registerNativeRuntime(
+      locator,
+      overview: () => locator<OverviewSynchronization>(),
     );
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(locator);
@@ -443,6 +448,14 @@ class AppLocator {
     );
     final native = locator<WalletNativeRuntime>();
     final electrumSync = locator<ElectrumSync>();
+    locator.registerSingleton(
+      locator<SyncFreshness>().recordCompletions(
+        electrumSync.finished.map((event) => event.key),
+        inventory,
+      ),
+      instanceName: 'syncFreshness',
+      dispose: (subscription) => subscription.cancel(),
+    );
     OverviewSynchronization overviewSync() =>
         locator<OverviewSynchronization>();
     locator.registerSingleton(
@@ -452,7 +465,7 @@ class AppLocator {
         loadWallet: (key) => locator<WalletNativeRuntime>().loadWallet(key),
         findDescriptor: (key) => locator<WalletCatalogPort>().find(key),
         synchronize: (descriptor) =>
-            locator<ForegroundWalletSync>().synchronizeDescriptor(descriptor),
+            locator<ForegroundWalletSynchronization>().execute(descriptor),
         events: WalletHistoryEvents.foreground(
           revisions: native.changes,
           finished: electrumSync.finished,
@@ -460,12 +473,12 @@ class AppLocator {
               overviewSync().coordinator.syncPassActivity,
           isSyncPassActive: () => overviewSync().coordinator.isSyncPassActive,
         ),
-        syncStarted: () => locator<ForegroundWalletSync>().started,
-        syncFinished: () => locator<ForegroundWalletSync>().finished,
+        syncStarted: () => electrumSync.started.map((key) => key.id),
+        syncFinished: () => electrumSync.finished.map((event) => event.key.id),
         orderSwaps: () => locator<OrderSwaps>(),
         actions: TransactionUiActions(
           openExchange: (context) =>
-              context.goNamed(ExchangeRoute.exchangeHome.name),
+              context.goNamed(BullExchangeNavigation.dashboardName),
           openWalletHome: (context) =>
               context.goNamed(WalletRoute.walletHome.name),
           refreshWallets: (context) => context.read<WalletBloc>().refresh(),
@@ -528,7 +541,7 @@ class AppLocator {
       ),
     );
     locator.registerLazySingleton(
-      () => CoinsFeature.mount<app_wallet.Wallet>(
+      () => CoinsFeature.mount<WalletKey>(
         inventory: inventory,
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
         foreground: locator<WalletNativeRuntime>().foreground,
@@ -547,28 +560,19 @@ class AppLocator {
             .where((walletId) => walletId == id),
         walletId: (wallet) => wallet.id,
         missingWalletRedirect: WalletRoute.walletHome.path,
-        onSend: (context, wallet, outpoints) => context.pushNamed<void>(
-          SendRoute.send.name,
-          extra: SendRouteArgs.selected(wallet: wallet, outpoints: outpoints),
-        ),
-        onSweep: (context, wallet, outpoints) => context.pushNamed<void>(
-          SendRoute.send.name,
-          extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
-        ),
+        onSend: SendNavigation.openSelected,
+        onSweep: SendNavigation.openSweep,
       ),
     );
     locator.registerLazySingleton<Coins>(() => locator<CoinsFeature>().coins);
-    LegacySendFlow.mount(locator);
     locator.registerSingleton(
       SwapFeature.mount(
         swaps: locator<Swaps>(),
         orders: locator<OrderSwaps>(),
         inventory: inventory,
         sync: locator<WalletNativeRuntime>(),
-        synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
-          key,
-          locator<WalletCatalogPort>(),
-        ),
+        synchronize: (key) => locator<ForegroundWalletSynchronization>()
+            .executeKey(key, locator<WalletCatalogPort>()),
         finished: locator<ElectrumSync>().finished.map((event) => event.key),
         signerDevices: () => locator<SignerDevices>(),
         preferences: locator<Preferences>(),
@@ -597,7 +601,6 @@ class AppLocator {
       ),
     );
 
-    ExchangeLocator.setup(locator);
     locator.registerSingleton(
       NetworkFeature.mount(
         services: locator,
@@ -608,17 +611,14 @@ class AppLocator {
       ),
     );
 
-    locator.registerLazySingleton(() {
-      final operations = WalletLocator.importOperations(locator);
-      return ImportFeature.mount(
+    locator.registerLazySingleton(
+      () => ImportFeature.mount(
         preferences: locator<Preferences>(),
         servers: locator<ElectrumServersPort>(),
         secrets: locator<Secrets>(),
         inventory: inventory,
         admission: locator<ParentCustodyAdmissionPort>(),
-        provisionMnemonic: operations.mnemonic,
-        provisionDescriptor: operations.descriptor,
-        provisionXpub: operations.xpub,
+        accounts: locator<WalletProvisioning>(),
         networkOf: Settings.networkOf,
         onImported: (context) {
           context.read<WalletBloc>().add(const WalletStarted());
@@ -626,8 +626,8 @@ class AppLocator {
         },
         onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
         qrIllustration: AssetImage(Assets.misc.qRPlaceholder.path),
-      );
-    });
+      ),
+    );
 
     locator.registerSingleton(
       ForegroundWalletStartup(
@@ -641,7 +641,7 @@ class AppLocator {
             watchOrders: startOrderSwapWatcher,
             watchAutoswap: startAutoswapWatcher,
           );
-          BoltzSwapsSetup.followEnvironment(locator);
+          SwapEngineSetup.followEnvironment(locator);
         },
         payjoin: startPayjoinRecovery
             ? () => locator<PayjoinLifecycle>()

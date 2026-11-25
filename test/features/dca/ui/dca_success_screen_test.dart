@@ -1,6 +1,6 @@
+import 'package:bull_exchange/bull_exchange.dart' show BullExchangeNavigation;
 import 'package:bull_exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,8 +23,8 @@ void main() {
 
     await expectSystemBackClosesTo(
       tester,
-      homeName: ExchangeRoute.exchangeHome.name,
-      homePath: ExchangeRoute.exchangeHome.path,
+      homeName: BullExchangeNavigation.dashboardName,
+      homePath: BullExchangeNavigation.dashboardPath,
       screen: BlocProvider<DcaBloc>.value(
         value: bloc,
         child: const DcaSuccessScreen(),

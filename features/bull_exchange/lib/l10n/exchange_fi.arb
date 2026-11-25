@@ -912,5 +912,8 @@
   "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "exchangeLandingDisclaimerNotAvailable": "Kryptovaluuttapörssin palvelut eivät ole käytettävissä Bull Bitcoin -mobiilisovelluksessa.",
   "exchangeLoginButton": "Kirjaudu tai rekisteröidy",
-  "exchangeGoToWebsiteButton": "Siirry Bull Bitcoin -pörssin verkkosivulle"
+  "exchangeGoToWebsiteButton": "Siirry Bull Bitcoin -pörssin verkkosivulle",
+  "exchangeErrorSigningOut": "Uloskirjautumista ei voitu viimeistellä. Yritä uudelleen.",
+  "exchangeErrorLoadingAnnouncements": "Tiedotteita ei voitu ladata.",
+  "exchangeErrorRequestingAccountDeletion": "Tilin poistopyyntöäsi ei voitu lähettää. Yritä uudelleen."
 }

@@ -36,10 +36,15 @@ void main() {
       broadcastSuccessImage: const AssetImage('unused-in-this-test'),
       missingWalletRedirect: '/wallet',
       selectBalanceSat: (_, _) => 0,
+      payment: () => throw StateError('payment not opened'),
+      openCoins: (_, _) {},
+      orderUnderReview: (_) => const SizedBox.shrink(),
+      paymentArrowImage: const AssetImage('unused-arrow'),
     );
     final router = GoRouter(
       initialLocation: '/broadcast-signed-tx',
       routes: [
+        routes.payment,
         routes.broadcastSignedTx,
         routes.consolidation,
         routes.replaceByFee,
@@ -72,5 +77,6 @@ void main() {
       '/consolidate/example',
     );
     expect(router.namedLocation('replaceByFeeFlow'), '/replace-by-fee-flow');
+    expect(router.namedLocation('send'), '/send');
   });
 }

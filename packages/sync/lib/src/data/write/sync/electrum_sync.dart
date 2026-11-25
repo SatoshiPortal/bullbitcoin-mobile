@@ -140,7 +140,7 @@ final class ElectrumSync {
         final context =
             'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=$headless reason=${reason.name}';
         log.fine(
-          'Electrum sync started $context discovery=$discover targeted=${coveredTargets.length}',
+          'Electrum sync started $context discovery=$discover allow_initial_scan=$allowInitialScan targeted=${coveredTargets.length}',
         );
         _started.add(key);
         var connectionSummary = 'route=unselected';

@@ -126,5 +126,445 @@
   "broadcastSignedTxErrorAlreadyInChain": "Esta transação já está na blockchain. Não há mais nada para transmitir.",
   "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Ela pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais."
+  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais.",
+  "swapMax": "MAX",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "sendSendNetworkFee": "Enviar Taxa de rede",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionNetworkLightning": "Luz",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "sendBroadcastingTransaction": "Transmitir a transação.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendAmountRequested": "Montante solicitado: ",
+  "@sendAmountRequested": {
+    "description": "Label for the requested amount in a payment request"
+  },
+  "sendAddress": "Endereço: ",
+  "@sendAddress": {
+    "description": "Label prefix for address field"
+  },
+  "sendShowPsbt": "Mostrar PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendTransferFeeDescription": "Esta é a taxa total deduzida do montante enviado",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendSelectAmount": "Selecione o valor",
+  "@sendSelectAmount": {
+    "description": "Label for selecting the amount to send"
+  },
+  "sendSendAmount": "Enviar valor",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendSelectedUtxosInsufficient": "Utxos selecionados não cobre a quantidade necessária",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendErrorInsufficientFundsForFees": "Não há fundos suficientes para cobrir o montante e as taxas",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendChange": "Variação",
+  "@sendChange": {
+    "description": "Label for change output in a transaction"
+  },
+  "sendSwapWillTakeTime": "Levará algum tempo para confirmar",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendSwapId": "ID do balanço",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "sendOpenTheCamera": "Abra a câmera",
+  "@sendOpenTheCamera": {
+    "description": "Button label for opening the camera to scan QR codes"
+  },
+  "receiveNote": "Nota",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "sendErrorAmountBelowMinimum": "Montante abaixo do limite mínimo de swap: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "Endereço do destinatário",
+  "@sendRecipientAddress": {
+    "description": "Label for the recipient address field"
+  },
+  "sendFrom": "A partir de",
+  "@sendFrom": {
+    "description": "Label for the sender/source in a transaction"
+  },
+  "sendServerNetworkFees": "Taxas de rede do servidor",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendSignWithBitBox": "Sinal com BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Endereço de pagamento Bitcoin inválido ou fatura",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "Formato de código QR não suportado",
+  "sendSwapRefundInProgress": "Reembolso de swap em progresso",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendInsufficientBalance": "Balança insuficiente",
+  "@sendInsufficientBalance": {
+    "description": "Error message when the wallet has insufficient balance to send"
+  },
+  "sendSwapInitiated": "Swap Iniciado",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "sendNetworkFees": "Taxas de rede",
+  "@sendNetworkFees": {
+    "description": "Label for network transaction fees"
+  },
+  "appStartupErrorMessage": "Falha ao iniciar o aplicativo. Tente fechá-lo completamente e reiniciá-lo. Se o erro persistir, entre em contato com o suporte e compartilhe seus logs.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "sendHighFeeWarning": "Aviso de alta taxa",
+  "@sendHighFeeWarning": {
+    "description": "Warning title for high transaction fees"
+  },
+  "receiveEnterHere": "Entre aqui...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "exchangeDcaAddressLabelLiquid": "Endereço líquido",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "sendDone": "Feito",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorAmountAboveMaximum": "Montante acima do limite máximo de swap: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "O seu reembolso foi processado.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendUnconfirmed": "Sem confirmação",
+  "@sendUnconfirmed": {
+    "description": "Status for 0-conf UTXO"
+  },
+  "sendTransferFee": "Taxa de swap",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorHardwareWalletCannotSwap": "As carteiras hardware não podem ser utilizadas para trocas.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
+  "sendReplaceByFeeActivated": "Substitui-a-taxa activada",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "addressViewBalance": "Balanço",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "sendType": "Tipo: ",
+  "@sendType": {
+    "description": "Label prefix for transaction type field"
+  },
+  "sendPaymentWillTakeTime": "Pagamento vai demorar tempo",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendContinue": "Continue",
+  "@sendContinue": {
+    "description": "Button label for continuing in the send flow"
+  },
+  "settingsCurrencyTitle": "Moeda",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "sendSats": "sats",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "sendTo": "Para",
+  "@sendTo": {
+    "description": "Label for the recipient/destination in a transaction"
+  },
+  "sendCoinConfirmations": "{count} confirmações",
+  "@sendCoinConfirmations": {
+    "description": "Label for UTXO confirmation count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendReceiveNetworkFee": "Receber Taxas de Rede",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "sendPasteAddressOrInvoice": "Cole um endereço de pagamento ou fatura",
+  "@sendPasteAddressOrInvoice": {
+    "description": "Placeholder text for the payment address or invoice input field"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "sendHighFeeWarningDescription": "Taxa total é {feePercent}% do montante que você está enviando",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendSelectCoinsManually": "Selecione moedas manualmente",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendBroadcastTransaction": "Transação de transmissão",
+  "@sendBroadcastTransaction": {
+    "description": "Button label for broadcasting a transaction to the network"
+  },
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "sendSwapInProgressBitcoin": "A troca está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendTransactionSignedLedger": "Transação assinada com sucesso com Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendSlowPaymentWarningDescription": "Bitcoin swaps levará tempo para confirmar.",
+  "@sendSlowPaymentWarningDescription": {
+    "description": "Description for slow payment warning"
+  },
+  "sendEconomyFee": "Economia",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendReceive": "Receber",
+  "@sendReceive": {
+    "description": "Label for receive transaction type"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Endereço de Bitcoin",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "sendSatsPerVB": "sat/vB",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "cancel": "Cancelar",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "sendTitle": "Enviar",
+  "@sendTitle": {
+    "description": "Title for the send screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Pagamentos imediatos",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "sendFastFee": "Rápido",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendErrorBroadcastFailed": "Falhado em transmitir transação. Verifique sua conexão de rede e tente novamente.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendAdvancedSettings": "Configurações avançadas",
+  "@sendAdvancedSettings": {
+    "description": "Title for advanced settings in the send flow"
+  },
+  "sendCustomFee": "Taxas personalizadas",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "sendSending": "Enviar",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendPaymentProcessing": "O pagamento está sendo processado. Pode demorar até um minuto",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendInvoicePaid": "Fatura paga",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendSignWithLedger": "Sinal com Ledger",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSlowPaymentWarning": "Aviso de pagamento lento",
+  "@sendSlowPaymentWarning": {
+    "description": "Warning title for slow payment confirmation"
+  },
+  "sendCoinControl": "Controle de moeda",
+  "@sendCoinControl": {
+    "description": "Feature to manually select UTXOs"
+  },
+  "sendAdvancedOptions": "Opções avançadas",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendAmount": "Montante",
+  "@sendAmount": {
+    "description": "Label for the transaction amount"
+  },
+  "sendViewDetails": "Ver detalhes",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "sendErrorConfirmationFailed": "Confirmação Falhada",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendSwapRefundCompleted": "Reembolso de Swap Completado",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "transactionNetworkLiquid": "Líquido",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreWalletTransactionStatusConfirmed": "Confirmado",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "coreScreensFeePriorityLabel": "Prioridade de Taxas",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "sendErrorAmountBelowSwapLimits": "O valor está abaixo dos limites de swap",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendConfirm": "Confirmação",
+  "@sendConfirm": {
+    "description": "Button label for confirming a send transaction"
+  },
+  "sendScanBitcoinQRCode": "Digitalize qualquer código QR Bitcoin ou Lightning para pagar com bitcoin.",
+  "@sendScanBitcoinQRCode": {
+    "description": "Instructions for scanning a QR code to make a Bitcoin payment"
+  },
+  "exchangeDcaAddressLabelLightning": "Endereço de iluminação",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "sendSwapFailed": "A troca falhou. Seu reembolso será processado em breve.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendReceiveAmount": "Receber valor",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Não saldo suficiente para cobrir este pagamento",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendConfirmSend": "Enviar",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSwapInProgressInvoice": "A troca está em andamento. A fatura será paga em alguns segundos.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendSuccessfullySent": "Enviado com sucesso",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "transactionNoteHint": "Nota",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNoteAddTitle": "Adicionar nota",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
+  "sendEstimatedDeliveryHours": "horas",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 selecionada} other{{count} selecionadas}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSelfTransfer": "Transferência própria",
+  "sendCoordinatingPayjoinTransaction": "Coordenando uma transação Payjoin.",
+  "sendErrorInvoiceExpired": "Esta fatura expirou. Peça ao destinatário uma nova fatura.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar a Carteira de Pagamento Instantânea para fazer pagamentos menores.",
+  "sendErrorInsufficientBalanceFrozenHint": "Saldo disponível insuficiente — {amount} está congelado. Descongele as moedas em Gerenciar moedas para usá-lo.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "Ordem expirada",
+  "sendSwapExpiredMessage": "Esta ordem expirou antes de qualquer fundo ser enviado. Nada foi enviado da sua carteira.",
+  "sendErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
+  "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
+  "sendErrorInvoiceExpiryTooShort": "Esta fatura expira cedo demais. Peça ao destinatário uma nova fatura.",
+  "closeDialogButton": "Fechar",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  }
 }

@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../default_wallets/default_wallets_payout_fields.dart';
 import '../../default_wallets/ui/default_wallets_router.dart';
+import '../../session/exchange_access_builder.dart';
 import '../domain/usecases/get_account_info_usecase.dart';
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/get_exchange_statistics_usecase.dart';
@@ -30,8 +32,6 @@ final class ExchangeSettingsHost {
   final Exchange Function() exchange;
   final SaveAccountPreferences savePreferences;
   final Future<void> Function(BuildContext) refreshSession;
-  final bool Function(BuildContext) isLoggedIn;
-  final Stream<bool> Function() sessionChanges;
   final bool Function(BuildContext) isSuperuser;
   final Uri? Function(BuildContext) securityUrl;
   final String Function(BuildContext) title;
@@ -49,8 +49,6 @@ final class ExchangeSettingsHost {
     required this.exchange,
     required this.savePreferences,
     required this.refreshSession,
-    required this.isLoggedIn,
-    required this.sessionChanges,
     required this.isSuperuser,
     required this.securityUrl,
     required this.title,
@@ -67,9 +65,12 @@ final class ExchangeSettingsHost {
 }
 
 class ExchangeSettingsRouter {
-  static List<RouteBase> routes(ExchangeSettingsHost config) => [
+  static List<RouteBase> routes(
+    ExchangeSettingsHost config, {
+    required DefaultWalletsPayoutFields payoutFields,
+  }) => [
     if (config.defaultWallets case final host?)
-      defaultWalletsRoute(config.exchange, host),
+      defaultWalletsRoute(config.exchange, host, payoutFields),
     if (config.access case final access?)
       exchangeAccessSettingsRoute(
         host: access,
@@ -80,8 +81,9 @@ class ExchangeSettingsRouter {
       name: ExchangeSettingsRoute.home.name,
       path: ExchangeSettingsRoute.home.path,
       builder: (context, state) => ExchangeSettingsScreen(
-        isLoggedIn: () => config.isLoggedIn(context),
-        sessionChanges: config.sessionChanges,
+        isLoggedIn: () => exchangeSignedIn(config.exchange().currentAccess),
+        sessionChanges: () =>
+            config.exchange().watchAccess().map(exchangeSignedIn),
         isSuperuser: config.isSuperuser(context),
         title: config.title,
         signedOutMessage: config.signedOutMessage,

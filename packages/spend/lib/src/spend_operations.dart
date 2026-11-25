@@ -57,11 +57,27 @@ final class _Spend extends _SpendPreviews {
     return switch (await _wallet(walletId)) {
       Ok(:final value) when value.key.network is BitcoinNetwork =>
         selected == null || selected.isEmpty
-            ? (await _sync.checkUnreservedInputs(const {})).mapErr(_syncFailure)
+            ? _unselectedPreconditions()
             : _validateSelection(value, selected),
       Ok() => const Err(SpendNetworkMismatchFailure()),
       Err(:final failure) => Err(failure),
     };
+  }
+
+  /// Without a selection the wallet chooses its inputs; funding then reads the
+  /// freezes and the protocol reservations, so both must be readable now.
+  Future<Result<void, SpendFailure>> _unselectedPreconditions() async {
+    if (await _frozen() case Err(:final failure)) return Err(failure);
+    return (await _sync.checkUnreservedInputs(const {})).mapErr(_syncFailure);
+  }
+
+  Future<Result<List<FrozenOutpoint>, SpendFailure>> _frozen() async {
+    final sync = await _sync.foreground();
+    final freezes = switch (sync) {
+      Ok(:final value) => await value.coins.listFrozen(),
+      Err(:final failure) => Err<List<FrozenOutpoint>, SyncFailure>(failure),
+    };
+    return freezes.mapErr(_syncFailure);
   }
 
   @override
@@ -240,6 +256,7 @@ final class _Spend extends _SpendPreviews {
                     unsignedPset: built.encoded,
                     fee: Sats.fromInt(price.feeSat),
                     amountSent: Sats(amount),
+                    discountedVsize: price.discountedVsize,
                   ),
                 ),
               (Err(:final failure), _) ||
@@ -263,14 +280,9 @@ final class _Spend extends _SpendPreviews {
       case Ok():
         break;
     }
-    final sync = await _sync.foreground();
-    final freezes = switch (sync) {
-      Ok(:final value) => await value.coins.listFrozen(),
-      Err(:final failure) => Err<List<FrozenOutpoint>, SyncFailure>(failure),
-    };
-    switch (freezes) {
+    switch (await _frozen()) {
       case Err(:final failure):
-        return Err(_syncFailure(failure));
+        return Err(failure);
       case Ok(:final value):
         final inputs = built.inputs.toSet();
         if (value.any((entry) => inputs.contains(entry.outpoint))) {

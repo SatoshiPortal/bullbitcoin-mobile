@@ -1576,5 +1576,8 @@
   "exchangeFeatureUnifiedHistory": "• Neověřené historie transakce",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  }
+  },
+  "exchangeErrorSigningOut": "Odhlášení se nepodařilo dokončit. Zkuste to prosím znovu.",
+  "exchangeErrorLoadingAnnouncements": "Oznámení se nepodařilo načíst.",
+  "exchangeErrorRequestingAccountDeletion": "Vaši žádost o smazání účtu se nepodařilo odeslat. Zkuste to prosím znovu."
 }

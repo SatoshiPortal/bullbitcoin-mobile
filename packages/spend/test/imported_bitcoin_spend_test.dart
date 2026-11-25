@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ark/funding.dart';
+import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -63,6 +64,63 @@ void main() {
     await directory.delete(recursive: true);
   });
 
+  test(
+    'Liquid fixed and drain requests require exactly one amount mode',
+    () async {
+      for (final request in [
+        (amount: null, drain: false),
+        (amount: 1000, drain: true),
+      ]) {
+        expect(
+          await spend.prepareLiquid(
+            walletId: 'wallet',
+            address: 'recipient',
+            amountSat: request.amount,
+            drain: request.drain,
+            feeRate: const RelativeFee(25),
+          ),
+          _failure<PreparedLiquidSpend, SpendInvalidRequestFailure>(),
+        );
+      }
+    },
+  );
+
+  test(
+    'Liquid preparation fails closed when the wallet cannot be resolved',
+    () async {
+      final unavailableSpend = Spend.open(
+        sync: runtime,
+        secrets: Secrets(scratchDirectory: () async => directory.path),
+        arkFunding: const ArkFundingSigningGuard(authority: null),
+        catalog: _UnavailableSpendCatalog(),
+      );
+      expect(
+        await unavailableSpend.prepareLiquid(
+          walletId: 'wallet',
+          address: 'recipient',
+          amountSat: 1000,
+          feeRate: const RelativeFee(25),
+        ),
+        _failure<PreparedLiquidSpend, SpendUnavailableFailure>(),
+      );
+      expect(connections.networks, isEmpty);
+    },
+  );
+
+  test('a resumed Liquid payin rejects an empty amount', () async {
+    expect(
+      await spend.resumeLiquidPayin(
+        signedPset: 'pset',
+        walletId: 'wallet',
+        network: LiquidNetwork.regtest,
+        address: 'recipient',
+        amount: Sats.zero,
+      ),
+      _failure<SpendBroadcastReceipt, SpendInvalidRequestFailure>(),
+    );
+    expect(connections.networks, isEmpty);
+  });
+
   test('global freezes refuse an imported input before connection', () async {
     expect(
       await freezes.freeze([FrozenOutpoint(input, origin: 'test')]),
@@ -74,7 +132,37 @@ void main() {
         network: BitcoinNetwork.regtest,
         isPsbt: false,
       ),
-      _failure<SpendSelectedInputsUnavailableFailure>(),
+      _failure<String, SpendSelectedInputsUnavailableFailure>(),
+    );
+    expect(connections.networks, isEmpty);
+  });
+
+  test('a freeze on another output does not block an imported input', () async {
+    final otherOutput = (txId: input.txId, vout: input.vout + 1);
+    expect(
+      await freezes.freeze([FrozenOutpoint(otherOutput, origin: 'test')]),
+      isA<Ok>(),
+    );
+    expect(
+      await spend.broadcastImportedBitcoin(
+        transaction: hex,
+        network: BitcoinNetwork.regtest,
+        isPsbt: false,
+      ),
+      _failure<String, SpendDeveloperAuthorizationFailure>(),
+    );
+    expect(connections.networks, [BitcoinNetwork.regtest]);
+  });
+
+  test('an unreadable freeze store refuses import before connection', () async {
+    freezes.failure = const SyncStorageFailure();
+    expect(
+      await spend.broadcastImportedBitcoin(
+        transaction: hex,
+        network: BitcoinNetwork.regtest,
+        isPsbt: false,
+      ),
+      _failure<String, SpendUnavailableFailure>(),
     );
     expect(connections.networks, isEmpty);
   });
@@ -114,7 +202,7 @@ void main() {
           network: BitcoinNetwork.regtest,
           isPsbt: false,
         ),
-        _failure<SpendDeveloperAuthorizationFailure>(),
+        _failure<String, SpendDeveloperAuthorizationFailure>(),
       );
       expect(connections.networks, [BitcoinNetwork.regtest]);
     },
@@ -142,7 +230,7 @@ void main() {
         network: BitcoinNetwork.mainnet,
         isPsbt: true,
       ),
-      _failure<SpendInvalidTransactionFailure>(),
+      _failure<String, SpendInvalidTransactionFailure>(),
     );
     expect(connections.networks, isEmpty);
   });
@@ -155,7 +243,7 @@ void main() {
         network: BitcoinNetwork.mainnet,
         isPsbt: false,
       ),
-      _failure<SpendBroadcastOutcomeUnknownFailure>(),
+      _failure<String, SpendBroadcastOutcomeUnknownFailure>(),
     );
     expect(connections.networks, [BitcoinNetwork.mainnet]);
   });
@@ -170,7 +258,7 @@ void main() {
           network: BitcoinNetwork.mainnet,
           isPsbt: false,
         ),
-        _failure<SpendBroadcastConnectionFailure>(),
+        _failure<String, SpendBroadcastConnectionFailure>(),
       );
     },
   );
@@ -183,7 +271,7 @@ void main() {
         network: BitcoinNetwork.testnet,
         isPsbt: false,
       ),
-      _failure<SpendDeveloperAuthorizationFailure>(),
+      _failure<String, SpendDeveloperAuthorizationFailure>(),
     );
     expect(connections.networks, [BitcoinNetwork.testnet]);
   });
@@ -211,13 +299,19 @@ void main() {
   });
 }
 
-Matcher _failure<F extends SpendFailure>() => isA<Err<String, SpendFailure>>()
+Matcher _failure<R, F extends SpendFailure>() => isA<Err<R, SpendFailure>>()
     .having((error) => error.failure, 'failure', isA<F>());
 
 final class _NoSpendCatalog implements SpendCatalog {
   @override
   Future<Result<SpendWallet, SpendFailure>> resolve(String walletId) async =>
       throw StateError('An imported spend must never resolve a wallet');
+}
+
+final class _UnavailableSpendCatalog implements SpendCatalog {
+  @override
+  Future<Result<SpendWallet, SpendFailure>> resolve(String walletId) async =>
+      const Err(SpendUnavailableFailure());
 }
 
 final class _Reservations implements InputReservationPort {

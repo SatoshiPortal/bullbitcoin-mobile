@@ -1,11 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:ark/funding.dart';
-import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:transactions/testing.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,46 +14,15 @@ import 'package:sync/sync.dart';
 
 import 'ark_funding_test_fixture.dart';
 
-class _Metadata extends Mock implements WalletRegistrations {}
-
-class _Values extends Mock implements SyncWalletValuesDatasource {}
-
 class _Inventory extends Mock implements WalletInventory {}
-
-class _CheckingStorage extends FakeSecureStoragePlatform {
-  final bool Function() markerCommitted;
-  bool sawCommittedMarker = false;
-  _CheckingStorage(this.markerCommitted);
-  @override
-  Future<String?> read({
-    required String key,
-    required Map<String, String> options,
-  }) async {
-    expect(
-      markerCommitted(),
-      isTrue,
-      reason: 'possible handoff must commit before the first Secrets read',
-    );
-    sawCommittedMarker = true;
-    return super.read(key: key, options: options);
-  }
-}
 
 void main() {
   late FundingFixture fixture;
-  late _Metadata metadata;
   late _Inventory inventory;
   late FakeSecureStoragePlatform keystore;
   late ArkFundingSigningGuard guard;
   int nativeAccesses = 0;
 
-  BitcoinWalletRepository generic() => BitcoinWalletRepository(
-    walletRegistrations: metadata,
-    secrets: Secrets(scratchDirectory: () async => fixture.directory.path),
-    wallet: (_) async => throw StateError('no native access expected'),
-    walletValuesDatasource: _Values(),
-    arkFundingGuard: guard,
-  );
   PayjoinWalletAdapter payjoin() => PayjoinWalletAdapter(
     Secrets(scratchDirectory: () async => fixture.directory.path),
     (_) async {
@@ -69,7 +35,6 @@ void main() {
   );
   setUp(() {
     fixture = FundingFixture();
-    metadata = _Metadata();
     inventory = _Inventory();
     when(() => inventory.readWallet(any())).thenAnswer(
       (invocation) async => Ok(
@@ -84,10 +49,6 @@ void main() {
     nativeAccesses = 0;
     keystore = FakeSecureStoragePlatform().install();
     guard = ArkFundingSigningGuard(authority: fixture.store);
-    when(() => metadata.fetch(any())).thenAnswer(
-      (i) async =>
-          fundingMetadata.copyWith(id: i.positionalArguments.single as String),
-    );
   });
   tearDown(() => fixture.close());
 
@@ -101,9 +62,13 @@ void main() {
             : publicFundingPsbt;
         sourceOk(inspectBitcoinPsbt(encoded));
         final id = variant == 'wallet-alias' ? 'alias' : fundingWalletId;
-        await expectLater(
-          generic().signPsbt(encoded, walletId: id),
-          throwsA(isA<WalletSpendBlockedException>()),
+        expect(
+          await guard.admit(
+            walletId: id,
+            network: BitcoinNetwork.regtest,
+            unsignedPsbt: encoded,
+          ),
+          isA<Err>(),
         );
         await expectLater(
           payjoin().signPsbt(
@@ -122,9 +87,13 @@ void main() {
     'unavailable authority blocks both signers rather than bypassing the guard',
     () async {
       guard = const ArkFundingSigningGuard(authority: null);
-      await expectLater(
-        generic().signPsbt(publicFundingPsbt, walletId: fundingWalletId),
-        throwsA(isA<WalletSpendBlockedException>()),
+      expect(
+        await guard.admit(
+          walletId: fundingWalletId,
+          network: BitcoinNetwork.regtest,
+          unsignedPsbt: publicFundingPsbt,
+        ),
+        isA<Err>(),
       );
       await expectLater(
         payjoin().signPsbt(
@@ -138,26 +107,26 @@ void main() {
       expect(nativeAccesses, 0);
     },
   );
-  test('ordinary unrelated signer reaches real Secrets only after the exact marker commits', () async {
-    final checking = _CheckingStorage(() {
-      final db = sqlite3.open(fixture.path);
-      try {
-        return db.select(
-              'SELECT txid FROM ark_ordinary_signing WHERE network=?',
-              ['regtest'],
-            ).length ==
-            1;
-      } finally {
-        db.close();
-      }
-    })..install();
-    // The real Secrets finds no stored seed and fails. No fake signer is used.
-    await expectLater(
-      generic().signPsbt(publicFundingPsbt, walletId: fundingWalletId),
-      throwsException,
+  test('ordinary signing admission commits the exact marker', () async {
+    expect(
+      await guard.admit(
+        walletId: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+        unsignedPsbt: publicFundingPsbt,
+      ),
+      isA<Ok>(),
     );
-    expect(checking.sawCommittedMarker, isTrue);
-    expect(checking.reads, greaterThan(0));
+    final db = sqlite3.open(fixture.path);
+    try {
+      expect(
+        db.select('SELECT txid FROM ark_ordinary_signing WHERE network=?', [
+          'regtest',
+        ]),
+        hasLength(1),
+      );
+    } finally {
+      db.close();
+    }
   });
   test(
     'Payjoin never authorizes a public fingerprint as a local key',
@@ -240,13 +209,36 @@ void main() {
     expect(opens, 1);
     expect(storage.reads, greaterThan(0));
   });
+  test('Spend checks Ark admission before reading a signing secret', () {
+    final source = File('packages/spend/lib/src/spend_operations.dart')
+        .readAsStringSync();
+    final signStart = source.indexOf(
+      'Future<Result<String, SpendFailure>> _signBitcoin(',
+    );
+    final signEnd = source.indexOf(
+      'Future<Result<SignedBitcoinSpend, SpendFailure>> signBitcoin(',
+      signStart,
+    );
+    expect(signStart, greaterThanOrEqualTo(0));
+    expect(signEnd, greaterThan(signStart));
+    final method = source.substring(signStart, signEnd);
+    final admission = method.indexOf('_arkFunding.admit(');
+    final secrets = method.indexOf('_secrets.fetch(');
+    expect(admission, greaterThanOrEqualTo(0));
+    expect(secrets, greaterThan(admission));
+  });
+
   test('marker persistence contention cannot reach the key store', () async {
     final db = sqlite3.open(fixture.path);
     try {
       db.execute('BEGIN IMMEDIATE');
-      await expectLater(
-        generic().signPsbt(publicFundingPsbt, walletId: fundingWalletId),
-        throwsA(isA<WalletSpendBlockedException>()),
+      expect(
+        await guard.admit(
+          walletId: fundingWalletId,
+          network: BitcoinNetwork.regtest,
+          unsignedPsbt: publicFundingPsbt,
+        ),
+        isA<Err>(),
       );
       expect(keystore.reads, 0);
       db.execute('ROLLBACK');

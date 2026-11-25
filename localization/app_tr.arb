@@ -741,10 +741,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "TAMAM TAMAM",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "Toplam Ücretler",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -772,10 +768,6 @@
   "sendErrorInsufficientFundsForFees": "Toplam ve ücretleri kapmak için yeterli para değil",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "Adres tipi",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupTapWordsInOrder": "Kurtarma kelimelerini içeri girin\nDoğru düzen",
   "@testBackupTapWordsInOrder": {
@@ -841,10 +833,6 @@
   "languageSettingsLabel": "Dil Dili",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "walletDeletionFailedTitle": "Delete Failed",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "Cüzdandan ödeme",
   "@payPayFromWallet": {
@@ -1289,10 +1277,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "Cancel",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "Hiçbir alıcı ödemek için bulundu.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1701,10 +1685,6 @@
   "autoswapAlwaysBlock": "Her zaman Block High Fees",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
-  },
-  "walletDeletionConfirmationTitle": "Delete Wallet",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "Network ücretleri",
   "@sendNetworkFees": {
@@ -2587,10 +2567,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "Türleme Yolu",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Adres",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2814,10 +2790,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "Desteklenmedi",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "backupWalletEncryptedVaultTitle": "Encrypted to",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2849,10 +2821,6 @@
   "exchangeDcaFrequencyWeek": "hafta",
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
-  },
-  "walletDeletionErrorGeneric": "Cüzdanı silmek için başarısız oldu, lütfen tekrar deneyin.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "Transfer kodu (buyu ödeme açıklaması olarak ekleyin)",
   "@fundExchangeLabelTransferCode": {
@@ -3070,10 +3038,6 @@
   "sellQrCode": "QR Kodu",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "Sadece 20.000 € üzerindeki işlemler için kullanın. Daha küçük işlemler için, Instant SEPA seçeneği kullanın.",
   "@fundExchangeRegularSepaInfo": {
@@ -4284,10 +4248,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "walletDetailsDeletingMessage": "Cüzdanı bitirmek...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "receiveUnableToVerifyAddress": "Adresi doğrulamak için kullanılamaz: Eksik cüzdan veya bilgi adresi",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
@@ -5383,10 +5343,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "Signer",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "exchangeDcaSummaryMessage": "Hesabınızda fon bulunduğu sürece, {network} üzerinden her {frequency} {amount} satın alıyorsunuz.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
@@ -5535,10 +5491,6 @@
   "addressViewChangeType": "Change",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "Delete",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "Onay Logout",
   "@confirmLogoutTitle": {
@@ -6081,10 +6033,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "Bu cüzdanı silmek istediğinizden emin misiniz?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "Taksitle",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -6323,10 +6271,6 @@
   "fundExchangeWarningTitle": "Dolandırıcılar için dikkat edin",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "Descriptor",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "Filter by type",
   "@payFilterByType": {
@@ -6668,10 +6612,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "Signer Device",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "testBackupEnterKeyManually": "Backup key manuel >>",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
@@ -6764,10 +6704,6 @@
   "payAdvancedSettings": "Gelişmiş Ayarlar",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "Pubkey",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "Birkaç saniye içinde doğrulanacaktır",
   "@receiveConfirmedInFewSeconds": {
@@ -6915,10 +6851,6 @@
   "swapProgressPendingMessage": "Takas devam ediyor. Bitcoin işlemlerinin onaylanması biraz zaman alabilir. Ana sayfaya dönüp bekleyebilirsiniz.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "walletDetailsNetworkLabel": "Ağ Ağı Ağı",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
   "broadcastSignedTxBroadcastError": "İşleminizi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",

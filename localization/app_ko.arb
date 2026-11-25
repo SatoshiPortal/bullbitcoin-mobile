@@ -745,10 +745,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "이름 *",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "총 요금",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -776,10 +772,6 @@
   "sendErrorInsufficientFundsForFees": "금액과 수수료에 대한 자금이 아닌",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "주소 유형",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupTapWordsInOrder": "복구 단어를 탭\n견적 요청",
   "@testBackupTapWordsInOrder": {
@@ -845,10 +837,6 @@
   "languageSettingsLabel": "* 이름",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "walletDeletionFailedTitle": "실패 삭제",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "지갑에서 지불",
   "@payPayFromWallet": {
@@ -1297,10 +1285,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "이름 *",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "지불 할 수 있습니다.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1709,10 +1693,6 @@
   "autoswapAlwaysBlock": "항상 블록 높은 비용",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
-  },
-  "walletDeletionConfirmationTitle": "지갑 삭제",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "네트워크 수수료",
   "@sendNetworkFees": {
@@ -2607,10 +2587,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "Derivation 경로",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin 주소",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2834,10 +2810,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "지원되지 않음",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "backupWalletEncryptedVaultTitle": "암호화된 vault",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2869,10 +2841,6 @@
   "exchangeDcaFrequencyWeek": "주 메뉴",
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
-  },
-  "walletDeletionErrorGeneric": "지갑을 삭제하려면 다시 시도하십시오.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "Transfer code (결제 설명 추가)",
   "@fundExchangeLabelTransferCode": {
@@ -3090,10 +3058,6 @@
   "sellQrCode": "QR 코드",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "walletDetailsUnnamedWalletFallback": "지갑 이름",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "만 € 20,000 이상의 거래에 사용됩니다. 작은 거래를 위해, 즉시 SEPA 옵션을 사용하십시오.",
   "@fundExchangeRegularSepaInfo": {
@@ -4321,10 +4285,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "walletDetailsDeletingMessage": "지갑 삭제 ...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "receiveUnableToVerifyAddress": "주소 확인 가능: 지갑 또는 주소 정보",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
@@ -5458,10 +5418,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "로그인",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "exchangeDcaSummaryMessage": "{amount} 모든 {frequency}를 구입하고 있습니다. {network} 귀하의 계정에 자금이 있습니다.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
@@ -5610,10 +5566,6 @@
   "addressViewChangeType": "- 기타",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "기타 제품",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "로그아웃",
   "@confirmLogoutTitle": {
@@ -6156,10 +6108,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "이 지갑을 삭제하시겠습니까?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "결제 방법",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -6402,10 +6350,6 @@
   "fundExchangeWarningTitle": "사기꾼에 대한 조심",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "연구분야",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "필터 유형",
   "@payFilterByType": {
@@ -6756,10 +6700,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "Signer 장치",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "testBackupEnterKeyManually": "백업 키를 수동으로 입력 >>",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
@@ -6865,10 +6805,6 @@
   "payAdvancedSettings": "고급 설정",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "스낵 바",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "몇 초 안에 확인됩니다",
   "@receiveConfirmedInFewSeconds": {
@@ -7020,10 +6956,6 @@
   "swapProgressPendingMessage": "스왑이 진행 중입니다. Bitcoin 트랜잭션은 확인되는 데 시간이 걸릴 수 있습니다. 홈으로 돌아가 기다리셔도 됩니다.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "walletDetailsNetworkLabel": "회사연혁",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "방송...",
   "broadcastSignedTxBroadcastError": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.",

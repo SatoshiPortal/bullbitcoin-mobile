@@ -53,7 +53,7 @@ Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Speci
 
 Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input.
 
-`ImportFeature.mount` owns the import hub, mnemonic entry and confirmation, watch-only scanning and confirmation, and hardware instructions. The mnemonic duplicate check reads the unlocked Secrets inventory for the active Bitcoin network. The shell passes foreground Wallet provisioning operations directly; they still own custody admission, catalog insertion and native creation. Remove those bindings when Secrets and Sync publish the complete provisioning operations.
+`ImportFeature.mount` owns the import hub, mnemonic entry and confirmation, watch-only scanning and confirmation, and hardware instructions. The mnemonic duplicate check reads the unlocked Secrets inventory for the active Bitcoin network. The shell binds `WalletProvisioning` and the Secrets custody admission port; Provisioning coordinates durable catalog registration with native account creation through Sync.
 
 ## 🎯 The architecture we tend toward
 
@@ -518,7 +518,7 @@ The standalone swap settings route lives in `features/swap`. It consumes `SwapRo
 
 Ordinary `.drift.dart` files are ignored build outputs. Historical schema JSON, migration steps and tracked migration-test helpers remain versioned in `packages/legacy_storage`. `make drift-migrations` runs the historical generator from that package. The package tests verify the legacy schema and its upgrade paths. App-level cutover tests under `test/storage_cutover` assemble the encrypted owners and the legacy source together.
 
-`make build-runner` builds the historical composer and the other members listed in `DRIFT_OWNER_PACKAGES` before the app. `make build-runner-watch` also starts a watcher for each listed member. The app retains modular Drift generation for its standalone order swaps database. CI restores and saves modular outputs alongside its build graph.
+`make build-runner` runs one `build_runner build --workspace`, which generates every member's outputs, including the Drift owners and the historical composer, in package-graph order. `make build-runner-watch` runs the same workspace build in watch mode. The app retains modular Drift generation for its standalone order swaps database. CI restores and saves modular outputs alongside its build graph.
 
 ## Electrum storage ownership
 
@@ -534,7 +534,7 @@ Electrum owns the declarations, generated rows and queries for `ElectrumServers`
 
 ## Wallet import boundary
 
-Wallet Import owns mnemonic prescan and confirmation, hardware instructions, QR descriptor selection and watch-only confirmation. It uses Scanning for QR and NFC acquisition and the selected network's Secrets inventory for duplicate checks. Host bindings call the foreground wallet owner for provisioning. Watch-only import captures the selected environment before parsing so it can disambiguate testnet and regtest public-key versions without changing the key. Mnemonic prescan preserves typed unsupported-script failures so the UI cannot continue with an unsupported import.
+Wallet Import owns mnemonic prescan and confirmation, hardware instructions, QR descriptor selection and watch-only confirmation. It uses Scanning for QR and NFC acquisition and the selected network's Secrets inventory for duplicate checks. It calls Provisioning to create the account, keeping mnemonic import under parent custody admission. Watch-only import captures the selected environment before parsing so it can disambiguate testnet and regtest public-key versions without changing the key. Mnemonic prescan preserves typed unsupported-script failures so the UI cannot continue with an unsupported import.
 
 ## Per-owner encrypted cutover
 

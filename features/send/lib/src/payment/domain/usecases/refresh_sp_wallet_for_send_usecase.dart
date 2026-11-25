@@ -1,0 +1,46 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result;
+import 'package:send/src/payment/domain/send_failure.dart';
+import 'package:send/src/payment/domain/sp_failure_mapping.dart';
+import 'package:send/src/payment/domain/sp_send_wallet.dart';
+import 'package:send/src/payment/domain/usecases/get_sp_network_for_send_usecase.dart';
+import 'package:silent/silent.dart';
+
+class RefreshSpWalletForSendUsecase {
+  final Silent _silent;
+  final GetSpNetworkForSendUsecase _getSpNetworkForSendUsecase;
+
+  RefreshSpWalletForSendUsecase(this._silent, this._getSpNetworkForSendUsecase);
+
+  /// The SP balance and network the send flow spends from, or null when SP is
+  /// not set up.
+  Future<Result<SpSendWallet?, SendFailure>> execute() async {
+    final refreshed = (await _silent.refresh()).mapErr(
+      (failure) =>
+          failure.toSendFailure() ?? SendUnexpectedFailure(failure.logMessage),
+    );
+    switch (refreshed) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: final spWallet):
+        if (spWallet == null) return const Ok(null);
+        // Never guessed: an unreadable network is forwarded, so the send flow
+        // fails closed instead of describing a test wallet as a mainnet one.
+        // A session is live by here (the refresh above established it), so this
+        // is a genuine read failure rather than a cold-start unknown.
+        final BitcoinNetwork network;
+        switch (await _getSpNetworkForSendUsecase.execute()) {
+          case Ok(:final value):
+            network = value;
+          case Err(:final failure):
+            return Err(failure);
+        }
+        return Ok(
+          SpSendWallet(
+            balanceSat: spWallet.balance.totalUnifiedSat.value,
+            network: network,
+          ),
+        );
+    }
+  }
+}

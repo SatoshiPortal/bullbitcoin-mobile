@@ -21,29 +21,32 @@ import 'package:path/path.dart' as p;
 // Label Editor publishes the existing note, label and import/export UI. Its
 // consumers use that surface while data-only consumers depend on the package.
 // Wallet reader ownership (2026-11-22): see ARCHITECTURE.md, "Wallet readers".
-// Exchange workspace UI consumers use the published routes.
+// Exchange workspace UI consumers use the published routes. Bull Exchange
+// builds its destination fields with Address View and opens order details
+// through Transactions; the app keeps only the wallet-card payin binding.
 // Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
 // Settings consumes Receive's disclaimer and typed Wallet Import navigation.
-// Wallet Import owns mnemonic input and scanning; Wallet uses its data types.
+// Wallet details read device associations through Signers' public storage API.
+// Wallet Import owns mnemonic input and scanning.
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
   'ark': 'scanning',
   'all_seed_view': 'access',
   'backups': 'access label_editor physical_backup_verification recoverbull',
-  'bull_exchange': 'bitcoin_price coins fees',
+  'bull_exchange': 'address_view bitcoin_price coins fees transactions',
   'coins': 'address_view bitcoin_price',
-  'exchange': 'address_view bull_exchange overview transactions wallet',
+  'exchange': 'address_view bull_exchange transactions wallet',
   'network': 'recoverbull silent',
   'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
   'overview': 'bitcoin_price quick_actions silent swap',
   'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
-  'send': 'address_view ark coins fees label_editor receive scanning signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network overview quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
+  'send': 'address_view ark coins fees label_editor receive scanning signers silent transactions',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange fees label_editor logs network quick_actions receive recoverbull send signers silent swap transactions wallet wallet_import',
   'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions wallet_import',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions',
   'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };
@@ -136,7 +139,7 @@ void main() {
     () {
       final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
       for (final path in [
-        'lib/features/send/presentation/bloc/send_cubit.dart',
+        'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
         'features/settings/lib/src/presentation/bloc/settings_cubit.dart',
         'features/swap/lib/src/presentation/transfer_bloc.dart',
       ]) {

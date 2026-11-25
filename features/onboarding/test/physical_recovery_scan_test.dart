@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bull_ui/app_theme.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:onboarding/onboarding.dart';
-import 'package:onboarding/src/domain/scan_onboarding_wallet_usecase.dart';
+import 'package:onboarding/src/domain/usecases/scan_onboarding_wallet_usecase.dart';
 import 'package:onboarding/src/presentation/bloc/onboarding_bloc.dart';
 import 'package:onboarding/src/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;

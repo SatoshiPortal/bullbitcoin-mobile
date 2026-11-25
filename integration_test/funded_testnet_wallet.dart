@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/locator.dart';
 import 'package:primitives/primitives.dart'
@@ -30,21 +31,29 @@ Future<WalletKey> openFundedTestnetWallet({
         'import the fixture secret',
       );
 
-  const network = Network.bitcoinTestnet;
+  const walletNetwork = Network.bitcoinTestnet;
+  const network = BitcoinNetwork.testnet;
   const scriptType = ScriptType.bip84;
   final id = WalletMetadataService.encodeId(
     fingerprint: secret.id.hex,
-    network: network,
+    network: walletNetwork,
     scriptType: scriptType,
   );
-  final key = WalletKey(id: id, network: BitcoinNetwork.testnet);
+  final key = WalletKey(id: id, network: network);
   if (requireValue(await inventory.findWallet(id), 'read the fixture wallet') ==
       null) {
-    final metadata = await WalletMetadataService.deriveFromSecret(
-      secret: secret,
-      network: network,
-      scriptType: scriptType,
-      isDefault: false,
+    // The account's public material is derived inside Secrets; only the
+    // xpub and descriptors leave the package.
+    final xpub = requireValue(
+      await secret.derive.xpub(network: network, scriptType: scriptType),
+      'derive the fixture xpub',
+    );
+    final descriptors = requireValue(
+      await secret.derive.descriptors.bitcoin(
+        network: network,
+        scriptType: scriptType,
+      ),
+      'derive the fixture descriptors',
     );
     requireValue(await native.prepareCreate(key), 'prepare the fixture wallet');
     requireValue(
@@ -52,12 +61,12 @@ Future<WalletKey> openFundedTestnetWallet({
         RegisteredWallet(
           id: id,
           secretFingerprint: secret.id.hex,
-          masterFingerprint: metadata.masterFingerprint,
+          masterFingerprint: secret.id.hex,
           signer: WalletSigner.local.name,
-          network: metadata.networkCode,
-          xpub: metadata.xpub,
-          externalDescriptor: metadata.externalPublicDescriptor,
-          internalDescriptor: metadata.internalPublicDescriptor,
+          network: WalletNetworkCodec.encode(walletNetwork),
+          xpub: xpub,
+          externalDescriptor: descriptors.external,
+          internalDescriptor: descriptors.internal,
           label: null,
           birthday: null,
           isDefault: false,

@@ -123,5 +123,319 @@
   "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটো ইতিমধ্যে ব্লকচেইনত আছে। সম্প্ৰচাৰ কৰিবলৈ একো বাকী নাই।",
   "broadcastSignedTxErrorRejected": "নেটৱৰ্কে এই লেনদেনটো নাকচ কৰিলে। ই হয়তো সম্পূৰ্ণভাৱে স্বাক্ষৰিত নহয়, অবৈধ, বা আন এটা পৰিশোধৰ সৈতে সংঘাতত আছে।",
   "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
-  "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।"
+  "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।",
+  "sendErrorInvoiceMustContainAmount": "Invoice-ত এটা পৰিমাণ থাকিব লাগিব",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
+  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
+  "coreWalletTransactionStatusConfirmed": "নিশ্চিত হৈছে",
+  "settingsCurrencyTitle": "মুদ্ৰা",
+  "retry": "পুনৰ চেষ্টা কৰক",
+  "sendTitle": "প্ৰেৰণ কৰক",
+  "sendPasteAddressOrInvoice": "পৰিশোধ ঠিকনা বা invoice পেষ্ট কৰক",
+  "sendContinue": "অব্যাহত ৰাখক",
+  "sendSelectAmount": "পৰিমাণ বাছক",
+  "sendAmountRequested": "অনুৰোধ কৰা পৰিমাণ: ",
+  "sendDone": "সম্পন্ন",
+  "sendSelectedUtxosInsufficient": "বাছনি কৰা UTXO-সমূহে প্ৰয়োজনীয় পৰিমাণ পূৰণ কৰিবলৈ অপৰ্যাপ্ত",
+  "sendAdvancedOptions": "উন্নত বিকল্পসমূহ",
+  "sendReplaceByFeeActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
+  "sendSelectCoinsManually": "Coin হাতেৰে বাছক",
+  "sendRecipientAddress": "প্ৰাপকৰ ঠিকনা",
+  "sendInsufficientBalance": "পৰ্যাপ্ত ব্যালেন্স নাই",
+  "sendScanBitcoinQRCode": "Bitcoin বা Lightning QR code স্কেন কৰক আৰু bitcoin দিয়ক।",
+  "sendOpenTheCamera": "কেমেৰা খোলক",
+  "sendCustomFee": "কাষ্টম মাচুল",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendEstimatedDelivery10to30Minutes": "10-30 মিনিট",
+  "sendAddress": "ঠিকনা: ",
+  "sendType": "ধৰণ: ",
+  "sendReceive": "গ্ৰহণ কৰক",
+  "sendChange": "পৰিৱৰ্তন",
+  "sendHighFeeWarning": "উচ্চ মাচুলৰ সতৰ্কবাণী",
+  "sendSlowPaymentWarning": "লেহেমীয়া পৰিশোধৰ সতৰ্কবাণী",
+  "sendSlowPaymentWarningDescription": "Bitcoin swap নিশ্চিত হ'বলৈ সময় লাগিব।",
+  "sendAdvancedSettings": "উন্নত ছেটিংছ",
+  "sendConfirm": "নিশ্চিত কৰক",
+  "sendBroadcastTransaction": "লেনদেন প্ৰচাৰ কৰক",
+  "sendFrom": "পৰা",
+  "sendTo": "লৈ",
+  "sendAmount": "পৰিমাণ",
+  "sendNetworkFees": "নেটৱৰ্ক মাচুল",
+  "receiveNote": "টোকা",
+  "receiveEnterHere": "ইয়াত দিয়ক...",
+  "transactionNetworkLightning": "Lightning",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLiquid": "Liquid",
+  "transactionNoteAddTitle": "টোকা যোগ কৰক",
+  "transactionNoteHint": "টোকা",
+  "globalDefaultBitcoinWalletLabel": "সুৰক্ষিত Bitcoin",
+  "globalDefaultLiquidWalletLabel": "তাৎক্ষণিক পৰিশোধ",
+  "sendCoinControl": "Coin Control",
+  "@sendCoinControl": {
+    "description": "Feature to manually select UTXOs"
+  },
+  "sendCoinConfirmations": "{count} টা নিশ্চিতকৰণ",
+  "@sendCoinConfirmations": {
+    "description": "Label for UTXO confirmation count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendUnconfirmed": "অনিশ্চিত",
+  "@sendUnconfirmed": {
+    "description": "Status for 0-conf UTXO"
+  },
+  "sendEconomyFee": "সাশ্ৰয়ী",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendFastFee": "দ্ৰুত",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendSwapId": "Swap ID",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "sendSendAmount": "প্ৰেৰণ পৰিমাণ",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendReceiveAmount": "গ্ৰহণ পৰিমাণ",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "sendSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক ফি",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "sendTransferFee": "Swap ফী",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendTransferFeeDescription": "এইটো প্ৰেৰণ কৰা পৰিমাণৰ পৰা কটা মুঠ ফি",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendReceiveNetworkFee": "গ্ৰহণ নেটৱৰ্ক ফি",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "sendServerNetworkFees": "চাৰ্ভাৰ নেটৱৰ্ক ফি",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendConfirmSend": "প্ৰেৰণ নিশ্চিত কৰক",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSelfTransfer": "নিজলৈ Transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
+  "sendSending": "পঠিওৱা হৈছে",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendBroadcastingTransaction": "লেনদেন broadcast কৰা হৈছে।",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendCoordinatingPayjoinTransaction": "Payjoin লেনদেন সমন্বয় কৰা হৈছে।",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
+  },
+  "sendSwapInProgressInvoice": "Swap চলি আছে। Invoice কেইছেকেণ্ডমানৰ ভিতৰত পৰিশোধ কৰা হ'ব।",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendSwapInProgressBitcoin": "Swap চলি আছে। Bitcoin লেনদেন নিশ্চিত হ'বলৈ অলপ সময় লাগিব পাৰে। আপুনি ঘৰলৈ উভতি আহি অপেক্ষা কৰিব পাৰে।",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendSwapRefundInProgress": "Swap ঘূৰাই দিয়া চলি আছে",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendSwapFailed": "Swap বিফল হৈছে। আপোনাৰ ঘূৰাই দিয়া ধন অতি সোনকালে প্ৰক্ৰিয়া কৰা হ'ব।",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendSwapRefundCompleted": "Swap ঘূৰাই দিয়া সম্পন্ন হৈছে",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendRefundProcessed": "আপোনাৰ ঘূৰাই দিয়া ধন প্ৰক্ৰিয়া কৰা হৈছে।",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendInvoicePaid": "Invoice পৰিশোধ হৈছে",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendPaymentProcessing": "পেমেণ্ট প্ৰক্ৰিয়া কৰা হৈছে। ই এক মিনিট পৰ্যন্ত সময় ল'ব পাৰে",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendPaymentWillTakeTime": "পেমেণ্টত সময় লাগিব",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendSwapInitiated": "Swap আৰম্ভ হৈছে",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "sendSwapWillTakeTime": "নিশ্চিত হ'বলৈ অলপ সময় লাগিব",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendSuccessfullySent": "সফলভাৱে পঠোৱা হৈছে",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendViewDetails": "বিৱৰণ চাওক",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "sendShowPsbt": "PSBT দেখুৱাওক",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSignWithLedger": "Ledger ৰে স্বাক্ষৰ কৰক",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "BitBox ৰে স্বাক্ষৰ কৰক",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendTransactionSignedLedger": "Ledger ৰে লেনদেন সফলভাৱে স্বাক্ষৰ কৰা হৈছে",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendHighFeeWarningDescription": "মুঠ ফি আপুনি পঠোৱা পৰিমাণৰ {feePercent}%",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorSwapCreationFailed": "Swap তৈয়াৰ কৰিবলৈ বিফল হৈছে।",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorInsufficientBalanceForPayment": "এই পেমেণ্ট কৰিবলৈ পৰ্যাপ্ত বেলেন্স নাই",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorInvalidAddressOrInvoice": "অবৈধ Bitcoin পেমেণ্ট ঠিকনা বা Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "অসমৰ্থিত QR ক'ড ফৰ্মেট",
+  "sendErrorBuildFailed": "এই পৰিশোধ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorConfirmationFailed": "নিশ্চিতকৰণ বিফল হৈছে",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendErrorAmountBelowSwapLimits": "পৰিমাণ Swap সীমাতকৈ কম",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "সৰু পেমেণ্ট কৰিবলৈ Instant Payments ত ধন যোগ কৰাৰ কথা বিবেচনা কৰক।",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
+  },
+  "sendErrorAmountBelowMinimum": "পৰিমাণ সৰ্বনিম্ন Swap সীমাতকৈ কম: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorAmountAboveMaximum": "পৰিমাণ সৰ্বোচ্চ Swap সীমাতকৈ বেছি: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorInsufficientFundsForFees": "পৰিমাণ আৰু ফি কভাৰ কৰিবলৈ পৰ্যাপ্ত ধন নাই",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendErrorBroadcastFailed": "লেনদেন broadcast কৰিবলৈ বিফল হৈছে। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "addressViewBalance": "বেলেন্স",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "swapMax": "সৰ্বোচ্চ",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin ঠিকনা",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning ঠিকনা",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid ঠিকনা",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "cancel": "বাতিল কৰক",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "coreScreensFeePriorityLabel": "মাচুলৰ অগ্ৰাধিকাৰ",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
+  "sendEstimatedDeliveryHours": "ঘণ্টা",
+  "coinsSelectedCount": "{count, plural, one{১ টা বাছনি কৰা হৈছে} other{{count} টা বাছনি কৰা হৈছে}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallet swap ৰ বাবে ব্যৱহাৰ কৰিব নোৱাৰি।",
+  "sendErrorInvoiceExpired": "এই invoice ৰ মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।",
+  "sendErrorInsufficientBalanceFrozenHint": "পৰ্যাপ্ত খৰচযোগ্য বেলেঞ্চ নাই — {amount} ফ্ৰীজ কৰা আছে। ইয়াক ব্যৱহাৰ কৰিবলৈ 'কইন পৰিচালনা কৰক' ত কইনবোৰ মুকলি কৰক।",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
+  "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।",
+  "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
+  "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
+  "sendErrorInvoiceExpiryTooShort": "এই invoice ৰ মেয়াদ অতি সোনকালে উকলিব। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।",
+  "closeDialogButton": "বন্ধ কৰক",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  }
 }

@@ -1125,10 +1125,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "OK",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "مجموع هزینه ها",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -1152,10 +1148,6 @@
   "sendErrorInsufficientFundsForFees": "بودجه کافی برای پوشش مبلغ و هزینه ها",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "نوع آدرس",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupTapWordsInOrder": "روی کلمات بازیابی در\nدستور صحیح",
   "@testBackupTapWordsInOrder": {
@@ -1209,10 +1201,6 @@
   "languageSettingsLabel": "زبان",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "walletDeletionFailedTitle": "حذف شکست",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "پرداخت از کیف پول",
   "@payPayFromWallet": {
@@ -1609,10 +1597,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "لغو",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "هیچ دریافت کننده ای برای پرداخت پیدا نشد.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1959,10 +1943,6 @@
   "autoswapAlwaysBlock": "همیشه هزینه های بالا را مسدود کنید",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
-  },
-  "walletDeletionConfirmationTitle": "کیف پول",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "هزینه های شبکه",
   "@sendNetworkFees": {
@@ -2717,10 +2697,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "مسیر حرکت",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2918,10 +2894,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "پشتیبانی نکردن",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "backupWalletEncryptedVaultTitle": "بایگانی برچسب ها",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2949,10 +2921,6 @@
   "sendSelectNetworkFee": "انتخاب هزینه شبکه",
   "@sendSelectNetworkFee": {
     "description": "Label for selecting the network fee in the send flow"
-  },
-  "walletDeletionErrorGeneric": "برای حذف کیف پول، لطفا دوباره امتحان کنید.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "کد انتقال (این را به عنوان شرح پرداخت اضافه کنید)",
   "@fundExchangeLabelTransferCode": {
@@ -3120,10 +3088,6 @@
   "sellQrCode": "کد QR",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "walletDetailsUnnamedWalletFallback": "کیف پول بدون نام",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "فقط برای معاملات بالای 20،000 یورو استفاده کنید. برای معاملات کوچکتر، از گزینه Instant SEPA استفاده کنید.",
   "@fundExchangeRegularSepaInfo": {
@@ -4175,10 +4139,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "walletDetailsDeletingMessage": "کیف پول...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "receiveUnableToVerifyAddress": "غیر قابل تأیید برای تأیید آدرس: کیف پول گم شده یا اطلاعات آدرس",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
@@ -5122,10 +5082,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "ثبت نام",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "addressLabel": "آدرس: ",
   "@addressLabel": {
     "description": "Label for UTXO address in coin selection tile"
@@ -5236,10 +5192,6 @@
   "addressViewChangeType": "تغییر",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "حذف",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "تایید Logout",
   "@confirmLogoutTitle": {
@@ -5716,10 +5668,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "آیا می خواهید این کیف پول را حذف کنید؟?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "جایگزین با هزینه",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -5920,10 +5868,6 @@
   "fundExchangeWarningTitle": "مراقب کلاهبرداران باشید",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "Descriptor",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "فیلتر توسط Type",
   "@payFilterByType": {
@@ -6238,10 +6182,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "دستگاه امضا کننده",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "testBackupEnterKeyManually": "کلید پشتیبان گیری را به صورت دستی وارد کنید>",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
@@ -6338,10 +6278,6 @@
   "payAdvancedSettings": "تنظیمات پیشرفته",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "Pubkey",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "در چند ثانیه تایید خواهد شد",
   "@receiveConfirmedInFewSeconds": {
@@ -6473,10 +6409,6 @@
   "swapProgressPendingMessage": "مبادله در حال انجام است. تأیید تراکنش‌های Bitcoin می‌تواند مدتی طول بکشد. می‌توانید به صفحه اصلی برگردید و منتظر بمانید.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "walletDetailsNetworkLabel": "شبکه Network",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "پخش ...",
   "broadcastSignedTxBroadcastError": "نتوانستیم تراکنش شما را منتشر کنیم. اتصال اینترنت خود را بررسی کرده و دوباره تلاش کنید.",

@@ -40,12 +40,14 @@ final class PreparedLiquidSpend {
   final String unsignedPset;
   final Sats fee;
   final Sats amountSent;
+  final int discountedVsize;
 
   const PreparedLiquidSpend._(
     this._native, {
     required this.unsignedPset,
     required this.fee,
     required this.amountSent,
+    required this.discountedVsize,
   });
 }
 

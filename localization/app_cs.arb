@@ -111,17 +111,9 @@
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
-  "walletDetailsUnnamedWalletFallback": "Unnamed Peněženka",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
-  },
   "addressViewAddressesTitle": "Odkazy",
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
-  },
-  "walletDetailsDeletingMessage": "Deleting peněženka...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
   },
   "payTransactionBroadcast": "Transakční vysílání",
   "@payTransactionBroadcast": {
@@ -850,10 +842,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "ČEŠTINA",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "Celkové poplatky",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -881,10 +869,6 @@
   "sendErrorInsufficientFundsForFees": "Není dostatek prostředků na pokrytí částky a poplatků",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "Typ adresy",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupTapWordsInOrder": "Klepněte na slova obnovení ve slovech\nsprávnou objednávku",
   "@testBackupTapWordsInOrder": {
@@ -946,10 +930,6 @@
   "payMemo": "Čeština",
   "@payMemo": {
     "description": "Label for optional payment note"
-  },
-  "walletDeletionFailedTitle": "Smazat",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "Platit z peněženky",
   "@payPayFromWallet": {
@@ -1390,10 +1370,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "Hledat",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "Nejsou k dispozici žádné příjemci.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1794,10 +1770,6 @@
   "autoswapAlwaysBlock": "Vždy blokovat vysoké poplatky",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
-  },
-  "walletDeletionConfirmationTitle": "Odstranit Peněženka",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "Síťové poplatky",
   "@sendNetworkFees": {
@@ -2643,10 +2615,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "Derivační cesta",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin adresa",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2850,10 +2818,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "Bez podpory",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "backupWalletEncryptedVaultTitle": "Šifrovaná klenba",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2885,10 +2849,6 @@
   "exchangeDcaFrequencyWeek": "týden",
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
-  },
-  "walletDeletionErrorGeneric": "Neúspěšné odstranění peněženky, zkuste to znovu.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "Převodový kód (přiložit tento popis platby)",
   "@fundExchangeLabelTransferCode": {
@@ -5361,10 +5321,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "Čeština",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "exchangeDcaSummaryMessage": "Kupujete {amount} každý {frequency} prostřednictvím {network}, pokud máte prostředky ve vašem účtu.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
@@ -5513,10 +5469,6 @@
   "addressViewChangeType": "Změna",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "Čeština",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "Potvrzení přihlášení",
   "@confirmLogoutTitle": {
@@ -6043,10 +5995,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "Přejete-li si tuto peněženku odstranit?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "Nahradit poplatek",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -6269,10 +6217,6 @@
   "fundExchangeWarningTitle": "Podívejte se na podvodníky",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "Čeština",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "Filtr podle typu",
   "@payFilterByType": {
@@ -6611,10 +6555,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "Signer zařízení",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "testBackupEnterKeyManually": "Zadejte klávesu Backup ručně >>",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
@@ -6716,10 +6656,6 @@
   "payAdvancedSettings": "Pokročilé nastavení",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "Čeština",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "Bude potvrzeno během několika sekund",
   "@receiveConfirmedInFewSeconds": {
@@ -6867,10 +6803,6 @@
   "swapProgressPendingMessage": "Swap probíhá. Potvrzení bitcoinových transakcí může chvíli trvat. Můžete se vrátit na domovskou obrazovku a počkat.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "walletDetailsNetworkLabel": "Čeština",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Vysílání...",
   "broadcastSignedTxBroadcastError": "Vaši transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",

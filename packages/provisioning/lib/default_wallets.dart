@@ -3,22 +3,23 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
+import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
+
 import 'provisioning_failure.dart';
+import 'src/wallet_provisioning.dart';
 
 /// Creates or resumes the default pair and returns its committed identities.
 class DefaultWalletProvisioning {
   final Secrets _secrets;
   final WalletInventory _inventory;
-  final Future<NetworkEnv> Function() _environment;
-  final Future<void> Function() _resume;
-  final Future<String> Function(Secret, Network, DateTime?) _create;
+  final ActiveEnvironmentReader _environment;
+  final WalletProvisioning _accounts;
 
   const DefaultWalletProvisioning({
     required this._secrets,
     required this._inventory,
     required this._environment,
-    required this._resume,
-    required this._create,
+    required this._accounts,
   });
 
   @useResult
@@ -42,14 +43,24 @@ class DefaultWalletProvisioning {
       return const Err(DefaultWalletMnemonicRequiredFailure());
     }
     try {
-      final environment = await _environment();
+      final NetworkEnv environment;
+      switch (await _environment.readActiveEnvironment()) {
+        case Ok(:final value):
+          environment = value.networkEnv;
+        case Err():
+          log.warning('Default wallet setup failed: preferences');
+          return const Err(DefaultWalletUnexpectedFailure());
+      }
       if (expectedNetwork != null && environment != expectedNetwork) {
         return const Err(DefaultWalletNetworkChangedFailure());
       }
       if (environment == NetworkEnv.signet) {
         return const Err(DefaultWalletNetworkChangedFailure());
       }
-      await _resume();
+      if (await _accounts.resume() case Err()) {
+        log.warning('Default wallet setup failed: provisioning resume');
+        return const Err(DefaultWalletUnexpectedFailure());
+      }
       final bitcoin = BitcoinNetwork.values.byName(environment.name);
       final liquid = LiquidNetwork.values.byName(environment.name);
       final existing = <WalletRegistration>[];
@@ -128,7 +139,20 @@ class DefaultWalletProvisioning {
           if (!hasBitcoin) bitcoin,
           if (!hasLiquid) liquid,
         ]) {
-          final id = await _create(current, network, birthday);
+          final String id;
+          switch (await _accounts.createDefault(
+            current,
+            network,
+            birthday: birthday,
+          )) {
+            case Ok(:final value):
+              id = value;
+            case Err(:final failure):
+              log.warning(
+                'Default wallet creation failed: ${failure.runtimeType}',
+              );
+              return const Err(DefaultWalletCreationFailure());
+          }
           final committed = await _inventory.readWallet(id);
           if (committed is! Ok<WalletRegistration, SecretFailure>) {
             return const Err(DefaultWalletStorageFailure());

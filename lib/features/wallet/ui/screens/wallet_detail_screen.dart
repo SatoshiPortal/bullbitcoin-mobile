@@ -26,7 +26,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class WalletDetailScreen extends StatelessWidget {
   const WalletDetailScreen({
@@ -59,12 +58,8 @@ class WalletDetailScreen extends StatelessWidget {
       walletName: walletName,
       settings: IconButton(
         tooltip: context.loc.settingsWalletSettingsTitle,
-        onPressed: () {
-          context.pushNamed(
-            SettingsRoute.walletDetailsSelectedWallet.name,
-            pathParameters: {'walletId': walletId},
-          );
-        },
+        onPressed: () =>
+            SettingsNavigation.openWalletDetails(context, walletId: walletId),
         icon: Image.asset(
           Assets.icons.settingsLine.path,
           width: 24,

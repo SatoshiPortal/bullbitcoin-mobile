@@ -1576,5 +1576,8 @@
   "exchangeFeatureUnifiedHistory": "● تاريخ المعاملات الموحد",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  }
+  },
+  "exchangeErrorSigningOut": "تعذر تسجيل خروجك بالكامل. يرجى المحاولة مرة أخرى.",
+  "exchangeErrorLoadingAnnouncements": "تعذر تحميل الإعلانات.",
+  "exchangeErrorRequestingAccountDeletion": "تعذر إرسال طلب حذف حسابك. يرجى المحاولة مرة أخرى."
 }

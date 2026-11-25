@@ -659,10 +659,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "ΕΝΤΆΞΕΙ",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "Ολοκληρωμένες χρεώσεις",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -682,10 +678,6 @@
   "sendErrorInsufficientFundsForFees": "Όχι αρκετά κεφάλαια για να καλύψει το ποσό και τα τέλη",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "Τύπος τύπου διευθύνσεων",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupButton": "Backup Test Backup Test Backup",
   "@testBackupButton": {
@@ -743,10 +735,6 @@
   "languageSettingsLabel": "Γλώσσα",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "walletDeletionFailedTitle": "Διαγράψτε",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "Πληρώστε από το πορτοφόλι",
   "@payPayFromWallet": {
@@ -1131,10 +1119,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "Ακύρωση",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "Κανένας παραλήπτης δεν βρέθηκε να πληρώσει.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1489,10 +1473,6 @@
   "autoswapAlwaysBlock": "Πάντα Block High Fees",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
-  },
-  "walletDeletionConfirmationTitle": "Διαγράψτε Wallet",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "Network χρεώσεις",
   "@sendNetworkFees": {
@@ -2261,10 +2241,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "Πρωτότυπο Path",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin διεύθυνση Bitcoin",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2464,10 +2440,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "Δεν υποστηρίζεται",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "backupWalletEncryptedVaultTitle": "Αποκρυπτωμένο θησαυροφυλάκιο",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2495,10 +2467,6 @@
   "exchangeDcaFrequencyWeek": "εβδομάδα",
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
-  },
-  "walletDeletionErrorGeneric": "Επιθυμούμενοι να διαγράψετε το πορτοφόλι, παρακαλώ δοκιμάστε ξανά.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "Κωδικός μεταφοράς (προσθέτως αυτό ως περιγραφή πληρωμής)",
   "@fundExchangeLabelTransferCode": {
@@ -2682,10 +2650,6 @@
   "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "Μόνο χρήση για συναλλαγές άνω των 20.000 ευρώ. Για μικρότερες συναλλαγές, χρησιμοποιήστε την επιλογή Instant SEPA.",
   "@fundExchangeRegularSepaInfo": {
@@ -3739,10 +3703,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "walletDetailsDeletingMessage": "Deleting πορτοφόλι...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "receiveUnableToVerifyAddress": "Δεν είναι σε θέση να επαληθεύσει τη διεύθυνση: Missing πορτοφόλι ή διεύθυνση πληροφοριών",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
@@ -4691,10 +4651,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "Signer",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "exchangeDcaSummaryMessage": "Αγοράζετε {amount} κάθε {frequency} μέσω {network}, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
@@ -4794,10 +4750,6 @@
   "addressViewChangeType": "Αλλαγή αλλαγής",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "Διαγράψτε",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "Επιβεβαίωση Logout",
   "@confirmLogoutTitle": {
@@ -5224,10 +5176,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το πορτοφόλι?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "Αντικαταστήστε με αμοιβή",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -5422,10 +5370,6 @@
   "fundExchangeWarningTitle": "Παρακολουθήστε τους απατεώνες",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "Descriptor",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "Φίλτρο τύπου",
   "@payFilterByType": {
@@ -5727,10 +5671,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "Signer Deviceer",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "fundExchangeWarningTactic3": "Λένε ότι εργάζονται για το χρέος ή τη συλλογή φόρων",
   "@fundExchangeWarningTactic3": {
     "description": "Third scammer tactic warning"
@@ -5820,10 +5760,6 @@
   "payAdvancedSettings": "Προχωρημένες ρυθμίσεις",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "Pubkey",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "Θα επιβεβαιωθεί σε λίγα δευτερόλεπτα",
   "@receiveConfirmedInFewSeconds": {
@@ -5967,10 +5903,6 @@
   "swapProgressPendingMessage": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορεί να χρειαστούν λίγο χρόνο για να επιβεβαιωθούν. Μπορείτε να επιστρέψετε στην αρχική οθόνη και να περιμένετε.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "walletDetailsNetworkLabel": "Network",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Broadcasting...",
   "broadcastSignedTxBroadcastError": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή σας. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",

@@ -912,5 +912,8 @@
   "exchangeFeatureBankTransfers": "• Отправить банковские переводы и оплатить счета",
   "exchangeGoToWebsiteButton": "Перейти на сайт биржи Bull Bitcoin",
   "exchangeFeatureDcaOrders": "• DCA, лимитные заказы и автоматическая покупка",
-  "exchangeFeatureUnifiedHistory": "• Единая история транзакций"
+  "exchangeFeatureUnifiedHistory": "• Единая история транзакций",
+  "exchangeErrorSigningOut": "Не удалось полностью выйти из аккаунта. Пожалуйста, попробуйте снова.",
+  "exchangeErrorLoadingAnnouncements": "Не удалось загрузить объявления.",
+  "exchangeErrorRequestingAccountDeletion": "Не удалось отправить запрос на удаление аккаунта. Пожалуйста, попробуйте снова."
 }

@@ -6,6 +6,65 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 void main() {
+  testWidgets('controlled selection follows the caller and its build verdict', (
+    tester,
+  ) async {
+    final coin = (
+      outpoint: (txId: 'c' * 64, vout: 0),
+      amount: Sats.fromInt(2000),
+      address: 'controlled address',
+      addressType: 'Receive',
+    );
+    var selected = <Outpoint>{};
+    var enabled = true;
+    var warning = false;
+    late StateSetter refresh;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        StatefulBuilder(
+          builder: (context, setState) {
+            refresh = setState;
+            return CoinSelectionSheet(
+              bitcoinUnit: BitcoinUnit.sats,
+              exchangeRate: null,
+              fiatCurrency: 'CAD',
+              coins: [coin],
+              initialSelection: selected,
+              requestedAmount: Sats.fromInt(2000),
+              labels: _labels,
+              onToggle: (outpoint) => setState(() {
+                selected = selected.contains(outpoint) ? {} : {outpoint};
+                enabled = selected.isEmpty;
+              }),
+              doneEnabled: enabled,
+              showInsufficient: warning,
+              onDone: (_) {},
+              addressBuilder: (address, style, color) => BullText(address),
+            );
+          },
+        ),
+      ),
+    );
+
+    final done = find.byType(BullButton);
+    expect(tester.widget<BullButton>(done).disabled, isFalse);
+    expect(find.text('Insufficient amount'), findsNothing);
+    await tester.tap(find.byKey(ValueKey(coin.outpoint)));
+    await tester.pump();
+    expect(tester.widget<BullButton>(done).disabled, isTrue);
+    expect(find.text('Insufficient amount'), findsNothing);
+
+    refresh(() => warning = true);
+    await tester.pump();
+    expect(find.text('Insufficient amount'), findsOneWidget);
+    refresh(() {
+      warning = false;
+      enabled = true;
+    });
+    await tester.pump();
+    expect(tester.widget<BullButton>(done).disabled, isFalse);
+  });
+
   testWidgets('exposes selection and removes a newly unavailable input', (
     tester,
   ) async {
