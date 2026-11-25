@@ -1,6 +1,7 @@
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_swap_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:novlang/novlang.dart';
@@ -64,11 +65,29 @@ void main() {
         apple.sendErrorAmountAboveMaximum('9'),
         'Amount above maximum transfer limit: 9 sats',
       );
-      expect(apple.swapRestoreActionable(0), 'No transfers to recover');
-      expect(none.swapRestoreActionable(0), 'No swaps to recover');
+      final appleSwap = await NovlangSwapLocalizationsDelegate(
+        NovlangPolicy.apple,
+      ).load(en);
+      final normalSwap = await NovlangSwapLocalizationsDelegate(
+        NovlangPolicy.none,
+      ).load(en);
+      expect(appleSwap.swapRestoreActionable(0), 'No transfers to recover');
+      expect(normalSwap.swapRestoreActionable(0), 'No swaps to recover');
       expect(
-        apple.swapRestoreActionable(3),
+        appleSwap.swapRestoreActionable(1),
+        contains('recovering 1 transfer'),
+      );
+      expect(
+        normalSwap.swapRestoreActionable(1),
+        contains('recovering 1 swap'),
+      );
+      expect(
+        appleSwap.swapRestoreActionable(3),
         contains('recovering 3 transfers'),
+      );
+      expect(
+        normalSwap.swapRestoreActionable(3),
+        contains('recovering 3 swaps'),
       );
       expect(
         apple.swapUnderReviewSupportMessage('o1', 'r1', 7),
