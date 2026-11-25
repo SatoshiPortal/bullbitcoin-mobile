@@ -67,9 +67,9 @@ final class BackupWarningNeededUsecase {
           .firstOrNull;
       if (bitcoinWallet == null) return const Ok(true);
       final fingerprint = bitcoinWallet.masterFingerprint;
-      if (fingerprint == null) return const Err(VaultStorageFailure());
+      if (fingerprint == null) return const Ok(true);
       if ((env == Environment.regtest) != certificateRegtest) {
-        return const Err(VaultStorageFailure());
+        return const Ok(true);
       }
       try {
         final certificate = await status(
