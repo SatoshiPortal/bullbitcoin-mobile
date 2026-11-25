@@ -25,6 +25,7 @@ class ExchangeSupportChatRouter {
       final draft = state.extra as ExchangeSupportChatDraft?;
       final fromExchange = state.uri.queryParameters['from'] == 'exchange';
       void exit() => onExit(context, fromExchange);
+      void back() => context.canPop() ? context.pop() : exit();
       return PopScope(
         canPop: context.canPop(),
         onPopInvokedWithResult: (didPop, _) {
@@ -42,6 +43,7 @@ class ExchangeSupportChatRouter {
                 onLogin: (context) => onLogin(context, draft),
                 loginLabel: loginLabel,
                 failureMessage: failureMessage,
+                onBack: back,
               ),
       );
     },

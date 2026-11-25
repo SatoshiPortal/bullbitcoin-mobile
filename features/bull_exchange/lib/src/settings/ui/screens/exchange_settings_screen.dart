@@ -83,7 +83,12 @@ class _ExchangeSettingsScreenState extends State<ExchangeSettingsScreen> {
             openWhenLoggedIn(() => context.pushNamed(route.name));
 
         return Scaffold(
-          appBar: AppBar(title: Text(widget.title(context))),
+          appBar: AppBar(
+            // A route nested under the settings route, whose page is always
+            // under it: the router's own pop is this screen's Back.
+            automaticallyImplyLeading: true,
+            title: Text(widget.title(context)),
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
