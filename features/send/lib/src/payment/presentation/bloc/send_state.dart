@@ -1,0 +1,837 @@
+import 'package:swaps/order_swaps.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:bull_pricer/bull_pricer.dart';
+
+import '../../domain/send_amount_conversion.dart';
+
+import 'package:primitives/primitives.dart'
+    show
+        BitcoinTransactionRecipient,
+        BitcoinUnit,
+        NetworkCapabilities,
+        NetworkCapability,
+        Outpoint,
+        Sats;
+import 'package:fees/fees.dart';
+import 'package:spend/spend.dart';
+import 'package:swaps/swaps.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
+import 'package:satoshifier/liquid_address.dart';
+import 'package:satoshifier/payment_request.dart';
+import 'package:primitives/primitives.dart' show calculatePercentage;
+
+import '../../domain/send_source.dart';
+
+import 'package:send/src/payment/presentation/send_wallet_view.dart';
+import 'package:transactions/transactions.dart';
+import 'package:coins/coins.dart' show WalletUtxo;
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:send/src/payment/domain/send_failure.dart';
+import 'package:send/src/payment/domain/bitcoin_recipient_list_policy.dart';
+import 'package:send/src/payment/domain/lnurl_pay_limits.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'send_state.freezed.dart';
+
+typedef SendRecipientDraft = ({
+  int id,
+  String address,
+  String amount,
+  bool receivesRemainder,
+  bool isValid,
+});
+
+enum SendType {
+  bitcoin,
+  lightning,
+  liquid;
+
+  static SendType from(PaymentRequest paymentRequest) {
+    switch (paymentRequest) {
+      case BitcoinPaymentRequest():
+        return SendType.bitcoin;
+      case LiquidPaymentRequest():
+        return SendType.liquid;
+      case Bolt11PaymentRequest():
+      case LnAddressPaymentRequest():
+        return SendType.lightning;
+      case Bip21PaymentRequest():
+        if (paymentRequest.network is BitcoinNetwork) {
+          return SendType.bitcoin;
+        } else {
+          return SendType.liquid;
+        }
+      case PsbtPaymentRequest():
+        return SendType.bitcoin; //TODO(azad): nop
+    }
+  }
+
+  String get displayName {
+    switch (this) {
+      case SendType.bitcoin:
+        return 'Bitcoin';
+      case SendType.lightning:
+        return 'Lightning';
+      case SendType.liquid:
+        return 'Liquid';
+    }
+  }
+}
+
+enum SendStep { address, amount, confirm, sending, success }
+
+SendStep sendStepForOrderSwapStatus(OrderSwapLocalStatus status) =>
+    switch (status) {
+      OrderSwapLocalStatus.awaitingUserConfirmation ||
+      OrderSwapLocalStatus.preparingPayin ||
+      OrderSwapLocalStatus.readyToBroadcast ||
+      OrderSwapLocalStatus.broadcastUnknown => SendStep.confirm,
+      OrderSwapLocalStatus.payinBroadcast ||
+      OrderSwapLocalStatus.payoutInProgress ||
+      OrderSwapLocalStatus.completed ||
+      OrderSwapLocalStatus.refunded ||
+      OrderSwapLocalStatus.expired ||
+      OrderSwapLocalStatus.failed => SendStep.success,
+      OrderSwapLocalStatus.creating ||
+      OrderSwapLocalStatus.creationUnknown => SendStep.address,
+    };
+
+SendStep sendStepForWatchedOrderSwap(
+  SendStep current,
+  OrderSwapLocalStatus status,
+) {
+  if (current == SendStep.address || current == SendStep.amount) return current;
+  return sendStepForOrderSwapStatus(status);
+}
+
+SendStep sendStepAfterBroadcastPersistenceFailure({
+  required SendStep current,
+  required String? transactionId,
+}) => transactionId == null ? SendStep.confirm : SendStep.success;
+
+@freezed
+abstract class SendState with _$SendState {
+  const factory SendState({
+    PreparedBitcoinSpend? bitcoinPreparation,
+    SignedBitcoinSpend? bitcoinSignature,
+    PreparedLiquidSpend? liquidPreparation,
+    SignedLiquidSpend? liquidSignature,
+    @Default(SendStep.address) SendStep step,
+    @Default(SendType.lightning) SendType sendType,
+    @Default('') String scannedRawPaymentRequest,
+    @Default('') String copiedRawPaymentRequest,
+    PaymentRequest? paymentRequest,
+    ({String recipient, LnurlPayLimits limits})? lnurlPay,
+    Bolt11PaymentRequest? lightningInvoice,
+    @Default([]) List<SendSource> wallets,
+    SendWalletView? selectedWallet,
+    @Default(false) bool isWalletManuallySelected,
+    bool? isToSelf,
+    // Payjoin remains disabled until send settings/onCurrencyChanged() have
+    // fetched settings at least once. Mirrors SettingsEntity.isPayjoinEnabled.
+    @Default(false) bool payjoinGloballyEnabled,
+    // The sender's per-send opt-out: payjoin can be available for this send
+    // (see [isPayjoinAvailable]) and still deliberately not attempted. Reset
+    // is not needed — the cubit lives per send flow.
+    @Default(false) bool payjoinOptedOut,
+    @Default('') String amount,
+    @Default({}) Map<SupportedCurrency, BitcoinPrice> amountQuotes,
+    SendAmountConversion? amountConversion,
+    SendAmountConversion? confirmedConversion,
+    @Default({}) Map<int, SendAmountConversion> recipientConversions,
+    @Default({}) Map<int, SendAmountConversion> confirmedRecipientConversions,
+    @Default(true) bool amountEntryValid,
+    @Default({}) Set<int> invalidAmountRecipientIds,
+    @Default([]) List<SendRecipientDraft> recipientDrafts,
+    @Default({}) Map<int, SendSource> internalRecipientWallets,
+    @Default({}) Set<int> qrAmountRecipientIds,
+    @Default(false) bool addingInternalRecipient,
+    @Default([]) List<int> recipientAmountsSat,
+    int? confirmedAmountSat,
+    BitcoinUnit? bitcoinUnit,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('CAD') String fiatCurrencyCode,
+    @Default('') String inputAmountCurrencyCode,
+    double? exchangeRate,
+    @Default('') String label,
+    @Default([]) List<WalletUtxo> utxos,
+    @Default([]) List<WalletUtxo> selectedUtxos,
+    @Default({}) Set<Outpoint> selectedInputOutpoints,
+    @Default({}) Set<Outpoint> sweepOutpoints,
+    @Default(true) bool replaceByFee,
+    FeeOptions? bitcoinFeesList,
+    FeeOptions? liquidFeesList,
+    NetworkFee? customFee,
+    @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
+    // Arm/disarm snapshot — internal to the custom-fee modal flow. When the
+    // user enters a value in the custom-fee field we eagerly commit
+    // `selectedFeeOption: custom` + typed `customFee` so the preset tiles
+    // visually deselect, without triggering a `createTransaction` rebuild.
+    // `armPriorSelection != null` iff the modal currently holds the arm;
+    // `disarmCustomFee` rolls back if the user closes the modal without
+    // `customFeesChanged` (which clears the arm). UI must not read these
+    // directly — they exist only to gate the rollback.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
+    // Real-fee previews + cached unsigned PSBTs per FeeSelection slot.
+    // Built on modal open (presets) and on debounced custom-rate typing.
+    // Cached PSBTs are REUSED at commit so the broadcast tx has the
+    // EXACT vsize/fee the modal showed — BDK's TxBuilder.finish() picks
+    // UTXOs via a randomized BnB→SRD algorithm (113/154/195 vbyte
+    // variance for identical inputs in our logs), so rebuilding at
+    // commit would diverge from the preview.
+    //
+    // Cleared on any input-shape change (wallet, recipient, amount,
+    // UTXO selection, replaceByFee, or a new armCustomFee/preview
+    // request). The principle: NEVER display a fee derived from
+    // rate × vsize math — only what BDK produces from a real PSBT.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
+    int? bitcoinTxSize,
+    int? liquidAbsoluteFees,
+    // Real Bitcoin absolute fee, read from the built PSBT (not a prediction).
+    // BDK overshoots a rate-based fee by 1–3 sat at sub-1 sat/vByte rates due
+    // to ceil rounding and sub-dust change absorption (documented BDK
+    // behaviour, see bdk_wallet TxBuilder docs and rust-bitcoin
+    // FeeRate::mul_by_weight which uses div_ceil). At normal rates the
+    // overshoot is invisible; at the sub-1 sat/vByte rates allowed by #2133
+    // it's significant (e.g. 14 → 16, 28 → 30). Set whenever a PSBT exists.
+    int? bitcoinAbsoluteFeesSat,
+    // prepare
+    String? unsignedPsbt,
+    String? signedBitcoinPsbt,
+    String? signedBitcoinTx,
+    String? signedLiquidTx,
+    OrderSwapRecord? lightningOrder,
+    OrderSwapQuote? lightningQuote,
+    ChainSwap? chainSwap,
+    LnSendSwap? lightningSwap,
+    // confirm
+    String? txId,
+    PayjoinSenderSession? payjoinSender,
+    @Default(false) bool isRetryingPayjoinProposal,
+    WalletTransaction? walletTransaction,
+    @Default(false) bool sendMax,
+    @Default(false) bool amountConfirmedClicked,
+    @Default(false) bool loadingBestWallet,
+    @Default(false) bool creatingSwap,
+    @Default(false) bool buildingTransaction,
+    @Default(false) bool signingTransaction,
+    @Default(false) bool broadcastingTransaction,
+    @Default('') String balanceApproximatedAmount,
+    // Set when a Liquid build fails because the wallet has too many UTXOs to
+    // spend in a single transaction and needs consolidating first.
+    @Default(false) bool consolidationRequired,
+    SendFailure? failure,
+  }) = _SendState;
+  const SendState._();
+
+  List<String> get inputAmountCurrencyCodes {
+    // With no price, an amount cannot be typed in fiat: offer none.
+    return [
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+      if (exchangeRate != null) ...fiatCurrencyCodes,
+    ];
+  }
+
+  /// Whether we have a valid payment request
+  bool get hasValidPaymentRequest => paymentRequest != null;
+
+  bool get isSweep => sweepOutpoints.isNotEmpty;
+
+  Set<Outpoint> get requiredInputOutpoints {
+    if (isSweep) return sweepOutpoints;
+    if (selectedInputOutpoints.isNotEmpty) return selectedInputOutpoints;
+    return {for (final utxo in selectedUtxos) utxo.outpoint};
+  }
+
+  bool get usesSelectedInputsOnly => requiredInputOutpoints.isNotEmpty;
+
+  bool get selectedInputsUnavailable {
+    if (!usesSelectedInputsOnly) return false;
+    final resolved = {for (final utxo in selectedUtxos) utxo.outpoint};
+    return resolved.length != requiredInputOutpoints.length ||
+        !resolved.containsAll(requiredInputOutpoints);
+  }
+
+  bool get hasFixedRequestAmount => switch (paymentRequest) {
+    Bip21PaymentRequest(:final amountSat) => (amountSat ?? 0) > 0,
+    LnAddressPaymentRequest() => lnurlPayLimits?.fixedAmountSat != null,
+    _ => false,
+  };
+
+  LnurlPayLimits? get lnurlPayLimits => switch ((paymentRequest, lnurlPay)) {
+    (
+      LnAddressPaymentRequest(:final address),
+      (recipient: final recipient, :final limits),
+    )
+        when address == recipient =>
+      limits,
+    _ => null,
+  };
+
+  bool get hasMultipleRecipients => recipientDrafts.length > 1;
+
+  List<SendSource> get bitcoinRecipientWallets {
+    final isTestnet = const BitcoinRecipientListPolicy().networkIsTestnet(
+      paymentRequest,
+    );
+    if (isTestnet == null) return const [];
+    final matchingWallets = wallets
+        .where(
+          (wallet) =>
+              wallet.isBitcoin && !wallet.network.isMainnet == isTestnet,
+        )
+        .toList();
+    final currentWallet = selectedBitcoinWallet;
+    if (currentWallet != null &&
+        currentWallet.isBitcoin &&
+        !currentWallet.network.isMainnet == isTestnet &&
+        matchingWallets.every((wallet) => wallet.id != currentWallet.id)) {
+      matchingWallets.add(currentWallet);
+    }
+    return matchingWallets;
+  }
+
+  List<SendSource> get selectableWallets {
+    if (usesSelectedInputsOnly) {
+      return [?selectedBitcoinWallet];
+    }
+    return hasMultipleRecipients ? bitcoinRecipientWallets : wallets;
+  }
+
+  bool get supportsRecipientList =>
+      const BitcoinRecipientListPolicy().supports(paymentRequest);
+
+  bool get usesRecipientList =>
+      selectedWallet is! SendWalletSp &&
+      supportsRecipientList &&
+      recipientDrafts.isNotEmpty;
+
+  bool get showsRecipientAmountList =>
+      usesRecipientList && hasMultipleRecipients;
+
+  bool get hasRemainderRecipient =>
+      recipientDrafts.any((recipient) => recipient.receivesRemainder);
+
+  bool get isMaxSend =>
+      recipientDrafts.isNotEmpty ? hasRemainderRecipient : sendMax;
+
+  bool get hasValidAmountEntry =>
+      hasFixedRequestAmount ||
+      (showsRecipientAmountList
+          ? recipientDrafts
+                .where((r) => !r.receivesRemainder)
+                .every((r) => !invalidAmountRecipientIds.contains(r.id))
+          : amountEntryValid);
+
+  bool get hasValidRecipientDrafts =>
+      const BitcoinRecipientListPolicy().hasValidRecipients(
+        recipients: recipientDrafts.map(
+          (recipient) => (
+            isValid: recipient.isValid,
+            receivesRemainder: recipient.receivesRemainder,
+            amountSat: recipientAmountSat(recipient),
+          ),
+        ),
+        isSweep: isSweep,
+      );
+
+  bool get hasInvalidAdditionalRecipient =>
+      recipientDrafts.skip(1).any((recipient) => !recipient.isValid);
+
+  bool get canAddRecipient =>
+      !selectedInputsUnavailable &&
+      !(usesSelectedInputsOnly && selectedWallet?.isLiquid == true) &&
+      (supportsRecipientList ||
+          (paymentRequest == null &&
+              copiedRawPaymentRequest.trim().isNotEmpty));
+
+  /// Whether a payjoin is structurally possible for this send: the setting
+  /// is on, the wallet signs locally, and the recipient's BIP21 advertises a
+  /// pj= endpoint. Drives whether the confirm screen offers the payjoin
+  /// toggle at all — [willAttemptPayjoin] adds the sender's choice on top.
+  ///
+  /// Gated on [SendSource.signsLocally]: a hardware/remote-signer wallet
+  /// (Ledger/BitBox) never reaches `signTransaction`'s payjoin branch (the
+  /// confirm screen swaps in a device-specific sign button for those
+  /// wallets instead), so without this check the toggle could promise a
+  /// payjoin that structurally can never happen for that wallet class.
+  bool get isPayjoinAvailable {
+    final wallet = selectedWallet;
+    final request = paymentRequest;
+    return !isSweep &&
+        !hasMultipleRecipients &&
+        !usesSelectedInputsOnly &&
+        payjoinGloballyEnabled &&
+        wallet != null &&
+        NetworkCapabilities.supports(
+          wallet.network,
+          NetworkCapability.payjoin,
+        ) &&
+        wallet.signsLocally &&
+        isToSelf != true &&
+        request is Bip21PaymentRequest &&
+        request.pj.isNotEmpty;
+  }
+
+  /// Single source of truth for whether a payjoin will actually be attempted
+  /// for this send — same pattern as [Payjoin.canManuallyBroadcastOriginal],
+  /// which unifies a control's state and its action guard. Used BOTH to
+  /// gate `signTransaction`'s payjoin branch and as the confirm screen's
+  /// toggle value, so the two can never disagree.
+  bool get willAttemptPayjoin => isPayjoinAvailable && !payjoinOptedOut;
+
+  String get paymentRequestAddress {
+    if (paymentRequest == null) {
+      return copiedRawPaymentRequest.isNotEmpty
+          ? copiedRawPaymentRequest
+          : scannedRawPaymentRequest;
+    }
+
+    if (paymentRequest!.isBip21) {
+      final bip21PaymentRequest = paymentRequest! as Bip21PaymentRequest;
+      return bip21PaymentRequest.address;
+    }
+    if (paymentRequest!.isBolt11) {
+      final bolt11PaymentRequest = paymentRequest! as Bolt11PaymentRequest;
+      return bolt11PaymentRequest.invoice;
+    }
+    if (paymentRequest!.isLnAddress) {
+      final lnAddressPaymentRequest =
+          paymentRequest! as LnAddressPaymentRequest;
+      return lnAddressPaymentRequest.address;
+    }
+    if (paymentRequest!.isBitcoinAddress) {
+      final bitcoinPaymentRequest = paymentRequest! as BitcoinPaymentRequest;
+      return bitcoinPaymentRequest.address;
+    }
+    if (paymentRequest!.isLiquidAddress) {
+      final liquidPaymentRequest = paymentRequest! as LiquidPaymentRequest;
+      return liquidPaymentRequest.address;
+    }
+    return copiedRawPaymentRequest.isNotEmpty
+        ? copiedRawPaymentRequest
+        : scannedRawPaymentRequest;
+  }
+
+  /// True when the destination is a Liquid address that does not support
+  /// Confidential Transactions: the amount sent to it will be publicly
+  /// visible on-chain. The confirm screen warns before building such a
+  /// payment — Liquid's privacy promise makes the silent case dangerous.
+  bool get isUnconfidentialLiquidDestination {
+    if (sendType != SendType.liquid) return false;
+    final address = switch (paymentRequest) {
+      LiquidPaymentRequest(:final address) => address,
+      Bip21PaymentRequest(:final address) => address,
+      _ => null,
+    };
+    if (address == null || address.isEmpty) return false;
+    return !isConfidentialLiquidAddress(address);
+  }
+
+  bool get isInputAmountFiat =>
+      ![
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ].contains(inputAmountCurrencyCode) &&
+      exchangeRate != null;
+
+  int get inputAmountSat {
+    return lnurlPayLimits?.fixedAmountSat ?? _amountSat(amount);
+  }
+
+  int recipientAmountSat(SendRecipientDraft recipient) {
+    return _amountSat(recipient.amount);
+  }
+
+  int _amountSat(String value) {
+    if (value.isEmpty) return 0;
+    if (isInputAmountFiat) {
+      final rate = exchangeRate;
+      return rate == null
+          ? 0
+          : Sats.tryFromFiat(value, rate)?.value.toInt() ?? 0;
+    }
+    final unit = BitcoinUnit.values
+        .where((unit) => unit.code == inputAmountCurrencyCode)
+        .firstOrNull;
+    return unit == null
+        ? 0
+        : Sats.tryParseBitcoin(value, unit)?.value.toInt() ?? 0;
+  }
+
+  List<BitcoinTransactionRecipient> get bitcoinTransactionRecipients => [
+    for (final recipient in recipientDrafts)
+      if (recipient.receivesRemainder)
+        BitcoinTransactionRecipient.remainder(address: recipient.address)
+      else
+        BitcoinTransactionRecipient.fixed(
+          address: recipient.address,
+          amountSat: Sats.fromInt(recipientAmountSat(recipient)),
+        ),
+  ];
+
+  int get totalFixedRecipientAmountSat => recipientDrafts
+      .where((recipient) => !recipient.receivesRemainder)
+      .fold(0, (sum, recipient) => sum + recipientAmountSat(recipient));
+
+  int get effectiveAmountSat {
+    final embedded = paymentRequest?.amountSat ?? 0;
+    return embedded > 0 ? embedded : inputAmountSat;
+  }
+
+  double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
+
+  double? get inputAmountFiat {
+    final rate = exchangeRate;
+    return rate == null ? null : ConvertAmount.btcToFiat(inputAmountBtc, rate);
+  }
+
+  double get confirmedAmountBtc => confirmedAmountSat != null
+      ? ConvertAmount.satsToBtc(confirmedAmountSat!)
+      : 0;
+
+  double? get confirmedAmountFiat {
+    final rate = exchangeRate;
+    return rate == null
+        ? null
+        : ConvertAmount.btcToFiat(confirmedAmountBtc, rate);
+  }
+
+  int? get lightningPayinAmountSat =>
+      lightningSwap?.paymentAmount ??
+      lightningOrder?.order?.payinAmountSat.toInt() ??
+      lightningQuote?.inAmountSat.toInt();
+
+  /// What the Lightning recipient receives: the invoice amount for a Boltz
+  /// swap, the order payout for an exchange one.
+  int? get lightningPayoutAmountSat => lightningSwap != null
+      ? lightningInvoice?.amountSat
+      : lightningOrder?.order?.payoutAmountSat.toInt() ??
+            lightningQuote?.outAmountSat.toInt();
+
+  /// The id the user can quote to support: the Boltz swap id, or the
+  /// exchange order number.
+  String? get lightningSwapReference =>
+      lightningSwap?.id ?? lightningOrder?.order?.orderNumber.toString();
+
+  /// The Boltz swap whose lockup this send funds, if any.
+  Swap? get boltzSendSwap => lightningSwap ?? chainSwap;
+
+  String? get boltzLockupAddress => switch (boltzSendSwap) {
+    LnSendSwap(:final paymentAddress) ||
+    ChainSwap(:final paymentAddress) => paymentAddress,
+    _ => null,
+  };
+
+  int? get boltzLockupAmountSat => switch (boltzSendSwap) {
+    LnSendSwap(:final paymentAmount) ||
+    ChainSwap(:final paymentAmount) => paymentAmount,
+    _ => null,
+  };
+
+  double get confirmedSwapAmountBtc =>
+      ConvertAmount.satsToBtc(lightningPayinAmountSat ?? 0);
+
+  String get formattedConfirmedAmountBitcoin {
+    return FormatAmount.sats(confirmedAmountSat ?? 0);
+  }
+
+  String get formattedSwapAmountBitcoin {
+    final payinAmount = lightningPayinAmountSat;
+    if (bitcoinUnit == null || payinAmount == null) return '';
+
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(payinAmount);
+    } else {
+      return FormatAmount.btc(confirmedSwapAmountBtc);
+    }
+  }
+
+  String get formattedConfirmedAmountFiat {
+    // No price: no fiat equivalent rather than a misleading zero.
+    final fiat = confirmedAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
+  }
+
+  String get formattedAmountInputEquivalent {
+    if (isInputAmountFiat) {
+      // If the input is in fiat, the equivalent should be in bitcoin
+      if (bitcoinUnit == null) {
+        return '';
+      } else if (bitcoinUnit == BitcoinUnit.sats) {
+        return FormatAmount.sats(inputAmountSat);
+      } else {
+        return FormatAmount.btc(inputAmountBtc);
+      }
+    }
+    // No price: no fiat equivalent rather than a misleading zero.
+    final fiat = inputAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
+  }
+
+  String formattedWalletBalance() {
+    if (selectedWallet?.balanceSat == null) return '—';
+    final balanceSat = maxAvailableBalanceSat;
+
+    if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
+    } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+      return FormatAmount.sats(balanceSat);
+    }
+    // A fiat input always has a price: without one, none is offered.
+    final rate = exchangeRate;
+    if (rate == null) return '';
+    return FormatAmount.fiat(
+      ConvertAmount.satsToFiat(balanceSat, rate),
+      inputAmountCurrencyCode,
+    );
+  }
+
+  String formattedApproximateBalance() {
+    final balance = selectedWallet?.balanceSat;
+    if (balance == null) return '—';
+
+    final satsBalance = maxAvailableBalanceSat;
+
+    if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
+        inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+      final rate = exchangeRate;
+      if (rate == null) return '';
+      return FormatAmount.fiat(
+        ConvertAmount.satsToFiat(satsBalance, rate),
+        fiatCurrencyCode,
+      );
+    } else {
+      if (bitcoinUnit == BitcoinUnit.sats) {
+        return FormatAmount.sats(satsBalance);
+      } else {
+        return FormatAmount.btc(ConvertAmount.satsToBtc(satsBalance));
+      }
+    }
+  }
+
+  String get formattedAbsoluteFees {
+    // `…` not `0` when no PSBT has been built yet — we never compute a
+    // fee ourselves from `rate × vsize`. Send screen will render this
+    // string verbatim; the brief `…` is honest about "not yet known".
+    if (absoluteFees == null) return '…';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
+  }
+
+  /// Amount (sats) locked in user-frozen coins ([WalletUtxo.isFrozen], which is
+  /// scoped to `origin = 'user'`). Zero until [utxos] are loaded.
+  ///
+  /// Payjoin reservations are also excluded when building, so the final drain
+  /// amount can be lower than [spendableBalanceSat].
+  int get frozenBalanceSat => utxos
+      .where((u) => u.isFrozen)
+      .fold(0, (sum, u) => sum + u.amountSat.toInt());
+
+  int get selectedSpendableBalanceSat => selectedUtxos
+      .where((utxo) => !utxo.isFrozen)
+      .fold(0, (sum, utxo) => sum + utxo.amountSat.toInt());
+
+  /// Frozen balance ([frozenBalanceSat]) formatted in the active [bitcoinUnit],
+  /// for the "you have frozen coins" hint shown when a payment can't be covered
+  /// by the spendable balance alone (#2337).
+  String get formattedFrozenBalance => bitcoinUnit == BitcoinUnit.sats
+      ? FormatAmount.sats(frozenBalanceSat)
+      : FormatAmount.btc(ConvertAmount.satsToBtc(frozenBalanceSat));
+
+  /// Spendable balance (sats) — the wallet balance minus the amount locked in
+  /// frozen coins (D7). Frozen coins are never spendable, so the amount screen
+  /// must validate against this, not the raw wallet balance. Falls back to the
+  /// full balance before [utxos] have loaded so it never under-reports.
+  int get spendableBalanceSat => isSweep
+      ? selectedSpendableBalanceSat
+      : (selectedWallet?.balanceSat?.toInt() ?? 0) - frozenBalanceSat;
+
+  int get maxAvailableBalanceSat => usesSelectedInputsOnly
+      ? selectedSpendableBalanceSat
+      : spendableBalanceSat;
+
+  int get maxSpendableBalanceSat {
+    final maxAmount = maxAvailableBalanceSat - (absoluteFees ?? 0);
+    return maxAmount < 0 ? 0 : maxAmount;
+  }
+
+  bool get walletHasBalance {
+    if (selectedWallet == null) return false;
+    if (!usesRecipientList) {
+      return inputAmountSat > 0 && inputAmountSat <= maxAvailableBalanceSat;
+    }
+    final fixedAmountSat = totalFixedRecipientAmountSat;
+    if (hasRemainderRecipient) {
+      final fixedAmountsAreValid =
+          recipientDrafts.length == 1 || fixedAmountSat > 0;
+      return fixedAmountsAreValid && fixedAmountSat < maxAvailableBalanceSat;
+    }
+    return fixedAmountSat > 0 && fixedAmountSat <= maxAvailableBalanceSat;
+  }
+
+  /// Specifically "the wallet could not construct the transaction".
+  ///
+  /// Narrow on purpose: it decides whether the amount screen mounts its error
+  /// block at all, and the other build-stage failures already surface there in
+  /// the amount field's own error line. Do not widen it to mean "any build
+  /// failure" — the confirm screen renders whatever is left over.
+  bool get hasBuildFailure => failure is SendTransactionBuildFailure;
+
+  /// Signing, confirming or broadcasting failed. Confirm screen only.
+  bool get hasConfirmFailure => failure is SendTransactionConfirmationFailure;
+
+  /// The broadcast itself failed, as opposed to an earlier confirm step. Drives
+  /// the "the payment may still have gone out" guidance.
+  bool get hasBroadcastFailure => switch (failure) {
+    SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
+      isBroadcastFailure,
+    _ => false,
+  };
+
+  /// The amount is short of the spendable balance. Rendered inline under the
+  /// amount field, and in the address step's error line.
+  bool get hasBalanceFailure => failure is SendInsufficientBalanceFailure;
+
+  /// The shortfall is explained by frozen coins, so the message can point at
+  /// Manage coins.
+  String? get frozenBalanceHint =>
+      hasBalanceFailure && frozenBalanceSat > 0 ? formattedFrozenBalance : null;
+
+  /// The amount is below the swap minimum and an on-chain send would work
+  /// instead, so the UI offers that alternative.
+  bool get suggestsInstantPayments => switch (failure) {
+    SendAmountOutOfBoundsFailure(:final suggestInstantPayments) =>
+      suggestInstantPayments,
+    _ => false,
+  };
+
+  bool get isLightning => sendType == SendType.lightning;
+  bool get isLightningBitcoinSwap =>
+      isLightning && selectedWallet?.network is BitcoinNetwork;
+
+  bool get isLnInvoicePaid {
+    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed ||
+        lightningSwap?.status == SwapStatus.canCoop ||
+        lightningSwap?.status == SwapStatus.completed;
+  }
+
+  bool get isSwapCompleted {
+    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed ||
+        lightningSwap?.status == SwapStatus.completed;
+  }
+
+  bool get disableConfirmSend =>
+      buildingTransaction ||
+      signingTransaction ||
+      broadcastingTransaction ||
+      failure is SendTransactionBuildFailure ||
+      failure is SendInsufficientBalanceFailure ||
+      failure is SendInsufficientFundsForFeesFailure ||
+      failure is SendSelectedCoinsInsufficientFailure ||
+      failure is SendSelectedCoinsUnavailableFailure;
+
+  bool get blocksSwapDueToHardwareWallet {
+    final wallet = selectedWallet;
+    if (wallet == null) return false;
+    final isSwap =
+        sendType == SendType.lightning ||
+        (sendType == SendType.liquid && !wallet.isLiquid) ||
+        (sendType == SendType.bitcoin && wallet.isLiquid);
+    return isSwap && wallet.isHardwareWallet;
+  }
+
+  bool get requireChainSwap {
+    if (selectedWallet == null) return false;
+    return (selectedWallet?.network is BitcoinNetwork &&
+            sendType == SendType.liquid) ||
+        (selectedWallet?.isLiquid == true && sendType == SendType.bitcoin);
+  }
+
+  NetworkFee? get selectedFee => switch (selectedFeeOption) {
+    FeeSelection.fastest => feeOptions?.fastest,
+    FeeSelection.economic => feeOptions?.economic,
+    FeeSelection.slow => feeOptions?.slow,
+    FeeSelection.custom => customFee,
+  };
+
+  bool get isChainSwap =>
+      (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
+      sendType == SendType.bitcoin && selectedWallet!.isLiquid;
+
+  FeeOptions? get feeOptions => selectedWallet == null
+      ? null
+      : selectedWallet!.isLiquid
+      ? liquidFeesList
+      : bitcoinFeesList;
+
+  /// Absolute fee the user will (or did) pay, in sats. **Real PSBT fee
+  /// only** when `bitcoinAbsoluteFeesSat` is populated (`psbt.fee()` =
+  /// Σ inputs − Σ outputs). Returns null otherwise; UI must render a
+  /// shimmer / loading placeholder, **never** fall back to local
+  /// `rate × vsize` arithmetic.
+  ///
+  /// The Liquid branch uses `liquidAbsoluteFees` — same contract,
+  /// populated by the LWK build.
+  int? get absoluteFees => selectedWallet == null
+      ? null
+      : selectedWallet!.isLiquid
+      ? liquidAbsoluteFees
+      : bitcoinAbsoluteFeesSat;
+
+  int? get totalSwapFees {
+    if (lightningSwap != null) {
+      final lockupSat = lightningPayinAmountSat;
+      final invoiceSat = lightningPayoutAmountSat;
+      if (lockupSat == null || invoiceSat == null) return null;
+      return lockupSat > invoiceSat ? lockupSat - invoiceSat : 0;
+    }
+    final order = lightningOrder?.order;
+    final payin = order?.payinAmountSat ?? lightningQuote?.inAmountSat;
+    final payout = order?.payoutAmountSat ?? lightningQuote?.outAmountSat;
+    if (payin == null || payout == null) return null;
+    final serviceFee = payin - payout;
+    return serviceFee > BigInt.zero ? serviceFee.toInt() : 0;
+  }
+
+  bool get isSlowPayment =>
+      // ignore: avoid_bool_literals_in_conditional_expressions
+      selectedWallet == null
+      ? false
+      // ignore: avoid_bool_literals_in_conditional_expressions
+      : selectedWallet!.isLiquid
+      ? false
+      : true;
+}
+
+extension SendStateFeePercent on SendState {
+  double getFeeAsPercentOfAmount() {
+    final payout = lightningPayoutAmountSat;
+    if (lightningPayinAmountSat != null && payout != null) {
+      return calculatePercentage(payout, totalSwapFees ?? 0);
+    }
+    if (chainSwap case final swap?) {
+      return swap.getFeeAsPercentOfAmount();
+    }
+    final fee = absoluteFees ?? 0;
+    final amount = confirmedAmountSat ?? 0;
+    if (fee == 0 || amount == 0) return 0.0;
+    return calculatePercentage(amount, fee);
+  }
+
+  bool get showFeeWarning => getFeeAsPercentOfAmount() > 5.0;
+
+  /// The wallet entity behind [selectedWallet], for the paths that sign, select
+  /// coins or quote a swap. Null on the silent payments path, where none of
+  /// those run and there is no entity to hand them.
+  SendSource? get selectedBitcoinWallet => switch (selectedWallet) {
+    SendWalletBitcoin(:final wallet) => wallet,
+    SendWalletSp() || null => null,
+  };
+}

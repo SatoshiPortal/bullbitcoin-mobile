@@ -10,7 +10,7 @@ void main() {
   group('Security audit #2603 cross-wallet swap reuse', () {
     test('usecase binds the new order to its source wallet and purpose', () {
       final source = File(
-        'lib/features/send/domain/usecases/create_send_swap_usecase.dart',
+        'features/send/lib/src/payment/domain/usecases/create_send_swap_usecase.dart',
       ).readAsStringSync();
 
       expect(source, isNot(contains('getSendSwapByInvoice(')));

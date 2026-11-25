@@ -8,7 +8,8 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
+import 'package:exchange/testing.dart' show exchangeForTesting;
 import 'package:exchange/exchange.dart';
 import 'package:settings/testing.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -19,7 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Exchange extends Mock implements ExchangeFacade {}
+class _Exchange extends Mock implements ExchangeAccessLifecycle {}
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
@@ -35,20 +36,24 @@ void main() {
     final exchange = _Exchange();
     final settings = _Settings();
     when(
-      () => exchange.currentAccess,
+      () => exchange.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
-    when(exchange.watchAccess).thenAnswer((_) => const Stream.empty());
+    when(exchange.watch).thenAnswer((_) => const Stream.empty());
     when(() => settings.state).thenReturn(const SettingsState());
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
+    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
+    addTearDown(() => locator.unregister<Exchange>());
     final manage =
         BullExchangeFeature.mount(
-          settings: SettingsRouter.exchangeSettingsHost,
-          networkUnavailable: () async => false,
-          showWebsiteOnly: (_) => false,
-          unavailableRedirectPath: '/home',
-          brandAssetPath: 'unused',
+          exchange: () => locator<Exchange>(),
+          preferences: () => throw StateError('Unexpected preferences'),
+          isSuperuser: (_) => false,
+          homePath: '/home',
           onExit: (_) {},
+          onOpenSettings: (_) {},
+          onAction: (_, _) {},
+          brandAssetPath: 'unused',
+          settingsAssetPath: 'unused',
+          settings: SettingsRouter.exchangeSettingsHost,
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,
         );
@@ -58,7 +63,7 @@ void main() {
         GoRoute(path: '/manage', builder: manage.builder),
         GoRoute(
           path: '/auth',
-          name: ExchangeRoute.exchangeAuth.name,
+          name: BullExchangeNavigation.authName,
           builder: (context, state) {
             expect(state.uri.queryParameters['from'], 'settings');
             return Scaffold(
@@ -117,21 +122,25 @@ void main() {
       ),
     );
     when(
-      () => exchange.currentAccess,
+      () => exchange.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-    when(exchange.watchAccess).thenAnswer((_) => const Stream.empty());
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
+    when(exchange.watch).thenAnswer((_) => const Stream.empty());
+    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
+    addTearDown(() => locator.unregister<Exchange>());
     final settingsRoutes = SettingsRouter.childRoutes(
       accessRoutes: const [],
       addressRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(
-        settings: SettingsRouter.exchangeSettingsHost,
-        networkUnavailable: () async => false,
-        showWebsiteOnly: (_) => false,
-        unavailableRedirectPath: '/home',
-        brandAssetPath: 'unused',
+        exchange: () => locator<Exchange>(),
+        preferences: () => throw StateError('Unexpected preferences'),
+        isSuperuser: (_) => false,
+        homePath: '/home',
         onExit: (_) {},
+        onOpenSettings: (_) {},
+        onAction: (_, _) {},
+        brandAssetPath: 'unused',
+        settingsAssetPath: 'unused',
+        settings: SettingsRouter.exchangeSettingsHost,
       ).settingsRoutes,
       backupRoutes: const [],
       priceRoutes: const [],
@@ -157,7 +166,7 @@ void main() {
         ),
         GoRoute(
           path: '/exchange',
-          name: ExchangeRoute.exchangeHome.name,
+          name: BullExchangeNavigation.dashboardName,
           builder: (_, _) => const Scaffold(body: Text('Exchange dashboard')),
         ),
         GoRoute(
@@ -212,25 +221,28 @@ void main() {
     final exchange = _Exchange();
     final settings = _Settings();
     when(() => settings.state).thenReturn(const SettingsState());
-    when(() => exchange.currentAccess)
-        .thenReturn(const ExchangeAccessDisabled());
+    when(() => exchange.current).thenReturn(const ExchangeAccessDisabled());
     var listens = 0;
     var cancels = 0;
     final changes = StreamController<ExchangeAccess>.broadcast(
       onListen: () => listens++,
       onCancel: () => cancels++,
     );
-    when(exchange.watchAccess).thenAnswer((_) => changes.stream);
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
+    when(exchange.watch).thenAnswer((_) => changes.stream);
+    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
+    addTearDown(() => locator.unregister<Exchange>());
     final route =
         BullExchangeFeature.mount(
-          settings: SettingsRouter.exchangeSettingsHost,
-          networkUnavailable: () async => false,
-          showWebsiteOnly: (_) => false,
-          unavailableRedirectPath: '/home',
-          brandAssetPath: 'unused',
+          exchange: () => locator<Exchange>(),
+          preferences: () => throw StateError('Unexpected preferences'),
+          isSuperuser: (_) => false,
+          homePath: '/home',
           onExit: (_) {},
+          onOpenSettings: (_) {},
+          onAction: (_, _) {},
+          brandAssetPath: 'unused',
+          settingsAssetPath: 'unused',
+          settings: SettingsRouter.exchangeSettingsHost,
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,
         );

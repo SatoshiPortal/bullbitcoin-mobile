@@ -1,5 +1,3 @@
-# Legacy exchange composition
+# Exchange payin binding
 
-## Dependencies
-
-- `transactions` opens Buy and withdrawal order details; `address_view` displays addresses. `address_view` supplies shared destination validation and scanning for Buy, DCA and default payouts.
+`exchange_payin_binding.dart` gives Sell and Pay the wallet cards, the wallet-home route and the app assets. It remains in the app while wallet cards and the wallet-home route live in `lib/features/wallet`; `bull_exchange` cannot import the app that mounts it. Everything else of the Exchange feature is in `features/bull_exchange` and `packages/exchange`.

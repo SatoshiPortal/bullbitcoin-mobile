@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:bull_ui/bull_ui.dart' show SizedBox, Widget;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
@@ -30,6 +28,7 @@ import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.
 
 class SettingsRouter {
   static Widget menuScope(Widget child) => ExchangeAccessBuilder(
+    exchange: locator<Exchange>(),
     builder: (_, access) =>
         RepositoryProvider<ExchangeAccess>.value(value: access, child: child),
   );
@@ -37,14 +36,12 @@ class SettingsRouter {
   static final exchangeSettingsHost = ExchangeSettingsHost(
     exchange: () => locator<Exchange>(),
     savePreferences: ({language, currency, emailNotificationsEnabled}) =>
-        locator<ExchangeFacade>().savePreferences(
+        locator<Exchange>().updateCurrentPreferences(
           language: language,
           currency: currency,
           emailNotificationsEnabled: emailNotificationsEnabled,
         ),
     refreshSession: ExchangeSessionScope.refresh,
-    isLoggedIn: ExchangeScope.isLoggedIn,
-    sessionChanges: ExchangeScope.signedInChanges,
     isSuperuser: (context) => Settings.isSuperuserOf(context),
     securityUrl: (context) => switch (Settings.networkOf(context)) {
       null || NetworkEnv.regtest || NetworkEnv.signet => null,
@@ -64,25 +61,24 @@ class SettingsRouter {
         TransactionsNavigation.openHistory(context, exchangeOnly: true),
     onOpenDefaultWallets: DefaultWalletsNavigation.open,
     onOpenExchange: (context) =>
-        context.goNamed(ExchangeRoute.exchangeHome.name),
+        context.goNamed(BullExchangeNavigation.dashboardName),
     access: (
       actions: (
-        current: () => locator<ExchangeFacade>().currentAccess,
-        watch: () => locator<ExchangeFacade>().watchAccess(),
-        enable: () => locator<ExchangeFacade>().enable(),
-        signOut: () => locator<ExchangeFacade>().logout(),
-        resolve: () => locator<ExchangeFacade>().resolveAccess(),
+        current: () => locator<Exchange>().currentAccess,
+        watch: () => locator<Exchange>().watchAccess(),
+        enable: () => locator<Exchange>().enableAccess(),
+        signOut: () => locator<Exchange>().signOut(),
+        resolve: () => locator<Exchange>().resolveAccess(),
       ),
       platform: Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other,
       description: (context) => context.loc.exchangeAccessSettingsDescription,
       onAuthenticate: (context) => context.pushNamed<void>(
-        ExchangeRoute.exchangeAuth.name,
+        BullExchangeNavigation.authName,
         queryParameters: {'from': 'settings'},
       ),
       onDisabled: (context) => context.goNamed(WalletRoute.walletHome.name),
     ),
     defaultWallets: (
-      payoutFields: exchangePayoutFields,
       isAvailable: () async => switch (await locator<Preferences>().fetch()) {
         Ok(:final value) => NetworkCapabilities.supports(
           BitcoinNetwork.fromName(value.environment.name),

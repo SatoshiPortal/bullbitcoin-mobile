@@ -1,0 +1,33 @@
+import 'package:send/src/payment/domain/send_failure.dart';
+import 'package:swaps/swaps.dart';
+
+extension BoltzSwapFailureToSendFailure on SwapsFailure {
+  SendFailure toSendFailure({required int amountSat}) => switch (this) {
+    SwapsInvoiceExpiryTooShortFailure() =>
+      const SendInvoiceExpiryTooShortFailure(),
+    final SwapsAmountOutOfLimitsFailure limits => SendAmountOutOfBoundsFailure(
+      minimumSat: limits.isBelowMinimum(amountSat)
+          ? BigInt.from(limits.minSat)
+          : null,
+      maximumSat: limits.isBelowMinimum(amountSat)
+          ? null
+          : BigInt.from(limits.maxSat),
+      logMessage: logMessage,
+    ),
+    SwapsBoltzUnavailableFailure() ||
+    SwapsBoltzRejectedFailure() ||
+    SwapsNetworkFailure() ||
+    SwapsBusyFailure() ||
+    SwapsAuthorizationFailure() ||
+    SwapsMasterKeyUnavailableFailure() ||
+    SwapsNotRestorableFailure() ||
+    SwapsRefundNotFinalFailure() => SendSwapCreationFailure(logMessage),
+    SwapsUnsupportedNetworkFailure() ||
+    SwapsInvalidServerFailure() ||
+    SwapsInvalidAutoSwapSettingsFailure() ||
+    SwapsInvalidLockupFailure() ||
+    SwapsStorageFailure() ||
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => SendUnexpectedFailure(logMessage),
+  };
+}

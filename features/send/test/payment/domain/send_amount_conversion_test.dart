@@ -1,4 +1,4 @@
-import 'package:send/send.dart';
+import 'package:send/src/payment/domain/send_amount_conversion.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

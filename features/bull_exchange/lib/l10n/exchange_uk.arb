@@ -912,5 +912,8 @@
   "exchangeFeatureBankTransfers": "• Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "exchangeGoToWebsiteButton": "Перейти на сайт Bull Біткойн",
   "exchangeFeatureDcaOrders": "• DCA, Обмеження замовлень та автокупе",
-  "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій"
+  "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій",
+  "exchangeErrorSigningOut": "Не вдалося повністю вийти з облікового запису. Будь ласка, спробуйте ще раз.",
+  "exchangeErrorLoadingAnnouncements": "Не вдалося завантажити оголошення.",
+  "exchangeErrorRequestingAccountDeletion": "Не вдалося надіслати запит на видалення облікового запису. Будь ласка, спробуйте ще раз."
 }

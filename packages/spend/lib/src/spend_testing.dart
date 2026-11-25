@@ -28,11 +28,13 @@ abstract final class SpendFixtures {
     required String unsignedPset,
     required Sats fee,
     required Sats amountSent,
+    int discountedVsize = 1,
   }) => PreparedLiquidSpend._(
     null,
     unsignedPset: unsignedPset,
     fee: fee,
     amountSent: amountSent,
+    discountedVsize: discountedVsize,
   );
 
   static SignedBitcoinSpend signedBitcoin(

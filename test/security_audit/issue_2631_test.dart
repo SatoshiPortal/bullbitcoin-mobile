@@ -9,8 +9,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2631 stale coin-control selections', () {
     test('loadUtxos intersects the selection with refreshed UTXOs', () {
-      final source = File('lib/features/send/presentation/bloc/send_cubit.dart')
-          .readAsStringSync();
+      final source = File(
+        'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
+      ).readAsStringSync();
       final loadUtxos = source.substring(
         source.indexOf('Future<void> loadUtxos('),
         source.indexOf('Future<void> utxoSelected'),

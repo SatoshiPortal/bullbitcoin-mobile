@@ -9,7 +9,6 @@ import 'package:path/path.dart' as p;
 // consumers migrate; never extend this list to permit a new shell dependency.
 const _legacyImports = {
   'lib/features/settings/ui/settings_router.dart -> locator.dart',
-  'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
 };
 
 void main() {

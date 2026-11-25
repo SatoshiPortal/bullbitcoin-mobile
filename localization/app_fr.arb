@@ -3237,8 +3237,5 @@
   "receiveRecipientMessageHint": "Facultatif, visible par le payeur",
   "receiveVerifyBitbox": "Vérifier sur BitBox",
   "receiveFeeDetails": "Détail des frais",
-  "sendErrorInvoiceExpiryTooShort": "Cette facture expire trop tôt. Demandez une nouvelle facture au destinataire.",
-  "sendLnurlLimitsUnavailable": "Impossible de lire les limites de paiement du destinataire Lightning. Réessayez.",
-  "sendLnurlNoPayableAmount": "Cette demande Lightning n’accepte aucun montant en satoshis entiers.",
-  "sendLnurlAmountRange": "Ce destinataire accepte de {minimumSat} à {maximumSat} sats."
+  "sendErrorInvoiceExpiryTooShort": "Cette facture expire trop tôt. Demandez une nouvelle facture au destinataire."
 }

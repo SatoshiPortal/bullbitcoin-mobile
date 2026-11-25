@@ -3,14 +3,13 @@ import 'package:exchange/exchange.dart';
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
+import 'package:exchange/testing.dart' show exchangeForTesting;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:settings/testing.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:exchange/exchange.dart'
-    show ExchangeAccess, ExchangeAccessEnabled, ExchangeAccessSession;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +23,7 @@ import 'package:settings/settings.dart';
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
-class _Exchange extends Mock implements ExchangeFacade {}
+class _Exchange extends Mock implements ExchangeAccessLifecycle {}
 
 void main() {
   testWidgets('search follows loading preferences and live exchange access', (
@@ -40,11 +39,11 @@ void main() {
       initialState: const SettingsState(),
     );
     when(
-      () => exchange.currentAccess,
+      () => exchange.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-    when(exchange.watchAccess).thenAnswer((_) => accessChanges.stream);
+    when(exchange.watch).thenAnswer((_) => accessChanges.stream);
     locator.pushNewScope();
-    locator.registerSingleton<ExchangeFacade>(exchange);
+    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
     addTearDown(locator.popScope);
     addTearDown(settingsChanges.close);
     addTearDown(accessChanges.close);

@@ -62,7 +62,10 @@ void main() {
     return WalletUtxoRepositoryImpl(
       inventory: inventory,
       labelsFacade: labels,
-      loadWallet: (_) async => Ok(wallet),
+      loadWallet: (resolved) async {
+        expect(resolved, key);
+        return Ok(wallet);
+      },
       foreground: () async => Ok(owner),
     );
   }

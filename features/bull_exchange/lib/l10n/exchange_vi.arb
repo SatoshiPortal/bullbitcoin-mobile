@@ -860,5 +860,8 @@
   "exchangeLandingDisclaimerLegal": "Quyền truy cập vào các dịch vụ sàn giao dịch sẽ bị giới hạn ở các quốc gia mà Bull Bitcoin có thể hoạt động hợp pháp và có thể yêu cầu KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Các dịch vụ sàn giao dịch tiền mã hóa không khả dụng trong ứng dụng di động Bull Bitcoin.",
   "exchangeLoginButton": "Đăng nhập hoặc đăng ký",
-  "exchangeGoToWebsiteButton": "Đến trang web sàn giao dịch Bull Bitcoin"
+  "exchangeGoToWebsiteButton": "Đến trang web sàn giao dịch Bull Bitcoin",
+  "exchangeErrorSigningOut": "Không thể đăng xuất hoàn toàn. Vui lòng thử lại.",
+  "exchangeErrorLoadingAnnouncements": "Không thể tải thông báo.",
+  "exchangeErrorRequestingAccountDeletion": "Không thể gửi yêu cầu xóa tài khoản của bạn. Vui lòng thử lại."
 }

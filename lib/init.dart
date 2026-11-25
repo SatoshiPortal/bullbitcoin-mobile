@@ -24,7 +24,6 @@ import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:background_tasks/wallet_jobs.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotificationStore;
@@ -351,7 +350,7 @@ class Bull {
 
       // Flush wizard pending values (if any) to SQLite now that the
       // settings repository is available, then mark the wizard complete.
-      final _ = await locator<ExchangeFacade>().resolveAccess();
+      final _ = await locator<Exchange>().resolveAccess();
       final applied = await startupWizard.applyPendingChoices(
         preferences: locator<Preferences>(),
         exchange: locator<Exchange>(),
