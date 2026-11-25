@@ -54,6 +54,71 @@ void main() {
       isFalse,
     );
   });
+  group('Lightning invoice', () {
+    PaymentRequest invoice({int amountSat = 2500, bool isTestnet = false}) =>
+        PaymentRequest.bolt11(
+          invoice: 'lninvoice',
+          amountSat: amountSat,
+          paymentHash: 'hash',
+          expiresAt: 0,
+          isTestnet: isTestnet,
+        );
+
+    test('a Bitcoin and a Liquid wallet that can fund it force a choice', () {
+      expect(
+        policy.requiresChoice(
+          request: invoice(),
+          wallets: [
+            wallet('a'),
+            wallet('b', network: LiquidNetwork.mainnet),
+          ],
+          hasFixedSource: false,
+        ),
+        isTrue,
+      );
+    });
+
+    test('regtest wallets are candidates for a test invoice', () {
+      expect(
+        policy.requiresChoice(
+          request: invoice(isTestnet: true),
+          wallets: [
+            wallet('a', network: BitcoinNetwork.regtest),
+            wallet('b', network: LiquidNetwork.regtest),
+          ],
+          hasFixedSource: false,
+        ),
+        isTrue,
+      );
+    });
+
+    test('remote signers, unfunded wallets and other networks do not', () {
+      expect(
+        policy.requiresChoice(
+          request: invoice(),
+          wallets: [
+            wallet('a'),
+            wallet('b', signer: WalletSigner.remote),
+            wallet('c', network: LiquidNetwork.mainnet, balance: 2500),
+            wallet('d', network: LiquidNetwork.testnet),
+          ],
+          hasFixedSource: false,
+        ),
+        isFalse,
+      );
+    });
+
+    test('an amountless invoice has no eligible wallets', () {
+      expect(
+        policy.eligibleWallets(invoice(amountSat: 0), [
+          wallet('a'),
+          wallet('b', network: LiquidNetwork.mainnet),
+        ]),
+        isEmpty,
+      );
+    });
+  });
+
   test('fixed source and duplicate catalog entries do not force a choice', () {
     final first = wallet('a');
     expect(

@@ -5417,6 +5417,102 @@ void main() {
       expect(cubit.state.step, SendStep.amount);
     });
 
+    test(
+      'lets the user choose the source of an invoice two wallets can pay',
+      () async {
+        final bitcoin = _bitcoinLocalWallet();
+        final liquid = _liquidWallet(balanceSat: 1000000);
+        final request = PaymentRequest.bolt11(
+          invoice: 'lnbc1invoice',
+          amountSat: 50000,
+          paymentHash: 'hash',
+          expiresAt: DateTime(2030).millisecondsSinceEpoch ~/ 1000,
+          isTestnet: false,
+        );
+        when(
+          () => bestWalletUsecase.execute(
+            wallets: [bitcoin, liquid],
+            request: request,
+            amountSat: 50000,
+          ),
+        ).thenReturn(Ok(liquid));
+        when(() => coins.load(walletId: liquid.id))
+            .thenAnswer((_) async => Ok(const []));
+        when(() => loadSources.watchFinished(liquid.key))
+            .thenAnswer((_) => const Stream.empty());
+        when(() => consolidation.isRequired(any()))
+            .thenAnswer((_) async => const Ok(false));
+        when(() => feeEstimates.estimate(any()))
+            .thenAnswer((_) async => Ok(_sweepFeeOptions));
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          SendState(wallets: [bitcoin, liquid], paymentRequest: request),
+        );
+
+        await cubit.continueOnAddressConfirmed();
+
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.sendType, SendType.lightning);
+        expect(cubit.state.step, SendStep.amount);
+        expect(cubit.state.selectedBitcoinWallet, liquid);
+        expect(cubit.state.hasFixedRequestAmount, isTrue);
+        // Boltz holds one swap per invoice, so none may exist before the
+        // user has confirmed the source.
+        verifyNever(
+          () => getSendSwapQuoteUsecase.execute(
+            wallet: any(named: 'wallet'),
+            amountSat: any(named: 'amountSat'),
+          ),
+        );
+        verifyNever(
+          () => createSendSwapUsecase.execute(
+            walletId: any(named: 'walletId'),
+            invoice: any(named: 'invoice'),
+            amountSat: any(named: 'amountSat'),
+            quote: any(named: 'quote'),
+            note: any(named: 'note'),
+          ),
+        );
+
+        final quote = _MockOrderSwapQuote();
+        final order = _MockOrderSwapRecord();
+        when(() => quote.inAmountSat).thenReturn(BigInt.from(50100));
+        when(() => order.localId).thenReturn('order-from-bitcoin');
+        when(() => order.localPayinTransactionId).thenReturn(null);
+        when(() => order.localStatus)
+            .thenReturn(OrderSwapLocalStatus.payoutInProgress);
+        when(() => order.order).thenReturn(null);
+        when(() => coins.load(walletId: bitcoin.id))
+            .thenAnswer((_) async => Ok(const []));
+        when(() => loadSources.watchFinished(bitcoin.key))
+            .thenAnswer((_) => const Stream.empty());
+        when(
+          () => getSendSwapQuoteUsecase.execute(
+            wallet: bitcoin,
+            amountSat: BigInt.from(50000),
+          ),
+        ).thenAnswer((_) async => Ok(quote));
+        when(
+          () => createSendSwapUsecase.execute(
+            walletId: bitcoin.id,
+            invoice: request as Bolt11PaymentRequest,
+            amountSat: 50000,
+            quote: quote,
+            note: '',
+          ),
+        ).thenAnswer((_) async => Ok(order));
+        when(() => watchSendSwapUsecase.execute('order-from-bitcoin'))
+            .thenAnswer((_) => const Stream.empty());
+
+        await cubit.updateSelectedWallet(bitcoin);
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.lightningOrder, order);
+      },
+    );
+
     test('routes a Liquid address to amount entry', () async {
       final wallet = _liquidWallet(balanceSat: 1000000);
       const request = PaymentRequest.liquid(

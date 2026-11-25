@@ -173,16 +173,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
-
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
 
@@ -245,22 +235,6 @@ jobs:
 
       - name: PR governance and custody imports (CI only)
         run: make pr-governance-ci-test custody-ci-check
-
-      # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
-      # runner has ~21GB free, so dropping this risks turning every PR red on
-      # "No space left on device". The setup action logs `df -h` — only drop
-      # this once a few runs prove comfortable headroom.
-      - name: Free disk space
-        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
-        # on a runner that can hold PR test secrets — a retag must not run here.
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
 
       # The gates below reference steps.setup.outcome — if this `id` is ever
       # renamed, the expression silently evaluates to '' and every check
@@ -348,17 +322,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Same reclaim as `checks`: the setup's .dart_tool and SDK do not fit a stock x64 runner otherwise.
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
-
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
         with:
@@ -386,8 +349,8 @@ jobs:
     name: Integration tests
     # arm64: free 4-vCPU runners for public repos, native arm execution — the
     # Rust FRB compile is exactly the workload that benefits. If this arch
-    # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
-    # jlumbroso free-disk-space step (see checks job) in one commit.
+    # surfaces a toolchain wart, revert this job to ubuntu-24.04 in one commit
+    # (x64 runners have ~86 GB free before setup and need no cleanup).
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
@@ -395,9 +358,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # This job builds the FRB Rust crates, the Flutter SDK toolchain and the
-      # Linux desktop app on one runner. The arm64 partner image is leaner
-      # than x64 (more free space, and the x64-oriented free-disk-space action
-      # doesn't apply), so reclaim the few big preinstalled dirs inline;
+      # Linux desktop app on one runner. The arm64 partner image keeps a few
+      # big preinstalled dirs, so reclaim them inline;
       # `|| true` because they may not exist on this image. The setup action
       # logs `df -h` to confirm headroom.
       - name: Free disk space (inline, arch-agnostic)

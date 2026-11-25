@@ -46,22 +46,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # x64 stock images are tight on disk once the SDK + pub + build_runner
-      # output land (see the checks job in analyze_and_test.yml); the arm64
-      # partner image is leaner and the action is x64-oriented, so clean up
-      # inline there instead.
-      - name: Free disk space (x64)
-        if: ${{ runner.arch == 'X64' }}
-        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action.
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
-
+      # The arm64 partner image keeps a few large preinstalled toolchains; removing them inline takes seconds. x64 runners have ~86 GB free before setup, which uses at most ~14 GB.
       - name: Free disk space (arm64, inline)
         if: ${{ runner.arch == 'ARM64' }}
         run: |
