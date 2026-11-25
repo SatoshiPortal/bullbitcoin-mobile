@@ -123,13 +123,33 @@ void main() {
     expect((await usecase.execute() as Ok).value, true);
   });
 
-  test('incomplete inventory or missing required fingerprint fails', () async {
+  test('incomplete inventory fails', () async {
     select(LiquidNetwork.mainnet, [], complete: false);
     expect(await usecase.execute(), isA<Err<bool, RecoverBullFailure>>());
-    select(LiquidNetwork.mainnet, []);
-    select(BitcoinNetwork.mainnet, [wallet('a', BitcoinNetwork.mainnet)]);
-    expect(await usecase.execute(), isA<Err<bool, RecoverBullFailure>>());
   });
+
+  test(
+    'missing first Bitcoin fingerprint warns without trying another',
+    () async {
+      select(BitcoinNetwork.mainnet, [
+        wallet('a', BitcoinNetwork.mainnet),
+        wallet(
+          'b',
+          BitcoinNetwork.mainnet,
+          fingerprint: Fingerprint('11111111'),
+        ),
+      ]);
+      expect(
+        await usecase.execute(),
+        isA<Ok<bool, RecoverBullFailure>>().having(
+          (result) => result.value,
+          'value',
+          true,
+        ),
+      );
+      expect(contexts, isEmpty);
+    },
+  );
 
   test('preference and fact errors fail closed', () async {
     when(preferences.readActiveEnvironment)
@@ -190,8 +210,41 @@ void main() {
     select(BitcoinNetwork.regtest, [
       wallet('r', BitcoinNetwork.regtest, fingerprint: Fingerprint('73c5da0a')),
     ]);
-    expect(await usecase.execute(), isA<Err<bool, RecoverBullFailure>>());
+    expect(
+      await usecase.execute(),
+      isA<Ok<bool, RecoverBullFailure>>().having(
+        (result) => result.value,
+        'value',
+        true,
+      ),
+    );
     expect(contexts, isEmpty);
+  });
+
+  test('verified regtest certificate suppresses warning', () async {
+    when(preferences.readActiveEnvironment)
+        .thenAnswer((_) async => const Ok(Environment.regtest));
+    final fingerprint = Fingerprint('73c5da0a');
+    select(BitcoinNetwork.regtest, [
+      wallet('r', BitcoinNetwork.regtest, fingerprint: fingerprint),
+    ]);
+    usecase = BackupWarningNeededUsecase(
+      inventory: inventory,
+      environment: preferences,
+      certificateRegtest: true,
+      readBackup: (id, {required regtest}) async {
+        families.add(regtest);
+        return const Ok(null);
+      },
+      status: (context) async {
+        contexts.add(context);
+        return Ok(BackupStatus(verifiedAt: DateTime.utc(2026)));
+      },
+    );
+    expect((await usecase.execute() as Ok).value, false);
+    expect(families, [true]);
+    expect(contexts.single.fingerprint, fingerprint);
+    expect(contexts.single.network, BitcoinNetwork.regtest);
   });
 
   test('testnet uses normal facts and its own certificate context', () async {
