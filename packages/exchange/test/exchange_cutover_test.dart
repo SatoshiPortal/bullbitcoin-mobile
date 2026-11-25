@@ -4,6 +4,7 @@ import 'package:exchange/src/data/storage/exchange_credential_import.dart'
     show exchangeCredentialImportForTesting;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/src/data/storage/exchange_credential_storage.dart';
+import 'package:exchange/src/data/storage/exchange_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/coordination.dart';
@@ -150,6 +151,81 @@ void main() {
     expect(first, isNotEmpty);
     await expectLegacySourcesUntouched();
   });
+
+  for (final (name, statement) in [
+    ('missing row', 'DELETE FROM exchange_basic_auth WHERE settings_id = 1'),
+    (
+      'unreadable username',
+      "UPDATE exchange_basic_auth SET username = x'ff' WHERE settings_id = 1",
+    ),
+    (
+      'unreadable password',
+      "UPDATE exchange_basic_auth SET password = x'ff' WHERE settings_id = 1",
+    ),
+  ]) {
+    test('an admitted store with $name is refused without repair', () async {
+      final admission = admitted(await cutover().prepare());
+      final opened = await ExchangeStore.openForTesting(
+        file: destination,
+        admission: admission,
+        keys: secrets.databaseKeys(module: 'exchange'),
+        existing: true,
+      );
+      final store = switch (opened) {
+        Ok(:final value) => value,
+        Err() => fail('the admitted store must open'),
+      };
+      await store.database.customStatement(statement);
+      await store.handle.close();
+      expect(
+        await open(admission),
+        isA<Err<ExchangeCredentialStorage, ExchangeFailure>>(),
+      );
+      await admission.close();
+      expect(
+        await cutover().admit(),
+        isA<Err<RuntimeAdmission, LegacyImportFailure>>(),
+      );
+      expect(
+        await cutover().prepare(),
+        isA<Err<RuntimeAdmission, LegacyImportFailure>>(),
+      );
+      final lease = await NativeFileGate(
+        File('${directory.path}/coordination/lifecycle.lock'),
+      ).acquire(exclusive: false, timeout: Duration.zero) as RuntimeAdmission;
+      try {
+        final raw = switch (await ExchangeStore.openForTesting(
+          file: destination,
+          admission: lease,
+          keys: secrets.databaseKeys(module: 'exchange'),
+          existing: true,
+        )) {
+          Ok(:final value) => value,
+          Err() => fail('the store must remain available for inspection'),
+        };
+        final rows = await raw.database
+            .customSelect(
+              'SELECT typeof(username) AS username_type, typeof(password) AS password_type '
+              'FROM exchange_basic_auth WHERE settings_id = 1',
+            )
+            .get();
+        if (name == 'missing row') {
+          expect(rows, isEmpty);
+        } else {
+          expect(
+            rows.single.data[name == 'unreadable username'
+                ? 'username_type'
+                : 'password_type'],
+            'blob',
+          );
+        }
+        await raw.handle.close();
+      } finally {
+        await lease.close();
+      }
+      await expectLegacySourcesUntouched();
+    });
+  }
 
   group('a crash after each durable step', () {
     for (final step in [
