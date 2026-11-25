@@ -13,17 +13,20 @@ enum VirtualIbanOnboardingPurpose { withdraw, funding }
 /// Creates the user's virtual IBAN, which Confidential SEPA needs.
 /// [onActivated] continues once it is active. [onUseRegularSepa] lets the
 /// user continue with regular SEPA while it is still being created.
+/// [onBack] leaves it: its host says where to.
 class VirtualIbanOnboardingScreen extends StatelessWidget {
   const VirtualIbanOnboardingScreen({
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    required this.onBack,
     this.onReturnHome,
     this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+  final VoidCallback onBack;
 
   /// Leaves the flow for the app home while activation continues in the
   /// background. When null, the button is not shown.
@@ -42,6 +45,8 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
                     .pop(RecipientType.confidentialSepaEur),
             onUseRegularSepa: () =>
                 Navigator.of(onboardingContext).pop(RecipientType.sepaEur),
+            // Pushed over the recipients list above: Back pops it.
+            onBack: () => Navigator.of(onboardingContext).pop(),
           ),
         ),
       ),
@@ -56,6 +61,7 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
       child: VirtualIbanOnboardingView(
         onActivated: onActivated,
         onUseRegularSepa: onUseRegularSepa,
+        onBack: onBack,
         onReturnHome: onReturnHome,
         purpose: purpose,
       ),
@@ -68,12 +74,14 @@ class VirtualIbanOnboardingView extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    required this.onBack,
     this.onReturnHome,
     this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+  final VoidCallback onBack;
   final VoidCallback? onReturnHome;
   final VirtualIbanOnboardingPurpose purpose;
 
@@ -93,7 +101,7 @@ class VirtualIbanOnboardingView extends StatelessWidget {
           children: [
             BullTopBar(
               title: context.loc.recipientsTypeConfidentialSepa,
-              onBack: () => Navigator.of(context).maybePop(),
+              onBack: onBack,
             ),
             BullFadingLinearProgress(trigger: isWorking),
             Expanded(

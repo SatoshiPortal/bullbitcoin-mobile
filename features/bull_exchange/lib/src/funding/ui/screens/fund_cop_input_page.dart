@@ -87,6 +87,10 @@ class _FundCopInputPageState extends State<FundCopInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: BackButton(
+          onPressed: () => widget.onEvent(const FundBackPressed()),
+        ),
         title: Text(context.loc.fundExchangeBankTransfer),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),

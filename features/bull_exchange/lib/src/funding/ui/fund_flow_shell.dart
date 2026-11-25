@@ -139,6 +139,7 @@ List<Page<void>> fundPagesFor(
     child: VirtualIbanFundingScreen(
       onUseRegularSepa: () => onEvent(const FundRegularSepaChosen()),
       onDone: () => onEvent(const FundDonePressed()),
+      onBack: () => onEvent(const FundBackPressed()),
     ),
   );
   List<Page<void>> origin(
@@ -270,8 +271,11 @@ List<Page<void>> fundPagesFor(
           ),
         ),
       ],
-    FundSessionEnded() => const [
-      MaterialPage(key: _endKey, child: _SessionEndedPage()),
+    FundSessionEnded() => [
+      MaterialPage(
+        key: _endKey,
+        child: _SessionEndedPage(onEvent: onEvent),
+      ),
     ],
     FundClosed() => const [
       MaterialPage(
@@ -329,11 +333,17 @@ class _ConsentSheetHost extends StatelessWidget {
 }
 
 class _SessionEndedPage extends StatelessWidget {
-  const _SessionEndedPage();
+  const _SessionEndedPage({required this.onEvent});
+
+  final void Function(FundFlowEvent event) onEvent;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.loc.fundExchangeTitle)),
+    appBar: AppBar(
+      automaticallyImplyLeading: false,
+      leading: BackButton(onPressed: () => onEvent(const FundBackPressed())),
+      title: Text(context.loc.fundExchangeTitle),
+    ),
     body: SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -348,7 +358,7 @@ class _SessionEndedPage extends StatelessWidget {
             const SizedBox(height: 24.0),
             BullButton.primary(
               label: context.loc.fundExchangeDoneButton,
-              onPressed: () => BullExchangeNavigation.goToDashboard(context),
+              onPressed: () => onEvent(const FundDonePressed()),
             ),
           ],
         ),

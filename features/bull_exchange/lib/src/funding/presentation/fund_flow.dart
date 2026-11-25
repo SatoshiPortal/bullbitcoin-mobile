@@ -467,7 +467,23 @@ FundFlowNext transitionFundFlow(FundFlowState state, FundFlowEvent event) {
     FundShowing() => _showing(state, event),
     FundRefused() => _refused(state, event),
     FundFetchFailed() => _fetchFailed(state, event),
-    FundSessionEnded() || FundClosed() => FundFlowNext.stay(state),
+    // The session-ended page's Back and Done leave the flow.
+    FundSessionEnded() => switch (event) {
+      FundBackPressed() || FundDonePressed() => _closed,
+      FundAccountLoaded() ||
+      FundRetryPressed() ||
+      FundJurisdictionPicked() ||
+      FundRailPicked() ||
+      FundConsentAccepted() ||
+      FundConsentSubmitted() ||
+      FundConsentVerified() ||
+      FundInstitutionsLoaded() ||
+      FundCopSubmitted() ||
+      FundRegularSepaChosen() ||
+      FundInstructionsLoaded() ||
+      FundSessionChanged() => FundFlowNext.stay(state),
+    },
+    FundClosed() => FundFlowNext.stay(state),
   };
 }
 

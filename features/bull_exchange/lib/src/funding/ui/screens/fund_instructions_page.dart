@@ -24,6 +24,8 @@ class FundInstructionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: BackButton(onPressed: () => onEvent(const FundBackPressed())),
         title: Text(context.loc.fundExchangeTitle),
         scrolledUnderElevation: 0.0,
       ),
@@ -70,7 +72,11 @@ class FundProblemPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = this.title;
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.fundExchangeTitle)),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: BackButton(onPressed: () => onEvent(const FundBackPressed())),
+        title: Text(context.loc.fundExchangeTitle),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

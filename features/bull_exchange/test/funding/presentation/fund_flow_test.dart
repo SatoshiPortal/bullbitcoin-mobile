@@ -267,7 +267,7 @@ final _table = <int, Map<int, _Next>>{
     20: _picking(Jurisdiction.canada, _consent),
     ..._sessionGone,
   },
-  15: {},
+  15: {20: _closed, 21: _closed},
   16: {},
 };
 
