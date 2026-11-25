@@ -29,6 +29,8 @@ class SendPaymentPage extends StatelessWidget {
     required this.onContinue,
     this.recipientReady = false,
     this.isBusy = false,
+    this.showMax = true,
+    this.showSettings = true,
     this.extra,
   });
 
@@ -56,6 +58,8 @@ class SendPaymentPage extends StatelessWidget {
   final VoidCallback? onContinue;
   final bool recipientReady;
   final bool isBusy;
+  final bool showMax;
+  final bool showSettings;
   final Widget? extra;
 
   @override
@@ -97,13 +101,16 @@ class SendPaymentPage extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(child: balance),
-                        Padding(
-                          padding: const EdgeInsets.only(right: BullSpacing.xs),
-                          child: BullFieldAction(
-                            label: maxLabel,
-                            onPressed: onMax,
+                        if (showMax)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: BullSpacing.xs,
+                            ),
+                            child: BullFieldAction(
+                              label: maxLabel,
+                              onPressed: onMax,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     const Gap(BullSpacing.xs),
@@ -200,7 +207,8 @@ class SendPaymentPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (MediaQuery.viewInsetsOf(context).bottom == 0) ...[
+                if (showSettings &&
+                    MediaQuery.viewInsetsOf(context).bottom == 0) ...[
                   BullSettingsEntryTile(
                     label: settingsLabel,
                     summary: feeSummary,

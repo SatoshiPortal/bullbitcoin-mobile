@@ -25,6 +25,16 @@ final class _SendPaymentSession {
   }
 
   bool supports(SendState state) {
+    final fixedInvoice =
+        state.paymentRequest is Bolt11PaymentRequest &&
+        state.hasFixedRequestAmount;
+    if (fixedInvoice) {
+      return !cubit.isSpMode &&
+          !state.isSweep &&
+          !state.usesSelectedInputsOnly &&
+          !state.hasMultipleRecipients &&
+          (state.step == SendStep.address || state.step == SendStep.amount);
+    }
     if (cubit.isSpMode ||
         state.isSweep ||
         state.usesSelectedInputsOnly ||
@@ -158,6 +168,23 @@ final class _SendPaymentSession {
     }
     if (state.step == SendStep.confirm) return review(context, state);
     final ready = state.step == SendStep.amount;
+    final fixedInvoice =
+        state.paymentRequest is Bolt11PaymentRequest &&
+        state.hasFixedRequestAmount;
+    final busy =
+        state.loadingBestWallet ||
+        state.buildingTransaction ||
+        state.amountConfirmedClicked ||
+        state.creatingSwap;
+    final eligible = fixedInvoice
+        ? const FixedAmountWalletChoicePolicy()
+              .eligibleWallets(
+                state.paymentRequest as Bolt11PaymentRequest,
+                state.wallets,
+              )
+              .where((source) => !source.isHardwareWallet)
+              .toList()
+        : <SendSource>[];
     final wallet = state.selectedWallet;
     final canonical =
         BitcoinUnit.values
@@ -185,7 +212,7 @@ final class _SendPaymentSession {
                   BullFieldAction(
                     icon: BullIcons.edit,
                     label: context.loc.sendEdit,
-                    onPressed: edit,
+                    onPressed: busy ? null : edit,
                   ),
                 ],
               ),
@@ -193,48 +220,70 @@ final class _SendPaymentSession {
           : AddressField(onInput: input, onScanned: scan, showLabel: false),
       amountLabel: context.loc.sendAmount,
       lockedAmountLabel: context.loc.sendAmountLocked,
-      amount: ValueListenableBuilder<BitcoinUnit>(
-        valueListenable: unit,
-        builder: (_, displayUnit, _) => BullAmountInput(
-          inCard: true,
-          framed: true,
-          canonicalUnit: canonical,
-          bitcoinDisplayUnit: displayUnit,
-          onBitcoinUnitChanged: (value) => unit.value = value,
-          amountController: amountController,
-          focusNode: amountFocus,
-          defaultCurrencyCode: state.fiatCurrencyCode,
-          currencies: [
-            for (final currency in SupportedCurrency.values)
-              BullAmountCurrency(
-                code: currency.code,
-                decimals: currency.decimals,
-                price: state.amountQuotes[currency]?.fiatAmount,
-                priceAt: state.amountQuotes[currency]?.fetchedAt,
+      amount: fixedInvoice
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                BullBorderedTile(
+                  child: money(context, state.effectiveAmountSat),
+                ),
+                if (state.failure case final failure?) ...[
+                  const Gap(BullSpacing.xs),
+                  Text(
+                    failure.toTranslated(
+                      context,
+                      formattedFrozenBalance: state.frozenBalanceHint,
+                    ),
+                    style: context.bullType.body.copyWith(
+                      color: context.bull.error,
+                    ),
+                  ),
+                ],
+              ],
+            )
+          : ValueListenableBuilder<BitcoinUnit>(
+              valueListenable: unit,
+              builder: (_, displayUnit, _) => BullAmountInput(
+                inCard: true,
+                framed: true,
+                canonicalUnit: canonical,
+                bitcoinDisplayUnit: displayUnit,
+                onBitcoinUnitChanged: (value) => unit.value = value,
+                amountController: amountController,
+                focusNode: amountFocus,
+                defaultCurrencyCode: state.fiatCurrencyCode,
+                currencies: [
+                  for (final currency in SupportedCurrency.values)
+                    BullAmountCurrency(
+                      code: currency.code,
+                      decimals: currency.decimals,
+                      price: state.amountQuotes[currency]?.fiatAmount,
+                      priceAt: state.amountQuotes[currency]?.fetchedAt,
+                    ),
+                ],
+                onEntryChanged: (entry) => cubit.amountEntryChanged(
+                  sats: entry.sats,
+                  currencyCode: entry.currencyCode,
+                  text: entry.text,
+                  rate: entry.price,
+                  quotedAt: entry.priceAt,
+                  isValid: entry.isValid,
+                  isEdit: entry.isEdit,
+                ),
+                isLiquid: wallet?.isLiquid == true,
+                isMax: state.isMaxSend,
+                maxLoading:
+                    state.isMaxSend && cubit.preparedMaxAmountSat == null,
+                maxAmountSat: switch (cubit.preparedMaxAmountSat) {
+                  final n? => BigInt.from(n),
+                  null => null,
+                },
+                error: state.failure?.toTranslated(
+                  context,
+                  formattedFrozenBalance: state.frozenBalanceHint,
+                ),
               ),
-          ],
-          onEntryChanged: (entry) => cubit.amountEntryChanged(
-            sats: entry.sats,
-            currencyCode: entry.currencyCode,
-            text: entry.text,
-            rate: entry.price,
-            quotedAt: entry.priceAt,
-            isValid: entry.isValid,
-            isEdit: entry.isEdit,
-          ),
-          isLiquid: wallet?.isLiquid == true,
-          isMax: state.isMaxSend,
-          maxLoading: state.isMaxSend && cubit.preparedMaxAmountSat == null,
-          maxAmountSat: switch (cubit.preparedMaxAmountSat) {
-            final n? => BigInt.from(n),
-            null => null,
-          },
-          error: state.failure?.toTranslated(
-            context,
-            formattedFrozenBalance: state.frozenBalanceHint,
-          ),
-        ),
-      ),
+            ),
       balance: Wrap(
         spacing: BullSpacing.xxs,
         children: [
@@ -272,8 +321,11 @@ final class _SendPaymentSession {
           : null,
       continueLabel: context.loc.sendContinue,
       recipientReady: ready,
-      isBusy: state.loadingBestWallet || state.buildingTransaction,
+      isBusy: busy,
+      showMax: !fixedInvoice,
+      showSettings: !fixedInvoice,
       onBack: () {
+        if (busy) return;
         if (ready) {
           edit();
         } else {
@@ -291,13 +343,23 @@ final class _SendPaymentSession {
                   )
                 : () => max(context)
           : null,
-      onWallet: ready ? () => wallets(context) : null,
+      onWallet:
+          ready &&
+              !busy &&
+              (!fixedInvoice ||
+                  eligible.length > 1 ||
+                  (eligible.length == 1 && eligible.single.id != wallet?.id))
+          ? () => wallets(context)
+          : null,
       onContinue:
           ready &&
               state.effectiveAmountSat > 0 &&
               state.hasValidAmountEntry &&
-              state.failure == null &&
+              (fixedInvoice || state.failure == null) &&
+              (!fixedInvoice ||
+                  eligible.any((source) => source.id == wallet?.id)) &&
               !state.amountConfirmedClicked &&
+              !state.creatingSwap &&
               !state.buildingTransaction
           ? () {
               amountFocus.unfocus();
@@ -309,7 +371,13 @@ final class _SendPaymentSession {
 
   Future<void> wallets(BuildContext context) async {
     amountFocus.unfocus();
-    final wallets = cubit.state.selectedWallet?.isLiquid == true
+    final request = cubit.state.paymentRequest;
+    final wallets = request is Bolt11PaymentRequest && request.amountSat > 0
+        ? const FixedAmountWalletChoicePolicy()
+              .eligibleWallets(request, cubit.state.wallets)
+              .where((source) => !source.isHardwareWallet)
+              .toList()
+        : cubit.state.selectedWallet?.isLiquid == true
         ? cubit.state.selectableWallets
         : cubit.state.wallets
               .where(
@@ -335,7 +403,19 @@ final class _SendPaymentSession {
         },
       ),
     );
-    if (!_disposed && selected != null) {
+    if (!_disposed &&
+        selected != null &&
+        !cubit.state.amountConfirmedClicked &&
+        !cubit.state.creatingSwap &&
+        cubit.state.step == SendStep.amount &&
+        (request is! Bolt11PaymentRequest ||
+            (cubit.state.paymentRequest == request &&
+                const FixedAmountWalletChoicePolicy()
+                    .eligibleWallets(request, cubit.state.wallets)
+                    .any(
+                      (source) =>
+                          source.id == selected.id && !source.isHardwareWallet,
+                    )))) {
       await cubit.updateSelectedWallet(selected);
     }
   }

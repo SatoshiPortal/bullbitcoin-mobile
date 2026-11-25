@@ -13,6 +13,7 @@ import '../widgets/send_grouped_address.dart';
 import 'dart:async';
 
 import '../../domain/send_source.dart';
+import '../../domain/fixed_amount_wallet_choice_policy.dart';
 import '../send_payment_ui.dart';
 import 'send_payment_page.dart';
 import 'send_payment_review.dart';
@@ -40,7 +41,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:send/src/send_localizations.dart';
 import 'package:send/src/payment/presentation/onchain_send_labels_l10n.dart';
 import 'package:satoshifier/payment_request.dart'
-    show Bip21PaymentRequest, LiquidPaymentRequest;
+    show Bip21PaymentRequest, Bolt11PaymentRequest, LiquidPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:label_editor/label_editor.dart';
