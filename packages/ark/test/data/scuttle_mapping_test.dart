@@ -127,6 +127,27 @@ void main() {
     expect(movementFromJson(legacy).direction, ArkMovementDirection.unknown);
   });
 
+  test('only receive types of Ark and Lightning project as incoming', () {
+    for (final (subsystem, kind) in [
+      ('bark.board', 'board'),
+      ('bark.round', 'refresh'),
+      ('bark.exit', 'start'),
+      ('bark.offboard', 'receive'),
+      ('bark.lightning_send', 'receive'),
+      ('bark.arkoor', 'send'),
+      ('bark.lightning_receive', 'send'),
+      ('unknown.subsystem', 'receive'),
+    ]) {
+      expect(
+        projectScuttleMovement(
+          _movement(subsystem: subsystem, kind: kind, effective: 1000),
+        ).direction,
+        isNot(ArkMovementDirection.incoming),
+        reason: '$subsystem/$kind',
+      );
+    }
+  });
+
   test('a movement projects absolute amounts and UTC seconds', () {
     final projected = projectScuttleMovement(
       _movement(completedAt: 1700000002),
