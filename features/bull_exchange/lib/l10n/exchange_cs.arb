@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Začněte s automatickým nákupem",
   "autoBuyConfirmTitle": "Potvrdit automatický nákup",
   "autoBuyInfoMessage": "Jakákoli částka přidaná na váš účet bude převedena na Bitcoin aktuálním směnným kurzem a odeslána do vaší peněženky.",
-  "autoBuyAccountUnavailableError": "Váš účet Bull Bitcoin není dostupný. Zkuste to prosím později.",
-  "autoBuyWalletRequiredError": "Přidejte alespoň jednu výchozí adresu Bitcoin, Lightning nebo Liquid.",
   "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
   "exchangeAuthLoginFailedMessage": "Chyba nastala, zkuste se znovu přihlásit.",
   "exchangeAuthLoginFailedOkButton": "ČEŠTINA",
@@ -422,7 +420,6 @@
   "recipientsFieldSecurityQuestionHint": "Zadejte bezpečnostní otázku (10-40 znaků)",
   "recipientsFieldSecurityAnswer": "Bezpečnostní odpověď",
   "recipientsFieldSecurityAnswerHint": "Zadejte bezpečnostní odpověď",
-  "recipientsValidationSecurityQuestionMin": "Bezpečnostní otázka musí mít alespoň 10 znaků",
   "recipientsCharCounter": "{count}/40 znaků",
   "recipientsFieldInstitutionCode": "Kód instituce",
   "recipientsFieldInstitutionCodeHint": "Zadejte kód instituce",
@@ -501,26 +498,13 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.",
   "recipientsFieldBankAccountIban": "Číslo bankovního účtu (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu",
-  "withdrawOwnershipQuestion": "Kdo má tento účet?",
-  "withdrawOwnershipOtherAccount": "To je někdo jiný účet",
-  "withdrawAboveMaxAmountError": "Maximální částka je {amount} {currency}",
-  "withdrawConfirmCard": "Čeština",
-  "withdrawBelowMinAmountError": "Minimální částka je {amount} {currency}",
-  "withdrawConfirmPhone": "Čeština",
-  "withdrawUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
   "withdrawConfirmTitle": "Potvrzení výběru",
   "withdrawConfirmAmount": "Množství",
-  "withdrawConfirmEmail": "E-mail",
   "withdrawConfirmButton": "Potvrzení výběru",
-  "withdrawOwnershipMyAccount": "Můj účet",
   "withdrawAmountTitle": "Sdraw fiat",
-  "withdrawConfirmClabe": "ČEŠTINA",
-  "withdrawConfirmPayee": "Čeština",
   "withdrawConfirmRecipientName": "Název příjemce",
-  "withdrawConfirmAccount": "Heslo",
   "withdrawSuccessOrderDetails": "Detaily objednávky",
   "withdrawSuccessTitle": "Odstoupení Initiated",
-  "withdrawConfirmIban": "ČEŠTINA",
   "withdrawConfirmBankAccount": "Bankovní účet",
   "withdrawAmountContinue": "Pokračovat",
   "withdrawInteracSecurityDetailsTitle": "Bezpečnostní údaje převodu",
@@ -528,8 +512,6 @@
   "withdrawInteracSecurityQuestionLengthError": "Bezpečnostní otázka musí mít 3–40 znaků",
   "withdrawInteracSecurityAnswerLengthError": "Bezpečnostní odpověď musí mít 3–40 znaků",
   "withdrawInteracSecurityAnswerFormatError": "Použijte písmena, číslice nebo spojovníky bez mezer",
-  "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
-  "withdrawConfidentialSepaNotActivatedError": "Aktivujte prosím možnost důvěrné platby pro tohoto příjemce SEPA.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -544,7 +526,7 @@
   "limitOrdersFiatAmount": "Amount",
   "limitOrdersEstimatedBuyPrice": "Estimated buy price",
   "limitOrderDetailsTitle": "Limit order details",
-  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsStatus": "Stav",
   "limitOrderDetailsNumber": "Order number",
   "limitOrderDetailsAddress": "Payout address",
   "limitOrderDetailsCreated": "Created",
@@ -605,14 +587,6 @@
   "@buyConfirmYouReceive": {
     "description": "Field label for receive amount"
   },
-  "buyAboveMaxAmountError": "Snažte se koupit nad maximálním množstvím.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyBelowMinAmountError": "Pokuste se koupit pod minimálním množstvím.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
   "buyConfirmPayoutWallet": "Peněženka pro výplatu",
   "buyPayoutMethodLiquid": "L-BTC na Liquid",
   "buyPayoutMethodBitcoin": "BTC na blockchainu Bitcoin",
@@ -641,7 +615,6 @@
       }
     }
   },
-  "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "dcaConfirmPaymentMethod": "Způsob platby",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -809,14 +782,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "Potvrzení nákupu",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyInputMaxAmountError": "Není možné koupit více než",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyNetworkFeeRate": "Síťový poplatek",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -932,14 +897,6 @@
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
   },
-  "buyUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyInputMinAmountError": "Měli byste si koupit alespoň",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
   "dcaUseDefaultLightningAddress": "Používejte výchozí adresu blesku.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -980,18 +937,6 @@
   "@dcaConfirmContinue": {
     "description": "Continue button on DCA confirmation"
   },
-  "dcaAccountUnavailableError": "Váš účet se nepodařilo načíst. Zkontrolujte připojení, ujistěte se, že jste přihlášeni, a zkuste to znovu.",
-  "dcaLightningAddressRequiredError": "Zadejte Lightning adresu pro příjem vašich nákupů.",
-  "dcaReceiveAddressError": "V peněžence se nepodařilo připravit přijímací adresu. Zkuste to prosím znovu.",
-  "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později.",
-  "payPleasePayInvoice": "Tuto fakturu prosím vyplňte",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "Payin částka",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "Pokročilé možnosti",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -1008,25 +953,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "Výplatní částka",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "Síťové poplatky",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "Maximální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "Nahrávání ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "Platba v postupu!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "Kompletní KYC",
   "@sellCompleteKYC": {
@@ -1036,49 +965,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "Bleskové sítě",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "Externí peněženka",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "Neplatný stav",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "S touto peněženkou se snažíte prodat minimální částku, která může být prodána.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "Kč Čeština",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "Vyberte síť",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "Nejsou k dispozici žádné fakturační údaje",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "Množství",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "Žádné podrobnosti",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "Zobrazit QR kód",
   "@sellShowQrCode": {
@@ -1104,25 +1001,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "Objednávky dokončeno!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "Tuto fakturu prosím vyplňte",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "Vyberte síť",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "Čeština Čeština",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "Cena bude obnovena v ",
   "@sellPriceWillRefreshIn": {
@@ -1143,10 +1024,6 @@
   "sellBalanceWillBeCredited": "Vaše zůstatek na účtu bude připsána po přijetí transakce na klíč.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
-  },
-  "payExchangeRate": "Směnný kurz",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
   },
   "copyDialogButton": "Čeština",
   "@copyDialogButton": {
@@ -1180,17 +1057,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "Nejsou k dispozici žádné fakturační údaje",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "Jak chcete zaplatit tuto fakturu?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "Čeština",
-  "payDescriptionLabel": "Popis platby (volitelné)",
-  "payDescriptionHint": "Přidejte poznámku k této platbě",
   "payPaymentDescription": "Popis platby",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1198,18 +1065,6 @@
   "sellQrCode": "QR kód",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "Přejděte domů",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "Nedostatečná vyváženost v zvolené peněžence dokončit tuto prodejní objednávku.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "Vybrat Peněženka",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "Pokračovat",
   "@payContinue": {
@@ -1223,10 +1078,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "Platit z jiné Bitcoin peněženky",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "Prioritní priority",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1234,14 +1085,6 @@
   "sellPayinAmount": "Payin částka",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
-  },
-  "sellBitcoinPriceLabel": "Bitcoin Cena",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
-  "payBitcoinPrice": "Bitcoin Cena",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "Čeština Čeština",
   "@sellMxnBalance": {
@@ -1263,16 +1106,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "Jak chcete zaplatit tuto fakturu?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "Která peněženka chcete platit?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "Čeština",
   "@sellFastest": {
@@ -1294,10 +1129,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "Bitcoin částka",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "Směnný kurz",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1305,10 +1136,6 @@
   "sellTitle": "Prodej Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "Kč Čeština",
   "@sellUsdBalance": {
@@ -1326,21 +1153,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "Minimální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "Výplatní příjemce",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "Tekutý síť",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "Vybrat Peněženka",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "Referenční číslo",
   "@paySinpeNumeroComprobante": {
@@ -1353,10 +1168,6 @@
   "payRecipientName": "Název příjemce",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "Potvrzení platby",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "Potvrzení platby",
   "@sellConfirmPayment": {
@@ -1374,49 +1185,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "Externí peněženka",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "Detaily objednávky",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "S touto peněženkou se snažíte prodat nad maximální částku, která může být prodána.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "Tekutý síť",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "Prodejní objednávka nebyla nalezena. Prosím, zkuste to znovu.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "Pokročilé možnosti",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "Podrobnosti o pomoc",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "Číslo objednávky",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "Čeština",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "Prodej v průběhu...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "Pokročilé nastavení",
   "@payAdvancedSettings": {
@@ -1426,14 +1213,6 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "payCompleted": "Platba dokončena!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
-  },
   "sellAdvancedSettings": "Pokročilé nastavení",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
@@ -1442,10 +1221,6 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
-  "sellSendPaymentContinue": "Pokračovat",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "closeDialogButton": "Zavřít",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
@@ -1453,14 +1228,10 @@
   "viewerTapToCopy": "Klepněte pro kopírování",
   "invoiceViewerTitle": "Faktura",
   "paySinpeReceipt": "Účtenka SINPE",
-  "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
-  "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
   "copiedToClipboard": "Zkopírováno do schránky",
   "sellPayoutBalance": "Přidat k zůstatku mého účtu",
-  "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
   "sellPayoutTitle": "Vybrat příjemce",
-  "sellPayoutNewBadge": "NOVÉ",
   "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
   "sendSelectedUtxosInsufficient": "Vybrané utxos nepokrývá požadovaná částka",
   "@sendSelectedUtxosInsufficient": {
@@ -1521,7 +1292,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Nedostatečná rovnováha",
   "limitOrdersInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
   "limitOrdersFundAccount": "Fond vašeho účtu",
@@ -1579,5 +1349,124 @@
   },
   "exchangeErrorSigningOut": "Odhlášení se nepodařilo dokončit. Zkuste to prosím znovu.",
   "exchangeErrorLoadingAnnouncements": "Oznámení se nepodařilo načíst.",
-  "exchangeErrorRequestingAccountDeletion": "Vaši žádost o smazání účtu se nepodařilo odeslat. Zkuste to prosím znovu."
+  "exchangeErrorRequestingAccountDeletion": "Vaši žádost o smazání účtu se nepodařilo odeslat. Zkuste to prosím znovu.",
+  "exchangeFileUploadStatusUnknown": "Stav neznámý",
+  "exchangeSupportChatAttachFileTooltip": "Připojit soubor",
+  "exchangeSupportChatAttachLogsTooltip": "Připojit protokoly",
+  "exchangeSupportChatSendTooltip": "Odeslat zprávu",
+  "exchangeSupportChatLogDraft": "Zde jsou mé protokoly",
+  "exchangeSupportChatLoadOlder": "Načíst starší zprávy",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "Funkce burzy",
+  "exchangeAccessSettingsOffHint": "Zapněte pro přihlášení nebo vytvoření účtu Bull Bitcoin.",
+  "exchangeAccessSettingsOnHint": "Funkce burzy jsou zapnuté.",
+  "exchangeAccessSignIn": "Přihlásit se nebo vytvořit účet",
+  "exchangeAccessDisableTitle": "Vypnout funkce burzy?",
+  "exchangeAccessDisableBody": "Tím se na tomto zařízení odhlásíte. Stávající objednávky, AutoBuy a opakované nákupy se nezruší.",
+  "exchangeAccessDisableConfirm": "Odhlásit a vypnout",
+  "exchangeTradingRetry": "Zkusit znovu",
+  "exchangeAccessUnreadable": "Přístup k burze se nepodařilo načíst. Zkuste to znovu nebo jej resetujte.",
+  "exchangeAccessReset": "Resetovat přístup k burze",
+  "exchangeAccessLogoutIncomplete": "Odhlášení není dokončeno. Dokončete odhlášení před zapnutím burzy.",
+  "exchangeAccessRetryLogout": "Dokončit odhlášení",
+  "exchangeAccessExpiring": "Vaše relace vypršela. Odhlašujeme vás na tomto zařízení.",
+  "exchangeLogoutDidNotFinish": "Odhlášení na tomto zařízení nebylo dokončeno.",
+  "networkFeatureUnavailable": "Tato funkce není ve vybrané síti dostupná.",
+  "exchangeBitcoinWalletsLoadFailed": "Nepodařilo se načíst výchozí peněženky",
+  "exchangeBitcoinWalletsAddressEmpty": "Adresa nesmí být prázdná",
+  "exchangeBitcoinWalletsSaveFailed": "Nepodařilo se uložit adresu peněženky",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "Nepodařilo se zjistit, zda byla tato adresa uložena. Než ji uložíte znovu, zkontrolujte ji níže.",
+  "exchangeBitcoinWalletsDeleteFailed": "Nepodařilo se smazat adresu peněženky",
+  "exchangeSettingsWriteBusy": "Jiný požadavek na burzu stále probíhá. Zkuste to za chvíli znovu.",
+  "exchangeSettingsSignedOut": "Již nejste přihlášeni k burze. Pro změnu těchto nastavení se znovu přihlaste.",
+  "exchangeBitcoinWalletsBusy": "Jiný požadavek na burzu stále probíhá. Zkuste to za chvíli znovu.",
+  "exchangeBitcoinWalletsUnsetSuccess": "Adresa peněženky odstraněna",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Nepodařilo se zjistit, zda byla tato adresa odstraněna. Než ji změníte, zkontrolujte to znovu.",
+  "exchangeBitcoinWalletsCheckAgain": "Zkontrolovat znovu",
+  "exchangeBitcoinWalletsSessionEnded": "Již nejste přihlášeni k burze. Pro úpravu výchozích peněženek se znovu přihlaste.",
+  "destinationExpectedType": "Zadejte nebo naskenujte platnou hodnotu {type}.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "Nakupujte, prodávejte a plaťte s Bull Bitcoin přímo ze své peněženky.",
+  "exchangeTradingUnavailable": "Obchodování není dostupné.",
+  "priceChartShowTooltip": "Zobrazit graf ceny",
+  "recipientsErrorSaveOutcomeUnknown": "Nepodařilo se zjistit, zda byl tento příjemce uložen. Než jej přidáte znovu, zkontrolujte své příjemce.",
+  "recipientsConfidentialSepaStatusUnknownTitle": "Stav aktivace neznámý",
+  "recipientsConfidentialSepaStatusUnknownDescription": "Stav aktivace tohoto příjemce se nepodařilo načíst. Než jej použijete pro Confidential SEPA, kontaktujte podporu.",
+  "recipientsReturnHome": "Zpět na úvod",
+  "withdrawConfirmOutcomeUnknownError": "Nepodařilo se potvrdit, zda byl váš výběr proveden. Než zahájíte nový výběr, zkontrolujte to znovu.",
+  "withdrawConfirmCheckAgainButton": "Zkontrolovat znovu",
+  "limitOrderStatusUnknown": "Stav neznámý",
+  "dcaUseDefaultBitcoinWallet": "Použít mou výchozí Bitcoin peněženku",
+  "dcaUseDefaultLiquidWallet": "Použít mou výchozí Liquid peněženku",
+  "dcaNoDefaultBitcoinWallet": "Ve svém účtu Bull Bitcoin nemáte výchozí Bitcoin peněženku. Nastavte ji nebo níže zadejte Bitcoin adresu.",
+  "dcaNoDefaultLiquidWallet": "Ve svém účtu Bull Bitcoin nemáte výchozí Liquid peněženku. Nastavte ji nebo níže zadejte Liquid adresu.",
+  "dcaManageDefaultWallets": "Nastavit výchozí peněženky",
+  "dcaEnterBitcoinAddressLabel": "Zadejte Bitcoin adresu",
+  "dcaEnterLiquidAddressLabel": "Zadejte Liquid adresu",
+  "dcaConfirmPayoutAddress": "Adresa pro příjem",
+  "exchangePaymentOutcomeUnknownChecking": "Ověřujeme, zda byla vaše platba odeslána…",
+  "walletSpendAwaitingObservation": "Utrácení není dostupné, dokud tato peněženka není synchronizovaná a nevidí v síti své předchozí platby. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a zkuste to znovu.",
+  "sendPayjoinSpendPaused": "Tato platba Payjoin je pozastavena, protože peněženka nemůže bezpečně pokračovat. Její vstupy zůstávají rezervované. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a poté tento návrh zopakujte, dokud je platný. Pokud vypršel, zkontrolujte platbu v Transakcích, než uděláte cokoli dalšího.",
+  "walletSpendBusy": "Peněženka je zaneprázdněná. Zkuste to za chvíli znovu.",
+  "fundExchangeJurisdictionHint": "Vyberte, odkud posíláte peníze",
+  "fundExchangeScamConsentUnverified": "Nepodařilo se potvrdit, že byl váš souhlas zaznamenán. Zkontrolujte připojení a zkuste to znovu.",
+  "fundExchangeSessionEnded": "Vaše relace na burze skončila. Pro vklad na účet se znovu přihlaste.",
+  "exchangePlatformNotAllowedError": "Burzu nelze na tomto zařízení zapnout.",
+  "exchangeStepReadFailed": "Tato data se teď nepodařilo načíst z burzy. Zkuste to znovu.",
+  "exchangeStepNotSent": "Na burzu nebylo nic odesláno. Zkontrolujte připojení a zkuste to znovu.",
+  "exchangeStepNotApplied": "Burza tento požadavek neprovedla. Můžete to zkusit znovu.",
+  "exchangeStepWriteRefused": "Burza tento požadavek odmítla.",
+  "exchangeOrderBelowMinimum": "Minimální částka je {amount} {currency}",
+  "exchangeOrderAboveMaximum": "Maximální částka je {amount} {currency}",
+  "exchangePayeeInactive": "Tento příjemce zatím není aktivován pro Confidential SEPA.",
+  "exchangeWriteGateBusy": "Jiný požadavek na burzu stále probíhá. Počkejte na jeho dokončení a zkuste to znovu.",
+  "exchangeWriteGateUnsettled": "Předchozí požadavek na burzu se stále ověřuje. Zkuste to znovu, až bude vyřízen.",
+  "exchangeWriteGateJournalUnreadable": "Nepodařilo se ověřit vaše předchozí požadavky na burzu. Zkuste to znovu.",
+  "exchangeStepUnverified": "Nepodařilo se ověřit, zda to burza přijala. Než začnete nový, zkontrolujte to znovu.",
+  "exchangeStepTimedOut": "Trvá to déle, než se čekalo. Můžete to zkontrolovat znovu, nebo odejít a vrátit se později.",
+  "exchangeAmountNoRate": "Cena bitcoinu teď není dostupná. Zkuste to znovu.",
+  "exchangeAmountKycNeeded": "Pro použití této částky dokončete ověření totožnosti.",
+  "exchangeStepVerifying": "Ověřujeme u burzy…",
+  "exchangeFlowSessionEnded": "Vaše relace na burze skončila. Pro pokračování se znovu přihlaste.",
+  "withdrawNoFundedBalance": "Nemáte žádný zůstatek k výběru.",
+  "exchangePayinNoFunds": "Tato peněženka nemá dost prostředků na tuto platbu a její síťový poplatek.",
+  "exchangePayinFeeTooLow": "Síťový poplatek je pod minimem sítě. Zkuste to znovu.",
+  "exchangePayinWalletBusy": "Peněženka se synchronizuje. Zkuste to za chvíli znovu.",
+  "exchangePayinConsolidationRequired": "Tato peněženka musí před zaplacením této částky konsolidovat své mince.",
+  "exchangePayinSigningRefused": "Peněženka nemohla platbu podepsat.",
+  "exchangePayinNotAuthorized": "Tato peněženka nemá oprávnění odesílat platby.",
+  "exchangePayinBuildFailed": "Platbu se nepodařilo připravit. Nic nebylo odesláno.",
+  "exchangePayinNodeRejected": "Síť transakci odmítla. Nic nebylo odesláno.",
+  "exchangePayinPayjoinNotStarted": "Platbu payjoin se nepodařilo zahájit. Nic nebylo odesláno.",
+  "exchangePayinDeadlinePassed": "Platební okno objednávky skončilo dříve, než byla platba odeslána. Nic nebylo odesláno.",
+  "exchangePayinSending": "Odesíláme vaši platbu…",
+  "exchangePayinNotSent": "Platba neodeslána",
+  "exchangePayinPayjoinNegotiating": "Vyjednáváme payjoin s burzou…",
+  "exchangePayinPayjoinPaused": "Payjoin je pozastaven, protože peněženka je zaneprázdněná. Zkuste to znovu.",
+  "exchangePayinUnseen": "Síť ani burza zatím tuto platbu nezobrazují. Stejnou transakci můžete odeslat znovu.",
+  "exchangePayinResend": "Odeslat stejnou transakci znovu",
+  "exchangeStepCheckAgain": "Zkontrolovat znovu",
+  "exchangePayinLeaveTitle": "Opustit tuto platbu?",
+  "exchangePayinLeaveMessage": "Pokud jste již zaplatili, burza platbu i tak přijme. Pokud ne, objednávka ve své lhůtě vyprší.",
+  "exchangePayinStay": "Zůstat",
+  "exchangePayinExternalTitle": "Pošlete přesně tuto částku na adresu níže",
+  "exchangePayinExternalWaiting": "Čekáme na vaši platbu…",
+  "exchangePayinRefusedByExchange": "Burza tuto platbu nepřijala. Kontaktujte podporu s číslem objednávky.",
+  "exchangePayinOrderEnded": "Tato objednávka skončila dříve, než byla vaše platba odeslána. Nic nebylo odesláno.",
+  "exchangePayinDepositRefused": "Tuto objednávku nelze zaplatit z této peněženky. Nic nebylo odesláno.",
+  "exchangePayinReceived": "Burza přijala vaši platbu",
+  "exchangePayinCoinsUnavailable": "Mince vaší peněženky se nepodařilo načíst. Zkuste to znovu.",
+  "buyPayoutAddressUnavailable": "Z této peněženky se nepodařilo získat adresu pro příjem. Vyberte ji znovu nebo zvolte jinou peněženku.",
+  "buyPayoutFailed": "Burza tuto výplatu nemohla dokončit. Otevřete detail objednávky nebo kontaktujte podporu.",
+  "buyPayoutStillPending": "Vaše výplata je stále na cestě. Můžete ji sledovat v detailu objednávky.",
+  "limitOrdersOverBalanceWarning": "To je více než váš dostupný zůstatek. Až se objednávka provede, nakoupí za to, co v té chvíli na zůstatku bude.",
+  "autoBuyAlreadyActive": "Automatický nákup už je na vašem účtu aktivní.",
+  "recipientsValidationEmailInvalid": "Zadejte platnou e-mailovou adresu",
+  "recipientsValidationClabeLength": "CLABE má 18 číslic",
+  "recipientsValidationClabeCheckDigit": "Tato CLABE není platná. Zkontrolujte číslo",
+  "recipientsValidationSpeiPhone": "Zadejte 10místné telefonní číslo bez předvolby země",
+  "recipientsValidationDebitCard": "Číslo debetní karty má 16 číslic",
+  "recipientsErrorFieldRefused": "Burza tuto hodnotu nepřijala",
+  "recipientsErrorCheckFields": "Některé údaje nebyly přijaty. Zkontrolujte označená pole výše.",
+  "recipientsErrorFieldsRefused": "Některé údaje nebyly přijaty: {fields}"
 }

@@ -190,6 +190,20 @@ Map<String, Object?> newFiatRecipientToJson(NewFiatRecipient recipient) => {
     key: ?value,
 };
 
+/// The holder fields of a Colombian recipient: `name` and `lastname` for a
+/// person, `corporateName` for a company, and always `isCorporate`.
+Map<String, Object?> _copHolderFields(NewCopHolder holder) => switch (holder) {
+  NewCopIndividual(:final name, :final lastname) => {
+    'isCorporate': false,
+    'name': name,
+    'lastname': lastname,
+  },
+  NewCopCorporate(:final corporateName) => {
+    'isCorporate': true,
+    'corporateName': corporateName,
+  },
+};
+
 Map<String, Object?> _newFiatRecipientFields(NewFiatRecipient recipient) =>
     switch (recipient) {
       NewInteracEmailCadRecipient() => {
@@ -248,16 +262,17 @@ Map<String, Object?> _newFiatRecipientFields(NewFiatRecipient recipient) =>
         'claveUniform': recipient.claveUniform,
       },
       NewPseColombiaCopRecipient() => {
-        'name': recipient.name,
+        ..._copHolderFields(recipient.holder),
+        'email': recipient.email,
         'bankCode': recipient.bankCode,
         'accountType': recipient.accountType,
         'bankAccount': recipient.bankAccount,
-        'bankName': recipient.bankName,
         'documentId': recipient.documentId,
         'documentType': recipient.documentType,
       },
       NewNequiColombiaCopRecipient() => {
-        'name': recipient.name,
+        ..._copHolderFields(recipient.holder),
+        'email': recipient.email,
         'bankAccount': recipient.bankAccount,
         'documentId': recipient.documentId,
         'documentType': recipient.documentType,

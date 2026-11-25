@@ -223,5 +223,6 @@
   "transactionPayjoinBroadcastFailed": "Alkuperäistä tapahtumaa ei voitu lähettää. Yritä uudelleen.",
   "transactionPayjoinOriginalUnavailable": "Alkuperäinen tapahtuma ei ole enää lähetettävissä.",
   "transactionLabelLimitReached": "Voit lisätä enintään 10 tunnistetta.",
-  "copiedToClipboard": "Kopioitu leikepöydälle"
+  "copiedToClipboard": "Kopioitu leikepöydälle",
+  "transactionListExchangeOrdersUnavailable": "Pörssin toimeksiantoja ei voitu ladata."
 }

@@ -8,16 +8,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Deposit details of the user's virtual IBAN, after creating it when needed.
 /// [onUseRegularSepa] lets the user fund through regular SEPA instead, and
-/// [onDone] leaves the funding flow.
+/// [onDone] leaves the funding flow, [onBack] goes back in it.
 class VirtualIbanFundingScreen extends StatelessWidget {
   const VirtualIbanFundingScreen({
     super.key,
     required this.onUseRegularSepa,
     required this.onDone,
+    required this.onBack,
   });
 
   final VoidCallback onUseRegularSepa;
   final VoidCallback onDone;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class VirtualIbanFundingScreen extends StatelessWidget {
       child: VirtualIbanFundingView(
         onUseRegularSepa: onUseRegularSepa,
         onDone: onDone,
+        onBack: onBack,
       ),
     );
   }
@@ -37,10 +40,12 @@ class VirtualIbanFundingView extends StatefulWidget {
     super.key,
     required this.onUseRegularSepa,
     required this.onDone,
+    required this.onBack,
   });
 
   final VoidCallback onUseRegularSepa;
   final VoidCallback onDone;
+  final VoidCallback onBack;
 
   @override
   State<VirtualIbanFundingView> createState() => _VirtualIbanFundingViewState();
@@ -69,12 +74,14 @@ class _VirtualIbanFundingViewState extends State<VirtualIbanFundingView> {
                   virtualIban: virtualIban,
                   accountOwnerName: state.accountOwnerName ?? '',
                   onDone: widget.onDone,
+                  onBack: widget.onBack,
                 );
               }
               return VirtualIbanOnboardingView(
                 purpose: VirtualIbanOnboardingPurpose.funding,
                 onActivated: () => setState(() => _showDetails = true),
                 onUseRegularSepa: widget.onUseRegularSepa,
+                onBack: widget.onBack,
               );
             },
           ),
@@ -87,11 +94,13 @@ class _VirtualIbanDetails extends StatelessWidget {
     required this.virtualIban,
     required this.accountOwnerName,
     required this.onDone,
+    required this.onBack,
   });
 
   final ActiveVirtualIban virtualIban;
   final String accountOwnerName;
   final VoidCallback onDone;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +114,7 @@ class _VirtualIbanDetails extends StatelessWidget {
           children: [
             BullTopBar(
               title: context.loc.recipientsTypeConfidentialSepa,
-              onBack: () => Navigator.of(context).maybePop(),
+              onBack: onBack,
             ),
             Expanded(
               child: BullScrollableColumn(

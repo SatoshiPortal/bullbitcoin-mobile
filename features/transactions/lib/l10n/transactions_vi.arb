@@ -219,5 +219,6 @@
   "transactionPayjoinBroadcastFailed": "Không thể phát sóng giao dịch gốc. Vui lòng thử lại.",
   "transactionPayjoinOriginalUnavailable": "Giao dịch gốc không còn khả dụng để phát sóng.",
   "transactionLabelLimitReached": "Bạn chỉ có thể có tối đa 10 nhãn.",
-  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm"
+  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm",
+  "transactionListExchangeOrdersUnavailable": "Không thể tải lệnh của sàn giao dịch."
 }

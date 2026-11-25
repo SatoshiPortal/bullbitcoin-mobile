@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Auto-buy ke saath shuru karein",
   "autoBuyConfirmTitle": "Auto-Buy Confirm Karein",
   "autoBuyInfoMessage": "Aapke account mein jodi gayi koi bhi raashi maujooda exchange rate par Bitcoin mein badal kar aapke wallet mein bhej di jayegi.",
-  "autoBuyAccountUnavailableError": "Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.",
-  "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
   "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
   "exchangeAuthLoginFailedTitle": "Login Fail Hua",
   "exchangeAuthLoginFailedMessage": "Koi error aaya, please dobara login karne ki koshish karo.",
@@ -432,7 +430,6 @@
   "recipientsFieldSecurityQuestionHint": "Security question enter karein (10-40 characters)",
   "recipientsFieldSecurityAnswer": "Security Answer",
   "recipientsFieldSecurityAnswerHint": "Security answer enter karein",
-  "recipientsValidationSecurityQuestionMin": "Security question kam se kam 10 characters ka hona chahiye",
   "recipientsCharCounter": "{count}/40 characters",
   "recipientsFieldInstitutionCode": "Institution Code",
   "recipientsFieldInstitutionCodeHint": "Institution code enter karein",
@@ -506,30 +503,15 @@
   "withdrawConfirmTitle": "Withdrawal Confirm Karo",
   "withdrawConfirmRecipientName": "Recipient ka naam",
   "withdrawConfirmAmount": "Amount",
-  "withdrawConfirmEmail": "Email",
-  "withdrawConfirmPayee": "Payee",
-  "withdrawConfirmAccount": "Account",
-  "withdrawConfirmIban": "IBAN",
-  "withdrawConfirmClabe": "CLABE",
-  "withdrawConfirmPhone": "Phone",
-  "withdrawConfirmCard": "Card",
   "withdrawConfirmButton": "Withdrawal confirm karo",
   "withdrawSuccessTitle": "Withdrawal Shuru Hua",
   "withdrawSuccessOrderDetails": "Order details",
   "withdrawConfirmBankAccount": "Bank account",
-  "withdrawOwnershipQuestion": "Ye account kiska hai?",
-  "withdrawOwnershipMyAccount": "Ye mera account hai",
-  "withdrawOwnershipOtherAccount": "Ye kisi aur ka account hai",
-  "withdrawUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
-  "withdrawBelowMinAmountError": "Minimum amount hai {amount} {currency}",
-  "withdrawAboveMaxAmountError": "Maximum amount {amount} {currency} hai",
   "withdrawInteracSecurityDetailsTitle": "Transfer security details",
   "withdrawInteracSaveAsDefault": "In details ko default ke roop mein save karein",
   "withdrawInteracSecurityQuestionLengthError": "Security question 3-40 characters ka hona chahiye",
   "withdrawInteracSecurityAnswerLengthError": "Security answer 3-40 characters ka hona chahiye",
   "withdrawInteracSecurityAnswerFormatError": "Spaces ke bina letters, numbers ya hyphens use karein",
-  "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
-  "withdrawConfidentialSepaNotActivatedError": "Kripya is SEPA recipient ke liye confidential payment option activate karein.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -544,7 +526,7 @@
   "limitOrdersFiatAmount": "Amount",
   "limitOrdersEstimatedBuyPrice": "Estimated buy price",
   "limitOrderDetailsTitle": "Limit order details",
-  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsStatus": "Sthiti",
   "limitOrderDetailsNumber": "Order number",
   "limitOrderDetailsAddress": "Payout address",
   "limitOrderDetailsCreated": "Created",
@@ -603,10 +585,6 @@
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
-  },
-  "buyConfirmPurchase": "Khareedari confirm karo",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
   },
   "buyYouBought": "Aapne {fiatAmount} mein {amount} kharida",
   "@buyYouBought": {
@@ -900,14 +878,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "buyInputMinAmountError": "Aapko kam se kam itna kharidna chahiye",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "Aap itne se zyada nahi kharid sakte",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC ID Verification Baaki Hai",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -967,74 +937,17 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "buyUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "Aap minimum amount se kam kharidne ki koshish kar rahe hain.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "Aap maximum amount se zyada kharidne ki koshish kar rahe hain.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.",
-  "dcaAccountUnavailableError": "Aapka account load nahi ho saka. Apna connection jaanchein, sunishchit karein ki aap logged in hain aur phir se koshish karein.",
-  "dcaLightningAddressRequiredError": "Apni khareedari paane ke liye ek Lightning address daalein.",
-  "dcaReceiveAddressError": "Aapke wallet mein receiving address taiyaar nahi ho saka. Kripya phir se koshish karein.",
-  "dcaOrderCreationError": "Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein.",
   "sellTitle": "Bitcoin Becho",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellSelectWallet": "Wallet Chuniye",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "sellWhichWalletQuestion": "Kis wallet se bechna chahte ho?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "sellExternalWallet": "Bahari wallet",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "sellFromAnotherWallet": "Doosre Bitcoin wallet se becho",
   "@sellFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
-  },
-  "sellAboveMaxAmountError": "Aap maximum raashi se zyada bechne ki koshish kar rahe ho is wallet se.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellBelowMinAmountError": "Aap minimum raashi se kam bechne ki koshish kar rahe ho is wallet se.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "sellInsufficientBalanceError": "Chunhe wallet mein itna balance nahi hai yeh sell order poora karne ke liye.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellUnauthenticatedError": "Aap logged in nahi ho. Jaari rakhne ke liye login karo.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "sellOrderNotFoundError": "Sell order nahi mila. Dobara koshish karo.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellOrderAlreadyConfirmedError": "Yeh sell order pehle hi confirm ho chuka hai.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "sellSelectNetwork": "Network Chuniye",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "sellHowToPayInvoice": "Yeh invoice kaise pay karna chahte ho?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
   },
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
@@ -1144,10 +1057,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellPleasePayInvoice": "Yeh invoice pay karo",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
   "sellBitcoinAmount": "Bitcoin raashi",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
@@ -1164,48 +1073,18 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "sellNoInvoiceData": "Koi invoice data nahi hai",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellInProgress": "Bechna jari hai...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
-  },
-  "sellGoHome": "Ghar jao",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellOrderCompleted": "Order poora hua!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
   "sellBalanceWillBeCredited": "Aapka account balance credit ho jayega jab aapka transaction onchain 1 confirmation le lega.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
   "payTitle": "Pay Karo",
-  "payDescriptionLabel": "Bhugtan vivaran (vaikalpik)",
-  "payDescriptionHint": "Is bhugtan ke liye ek note jodein",
   "payPaymentDescription": "Bhugtan vivaran",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
-  "payPaymentInProgress": "Payment Ho Rahi Hai!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
-  },
   "payPriceRefreshIn": "Kimat refresh hogi ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "payWhichWallet": "Kis wallet se pay karna chahte ho?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
-  },
-  "payExternalWalletDescription": "Doosre Bitcoin wallet se pay karo",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
   },
   "payRbfActivated": "Replace-by-fee chalu hai",
   "@payRbfActivated": {
@@ -1227,14 +1106,6 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "sellSendPaymentContinue": "Continue",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
-  "sellBitcoinPriceLabel": "Bitcoin Price",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "sellViewDetailsButton": "Details dekho",
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
@@ -1247,10 +1118,6 @@
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
   },
-  "sellLoadingGeneric": "Load ho raha hai...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "payRecipientType": "Recipient type",
   "@payRecipientType": {
     "description": "Label for recipient type"
@@ -1259,73 +1126,9 @@
   "@payRecipientName": {
     "description": "Label for recipient name"
   },
-  "payRecipientDetails": "Recipient details",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
-  },
-  "payNoDetailsAvailable": "Koi details uplabdh nahi",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
-  },
-  "paySelectWallet": "Wallet Chunein",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
-  },
-  "payExternalWallet": "External wallet",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payAboveMaxAmountError": "Is wallet se aap zyada se zyada {amount} pay kar sakte hain.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "payBelowMinAmountError": "Is wallet se aap kam se kam {amount} pay kar sakte hain.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "payInsufficientBalanceError": "Is pay order ko poora karne ke liye selected wallet mein balance kam hai.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "payUnauthenticatedError": "Aap authenticated nahi hain. Jaari rakhne ke liye kripya log in karein.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "paySelectNetwork": "Network Chunein",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payHowToPayInvoice": "Aap is invoice ko kaise pay karna chahte hain?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "payConfirmPayment": "Payment Confirm Karein",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
-  },
   "payOrderNumber": "Order number",
   "@payOrderNumber": {
     "description": "Label for order number"
-  },
-  "payPayinAmount": "Payin amount",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
-  "payPayoutAmount": "Payout amount",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
-  "payExchangeRate": "Exchange rate",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
   },
   "payPayFromWallet": "Wallet se pay karein",
   "@payPayFromWallet": {
@@ -1371,18 +1174,6 @@
   "@payContinue": {
     "description": "Button to continue to next step"
   },
-  "payPleasePayInvoice": "Kripya is invoice ko pay karein",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payBitcoinAmount": "Bitcoin amount",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
-  "payBitcoinPrice": "Bitcoin Price",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
-  },
   "payCopyInvoice": "Invoice Copy karein",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
@@ -1395,14 +1186,6 @@
   "@payQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "payNoInvoiceData": "Koi invoice data uplabdh nahi",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "payInvalidState": "Invalid state",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
   "payViewDetails": "Details dekhein",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -1410,10 +1193,6 @@
   "paySinpeReceipt": "SINPE Receipt",
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
-  },
-  "payCompleted": "Payment Poora Hua!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -1447,23 +1226,15 @@
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
   },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
   "viewerTapToCopy": "Copy karne ke liye tap karo",
   "invoiceViewerTitle": "Invoice",
-  "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
-  "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
   "copiedToClipboard": "Clipboard par copy kiya gaya",
   "sellPayoutBalance": "Mere account balance mein jodein",
-  "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
   "sellPayoutTitle": "Recipient Select Karo",
-  "sellPayoutNewBadge": "NAYA",
   "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
   "sendSelectedUtxosInsufficient": "Chunne hue UTXOs zaruri rashi ke liye kaafi nahi hain",
   "@sendSelectedUtxosInsufficient": {
@@ -1524,7 +1295,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Insufficient balance",
   "limitOrdersInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
   "limitOrdersFundAccount": "Apna account fund karo",
@@ -1582,5 +1352,124 @@
   },
   "exchangeErrorSigningOut": "Aap poori tarah sign out nahin ho sake. Kripya dobara koshish karein.",
   "exchangeErrorLoadingAnnouncements": "Announcements load nahin ho sake.",
-  "exchangeErrorRequestingAccountDeletion": "Aapka account delete karne ka request nahin bheja ja saka. Kripya dobara koshish karein."
+  "exchangeErrorRequestingAccountDeletion": "Aapka account delete karne ka request nahin bheja ja saka. Kripya dobara koshish karein.",
+  "exchangeFileUploadStatusUnknown": "Sthiti agyaat",
+  "exchangeSupportChatAttachFileTooltip": "File attach karein",
+  "exchangeSupportChatAttachLogsTooltip": "Logs attach karein",
+  "exchangeSupportChatSendTooltip": "Message bhejein",
+  "exchangeSupportChatLogDraft": "Ye rahe mere logs",
+  "exchangeSupportChatLoadOlder": "Pichhle messages load karein",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "Exchange ke features",
+  "exchangeAccessSettingsOffHint": "Sign in karne ya Bull Bitcoin account banane ke liye enable karein.",
+  "exchangeAccessSettingsOnHint": "Exchange features enabled hain.",
+  "exchangeAccessSignIn": "Sign in karein ya account banayein",
+  "exchangeAccessDisableTitle": "Exchange features disable karein?",
+  "exchangeAccessDisableBody": "Isse aap is device par sign out ho jayenge. Maujooda orders, AutoBuy aur recurring buys cancel nahi honge.",
+  "exchangeAccessDisableConfirm": "Sign out aur disable karein",
+  "exchangeTradingRetry": "Dobara try karein",
+  "exchangeAccessUnreadable": "Exchange access padha nahi ja saka. Dobara try karein ya ise reset karein.",
+  "exchangeAccessReset": "Exchange access reset karein",
+  "exchangeAccessLogoutIncomplete": "Sign out poora nahi hua. Exchange enable karne se pehle sign out poora karein.",
+  "exchangeAccessRetryLogout": "Sign out poora karein",
+  "exchangeAccessExpiring": "Aapka session expire ho gaya. Is device par aapko sign out kiya ja raha hai.",
+  "exchangeLogoutDidNotFinish": "Is device par sign out poora nahi hua.",
+  "networkFeatureUnavailable": "Yeh feature chune gaye network par available nahi hai.",
+  "exchangeBitcoinWalletsLoadFailed": "Default wallets load nahi ho sake",
+  "exchangeBitcoinWalletsAddressEmpty": "Address khaali nahi ho sakta",
+  "exchangeBitcoinWalletsSaveFailed": "Wallet address save nahi ho saka",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "Hum pata nahi laga sake ki yeh address save hua ya nahi. Dobara save karne se pehle neeche ise check karein.",
+  "exchangeBitcoinWalletsDeleteFailed": "Wallet address delete nahi ho saka",
+  "exchangeSettingsWriteBusy": "Exchange ki ek aur request abhi chal rahi hai. Thodi der mein dobara try karein.",
+  "exchangeSettingsSignedOut": "Aap ab exchange mein signed in nahi hain. Ye settings badalne ke liye dobara sign in karein.",
+  "exchangeBitcoinWalletsBusy": "Exchange ki ek aur request abhi chal rahi hai. Thodi der mein dobara try karein.",
+  "exchangeBitcoinWalletsUnsetSuccess": "Wallet address hata diya gaya",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Hum pata nahi laga sake ki yeh address hataya gaya ya nahi. Ise badalne se pehle dobara check karein.",
+  "exchangeBitcoinWalletsCheckAgain": "Dobara check karein",
+  "exchangeBitcoinWalletsSessionEnded": "Aap ab exchange mein signed in nahi hain. Apne default wallets edit karne ke liye dobara sign in karein.",
+  "destinationExpectedType": "Ek valid {type} enter ya scan karein.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "Apne wallet se hi Bull Bitcoin ke saath kharidein, bechein aur pay karein.",
+  "exchangeTradingUnavailable": "Trading available nahi hai.",
+  "priceChartShowTooltip": "Price chart dikhayein",
+  "recipientsErrorSaveOutcomeUnknown": "Hum pata nahi laga sake ki yeh recipient save hua ya nahi. Ise dobara add karne se pehle apne recipients check karein.",
+  "recipientsConfidentialSepaStatusUnknownTitle": "Activation sthiti agyaat",
+  "recipientsConfidentialSepaStatusUnknownDescription": "Hum is recipient ka activation status padh nahi sake. Confidential SEPA ke liye iska istemal karne se pehle kripya support se sampark karein.",
+  "recipientsReturnHome": "Home par lautein",
+  "withdrawConfirmOutcomeUnknownError": "Hum confirm nahi kar sake ki aapki withdrawal hui ya nahi. Nayi withdrawal shuru karne se pehle dobara check karein.",
+  "withdrawConfirmCheckAgainButton": "Dobara check karein",
+  "limitOrderStatusUnknown": "Sthiti agyaat",
+  "dcaUseDefaultBitcoinWallet": "Mera default Bitcoin wallet use karein",
+  "dcaUseDefaultLiquidWallet": "Mera default Liquid wallet use karein",
+  "dcaNoDefaultBitcoinWallet": "Aapke Bull Bitcoin account mein koi default Bitcoin wallet nahi hai. Ek set karein, ya neeche Bitcoin address enter karein.",
+  "dcaNoDefaultLiquidWallet": "Aapke Bull Bitcoin account mein koi default Liquid wallet nahi hai. Ek set karein, ya neeche Liquid address enter karein.",
+  "dcaManageDefaultWallets": "Default wallets set karein",
+  "dcaEnterBitcoinAddressLabel": "Bitcoin address enter karein",
+  "dcaEnterLiquidAddressLabel": "Liquid address enter karein",
+  "dcaConfirmPayoutAddress": "Receive karne ka address",
+  "exchangePaymentOutcomeUnknownChecking": "Check kar rahe hain ki aapka payment bheja gaya ya nahi…",
+  "walletSpendAwaitingObservation": "Jab tak yeh wallet sync hokar network par apne pichhle payments nahi dekh leta, tab tak spending available nahi hai. Wallet refresh karein ya \"Scan for missing transactions\" use karein, phir dobara try karein.",
+  "sendPayjoinSpendPaused": "Yeh Payjoin payment rok diya gaya hai kyunki wallet surakshit roop se aage nahi badh sakta. Iske inputs reserved rahenge. Wallet refresh karein ya \"Scan for missing transactions\" use karein, phir jab tak yeh proposal valid hai, ise dobara try karein. Agar yeh expire ho gaya hai, toh aage kuch bhi karne se pehle Transactions mein payment check karein.",
+  "walletSpendBusy": "Wallet busy hai. Thodi der mein dobara try karein.",
+  "fundExchangeJurisdictionHint": "Chunein ki aap paise kahan se bhej rahe hain",
+  "fundExchangeScamConsentUnverified": "Hum confirm nahi kar sake ki aapki consent record hui. Apna connection check karein aur dobara try karein.",
+  "fundExchangeSessionEnded": "Aapka exchange session khatam ho gaya. Apne account mein funds daalne ke liye dobara sign in karein.",
+  "exchangePlatformNotAllowedError": "Is device par exchange on nahi kiya ja sakta.",
+  "exchangeStepReadFailed": "Hum abhi exchange se yeh load nahi kar sake. Dobara try karein.",
+  "exchangeStepNotSent": "Exchange ko kuch nahi bheja gaya. Apna connection check karein aur dobara try karein.",
+  "exchangeStepNotApplied": "Exchange ne yeh request apply nahi ki. Aap dobara try kar sakte hain.",
+  "exchangeStepWriteRefused": "Exchange ne yeh request reject kar di.",
+  "exchangeOrderBelowMinimum": "Minimum amount {amount} {currency} hai",
+  "exchangeOrderAboveMaximum": "Maximum amount {amount} {currency} hai",
+  "exchangePayeeInactive": "Yeh recipient abhi Confidential SEPA ke liye activate nahi hua hai.",
+  "exchangeWriteGateBusy": "Exchange ki ek aur request abhi chal rahi hai. Uske poora hone ka intezaar karein, phir dobara try karein.",
+  "exchangeWriteGateUnsettled": "Exchange ki ek pichhli request abhi check ho rahi hai. Uske settle hone ke baad dobara try karein.",
+  "exchangeWriteGateJournalUnreadable": "Hum exchange ki aapki pichhli requests check nahi kar sake. Dobara try karein.",
+  "exchangeStepUnverified": "Hum check nahi kar sake ki exchange ko yeh mila ya nahi. Naya shuru karne se pehle dobara check karein.",
+  "exchangeStepTimedOut": "Ismein ummeed se zyada samay lag raha hai. Aap dobara check kar sakte hain ya abhi chhodkar baad mein laut sakte hain.",
+  "exchangeAmountNoRate": "Bitcoin ki price abhi available nahi hai. Dobara try karein.",
+  "exchangeAmountKycNeeded": "Yeh amount use karne ke liye apna identity verification poora karein.",
+  "exchangeStepVerifying": "Exchange se check kar rahe hain…",
+  "exchangeFlowSessionEnded": "Aapka exchange session khatam ho gaya. Jaari rakhne ke liye dobara sign in karein.",
+  "withdrawNoFundedBalance": "Aapke paas withdraw karne ke liye koi balance nahi hai.",
+  "exchangePayinNoFunds": "Is wallet mein is payment aur uski network fee ke liye kaafi funds nahi hain.",
+  "exchangePayinFeeTooLow": "Network fee network ki minimum se kam hai. Dobara try karein.",
+  "exchangePayinWalletBusy": "Wallet sync karne mein busy hai. Thodi der mein dobara try karein.",
+  "exchangePayinConsolidationRequired": "Yeh amount pay karne se pehle is wallet ko apne coins consolidate karne honge.",
+  "exchangePayinSigningRefused": "Wallet payment sign nahi kar saka.",
+  "exchangePayinNotAuthorized": "Yeh wallet payments bhejne ke liye authorized nahi hai.",
+  "exchangePayinBuildFailed": "Payment taiyaar nahi ho saka. Kuch nahi bheja gaya.",
+  "exchangePayinNodeRejected": "Network ne transaction reject kar diya. Kuch nahi bheja gaya.",
+  "exchangePayinPayjoinNotStarted": "Payjoin payment shuru nahi ho saka. Kuch nahi bheja gaya.",
+  "exchangePayinDeadlinePassed": "Payment bhejne se pehle hi order ki payment window khatam ho gayi. Kuch nahi bheja gaya.",
+  "exchangePayinSending": "Aapka payment bheja ja raha hai…",
+  "exchangePayinNotSent": "Payment nahi bheja gaya",
+  "exchangePayinPayjoinNegotiating": "Exchange ke saath Payjoin negotiate ho raha hai…",
+  "exchangePayinPayjoinPaused": "Payjoin rok diya gaya hai kyunki wallet busy hai. Dobara try karein.",
+  "exchangePayinUnseen": "Na network par, na exchange par yeh payment abhi dikh raha hai. Aap wahi transaction dobara bhej sakte hain.",
+  "exchangePayinResend": "Wahi transaction dobara bhejein",
+  "exchangeStepCheckAgain": "Dobara check karein",
+  "exchangePayinLeaveTitle": "Yeh payment chhodein?",
+  "exchangePayinLeaveMessage": "Agar aap pay kar chuke hain, toh exchange ko yeh phir bhi mil jayega. Agar nahi, toh order apni deadline par expire ho jayega.",
+  "exchangePayinStay": "Rukein",
+  "exchangePayinExternalTitle": "Neeche diye gaye address par bilkul yahi amount bhejein",
+  "exchangePayinExternalWaiting": "Aapke payment ka intezaar hai…",
+  "exchangePayinRefusedByExchange": "Exchange ne yeh payment accept nahi kiya. Order number ke saath support se sampark karein.",
+  "exchangePayinOrderEnded": "Aapka payment bhejne se pehle yeh order khatam ho gaya. Kuch nahi bheja gaya.",
+  "exchangePayinDepositRefused": "Is order ka payment is wallet se nahi ho sakta. Kuch nahi bheja gaya.",
+  "exchangePayinReceived": "Exchange ko aapka payment mil gaya",
+  "exchangePayinCoinsUnavailable": "Aapke wallet ke coins load nahi ho sake. Phir se koshish kariye.",
+  "buyPayoutAddressUnavailable": "Is wallet se receive address nahi mil saka. Ise phir se chunein ya koi doosra wallet chunein.",
+  "buyPayoutFailed": "Exchange yeh payout poora nahi kar saka. Order details kholein ya support se sampark karein.",
+  "buyPayoutStillPending": "Aapka payout abhi raaste mein hai. Aap ise order details mein dekh sakte hain.",
+  "limitOrdersOverBalanceWarning": "Yeh aapke available balance se zyada hai. Order execute hone par us waqt balance mein jitna hoga, utne se kharida jayega.",
+  "autoBuyAlreadyActive": "Aapke account par Auto Buy pehle se active hai.",
+  "recipientsValidationEmailInvalid": "Ek valid email address daalein",
+  "recipientsValidationClabeLength": "CLABE mein 18 digits hote hain",
+  "recipientsValidationClabeCheckDigit": "Yah CLABE valid nahin hai. Number check karein",
+  "recipientsValidationSpeiPhone": "Country code ke bina 10 digit ka phone number daalein",
+  "recipientsValidationDebitCard": "Debit card number mein 16 digits hote hain",
+  "recipientsErrorFieldRefused": "Exchange ne yeh value accept nahi ki",
+  "recipientsErrorCheckFields": "Kuch details accept nahi hui. Upar mark kiye gaye fields check karein.",
+  "recipientsErrorFieldsRefused": "Kuch details accept nahi hui: {fields}"
 }

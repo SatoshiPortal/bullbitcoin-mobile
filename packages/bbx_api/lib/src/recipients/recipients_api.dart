@@ -22,6 +22,16 @@ final class RecipientsApi {
   static const endpoint = '/ak/api-recipients';
   static const _v2 = {'x-api-version': '2.0.0'};
 
+  /// How long [createVirtualIban] and [activateSepaVirtualPayee] wait for the
+  /// answer. Both answer only after the server has polled Fiat Republic: the
+  /// create waits for the end user to become active, the activation for the
+  /// end user and then the virtual account, each poll bounded by the server's
+  /// `FIAT_REPUBLIC_POLLING_TIMEOUT` (3 minutes by default). A 30-second limit
+  /// would cut off a request the server is still working on. The wait stays
+  /// bounded so the screen always gets an answer; connect and send keep the
+  /// client's timeouts.
+  static const virtualIbanReceiveTimeout = Duration(minutes: 8);
+
   final BbxTransport _transport;
 
   @internal
@@ -48,7 +58,7 @@ final class RecipientsApi {
     required String address,
     required bool isOwner,
     required bool isDefault,
-  }) => _transport.request(
+  }) => _transport.write(
     endpoint,
     'createMyRecipient',
     params: {
@@ -70,7 +80,7 @@ final class RecipientsApi {
     String? address,
     bool? isDefault,
     bool isOwner = true,
-  }) => _transport.request(
+  }) => _transport.write(
     endpoint,
     'updateMyRecipient',
     params: {
@@ -88,7 +98,7 @@ final class RecipientsApi {
   /// Creates a fiat recipient.
   Future<Result<FiatRecipient, BbxFailure>> createRecipientFiat(
     NewFiatRecipient recipient,
-  ) => _transport.request(
+  ) => _transport.write(
     endpoint,
     'createRecipientFiat',
     params: {'element': newFiatRecipientToJson(recipient)},
@@ -247,12 +257,13 @@ final class RecipientsApi {
 
   /// Creates the user's virtual IBAN.
   Future<Result<VirtualIban, BbxFailure>> createVirtualIban() =>
-      _transport.request(
+      _transport.write(
         endpoint,
         'createMyRecipient',
         params: {
           'element': {'recipientType': 'FR_VIRTUAL_ACCOUNT', 'isOwner': true},
         },
+        receiveTimeout: virtualIbanReceiveTimeout,
         read: (result) => parseVirtualIban(_element(result)),
       );
 
@@ -265,6 +276,7 @@ final class RecipientsApi {
     'activateSepaVirtualPayee',
     params: {'recipientId': recipientId},
     headers: _v2,
+    receiveTimeout: virtualIbanReceiveTimeout,
     read: (result) => parseSepaVirtualPayee(_element(result)),
   );
 

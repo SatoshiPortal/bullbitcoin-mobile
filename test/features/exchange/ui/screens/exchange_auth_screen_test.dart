@@ -1,5 +1,3 @@
-import '../../fixtures/legacy_access.dart';
-
 import 'package:exchange/setup.dart';
 import 'package:exchange/exchange.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +11,6 @@ import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -23,12 +20,6 @@ import '../../../settings/fake_webview_platform.dart';
 class _Settings extends Mock implements Preferences {}
 
 class _Keys extends Mock implements ExchangeCredentials {}
-
-class _Cubit extends Mock implements ExchangeCubit {}
-
-typedef _Authenticate = Future<Result<void, ExchangeFailure>> Function({
-  required bool Function() isCurrent,
-});
 
 class _Platform extends FakeWebViewPlatform {
   _Delegate? delegate;
@@ -88,12 +79,6 @@ class _Delegate extends FakePlatformNavigationDelegate {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() {
-    Future<Result<void, ExchangeFailure>> fallback({
-      required bool Function() isCurrent,
-    }) async => const Ok(null);
-    registerFallbackValue(fallback);
-  });
   for (final scenario in [
     'deferred',
     'acknowledge',
@@ -104,21 +89,27 @@ void main() {
     testWidgets('authentication WebView: $scenario', (tester) async {
       var generations = 0;
       var exits = 0;
+      var dones = 0;
       final platform = _Platform();
       if (scenario == 'no-session') platform.cookies.cookies = [];
       WebViewPlatform.instance = platform;
       final settings = _Settings();
       final keys = _Keys();
-      final cubit = _Cubit();
       SharedPreferences.setMockInitialValues({});
       when(() => keys.readActiveApiKey(isTestnet: true))
           .thenAnswer((_) async => const Ok(null));
-      final access = legacyAccessForTesting(
+      Object? storedAccess;
+      final access = ExchangeAccessLifecycle.open(
         apiKeyRepository: keys,
         readEnvironment: () async => true,
         platformAllowed: () async => true,
         disconnectNotifications: () async {},
         clearCookies: () async {},
+        readPreference: () async => storedAccess,
+        writePreference: (value) async {
+          storedAccess = value;
+          return true;
+        },
       );
       final _ = await access.enable();
       when(settings.readExchangeWebPreferences).thenAnswer(
@@ -127,21 +118,6 @@ void main() {
           exchangeTestnetBasicAuthUsername: null,
           exchangeTestnetBasicAuthPassword: null,
         )),
-      );
-      when(() => cubit.state).thenReturn(const ExchangeState());
-      when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-      // The screen authenticates through its cubit, which runs the use case.
-      when(
-        () => cubit.completeAuthentication(
-          any(),
-          isCurrent: any(named: 'isCurrent'),
-        ),
-      ).thenAnswer(
-        (invocation) =>
-            (invocation.positionalArguments.single as _Authenticate)(
-              isCurrent:
-                  invocation.namedArguments[#isCurrent] as bool Function(),
-            ),
       );
       platform.evaluate = (_) {
         generations++;
@@ -182,12 +158,10 @@ void main() {
           theme: AppTheme.themeData(AppThemeType.light),
           localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocProvider<ExchangeCubit>.value(
-            value: cubit,
-            child: ExchangeAuthScreen(
-              onExit: () => exits++,
-              host: exchangeAuthHost(() => capability),
-            ),
+          home: ExchangeAuthScreen(
+            onExit: () => exits++,
+            onDone: () => dones++,
+            host: exchangeAuthHost(() => capability),
           ),
         ),
       );
@@ -222,23 +196,9 @@ void main() {
       expect(generations, scenario == 'no-session' ? 0 : 1);
       expect(platform.cookies.clears, 0);
       expect(exits, 0);
+      expect(dones, 0);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(platform.controller?.reloadCount, scenario == 'retry' ? 1 : 0);
-      if (scenario == 'no-session') {
-        verifyNever(
-          () => cubit.completeAuthentication(
-            any(),
-            isCurrent: any(named: 'isCurrent'),
-          ),
-        );
-      } else {
-        verify(
-          () => cubit.completeAuthentication(
-            any(),
-            isCurrent: any(named: 'isCurrent'),
-          ),
-        ).called(1);
-      }
       verify(() => keys.readActiveApiKey(isTestnet: true)).called(1);
       verifyNoMoreInteractions(keys);
     });

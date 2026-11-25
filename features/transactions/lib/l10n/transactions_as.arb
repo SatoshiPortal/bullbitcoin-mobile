@@ -231,5 +231,6 @@
   "transactionPayjoinBroadcastFailed": "মূল লেনদেনটো সম্প্ৰচাৰ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটো আৰু সম্প্ৰচাৰৰ বাবে উপলব্ধ নহয়।",
   "transactionLabelLimitReached": "আপুনি সৰ্বাধিক ১০টা লেবেল ৰাখিব পাৰে।",
-  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে"
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
+  "transactionListExchangeOrdersUnavailable": "এক্সচেঞ্জৰ অৰ্ডাৰসমূহ লোড কৰিব পৰা নগ'ল।"
 }

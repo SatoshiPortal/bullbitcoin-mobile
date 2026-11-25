@@ -63,6 +63,7 @@ void main() {
           child: VirtualIbanFundingView(
             onUseRegularSepa: () => usedRegularSepa++,
             onDone: () => done++,
+            onBack: () {},
           ),
         ),
       ),

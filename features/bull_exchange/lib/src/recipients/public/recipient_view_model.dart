@@ -1,141 +1,34 @@
 import 'package:exchange/exchange.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:meta/meta.dart';
 
-part 'recipient_view_model.freezed.dart';
+/// A recipient as the recipient screens show it: everything shown comes
+/// from its payout rail.
+@immutable
+final class RecipientViewModel {
+  final Recipient recipient;
 
-@Freezed(toStringOverride: false)
-sealed class RecipientViewModel with _$RecipientViewModel {
-  const factory RecipientViewModel({
-    required String id,
-    required RecipientType type,
-    String? name,
-    String? firstname,
-    String? lastname,
-    String? email,
-    String? securityQuestion,
-    String? securityAnswer,
-    bool? isCorporate,
-    String? corporateName,
-    String? ownerName,
-    String? label,
-    String? payeeName,
-    String? payeeCode,
-    String? payeeAccountNumber,
-    String? institutionNumber,
-    String? transitNumber,
-    String? accountNumber,
-    String? iban,
-    String? clabe,
-    String? phoneNumber,
-    String? debitcard,
-    bool? isOwner,
-    String? bankAccount,
-    @Default(false) bool isVirtualPayeeActive,
-  }) = _RecipientViewModel;
-  const RecipientViewModel._();
+  const RecipientViewModel(this.recipient);
 
-  String get jurisdictionCode => type.jurisdictionCode;
-  String get currencyCode => type.currencyCode;
-  bool get requiresInteracSecurityDetails =>
-      type == RecipientType.interacEmailCad;
+  String get id => recipient.recipientId;
+  PayoutRail get rail => recipient.rail;
+  RecipientType get type => rail.type;
+  String? get label => recipient.label;
+  bool? get isOwner => recipient.isOwner;
+  Jurisdiction get jurisdiction => rail.market.jurisdiction;
+  FiatCurrency get currency => rail.market.currency;
+  String? get displayName => recipient.onRail.displayName;
+  List<AccountRow> get accountRows => recipient.onRail.accountRows;
 
-  String? get displayName {
-    if (isCorporate == true &&
-        corporateName != null &&
-        corporateName!.isNotEmpty) {
-      return corporateName!;
-    }
+  @override
+  bool operator ==(Object other) =>
+      other is RecipientViewModel &&
+      other.id == id &&
+      other.rail == rail &&
+      identical(other.recipient.details, recipient.details);
 
-    switch (type) {
-      case RecipientType.interacEmailCad:
-        if (name != null && name!.isNotEmpty) return name!;
-        if (firstname != null && lastname != null) {
-          return '$firstname $lastname';
-        }
-        if (firstname != null) return firstname!;
-        if (lastname != null) return lastname!;
-        if (email != null) return email!;
-        return null;
+  @override
+  int get hashCode => Object.hash(id, rail);
 
-      case RecipientType.billPaymentCad:
-        if (payeeName != null && payeeName!.isNotEmpty) return payeeName!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-
-      case RecipientType.bankTransferCad:
-        if (name != null && name!.isNotEmpty) return name!;
-        if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;
-        if (firstname != null && lastname != null) {
-          return '$firstname $lastname';
-        }
-        if (firstname != null) return firstname!;
-        if (lastname != null) return lastname!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        if (name != null && name!.isNotEmpty) return name!;
-        if (firstname != null && lastname != null) {
-          return '$firstname $lastname';
-        }
-        if (firstname != null) return firstname!;
-        if (lastname != null) return lastname!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-
-      case RecipientType.speiClabeMxn:
-        if (name != null && name!.isNotEmpty) return name!;
-        if (firstname != null && lastname != null) {
-          return '$firstname $lastname';
-        }
-        if (firstname != null) return firstname!;
-        if (lastname != null) return lastname!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-
-      case RecipientType.speiSmsMxn:
-        if (name != null && name!.isNotEmpty) return name!;
-        if (firstname != null && lastname != null) {
-          return '$firstname $lastname';
-        }
-        if (firstname != null) return firstname!;
-        if (lastname != null) return lastname!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-
-      case RecipientType.speiCardMxn:
-        if (name != null && name!.isNotEmpty) return name!;
-        if (firstname != null && lastname != null) {
-          return '$firstname $lastname';
-        }
-        if (firstname != null) return firstname!;
-        if (lastname != null) return lastname!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-
-      case RecipientType.sinpeIbanUsd:
-      case RecipientType.sinpeIbanCrc:
-        if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;
-        if (label != null && label!.isNotEmpty) return label!;
-        if (iban != null && iban!.isNotEmpty) return iban!;
-        return null;
-
-      case RecipientType.sinpeMovilCrc:
-        if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;
-        if (label != null && label!.isNotEmpty) return label!;
-        if (phoneNumber != null && phoneNumber!.isNotEmpty) {
-          return phoneNumber!;
-        }
-        return null;
-      case RecipientType.bankAccountArgentina:
-        if (name != null && name!.isNotEmpty) return name!;
-        if (label != null && label!.isNotEmpty) return label!;
-        return null;
-      case RecipientType.pseColombia:
-        return name;
-      case RecipientType.nequiColombia:
-        return name;
-    }
-  }
+  @override
+  String toString() => 'RecipientViewModel($id, $rail)';
 }

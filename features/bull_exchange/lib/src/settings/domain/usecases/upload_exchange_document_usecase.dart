@@ -23,6 +23,14 @@ final class ExchangeDocumentUploaded extends UploadExchangeDocumentOutcome {
   const ExchangeDocumentUploaded();
 }
 
+/// A picked document that passed the checks, named as the exchange expects.
+final class ExchangeDocumentToUpload {
+  final List<int> bytes;
+  final String fileName;
+
+  const ExchangeDocumentToUpload({required this.bytes, required this.fileName});
+}
+
 /// Picks a document, checks it against the exchange's limits, and uploads it.
 ///
 /// Every step that can fail is already a `Result`, so this composes them with
@@ -36,9 +44,29 @@ class UploadExchangeDocumentUsecase {
     required this._exchange,
   });
 
+  /// Picks and uploads in one go; see [pick] and [upload].
   @useResult
   Future<Result<UploadExchangeDocumentOutcome, ExchangeSettingsFailure>>
   execute({String? userId}) async {
+    switch (await pick(userId: userId)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: null):
+        return const Ok(ExchangeDocumentPickCancelled());
+      case Ok(value: final ExchangeDocumentToUpload document):
+        return switch (await upload(document)) {
+          Ok() => const Ok(ExchangeDocumentUploaded()),
+          Err(:final failure) => Err(failure),
+        };
+    }
+  }
+
+  /// Lets the user pick a document and checks it against the exchange's
+  /// limits. `null` means the picker was dismissed.
+  @useResult
+  Future<Result<ExchangeDocumentToUpload?, ExchangeSettingsFailure>> pick({
+    String? userId,
+  }) async {
     final picked = await _fileSystem.pick(
       allowedExtensions: FileToUpload.allowedExtensions,
     );
@@ -57,7 +85,7 @@ class UploadExchangeDocumentUsecase {
     }
 
     if (document == null) {
-      return const Ok(ExchangeDocumentPickCancelled());
+      return const Ok(null);
     }
 
     final List<int> bytes;
@@ -87,13 +115,17 @@ class UploadExchangeDocumentUsecase {
 
     // Mirrors the filename BB-Exchange expects for a secure upload.
     final fileName = userId != null ? 'doc-$userId-ID' : document.name;
-
-    return switch (await _exchange.uploadKycDocument(
-      fileBytes: bytes,
-      fileName: fileName,
-    )) {
-      Ok() => const Ok(ExchangeDocumentUploaded()),
-      Err() => const Err(ExchangeSettingsDocumentUploadFailure()),
-    };
+    return Ok(ExchangeDocumentToUpload(bytes: bytes, fileName: fileName));
   }
+
+  @useResult
+  Future<Result<void, ExchangeSettingsFailure>> upload(
+    ExchangeDocumentToUpload document,
+  ) async => switch (await _exchange.uploadKycDocument(
+    fileBytes: document.bytes,
+    fileName: document.fileName,
+  )) {
+    Ok() => const Ok(null),
+    Err() => const Err(ExchangeSettingsDocumentUploadFailure()),
+  };
 }

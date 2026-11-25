@@ -323,7 +323,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "ปรึกษา",
+  "retry": "ลองอีกครั้ง",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -726,5 +726,6 @@
   "transactionPayjoinBroadcastFailed": "ไม่สามารถเผยแพร่ธุรกรรมต้นฉบับได้ โปรดลองอีกครั้ง",
   "transactionPayjoinOriginalUnavailable": "ธุรกรรมต้นฉบับไม่สามารถเผยแพร่ได้อีกต่อไป",
   "transactionLabelLimitReached": "คุณสามารถมีป้ายกำกับได้สูงสุด 10 รายการ",
-  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "transactionListExchangeOrdersUnavailable": "ไม่สามารถโหลดคำสั่งซื้อขายของ Exchange ได้"
 }

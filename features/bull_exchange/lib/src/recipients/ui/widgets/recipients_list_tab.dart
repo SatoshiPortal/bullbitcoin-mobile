@@ -107,18 +107,10 @@ class RecipientsListTabState extends State<RecipientsListTab> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<RecipientsBloc>().state;
-    final loaded = state.selectableRecipients ?? const <RecipientViewModel>[];
     final types = state.selectableRecipientTypes;
-    final owner = state.allowedRecipientFilters.isOwner;
-    final recipients = widget.enforceRecipientFilter
-        ? loaded
-              .where(
-                (recipient) =>
-                    types.contains(recipient.type) &&
-                    (owner == null || recipient.isOwner == owner),
-              )
-              .toList()
-        : loaded;
+    final recipients =
+        state.shownRecipients(strict: widget.enforceRecipientFilter) ??
+        const <RecipientViewModel>[];
     final selectedId = _selectedRecipient?.id;
     final selected = recipients
         .where((recipient) => recipient.id == selectedId)
@@ -154,7 +146,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             style: context.bullType.body,
           ),
           const Gap(8.0),
-          BlocSelector<RecipientsBloc, RecipientsState, String?>(
+          BlocSelector<RecipientsBloc, RecipientsState, Jurisdiction?>(
             selector: (state) => state.jurisdictionFilter,
             builder: (context, selected) {
               return JurisdictionsDropdown(
@@ -165,7 +157,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
                     RecipientsEvent.jurisdictionChanged(newJurisdiction),
                   );
                   if (newJurisdiction != null &&
-                      _selectedRecipient?.jurisdictionCode != newJurisdiction) {
+                      _selectedRecipient?.jurisdiction != newJurisdiction) {
                     setState(() => _selectedRecipient = null);
                   }
                 },
@@ -271,7 +263,9 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     bool Function(RecipientViewModel) canSelect,
   ) {
     if (recipients.isEmpty) {
-      if (state.isLoadingRecipients) {
+      // Placeholders only while the first page is on its way: once a page
+      // arrived the list is its rows, empty, or the failure.
+      if (state.recipients == null && state.isLoadingRecipients) {
         return ListView(
           controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),

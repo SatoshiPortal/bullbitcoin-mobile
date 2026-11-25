@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Bark's prost-build runs the host protoc even when cross-compiling Android.
+# Scuttle's prost-build runs the host protoc even when cross-compiling Android.
 # The tools image is pinned to linux/amd64 above; use the same official release
 # and digest as the Linux x64 CI setup, retaining the well-known proto includes.
 RUN curl --retry 5 --retry-all-errors -fL \
@@ -169,13 +169,6 @@ ARG PAYJOIN_RUST_VERSION="1.85.1"
 RUN rustup toolchain install ${PAYJOIN_RUST_VERSION} --profile minimal
 RUN rustup component add --toolchain ${PAYJOIN_RUST_VERSION} clippy rustfmt
 RUN rustup target add --toolchain ${PAYJOIN_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-
-# Bark Native Assets selects its compiler for APK and app bundle builds.
-ARG BARK_RUST_VERSION="1.90.0"
-RUN rustup toolchain install ${BARK_RUST_VERSION} --profile minimal
-RUN rustup component add --toolchain ${BARK_RUST_VERSION} clippy rustfmt
-RUN rustup target add --toolchain ${BARK_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-RUN rustup run ${BARK_RUST_VERSION} rustc --version | grep -F "rustc ${BARK_RUST_VERSION}"
 
 # Belt-and-suspenders verification: abort if the installed Rust does not match
 # EXPECTED_RUST_VERSION when provided.

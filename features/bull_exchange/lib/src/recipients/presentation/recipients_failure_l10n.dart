@@ -15,6 +15,12 @@ extension RecipientsFailureL10n on RecipientsFailure {
     RecipientsNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
     RecipientsLoadFailure() => context.loc.recipientsErrorLoadFailed,
     RecipientsSaveFailure() => context.loc.recipientsErrorSaveFailed,
+    final RecipientsInvalidFieldsFailure refused =>
+      context.loc.recipientsErrorFieldsRefused(
+        refused.refusedFieldNames(except: const {}).join(', '),
+      ),
+    RecipientsSaveOutcomeUnknownFailure() =>
+      context.loc.recipientsErrorSaveOutcomeUnknown,
     RecipientsSinpeLookupFailure() =>
       context.loc.recipientsErrorSinpeLookupFailed,
     RecipientsCadBillerSearchFailure() =>
@@ -37,5 +43,34 @@ extension RecipientsFailureL10n on RecipientsFailure {
     RecipientsSelectionFailure() ||
     RecipientsInvalidSecurityDetailsFailure() ||
     RecipientsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
+}
+
+/// The refused fields a form names under each field, and the rest.
+extension RecipientsInvalidFieldsFailureL10n on RecipientsInvalidFieldsFailure {
+  /// The API names of the refused fields, leaving out the fields in [except]
+  /// (the ones the form marks under the field itself).
+  List<String> refusedFieldNames({required Set<RecipientField> except}) => [
+    for (final field in fields.keys)
+      if (!except.contains(field)) field.wireName,
+    ...otherFields,
+  ];
+
+  /// The message under the Continue button of a form that marks the
+  /// [shownFields] itself.
+  String summary(BuildContext context, Set<RecipientField> shownFields) {
+    final rest = refusedFieldNames(except: shownFields);
+    return rest.isEmpty
+        ? context.loc.recipientsErrorCheckFields
+        : context.loc.recipientsErrorFieldsRefused(rest.join(', '));
+  }
+}
+
+/// The message under a form [field] the exchange refused, or null.
+extension RecipientFieldProblemL10n on RecipientFieldProblem {
+  String toTranslated(BuildContext context) => switch (this) {
+    RecipientFieldProblem.missing =>
+      context.loc.recipientsValidationFieldRequired,
+    RecipientFieldProblem.invalid => context.loc.recipientsErrorFieldRefused,
   };
 }

@@ -4,7 +4,7 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  PaymentDestinationField payoutField(WalletAddressType type) =>
+  PaymentDestinationField payoutField(BtcNetwork type) =>
       exchangePurchasePayoutField(
         type: type,
         value: '',
@@ -16,10 +16,10 @@ void main() {
       ) as PaymentDestinationField;
 
   test('lightning payout field accepts LNURL like the limit order base', () {
-    expect(payoutField(WalletAddressType.lightning).allowLnurl, isTrue);
+    expect(payoutField(BtcNetwork.lightning).allowLnurl, isTrue);
   });
 
   test('bitcoin payout field keeps accepting LNURL for purchases', () {
-    expect(payoutField(WalletAddressType.bitcoin).allowLnurl, isTrue);
+    expect(payoutField(BtcNetwork.bitcoin).allowLnurl, isTrue);
   });
 }

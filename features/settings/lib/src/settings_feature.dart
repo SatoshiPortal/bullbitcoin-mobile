@@ -107,6 +107,9 @@ final class SettingsFeature {
 }
 
 abstract final class SettingsNavigation {
+  /// Where the settings hub is mounted; hosts nest their routes below it.
+  static const homePath = _homePath;
+
   static Future<void> open(BuildContext context) =>
       context.pushNamed<void>(_homeName);
 

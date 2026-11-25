@@ -42,3 +42,24 @@ LimitOrder limitOrder({
   expiresAt: DateTime.utc(2026, 12, 1),
   address: 'bc1qexample',
 );
+
+const limitSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'a',
+);
+const limitOtherSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 2,
+  sessionId: 'b',
+);
+
+const limitBitcoinAddress = 'bc1qdefault';
+
+DefaultWallets limitDefaultWallets() => const DefaultWallets(
+  bitcoin: DefaultWallet(
+    recipientId: 'r-btc',
+    walletType: BtcNetwork.bitcoin,
+    address: limitBitcoinAddress,
+  ),
+);

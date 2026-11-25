@@ -219,5 +219,6 @@
   "transactionPayjoinBroadcastFailed": "Չհաջողվեց հեռարձակել սկզբնական գործարքը։ Խնդրում ենք փորձել կրկին։",
   "transactionPayjoinOriginalUnavailable": "Սկզբնական գործարքն այլևս հասանելի չէ հեռարձակման համար։",
   "transactionLabelLimitReached": "Կարող եք ունենալ առավելագույնը 10 պիտակ։",
-  "copiedToClipboard": "Պատճենվեց սեղմատախտակին"
+  "copiedToClipboard": "Պատճենվեց սեղմատախտակին",
+  "transactionListExchangeOrdersUnavailable": "Չհաջողվեց բեռնել բորսայի պատվերները։"
 }

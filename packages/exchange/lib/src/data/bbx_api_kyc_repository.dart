@@ -29,9 +29,7 @@ final class BbxApiKycRepository {
         ExchangeCredentialReadFailure(),
       ),
       Err(:final failure) => Err(
-        ExchangeDocumentUploadFailure(
-          'Failed to upload document: ${failure.runtimeType}',
-        ),
+        ExchangeDocumentUploadFailure('Failed to upload document: $failure'),
       ),
     };
   }

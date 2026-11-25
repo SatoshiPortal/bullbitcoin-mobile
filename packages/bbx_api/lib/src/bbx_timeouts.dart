@@ -19,3 +19,6 @@ final class BbxTimeouts {
   /// No timeout on any phase.
   static const none = BbxTimeouts();
 }
+
+/// Reports how many of [total] body bytes an upload has sent.
+typedef BbxProgress = void Function(int sent, int total);

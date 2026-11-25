@@ -1,3 +1,7 @@
+import '../../../domain/catalog/jurisdiction.dart';
+import '../../../domain/entities/order.dart';
+import '../../../payout/payout_rail.dart';
+
 /// VALUE OBJECT: recipient type
 /// Value objects are immutable and defined by their attributes
 /// They encapsulate validation and behavior related to the type itself
@@ -33,64 +37,20 @@ enum RecipientType {
     );
   }
 
-  String get jurisdictionCode {
-    switch (this) {
-      case RecipientType.interacEmailCad:
-      case RecipientType.billPaymentCad:
-      case RecipientType.bankTransferCad:
-        return 'CA';
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return 'EU';
-      case RecipientType.speiClabeMxn:
-      case RecipientType.speiSmsMxn:
-      case RecipientType.speiCardMxn:
-        return 'MX';
-      case RecipientType.sinpeIbanUsd:
-      case RecipientType.sinpeIbanCrc:
-      case RecipientType.sinpeMovilCrc:
-        return 'CR';
-      case RecipientType.bankAccountArgentina:
-        return 'AR';
-      case RecipientType.pseColombia:
-        return 'CO';
-      case RecipientType.nequiColombia:
-        return 'CO';
-    }
-  }
+  /// The rail this type is the wire identity of.
+  PayoutRail get rail => PayoutRails.of(this);
 
-  String get currencyCode {
-    switch (this) {
-      case RecipientType.interacEmailCad:
-      case RecipientType.billPaymentCad:
-      case RecipientType.bankTransferCad:
-        return 'CAD';
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return 'EUR';
-      case RecipientType.speiClabeMxn:
-      case RecipientType.speiSmsMxn:
-      case RecipientType.speiCardMxn:
-        return 'MXN';
-      case RecipientType.sinpeIbanUsd:
-        return 'USD';
-      case RecipientType.sinpeIbanCrc:
-      case RecipientType.sinpeMovilCrc:
-        return 'CRC';
-      case RecipientType.bankAccountArgentina:
-        return 'ARS';
-      case RecipientType.pseColombia:
-        return 'COP';
-      case RecipientType.nequiColombia:
-        return 'COP';
-    }
-  }
+  Jurisdiction get jurisdiction => rail.market.jurisdiction;
+
+  FiatCurrency get currency => rail.market.currency;
+
+  String get currencyCode => currency.code;
 
   /// Confidential SEPA depends on the user's eligibility, so a flow must
   /// request it explicitly.
-  static List<RecipientType> get standardTypes => RecipientType.values
-      .where((type) => type != RecipientType.confidentialSepaEur)
-      .toList();
+  static List<RecipientType> get standardTypes => [
+    for (final rail in PayoutRails.standard) rail.type,
+  ];
 
   static Set<RecipientType> typesForCurrency(String currencyCode) {
     return standardTypes

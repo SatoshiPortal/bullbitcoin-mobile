@@ -104,6 +104,14 @@ Matcher _fails(Matcher matcher) => isA<Err<dynamic, ExchangeFailure>>().having(
   matcher,
 );
 
+Matcher _refused(Matcher reason) =>
+    isA<WriteRefused<dynamic>>().having((w) => w.reason, 'reason', reason);
+
+T _createdOf<T>(ExchangeWrite<T> write) => switch (write) {
+  WriteDone(:final value) => value,
+  _ => fail('expected a created order, got $write'),
+};
+
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Ok() => fail('expected an Err, got Ok'),
   Err(:final failure) => failure,
@@ -282,6 +290,33 @@ void main() {
         await _unreadableKey(FakeBbxHttp()).getOrder('o-1'),
         _fails(isA<ExchangeCredentialReadFailure>()),
       );
+    });
+
+    test('every transport failure has an explicit answer', () async {
+      for (final (http, matcher) in [
+        (
+          FakeBbxHttp(status: 503, body: const {}),
+          isA<ExchangeOrderLoadFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.badCertificate),
+          isA<ExchangeOrderLoadFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.cancel),
+          isA<ExchangeOrderLoadFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.connectionError),
+          isA<ExchangeNetworkFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.receiveTimeout),
+          isA<ExchangeNetworkFailure>(),
+        ),
+      ]) {
+        expect(await _repository(http).getOrder('o-1'), _fails(matcher));
+      }
     });
 
     test('a JSON-RPC rejection omits its message', () async {
@@ -592,12 +627,12 @@ void main() {
 
     test('sends the address and the fiat amount', () async {
       final http = created();
-      final order = _valueOf(
+      final order = _createdOf(
         await _repository(http, isTestnet: true).placeBuyOrder(
           toAddress: 'lq1address',
           orderAmount: const FiatAmount(5),
           currency: FiatCurrency.cad,
-          network: OrderBitcoinNetwork.liquid,
+          network: BtcNetwork.liquid,
           isOwner: true,
         ),
       );
@@ -623,11 +658,11 @@ void main() {
           toAddress: 'bc1address',
           orderAmount: const BitcoinAmount(0.001),
           currency: FiatCurrency.eur,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           isOwner: false,
           payjoinBip21: 'bitcoin:bc1address?pj=https://payjo.in/s',
         ),
-        isA<Ok<BuyOrder, ExchangeFailure>>(),
+        isA<WriteDone<BuyOrder>>(),
       );
       expect(_params(http), {
         'fiatCurrency': 'EUR',
@@ -638,23 +673,28 @@ void main() {
       });
     });
 
-    Future<Result<BuyOrder, ExchangeFailure>> buy(FakeBbxHttp http) =>
+    Future<ExchangeWrite<BuyOrder>> buy(FakeBbxHttp http) =>
         _repository(http).placeBuyOrder(
           toAddress: 'bc1address',
           orderAmount: const FiatAmount(5),
           currency: FiatCurrency.cad,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           isOwner: true,
         );
 
     test('aggregate minimums are the lowest minimum', () async {
       expect(
         await buy(FakeBbxHttp(body: _limits([(20, _min), (50, _min)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.minimum)
-              .having((e) => e.amount, 'minAmount', 20)
-              .having((e) => e.currency, 'currency', 'CAD'),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit,
+            'orderLimit',
+            const ExchangeOrderLimit(
+              ExchangeOrderAmountBound.minimum,
+              20,
+              'CAD',
+            ),
+          ),
         ),
       );
     });
@@ -662,28 +702,38 @@ void main() {
     test('aggregate maximums are the highest maximum', () async {
       expect(
         await buy(FakeBbxHttp(body: _limits([(1000, _max), (3000, _max)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.maximum)
-              .having((e) => e.amount, 'maxAmount', 3000)
-              .having((e) => e.currency, 'currency', 'CAD'),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit,
+            'orderLimit',
+            const ExchangeOrderLimit(
+              ExchangeOrderAmountBound.maximum,
+              3000,
+              'CAD',
+            ),
+          ),
         ),
       );
     });
 
-    test('mixed limits are rejected without exposing the message', () async {
+    test('mixed limits are refused without exposing the message', () async {
       expect(
         await buy(FakeBbxHttp(body: _limits([(20, _min), (50, _max)]))),
-        _fails(isA<ExchangeOrderRejectedFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having((r) => r.orderLimit, 'limit', isNull),
+        ),
       );
     });
 
-    test('a transport failure keeps its safe classification', () async {
-      expect(
-        await buy(FakeBbxHttp(error: DioExceptionType.connectionError)),
-        _fails(isA<ExchangeNetworkFailure>()),
-      );
-    });
+    test(
+      'a lost connection is an unknown outcome: the order may exist',
+      () async {
+        expect(
+          await buy(FakeBbxHttp(error: DioExceptionType.connectionError)),
+          isA<WriteOutcomeUnknown<BuyOrder>>(),
+        );
+      },
+    );
 
     test('a single reason.limit is the minimum failure', () async {
       expect(
@@ -699,11 +749,16 @@ void main() {
             },
           ),
         ),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.minimum)
-              .having((e) => e.amount, 'minAmount', 0.0001)
-              .having((e) => e.currency, 'currency', 'BTC'),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit,
+            'orderLimit',
+            const ExchangeOrderLimit(
+              ExchangeOrderAmountBound.minimum,
+              0.0001,
+              'BTC',
+            ),
+          ),
         ),
       );
     });
@@ -711,10 +766,14 @@ void main() {
     test('a decimal aggregate maximum is kept', () async {
       expect(
         await buy(FakeBbxHttp(body: _limits([(1000, _max), (2500.5, _max)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.maximum)
-              .having((e) => e.amount, 'maxAmount', 2500.5),
+        _refused(
+          isA<ExchangeRefusal>()
+              .having(
+                (r) => r.orderLimit?.bound,
+                'bound',
+                ExchangeOrderAmountBound.maximum,
+              )
+              .having((r) => r.orderLimit?.amount, 'amount', 2500.5),
         ),
       );
     });
@@ -769,61 +828,70 @@ void main() {
       'an error without a message': {'error': <String, Object?>{}},
     };
     for (final MapEntry(key: name, value: body) in unusableLimits.entries) {
-      test('$name is a rejection without an amount bound', () async {
+      test('$name is a refusal without an amount bound', () async {
         expect(
           await buy(FakeBbxHttp(body: body)),
-          _fails(isA<ExchangeOrderRejectedFailure>()),
+          _refused(
+            isA<ExchangeRefusal>().having((r) => r.orderLimit, 'limit', isNull),
+          ),
         );
       });
     }
 
-    test('an inactive virtual payee has a typed failure', () async {
+    test('an inactive virtual payee is a refusal naming it', () async {
       expect(
         await buy(FakeBbxHttp(body: _notActivated)),
-        _fails(isA<ExchangeConfidentialSepaInactiveFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having((r) => r.payeeInactive, 'payee', true),
+        ),
       );
     });
 
-    test(
-      'no stored key is ExchangeNotAuthenticatedFailure, without a request',
-      () async {
-        final http = FakeBbxHttp();
-        expect(
-          await _signedOut(http).placeBuyOrder(
-            toAddress: 'bc1address',
-            orderAmount: const FiatAmount(5),
-            currency: FiatCurrency.cad,
-            network: OrderBitcoinNetwork.bitcoin,
-            isOwner: true,
-          ),
-          _fails(isA<ExchangeNotAuthenticatedFailure>()),
-        );
-        expect(http.requests, isEmpty);
-      },
-    );
+    test('no stored key is not sent (signed out), without a request', () async {
+      final http = FakeBbxHttp();
+      expect(
+        await _signedOut(http).placeBuyOrder(
+          toAddress: 'bc1address',
+          orderAmount: const FiatAmount(5),
+          currency: FiatCurrency.cad,
+          network: BtcNetwork.bitcoin,
+          isOwner: true,
+        ),
+        isA<WriteNotSent<dynamic>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.signedOut,
+        ),
+      );
+      expect(http.requests, isEmpty);
+    });
 
-    test('an unreadable key is a credential failure', () async {
+    test('an unreadable key is not sent', () async {
       expect(
         await _unreadableKey(FakeBbxHttp()).placeBuyOrder(
           toAddress: 'bc1address',
           orderAmount: const FiatAmount(5),
           currency: FiatCurrency.cad,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           isOwner: true,
         ),
-        _fails(isA<ExchangeCredentialReadFailure>()),
+        isA<WriteNotSent<dynamic>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.credentialUnavailable,
+        ),
       );
     });
   });
 
   group('placeSellOrder', () {
-    Future<Result<SellOrder, ExchangeFailure>> sell(
+    Future<ExchangeWrite<SellOrder>> sell(
       FakeBbxHttp http, {
       bool usePayjoin = false,
     }) => _repository(http).placeSellOrder(
       orderAmount: const FiatAmount(100),
       currency: FiatCurrency.eur,
-      network: OrderBitcoinNetwork.bitcoin,
+      network: BtcNetwork.bitcoin,
       usePayjoin: usePayjoin,
     );
 
@@ -833,7 +901,7 @@ void main() {
 
     test('sends sellToBalance without usePayjoin when false', () async {
       final http = created();
-      expect(_valueOf(await sell(http)), isA<SellOrder>());
+      expect(_createdOf(await sell(http)), isA<SellOrder>());
       expect((http.requests.single.data as Map)['method'], 'sellToBalance');
       expect(_params(http), {
         'fiatCurrency': 'EUR',
@@ -853,7 +921,7 @@ void main() {
       });
     });
 
-    test('a single minimum limit is the minimum failure', () async {
+    test('a single minimum limit is a refusal naming it', () async {
       expect(
         await sell(
           FakeBbxHttp(
@@ -867,25 +935,30 @@ void main() {
             },
           ),
         ),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.minimum)
-              .having((e) => e.amount, 'minAmount', 10)
-              .having((e) => e.currency, 'currency', 'EUR'),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit,
+            'orderLimit',
+            const ExchangeOrderLimit(
+              ExchangeOrderAmountBound.minimum,
+              10,
+              'EUR',
+            ),
+          ),
         ),
       );
     });
 
-    test('another order type is the cast error, as before', () async {
+    test('another order type is an unknown outcome: an order exists', () async {
       expect(
         await sell(FakeBbxHttp(body: {'result': orderJsonFixture()})),
-        _fails(isA<ExchangeOrderLoadFailure>()),
+        isA<WriteOutcomeUnknown<SellOrder>>(),
       );
     });
   });
 
   group('placePayOrder', () {
-    Future<Result<FiatPaymentOrder, ExchangeFailure>> pay(
+    Future<ExchangeWrite<FiatPaymentOrder>> pay(
       FakeBbxHttp http, {
       SepaPaymentProcessor? processor,
       String? description,
@@ -894,7 +967,7 @@ void main() {
     }) => _repository(http).placePayOrder(
       orderAmount: amount,
       recipientId: 'r-1',
-      network: OrderBitcoinNetwork.bitcoin,
+      network: BtcNetwork.bitcoin,
       paymentDescription: description,
       paymentProcessor: processor,
       usePayjoin: usePayjoin,
@@ -911,7 +984,7 @@ void main() {
       test('sends the ${processor.name} processor and payjoin', () async {
         final http = created();
         expect(
-          _valueOf(await pay(http, processor: processor, usePayjoin: true)),
+          _createdOf(await pay(http, processor: processor, usePayjoin: true)),
           isA<FiatPaymentOrder>(),
         );
         expect((http.requests.single.data as Map)['method'], 'sellToRecipient');
@@ -944,13 +1017,19 @@ void main() {
       });
     });
 
-    test('an inactive virtual payee is the activation exception', () async {
+    test('an inactive virtual payee is a refusal naming it', () async {
       expect(
         await pay(
           FakeBbxHttp(body: _notActivated),
           processor: SepaPaymentProcessor.confidential,
         ),
-        _fails(isA<ExchangeConfidentialSepaInactiveFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.payeeInactive,
+            'payeeInactive',
+            true,
+          ),
+        ),
       );
     });
 
@@ -974,8 +1053,8 @@ void main() {
             },
           ),
         ),
-        _fails(
-          isA<ExchangeOrderRejectedFailure>()
+        _refused(
+          isA<ExchangeRefusal>()
               .having((e) => e.apiCode, 'apiCode', 'ERR_ORD_PO404')
               .having((e) => e.rpcCode, 'rpcCode', -32603)
               .having(
@@ -987,25 +1066,29 @@ void main() {
       );
       final logs = (await capture.logger.readLogs()).join('\n');
       expect(logs, contains('apiCode: ERR_ORD_PO404'));
-      expect(logs, contains('rpcCode: -32603'));
+      expect(logs, contains('BbxRpcFailure(code: -32603'));
       expect(logs, contains('requestId=60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0'));
       expect(logs, isNot(contains('Account details')));
     });
 
-    test('a maximum limit is the maximum failure', () async {
+    test('a maximum limit is a refusal naming it', () async {
       expect(
         await pay(FakeBbxHttp(body: _limits([(500, _max)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.maximum)
-              .having((e) => e.amount, 'maxAmount', 500),
+        _refused(
+          isA<ExchangeRefusal>()
+              .having(
+                (r) => r.orderLimit?.bound,
+                'bound',
+                ExchangeOrderAmountBound.maximum,
+              )
+              .having((r) => r.orderLimit?.amount, 'maxAmount', 500),
         ),
       );
     });
   });
 
   group('placeWithdrawalOrder', () {
-    Future<Result<WithdrawOrder, ExchangeFailure>> withdraw(
+    Future<ExchangeWrite<WithdrawOrder>> withdraw(
       FakeBbxHttp http, {
       SepaPaymentProcessor? processor,
       String? question,
@@ -1024,7 +1107,7 @@ void main() {
     test('sends the amount, recipient and processor', () async {
       final http = created();
       expect(
-        _valueOf(
+        _createdOf(
           await withdraw(http, processor: SepaPaymentProcessor.confidential),
         ),
         isA<WithdrawOrder>(),
@@ -1053,12 +1136,12 @@ void main() {
       });
     });
 
-    test('limits and an inactive payee are typed failures', () async {
+    test('limits and an inactive payee are refusals naming them', () async {
       expect(
         await withdraw(FakeBbxHttp(body: _limits([(20, _min)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>().having(
-            (e) => e.bound,
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit?.bound,
             'bound',
             ExchangeOrderAmountBound.minimum,
           ),
@@ -1066,9 +1149,9 @@ void main() {
       );
       expect(
         await withdraw(FakeBbxHttp(body: _limits([(20, _max)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>().having(
-            (e) => e.bound,
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit?.bound,
             'bound',
             ExchangeOrderAmountBound.maximum,
           ),
@@ -1076,7 +1159,13 @@ void main() {
       );
       expect(
         await withdraw(FakeBbxHttp(body: _notActivated)),
-        _fails(isA<ExchangeConfidentialSepaInactiveFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.payeeInactive,
+            'payeeInactive',
+            true,
+          ),
+        ),
       );
     });
 
@@ -1087,17 +1176,26 @@ void main() {
           question: 'q',
           answer: 'secret',
         ),
-        _fails(isA<ExchangeOrderRejectedFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.toString(),
+            'text',
+            isNot(contains('secret')),
+          ),
+        ),
       );
     });
   });
 
   group('confirm and accelerate', () {
+    T done<T>(ExchangeWrite<T> write) => switch (write) {
+      WriteDone(:final value) => value,
+      _ => fail('Unexpected write result: $write'),
+    };
+
     test('confirmBuyOrder confirms the order summary', () async {
       final http = FakeBbxHttp(body: {'result': orderJsonFixture()});
-      final order = _valueOf(
-        await _repository(http).confirmBuyOrder('order-1'),
-      );
+      final order = done(await _repository(http).confirmBuyOrder('order-1'));
       expect(
         (http.requests.single.data as Map)['method'],
         'confirmOrderSummary',
@@ -1111,7 +1209,7 @@ void main() {
         body: {'result': orderJsonFixture(orderType: 'Withdraw')},
       );
       expect(
-        _valueOf(await _repository(http).confirmWithdrawOrder('order-1')),
+        done(await _repository(http).confirmWithdrawOrder('order-1')),
         isA<WithdrawOrder>(),
       );
       expect(_params(http), {'orderId': 'order-1'});
@@ -1120,7 +1218,7 @@ void main() {
     test('accelerateBuyOrder unbatches and expresses the order', () async {
       final http = FakeBbxHttp(body: {'result': orderJsonFixture()});
       expect(
-        _valueOf(await _repository(http).accelerateBuyOrder('order-1')),
+        done(await _repository(http).accelerateBuyOrder('order-1')),
         isA<BuyOrder>(),
       );
       expect(
@@ -1130,54 +1228,93 @@ void main() {
       expect(_params(http), {'orderId': 'order-1'});
     });
 
-    test('another order type returns a load failure', () async {
+    test('another order type is an unknown outcome, not a failure', () async {
       final http = FakeBbxHttp(body: {'result': orderJsonFixture()});
       expect(
         await _repository(http).confirmWithdrawOrder('order-1'),
-        _fails(isA<ExchangeOrderLoadFailure>()),
+        isA<WriteOutcomeUnknown<WithdrawOrder>>(),
       );
     });
 
-    test('a JSON-RPC rejection omits its message', () async {
-      for (final call
-          in <Future<Result<Order, ExchangeFailure>> Function(ExchangeOrders)>[
-            (r) => r.confirmBuyOrder('o'),
-            (r) => r.confirmWithdrawOrder('o'),
-            (r) => r.accelerateBuyOrder('o'),
-          ]) {
+    final calls =
+        <String, Future<ExchangeWrite<Order>> Function(ExchangeOrders)>{
+          'confirmBuyOrder': (r) => r.confirmBuyOrder('o'),
+          'confirmWithdrawOrder': (r) => r.confirmWithdrawOrder('o'),
+          'accelerateBuyOrder': (r) => r.accelerateBuyOrder('o'),
+        };
+
+    for (final MapEntry(key: name, value: call) in calls.entries) {
+      test('$name: a JSON-RPC rejection keeps only its codes', () async {
         expect(
           await call(_repository(FakeBbxHttp(body: _rpcError))),
-          _fails(
-            isA<ExchangeOrderRejectedFailure>()
-                .having(
-                  (e) => e.toString(),
-                  'diagnostics',
-                  isNot(contains('sat@example.com')),
-                )
-                .having((e) => e.rpcCode, 'rpcCode', -1),
+          isA<WriteRefused<Order>>()
+              .having((w) => w.reason.rpcCode, 'rpcCode', -1)
+              .having(
+                (w) => w.reason.toString(),
+                'diagnostics',
+                isNot(contains('sat@example.com')),
+              ),
+        );
+      });
+
+      test('$name: a timeout after sending is an unknown outcome', () async {
+        expect(
+          await call(
+            _repository(FakeBbxHttp(error: DioExceptionType.receiveTimeout)),
+          ),
+          isA<WriteOutcomeUnknown<Order>>(),
+        );
+      });
+
+      test('$name: a connect timeout was not sent', () async {
+        expect(
+          await call(
+            _repository(FakeBbxHttp(error: DioExceptionType.connectionTimeout)),
+          ),
+          isA<WriteNotSent<Order>>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.unreachable,
           ),
         );
-      }
-    });
+      });
 
-    test('a limit error on confirm is not an amount failure', () async {
-      expect(
-        await _repository(FakeBbxHttp(body: _limits([(20, _min)])))
-            .confirmBuyOrder('o'),
-        _fails(isA<ExchangeOrderRejectedFailure>()),
-      );
-    });
+      test('$name: an unreadable reply is an unknown outcome', () async {
+        expect(
+          await call(_repository(FakeBbxHttp(body: {'result': null}))),
+          isA<WriteOutcomeUnknown<Order>>(),
+        );
+      });
 
-    test('no stored key is ExchangeNotAuthenticatedFailure', () async {
-      expect(
-        await _signedOut(FakeBbxHttp()).confirmWithdrawOrder('o'),
-        _fails(isA<ExchangeNotAuthenticatedFailure>()),
-      );
-      expect(
-        await _signedOut(FakeBbxHttp()).accelerateBuyOrder('o'),
-        _fails(isA<ExchangeNotAuthenticatedFailure>()),
-      );
-    });
+      test('$name: an HTTP 401 is a rejected session', () async {
+        expect(
+          await call(_repository(FakeBbxHttp(status: 401, body: const {}))),
+          isA<WriteSessionRejected<Order>>(),
+        );
+      });
+
+      test('$name: no stored key was not sent', () async {
+        expect(
+          await call(_signedOut(FakeBbxHttp())),
+          isA<WriteNotSent<Order>>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.signedOut,
+          ),
+        );
+      });
+    }
+
+    test(
+      'a limit error on confirm is a refusal, not an amount failure',
+      () async {
+        expect(
+          await _repository(FakeBbxHttp(body: _limits([(20, _min)])))
+              .confirmBuyOrder('o'),
+          isA<WriteRefused<BuyOrder>>(),
+        );
+      },
+    );
   });
 
   group('createDca', () {
@@ -1193,10 +1330,10 @@ void main() {
       'address': 'lq1address',
     };
 
-    Future<Result<Dca, ExchangeFailure>> create(
+    Future<ExchangeWrite<Dca>> create(
       FakeBbxHttp http, {
       DcaBuyFrequency frequency = DcaBuyFrequency.weekly,
-      DcaNetwork network = DcaNetwork.liquid,
+      BtcNetwork network = BtcNetwork.liquid,
     }) => _repository(http).createDca(
       amount: 25.5,
       currency: FiatCurrency.cad,
@@ -1245,9 +1382,9 @@ void main() {
         expect(element['recurringFrequency'], wire);
       }
       for (final (network, wire) in [
-        (DcaNetwork.bitcoin, 'OUT_BITCOIN_ADDRESS'),
-        (DcaNetwork.lightning, 'OUT_LIGHTNING_ADDRESS'),
-        (DcaNetwork.liquid, 'OUT_LIQUID_ADDRESS'),
+        (BtcNetwork.bitcoin, 'OUT_BITCOIN_ADDRESS'),
+        (BtcNetwork.lightning, 'OUT_LIGHTNING_ADDRESS'),
+        (BtcNetwork.liquid, 'OUT_LIQUID_ADDRESS'),
       ]) {
         final http = FakeBbxHttp(
           body: {
@@ -1264,7 +1401,7 @@ void main() {
     });
 
     test('maps the created DCA', () async {
-      final created = _valueOf(
+      final created = _written(
         await create(
           FakeBbxHttp(
             body: {
@@ -1277,66 +1414,86 @@ void main() {
       expect(created.amount, 25.5);
       expect(created.currency, FiatCurrency.cad);
       expect(created.frequency, DcaBuyFrequency.weekly);
-      expect(created.network, DcaNetwork.liquid);
+      expect(created.network, BtcNetwork.liquid);
       expect(created.address, 'lq1address');
       expect(created.nextPurchaseDate, DateTime.utc(2026, 11, 27));
     });
 
-    test(
-      'an unknown frequency keeps the server value out of the failure',
-      () async {
-        expect(
-          await create(
-            FakeBbxHttp(
-              body: {
-                'result': {
-                  'element': {...dca, 'recurringFrequency': 'YEARLY'},
-                },
-              },
-            ),
-          ),
-          _fails(isA<ExchangeOrderLoadFailure>()),
-        );
-      },
-    );
-
-    test('a refusal is a typed failure without the message', () async {
+    test('a created DCA with an unknown frequency is an unknown outcome, not a '
+        'failure (DCA-2)', () async {
       expect(
-        await create(FakeBbxHttp(body: _rpcError)),
-        _fails(
-          isA<ExchangeOrderRejectedFailure>().having(
-            (e) => e.toString(),
-            'diagnostics',
-            isNot(contains('sat@example.com')),
+        await create(
+          FakeBbxHttp(
+            body: {
+              'result': {
+                'element': {...dca, 'recurringFrequency': 'YEARLY'},
+              },
+            },
           ),
+        ),
+        isA<WriteOutcomeUnknown<Dca>>().having(
+          (w) => w.reason,
+          'reason',
+          isNot(contains('YEARLY')),
         ),
       );
     });
 
-    test('no stored key is ExchangeNotAuthenticatedFailure', () async {
+    test('a timeout after sending is an unknown outcome', () async {
+      expect(
+        await create(FakeBbxHttp(error: DioExceptionType.receiveTimeout)),
+        isA<WriteOutcomeUnknown<Dca>>(),
+      );
+    });
+
+    test('a refusal keeps only its codes', () async {
+      expect(
+        await create(FakeBbxHttp(body: _rpcError)),
+        isA<WriteRefused<Dca>>().having(
+          (w) => w.reason.toString(),
+          'diagnostics',
+          isNot(contains('sat@example.com')),
+        ),
+      );
+    });
+
+    test('no stored key was not sent', () async {
       expect(
         await _signedOut(FakeBbxHttp()).createDca(
           amount: 1,
           currency: FiatCurrency.cad,
           frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
-        _fails(isA<ExchangeNotAuthenticatedFailure>()),
+        isA<WriteNotSent<Dca>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.signedOut,
+        ),
       );
     });
 
-    test('an unreadable key is a credential failure', () async {
+    test('an unreadable key was not sent', () async {
       expect(
         await _unreadableKey(FakeBbxHttp()).createDca(
           amount: 1,
           currency: FiatCurrency.cad,
           frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
-        _fails(isA<ExchangeCredentialReadFailure>()),
+        isA<WriteNotSent<Dca>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.credentialUnavailable,
+        ),
       );
     });
   });
 }
+
+T _written<T>(ExchangeWrite<T> write) => switch (write) {
+  WriteDone(:final value) => value,
+  _ => fail('Unexpected write result: $write'),
+};

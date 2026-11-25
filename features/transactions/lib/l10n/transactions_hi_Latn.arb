@@ -751,5 +751,6 @@
   "transactionPayjoinBroadcastFailed": "Original transaction broadcast nahin ho saka. Kripya dobara koshish karein.",
   "transactionPayjoinOriginalUnavailable": "Original transaction ab broadcast ke liye available nahin hai.",
   "transactionLabelLimitReached": "Aap zyada se zyada 10 labels rakh sakte hain.",
-  "copiedToClipboard": "Clipboard par copy kiya gaya"
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "transactionListExchangeOrdersUnavailable": "Exchange orders load nahi ho sake."
 }

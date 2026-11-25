@@ -18,8 +18,14 @@ import 'package:preferences/preferences.dart';
 
 class _Preferences extends Mock implements Preferences {}
 
-class _ExchangeCubit extends MockCubit<ExchangeState>
-    implements ExchangeCubit {}
+class _ExchangeBloc extends MockBloc<ExchangeEvent, ExchangeState>
+    implements ExchangeBloc {}
+
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
 
 const _summary = UserSummary(
   userNumber: 1,
@@ -32,19 +38,27 @@ const _summary = UserSummary(
   autoBuy: UserAutoBuy(isActive: false, addresses: UserAutoBuyAddresses()),
 );
 
+const _loaded = ExchangeLoaded(
+  session: _session,
+  summary: _summary,
+  announcements: AnnouncementsShown([]),
+  refresh: RefreshIdle(),
+  dcaStop: DcaStopIdle(),
+);
+
 /// Trade has no tab bar or system back on iOS: every state must lead home.
 Future<void> _expectExitLeadsHome(
   WidgetTester tester,
   ExchangeState state,
 ) async {
-  final cubit = _ExchangeCubit();
+  final cubit = _ExchangeBloc();
   when(() => cubit.state).thenReturn(state);
 
   var exits = 0;
   await tester.pumpWidget(
     MultiBlocProvider(
       providers: [
-        BlocProvider<ExchangeCubit>.value(value: cubit),
+        BlocProvider<ExchangeBloc>.value(value: cubit),
         BitcoinPriceFixture.chart(),
       ],
       child: MaterialApp(
@@ -84,6 +98,7 @@ ExchangeHomeScreen _dashboard({
   Future<void> Function()? refreshAccount,
 }) => ExchangeHomeScreen(
   watchDashboard: ExchangeSessionScope.watchDashboard,
+  watchUnreadSupportMessages: (_) => 0,
   exchange: () => locator<Exchange>(),
   preferences: () => locator<Preferences>(),
   brandAsset: Assets.logos.bbLogoSmall.path,
@@ -113,13 +128,13 @@ void main() {
   testWidgets('initial account failure shows error and retry fetches again', (
     tester,
   ) async {
-    final cubit = _ExchangeCubit();
-    when(() => cubit.state).thenReturn(
-      const ExchangeState(getUserSummaryFailure: ExchangeNetworkFailure()),
-    );
-    when(cubit.fetchUserSummary).thenAnswer((_) async {});
+    final cubit = _ExchangeBloc();
+    when(
+      () => cubit.state,
+    ).thenReturn(const ExchangeLoadFailed(_session, ExchangeNetworkFailure()));
+    var refreshes = 0;
     await tester.pumpWidget(
-      BlocProvider<ExchangeCubit>.value(
+      BlocProvider<ExchangeBloc>.value(
         value: cubit,
         child: MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
@@ -133,7 +148,7 @@ void main() {
           home: Scaffold(
             body: _dashboard(
               homeCards: const [],
-              refreshAccount: cubit.fetchUserSummary,
+              refreshAccount: () async => refreshes++,
               onHomeRefresh: () {},
               onOpenSettings: () {},
               onAction: (_) {},
@@ -150,17 +165,17 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(find.text(loc.exchangeErrorNetwork), findsOneWidget);
     await tester.tap(find.text(loc.retry));
-    verify(cubit.fetchUserSummary).called(1);
+    expect(refreshes, 1);
     await tester.pumpWidget(const SizedBox.shrink());
     await cubit.close();
   });
   testWidgets(
     'initial account load shows progress while no result is available',
     (tester) async {
-      final cubit = _ExchangeCubit();
-      when(() => cubit.state).thenReturn(const ExchangeState());
+      final cubit = _ExchangeBloc();
+      when(() => cubit.state).thenReturn(const ExchangeLoading(_session));
       await tester.pumpWidget(
-        BlocProvider<ExchangeCubit>.value(
+        BlocProvider<ExchangeBloc>.value(
           value: cubit,
           child: MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
@@ -193,14 +208,13 @@ void main() {
   testWidgets('names every top bar button within a 48 dp target', (
     tester,
   ) async {
-    final cubit = _ExchangeCubit();
-    when(() => cubit.state)
-        .thenReturn(const ExchangeState(userSummary: _summary));
+    final cubit = _ExchangeBloc();
+    when(() => cubit.state).thenReturn(_loaded);
 
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
-          BlocProvider<ExchangeCubit>.value(value: cubit),
+          BlocProvider<ExchangeBloc>.value(value: cubit),
           BitcoinPriceFixture.chart(),
         ],
         child: MaterialApp(
@@ -246,21 +260,18 @@ void main() {
 
   group('every Trade state leads back to Wallet Home', () {
     testWidgets('loading', (tester) async {
-      await _expectExitLeadsHome(tester, const ExchangeState());
+      await _expectExitLeadsHome(tester, const ExchangeLoading(_session));
     });
 
     testWidgets('initial failure', (tester) async {
       await _expectExitLeadsHome(
         tester,
-        const ExchangeState(getUserSummaryFailure: ExchangeNetworkFailure()),
+        const ExchangeLoadFailed(_session, ExchangeNetworkFailure()),
       );
     });
 
     testWidgets('loaded account', (tester) async {
-      await _expectExitLeadsHome(
-        tester,
-        const ExchangeState(userSummary: _summary),
-      );
+      await _expectExitLeadsHome(tester, _loaded);
     });
   });
 }

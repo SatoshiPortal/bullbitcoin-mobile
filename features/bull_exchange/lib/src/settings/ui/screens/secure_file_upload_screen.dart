@@ -1,6 +1,6 @@
 import '../../../exchange_l10n.dart';
-import '../../presentation/secure_file_upload_cubit.dart';
-import '../../presentation/secure_file_upload_state.dart';
+import '../../presentation/secure_file_upload_bloc.dart';
+import '../../presentation/secure_file_upload_machine.dart';
 import '../../presentation/exchange_settings_failure_l10n.dart';
 
 import 'package:bull_ui/bull_ui.dart';
@@ -13,17 +13,13 @@ class SecureFileUploadScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SecureFileUploadCubit, SecureFileUploadState>(
+    return BlocListener<SecureUploadBloc, SecureUploadState>(
       listenWhen: (previous, current) =>
-          (!previous.uploadComplete && current.uploadComplete),
-      listener: (context, state) {
-        if (state.uploadComplete) {
-          BullSnackBar.show(
-            context,
-            message: context.loc.exchangeFileUploadSuccess,
-          );
-        }
-      },
+          previous is! UploadDone && current is UploadDone,
+      listener: (context, state) => BullSnackBar.show(
+        context,
+        message: context.loc.exchangeFileUploadSuccess,
+      ),
       child: BullScaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -52,11 +48,25 @@ class _ErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final failure = context.select(
-      (SecureFileUploadCubit cubit) => cubit.state.failure,
-    );
+    final state = context.watch<SecureUploadBloc>().state;
+    final (failure, event) = switch (state) {
+      UploadStatusFailed(:final failure) => (
+        failure,
+        const UploadRetryPressed(),
+      ),
+      UploadReady(problem: final failure?) => (
+        failure,
+        const UploadProblemDismissed(),
+      ),
+      UploadStatusLoading() ||
+      UploadReady() ||
+      UploadBlocked() ||
+      UploadPicking() ||
+      UploadSending() ||
+      UploadDone() => (null, null),
+    };
 
-    if (failure == null) return const SizedBox.shrink();
+    if (failure == null || event == null) return const SizedBox.shrink();
 
     return Container(
       width: double.infinity,
@@ -81,13 +91,12 @@ class _ErrorMessage extends StatelessWidget {
           ),
           IconButton(
             icon: BullIcon(
-              BullIcons.close,
+              event is UploadRetryPressed ? BullIcons.sync : BullIcons.close,
               color: context.bull.error,
               size: 18,
             ),
-            onPressed: () {
-              context.read<SecureFileUploadCubit>().clearError();
-            },
+            tooltip: event is UploadRetryPressed ? context.loc.retry : null,
+            onPressed: () => context.read<SecureUploadBloc>().add(event),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
@@ -102,14 +111,22 @@ class _UploadOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<SecureFileUploadCubit>().state;
-    final status = state.secureUploadStatus;
+    final state = context.watch<SecureUploadBloc>().state;
+    final (status, isLoading, isUploading) = switch (state) {
+      UploadStatusLoading() || UploadDone() => (null, true, false),
+      UploadStatusFailed() => (null, false, false),
+      UploadReady(:final status) => (status, false, false),
+      UploadBlocked(:final status) => (status, false, false),
+      UploadPicking(:final account) || UploadSending(:final account) => (
+        secureUploadStatusOf(account.status),
+        false,
+        true,
+      ),
+    };
+    void upload() =>
+        context.read<SecureUploadBloc>().add(const UploadPressed());
 
-    final canInteract =
-        status == SecureUploadStatus.upload ||
-        status == SecureUploadStatus.rejected;
-
-    final shouldIgnore = state.isUploading || !canInteract;
+    final shouldIgnore = state is! UploadReady;
 
     return IgnorePointer(
       ignoring: shouldIgnore,
@@ -155,7 +172,7 @@ class _UploadOptionCard extends StatelessWidget {
                   ),
                   if (status != SecureUploadStatus.rejected) ...[
                     const Gap(BullSpacing.md),
-                    if (state.isLoadingUser)
+                    if (isLoading)
                       SizedBox(
                         width: 20,
                         height: 20,
@@ -164,15 +181,11 @@ class _UploadOptionCard extends StatelessWidget {
                           color: context.bull.primary,
                         ),
                       )
-                    else
+                    else if (status != null)
                       _UploadStatusButton(
                         status: status,
-                        isUploading: state.isUploading,
-                        onPressed: () {
-                          context
-                              .read<SecureFileUploadCubit>()
-                              .pickAndUploadFile();
-                        },
+                        isUploading: isUploading,
+                        onPressed: upload,
                       ),
                   ],
                 ],
@@ -180,10 +193,8 @@ class _UploadOptionCard extends StatelessWidget {
               if (status == SecureUploadStatus.rejected) ...[
                 const Gap(BullSpacing.sm),
                 _RejectedStatusWithReupload(
-                  isUploading: state.isUploading,
-                  onPressed: () {
-                    context.read<SecureFileUploadCubit>().pickAndUploadFile();
-                  },
+                  isUploading: isUploading,
+                  onPressed: upload,
                 ),
               ],
             ],
@@ -295,6 +306,28 @@ class _UploadStatusButton extends StatelessWidget {
 
       case SecureUploadStatus.rejected:
         return const SizedBox.shrink();
+
+      case SecureUploadStatus.unknown:
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: BullSpacing.sm,
+            vertical: BullSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(context.bullShapes.badge),
+            border: Border.all(
+              color: context.bull.outline.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
+          ),
+          child: BullText(
+            context.loc.exchangeFileUploadStatusUnknown,
+            style: context.bullType.caption.copyWith(
+              fontWeight: FontWeight.w600,
+              color: context.bull.onSurface,
+            ),
+          ),
+        );
     }
   }
 }

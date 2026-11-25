@@ -65,6 +65,7 @@ void main() {
           child: VirtualIbanOnboardingView(
             onActivated: () => activated++,
             onUseRegularSepa: () => usedRegularSepa++,
+            onBack: () {},
             onReturnHome: withReturnHome ? () => returnedHome++ : null,
           ),
         ),

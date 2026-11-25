@@ -277,15 +277,9 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     ArkForegroundMaintenance? maintenance;
     WalletArkDisplayData? displayData;
     final exitFunding = ArkExitFunding();
-    // An exit's fees come from Secure Bitcoin, at its start and when it
-    // needs more. Built on first use: opening Ark never needs the send stack.
-    final send = services.send;
-    final exitTopUp = send == null
-        ? null
-        : WalletArkReserveTopUp(
-            sourceWallet: selection.displaySourceWalletId,
-            send: send,
-          );
+    // Scuttle funds the exit reserve only through a journaled, reviewed
+    // transfer; the unjournaled automatic top-up is not wired.
+    const ArkReserveTopUpPort? exitTopUp = null;
     try {
       final language =
           (await locator<RuntimeDisplayPreferencesReader>().readLanguage())
@@ -355,7 +349,25 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         boardFunding: board,
         displayData: displayData,
         exitFunding: exitFunding,
-        exitTopUp: exitTopUp,
+        savedExitDestination: switch (board) {
+          WalletArkBoardFunding actor => (
+            ids,
+          ) => actor.readInitialExitDestination(config.id, ids),
+          _ => null,
+        },
+        fundInitialExit: switch (board) {
+          WalletArkBoardFunding actor => (quote, address) async {
+            if (!policy.active || quote.account != config.id) {
+              return const Err(ArkServiceUnavailableFailure());
+            }
+            return actor.fundInitialExit(
+              quote,
+              address,
+              isCurrent: () => policy.active,
+            );
+          },
+          _ => null,
+        },
         exitDestination: switch (services.nextReceiveAddress) {
           final nextAddress? => WalletArkExitDestination(
             sourceWallet: selection.displaySourceWalletId,

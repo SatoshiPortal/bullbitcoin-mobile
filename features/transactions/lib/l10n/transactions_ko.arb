@@ -323,7 +323,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "이름 *",
+  "retry": "다시 시도",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -726,5 +726,6 @@
   "transactionPayjoinBroadcastFailed": "원본 거래를 브로드캐스트할 수 없습니다. 다시 시도해 주세요.",
   "transactionPayjoinOriginalUnavailable": "원본 거래를 더 이상 브로드캐스트할 수 없습니다.",
   "transactionLabelLimitReached": "라벨은 최대 10개까지 추가할 수 있습니다.",
-  "copiedToClipboard": "클립보드에 복사되었습니다"
+  "copiedToClipboard": "클립보드에 복사되었습니다",
+  "transactionListExchangeOrdersUnavailable": "거래소 주문 내역을 불러올 수 없습니다."
 }
