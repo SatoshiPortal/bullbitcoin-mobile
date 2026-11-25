@@ -33,6 +33,22 @@ class _Preferences extends Mock implements Preferences {}
 class _ExchangeBloc extends MockBloc<ExchangeEvent, ExchangeState>
     implements ExchangeBloc {}
 
+class _UnreadBloc extends MockBloc<SupportUnreadEvent, SupportUnreadState>
+    implements SupportUnreadBloc {}
+
+/// The blocs ExchangeSessionScope provides above the exchange routes.
+Widget _scoped(_ExchangeBloc exchange, Widget child) {
+  final unread = _UnreadBloc();
+  when(() => unread.state).thenReturn(const UnreadSignedOut());
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider<ExchangeBloc>.value(value: exchange),
+      BlocProvider<SupportUnreadBloc>.value(value: unread),
+    ],
+    child: child,
+  );
+}
+
 BullExchangeFeature _mount({
   required Exchange Function() exchange,
   void Function(BuildContext)? onExit,
@@ -184,9 +200,9 @@ void main() {
     addTearDown(cubit.close);
     addTearDown(changes.close);
     await tester.pumpWidget(
-      BlocProvider<ExchangeBloc>.value(
-        value: cubit,
-        child: MaterialApp.router(
+      _scoped(
+        cubit,
+        MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
           localizationsDelegates: const [
@@ -260,9 +276,9 @@ void main() {
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      BlocProvider<ExchangeBloc>.value(
-        value: cubit,
-        child: MaterialApp.router(
+      _scoped(
+        cubit,
+        MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
           localizationsDelegates: const [
