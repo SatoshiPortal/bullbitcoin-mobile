@@ -17,6 +17,7 @@ class RecordingGateway implements ScheduledNotificationPort {
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   }) async {
     this.notification = notification;
     id = platformId;

@@ -32,6 +32,7 @@ final class FlutterScheduledNotificationGateway
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   }) async {
     switch (await _permissions.isEnabled()) {
       case Err(:final failure):
@@ -65,9 +66,9 @@ final class FlutterScheduledNotificationGateway
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         );
       } else {
-        // show does not remove an existing pending alarm for this identifier.
-        // Cancel first so an older future alarm cannot reappear after urgency.
-        await _plugin.cancel(id: platformId);
+        // A pending alarm survives show. Most callers cancel it first; a
+        // dedicated immediate-only ID can instead preserve onlyAlertOnce.
+        if (cancelExisting) await _plugin.cancel(id: platformId);
         await _plugin.show(
           id: platformId,
           title: notification.title,
