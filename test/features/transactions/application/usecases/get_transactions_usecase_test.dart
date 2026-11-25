@@ -241,6 +241,8 @@ void main() {
   });
 
   test('a read order list is merged', () async {
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
     final history = historyOf(await usecase.execute());
 
     expect(history.exchangeOrders, isA<ExchangeOrdersMerged>());
