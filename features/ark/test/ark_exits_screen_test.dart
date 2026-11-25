@@ -629,6 +629,26 @@ void main() {
       expect(find.byType(ArkExitSteps), findsNothing);
     });
 
+    testWidgets('the switch sits at the same place on both views', (
+      tester,
+    ) async {
+      final h = animated(ArkExitStatus.pending);
+      await tester.pumpWidget(app(h.screen));
+      await tester.pump();
+      await openDetail(tester);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      final onStatus = tester.getRect(find.byType(BullPaymentViewSwitch));
+
+      await tester.tap(find.text('Details'));
+      await tester.pump();
+      expect(find.byType(ArkExitSteps), findsOneWidget);
+      expect(tester.getRect(find.byType(BullPaymentViewSwitch)), onStatus);
+
+      await tester.tap(find.text('Status'));
+      await tester.pump();
+      expect(tester.getRect(find.byType(BullPaymentViewSwitch)), onStatus);
+    });
+
     testWidgets('a failed exit has an animation phase, so it has both views', (
       tester,
     ) async {
