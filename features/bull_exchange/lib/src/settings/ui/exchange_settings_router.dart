@@ -33,6 +33,10 @@ final class ExchangeSettingsHost {
   final SaveAccountPreferences savePreferences;
   final Future<void> Function(BuildContext) refreshSession;
   final bool Function(BuildContext) isSuperuser;
+
+  /// [ExchangePlatform.websiteOnly] for this device and the current user.
+  bool websiteOnly(BuildContext context) =>
+      ExchangePlatform.current.websiteOnly(isSuperuser: isSuperuser(context));
   final Uri? Function(BuildContext) securityUrl;
   final String Function(BuildContext) title;
   final String Function(BuildContext) signedOutMessage;
@@ -84,9 +88,7 @@ class ExchangeSettingsRouter {
         isLoggedIn: () => exchangeSignedIn(config.exchange().currentAccess),
         sessionChanges: () =>
             config.exchange().watchAccess().map(exchangeSignedIn),
-        websiteOnly: ExchangePlatform.current.websiteOnly(
-          isSuperuser: config.isSuperuser(context),
-        ),
+        websiteOnly: config.websiteOnly(context),
         title: config.title,
         signedOutMessage: config.signedOutMessage,
         buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
