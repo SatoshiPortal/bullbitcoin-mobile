@@ -54,13 +54,55 @@ sealed class RecipientsState with _$RecipientsState {
       )
       .toSet();
 
-  /// Regular and Confidential SEPA list the same accounts, so a list that
-  /// offers both shows one route at a time.
-  bool get canChooseSepaType =>
+  bool get _offersBothSepaRoutes =>
       selectableRecipientTypes.contains(RecipientType.sepaEur) &&
-      selectableRecipientTypes.contains(RecipientType.confidentialSepaEur) &&
-      (jurisdictionFilter == null ||
-          jurisdictionFilter == RecipientType.sepaEur.jurisdiction);
+      selectableRecipientTypes.contains(RecipientType.confidentialSepaEur);
+
+  /// Regular and Confidential SEPA list the same accounts, so a list that
+  /// offers both shows one route at a time. The route is a type filter of
+  /// the European list: it is offered only there, where it decides every
+  /// row shown (under all jurisdictions it would leave the other rails'
+  /// rows in a list labelled with a SEPA route).
+  bool get canChooseSepaType =>
+      _offersBothSepaRoutes &&
+      jurisdictionFilter == RecipientType.sepaEur.jurisdiction;
+
+  /// The types the list asks for and shows: the selectable ones in the
+  /// selected jurisdiction, with one SEPA route when both are offered (the
+  /// chosen one in Europe, regular SEPA otherwise).
+  Set<RecipientType> get listedTypes {
+    final hiddenSepaType = !_offersBothSepaRoutes
+        ? null
+        : canChooseSepaType && sepaType == RecipientType.confidentialSepaEur
+        ? RecipientType.sepaEur
+        : RecipientType.confidentialSepaEur;
+    final jurisdiction = jurisdictionFilter;
+    return selectableRecipientTypes
+        .where(
+          (type) =>
+              type != hiddenSepaType &&
+              (jurisdiction == null || type.jurisdiction == jurisdiction),
+        )
+        .toSet();
+  }
+
+  /// The rows the list shows, always derived from the selected type and
+  /// jurisdiction ([listedTypes]), whatever the server returned; with
+  /// [strict], also only rows of the allowed owner. Null before the first
+  /// page arrived.
+  List<RecipientViewModel>? shownRecipients({required bool strict}) {
+    final rows = selectableRecipients;
+    if (rows == null) return null;
+    final types = listedTypes;
+    final owner = allowedRecipientFilters.isOwner;
+    return rows
+        .where(
+          (recipient) =>
+              types.contains(recipient.type) &&
+              (!strict || owner == null || recipient.isOwner == owner),
+        )
+        .toList();
+  }
 
   bool get onlyOwnerRecipients => allowedRecipientFilters.isOwner ?? false;
 

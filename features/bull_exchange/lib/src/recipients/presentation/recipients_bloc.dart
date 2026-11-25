@@ -313,21 +313,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     }
   }
 
-  List<RecipientType> _effectiveTypes(RecipientsState state) {
-    final hiddenSepaType = !state.canChooseSepaType
-        ? null
-        : state.sepaType == RecipientType.confidentialSepaEur
-        ? RecipientType.sepaEur
-        : RecipientType.confidentialSepaEur;
-    final jurisdiction = state.jurisdictionFilter;
-    return state.selectableRecipientTypes
-        .where(
-          (type) =>
-              type != hiddenSepaType &&
-              (jurisdiction == null || type.jurisdiction == jurisdiction),
-        )
-        .toList();
-  }
+  List<RecipientType> _effectiveTypes(RecipientsState state) =>
+      state.listedTypes.toList();
 
   List<RecipientViewModel> _toViewModels(List<Recipient> recipients) =>
       recipients.map(RecipientViewModel.new).toList();

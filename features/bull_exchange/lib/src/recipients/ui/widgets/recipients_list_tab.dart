@@ -107,18 +107,10 @@ class RecipientsListTabState extends State<RecipientsListTab> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<RecipientsBloc>().state;
-    final loaded = state.selectableRecipients ?? const <RecipientViewModel>[];
     final types = state.selectableRecipientTypes;
-    final owner = state.allowedRecipientFilters.isOwner;
-    final recipients = widget.enforceRecipientFilter
-        ? loaded
-              .where(
-                (recipient) =>
-                    types.contains(recipient.type) &&
-                    (owner == null || recipient.isOwner == owner),
-              )
-              .toList()
-        : loaded;
+    final recipients =
+        state.shownRecipients(strict: widget.enforceRecipientFilter) ??
+        const <RecipientViewModel>[];
     final selectedId = _selectedRecipient?.id;
     final selected = recipients
         .where((recipient) => recipient.id == selectedId)

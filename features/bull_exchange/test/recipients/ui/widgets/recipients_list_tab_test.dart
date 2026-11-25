@@ -541,10 +541,8 @@ void main() {
             recipients: [confidential],
           ),
         );
-        expect(
-          find.text('Satoshi Nakamoto'),
-          enforceFilter ? findsNothing : findsOneWidget,
-        );
+        // A type the list can't offer is never shown, strict or not.
+        expect(find.text('Satoshi Nakamoto'), findsNothing);
         expect(
           tester.widget<BullButton>(find.byType(BullButton)).disabled,
           isTrue,
@@ -553,4 +551,49 @@ void main() {
       },
     );
   }
+
+  testWidgets('the SEPA route tab filters every row shown', (tester) async {
+    final interac = recipientFixture(
+      'interac',
+      RecipientType.interacEmailCad,
+      name: 'Email Money Transfer recipient',
+      isOwner: true,
+    );
+    await pumpList(
+      tester,
+      enforceRecipientFilter: true,
+      availability: ConfidentialSepaAvailability.ready,
+      initialState: RecipientsState(
+        allowedRecipientFilters: RecipientFilterCriteria(
+          types: [for (final rail in PayoutRails.all) rail.type],
+        ),
+        confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
+        jurisdictionFilter: Jurisdiction.europe,
+        // The server answered rows of another rail too.
+        recipients: [_recipient, interac],
+      ),
+    );
+    expect(find.byType(BullSegmented), findsWidgets);
+    expect(find.text('Satoshi Nakamoto'), findsOneWidget);
+    expect(find.text('Email Money Transfer recipient'), findsNothing);
+  });
+
+  testWidgets('under all jurisdictions no SEPA route tab is offered', (
+    tester,
+  ) async {
+    final loc = await pumpList(
+      tester,
+      enforceRecipientFilter: true,
+      availability: ConfidentialSepaAvailability.ready,
+      initialState: RecipientsState(
+        allowedRecipientFilters: RecipientFilterCriteria(
+          types: [for (final rail in PayoutRails.all) rail.type],
+        ),
+        confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
+        recipients: [_recipient],
+      ),
+    );
+    expect(find.text(loc.recipientsTypeConfidentialSepa), findsNothing);
+    expect(find.text('Satoshi Nakamoto'), findsOneWidget);
+  });
 }

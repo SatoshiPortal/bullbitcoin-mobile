@@ -85,4 +85,66 @@ void main() {
       {RecipientType.confidentialSepaEur},
     );
   });
+
+  group('the shown list follows the selected type and jurisdiction', () {
+    final interac = recipientFixture('interac', RecipientType.interacEmailCad);
+    final sepa = recipientFixture('sepa', RecipientType.sepaEur);
+    final confidential = recipientFixture(
+      'confidential',
+      RecipientType.confidentialSepaEur,
+    );
+    // The pay flow's picker: every rail, Confidential SEPA usable.
+    RecipientsState pay({
+      Jurisdiction? jurisdiction,
+      RecipientType sepaType = RecipientType.sepaEur,
+    }) => RecipientsState(
+      allowedRecipientFilters: RecipientFilterCriteria(
+        types: [for (final rail in PayoutRails.all) rail.type],
+      ),
+      confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
+      jurisdictionFilter: jurisdiction,
+      sepaType: sepaType,
+      recipients: [interac, sepa, confidential],
+    );
+
+    test('all jurisdictions: every rail, regular SEPA, no route tab', () {
+      final state = pay();
+      expect(state.canChooseSepaType, isFalse);
+      expect(state.shownRecipients(strict: true), [interac, sepa]);
+      expect(state.listedTypes, contains(RecipientType.interacEmailCad));
+      expect(
+        state.listedTypes,
+        isNot(contains(RecipientType.confidentialSepaEur)),
+      );
+    });
+
+    test('Europe, SEPA tab: only regular SEPA rows', () {
+      final state = pay(jurisdiction: Jurisdiction.europe);
+      expect(state.canChooseSepaType, isTrue);
+      expect(state.shownRecipients(strict: true), [sepa]);
+      expect(state.listedTypes, {RecipientType.sepaEur});
+    });
+
+    test('Europe, Confidential SEPA tab: only confidential rows', () {
+      final state = pay(
+        jurisdiction: Jurisdiction.europe,
+        sepaType: RecipientType.confidentialSepaEur,
+      );
+      expect(state.shownRecipients(strict: true), [confidential]);
+      expect(state.listedTypes, {RecipientType.confidentialSepaEur});
+    });
+
+    test('Canada: only Canadian rails', () {
+      final state = pay(jurisdiction: Jurisdiction.canada);
+      expect(state.canChooseSepaType, isFalse);
+      expect(state.shownRecipients(strict: true), [interac]);
+    });
+
+    test('before the first page there is no list', () {
+      expect(
+        pay().copyWith(recipients: null).shownRecipients(strict: true),
+        isNull,
+      );
+    });
+  });
 }
