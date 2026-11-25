@@ -785,6 +785,13 @@ void main() {
         .thenAnswer((_) async => const Ok(1));
     watchWalletTransactionByTxIdUsecase =
         _MockWatchWalletTransactionByTxIdUsecase();
+    // A settled Payjoin starts the by-txid watcher on its own transaction.
+    when(
+      () => watchWalletTransactionByTxIdUsecase.watchWalletTransactionByTxId(
+        walletId: any(named: 'walletId'),
+        txId: any(named: 'txId'),
+      ),
+    ).thenAnswer((_) => const Stream.empty());
     calculateBitcoinAbsoluteFeesUsecase =
         _MockCalculateBitcoinAbsoluteFeesUsecase();
     verifyChainSwapAmountSendUsecase = _MockVerifyChainSwapAmountSendUsecase();

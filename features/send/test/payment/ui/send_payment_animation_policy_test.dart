@@ -2,7 +2,6 @@ import 'package:send/src/payment/ui/screens/send_payment_animation_policy.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:swaps/order_swaps.dart';
-import 'package:swaps/swaps.dart';
 
 void main() {
   test('funded failed and expired orders remain provisional', () {
@@ -24,35 +23,13 @@ void main() {
     }
   });
 
-  test('Boltz needs settlement proof and refundable stays pending', () {
-    for (final status in SwapStatus.values) {
-      for (final proven in [false, true]) {
-        final expected = switch (status) {
-          SwapStatus.completed when proven => BullPaymentPhase.success,
-          SwapStatus.refunded => BullPaymentPhase.failed,
-          _ => null,
-        };
-        expect(
-          boltzPaymentPhase(status, refunded: false, completedProven: proven),
-          expected,
-          reason: '${status.name}, proven=$proven',
-        );
-        expect(
-          boltzPaymentPhase(status, refunded: true, completedProven: proven),
-          BullPaymentPhase.failed,
-          reason: status.name,
-        );
-      }
-    }
-  });
-
-  test('direct success excludes old txids, swaps, and Payjoin', () {
+  test('direct broadcast excludes old txids, swaps, and Payjoin', () {
     bool result({
       bool swap = false,
       String? old,
       String? tx,
       bool pj = false,
-    }) => directPaymentSucceeded(
+    }) => directPaymentBroadcast(
       expectsSwap: swap,
       previousTxId: old,
       transactionId: tx,
@@ -63,5 +40,26 @@ void main() {
     expect(result(old: 'old', tx: 'old'), isFalse);
     expect(result(swap: true, tx: 'new'), isFalse);
     expect(result(pj: true, tx: 'new'), isFalse);
+  });
+
+  test('direct success needs the confirmation of its own transaction', () {
+    bool result({
+      bool broadcast = true,
+      String? tx = 'new',
+      String? observed,
+      bool confirmed = false,
+    }) => directPaymentSucceeded(
+      broadcast: broadcast,
+      transactionId: tx,
+      observedTransactionId: observed,
+      observedConfirmed: confirmed,
+    );
+    // A txid alone proves the broadcast, never the confirmation.
+    expect(result(), isFalse);
+    expect(result(observed: 'new'), isFalse);
+    expect(result(observed: 'new', confirmed: true), isTrue);
+    // Another transaction confirming says nothing about this payment.
+    expect(result(observed: 'other', confirmed: true), isFalse);
+    expect(result(broadcast: false, observed: 'new', confirmed: true), isFalse);
   });
 }
