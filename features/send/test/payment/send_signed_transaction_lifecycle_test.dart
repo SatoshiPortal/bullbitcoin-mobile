@@ -1,3 +1,4 @@
+import 'package:send/src/payment/domain/usecases/watch_send_settlement_usecase.dart';
 import 'package:send/src/payment/domain/usecases/load_send_sources_usecase.dart';
 import 'package:send/src/payment/domain/usecases/load_send_coins_usecase.dart';
 import 'package:coins/coins.dart';
@@ -256,7 +257,7 @@ class _TestSendCubit extends SendCubit {
     required super.broadcastPayjoinOriginalUsecase,
     required super.getVisiblePayjoinTransactionUsecase,
     required super.retryPayjoinProposalUsecase,
-    required super.transactions,
+    required super.watchSettlement,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
     required super.consolidation,
@@ -371,7 +372,9 @@ void main() {
       getVisiblePayjoinTransactionUsecase:
           _MockGetVisiblePayjoinTransactionUsecase(),
       retryPayjoinProposalUsecase: _MockRetryPayjoinProposalUsecase(),
-      transactions: _MockWatchWalletTransactionByTxIdUsecase(),
+      watchSettlement: WatchSendSettlementUsecase(
+        _MockWatchWalletTransactionByTxIdUsecase(),
+      ),
       verifyChainSwapAmountSendUsecase: _MockVerifyChainSwapAmountSendUsecase(),
       verifyExchangePayinUsecase: _MockVerifyExchangePayinUsecase(),
       consolidation: consolidation,

@@ -52,6 +52,7 @@ void main() {
       openCoins: (_, _) {},
       orderUnderReview: (_) => const SizedBox.shrink(),
       paymentArrowImage: const AssetImage('unused-arrow'),
+      pollSettlement: (_, {required isActive}) async {},
       arkAccounts: () => accounts,
     );
     final payment = routes.payment;
