@@ -450,6 +450,9 @@ void main() {
     await tester.pump();
     expect(rig.cubit.state, isA<ArkBoardBusy>());
     expect(find.byType(BullPaymentTransition), findsOneWidget);
+    // No operation yet: the funding is being sent, not sent.
+    expect(find.textContaining('Sending funding'), findsWidgets);
+    expect(find.textContaining('Funding sent'), findsNothing);
     expect(find.text('Confirm board'), findsNothing);
     await tester.tap(find.text('View status'));
     await tester.pump();
