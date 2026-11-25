@@ -67,9 +67,9 @@ void main() {
           final progress = _progress(order);
           final reached = switch (payout) {
             OrderPayoutStatus.inProgress ||
-            OrderPayoutStatus.awaitingClaim ||
-            // Completed with no transaction proves nothing more.
-            OrderPayoutStatus.completed => 1,
+            OrderPayoutStatus.awaitingClaim => 1,
+            // Completed ends the watch too: the rail reports it delivered.
+            OrderPayoutStatus.completed => 4,
             OrderPayoutStatus.notStarted ||
             OrderPayoutStatus.scheduled ||
             OrderPayoutStatus.canceled ||
@@ -80,11 +80,16 @@ void main() {
               payout == OrderPayoutStatus.canceled ||
               payout == OrderPayoutStatus.failed;
           final reason = payout.name;
-          expect(_phase(order), switch (stopped) {
-            true => BullPaymentPhase.failed,
-            false => BullPaymentPhase.sending,
+          final delivered = payout == OrderPayoutStatus.completed;
+          expect(_phase(order), switch ((stopped, delivered)) {
+            (true, _) => BullPaymentPhase.failed,
+            (_, true) => BullPaymentPhase.success,
+            _ => BullPaymentPhase.sending,
           }, reason: reason);
-          if (stopped) {
+          if (delivered) {
+            expect(progress.completed, reached, reason: reason);
+            expect(progress.failedAt, isNull, reason: reason);
+          } else if (stopped) {
             expect(progress.failedAt, reached + 1, reason: reason);
             expect(progress.completed, reached + 1, reason: reason);
           } else {
