@@ -1,7 +1,9 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
-import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
+import 'package:sync/storage.dart' show SyncFreshness;
 
 import 'dart:async';
 
@@ -55,8 +57,8 @@ import 'package:electrum/setup.dart'
         RegtestElectrumProfile;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
+import 'package:bb_mobile/native_runtime_setup.dart';
 import 'package:settings/setup.dart' show SettingsRecoverBullBindings;
-import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
@@ -65,7 +67,6 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:settings/settings.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -88,7 +89,7 @@ import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/features/wallet/public/boltz_swaps_setup.dart';
+import 'package:swap_feature/setup.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -129,11 +130,7 @@ class AppLocator {
       locator<SecretsInventory>(),
       locator<DeveloperEnvironmentReader>(),
       locator<Secrets>(),
-      (secret, network) => WalletRecoverBullBindings.restoreDefaults(
-        locator<DefaultWalletProvisioning>(),
-        secret,
-        network,
-      ),
+      locator<DefaultWalletProvisioning>(),
     );
     locator.registerSingleton<RecoverBullWalletPort>(wallets);
     final family = settings.path == databasePath ? null : 'regtest';
@@ -300,7 +297,10 @@ class AppLocator {
       );
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
-    final swaps = await BoltzSwapsSetup.setup(locator);
+    final swaps = await SwapEngineSetup.open(
+      locator,
+      inventory: locator<SecretsInventory>(),
+    );
     if (swaps case Err()) return swaps;
     CoreLocator.registerUsecases(locator);
     mountPayjoin(locator, startRecovery: false);
@@ -312,7 +312,7 @@ class AppLocator {
         inventory: inventory,
         environment: locator<ActiveEnvironmentReader>(),
         catalog: () => locator<WalletCatalogPort>(),
-        synchronize: locator<ForegroundWalletSync>().synchronizeDescriptor,
+        synchronize: locator<ForegroundWalletSynchronization>().execute,
         refreshRevisions: locator<WalletNativeRuntime>().refreshAll,
         swaps: () => locator<SwapActivity>(),
         silent: () => locator<Silent>(),
@@ -396,6 +396,10 @@ class AppLocator {
         preferences: locator<ActiveEnvironmentReader>(),
       ),
     );
+    registerNativeRuntime(
+      locator,
+      overview: () => locator<OverviewSynchronization>(),
+    );
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(locator);
     mountAddressView(locator);
@@ -444,6 +448,14 @@ class AppLocator {
     );
     final native = locator<WalletNativeRuntime>();
     final electrumSync = locator<ElectrumSync>();
+    locator.registerSingleton(
+      locator<SyncFreshness>().recordCompletions(
+        electrumSync.finished.map((event) => event.key),
+        inventory,
+      ),
+      instanceName: 'syncFreshness',
+      dispose: (subscription) => subscription.cancel(),
+    );
     OverviewSynchronization overviewSync() =>
         locator<OverviewSynchronization>();
     locator.registerSingleton(
@@ -453,7 +465,7 @@ class AppLocator {
         loadWallet: (key) => locator<WalletNativeRuntime>().loadWallet(key),
         findDescriptor: (key) => locator<WalletCatalogPort>().find(key),
         synchronize: (descriptor) =>
-            locator<ForegroundWalletSync>().synchronizeDescriptor(descriptor),
+            locator<ForegroundWalletSynchronization>().execute(descriptor),
         events: WalletHistoryEvents.foreground(
           revisions: native.changes,
           finished: electrumSync.finished,
@@ -461,8 +473,8 @@ class AppLocator {
               overviewSync().coordinator.syncPassActivity,
           isSyncPassActive: () => overviewSync().coordinator.isSyncPassActive,
         ),
-        syncStarted: () => locator<ForegroundWalletSync>().started,
-        syncFinished: () => locator<ForegroundWalletSync>().finished,
+        syncStarted: () => electrumSync.started.map((key) => key.id),
+        syncFinished: () => electrumSync.finished.map((event) => event.key.id),
         orderSwaps: () => locator<OrderSwaps>(),
         actions: TransactionUiActions(
           openExchange: (context) =>
@@ -559,10 +571,8 @@ class AppLocator {
         orders: locator<OrderSwaps>(),
         inventory: inventory,
         sync: locator<WalletNativeRuntime>(),
-        synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
-          key,
-          locator<WalletCatalogPort>(),
-        ),
+        synchronize: (key) => locator<ForegroundWalletSynchronization>()
+            .executeKey(key, locator<WalletCatalogPort>()),
         finished: locator<ElectrumSync>().finished.map((event) => event.key),
         signerDevices: () => locator<SignerDevices>(),
         preferences: locator<Preferences>(),
@@ -601,17 +611,14 @@ class AppLocator {
       ),
     );
 
-    locator.registerLazySingleton(() {
-      final operations = WalletLocator.importOperations(locator);
-      return ImportFeature.mount(
+    locator.registerLazySingleton(
+      () => ImportFeature.mount(
         preferences: locator<Preferences>(),
         servers: locator<ElectrumServersPort>(),
         secrets: locator<Secrets>(),
         inventory: inventory,
         admission: locator<ParentCustodyAdmissionPort>(),
-        provisionMnemonic: operations.mnemonic,
-        provisionDescriptor: operations.descriptor,
-        provisionXpub: operations.xpub,
+        accounts: locator<WalletProvisioning>(),
         networkOf: Settings.networkOf,
         onImported: (context) {
           context.read<WalletBloc>().add(const WalletStarted());
@@ -619,8 +626,8 @@ class AppLocator {
         },
         onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
         qrIllustration: AssetImage(Assets.misc.qRPlaceholder.path),
-      );
-    });
+      ),
+    );
 
     locator.registerSingleton(
       ForegroundWalletStartup(
@@ -634,7 +641,7 @@ class AppLocator {
             watchOrders: startOrderSwapWatcher,
             watchAutoswap: startAutoswapWatcher,
           );
-          BoltzSwapsSetup.followEnvironment(locator);
+          SwapEngineSetup.followEnvironment(locator);
         },
         payjoin: startPayjoinRecovery
             ? () => locator<PayjoinLifecycle>()

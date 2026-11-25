@@ -4,16 +4,19 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
 import 'provisioning_failure.dart';
+import 'src/wallet_provisioning.dart';
 
 export 'default_wallets.dart';
+export 'src/wallet_provisioning.dart'
+    show WalletProvisioning, WalletProvisioningException, WatchOnlyAccount;
 export 'provisioning_failure.dart';
 
 /// Adds the missing half of a legacy default pair using its existing seed.
 final class DefaultWalletRepair {
   final Secrets _secrets;
-  final Future<void> Function(Secret, Network) _create;
+  final WalletProvisioning _accounts;
 
-  const DefaultWalletRepair(this._secrets, this._create);
+  const DefaultWalletRepair(this._secrets, this._accounts);
 
   @useResult
   Future<Result<bool, ProvisioningFailure>> execute(
@@ -57,12 +60,12 @@ final class DefaultWalletRepair {
     }
     switch (await _secrets.fetch(fingerprint)) {
       case Ok(:final value):
-        try {
-          await _create(value, missing);
-          return const Ok(true);
-        } on Exception catch (error) {
-          log.warning('Default wallet repair failed: ${error.runtimeType}');
-          return const Err(DefaultWalletRepairFailure());
+        switch (await _accounts.createDefault(value, missing)) {
+          case Ok():
+            return const Ok(true);
+          case Err(:final failure):
+            log.warning('Default wallet repair failed: ${failure.runtimeType}');
+            return const Err(DefaultWalletRepairFailure());
         }
       case Err(:final failure):
         log.warning('Default wallet repair deferred: ${failure.runtimeType}');

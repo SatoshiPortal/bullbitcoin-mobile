@@ -96,6 +96,27 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     WalletKey key, {
     String? replacing,
   }) => _result(() => _spendStatus(key, replacing: replacing));
+
+  /// The spend readiness of [walletId] as the catalog resolves it. A wallet
+  /// the catalog cannot resolve, or whose state is unreadable, is never ready.
+  Future<BitcoinSpendStatus> spendStatusOf(String walletId) async {
+    final WalletKey key;
+    switch (await _catalog.list()) {
+      case Ok(:final value):
+        final found = value
+            .where((descriptor) => descriptor.key.id == walletId)
+            .firstOrNull;
+        if (found == null) return BitcoinSpendStatus.unavailable;
+        key = found.key;
+      case Err():
+        return BitcoinSpendStatus.unavailable;
+    }
+    return switch (await spendStatus(key)) {
+      Ok(:final value) => value,
+      Err() => BitcoinSpendStatus.unavailable,
+    };
+  }
+
   Future<Result<bool, SyncFailure>> protectObservedSpend(
     WalletKey key,
     String txid,

@@ -35,11 +35,11 @@ import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart'
     show arkBoardFundingBinding, SqliteArkFundingReservations;
 import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/wallet_ark_services.dart';
 import 'package:fees/fees.dart';
-import 'package:sync/write.dart' show WalletNativeRuntime;
-import 'package:background_tasks/background_tasks.dart';
+import 'package:sync/write.dart'
+    show ForegroundWalletSynchronization, WalletNativeRuntime;
+import 'package:background_tasks/background_tasks.dart' show BackgroundSchedule;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/migration.dart';
@@ -412,11 +412,12 @@ Future<void> _setupArkRegtestProfile() async {
       authority: locator<SqliteArkFundingReservations>(),
       runtime: locator<WalletNativeRuntime>(),
       inventory: locator<SecretsInventory>(),
-      synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
-        key,
-        locator<WalletCatalogPort>(),
-        reason: SyncReason.manual,
-      ),
+      synchronize: (key) =>
+          locator<ForegroundWalletSynchronization>().executeKey(
+            key,
+            locator<WalletCatalogPort>(),
+            reason: SyncReason.manual,
+          ),
       secrets: locator<Secrets>(),
       fees: locator<Fees>(),
       custody: locator<ParentCustodyAdmissionPort>(),

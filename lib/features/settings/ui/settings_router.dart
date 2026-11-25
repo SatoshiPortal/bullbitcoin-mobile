@@ -12,11 +12,8 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:settings/settings.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:transactions/routes.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -24,7 +21,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:bull_logs/bull_logs.dart';
-import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 class SettingsRouter {
   static Widget menuScope(Widget child) => ExchangeAccessBuilder(
@@ -98,6 +94,7 @@ class SettingsRouter {
     RouteBase? seedViewRoute,
     required List<RouteBase> exchangeSettingsRoutes,
     List<RouteBase> addressRoutes = const [],
+    required List<RouteBase> walletRoutes,
   }) {
     return [
       ...priceRoutes,
@@ -139,44 +136,7 @@ class SettingsRouter {
 
       ...accessRoutes,
       ...backupRoutes,
-      // A wallet is always reached from its own screen (wallet home → gear),
-      // never from a list, so these carry the shared prefix themselves.
-      GoRoute(
-        path: SettingsRoute.walletDetailsSelectedWallet.path,
-        name: SettingsRoute.walletDetailsSelectedWallet.name,
-        builder: (context, state) {
-          final walletId = state.pathParameters['walletId']!;
-          return MultiBlocListener(
-            listeners: [
-              BlocListener<WalletBloc, WalletState>(
-                listenWhen: (previous, current) {
-                  return previous.wallets.length > current.wallets.length;
-                },
-                listener: (context, state) {
-                  context.goNamed(WalletRoute.walletHome.name);
-                },
-              ),
-              BlocListener<WalletBloc, WalletState>(
-                listenWhen: (previous, current) {
-                  // Listen for a wallet deletion failure to show a sheet.
-                  return previous.walletDeletionFailure == null &&
-                      current.walletDeletionFailure != null;
-                },
-                listener: (context, state) {
-                  WalletDeletionFailedSheet.show(
-                    context,
-                    failure: state.walletDeletionFailure!,
-                  );
-                },
-              ),
-            ],
-            child: BlocProvider(
-              create: (_) => locator<WalletDiscoveryCubit>(),
-              child: WalletDetailsScreen(walletId: walletId),
-            ),
-          );
-        },
-      ),
+      ...walletRoutes,
       ...addressRoutes,
       const LogsFeature().route,
       ?seedViewRoute,

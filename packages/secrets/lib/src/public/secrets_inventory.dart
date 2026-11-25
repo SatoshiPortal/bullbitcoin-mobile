@@ -30,13 +30,14 @@ import '../domain/wallet_registration.dart';
 import 'extensions.dart';
 import 'secret.dart';
 import 'secrets.dart';
+import 'seed_reference_port.dart';
 import 'wallet_inventory.dart';
 
 part 'bip85_derivations.dart';
 
 /// The foreground wallet inventory. Access starts with the persisted policy.
 /// Lock invalidates any pending read and the next operation checks the session.
-final class SecretsInventory implements WalletInventory {
+final class SecretsInventory implements WalletInventory, SeedReferencePort {
   final InventoryStore _store;
   final AccessRepository _access;
   final InventoryRepository _wallets;
@@ -157,6 +158,16 @@ final class SecretsInventory implements WalletInventory {
       _inSession((_) => _wallets.referencedFingerprints(defaultViewId));
 
   /// Whether the authorized view has any wallet, including on other networks.
+  /// Seeds held by locally signing wallets of every view. A watch-only origin
+  /// never keeps a seed alive (#2634); a locked session, an unreadable
+  /// inventory or an invalid local reference cannot prove the seed unused.
+  @override
+  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
+      switch (await _inSession((_) => _wallets.custodyFingerprints())) {
+        Ok(:final value) => Ok(value),
+        Err() => const Err(SeedReferencesUnavailable()),
+      };
+
   @useResult
   Future<Result<bool, SecretFailure>> hasWallets() async =>
       (await listWallets()).map((wallets) => wallets.isNotEmpty);

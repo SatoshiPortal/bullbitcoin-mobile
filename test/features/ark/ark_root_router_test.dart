@@ -1,9 +1,25 @@
 import 'package:address_view/routes.dart' show AddressViewFeature;
+import 'package:announcements/setup.dart' show AnnouncementDismissals;
 import 'package:labels/labels.dart' show Labels;
 import 'package:access/access.dart' show Access;
 import 'package:all_seed_view/setup.dart';
 import 'package:bip85/bip85.dart';
 import 'package:secrets/custody.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:signers/storage.dart' show SignerDevices;
+import 'package:swaps/order_swaps.dart' show OrderSwaps;
+import 'package:swaps/swaps.dart' show SwapStore;
+import 'package:sync/sync.dart'
+    show
+        InputReservation,
+        InputReservationPort,
+        ReservedAddressPort,
+        SyncFailure,
+        SyncNotFoundFailure,
+        WalletConnection,
+        WalletConnectionPort,
+        WalletKey;
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:swaps/swaps.dart' show BoltzSwaps;
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
@@ -24,7 +40,6 @@ import 'package:access/setup.dart';
 import 'package:exchange/exchange.dart' show Exchange;
 import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart' show exchangeForTesting;
-import 'package:provisioning/provisioning.dart' show DefaultWalletProvisioning;
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -42,6 +57,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Fingerprint, Network, ScriptType;
 import 'package:receive/setup.dart';
 import 'package:secrets/secrets.dart' hide Language;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
@@ -52,10 +69,13 @@ import 'package:spend/spend.dart' show Spend;
 import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
+import '../../support/wallet_registrations.dart';
 
 import 'package:silent/setup.dart';
 import 'package:silent/silent.dart' show Silent;
-import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:sync/write.dart'
+    show ElectrumSync, WalletNativeLifecycle, WalletNativeRuntime;
 
 class PricePreferences extends Mock
     implements
@@ -121,6 +141,70 @@ class _UnusedCustodyAdmission extends Mock
 
 class _UnusedSwaps extends Mock implements BoltzSwaps {}
 
+class _UnusedSwapStore extends Mock implements SwapStore {}
+
+class _UnusedOrders extends Mock implements OrderSwaps {}
+
+class _UnusedDismissals extends Mock implements AnnouncementDismissals {}
+
+class _UnusedReserved implements ReservedAddressPort {
+  @override
+  Future<Result<bool, SyncFailure>> isReserved(WalletKey key, String address) =>
+      throw StateError('Unexpected address reservation read');
+}
+
+class _UnusedInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() =>
+      throw StateError('Unexpected input reservation read');
+}
+
+class _UnusedConnections implements WalletConnectionPort {
+  @override
+  Future<Result<T, SyncFailure>> run<T>({
+    required Network network,
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
+    operation,
+    required bool Function(SyncFailure) mayRetry,
+  }) => throw StateError('Unexpected sync connection');
+}
+
+class _UnusedAccounts implements WalletProvisioning {
+  @override
+  Future<Result<void, WalletProvisioningFailure>> resume() =>
+      throw StateError('Unexpected provisioning resume');
+
+  @override
+  Future<Result<String, WalletProvisioningFailure>> createDefault(
+    Secret secret,
+    Network network, {
+    DateTime? birthday,
+  }) => throw StateError('Unexpected default provisioning');
+
+  @override
+  Future<Result<void, ParentCustodyFailure>> importMnemonic({
+    required Fingerprint parent,
+    required Secrets secrets,
+    required ParentCustodyAdmissionPort admission,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    String? label,
+  }) => throw StateError('Unexpected mnemonic provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importDescriptor(
+    WatchOnlyAccount account,
+  ) => throw StateError('Unexpected descriptor provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importXpub({
+    required String xpub,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required String label,
+  }) => throw StateError('Unexpected xpub provisioning');
+}
+
 class _UnusedProvisioning extends Mock implements DefaultWalletProvisioning {}
 
 void main() {
@@ -150,9 +234,11 @@ void main() {
       locator.registerSingleton<RecoverBullFeature>(recovery);
       FakeSecureStoragePlatform().install();
       final inventoryFixture = await tester.runAsync(
-        () => InventoryFixture.open(directory),
+        () => InventoryFixture.open(directory, withSignerDevices: true),
       );
       if (inventoryFixture == null) throw StateError('Inventory unavailable');
+      final signerDevices = inventoryFixture.signerDevices;
+      if (signerDevices == null) throw StateError('Signer devices unavailable');
       final accessServices = GetIt.asNewInstance();
       locator.registerSingleton(
         AccessFeature.mount(
@@ -234,6 +320,37 @@ void main() {
       );
       final secrets = Secrets(scratchDirectory: () async => directory.path);
       final inventory = inventoryFixture.inventory;
+      final references = SeedReferences(
+        _UnusedReferences(),
+        admission: _UnusedCustodyAdmission(),
+      );
+      // The router resolves the settings details page at construction: every
+      // owner it reads there must be present, even though this test never
+      // opens the page.
+      locator.registerSingleton<SecretsInventory>(inventory);
+      locator.registerSingleton<Secrets>(secrets);
+      locator.registerSingleton<SignerDevices>(signerDevices);
+      locator.registerSingleton<SwapStore>(_UnusedSwapStore());
+      locator.registerSingleton<OrderSwaps>(_UnusedOrders());
+      locator.registerSingleton<AnnouncementDismissals>(_UnusedDismissals());
+      locator.registerSingleton<SeedReferences>(references);
+      final electrumSync = ElectrumSync(
+        connections: _UnusedConnections(),
+        documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
+      );
+      locator.registerSingleton<ElectrumSync>(electrumSync);
+      final nativeRuntime = WalletNativeRuntime.open(
+        catalog: TestWalletCatalog(MemoryWalletRegistrations()),
+        reserved: _UnusedReserved(),
+        inputReservations: _UnusedInputReservations(),
+        deleteCatalogEntry: (_) async => const Ok(null),
+        sync: electrumSync,
+        documentsDirectory: () async => directory.path,
+        freezes: MemoryFreezeStore(),
+        connections: _UnusedConnections(),
+      );
+      locator.registerSingleton<WalletNativeRuntime>(nativeRuntime);
       locator.registerSingleton(
         AddressViewFeature.mount(
           labels: _UnusedLabels(),
@@ -255,10 +372,7 @@ void main() {
           secrets: secrets,
           inventory: inventory,
           preferences: preferences,
-          references: SeedReferences(
-            _UnusedReferences(),
-            admission: _UnusedCustodyAdmission(),
-          ),
+          references: references,
           swaps: _UnusedSwaps(),
           access: const Access(),
         ),
@@ -270,25 +384,7 @@ void main() {
           secrets: secrets,
           inventory: inventory,
           admission: _UnusedCustodyAdmission(),
-          provisionMnemonic: ({
-            required parent,
-            required secrets,
-            required admission,
-            required network,
-            required scriptType,
-            label,
-          }) => throw StateError('Unexpected mnemonic provisioning'),
-          provisionDescriptor: ({
-            required descriptor,
-            required signer,
-            required label,
-          }) => throw StateError('Unexpected descriptor provisioning'),
-          provisionXpub: ({
-            required xpub,
-            required network,
-            required scriptType,
-            required label,
-          }) => throw StateError('Unexpected xpub provisioning'),
+          accounts: _UnusedAccounts(),
           networkOf: (_) => null,
           onExit: (_) {},
           onImported: (_) {},
@@ -364,7 +460,6 @@ void main() {
         await locator.unregister<Bip85Feature>();
         await locator.unregister<AllSeedViewFeature>();
         await accessServices.reset();
-        await inventoryFixture.close();
         await locator.unregister<SignersFeature>();
         await signerServices.reset();
         await locator.unregister<Exchange>();
@@ -386,6 +481,17 @@ void main() {
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
         await locator.unregister<ReceiveFeature>();
+        await locator.unregister<WalletNativeRuntime>();
+        await nativeRuntime.close();
+        await locator.unregister<ElectrumSync>();
+        await locator.unregister<AnnouncementDismissals>();
+        await locator.unregister<SeedReferences>();
+        await locator.unregister<OrderSwaps>();
+        await locator.unregister<SwapStore>();
+        await locator.unregister<SignerDevices>();
+        await locator.unregister<Secrets>();
+        await locator.unregister<SecretsInventory>();
+        await inventoryFixture.close();
         await receiveServices.reset();
         await transactionServices.reset();
         await networkServices.reset();
@@ -398,6 +504,13 @@ void main() {
       expect(router.namedLocation('receiveLiquid'), '/receive/liquid');
       expect(router.namedLocation('settings'), '/settings');
       expect(router.namedLocation('search'), '/settings/search');
+      expect(
+        router.namedLocation(
+          'walletDetailsSelectedWallet',
+          pathParameters: {'walletId': 'watch-only'},
+        ),
+        '/settings/wallet-details/watch-only',
+      );
       expect(
         router.namedLocation('backupSettings'),
         '/settings/backup-settings',

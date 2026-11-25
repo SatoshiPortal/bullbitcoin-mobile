@@ -144,6 +144,7 @@ void main() {
       ).settingsRoutes,
       backupRoutes: const [],
       priceRoutes: const [],
+      walletRoutes: const [],
     );
     final manage = settingsRoutes.whereType<GoRoute>().singleWhere(
       (route) => route.name == ExchangeAccessSettingsNavigation.name,

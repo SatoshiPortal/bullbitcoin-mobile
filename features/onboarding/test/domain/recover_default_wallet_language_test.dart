@@ -5,6 +5,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' show hex;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:primitives/primitives.dart' as p;
 import 'package:secrets/secrets.dart' as s;
@@ -15,6 +16,70 @@ class _Inventory extends Mock implements s.WalletInventory {}
 
 class _Verification extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
+
+/// Records the default accounts the provisioning pass creates.
+final class _Accounts implements WalletProvisioning {
+  _Accounts(this.created, this.registrations);
+
+  final List<s.Secret> created;
+  final List<s.WalletRegistration> registrations;
+
+  @override
+  Future<p.Result<void, WalletProvisioningFailure>> resume() async =>
+      const Ok(null);
+
+  @override
+  Future<p.Result<String, WalletProvisioningFailure>> createDefault(
+    s.Secret secret,
+    p.Network network, {
+    DateTime? birthday,
+  }) async {
+    created.add(secret);
+    final id = network.toString();
+    registrations.add(
+      walletRegistrationForTesting(
+        id: id,
+        network: network,
+        isDefault: true,
+        signer: s.WalletSigner.local,
+        masterFingerprint: secret.id,
+        secretFingerprint: secret.id,
+      ),
+    );
+    return Ok(id);
+  }
+
+  @override
+  Future<p.Result<void, s.ParentCustodyFailure>> importMnemonic({
+    required p.Fingerprint parent,
+    required s.Secrets secrets,
+    required s.ParentCustodyAdmissionPort admission,
+    required p.BitcoinNetwork network,
+    required p.ScriptType scriptType,
+    String? label,
+  }) => throw StateError('Unexpected mnemonic provisioning');
+
+  @override
+  Future<p.Result<void, WalletProvisioningFailure>> importDescriptor(
+    WatchOnlyAccount account,
+  ) => throw StateError('Unexpected descriptor provisioning');
+
+  @override
+  Future<p.Result<void, WalletProvisioningFailure>> importXpub({
+    required String xpub,
+    required p.BitcoinNetwork network,
+    required p.ScriptType scriptType,
+    required String label,
+  }) => throw StateError('Unexpected xpub provisioning');
+}
+
+final class _Environment implements ActiveEnvironmentReader {
+  @override
+  Future<p.Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async {
+    return const Ok(Environment.mainnet);
+  }
+}
 
 /// A generated French phrase, never a real wallet's.
 final _french = bip39.Mnemonic(
@@ -53,23 +118,8 @@ void main() {
     final provisioning = DefaultWalletProvisioning(
       secrets: secrets,
       inventory: inventory,
-      environment: () async => p.NetworkEnv.mainnet,
-      resume: () async {},
-      create: (secret, network, birthday) async {
-        created.add(secret);
-        final id = network.toString();
-        registrations.add(
-          walletRegistrationForTesting(
-            id: id,
-            network: network,
-            isDefault: true,
-            signer: s.WalletSigner.local,
-            masterFingerprint: secret.id,
-            secretFingerprint: secret.id,
-          ),
-        );
-        return id;
-      },
+      environment: _Environment(),
+      accounts: _Accounts(created, registrations),
     );
     final verification = _Verification();
     when(() => verification.execute(any()))

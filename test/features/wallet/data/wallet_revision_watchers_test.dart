@@ -3,7 +3,8 @@ import 'package:primitives/primitives.dart';
 import 'dart:async';
 
 import 'package:transactions/testing.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:sync/sync.dart'
+    show WalletKey, WalletLifecycle, WalletRevision, WalletRevisionState;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

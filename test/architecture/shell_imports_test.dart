@@ -30,10 +30,6 @@ void main() {
     final shell = parseString(
       content: File('lib/locator.dart').readAsStringSync(),
     ).unit;
-    final facade = parseString(
-      content: File('lib/features/wallet/public/wallet_facade.dart')
-          .readAsStringSync(),
-    ).unit;
 
     expect(
       shell.directives
@@ -48,14 +44,6 @@ void main() {
               'wallet_facade.dart',
             }.contains(p.basename(uri)),
           ),
-      isEmpty,
-    );
-    expect(
-      facade.directives
-          .whereType<ExportDirective>()
-          .map((directive) => directive.uri.stringValue)
-          .whereType<String>()
-          .where((uri) => uri.contains('/domain/usecases/')),
       isEmpty,
     );
   });

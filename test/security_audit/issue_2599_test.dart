@@ -16,9 +16,8 @@ void main() {
           'packages/legacy_storage/lib/src/app_database/sqlite_database.dart',
         ).readAsStringSync();
         final initialization = File('lib/init.dart').readAsStringSync();
-        final walletComposition = File(
-          'lib/features/wallet/wallet_locator.dart',
-        ).readAsStringSync();
+        final walletComposition = File('lib/native_runtime_setup.dart')
+            .readAsStringSync();
         final writer = File(
           'packages/sync/lib/src/data/write/native_write_session.dart',
         ).readAsStringSync();

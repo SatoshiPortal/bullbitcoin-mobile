@@ -53,7 +53,7 @@ Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Speci
 
 Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input.
 
-`ImportFeature.mount` owns the import hub, mnemonic entry and confirmation, watch-only scanning and confirmation, and hardware instructions. The mnemonic duplicate check reads the unlocked Secrets inventory for the active Bitcoin network. The shell passes foreground Wallet provisioning operations directly; they still own custody admission, catalog insertion and native creation. Remove those bindings when Secrets and Sync publish the complete provisioning operations.
+`ImportFeature.mount` owns the import hub, mnemonic entry and confirmation, watch-only scanning and confirmation, and hardware instructions. The mnemonic duplicate check reads the unlocked Secrets inventory for the active Bitcoin network. The shell binds `WalletProvisioning` and the Secrets custody admission port; Provisioning coordinates durable catalog registration with native account creation through Sync.
 
 ## 🎯 The architecture we tend toward
 
@@ -534,7 +534,7 @@ Electrum owns the declarations, generated rows and queries for `ElectrumServers`
 
 ## Wallet import boundary
 
-Wallet Import owns mnemonic prescan and confirmation, hardware instructions, QR descriptor selection and watch-only confirmation. It uses Scanning for QR and NFC acquisition and the selected network's Secrets inventory for duplicate checks. Host bindings call the foreground wallet owner for provisioning. Watch-only import captures the selected environment before parsing so it can disambiguate testnet and regtest public-key versions without changing the key. Mnemonic prescan preserves typed unsupported-script failures so the UI cannot continue with an unsupported import.
+Wallet Import owns mnemonic prescan and confirmation, hardware instructions, QR descriptor selection and watch-only confirmation. It uses Scanning for QR and NFC acquisition and the selected network's Secrets inventory for duplicate checks. It calls Provisioning to create the account, keeping mnemonic import under parent custody admission. Watch-only import captures the selected environment before parsing so it can disambiguate testnet and regtest public-key versions without changing the key. Mnemonic prescan preserves typed unsupported-script failures so the UI cannot continue with an unsupported import.
 
 ## Per-owner encrypted cutover
 

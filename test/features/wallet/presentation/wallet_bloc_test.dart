@@ -36,7 +36,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
@@ -58,8 +57,6 @@ class _MockSyncWalletsUsecase extends Mock implements SyncWalletsUsecase {}
 
 class _MockGetUnconfirmedIncomingBalanceUsecase extends Mock
     implements GetUnconfirmedIncomingBalanceUsecase {}
-
-class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
 class _MockCheckBackupNeededUsecase extends Mock
     implements CheckBackupNeededUsecase {
@@ -102,7 +99,6 @@ WalletBloc createBloc(
     syncWalletsUsecase: refreshSync ?? _stubbedSync(),
     getUnconfirmedIncomingBalanceUsecase:
         getUnconfirmed ?? _MockGetUnconfirmedIncomingBalanceUsecase(),
-    deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
@@ -467,7 +463,6 @@ void main() {
           syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
           getUnconfirmedIncomingBalanceUsecase:
               _MockGetUnconfirmedIncomingBalanceUsecase(),
-          deleteWalletUsecase: _MockDeleteWalletUsecase(),
           checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
           checkSpScanningForWalletUsecase: _stubbedSpScanning(),
           refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -582,7 +577,6 @@ void main() {
         syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
         getUnconfirmedIncomingBalanceUsecase:
             _MockGetUnconfirmedIncomingBalanceUsecase(),
-        deleteWalletUsecase: _MockDeleteWalletUsecase(),
         checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
         checkSpScanningForWalletUsecase: _stubbedSpScanning(),
         refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -817,7 +811,6 @@ WalletBloc _blocWithFailingLoad(
     syncWalletsUsecase: sync ?? _stubbedSync(),
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
-    deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -925,7 +918,6 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     syncWalletsUsecase: sync,
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
-    deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),

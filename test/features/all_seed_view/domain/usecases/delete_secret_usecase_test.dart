@@ -5,7 +5,6 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -14,7 +13,7 @@ import 'package:secrets/testing.dart';
 
 class _MockSeedOwner extends Mock implements SeedReferencePort {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockWalletCatalog extends Mock implements SeedReferencePort {}
 
 /// Was `DeleteSeedUsecase`, inside the seeds package. The class moved out when the package stopped knowing what a wallet is — `Secrets.trash` is unconditional and documented as such — but the responsibility did not: something must still refuse to delete a secret a wallet depends on, and that something is here.
 ///
@@ -37,7 +36,7 @@ void main() {
 
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
-  late _MockWalletRepository walletRepository;
+  late _MockWalletCatalog walletRepository;
   late SeedReferences references;
   late DeleteSecretUsecase usecase;
   late Fingerprint id;
@@ -61,7 +60,7 @@ void main() {
       language: Language.english,
     )) as Ok<Secret, SecretFailure>;
     id = stored.value.id;
-    walletRepository = _MockWalletRepository();
+    walletRepository = _MockWalletCatalog();
     references = SeedReferences(
       walletRepository,
       admission: SqliteParentCustodyAdmission(

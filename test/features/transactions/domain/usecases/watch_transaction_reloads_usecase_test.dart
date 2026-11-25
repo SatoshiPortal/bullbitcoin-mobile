@@ -4,7 +4,8 @@ import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
 
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:sync/sync.dart'
+    show WalletKey, WalletLifecycle, WalletRevision, WalletRevisionState;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 

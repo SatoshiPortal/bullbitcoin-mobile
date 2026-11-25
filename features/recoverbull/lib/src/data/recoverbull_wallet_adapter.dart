@@ -1,31 +1,53 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart';
 
 import '../domain/entities/vault_context.dart';
 import '../domain/recoverbull_failure.dart';
 import '../domain/recoverbull_wallet_port.dart';
 
-/// Provisions the default accounts and returns the identity actually committed.
-typedef RestoreDefaultAccounts =
-    Future<Result<VaultContext, RecoverBullFailure>> Function(
-      Secret secret,
-      BitcoinNetwork network,
-    );
-
 final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
   final WalletInventory _wallets;
   final DeveloperEnvironmentReader _settings;
   final Secrets _secrets;
-  final RestoreDefaultAccounts _restore;
+  final DefaultWalletProvisioning _provisioning;
 
   const RecoverBullWalletAdapter(
     this._wallets,
     this._settings,
     this._secrets,
-    this._restore,
+    this._provisioning,
   );
+
+  /// Provisions the default accounts and returns the identity actually
+  /// committed for [network].
+  Future<Result<VaultContext, RecoverBullFailure>> _restoreDefaults(
+    Secret secret,
+    BitcoinNetwork network,
+  ) async {
+    final List<WalletRegistration> wallets;
+    switch (await _provisioning.execute(
+      secret: secret,
+      expectedNetwork: network.env,
+    )) {
+      case Ok(:final value):
+        wallets = value;
+      case Err():
+        return const Err(VaultStorageFailure());
+    }
+    final bitcoin = wallets
+        .where((wallet) => wallet.network == network)
+        .toList();
+    if (bitcoin.length != 1) return const Err(VaultContextChangedFailure());
+    final wallet = bitcoin.single;
+    final fingerprint = wallet.secretFingerprint;
+    if (wallet.signer != WalletSigner.local || fingerprint == null) {
+      return const Err(VaultContextChangedFailure());
+    }
+    return Ok(VaultContext(fingerprint: fingerprint, network: network));
+  }
 
   @override
   Future<Result<VaultContext?, RecoverBullFailure>> currentDefault() async {
@@ -100,7 +122,7 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
           if (!await _stillSelected(settings.environment)) {
             return const Err(VaultContextChangedFailure());
           }
-          return await _restore(value, requested.network);
+          return await _restoreDefaults(value, requested.network);
       }
     } on Exception {
       log.warning('recoverbull.wallet.restore.failed');

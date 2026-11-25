@@ -3,15 +3,16 @@ import 'dart:async';
 import 'package:address_view/address_view.dart' show AddressView;
 import 'package:address_view/routes.dart';
 import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 import 'package:receive/receive.dart' show Receive;
+import 'package:secrets/custody.dart' show SeedReferences;
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:silent/silent.dart' show Silent;
-import 'package:swaps/swaps.dart' show Swaps;
+import 'package:swaps/swaps.dart' show SwapStore, Swaps;
 import 'package:sync/sync.dart' show WalletKey, WalletCatalogPort;
-import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:primitives/primitives.dart' show Err, NetworkEnv, Result;
 import 'package:secrets/storage.dart';
@@ -64,7 +65,8 @@ import 'package:wallet_import/setup.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
@@ -198,7 +200,7 @@ class AppRouter {
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {
-    WalletRecoverBullBindings.tested(context);
+    context.read<WalletBloc>().add(const VerifyBackupStatus());
     router.goNamed(WalletRoute.walletHome.name);
   }
 
@@ -223,10 +225,8 @@ class AppRouter {
     payment: () => (
       inventory: locator<SecretsInventory>(),
       native: locator<WalletNativeRuntime>(),
-      synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
-        key,
-        locator<WalletCatalogPort>(),
-      ),
+      synchronize: (key) => locator<ForegroundWalletSynchronization>()
+          .executeKey(key, locator<WalletCatalogPort>()),
       finishedSyncs: locator<ElectrumSync>().finished.map((event) => event.key),
       readSignerDevice: (walletId) => locator<SignerDevices>().read(walletId),
       preferences: locator<Preferences>(),
@@ -363,6 +363,24 @@ class AppRouter {
             ).route,
           ],
           priceRoutes: locator<BitcoinPriceFeature>().routes,
+          walletRoutes: [
+            SettingsFeature.walletDetails(
+              inventory: locator<SecretsInventory>(),
+              devices: locator<SignerDevices>(),
+              native: locator<WalletNativeRuntime>(),
+              swaps: locator<SwapStore>(),
+              orders: locator<OrderSwaps>(),
+              references: locator<SeedReferences>(),
+              secrets: locator<Secrets>(),
+              discover: (walletId) => locator<OverviewSynchronization>()
+                  .coordinator
+                  .discoverWallet(walletId),
+              onDeleted: (context) {
+                context.read<WalletBloc>().add(const WalletStarted());
+                context.goNamed(WalletRoute.walletHome.name);
+              },
+            ),
+          ],
         ),
       ).route,
       ...locator<TransactionsFeature>().routes,
@@ -390,7 +408,7 @@ class AppRouter {
       locator<RecoverBullFeature>().route(
         copiedMessage: (context) => context.loc.copiedToClipboard,
         onRecovered: (context) {
-          WalletRecoverBullBindings.recovered(context);
+          context.read<WalletBloc>().add(const WalletStarted());
           router.goNamed(WalletRoute.walletHome.name);
         },
         onTested: _onBackupTestSucceeded,

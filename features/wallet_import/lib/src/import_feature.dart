@@ -10,7 +10,7 @@ import 'package:secrets/secrets.dart'
     show ParentCustodyAdmissionPort, Secrets, WalletInventory;
 import 'package:wallet_import/src/domain/check_wallet_status_usecase.dart';
 import 'package:wallet_import/src/domain/import_failure.dart';
-import 'package:wallet_import/src/domain/import_operations.dart';
+import 'package:provisioning/provisioning.dart' show WalletProvisioning;
 import 'package:wallet_import/src/domain/mnemonic/check_duplicate_mnemonic_usecase.dart';
 import 'package:wallet_import/src/domain/mnemonic/import_wallet_usecase.dart';
 import 'package:wallet_import/src/domain/scan_mnemonic_usecase.dart';
@@ -39,9 +39,7 @@ class ImportFeature {
     required Secrets secrets,
     required WalletInventory inventory,
     required ParentCustodyAdmissionPort admission,
-    required ProvisionMnemonicWallet provisionMnemonic,
-    required ProvisionDescriptorWallet provisionDescriptor,
-    required ProvisionXpubWallet provisionXpub,
+    required WalletProvisioning accounts,
     required NetworkEnv? Function(BuildContext) networkOf,
     required void Function(BuildContext) onImported,
     required void Function(BuildContext) onExit,
@@ -63,11 +61,11 @@ class ImportFeature {
       checkDuplicateMnemonicUsecase: duplicate,
       secrets: secrets,
       settingsRepository: preferences,
-      provision: provisionMnemonic,
+      provision: accounts.importMnemonic,
       admission: admission,
     );
-    final descriptor = ImportWatchOnlyDescriptorUsecase(provisionDescriptor);
-    final xpub = ImportWatchOnlyXpubUsecase(provisionXpub);
+    final descriptor = ImportWatchOnlyDescriptorUsecase(accounts);
+    final xpub = ImportWatchOnlyXpubUsecase(accounts);
     final parse = ParseWatchOnlyInputUsecase();
     final readNetwork = ReadWatchOnlyNetworkUsecase(preferences);
 

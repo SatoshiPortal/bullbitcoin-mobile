@@ -1,7 +1,6 @@
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/data/ark_reserve_top_up.dart';
 import 'package:bb_mobile/features/wallet/data/ark_source_wallet_name.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -15,6 +14,7 @@ import 'package:material_ui/material_ui.dart' show BoxFit, Image;
 import 'package:primitives/primitives.dart';
 import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
+import 'package:sync/write.dart' show ForegroundWalletSynchronization;
 
 /// What the wallet gives Ark: its Secure Bitcoin operations (fresh receive
 /// addresses, sends for exit fees, wallet names), its card artwork, the
@@ -34,7 +34,7 @@ ArkAppServices walletArkAppServices(GetIt locator) => ArkAppServices(
         locator<WalletRegistrations>(),
         id,
       );
-      await locator<ForegroundWalletSync>().synchronizeKey(
+      await locator<ForegroundWalletSynchronization>().executeKey(
         key,
         locator<WalletCatalogPort>(),
         reason: SyncReason.manual,

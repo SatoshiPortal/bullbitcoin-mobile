@@ -10,11 +10,8 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit
 import 'package:settings/settings.dart';
 import 'package:swaps/swaps.dart';
 import 'package:get_it/get_it.dart';
-import 'package:overview/setup.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:secrets/storage.dart' show SecretsInventory;
-import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
@@ -53,14 +50,6 @@ class SettingsLocator {
         offered: _exchangeActivationOffer(locator, onlyWhileOff: true),
       ),
       dispose: (cubit) => cubit.close(),
-    );
-    locator.registerFactory<DiscoverWalletUsecase>(
-      () => DiscoverWalletUsecase(
-        locator<OverviewSynchronization>().coordinator.discoverWallet,
-      ),
-    );
-    locator.registerFactory<WalletDiscoveryCubit>(
-      () => WalletDiscoveryCubit(locator<DiscoverWalletUsecase>()),
     );
   }
 
