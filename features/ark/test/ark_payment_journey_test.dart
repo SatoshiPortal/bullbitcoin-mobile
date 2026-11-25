@@ -179,7 +179,16 @@ void main() {
       );
       await frame(tester);
       expect(find.byType(BullSuccessScreen), findsOneWidget);
-      expect(find.text('Payment sent'), findsOneWidget);
+      // Only a settled payment is announced as sent; a pending one names its
+      // status until the next round.
+      expect(
+        find.text('Payment sent'),
+        status == ArkOperationStatus.succeeded ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.text('Pending'),
+        status == ArkOperationStatus.pending ? findsOneWidget : findsNothing,
+      );
       expect(
         find.textContaining('next round'),
         status == ArkOperationStatus.pending ? findsOneWidget : findsNothing,
