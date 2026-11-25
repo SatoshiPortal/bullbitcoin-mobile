@@ -466,4 +466,32 @@ void main() {
       expect(bloc.state.failedToSelectRecipient, isNull);
     });
   });
+
+  test('a page with no row ends the list, so loading more stops', () async {
+    var calls = 0;
+    when(() => getRecipients.execute(any())).thenAnswer((invocation) async {
+      calls++;
+      final params =
+          invocation.positionalArguments.single as GetRecipientsParams;
+      // The server counts 120 but returns nothing past the first page.
+      return Ok(
+        GetRecipientsResult(
+          recipients: params.page == 1 ? [_recipientEntity()] : const [],
+          totalRecipients: 120,
+        ),
+      );
+    });
+    when(() => getConfidentialSepaAvailability.execute())
+        .thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
+    final bloc = buildBloc();
+    addTearDown(bloc.close);
+    bloc.add(const RecipientsEvent.started());
+    await pumpEventQueue();
+    expect(bloc.state.hasMoreRecipientsToLoad, isTrue);
+    bloc.add(const RecipientsEvent.moreLoaded());
+    await pumpEventQueue();
+    expect(bloc.state.hasMoreRecipientsToLoad, isFalse);
+    expect(bloc.state.isLoadingRecipients, isFalse);
+    expect(calls, 2);
+  });
 }

@@ -140,7 +140,12 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
           );
           emit(
             state.copyWith(
-              totalRecipients: value.totalRecipients,
+              // A page with no row this build can show ends the list: the
+              // server's total can count rows it never returns, and the
+              // list asks for more while it has none to show.
+              totalRecipients: value.recipients.isEmpty
+                  ? state.recipients!.length
+                  : value.totalRecipients,
               loadedPages: state.loadedPages + 1,
               recipients: [
                 ...state.recipients!,

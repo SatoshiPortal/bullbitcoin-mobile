@@ -14,7 +14,8 @@ import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/recipients/recipients_scope.dart';
 import 'package:bull_exchange/src/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullSegmented;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSegmented, BullShimmerBox;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -595,5 +596,36 @@ void main() {
     );
     expect(find.text(loc.recipientsTypeConfidentialSepa), findsNothing);
     expect(find.text('Satoshi Nakamoto'), findsOneWidget);
+  });
+
+  testWidgets('loading more with nothing to show is the empty list, not '
+      'placeholders', (tester) async {
+    final interac = recipientFixture(
+      'interac',
+      RecipientType.interacEmailCad,
+      isOwner: true,
+    );
+    final loc = await pumpList(
+      tester,
+      enforceRecipientFilter: true,
+      availability: ConfidentialSepaAvailability.ready,
+      initialState: RecipientsState(
+        allowedRecipientFilters: RecipientFilterCriteria(
+          types: const [
+            RecipientType.sepaEur,
+            RecipientType.confidentialSepaEur,
+          ],
+        ),
+        confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
+        jurisdictionFilter: Jurisdiction.europe,
+        sepaType: RecipientType.confidentialSepaEur,
+        isLoadingRecipients: true,
+        recipients: [interac],
+        totalRecipients: 1,
+        loadedPages: 1,
+      ),
+    );
+    expect(find.byType(BullShimmerBox), findsNothing);
+    expect(find.text(loc.recipientsListEmpty), findsOneWidget);
   });
 }

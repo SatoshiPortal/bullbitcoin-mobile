@@ -263,7 +263,9 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     bool Function(RecipientViewModel) canSelect,
   ) {
     if (recipients.isEmpty) {
-      if (state.isLoadingRecipients) {
+      // Placeholders only while the first page is on its way: once a page
+      // arrived the list is its rows, empty, or the failure.
+      if (state.recipients == null && state.isLoadingRecipients) {
         return ListView(
           controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
