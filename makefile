@@ -127,6 +127,10 @@ rust-bindings-codegen:
 onion-codegen:
 	@bash packages/onion/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
 
+.PHONY: scuttle-codegen
+scuttle-codegen:
+	@bash packages/ark/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
 # One build over every workspace member: build_runner resolves cross-package inputs (Drift owners before their composer, a member's types before its dependents) from the package graph, in a single process whose cache lives in the root .dart_tool/build.
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
