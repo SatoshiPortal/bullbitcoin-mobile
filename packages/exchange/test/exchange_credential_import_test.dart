@@ -179,10 +179,9 @@ void main() {
     },
   );
 
-  // PENDING PRODUCT DECISION: a lone API key under a marker kept from a fresh
-  // install. This pins today's behaviour (ignored, never read) only.
-  test('[pending product decision] a kept fresh marker imports the Settings '
-      'rows but not the keychain record', () async {
+  // D103: a lone API key under a marker kept from a fresh install is ignored.
+  test('a kept fresh marker imports the Settings rows but not the keychain '
+      'record', () async {
     _value(
       await secrets.exchangeKeychain.write('{"key":"old"}', isTestnet: false),
     );

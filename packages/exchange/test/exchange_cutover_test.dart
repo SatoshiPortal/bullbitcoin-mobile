@@ -386,8 +386,7 @@ void main() {
   for (final version in [1, 2]) {
     test('a v$version marker published before Exchange joined imports the '
         'Basic Auth the app wrote afterwards', () async {
-      // No API key: this pins the Settings path only, not the pending key
-      // decision below.
+      // No API key: this pins the Settings path only; the key is D103 below.
       keystore.entries.clear();
       await source.delete();
       final markerFile = File('${directory.path}/coordination/split-v1.json');
@@ -448,10 +447,9 @@ void main() {
     });
   }
 
-  // PENDING PRODUCT DECISION: whether a lone API key under a marker kept from
-  // a fresh install is imported or ignored. This pins today's behaviour only.
-  test('[pending product decision] a marker published before Exchange joined '
-      'still ignores the keychain residue', () async {
+  // D103: a lone API key under a marker kept from a fresh install is ignored.
+  test('a marker published before Exchange joined still ignores the keychain '
+      'residue', () async {
     await source.delete();
     final before = StorageCutover(
       directory: Directory('${directory.path}/coordination'),
