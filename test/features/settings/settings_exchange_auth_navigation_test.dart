@@ -128,6 +128,7 @@ void main() {
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
     addTearDown(() => locator.unregister<Exchange>());
     final settingsRoutes = SettingsRouter.childRoutes(
+      swapRecoveryRoutes: const [],
       accessRoutes: const [],
       addressRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(

@@ -342,6 +342,7 @@ class AppRouter {
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
+          swapRecoveryRoutes: locator<SwapFeature>().recoveryRoutes,
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
           addressRoutes: [locator<AddressViewFeature>().route],
           accessRoutes: locator<AccessFeature>().routes.settings,

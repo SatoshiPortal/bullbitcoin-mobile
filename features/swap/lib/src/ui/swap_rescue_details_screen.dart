@@ -1,9 +1,13 @@
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show FormatAmount, LiquidNetwork;
-import 'package:bb_mobile/localization/app_localizations_context.dart';
+
+import '../swap_l10n.dart';
+
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
+
+import '../presentation/swap_rescue_cubit.dart';
+import '../presentation/swaps_failure_l10n.dart';
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -89,7 +93,7 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                       const Gap(24),
                       BullButton.primary(
                         label: context.loc.swapRescueButton,
-                        onPressed: (!swap.recoverable || !state.canRescue)
+                        onPressed: (!restorable.isRescuable || !state.canRescue)
                             ? null
                             : () => context.read<SwapRescueCubit>().rescue(),
                       ),
