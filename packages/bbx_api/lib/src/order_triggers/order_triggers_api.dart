@@ -129,6 +129,7 @@ BbxFailure limitOrderRejection(Object error) {
     code: rpc.code,
     message: rpc.message,
     apiCode: code,
+    fieldErrors: rpc.fieldErrors,
     requestId: rpc.requestId,
   );
 }

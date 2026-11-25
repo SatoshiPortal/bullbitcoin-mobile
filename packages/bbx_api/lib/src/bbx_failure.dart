@@ -62,10 +62,16 @@ final class BbxHttpFailure extends BbxFailure {
 /// quote account data, so [toString] leaves it out. [apiCode] is the error's
 /// `data.apiError.code`, kept only when it is an `ERR_` code so that it never
 /// carries account details.
+///
+/// [fieldErrors] are the request fields the server's validation refused,
+/// each with its `ERR_VALIDATION_` code: the field path inside the request's
+/// `element` (`email`, `bankAccount`) to the code. Never a value or the
+/// server's message, which can quote one; [toString] lists only the paths.
 final class BbxRpcFailure extends BbxFailure {
   final int? code;
   final String? message;
   final String? apiCode;
+  final Map<String, String> fieldErrors;
   @override
   final String? requestId;
 
@@ -73,6 +79,7 @@ final class BbxRpcFailure extends BbxFailure {
     this.code,
     this.message,
     this.apiCode,
+    this.fieldErrors = const {},
     this.requestId,
     StackTrace? origin,
   }) : super(origin);
@@ -80,6 +87,7 @@ final class BbxRpcFailure extends BbxFailure {
   @override
   String toString() =>
       'BbxRpcFailure(code: $code, apiCode: $apiCode'
+      '${fieldErrors.isEmpty ? '' : ', fields: ${fieldErrors.keys.toList()}'}'
       '${_requestIdSuffix(requestId)})';
 }
 

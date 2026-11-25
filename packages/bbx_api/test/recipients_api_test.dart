@@ -875,6 +875,39 @@ void main() {
       );
     });
 
+    test('a refused recipient keeps the fields the server named', () async {
+      answer({
+        'error': {
+          'code': -32602,
+          'message': 'Validation error',
+          'data': {
+            'apiError': {
+              'code': 'ERR_API_400',
+              'fields': {
+                'element': {
+                  'email': [
+                    {
+                      'code': 'ERR_VALIDATION_REQUIRED',
+                      'message': 'Is required',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      expect(
+        await failedCall(
+          api.createRecipientFiat(const NewSepaEurRecipient(iban: 'DE89')),
+        ),
+        isA<BbxRpcFailure>().having((f) => f.fieldErrors, 'fieldErrors', {
+          'email': 'ERR_VALIDATION_REQUIRED',
+        }),
+      );
+    });
+
     test('a status other than 200 is an HTTP failure', () async {
       answer({'result': null}, status: 204);
 

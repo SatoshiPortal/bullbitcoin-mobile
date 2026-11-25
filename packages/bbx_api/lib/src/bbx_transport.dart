@@ -275,12 +275,14 @@ BbxFailure _withOrigin(
     :final code,
     :final message,
     :final apiCode,
+    :final fieldErrors,
     :final requestId,
   ) =>
     BbxRpcFailure(
       code: code,
       message: message,
       apiCode: apiCode,
+      fieldErrors: fieldErrors,
       requestId: requestId,
       origin: origin,
     ),
