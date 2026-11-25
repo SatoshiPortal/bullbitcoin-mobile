@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Network, Ok, Err;
+    show BitcoinNetwork, LiquidNetwork, Network, Ok, Err;
 import 'package:satoshifier/payment_request.dart';
 import 'package:send/src/payment/domain/send_source.dart';
 import 'package:secrets/testing.dart' show walletRegistrationForTesting;
@@ -102,6 +102,98 @@ void main() {
         // of funds would send them off to top up for no reason.
         expect(failure, isA<SendInvalidPaymentRequestFailure>());
         expect(failure, isNot(isA<SendInsufficientBalanceFailure>()));
+    }
+  });
+
+  group('selects by chain within the active environment', () {
+    PaymentRequest invoice({required bool isTestnet}) => PaymentRequest.bolt11(
+      invoice: 'lninvoice',
+      amountSat: 50000,
+      paymentHash: 'hash',
+      expiresAt: 0,
+      isTestnet: isTestnet,
+    );
+
+    for (final (name, bitcoin, liquid, isTestnet) in [
+      ('mainnet', BitcoinNetwork.mainnet, LiquidNetwork.mainnet, false),
+      ('testnet', BitcoinNetwork.testnet, LiquidNetwork.testnet, true),
+      ('regtest', BitcoinNetwork.regtest, LiquidNetwork.regtest, true),
+    ]) {
+      test('a $name invoice is paid from Liquid first', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+            _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+          ],
+          request: invoice(isTestnet: isTestnet),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<SendSource, SendFailure>).value.network, liquid);
+      });
+
+      // Detection rejects Lightning addresses on regtest.
+      if (name != 'regtest') {
+        test('a $name Lightning address is paid from Liquid first', () {
+          final result = usecase.execute(
+            wallets: [
+              _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+              _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+            ],
+            request: const PaymentRequest.lnAddress(
+              address: 'name@example.com',
+            ),
+            amountSat: 50000,
+          );
+
+          expect((result as Ok<SendSource, SendFailure>).value.network, liquid);
+        });
+      }
+
+      test('a $name invoice falls back to Bitcoin when Liquid is short', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'liquid', balanceSat: 1000, network: liquid),
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+          ],
+          request: invoice(isTestnet: isTestnet),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<SendSource, SendFailure>).value.network, bitcoin);
+      });
+
+      test('a $name Bitcoin address is paid from Bitcoin', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+          ],
+          request: PaymentRequest.bitcoin(
+            address: 'address',
+            isTestnet: isTestnet,
+          ),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<SendSource, SendFailure>).value.network, bitcoin);
+      });
+
+      test('a $name Liquid address is paid from Liquid', () {
+        final result = usecase.execute(
+          wallets: [
+            _wallet(id: 'bitcoin', balanceSat: 100000, network: bitcoin),
+            _wallet(id: 'liquid', balanceSat: 200000, network: liquid),
+          ],
+          request: PaymentRequest.liquid(
+            address: 'address',
+            isTestnet: isTestnet,
+          ),
+          amountSat: 50000,
+        );
+
+        expect((result as Ok<SendSource, SendFailure>).value.network, liquid);
+      });
     }
   });
 
