@@ -2487,7 +2487,7 @@ class SendCubit extends Cubit<SendState>
     // A plain Bitcoin send still uses the recipient list for its one output.
     final paymentRequest = state.paymentRequest;
     final singleBitcoinConversion =
-        paymentRequest is BitcoinPaymentRequest &&
+        const BitcoinRecipientListPolicy().isPlainAddress(paymentRequest) &&
             state.usesRecipientList &&
             state.recipientDrafts.length == 1 &&
             !state.isMaxSend

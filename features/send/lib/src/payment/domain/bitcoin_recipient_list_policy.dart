@@ -19,6 +19,16 @@ final class BitcoinRecipientListPolicy {
         _ => false,
       };
 
+  /// A bare Bitcoin address. Regtest detection keeps a plain address as a
+  /// regtest BIP21 request so it carries its exact network; its URI is then
+  /// the address itself, without parameters.
+  bool isPlainAddress(PaymentRequest? request) => switch (request) {
+    BitcoinPaymentRequest() => true,
+    Bip21PaymentRequest(:final network, :final uri, :final address) =>
+      network == BitcoinNetwork.regtest && uri == address,
+    _ => false,
+  };
+
   bool? networkIsTestnet(PaymentRequest? request) => switch (request) {
     BitcoinPaymentRequest(:final isTestnet) => isTestnet,
     Bip21PaymentRequest(:final network) when network is BitcoinNetwork =>

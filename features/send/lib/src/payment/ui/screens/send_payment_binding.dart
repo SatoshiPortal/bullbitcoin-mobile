@@ -37,7 +37,8 @@ final class _SendPaymentSession {
       return false;
     }
     final request = state.paymentRequest;
-    return request == null || request is BitcoinPaymentRequest;
+    return request == null ||
+        const BitcoinRecipientListPolicy().isPlainAddress(request);
   }
 
   void update(SendState state) {
