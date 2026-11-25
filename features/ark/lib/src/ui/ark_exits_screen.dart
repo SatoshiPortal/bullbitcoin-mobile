@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:material_ui/material_ui.dart'
+    show IndexedStack, StackFit, TickerMode;
 import 'package:primitives/primitives.dart';
 
 import '../domain/ark_exit_candidates.dart';
@@ -22,6 +26,9 @@ class ArkExitsScreen extends StatefulWidget {
   /// can pay their next fees; null when they are not waiting for it.
   final Sats? waitingForFunds;
 
+  /// Whether payment animations are on. Null: always on.
+  final Future<bool> Function()? readPaymentAnimations;
+
   const ArkExitsScreen({
     super.key,
     required this.snapshot,
@@ -29,6 +36,7 @@ class ArkExitsScreen extends StatefulWidget {
     this.onRefresh,
     this.onSendOnChain,
     this.waitingForFunds,
+    this.readPaymentAnimations,
   });
 
   @override
@@ -37,6 +45,34 @@ class ArkExitsScreen extends StatefulWidget {
 
 class _ArkExitsScreenState extends State<ArkExitsScreen> {
   String? _selected;
+
+  // Null until the preference is read: the details show meanwhile, so the
+  // animation never flashes against a stored "off".
+  bool? _animations;
+
+  // The exit's details, shown in place of its payment animation.
+  bool _showDetails = false;
+
+  Future<void> _readAnimations() async {
+    final read = widget.readPaymentAnimations;
+    if (read == null) {
+      _animations = true;
+      return;
+    }
+    bool value;
+    try {
+      value = await read();
+    } on Object {
+      value = true;
+    }
+    if (mounted) setState(() => _animations = value);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_readAnimations());
+  }
 
   @override
   void didUpdateWidget(ArkExitsScreen oldWidget) {
@@ -175,11 +211,19 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
         !_exits.any((exit) => exit.id == id)) {
       return;
     }
-    setState(() => _selected = id);
+    setState(() {
+      _selected = id;
+      _showDetails = false;
+    });
   }
 
   void _closeDetails() {
-    if (mounted) setState(() => _selected = null);
+    if (mounted) {
+      setState(() {
+        _selected = null;
+        _showDetails = false;
+      });
+    }
   }
 
   // A stale wallet can only open review for an individually priced board.
@@ -207,76 +251,169 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = arkLocalizationsOf(context);
-    final account = widget.snapshot.account;
     final detail = _detail;
+    final phase = detail == null ? null : arkExitAnimationPhase(detail.status);
+    // The animation replaces the page only for an exit that has one, once
+    // the preference is known to be on.
+    final animated = detail != null && phase != null && _animations == true;
+    final Widget body;
+    if (animated) {
+      final showingStatus = !_showDetails;
+      if (showingStatus) _statusBuilt = true;
+      final switcher = _switcher(context, showingStatus);
+      body = IndexedStack(
+        sizing: StackFit.expand,
+        index: showingStatus ? 0 : 1,
+        children: [
+          // A hidden view must not tick: its scene stops animating.
+          TickerMode(
+            enabled: showingStatus,
+            child: !_statusBuilt
+                ? const SizedBox.shrink()
+                : _status(context, detail, phase, switcher),
+          ),
+          TickerMode(
+            enabled: !showingStatus,
+            child: _page(context, switcher: switcher),
+          ),
+        ],
+      );
+    } else {
+      _statusBuilt = false;
+      body = _page(context);
+    }
+    // The one back handler, for both views.
     return PopScope(
       canPop: detail == null,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _closeDetails();
       },
-      child: BullScaffold(
-        backgroundColor: context.bull.background,
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              BullSpacing.md,
-              BullSpacing.xs,
-              BullSpacing.md,
-              BullSpacing.lg,
-            ),
-            child: detail == null
-                ? BullButton.big(
-                    label: l10n.startEmergencyExit,
-                    onPressed: () => _review(account),
-                    disabled: !_current,
-                    bgColor: context.bull.primary,
-                    textColor: context.bull.onPrimary,
-                  )
-                : _detailAction(context, account, detail),
+      child: body,
+    );
+  }
+
+  bool _statusBuilt = false;
+
+  Widget _switcher(BuildContext context, bool showingStatus) {
+    final l10n = arkLocalizationsOf(context);
+    return BullPaymentViewSwitch(
+      showingStatus: showingStatus,
+      statusLabel: l10n.exitViewStatus,
+      detailsLabel: l10n.exitViewDetails,
+      semanticsLabel: l10n.exitViewsLabel,
+      onStatus: () {
+        if (mounted) setState(() => _showDetails = false);
+      },
+      onDetails: () {
+        if (mounted) setState(() => _showDetails = true);
+      },
+    );
+  }
+
+  Widget _status(
+    BuildContext context,
+    ArkExit exit,
+    BullPaymentPhase phase,
+    Widget switcher,
+  ) {
+    final l10n = arkLocalizationsOf(context);
+    final label = arkExitStatusLabel(l10n, exit.status);
+    return BullPaymentTransition(
+      network: BullPaymentNetwork.arkExit,
+      phase: phase,
+      progress: arkExitAnimationProgress(
+        exit,
+        steps: [
+          l10n.exitProgressUnrolling,
+          l10n.exitStepDelay,
+          l10n.exitStatusClaimable,
+          l10n.exitProgressClaimBroadcast,
+          l10n.exitProgressConfirmed,
+        ],
+      ),
+      status: label,
+      statusTag: label,
+      bottom: switcher,
+      onBack: _closeDetails,
+      onDone: () {},
+    );
+  }
+
+  Widget _page(BuildContext context, {Widget? switcher}) {
+    final l10n = arkLocalizationsOf(context);
+    final account = widget.snapshot.account;
+    final detail = _detail;
+    return BullScaffold(
+      backgroundColor: context.bull.background,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            BullSpacing.md,
+            BullSpacing.xs,
+            BullSpacing.md,
+            BullSpacing.lg,
           ),
-        ),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
-                child: BullTopBar(
-                  title: l10n.exits,
-                  titleWidget: BullText(l10n.exits, role: BullTextRole.title),
-                  onBack: detail == null
-                      ? () => Navigator.pop(context)
-                      : _closeDetails,
+          child: detail == null
+              ? BullButton.big(
+                  label: l10n.startEmergencyExit,
+                  onPressed: () => _review(account),
+                  disabled: !_current,
+                  bgColor: context.bull.primary,
+                  textColor: context.bull.onPrimary,
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (switcher != null) ...[
+                      Center(child: switcher),
+                      const Gap(BullSpacing.sm),
+                    ],
+                    _detailAction(context, account, detail),
+                  ],
                 ),
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+              child: BullTopBar(
+                title: l10n.exits,
+                titleWidget: BullText(l10n.exits, role: BullTextRole.title),
+                onBack: detail == null
+                    ? () => Navigator.pop(context)
+                    : _closeDetails,
               ),
-              Expanded(
-                // Pull to refresh, as on the app's wallets.
-                child: BullRefreshIndicator(
-                  onRefresh: () async => _refresh(account),
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(
-                      BullSpacing.md,
-                      BullSpacing.zero,
-                      BullSpacing.md,
-                      BullSpacing.md,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (detail == null)
-                          ..._home(context, account)
-                        else
-                          ..._detailBody(context, account, detail),
-                      ],
-                    ),
+            ),
+            Expanded(
+              // Pull to refresh, as on the app's wallets.
+              child: BullRefreshIndicator(
+                onRefresh: () async => _refresh(account),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(
+                    BullSpacing.md,
+                    BullSpacing.zero,
+                    BullSpacing.md,
+                    BullSpacing.md,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (detail == null)
+                        ..._home(context, account)
+                      else
+                        ..._detailBody(context, account, detail),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -373,7 +510,6 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     final l10n = arkLocalizationsOf(context);
     final colors = context.bull;
     final steps = _steps(context, exit);
-    final animationPhase = arkExitAnimationPhase(exit.status);
     return [
       if (exit.status == ArkExitStatus.pending) ...[
         ..._waiting(context),
@@ -403,29 +539,6 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
         ),
       ),
       const Gap(BullSpacing.md),
-      if (animationPhase != null) ...[
-        SizedBox(
-          height: 200,
-          child: IgnorePointer(
-            child: BullPaymentAnimation(
-              network: BullPaymentNetwork.arkExit,
-              phase: animationPhase,
-              progress: arkExitAnimationProgress(
-                exit,
-                steps: [
-                  l10n.exitProgressUnrolling,
-                  l10n.exitStepDelay,
-                  l10n.exitStatusClaimable,
-                  l10n.exitProgressClaimBroadcast,
-                  l10n.exitProgressConfirmed,
-                ],
-              ),
-              statusTag: arkExitStatusLabel(l10n, exit.status),
-            ),
-          ),
-        ),
-        const Gap(BullSpacing.md),
-      ],
       if (steps == null)
         // The app's error card, as on its exchange screens.
         BullInfoCard(

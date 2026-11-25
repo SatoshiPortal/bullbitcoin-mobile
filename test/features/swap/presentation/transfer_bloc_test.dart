@@ -1,5 +1,3 @@
-import 'package:swap_feature/src/domain/usecases/watch_transfer_settlement_usecase.dart';
-
 import '../../../../features/send/test/payment/testing/send_spend_test_double.dart'
     show
         PreparedBitcoinSend,

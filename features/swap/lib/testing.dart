@@ -40,4 +40,5 @@ export 'src/ui/widgets/internal_transfer_form.dart';
 export 'src/ui/widgets/swap_balance_row.dart';
 export 'src/ui/widgets/swap_external_address_input.dart';
 export 'src/domain/usecases/refresh_pending_order_swaps_usecase.dart';
+export 'src/domain/usecases/watch_transfer_settlement_usecase.dart';
 export 'src/swap_feature.dart' show swapSettingsRoute;

@@ -129,7 +129,7 @@
   "settingsScreenPrivacyTitle": "Confidentialité de l’écran",
   "settingsScreenPrivacyDisabledMessage": "Les captures d’écran sont désormais autorisées sur les écrans sensibles",
   "settingsPaymentAnimationsTitle": "Animations de paiement",
-  "settingsPaymentAnimationsSubtitle": "Afficher l’animation de progression du paiement ; désactivée, ouvre directement les détails de la transaction.",
+  "settingsPaymentAnimationsSubtitle": "Désactivées : les paiements ouvrent leurs détails.",
   "settingsSearchPaymentAnimationsKeywords": "animation de paiement|animation|animation de progression|détails de la transaction|réduire les animations",
   "settingsErrorSavingSetting": "Ce paramètre n'a pas pu être enregistré. Veuillez réessayer.",
   "settingsErrorConsentNotGiven": "Ce paramètre nécessite votre confirmation avant d'être modifié.",

@@ -116,10 +116,7 @@ void main() {
 
     expect(find.text('Payment animations'), findsOneWidget);
     expect(
-      find.text(
-        'Show the payment progress animation; when off, open the '
-        'transaction details directly.',
-      ),
+      find.text('When off, payments open their details directly.'),
       findsOneWidget,
     );
     final tile = find.ancestor(
