@@ -49,13 +49,6 @@ final class ExchangeCredentialImport
     '.retire-pending',
   ].any((suffix) => File('${_file.path}$suffix').existsSync());
 
-  /// A keychain record without a legacy database is iOS residue of an earlier
-  /// install. It is never read, written or deleted, so there is nothing to
-  /// refuse: the coordinator records the owner as fresh and Exchange starts
-  /// signed out.
-  @override
-  bool get freshWhenInitialFresh => true;
-
   @override
   Future<Result<void, LegacyImportFailure>> verifyInitialSource(
     ExclusiveAdmission admission, {
@@ -151,7 +144,7 @@ final class _PreparedExchange implements PreparedOwner {
       case Ok(value: OwnerReadiness.pending):
         break;
     }
-    final records = await _readRecords(_legacy);
+    final records = await _recordsToImport(source);
     if (records case Err(:final failure)) return Err(failure);
     final keys = (records as Ok<_Records, LegacyImportFailure>).value;
     return importLegacyDatabase(
@@ -179,6 +172,15 @@ final class _PreparedExchange implements PreparedOwner {
       },
     );
   }
+
+  /// PENDING PRODUCT DECISION, the only place that decides it: whether an API
+  /// key found under a marker kept from a fresh install is imported or ignored.
+  /// Today it is ignored (iOS residue of an earlier install), never read nor
+  /// deleted, while the Settings rows are always imported.
+  Future<Result<_Records, LegacyImportFailure>> _recordsToImport(
+    LegacySource source,
+  ) async =>
+      source.initialFresh ? const Ok(_emptyRecords) : _readRecords(_legacy);
 
   @override
   Future<Result<void, LegacyImportFailure>> initializeFresh() async {
