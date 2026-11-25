@@ -21,7 +21,8 @@ import '../widgets/send_payment_settings.dart';
 import '../widgets/send_custom_fee_editor.dart';
 import '../widgets/send_whole_balance_dialog.dart';
 import '../../domain/send_custom_fee_policy.dart';
-import 'send_payment_animation_policy.dart';
+
+import 'package:transactions/payment_status.dart';
 
 import '../widgets/send_ark_routing_actions.dart';
 
@@ -132,18 +133,40 @@ class _SendScreenState extends State<SendScreen> {
   bool _confirmInFlight = false;
   bool _expectsSwap = false;
   String? _previousTxId;
+  bool _showAnimations = true;
+  bool _animationsLoaded = false;
+  late final Future<void> _animationsRead;
+  bool _awaitingDetails = false;
+  bool _awaitingPayjoinDetails = false;
+  String? _baselineOrderId;
+  String? _baselineOrderPayinTxId;
+  String? _baselineSwapId;
+  String? _baselineSwapSendTxId;
 
   @override
   void initState() {
     super.initState();
-    _payment = _SendPaymentSession(context.read<SendCubit>(), _confirm);
+    final cubit = context.read<SendCubit>();
+    _payment = _SendPaymentSession(cubit, _confirm);
+    _animationsRead = cubit.readShowPaymentAnimations().then((enabled) {
+      _showAnimations = enabled;
+      _animationsLoaded = true;
+    });
   }
 
   Future<void> _confirm() async {
     final cubit = context.read<SendCubit>();
     if (_confirmInFlight) return;
     _confirmInFlight = true;
+    if (!_animationsLoaded) await _animationsRead;
+    if (!mounted) {
+      _confirmInFlight = false;
+      return;
+    }
     if (cubit.state.willAttemptPayjoin || cubit.state.payjoinSender != null) {
+      // Without animations the Payjoin progress stays on this screen and
+      // hands off to the details once the session settles.
+      if (!_showAnimations) _awaitingPayjoinDetails = true;
       try {
         await cubit.onConfirmTransactionClicked();
       } finally {
@@ -152,8 +175,18 @@ class _SendScreenState extends State<SendScreen> {
       return;
     }
     setState(() {
-      _transitionVisible = true;
+      _transitionVisible = _showAnimations;
+      _awaitingDetails = !_showAnimations;
       _previousTxId = cubit.state.txId;
+      final previousOrder = cubit.state.lightningOrder;
+      final previousSwap = cubit.state.boltzSendSwap;
+      _baselineOrderId = previousOrder?.localId;
+      _baselineOrderPayinTxId = previousOrder?.localPayinTransactionId;
+      _baselineSwapId = previousSwap?.id;
+      _baselineSwapSendTxId = switch (previousSwap) {
+        LnSendSwap(:final sendTxid) || ChainSwap(:final sendTxid) => sendTxid,
+        _ => null,
+      };
       _expectsSwap =
           cubit.state.sendType == SendType.lightning ||
           cubit.state.requireChainSwap ||
@@ -166,11 +199,16 @@ class _SendScreenState extends State<SendScreen> {
       _confirmInFlight = false;
       if (mounted) {
         final state = cubit.state;
-        final uncertain =
-            state.hasBroadcastFailure ||
-            state.lightningOrder?.localStatus ==
-                OrderSwapLocalStatus.broadcastUnknown;
+        final uncertain = _isUncertain(state);
+        _openDetailsWithoutTransition(state);
         setState(() {
+          if (_awaitingDetails &&
+              (uncertain ||
+                  (state.failure != null && !_isPreBroadcastFailure(state)) ||
+                  (state.step == SendStep.confirm &&
+                      _terminalPhase(state) == null))) {
+            _awaitingDetails = false;
+          }
           if (uncertain ||
               (state.failure != null && !_isPreBroadcastFailure(state)) ||
               (state.step == SendStep.confirm &&
@@ -180,6 +218,77 @@ class _SendScreenState extends State<SendScreen> {
         });
       }
     }
+  }
+
+  bool _isUncertain(SendState state) =>
+      state.hasBroadcastFailure ||
+      state.lightningOrder?.localStatus ==
+          OrderSwapLocalStatus.broadcastUnknown;
+
+  /// With payment animations off, opens the details once, as soon as this
+  /// attempt has broadcast evidence and the Send route is still current. An
+  /// order or swap that already existed before the attempt never counts, and a
+  /// failure before broadcast keeps the user in the flow with its error.
+  void _openDetailsWithoutTransition(SendState state) {
+    if (_awaitingPayjoinDetails) {
+      _openPayjoinDetailsWithoutAnimation(state);
+      return;
+    }
+    if (!_awaitingDetails || _isUncertain(state)) return;
+    if (!_hasBroadcastEvidence(state)) return;
+    final target = _detailsTarget(state);
+    if (target == null) return;
+    _awaitingDetails = false;
+    if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
+    unawaited(
+      TransactionsNavigation.openDetails(
+        context,
+        target,
+        returnHome: true,
+        view: TransactionDetailsView.details,
+      ),
+    );
+  }
+
+  void _openPayjoinDetailsWithoutAnimation(SendState state) {
+    final payjoin = state.payjoinSender;
+    final txId = state.txId;
+    if (payjoin == null || txId == null) return;
+    if (!(payjoin.isCompleted || payjoin.isAborted)) return;
+    if (state.step != SendStep.success) return;
+    _awaitingPayjoinDetails = false;
+    if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
+    unawaited(
+      TransactionsNavigation.openDetails(
+        context,
+        TransactionDetailsTarget.wallet(txId, walletId: payjoin.walletId),
+        returnHome: true,
+        view: TransactionDetailsView.details,
+      ),
+    );
+  }
+
+  /// True only when the broadcast belongs to the current confirmation.
+  bool _hasBroadcastEvidence(SendState state) {
+    final order = state.lightningOrder;
+    if (order != null) {
+      final payin = order.localPayinTransactionId;
+      return payin != null &&
+          (order.localId != _baselineOrderId ||
+              payin != _baselineOrderPayinTxId);
+    }
+    final swap = state.boltzSendSwap;
+    if (swap != null) {
+      final sendTxId = switch (swap) {
+        LnSendSwap(:final sendTxid) || ChainSwap(:final sendTxid) => sendTxid,
+        _ => null,
+      };
+      return sendTxId != null &&
+          (swap.id != _baselineSwapId || sendTxId != _baselineSwapSendTxId);
+    }
+    if (_expectsSwap) return false;
+    final txId = state.txId;
+    return txId != null && txId != _previousTxId && state.payjoinSender == null;
   }
 
   BullPaymentPhase? _terminalPhase(SendState state) {
@@ -368,6 +477,7 @@ class _SendScreenState extends State<SendScreen> {
         context,
         target,
         returnHome: true,
+        view: TransactionDetailsView.details,
       );
     }
   }
@@ -382,7 +492,10 @@ class _SendScreenState extends State<SendScreen> {
   Widget build(BuildContext context) {
     final state = context.watch<SendCubit>().state;
     final content = BlocListener<SendCubit, SendState>(
-      listener: (_, state) => _payment.update(state),
+      listener: (_, state) {
+        _payment.update(state);
+        _openDetailsWithoutTransition(state);
+      },
       child: _content(context, state),
     );
     final terminal = _terminalPhase(state);
@@ -481,9 +594,9 @@ class _SendScreenState extends State<SendScreen> {
       case SendStep.confirm:
         return const SendConfirmScreen();
       case SendStep.sending:
-        return const SendSendingScreen();
+        return SendSendingScreen(animate: _showAnimations);
       case SendStep.success:
-        return const SendSucessScreen();
+        return SendSucessScreen(animate: _showAnimations);
     }
   }
 }
@@ -2986,7 +3099,11 @@ class SendConfirmTopArea extends StatelessWidget {
 }
 
 class SendSendingScreen extends StatelessWidget {
-  const SendSendingScreen({super.key});
+  const SendSendingScreen({super.key, this.animate = true});
+
+  /// False when the user turned payment animations off: Payjoin shows its
+  /// plain progress text instead of the animation.
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
@@ -3063,7 +3180,7 @@ class SendSendingScreen extends StatelessWidget {
         child: Align(
           child: Column(
             children: [
-              if (isPayjoin)
+              if (isPayjoin && animate)
                 SizedBox(
                   height: 192,
                   child: IgnorePointer(
@@ -3190,7 +3307,9 @@ class SendSendingScreen extends StatelessWidget {
 }
 
 class SendSucessScreen extends StatelessWidget {
-  const SendSucessScreen({super.key});
+  const SendSucessScreen({super.key, this.animate = true});
+
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
@@ -3377,36 +3496,38 @@ class SendSucessScreen extends StatelessWidget {
                       ),
                     ),
                     if (payjoin != null) ...[
-                      SizedBox(
-                        height: 96,
-                        child: IgnorePointer(
-                          child: BullPaymentAnimation(
-                            network: BullPaymentNetwork.payjoin,
-                            phase: payjoinPaymentPhase(
-                              payjoin.status,
-                              confirmed: directPaymentSucceeded(
-                                broadcast: true,
-                                transactionId: settledTxId,
-                                observedTransactionId: walletTransaction?.txId,
-                                observedConfirmed:
-                                    walletTransaction?.isConfirmed ?? false,
+                      if (animate)
+                        SizedBox(
+                          height: 96,
+                          child: IgnorePointer(
+                            child: BullPaymentAnimation(
+                              network: BullPaymentNetwork.payjoin,
+                              phase: payjoinPaymentPhase(
+                                payjoin.status,
+                                confirmed: directPaymentSucceeded(
+                                  broadcast: true,
+                                  transactionId: settledTxId,
+                                  observedTransactionId:
+                                      walletTransaction?.txId,
+                                  observedConfirmed:
+                                      walletTransaction?.isConfirmed ?? false,
+                                ),
                               ),
-                            ),
-                            statusTag: payjoin.isAborted
-                                ? context.loc.sendSentWithoutPayjoin
-                                : null,
-                            progress: payjoinPaymentProgress(
-                              status: payjoin.status,
-                              steps: [
-                                context.loc.paymentStepRequested,
-                                context.loc.paymentStepProposed,
-                                context.loc.paymentStepBroadcasted,
-                                context.loc.paymentStepConfirmed,
-                              ],
+                              statusTag: payjoin.isAborted
+                                  ? context.loc.sendSentWithoutPayjoin
+                                  : null,
+                              progress: payjoinPaymentProgress(
+                                status: payjoin.status,
+                                steps: [
+                                  context.loc.paymentStepRequested,
+                                  context.loc.paymentStepProposed,
+                                  context.loc.paymentStepBroadcasted,
+                                  context.loc.paymentStepConfirmed,
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
                       // A payjoin send that completed via the plain-broadcast
                       // fallback (receiver declined/expired or the payjoin
                       // negotiation failed). The user explicitly expected a
@@ -3460,6 +3581,7 @@ class SendSucessScreen extends StatelessWidget {
                       context,
                       TransactionDetailsTarget.orderSwap(orderSwap.localId),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   } else if (boltzSwap != null) {
                     TransactionsNavigation.openDetails(
@@ -3469,6 +3591,7 @@ class SendSucessScreen extends StatelessWidget {
                         walletId: boltzSwap.walletId,
                       ),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   } else if (walletTransaction != null) {
                     TransactionsNavigation.openDetails(
@@ -3478,6 +3601,7 @@ class SendSucessScreen extends StatelessWidget {
                         walletId: walletTransaction.walletId,
                       ),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   } else if (payjoin != null) {
                     // Navigate by the on-chain txid, NOT payjoin.id: a
@@ -3494,6 +3618,7 @@ class SendSucessScreen extends StatelessWidget {
                         walletId: payjoin.walletId,
                       ),
                       returnHome: true,
+                      view: TransactionDetailsView.details,
                     );
                   }
                 },
