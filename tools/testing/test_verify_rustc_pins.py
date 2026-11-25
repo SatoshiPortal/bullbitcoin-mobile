@@ -20,7 +20,7 @@ LIBRARIES = {
 
 
 class VerifyRustcPinsTest(unittest.TestCase):
-    def check_apk(self, *, abis=("arm64-v8a",), changed=None, expected_abis=None, require_bark=False, via_make=False):
+    def check_apk(self, *, abis=("arm64-v8a",), changed=None, expected_abis=None, require_scuttle=False, via_make=False):
         files = {
             f"lib/{abi}/{name}": f"rustc version {version}\n".encode()
             for abi in abis
@@ -33,7 +33,7 @@ class VerifyRustcPinsTest(unittest.TestCase):
                 for path, content in files.items():
                     if content is not None:
                         archive.writestr(path, content)
-            command = ["bash", str(SCRIPT), *(["--require-bark"] if require_bark else []), str(apk), SDK_RUST, PAYJOIN_RUST, *(expected_abis or abis)]
+            command = ["bash", str(SCRIPT), *(["--require-scuttle"] if require_scuttle else []), str(apk), SDK_RUST, PAYJOIN_RUST, *(expected_abis or abis)]
             if via_make:
                 container = Path(directory) / "container"
                 container.write_text('#!/bin/sh\nprintf "rustc %s (fixture)\\n" "$6"\n')
@@ -47,7 +47,7 @@ class VerifyRustcPinsTest(unittest.TestCase):
             )
         return result
 
-    def test_android_verification_requires_the_app_bark_dependency(self):
+    def test_android_verification_requires_the_app_scuttle_dependency(self):
         root = SCRIPT.parents[1]
         plan = subprocess.run(
             ["make", "-n", "android", "release"], cwd=root,
@@ -57,10 +57,10 @@ class VerifyRustcPinsTest(unittest.TestCase):
         self.assertIn('verify-rustc-pins APK=', plan.stdout)
         missing = self.check_apk(via_make=True)
         self.assertNotEqual(missing.returncode, 0)
-        self.assertIn("Missing tracked Rust library: arm64-v8a/libbark_ffi_dart.so", missing.stderr)
+        self.assertIn("Missing tracked Rust library: arm64-v8a/librust_lib_scuttle.so", missing.stderr)
         present = self.check_apk(
             via_make=True,
-            changed={"lib/arm64-v8a/libbark_ffi_dart.so": b"rustc version 1.90.0\n"},
+            changed={"lib/arm64-v8a/librust_lib_scuttle.so": f"rustc version {SDK_RUST}\n".encode()},
         )
         self.assertEqual(present.returncode, 0, present.stdout + present.stderr)
 
@@ -130,51 +130,31 @@ class VerifyRustcPinsTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Untracked Rust library", result.stderr)
 
-    def test_accepts_exact_bark_compiler_with_legacy_and_required_cli(self):
-        for required in (False, True):
-            with self.subTest(required=required):
-                result = self.check_apk(
-                    changed={"lib/arm64-v8a/libbark_ffi_dart.so": b"rustc version 1.90.0\nrustc version 1.90.0\n"},
-                    require_bark=required,
-                )
-                self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertIn("libbark_ffi_dart.so: rustc 1.90.0", result.stdout)
-
-    def test_required_bark_is_checked_in_every_expected_abi(self):
+    def test_required_scuttle_is_checked_in_every_expected_abi(self):
         abis = ("arm64-v8a", "x86_64")
         for missing in (None, "arm64-v8a", "x86_64"):
             with self.subTest(missing=missing):
                 result = self.check_apk(
                     abis=abis,
-                    changed={f"lib/{abi}/libbark_ffi_dart.so": b"rustc version 1.90.0\n" for abi in abis if abi != missing},
-                    require_bark=True,
+                    changed={f"lib/{abi}/librust_lib_scuttle.so": f"rustc version {SDK_RUST}\n".encode() for abi in abis if abi != missing},
+                    require_scuttle=True,
                 )
                 if missing is None:
                     self.assertEqual(result.returncode, 0, result.stderr)
                 else:
                     self.assertNotEqual(result.returncode, 0)
-                    self.assertIn(f"Missing tracked Rust library: {missing}/libbark_ffi_dart.so", result.stderr)
+                    self.assertIn(f"Missing tracked Rust library: {missing}/librust_lib_scuttle.so", result.stderr)
 
-    def test_rejects_required_bark_absent_in_single_abi(self):
-        result = self.check_apk(require_bark=True)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("Missing tracked Rust library: arm64-v8a/libbark_ffi_dart.so", result.stderr)
-
-    def test_rejects_wrong_missing_or_mixed_bark_markers(self):
+    def test_rejects_wrong_missing_or_mixed_scuttle_markers(self):
         for markers, diagnostic in (
-            (b"rustc version 1.100.0\n", "Unexpected rustc markers"),
+            (b"rustc version 1.90.0\n", "Unexpected rustc markers"),
             (b"no version", "No rustc version marker"),
-            (b"rustc version 1.90.0\nrustc version 1.100.0\n", "Unexpected rustc markers"),
+            (f"rustc version {SDK_RUST}\nrustc version 1.90.0\n".encode(), "Unexpected rustc markers"),
         ):
             with self.subTest(markers=markers):
-                result = self.check_apk(changed={"lib/arm64-v8a/libbark_ffi_dart.so": markers})
+                result = self.check_apk(changed={"lib/arm64-v8a/librust_lib_scuttle.so": markers})
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn(diagnostic, result.stderr)
-
-    def test_rejects_extra_abi_bark_without_marker(self):
-        result = self.check_apk(changed={"lib/x86_64/libbark_ffi_dart.so": b"no version"})
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("Tracked Rust library in unexpected ABI", result.stderr)
 
     def test_scuttle_uses_the_sdk_compiler_pin(self):
         library = "lib/arm64-v8a/librust_lib_scuttle.so"
@@ -190,13 +170,8 @@ class VerifyRustcPinsTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Tracked Rust library in unexpected ABI", result.stderr)
 
-    def test_rejects_unknown_library_with_bark_compiler(self):
-        result = self.check_apk(changed={"lib/arm64-v8a/libother.so": b"rustc version 1.90.0\n"})
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("Untracked Rust library", result.stderr)
-
-    def test_bare_required_bark_flag_reports_usage(self):
-        result = subprocess.run(["bash", str(SCRIPT), "--require-bark"], text=True, capture_output=True, check=False)
+    def test_bare_required_scuttle_flag_reports_usage(self):
+        result = subprocess.run(["bash", str(SCRIPT), "--require-scuttle"], text=True, capture_output=True, check=False)
         self.assertEqual(result.returncode, 2)
         self.assertIn("Usage:", result.stderr)
         self.assertNotIn("unbound variable", result.stderr)
