@@ -17,6 +17,7 @@ class RecipientsScreen extends StatelessWidget {
   const RecipientsScreen({
     required this.filter,
     required this.onRecipientSelected,
+    required this.onBack,
     this.fixedRecipientType,
     this.enforceRecipientFilter = false,
     this.isHookRunning,
@@ -28,6 +29,10 @@ class RecipientsScreen extends StatelessWidget {
   final RecipientFilterCriteria filter;
   final Future<void>? Function(RecipientViewModel, {required bool isNew})
   onRecipientSelected;
+
+  /// The back of the screen's host (a flow's back event); never implied by
+  /// the navigator, which can't pop the first page of a flow.
+  final VoidCallback onBack;
   final RecipientType? fixedRecipientType;
   final bool enforceRecipientFilter;
   final bool? isHookRunning;
@@ -42,6 +47,7 @@ class RecipientsScreen extends StatelessWidget {
               .createRecipientsBloc(filter, onRecipientSelected)
             ..add(const RecipientsEvent.started()),
       child: _RecipientsScreenContent(
+        onBack: onBack,
         fixedRecipientType: fixedRecipientType,
         enforceRecipientFilter: enforceRecipientFilter,
         isHookRunning: isHookRunning,
@@ -54,12 +60,14 @@ class RecipientsScreen extends StatelessWidget {
 
 class _RecipientsScreenContent extends StatefulWidget {
   const _RecipientsScreenContent({
+    required this.onBack,
     this.fixedRecipientType,
     this.enforceRecipientFilter = false,
     this.isHookRunning,
     this.onRecipientAddedHookError,
     this.onRecipientSelectedHookError,
   });
+  final VoidCallback onBack;
   final RecipientType? fixedRecipientType;
   final bool enforceRecipientFilter;
   final bool? isHookRunning;
@@ -85,9 +93,7 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
             children: [
               BullTopBar(
                 title: context.loc.recipientsScreenTitle,
-                onBack: Navigator.of(context).canPop()
-                    ? () => Navigator.of(context).pop()
-                    : null,
+                onBack: widget.onBack,
               ),
               BlocSelector<RecipientsBloc, RecipientsState, bool>(
                 selector: (state) =>

@@ -154,6 +154,7 @@ List<Page<void>> buyPagesFor(
     Builder(
       builder: (context) => FlowStatusPage(
         title: context.loc.buyInputTitle,
+        onBack: () => onEvent(const BuyBackPressed()),
         headline: headline?.call(context),
         message: message?.call(context),
         busy: busy,

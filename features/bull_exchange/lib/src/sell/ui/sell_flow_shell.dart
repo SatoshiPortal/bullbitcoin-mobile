@@ -165,6 +165,7 @@ List<Page<void>> sellPagesFor(
     Builder(
       builder: (context) => FlowStatusPage(
         title: context.loc.sellTitle,
+        onBack: () => onEvent(const SellBackPressed()),
         headline: headline?.call(context),
         message: message?.call(context),
         busy: busy,
@@ -254,6 +255,7 @@ List<Page<void>> sellPagesFor(
         builder: (context) => RecipientPickScreen(
           filter: sellRecipientFilter(amount.market),
           onPicked: (recipient) => onEvent(SellRecipientPicked(recipient)),
+          onBack: () => onEvent(const SellBackPressed()),
           problem: refused == null
               ? null
               : const RecipientsSelectionFailure().toTranslated(context),
@@ -294,6 +296,7 @@ List<Page<void>> sellPagesFor(
             title: context.loc.sellTitle,
             running: requirements,
             onEvent: (event) => onEvent(SellRequirementsChanged(event)),
+            onBack: () => onEvent(const SellBackPressed()),
           ),
         ),
       ),
@@ -460,6 +463,7 @@ List<Page<void>> sellPagesFor(
               state: payin,
               ui: ui,
               onEvent: (event) => onEvent(SellPayinChanged(event)),
+              onBack: () => onEvent(const SellBackPressed()),
               externalLabels: (
                 refreshIn: context.loc.sellPriceWillRefreshIn,
                 copyInvoice: context.loc.sellCopyInvoice,

@@ -240,4 +240,18 @@ void main() {
     );
     expect(find.text(labels.sellBalanceWillBeCredited), findsOneWidget);
   });
+
+  for (final (name, state) in [
+    ('loading', sellLoadingState),
+    ('amount', sellAmountState),
+  ]) {
+    testWidgets('the $name page has a back that sends SellBackPressed', (
+      tester,
+    ) async {
+      final events = <SellFlowEvent>[];
+      await _pump(tester, state, events: events);
+      await tester.tap(find.byTooltip('Back').last);
+      expect(events.single, isA<SellBackPressed>());
+    });
+  }
 }

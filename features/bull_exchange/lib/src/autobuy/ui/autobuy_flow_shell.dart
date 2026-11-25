@@ -91,6 +91,7 @@ Widget autoBuyPageFor(
   }) => Builder(
     builder: (context) => FlowStatusPage(
       title: context.loc.autoBuyTitle,
+      onBack: () => onEvent(const AutoBuyBackPressed()),
       headline: headline?.call(context),
       message: message?.call(context),
       busy: busy,

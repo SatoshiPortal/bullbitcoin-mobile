@@ -85,6 +85,7 @@ Widget limitPageFor(
   }) => Builder(
     builder: (context) => FlowStatusPage(
       title: context.loc.limitOrdersTitle,
+      onBack: () => onEvent(const LimitBackPressed()),
       headline: headline?.call(context),
       message: message?.call(context),
       busy: busy,

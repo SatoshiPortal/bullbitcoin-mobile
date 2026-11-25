@@ -145,6 +145,7 @@ List<Page<void>> withdrawPagesFor(
     Builder(
       builder: (context) => FlowStatusPage(
         title: title(context),
+        onBack: () => onEvent(const WithdrawBackPressed()),
         message: message?.call(context),
         busy: busy,
         isError: isError,
@@ -203,6 +204,7 @@ List<Page<void>> withdrawPagesFor(
         builder: (context) => RecipientPickScreen(
           filter: withdrawRecipientFilter(amount.market),
           onPicked: (recipient) => onEvent(WithdrawRecipientPicked(recipient)),
+          onBack: () => onEvent(const WithdrawBackPressed()),
           problem: refused == null
               ? null
               : const RecipientsSelectionFailure().toTranslated(context),
@@ -237,6 +239,7 @@ List<Page<void>> withdrawPagesFor(
             title: title(context),
             running: requirements,
             onEvent: (event) => onEvent(WithdrawRequirementsChanged(event)),
+            onBack: () => onEvent(const WithdrawBackPressed()),
           ),
         ),
       ),

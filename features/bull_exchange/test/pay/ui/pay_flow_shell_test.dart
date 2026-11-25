@@ -155,4 +155,21 @@ void main() {
     await tester.tap(checkAgain);
     expect(events.single, isA<PayRetryPressed>());
   });
+
+  // Pay opens on the recipient list, alone in the flow's navigator: its
+  // back must be the flow's event, not an implied pop.
+  for (final (name, state) in [
+    ('loading', payLoadingState),
+    ('recipient', payRecipientState),
+    ('amount', payAmountState),
+  ]) {
+    testWidgets('the $name page has a back that sends PayBackPressed', (
+      tester,
+    ) async {
+      final events = <PayFlowEvent>[];
+      await _pump(tester, state, events: events);
+      await tester.tap(find.byTooltip('Back').last);
+      expect(events.single, isA<PayBackPressed>());
+    });
+  }
 }

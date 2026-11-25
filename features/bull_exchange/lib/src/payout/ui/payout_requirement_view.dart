@@ -14,10 +14,14 @@ class PayoutRequirementView extends StatelessWidget {
     required this.title,
     required this.running,
     required this.onEvent,
+    required this.onBack,
   });
 
   final String title;
   final RequirementsRunning running;
+
+  /// The flow's back event, on every requirement page.
+  final VoidCallback onBack;
   final void Function(RequirementsEvent event) onEvent;
 
   @override
@@ -25,6 +29,7 @@ class PayoutRequirementView extends StatelessWidget {
     InteracStep(:final state) => _InteracView(
       state: state,
       onEvent: (event) => onEvent(RequirementInteracEvent(event)),
+      onBack: onBack,
     ),
     VirtualIbanStep(:final state) => _virtualIban(context, state),
     VirtualPayeeStep(:final state) => _virtualPayee(context, state),
@@ -46,15 +51,21 @@ class PayoutRequirementView extends StatelessWidget {
       VibanLoading() ||
       VibanActive() ||
       VibanDeclined() ||
-      VibanSessionEnded() => FlowStatusPage(title: title, busy: true),
+      VibanSessionEnded() => FlowStatusPage(
+        title: title,
+        onBack: onBack,
+        busy: true,
+      ),
       VibanLoadFailed(:final problem) => FlowStatusPage(
         title: title,
+        onBack: onBack,
         message: problem.toTranslated(context),
         isError: true,
         actions: [retry, regular],
       ),
       VibanIntro(:final ownerName) => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsVirtualIbanIntroTitle,
         message:
             '${context.loc.recipientsVirtualIbanIntroDescription}\n\n'
@@ -70,17 +81,20 @@ class PayoutRequirementView extends StatelessWidget {
       ),
       VibanCreating() || VibanVerifying() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsVirtualIbanActivatingTitle,
         busy: true,
       ),
       VibanCreateFailed(:final problem) => FlowStatusPage(
         title: title,
+        onBack: onBack,
         message: problem.toTranslated(context),
         isError: true,
         actions: [retry, regular],
       ),
       VibanUnverified(:final problem) => FlowStatusPage(
         title: title,
+        onBack: onBack,
         message:
             '${context.loc.exchangeStepUnverified}\n${problem.toTranslated(context)}',
         isError: true,
@@ -88,6 +102,7 @@ class PayoutRequirementView extends StatelessWidget {
       ),
       VibanActivating() || VibanPaused() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsVirtualIbanActivatingTitle,
         message: context.loc.recipientsVirtualIbanActivatingDescription,
         busy: true,
@@ -95,6 +110,7 @@ class PayoutRequirementView extends StatelessWidget {
       ),
       VibanTimedOut() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsVirtualIbanActivatingTitle,
         message: context.loc.exchangeStepTimedOut,
         actions: [retry, regular],
@@ -121,17 +137,20 @@ class PayoutRequirementView extends StatelessWidget {
       PayeeDeclined() ||
       PayeeSessionEnded() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsConfidentialSepaActivatingTitle,
         busy: true,
       ),
       PayeeLoadFailed(:final problem) => FlowStatusPage(
         title: title,
+        onBack: onBack,
         message: problem.toTranslated(context),
         isError: true,
         actions: [retry, regular],
       ),
       PayeeActivateFailed(:final problem) => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsConfidentialSepaNotActivatedTitle,
         message: problem.toTranslated(context),
         isError: true,
@@ -139,6 +158,7 @@ class PayoutRequirementView extends StatelessWidget {
       ),
       PayeePending() || PayeePaused() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsConfidentialSepaActivatingTitle,
         message: context.loc.recipientsConfidentialSepaActivatingDescription,
         busy: true,
@@ -146,12 +166,14 @@ class PayoutRequirementView extends StatelessWidget {
       ),
       PayeeTimedOut() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsConfidentialSepaActivatingTitle,
         message: context.loc.exchangeStepTimedOut,
         actions: [retry, regular],
       ),
       PayeeUnknownStatus() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.recipientsConfidentialSepaStatusUnknownTitle,
         message: context.loc.recipientsConfidentialSepaStatusUnknownDescription,
         isError: true,
@@ -165,10 +187,15 @@ class PayoutRequirementView extends StatelessWidget {
 /// checked by the step on Continue (3–40 characters, answer letters, digits
 /// and hyphens).
 class _InteracView extends StatefulWidget {
-  const _InteracView({required this.state, required this.onEvent});
+  const _InteracView({
+    required this.state,
+    required this.onEvent,
+    required this.onBack,
+  });
 
   final InteracSecurityState state;
   final void Function(InteracSecurityEvent event) onEvent;
+  final VoidCallback onBack;
 
   @override
   State<_InteracView> createState() => _InteracViewState();
@@ -215,7 +242,7 @@ class _InteracViewState extends State<_InteracView> {
           children: [
             BullTopBar(
               title: context.loc.withdrawInteracSecurityDetailsTitle,
-              onBack: () => Navigator.of(context).maybePop(),
+              onBack: widget.onBack,
             ),
             Expanded(
               child: BullScrollableColumn(

@@ -6,17 +6,21 @@ import 'package:flutter/widgets.dart';
 /// The recipients list and form of a flow's recipient step: shows the
 /// recipients [filter] admits and hands the picked (or newly saved) one to
 /// [onPicked]. The flow decides with the same filter (`filter.choose`)
-/// whether it goes on; [problem] is its answer when it doesn't.
+/// whether it goes on; [problem] is its answer when it doesn't. [onBack] is
+/// the flow's back event: the step is often the first page of the flow's
+/// navigator, where nothing can pop.
 class RecipientPickScreen extends StatelessWidget {
   const RecipientPickScreen({
     super.key,
     required this.filter,
     required this.onPicked,
+    required this.onBack,
     this.problem,
   });
 
   final RecipientFilter filter;
   final void Function(Recipient recipient) onPicked;
+  final VoidCallback onBack;
   final String? problem;
 
   @override
@@ -35,6 +39,7 @@ class RecipientPickScreen extends StatelessWidget {
         onPicked(recipient.recipient);
         return null;
       },
+      onBack: onBack,
       enforceRecipientFilter: true,
       fixedRecipientType: types.length == 1 ? types.single : null,
       onRecipientAddedHookError: problem,

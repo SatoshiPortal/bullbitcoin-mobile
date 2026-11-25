@@ -97,14 +97,12 @@ Widget accelerateViewFor(
   required void Function(String orderId) openOrder,
 }) {
   final title = context.loc.buyConfirmExpressWithdrawal;
-  FlowAction back() => FlowAction(
-    context.loc.cancel,
-    () => onEvent(const AccelerateBackPressed()),
-    primary: false,
-  );
+  void onBack() => onEvent(const AccelerateBackPressed());
+  FlowAction back() => FlowAction(context.loc.cancel, onBack, primary: false);
   return switch (state) {
     AccelerateLoading(load: ContextFailed(:final problem)) => FlowStatusPage(
       title: title,
+      onBack: onBack,
       message: problem.toTranslated(context),
       isError: true,
       actions: [
@@ -115,7 +113,11 @@ Widget accelerateViewFor(
         back(),
       ],
     ),
-    AccelerateLoading() => FlowStatusPage(title: title, busy: true),
+    AccelerateLoading() => FlowStatusPage(
+      title: title,
+      onBack: onBack,
+      busy: true,
+    ),
     AccelerateReady(:final quote) => AccelerateFeePage(
       quote: quote,
       unit: unit,
@@ -136,6 +138,7 @@ Widget accelerateViewFor(
       ),
       ConfirmUnverified(:final problem) => FlowStatusPage(
         title: title,
+        onBack: onBack,
         headline: context.loc.exchangeStepUnverified,
         message: problem.toTranslated(context),
         isError: true,
@@ -153,6 +156,7 @@ Widget accelerateViewFor(
       ),
       ConfirmVerifying() => FlowStatusPage(
         title: title,
+        onBack: onBack,
         message: context.loc.exchangeStepVerifying,
         busy: true,
       ),
@@ -180,6 +184,7 @@ Widget accelerateViewFor(
     ),
     AccelerateSessionEnded() => FlowStatusPage(
       title: title,
+      onBack: onBack,
       message: context.loc.exchangeFlowSessionEnded,
       isError: true,
       actions: [
@@ -189,7 +194,11 @@ Widget accelerateViewFor(
         ),
       ],
     ),
-    AccelerateClosed() => FlowStatusPage(title: title, busy: true),
+    AccelerateClosed() => FlowStatusPage(
+      title: title,
+      onBack: onBack,
+      busy: true,
+    ),
   };
 }
 

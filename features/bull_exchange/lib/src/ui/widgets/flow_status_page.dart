@@ -15,10 +15,16 @@ final class FlowAction {
 /// The page a flow shows for a step state that is waiting, failed or ended:
 /// a title, an optional message, a spinner while [busy], and the exits the
 /// state has. Every exit is an event of the flow.
+///
+/// The app bar's back is [onBack], never one implied by the navigator: a
+/// flow's pages live in the flow's own navigator, whose first page can't pop,
+/// and popping it would skip the flow machine. A state with no way back says
+/// so with `onBack: null`.
 class FlowStatusPage extends StatelessWidget {
   const FlowStatusPage({
     super.key,
     required this.title,
+    required this.onBack,
     this.headline,
     this.message,
     this.busy = false,
@@ -27,6 +33,9 @@ class FlowStatusPage extends StatelessWidget {
   });
 
   final String title;
+
+  /// Sends the flow's back event; null shows no back.
+  final VoidCallback? onBack;
   final String? headline;
   final String? message;
   final bool busy;
@@ -38,7 +47,14 @@ class FlowStatusPage extends StatelessWidget {
     final headline = this.headline;
     final message = this.message;
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: switch (onBack) {
+          final onBack? => BackButton(onPressed: onBack),
+          null => null,
+        },
+        title: Text(title),
+      ),
       body: SafeArea(
         child: BullScrollableColumn(
           padding: const EdgeInsets.all(24),

@@ -42,10 +42,14 @@ class PayinView extends StatelessWidget {
     required this.state,
     required this.ui,
     required this.onEvent,
+    required this.onBack,
     required this.externalLabels,
   });
 
   final String title;
+
+  /// The flow's back event; the app bar shows it on every payin page.
+  final VoidCallback onBack;
   final PayinExternalLabels externalLabels;
   final PayinState<PayinSpend> state;
   final ExchangePayinUi ui;
@@ -68,6 +72,7 @@ class PayinView extends StatelessWidget {
       List<FlowAction> actions = const [],
     }) => FlowStatusPage(
       title: title,
+      onBack: onBack,
       headline: headline,
       message: message,
       busy: busy,

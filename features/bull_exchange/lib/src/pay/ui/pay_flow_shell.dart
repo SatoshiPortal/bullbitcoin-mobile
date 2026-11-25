@@ -163,6 +163,7 @@ List<Page<void>> payPagesFor(
     Builder(
       builder: (context) => FlowStatusPage(
         title: context.loc.payTitle,
+        onBack: () => onEvent(const PayBackPressed()),
         headline: headline?.call(context),
         message: message?.call(context),
         busy: busy,
@@ -190,6 +191,7 @@ List<Page<void>> payPagesFor(
         builder: (context) => RecipientPickScreen(
           filter: payRecipientFilter,
           onPicked: (recipient) => onEvent(PayRecipientPicked(recipient)),
+          onBack: () => onEvent(const PayBackPressed()),
           problem: refused == null
               ? null
               : const RecipientsSelectionFailure().toTranslated(context),
@@ -268,6 +270,7 @@ List<Page<void>> payPagesFor(
             title: context.loc.payTitle,
             running: requirements,
             onEvent: (event) => onEvent(PayRequirementsChanged(event)),
+            onBack: () => onEvent(const PayBackPressed()),
           ),
         ),
       ),
@@ -431,6 +434,7 @@ List<Page<void>> payPagesFor(
               state: payin,
               ui: ui,
               onEvent: (event) => onEvent(PayPayinChanged(event)),
+              onBack: () => onEvent(const PayBackPressed()),
               externalLabels: (
                 refreshIn: context.loc.payPriceRefreshIn,
                 copyInvoice: context.loc.payCopyInvoice,

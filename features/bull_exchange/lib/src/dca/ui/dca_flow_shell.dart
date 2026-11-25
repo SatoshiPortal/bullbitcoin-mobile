@@ -105,6 +105,7 @@ List<Page<void>> dcaPagesFor(
     Builder(
       builder: (context) => FlowStatusPage(
         title: context.loc.dcaSetupTitle,
+        onBack: () => onEvent(const DcaBackPressed()),
         headline: headline?.call(context),
         message: message?.call(context),
         busy: busy,
