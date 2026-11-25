@@ -3,8 +3,8 @@ part of 'recipients_bloc.dart';
 @freezed
 sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
-    String? preferredJurisdiction,
-    String? jurisdictionFilter,
+    Jurisdiction? preferredJurisdiction,
+    Jurisdiction? jurisdictionFilter,
     ConfidentialSepaAvailability? confidentialSepaAvailability,
     @Default(false) bool isLoadingConfidentialSepaAvailability,
     RecipientsFailure? failedToLoadConfidentialSepaAvailability,
@@ -54,41 +54,81 @@ sealed class RecipientsState with _$RecipientsState {
       )
       .toSet();
 
-  /// Regular and Confidential SEPA list the same accounts, so a list that
-  /// offers both shows one route at a time.
-  bool get canChooseSepaType =>
+  bool get _offersBothSepaRoutes =>
       selectableRecipientTypes.contains(RecipientType.sepaEur) &&
-      selectableRecipientTypes.contains(RecipientType.confidentialSepaEur) &&
-      (jurisdictionFilter == null ||
-          jurisdictionFilter == RecipientType.sepaEur.jurisdictionCode);
+      selectableRecipientTypes.contains(RecipientType.confidentialSepaEur);
+
+  /// Regular and Confidential SEPA list the same accounts, so a list that
+  /// offers both shows one route at a time. The route is a type filter of
+  /// the European list: it is offered only there, where it decides every
+  /// row shown (under all jurisdictions it would leave the other rails'
+  /// rows in a list labelled with a SEPA route).
+  bool get canChooseSepaType =>
+      _offersBothSepaRoutes &&
+      jurisdictionFilter == RecipientType.sepaEur.jurisdiction;
+
+  /// The types the list asks for and shows: the selectable ones in the
+  /// selected jurisdiction, with one SEPA route when both are offered (the
+  /// chosen one in Europe, regular SEPA otherwise).
+  Set<RecipientType> get listedTypes {
+    final hiddenSepaType = !_offersBothSepaRoutes
+        ? null
+        : canChooseSepaType && sepaType == RecipientType.confidentialSepaEur
+        ? RecipientType.sepaEur
+        : RecipientType.confidentialSepaEur;
+    final jurisdiction = jurisdictionFilter;
+    return selectableRecipientTypes
+        .where(
+          (type) =>
+              type != hiddenSepaType &&
+              (jurisdiction == null || type.jurisdiction == jurisdiction),
+        )
+        .toSet();
+  }
+
+  /// The rows the list shows, always derived from the selected type and
+  /// jurisdiction ([listedTypes]), whatever the server returned; with
+  /// [strict], also only rows of the allowed owner. Null before the first
+  /// page arrived.
+  List<RecipientViewModel>? shownRecipients({required bool strict}) {
+    final rows = selectableRecipients;
+    if (rows == null) return null;
+    final types = listedTypes;
+    final owner = allowedRecipientFilters.isOwner;
+    return rows
+        .where(
+          (recipient) =>
+              types.contains(recipient.type) &&
+              (!strict || owner == null || recipient.isOwner == owner),
+        )
+        .toList();
+  }
 
   bool get onlyOwnerRecipients => allowedRecipientFilters.isOwner ?? false;
 
   bool get onlyNonOwnerRecipients => allowedRecipientFilters.isOwner == false;
 
-  Set<String> get availableJurisdictions =>
-      selectableRecipientTypes.map((type) => type.jurisdictionCode).toSet();
+  Set<Jurisdiction> get availableJurisdictions =>
+      selectableRecipientTypes.map((type) => type.jurisdiction).toSet();
 
-  String? get selectedJurisdiction {
+  Jurisdiction? get selectedJurisdiction {
     if (preferredJurisdiction != null) {
       if (selectableRecipientTypes.any(
-        (t) => t.jurisdictionCode == preferredJurisdiction,
+        (t) => t.jurisdiction == preferredJurisdiction,
       )) {
         return preferredJurisdiction;
       } else {
         // Preferred jurisdiction is not available in the current filters
         // so we fall back to the first available jurisdiction
-        return selectableRecipientTypes
-            .map((t) => t.jurisdictionCode)
-            .firstOrNull;
+        return selectableRecipientTypes.map((t) => t.jurisdiction).firstOrNull;
       }
     }
     return null;
   }
 
-  Set<RecipientType> recipientTypesForJurisdiction(String jurisdiction) {
+  Set<RecipientType> recipientTypesForJurisdiction(Jurisdiction jurisdiction) {
     return selectableRecipientTypes
-        .where((type) => type.jurisdictionCode == jurisdiction)
+        .where((type) => type.jurisdiction == jurisdiction)
         .toSet();
   }
 

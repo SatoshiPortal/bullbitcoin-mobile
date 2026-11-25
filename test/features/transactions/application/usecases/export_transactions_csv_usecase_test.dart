@@ -103,9 +103,14 @@ void main() {
   });
 
   void stub(List<Transaction> txs) {
-    when(
-      () => getTransactions.execute(),
-    ).thenAnswer((_) async => Ok<List<Transaction>, TransactionFailure>(txs));
+    when(() => getTransactions.execute()).thenAnswer(
+      (_) async => Ok<TransactionHistory, TransactionFailure>(
+        TransactionHistory(
+          transactions: txs,
+          exchangeOrders: const ExchangeOrdersMerged(),
+        ),
+      ),
+    );
   }
 
   /// Unwraps the `Result` for the tests that assert on CSV content: there a

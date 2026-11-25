@@ -5,7 +5,8 @@ import 'package:exchange/exchange.dart';
 /// Emits the status of a SEPA recipient's virtual payee, activates it when
 /// there is none, then emits each new status until it is active. It checks often at first,
 /// because activation usually takes a few seconds, then less often. A
-/// failure is the last event.
+/// failure, an active status or a status this build doesn't know is the last
+/// event.
 class WatchSepaVirtualPayeeActivationUsecase {
   final ExchangeRecipients _sepaVirtualPayeeRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
@@ -59,7 +60,7 @@ class WatchSepaVirtualPayeeActivationUsecase {
     }
 
     var polls = 0;
-    while (!status.isActive) {
+    while (!status.isTerminal) {
       await Future<void>.delayed(
         polls < _initialPolls ? _initialPollInterval : _pollInterval,
       );

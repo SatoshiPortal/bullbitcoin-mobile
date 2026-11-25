@@ -145,10 +145,6 @@
   "@app__settingsExchangeSettingsTitle_apple": {
     "description": "Apple (App Store) wording for the root catalogue key settingsExchangeSettingsTitle."
   },
-  "app__exchangeTestnetBasicAuthTitle_apple": "Testnet account credentials",
-  "@app__exchangeTestnetBasicAuthTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthTitle."
-  },
   "app__walletDeletionErrorOngoingSwaps_apple": "You cannot delete a wallet with ongoing transfers.",
   "@app__walletDeletionErrorOngoingSwaps_apple": {
     "description": "Apple (App Store) wording for the root catalogue key walletDeletionErrorOngoingSwaps."
@@ -184,10 +180,6 @@
   "app__sellExchangeRate_apple": "Rate",
   "@app__sellExchangeRate_apple": {
     "description": "Apple (App Store) wording for the root catalogue key sellExchangeRate."
-  },
-  "app__payExchangeRate_apple": "Rate",
-  "@app__payExchangeRate_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key payExchangeRate."
   },
   "app__transactionDetailTransferProgress_apple": "Transfer Progress",
   "@app__transactionDetailTransferProgress_apple": {
@@ -559,26 +551,6 @@
   "@app__notLoggedInMessage_apple": {
     "description": "Apple (App Store) wording for the root catalogue key notLoggedInMessage."
   },
-  "app__paySwapFee_apple": "Transfer Fee",
-  "@app__paySwapFee_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key paySwapFee."
-  },
-  "app__payRequiresSwap_apple": "This payment requires a transfer",
-  "@app__payRequiresSwap_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key payRequiresSwap."
-  },
-  "app__paySwapInProgress_apple": "Transfer in progress…",
-  "@app__paySwapInProgress_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key paySwapInProgress."
-  },
-  "app__paySwapCompleted_apple": "Transfer completed",
-  "@app__paySwapCompleted_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key paySwapCompleted."
-  },
-  "app__paySwapFailed_apple": "Transfer failed",
-  "@app__paySwapFailed_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key paySwapFailed."
-  },
   "app__sendSubmarineSwap_apple": "Submarine Transfer",
   "@app__sendSubmarineSwap_apple": {
     "description": "Apple (App Store) wording for the root catalogue key sendSubmarineSwap."
@@ -722,18 +694,6 @@
   "@app__exportTransactionsDescription_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exportTransactionsDescription."
   },
-  "app__exchangeLandingConnect_apple": "Connect your Bull Bitcoin account",
-  "@app__exchangeLandingConnect_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeLandingConnect."
-  },
-  "app__exchangeLandingLoginToUseSupport_apple": "Please login or sign up to use the support chat for account related issues.",
-  "@app__exchangeLandingLoginToUseSupport_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeLandingLoginToUseSupport."
-  },
-  "app__sellSendPaymentExchangeRate_apple": "Rate",
-  "@app__sellSendPaymentExchangeRate_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key sellSendPaymentExchangeRate."
-  },
   "app__swapTitle_apple": "Internal Transfer",
   "@app__swapTitle_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapTitle."
@@ -822,10 +782,6 @@
   "@bull_exchange__exchangeGoToWebsiteButton_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeGoToWebsiteButton."
   },
-  "app__exchangeSupportChatWalletIssuesInfo_apple": "This chat is only for account related issues in Funding/Buy/Sell/Withdraw/Pay.\nFor wallet related issues, join the telegram group by clicking here.",
-  "@app__exchangeSupportChatWalletIssuesInfo_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeSupportChatWalletIssuesInfo."
-  },
   "app__navigationTabExchange_apple": "Account",
   "@app__navigationTabExchange_apple": {
     "description": "Apple (App Store) wording for the root catalogue key navigationTabExchange."
@@ -857,10 +813,6 @@
   "label_editor__systemLabelAutoSwap_apple": "Auto Transfer",
   "@label_editor__systemLabelAutoSwap_apple": {
     "description": "Apple (App Store) wording for the label editor catalogue key systemLabelAutoSwap."
-  },
-  "app__logoutConfirmationDescription_apple": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access account features.",
-  "@app__logoutConfirmationDescription_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key logoutConfirmationDescription."
   },
   "wizard__wizardJourneyTip5_apple": "Transfer between Bitcoin and Liquid with no KYC",
   "@wizard__wizardJourneyTip5_apple": {
@@ -916,18 +868,6 @@
   "app__swapErrorRouteUnavailableGeneric_apple": "This transfer is not available.",
   "@app__swapErrorRouteUnavailableGeneric_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapErrorRouteUnavailableGeneric."
-  },
-  "app__autoBuyInfoMessage_apple": "Any amount added to your account will be converted to Bitcoin at the current rate and sent to your wallet.",
-  "@app__autoBuyInfoMessage_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key autoBuyInfoMessage."
-  },
-  "app__limitOrdersBackToExchange_apple": "Back to Account",
-  "@app__limitOrdersBackToExchange_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key limitOrdersBackToExchange."
-  },
-  "app__exchangePaymentSentPastDeadline_apple": "Payment sent. Bull Bitcoin reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
-  "@app__exchangePaymentSentPastDeadline_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangePaymentSentPastDeadline."
   },
   "app__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemonic",
   "@app__allSeedViewSwapMnemonicTitle_apple": {

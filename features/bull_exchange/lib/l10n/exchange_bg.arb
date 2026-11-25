@@ -306,8 +306,6 @@
   "autoBuyGetStarted": "Започнете с автоматичната покупка",
   "autoBuyConfirmTitle": "Потвърдете автоматичната покупка",
   "autoBuyInfoMessage": "Всяка сума, добавена към сметката ви, ще бъде конвертирана в Bitcoin по текущия обменен курс и изпратена към портфейла ви.",
-  "autoBuyAccountUnavailableError": "Вашата Bull Bitcoin сметка не е налична. Опитайте отново по-късно.",
-  "autoBuyWalletRequiredError": "Добавете поне един Bitcoin, Lightning или Liquid адрес по подразбиране.",
   "autoBuyUpdateError": "Автоматичната покупка не можа да бъде актуализирана. Опитайте отново по-късно.",
   "exchangeAuthLoginFailedTitle": "Неуспешен вход",
   "exchangeAuthLoginFailedMessage": "Възникна грешка, моля, опитайте да влезете отново.",
@@ -421,7 +419,6 @@
   "recipientsFieldSecurityQuestionHint": "Въведете контролния въпрос (10-40 знака)",
   "recipientsFieldSecurityAnswer": "Контролен отговор",
   "recipientsFieldSecurityAnswerHint": "Въведете контролния отговор",
-  "recipientsValidationSecurityQuestionMin": "Контролният въпрос трябва да съдържа поне 10 знака",
   "recipientsCharCounter": "{count}/40 знака",
   "recipientsFieldInstitutionCode": "Код на институцията",
   "recipientsFieldInstitutionCodeHint": "Въведете кода на институцията",
@@ -506,30 +503,15 @@
   "withdrawConfirmTitle": "Потвърди тегленето",
   "withdrawConfirmRecipientName": "Име на получателя",
   "withdrawConfirmAmount": "Сума",
-  "withdrawConfirmEmail": "Имейл",
-  "withdrawConfirmPayee": "Получател на плащане",
-  "withdrawConfirmAccount": "Сметка",
-  "withdrawConfirmIban": "IBAN",
-  "withdrawConfirmClabe": "CLABE",
-  "withdrawConfirmPhone": "Телефон",
-  "withdrawConfirmCard": "Карта",
   "withdrawConfirmButton": "Потвърди тегленето",
   "withdrawSuccessTitle": "Тегленето е инициирано",
   "withdrawSuccessOrderDetails": "Детайли за поръчката",
   "withdrawConfirmBankAccount": "Банкова сметка",
-  "withdrawOwnershipQuestion": "На кого принадлежи тази сметка?",
-  "withdrawOwnershipMyAccount": "Това е моята сметка",
-  "withdrawOwnershipOtherAccount": "Това е сметка на друго лице",
-  "withdrawUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
-  "withdrawBelowMinAmountError": "Минимална сума е {amount} {currency}",
-  "withdrawAboveMaxAmountError": "Максимална сума е {amount} {currency}",
   "withdrawInteracSecurityDetailsTitle": "Данни за сигурност на превода",
   "withdrawInteracSaveAsDefault": "Запази тези данни по подразбиране",
   "withdrawInteracSecurityQuestionLengthError": "Контролният въпрос трябва да е между 3 и 40 знака",
   "withdrawInteracSecurityAnswerLengthError": "Контролният отговор трябва да е между 3 и 40 знака",
   "withdrawInteracSecurityAnswerFormatError": "Използвайте букви, цифри или тирета без интервали",
-  "withdrawUnexpectedError": "Вашето теглене не можа да бъде завършено в момента. Моля, опитайте отново или се свържете с поддръжката.",
-  "withdrawConfidentialSepaNotActivatedError": "Моля, активирайте опцията за поверително плащане за този получател по SEPA.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -544,7 +526,7 @@
   "limitOrdersFiatAmount": "Amount",
   "limitOrdersEstimatedBuyPrice": "Estimated buy price",
   "limitOrderDetailsTitle": "Limit order details",
-  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsStatus": "Статус",
   "limitOrderDetailsNumber": "Order number",
   "limitOrderDetailsAddress": "Payout address",
   "limitOrderDetailsCreated": "Created",
@@ -577,7 +559,6 @@
   "logoutConfirmationDescription": "Сигурни ли сте, че искате да излезете от акаунта си в Bull Bitcoin? Ще трябва да влезете отново, за да получите достъп до функциите на борсата.",
   "logoutConfirmationCancel": "Отказ",
   "logoutConfirmationLogout": "Изход",
-  "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
   "buyConfirmPayoutWallet": "Портфейл за изплащане",
   "buyPayoutMethodLiquid": "L-BTC в Liquid",
   "buyPayoutMethodBitcoin": "BTC в блокчейна на Bitcoin",
@@ -720,10 +701,6 @@
   "@buyThatWasFast": {
     "description": "Additional success message for accelerated transaction"
   },
-  "buyConfirmPurchase": "Потвърдете покупката",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
   "buyNetworkFeeRate": "Ставка на таксата за мрежата",
   "@buyNetworkFeeRate": {
     "description": "Label for network fee rate"
@@ -818,8 +795,6 @@
   "dcaConfirmLightningAddress": "Lightning адрес",
   "dcaConfirmContinue": "Продължи",
   "buyInputTitle": "Купи Bitcoin",
-  "buyInputMinAmountError": "Трябва да купите поне",
-  "buyInputMaxAmountError": "Не можете да купите повече от",
   "buyInputKycPending": "Изчаква се проверка на самоличността (KYC)",
   "buyInputKycMessage": "Първо трябва да завършите проверка на самоличността",
   "buyInputCompleteKyc": "Завърши KYC",
@@ -834,24 +809,9 @@
   "buyConfirmPayoutMethod": "Метод на изплащане",
   "buyConfirmExternalWallet": "Външен биткойн портфейл",
   "buyConfirmAwaitingConfirmation": "Изчаква потвърждение ",
-  "buyUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
-  "buyBelowMinAmountError": "Опитвате се да купите под минималната сума.",
-  "buyAboveMaxAmountError": "Опитвате се да купите над максималната сума.",
-  "dcaAccountUnavailableError": "Профилът ви не можа да бъде зареден. Проверете връзката си, уверете се, че сте влезли, и опитайте отново.",
-  "dcaLightningAddressRequiredError": "Въведете Lightning адрес, за да получавате покупките си.",
-  "dcaReceiveAddressError": "Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.",
-  "dcaOrderCreationError": "Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно.",
   "closeDialogButton": "Затвори",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payPleasePayInvoice": "Моля, платете тази фактура.",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "Входяща сума",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
   },
   "sellAdvancedOptions": "Разширени настройки",
   "@sellAdvancedOptions": {
@@ -869,21 +829,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "Сума за изплащане",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "Такси за мрежата",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "Максималната сума, която можете да платите с този портфейл, е {amount}.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "payPaymentInProgress": "Плащането е в процес на обработка!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "Завършете KYC верификацията",
   "@sellCompleteKYC": {
@@ -893,49 +841,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "Лайтнинг мрежа",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "Външен портфейл",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "Невалидно състояние",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "Опитвате се да продадете под минималната сума, която може да се продаде с този портфейл.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "Баланс EUR",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "Изберете мрежа",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "Няма налични данни за фактура",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "Сума",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "Тази поръчка за продажба вече е потвърдена.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE изпратено!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "Няма налични детайли",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "Покажете QR кода",
   "@sellShowQrCode": {
@@ -957,25 +873,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "Поръчката е завършена!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "Моля, платете тази фактура.",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "Изберете мрежа",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "Баланс CAD",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за плащане.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "Цената ще се обнови след ",
   "@sellPriceWillRefreshIn": {
@@ -996,10 +896,6 @@
   "sellBalanceWillBeCredited": "Балансът ви ще бъде кредитиран, след като вашата транзакция получи 1 потвърждение в блокчейн.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
-  },
-  "payExchangeRate": "Курс на обмен",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
   },
   "copyDialogButton": "Копирай",
   "@copyDialogButton": {
@@ -1033,17 +929,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "Няма налични данни за фактура",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "Как искате да платите тази фактура?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "Плати",
-  "payDescriptionLabel": "Описание на плащането (по избор)",
-  "payDescriptionHint": "Добавете бележка към това плащане",
   "payPaymentDescription": "Описание на плащането",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1051,18 +937,6 @@
   "sellQrCode": "QR код",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "Отиди на началната страница",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за продажба.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "Изберете портфейл",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "Продължи",
   "@payContinue": {
@@ -1076,10 +950,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "Платете от друг биткойн портфейл",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "Приоритет на таксата",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1087,10 +957,6 @@
   "sellPayinAmount": "Входяща сума",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
-  },
-  "payBitcoinPrice": "Цена на Биткойн",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "Баланс MXN",
   "@sellMxnBalance": {
@@ -1108,16 +974,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "Как искате да платите тази фактура?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "От кой портфейл искате да платите?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "Най-бързият",
   "@sellFastest": {
@@ -1139,10 +997,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "Сума в биткойни",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "Курс на обмен",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1150,10 +1004,6 @@
   "sellTitle": "Продайте биткойн",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "Баланс USD",
   "@sellUsdBalance": {
@@ -1167,21 +1017,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "Минималната сума, която можете да платите с този портфейл, е {amount}.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "Получател на изплащане",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "Liquid мрежа",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "Изберете портфейл",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "==WEBLATE_PART==\nРеференционен номер",
   "@paySinpeNumeroComprobante": {
@@ -1194,10 +1032,6 @@
   "payRecipientName": "Име на получателя",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "Потвърди плащането",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "Потвърдете плащането",
   "@sellConfirmPayment": {
@@ -1215,61 +1049,29 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "Външен портфейл",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "Детайли за поръчката",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "Опитвате се да продадете над максималната сума, която може да се продаде с този портфейл.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "Liquid мрежа",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "Поръчката за продажба не беше намерена. Моля, опитайте отново.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "Разширени настройки",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "Детайли за получателя",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "Номер на поръчка",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "Готово",
   "@payDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellInProgress": "Продажбата е в ход...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
-  },
   "payAdvancedSettings": "Разширени настройки",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "payCompleted": "Плащането завършено!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Биткойн в блокчейна",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "Разширени настройки",
   "@sellAdvancedSettings": {
@@ -1283,20 +1085,13 @@
   "invoiceViewerTitle": "Фактура",
   "paySinpeReceipt": "SINPE разписка",
   "sellSendPaymentNetworkFees": "Мрежови такси",
-  "sellSendPaymentContinue": "Продължи",
-  "sellBitcoinPriceLabel": "Цена на Bitcoin",
   "sellViewDetailsButton": "Виж детайлите",
   "sellKycPendingTitle": "Изчаква се проверка на самоличността (KYC)",
   "sellKycPendingDescription": "Първо трябва да завършите проверка на самоличността",
-  "sellLoadingGeneric": "Зареждане...",
-  "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
-  "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
   "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
   "copiedToClipboard": "Копирано в клипборда",
   "sellPayoutBalance": "Добавяне към баланса по моята сметка",
-  "sellPayoutSepaDescription": "Тегленията се показват като изпратени от Leonod",
   "sellPayoutTitle": "Избор на получател",
-  "sellPayoutNewBadge": "НОВО",
   "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
   "sendSelectedUtxosInsufficient": "Избраните UTXO не покриват необходимата сума",
   "@sendSelectedUtxosInsufficient": {
@@ -1357,7 +1152,6 @@
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
   "limitOrdersBackToExchange": "Back to Exchange",
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersInsufficientBalance": "Недостатъчен баланс",
   "limitOrdersInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
   "limitOrdersFundAccount": "Захрани сметката си",
@@ -1376,5 +1170,124 @@
   "exchangeGoToWebsiteButton": "Отиди на уебсайта на борсата Bull Bitcoin",
   "exchangeErrorSigningOut": "Не можахте да излезете напълно от профила си. Моля, опитайте отново.",
   "exchangeErrorLoadingAnnouncements": "Съобщенията не можаха да бъдат заредени.",
-  "exchangeErrorRequestingAccountDeletion": "Заявката ви за изтриване на акаунта не можа да бъде изпратена. Моля, опитайте отново."
+  "exchangeErrorRequestingAccountDeletion": "Заявката ви за изтриване на акаунта не можа да бъде изпратена. Моля, опитайте отново.",
+  "exchangeFileUploadStatusUnknown": "Неизвестен статус",
+  "exchangeSupportChatAttachFileTooltip": "Прикачване на файл",
+  "exchangeSupportChatAttachLogsTooltip": "Прикачване на регистри",
+  "exchangeSupportChatSendTooltip": "Изпращане на съобщение",
+  "exchangeSupportChatLogDraft": "Ето моите регистри",
+  "exchangeSupportChatLoadOlder": "Зареждане на по-стари съобщения",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "Функции на борсата",
+  "exchangeAccessSettingsOffHint": "Включете, за да влезете или да създадете акаунт в Bull Bitcoin.",
+  "exchangeAccessSettingsOnHint": "Функциите на борсата са включени.",
+  "exchangeAccessSignIn": "Вход или създаване на акаунт",
+  "exchangeAccessDisableTitle": "Изключване на функциите на борсата?",
+  "exchangeAccessDisableBody": "Това ще ви изведе от профила на това устройство. Съществуващите поръчки, AutoBuy и периодичните покупки няма да бъдат отменени.",
+  "exchangeAccessDisableConfirm": "Изход и изключване",
+  "exchangeTradingRetry": "Опитай отново",
+  "exchangeAccessUnreadable": "Достъпът до борсата не можа да бъде прочетен. Опитайте отново или го нулирайте.",
+  "exchangeAccessReset": "Нулиране на достъпа до борсата",
+  "exchangeAccessLogoutIncomplete": "Излизането не е завършено. Завършете излизането, преди да включите борсата.",
+  "exchangeAccessRetryLogout": "Завършване на излизането",
+  "exchangeAccessExpiring": "Сесията ви изтече. Извеждаме ви от профила на това устройство.",
+  "exchangeLogoutDidNotFinish": "Излизането не завърши на това устройство.",
+  "networkFeatureUnavailable": "Тази функция не е налична в избраната мрежа.",
+  "exchangeBitcoinWalletsLoadFailed": "Неуспешно зареждане на портфейлите по подразбиране",
+  "exchangeBitcoinWalletsAddressEmpty": "Адресът не може да бъде празен",
+  "exchangeBitcoinWalletsSaveFailed": "Неуспешно запазване на адреса на портфейла",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "Не можахме да разберем дали този адрес е запазен. Проверете го по-долу, преди да запазите отново.",
+  "exchangeBitcoinWalletsDeleteFailed": "Неуспешно изтриване на адреса на портфейла",
+  "exchangeSettingsWriteBusy": "Друга заявка към борсата все още се изпълнява. Опитайте отново след малко.",
+  "exchangeSettingsSignedOut": "Вече не сте влезли в борсата. Влезте отново, за да промените тези настройки.",
+  "exchangeBitcoinWalletsBusy": "Друга заявка към борсата все още се изпълнява. Опитайте отново след малко.",
+  "exchangeBitcoinWalletsUnsetSuccess": "Адресът на портфейла е премахнат",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Не можахме да разберем дали този адрес е премахнат. Проверете отново, преди да го промените.",
+  "exchangeBitcoinWalletsCheckAgain": "Провери отново",
+  "exchangeBitcoinWalletsSessionEnded": "Вече не сте влезли в борсата. Влезте отново, за да редактирате портфейлите си по подразбиране.",
+  "destinationExpectedType": "Въведете или сканирайте валиден {type}.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "Купувайте, продавайте и плащайте с Bull Bitcoin директно от портфейла си.",
+  "exchangeTradingUnavailable": "Търговията не е налична.",
+  "priceChartShowTooltip": "Показване на графиката на цената",
+  "recipientsErrorSaveOutcomeUnknown": "Не можахме да разберем дали този получател е запазен. Проверете получателите си, преди да го добавите отново.",
+  "recipientsConfidentialSepaStatusUnknownTitle": "Неизвестен статус на активиране",
+  "recipientsConfidentialSepaStatusUnknownDescription": "Не успяхме да прочетем статуса на активиране на този получател. Моля, свържете се с поддръжката, преди да го използвате за Confidential SEPA.",
+  "recipientsReturnHome": "Към началния екран",
+  "withdrawConfirmOutcomeUnknownError": "Не можахме да потвърдим дали тегленето ви е извършено. Проверете отново, преди да започнете ново теглене.",
+  "withdrawConfirmCheckAgainButton": "Провери отново",
+  "limitOrderStatusUnknown": "Неизвестен статус",
+  "dcaUseDefaultBitcoinWallet": "Използвай моя Bitcoin портфейл по подразбиране",
+  "dcaUseDefaultLiquidWallet": "Използвай моя Liquid портфейл по подразбиране",
+  "dcaNoDefaultBitcoinWallet": "Нямате Bitcoin портфейл по подразбиране в акаунта си в Bull Bitcoin. Задайте такъв или въведете Bitcoin адрес по-долу.",
+  "dcaNoDefaultLiquidWallet": "Нямате Liquid портфейл по подразбиране в акаунта си в Bull Bitcoin. Задайте такъв или въведете Liquid адрес по-долу.",
+  "dcaManageDefaultWallets": "Задаване на портфейли по подразбиране",
+  "dcaEnterBitcoinAddressLabel": "Въведете Bitcoin адрес",
+  "dcaEnterLiquidAddressLabel": "Въведете Liquid адрес",
+  "dcaConfirmPayoutAddress": "Адрес за получаване",
+  "exchangePaymentOutcomeUnknownChecking": "Проверяваме дали плащането ви е изпратено…",
+  "walletSpendAwaitingObservation": "Харченето не е възможно, докато този портфейл не се синхронизира и не види предишните си плащания в мрежата. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново.",
+  "sendPayjoinSpendPaused": "Това Payjoin плащане е на пауза, защото портфейлът не може да продължи безопасно. Входовете му остават резервирани. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново това предложение, докато е валидно. Ако е изтекло, проверете плащането в „Транзакции“, преди да предприемете други действия.",
+  "walletSpendBusy": "Портфейлът е зает. Опитайте отново след малко.",
+  "fundExchangeJurisdictionHint": "Изберете откъде изпращате пари",
+  "fundExchangeScamConsentUnverified": "Не можахме да потвърдим, че съгласието ви е записано. Проверете връзката си и опитайте отново.",
+  "fundExchangeSessionEnded": "Сесията ви в борсата приключи. Влезте отново, за да заредите акаунта си.",
+  "exchangePlatformNotAllowedError": "Борсата не може да бъде включена на това устройство.",
+  "exchangeStepReadFailed": "В момента не можахме да заредим това от борсата. Опитайте отново.",
+  "exchangeStepNotSent": "Нищо не беше изпратено към борсата. Проверете връзката си и опитайте отново.",
+  "exchangeStepNotApplied": "Борсата не изпълни тази заявка. Можете да опитате отново.",
+  "exchangeStepWriteRefused": "Борсата отказа тази заявка.",
+  "exchangeOrderBelowMinimum": "Минималната сума е {amount} {currency}",
+  "exchangeOrderAboveMaximum": "Максималната сума е {amount} {currency}",
+  "exchangePayeeInactive": "Този получател все още не е активиран за Confidential SEPA.",
+  "exchangeWriteGateBusy": "Друга заявка към борсата все още е в процес. Изчакайте я да приключи и опитайте отново.",
+  "exchangeWriteGateUnsettled": "Предишна заявка към борсата все още се проверява. Опитайте отново, след като бъде уредена.",
+  "exchangeWriteGateJournalUnreadable": "Не можахме да проверим предишните ви заявки към борсата. Опитайте отново.",
+  "exchangeStepUnverified": "Не можахме да проверим дали борсата е получила това. Проверете отново, преди да започнете нова.",
+  "exchangeStepTimedOut": "Това отнема повече време от очакваното. Можете да проверите отново или да излезете и да се върнете по-късно.",
+  "exchangeAmountNoRate": "Цената на биткойн в момента не е налична. Опитайте отново.",
+  "exchangeAmountKycNeeded": "Завършете проверката на самоличността си, за да използвате тази сума.",
+  "exchangeStepVerifying": "Проверяваме при борсата…",
+  "exchangeFlowSessionEnded": "Сесията ви в борсата приключи. Влезте отново, за да продължите.",
+  "withdrawNoFundedBalance": "Нямате наличност за теглене.",
+  "exchangePayinNoFunds": "Този портфейл няма достатъчно средства за това плащане и таксата за мрежата.",
+  "exchangePayinFeeTooLow": "Таксата за мрежата е под минимума на мрежата. Опитайте отново.",
+  "exchangePayinWalletBusy": "Портфейлът се синхронизира. Опитайте отново след малко.",
+  "exchangePayinConsolidationRequired": "Този портфейл трябва да консолидира монетите си, преди да може да плати тази сума.",
+  "exchangePayinSigningRefused": "Портфейлът не можа да подпише плащането.",
+  "exchangePayinNotAuthorized": "Този портфейл няма разрешение да изпраща плащания.",
+  "exchangePayinBuildFailed": "Плащането не можа да бъде подготвено. Нищо не е изпратено.",
+  "exchangePayinNodeRejected": "Мрежата отказа транзакцията. Нищо не е изпратено.",
+  "exchangePayinPayjoinNotStarted": "Payjoin плащането не можа да започне. Нищо не е изпратено.",
+  "exchangePayinDeadlinePassed": "Срокът за плащане на поръчката изтече, преди плащането да бъде изпратено. Нищо не е изпратено.",
+  "exchangePayinSending": "Изпращаме плащането ви…",
+  "exchangePayinNotSent": "Плащането не е изпратено",
+  "exchangePayinPayjoinNegotiating": "Договаряме payjoin с борсата…",
+  "exchangePayinPayjoinPaused": "Payjoin е на пауза, защото портфейлът е зает. Опитайте отново.",
+  "exchangePayinUnseen": "Нито мрежата, нито борсата показват това плащане засега. Можете да изпратите същата транзакция отново.",
+  "exchangePayinResend": "Изпрати същата транзакция отново",
+  "exchangeStepCheckAgain": "Провери отново",
+  "exchangePayinLeaveTitle": "Напускане на това плащане?",
+  "exchangePayinLeaveMessage": "Ако вече сте платили, борсата пак ще го получи. Ако не, поръчката изтича в крайния си срок.",
+  "exchangePayinStay": "Остани",
+  "exchangePayinExternalTitle": "Изпратете точно тази сума на адреса по-долу",
+  "exchangePayinExternalWaiting": "Изчакваме плащането ви…",
+  "exchangePayinRefusedByExchange": "Борсата не прие това плащане. Свържете се с поддръжката, като посочите номера на поръчката.",
+  "exchangePayinOrderEnded": "Тази поръчка приключи, преди плащането ви да бъде изпратено. Нищо не е изпратено.",
+  "exchangePayinDepositRefused": "Тази поръчка не може да бъде платена от този портфейл. Нищо не е изпратено.",
+  "exchangePayinReceived": "Борсата получи плащането ви",
+  "exchangePayinCoinsUnavailable": "Монетите на портфейла ви не можаха да се заредят. Опитайте отново.",
+  "buyPayoutAddressUnavailable": "Не успяхме да получим адрес за получаване от този портфейл. Изберете го отново или изберете друг портфейл.",
+  "buyPayoutFailed": "Борсата не успя да завърши това плащане. Отворете детайлите на поръчката или се свържете с поддръжката.",
+  "buyPayoutStillPending": "Плащането ви все още е на път. Можете да го следите в детайлите на поръчката.",
+  "limitOrdersOverBalanceWarning": "Това е повече от наличния ви баланс. Когато поръчката се изпълни, тя купува с наличното тогава в баланса ви.",
+  "autoBuyAlreadyActive": "Автоматичната покупка вече е активна за профила ви.",
+  "recipientsValidationEmailInvalid": "Въведете валиден имейл адрес",
+  "recipientsValidationClabeLength": "CLABE се състои от 18 цифри",
+  "recipientsValidationClabeCheckDigit": "Тази CLABE не е валидна. Проверете номера",
+  "recipientsValidationSpeiPhone": "Въведете 10-цифрения телефонен номер без кода на държавата",
+  "recipientsValidationDebitCard": "Номерът на дебитната карта се състои от 16 цифри",
+  "recipientsErrorFieldRefused": "Борсата не прие тази стойност",
+  "recipientsErrorCheckFields": "Някои данни не бяха приети. Проверете отбелязаните по-горе полета.",
+  "recipientsErrorFieldsRefused": "Някои данни не бяха приети: {fields}"
 }

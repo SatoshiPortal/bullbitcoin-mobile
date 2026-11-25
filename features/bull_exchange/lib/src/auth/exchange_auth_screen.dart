@@ -1,4 +1,5 @@
 import '../exchange_l10n.dart';
+import 'exchange_auth_machine.dart';
 
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 
@@ -34,16 +35,19 @@ typedef ExchangeAuthHost = ({
   Uri testnetKycUrl,
   ExchangeAccess Function() currentAccess,
   Stream<ExchangeAccess> Function() watchAccess,
-  Stream<bool> Function(BuildContext) accountSignedInChanges,
   Future<void> Function(BuildContext) retryAccess,
 });
 
+/// The sign-in WebView, driven by [transitionAuth]. [onDone] runs once, when
+/// the API key is stored; [onExit] once, when the user leaves first.
 class ExchangeAuthScreen extends StatefulWidget {
   final VoidCallback onExit;
+  final VoidCallback onDone;
   final ExchangeAuthHost host;
 
   const ExchangeAuthScreen({
     required this.onExit,
+    required this.onDone,
     required this.host,
     super.key,
   });
@@ -55,53 +59,100 @@ class ExchangeAuthScreen extends StatefulWidget {
 class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   late final WebViewController _controller = WebViewController();
   late final WebViewCookieManager _cookieManager = WebViewCookieManager();
-  late final Uri _bbAuthUrl;
-  String? _basicAuthUsername;
-  String? _basicAuthPassword;
-  bool _isGeneratingApiKey = false;
-  bool _isClosing = false;
-
-  bool _isLoadingConfiguration = true;
-  ExchangeFailure? _configurationFailure;
+  ExchangeAuthState _state = const AuthLoadingConfig();
+  bool _webViewConfigured = false;
 
   @override
   void initState() {
     super.initState();
-
-    unawaited(_load());
+    unawaited(_loadConfiguration());
   }
 
-  Future<void> _retry() async {
-    setState(() {
-      _isLoadingConfiguration = true;
-      _configurationFailure = null;
-    });
-    await _load();
-  }
-
-  Future<void> _load() async {
-    final result = await widget.host.loadConfiguration();
+  void _add(ExchangeAuthEvent event) {
     if (!mounted) return;
-    final ExchangeWebPreferences settingsState;
-    switch (result) {
-      case Ok(:final value):
-        settingsState = value;
-      case Err(:final failure):
-        setState(() {
-          _isLoadingConfiguration = false;
-          _configurationFailure = failure;
-        });
-        return;
+    final previous = _state;
+    final next = transitionAuth(previous, event);
+    if (next == previous) return;
+    setState(() => _state = next);
+    switch (next) {
+      case AuthLoadingConfig():
+        unawaited(_loadConfiguration());
+      case AuthBrowsing(:final config) when !_webViewConfigured:
+        _webViewConfigured = true;
+        _configureWebView(config);
+      case AuthGeneratingKey(:final config):
+        unawaited(_generateKey(config));
+      case AuthKeyFailed(:final failure):
+        unawaited(_showKeyFailure(failure));
+      case AuthDone():
+        widget.onDone();
+      case AuthClosing():
+        widget.onExit();
+      case AuthConfigFailed() || AuthBrowsing():
+        break;
     }
-    final isTestnet = settingsState.environment == Environment.testnet;
-    _bbAuthUrl = isTestnet
-        ? widget.host.testnetSignInUrl
-        : widget.host.mainnetSignInUrl;
-    if (isTestnet) {
-      _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
-      _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
-    }
+  }
 
+  Future<void> _loadConfiguration() async {
+    final result = await widget.host.loadConfiguration();
+    _add(switch (result) {
+      Ok(:final value) => AuthConfigLoaded(
+        ExchangeAuthConfig(
+          isTestnet: value.environment == Environment.testnet,
+          signInUrl: value.environment == Environment.testnet
+              ? widget.host.testnetSignInUrl
+              : widget.host.mainnetSignInUrl,
+          basicAuth: _testnetBasicAuth(value),
+        ),
+      ),
+      Err(:final failure) => AuthConfigUnavailable(failure),
+    });
+  }
+
+  static ({String username, String password})? _testnetBasicAuth(
+    ExchangeWebPreferences preferences,
+  ) {
+    final username = preferences.exchangeTestnetBasicAuthUsername;
+    final password = preferences.exchangeTestnetBasicAuthPassword;
+    if (preferences.environment != Environment.testnet ||
+        username == null ||
+        password == null) {
+      return null;
+    }
+    return (username: username, password: password);
+  }
+
+  Future<void> _generateKey(ExchangeAuthConfig config) async {
+    ExchangeAuthEvent outcome;
+    try {
+      final result = await widget.host.authenticate(
+        context,
+        _controller.runJavaScriptReturningResult,
+        isTestnet: config.isTestnet,
+        isCurrent: () => mounted && _state is AuthGeneratingKey,
+      );
+      outcome = switch (result) {
+        Ok() => const AuthKeyStored(),
+        Err(failure: ExchangeAuthenticationDeferredFailure()) =>
+          const AuthKeyDeferred(),
+        Err(:final failure) => AuthKeyNotStored(failure),
+      };
+    } on Exception {
+      log.warning('Exchange auth failed reason=platform');
+      outcome = const AuthKeyNotStored(ExchangeUnexpectedFailure('platform'));
+    }
+    _add(outcome);
+  }
+
+  Future<void> _showKeyFailure(ExchangeFailure failure) async {
+    final retry = await _handleLoginError(failure);
+    if (!mounted || _state is! AuthKeyFailed) return;
+    _add(const AuthErrorAcknowledged());
+    if (retry && _state is AuthBrowsing) await _controller.reload();
+  }
+
+  void _configureWebView(ExchangeAuthConfig config) {
+    final isTestnet = config.isTestnet;
     // Hosts of the Bull web app the site links back to.
     final appHosts = {
       widget.host.returnUrl.host,
@@ -113,13 +164,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       ..addJavaScriptChannel(
         'Flutter',
         onMessageReceived: (JavaScriptMessage message) {
-          if (message.message == 'close') {
-            if (!_isClosing && mounted) {
-              _isClosing = true;
-              // Navigate immediately
-              widget.onExit();
-            }
-          }
+          if (message.message == 'close') _add(const AuthCloseRequested());
         },
       )
       ..setNavigationDelegate(
@@ -162,38 +207,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
               return;
             }
 
-            // Check if the URL contains the bb_session cookie
-            final hasSession = await _hasBBSessionCookie(url);
-            // If no bb_session cookie is found, do nothing as the user is not
-            //  logged in yet.
-            if (!hasSession) return;
-
-            if (!mounted || _isClosing || _isGeneratingApiKey) return;
-            var retry = false;
-            setState(() => _isGeneratingApiKey = true);
-            try {
-              final result = await widget.host.authenticate(
-                context,
-                _controller.runJavaScriptReturningResult,
-                isTestnet: isTestnet,
-                isCurrent: () => mounted && !_isClosing,
-              );
-              final failure = switch (result) {
-                Err(:final failure) => failure,
-                Ok() => null,
-              };
-              if (!mounted || _isClosing) return;
-              if (failure != null &&
-                  failure is! ExchangeAuthenticationDeferredFailure) {
-                retry = await _handleLoginError(failure);
-              }
-            } on Exception {
-              log.warning('Exchange auth failed reason=platform');
-              if (mounted && !_isClosing) retry = await _handleLoginError();
-            } finally {
-              if (mounted) setState(() => _isGeneratingApiKey = false);
-            }
-            if (retry && mounted && !_isClosing) await _controller.reload();
+            // Only a page with the web session cookie can produce a key.
+            if (_state is! AuthBrowsing) return;
+            if (!await _hasBBSessionCookie(url)) return;
+            _add(const AuthWebSessionSeen());
           },
           onNavigationRequest: (NavigationRequest request) {
             // Exact host matching — a startsWith('https://accounts') prefix
@@ -207,7 +224,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
               return NavigationDecision.prevent;
             }
 
-            final authHost = _bbAuthUrl.host;
+            final authHost = config.signInUrl.host;
             if (uri.host == authHost) {
               return NavigationDecision.navigate;
             }
@@ -225,14 +242,13 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             return NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
-            final username = _basicAuthUsername;
-            final password = _basicAuthPassword;
-            if (username == null || password == null) {
+            final auth = config.basicAuth;
+            if (auth == null) {
               request.onCancel();
               return;
             }
             request.onProceed(
-              WebViewCredential(user: username, password: password),
+              WebViewCredential(user: auth.username, password: auth.password),
             );
           },
         ),
@@ -241,7 +257,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       ..setUserAgent(
         'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15.0 Safari/604.1',
       )
-      ..loadRequest(_bbAuthUrl);
+      ..loadRequest(config.signInUrl);
 
     if (Platform.isAndroid) {
       AndroidWebViewController.enableDebugging(false);
@@ -255,36 +271,31 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
         platformController.setAllowsBackForwardNavigationGestures(true);
       }
     }
-    setState(() => _isLoadingConfiguration = false);
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_isLoadingConfiguration) {
-      return const SafeArea(child: Center(child: CircularProgressIndicator()));
-    }
-    if (_configurationFailure case final failure?) {
-      return SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CloseButton(onPressed: widget.onExit),
-            BullInfoCard(
-              description: widget.host.failureMessage(context, failure),
-              tagColor: context.appColors.error,
-              bgColor: context.appColors.errorContainer,
-              onTap: _retry,
-            ),
-          ],
-        ),
-      );
-    }
-    return SafeArea(
-      child: _isGeneratingApiKey
-          ? const Center(child: CircularProgressIndicator())
-          : WebViewWidget(controller: _controller),
-    );
-  }
+  Widget build(BuildContext context) => switch (_state) {
+    AuthLoadingConfig() || AuthGeneratingKey() || AuthDone() => const SafeArea(
+      child: Center(child: CircularProgressIndicator()),
+    ),
+    AuthConfigFailed(:final failure) => SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CloseButton(onPressed: () => _add(const AuthCloseRequested())),
+          BullInfoCard(
+            description: widget.host.failureMessage(context, failure),
+            tagColor: context.appColors.error,
+            bgColor: context.appColors.errorContainer,
+            onTap: () => _add(const AuthRetryRequested()),
+          ),
+        ],
+      ),
+    ),
+    AuthBrowsing() ||
+    AuthKeyFailed() ||
+    AuthClosing() => SafeArea(child: WebViewWidget(controller: _controller)),
+  };
 
   Future<bool> _hasBBSessionCookie(String url) async {
     final cookies = await _cookieManager.getCookies(domain: Uri.parse(url));
@@ -294,8 +305,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
   /// OK returns to the same web session; Retry reloads it.
   /// Only explicit sign-out clears cookies.
-  Future<bool> _handleLoginError([ExchangeFailure? failure]) async {
-    if (!mounted || _isClosing) return false;
+  Future<bool> _handleLoginError(ExchangeFailure failure) async {
+    if (!mounted) return false;
     return await BullDialog.show<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
@@ -306,10 +317,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             ),
             title: Text(context.loc.exchangeAuthLoginFailedTitle),
             content: Text(
-              (failure == null
-                      ? null
-                      : widget.host.failureMessage(context, failure)) ??
-                  context.loc.exchangeAuthLoginFailedMessage,
+              failure is ExchangeUnexpectedFailure
+                  ? context.loc.exchangeAuthLoginFailedMessage
+                  : widget.host.failureMessage(context, failure),
             ),
             actions: [
               BullButton.secondary(
@@ -328,11 +338,5 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           ),
         ) ??
         false;
-  }
-
-  @override
-  void dispose() {
-    _isClosing = true;
-    super.dispose();
   }
 }

@@ -28,7 +28,7 @@ final class OrderTriggersApi {
     required DcaFrequency frequency,
     required DcaRecipientType recipientType,
     required String address,
-  }) => _transport.request(
+  }) => _transport.write(
     endpoint,
     'createDCA',
     id: '1',
@@ -73,15 +73,20 @@ final class OrderTriggersApi {
     required String currencyCode,
     required String estimatedBtcAmount,
     required String address,
-  }) => _limitOrderCall('addLimitOrder', {
-    'element': {
-      'limitPrice': limitPrice,
-      'fiatAmount': fiatAmount,
-      'currencyCode': currencyCode,
-      'estimatedBtcAmount': estimatedBtcAmount,
-      'address': address,
+  }) => _limitOrderCall(
+    'addLimitOrder',
+    {
+      'element': {
+        'limitPrice': limitPrice,
+        'fiatAmount': fiatAmount,
+        'currencyCode': currencyCode,
+        'estimatedBtcAmount': estimatedBtcAmount,
+        'address': address,
+      },
     },
-  }, parse: parseLimitOrder);
+    parse: parseLimitOrder,
+    write: true,
+  );
 
   /// Cancels the limit order [limitOrderId] and returns it.
   Future<Result<LimitOrder, BbxFailure>> cancelLimitOrder(
@@ -99,7 +104,8 @@ final class OrderTriggersApi {
     String method,
     Map<String, Object?> params, {
     required T Function(Map<String, dynamic> element) parse,
-  }) => _transport.request(
+    bool write = false,
+  }) => (write ? _transport.write<T> : _transport.request<T>)(
     endpoint,
     method,
     params: params,
@@ -123,6 +129,7 @@ BbxFailure limitOrderRejection(Object error) {
     code: rpc.code,
     message: rpc.message,
     apiCode: code,
+    fieldErrors: rpc.fieldErrors,
     requestId: rpc.requestId,
   );
 }

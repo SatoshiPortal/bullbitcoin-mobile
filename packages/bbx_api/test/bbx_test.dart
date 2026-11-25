@@ -183,7 +183,6 @@ void main() {
         failure,
         isA<BbxRpcFailure>().having((f) => f.requestId, 'requestId', requestId),
       );
-      expect(failure.requestIdLabel, ' requestId=$requestId');
       expect(
         failure.toString(),
         'BbxRpcFailure(code: -32603, apiCode: ERR_ORD_500, '
@@ -217,7 +216,32 @@ void main() {
         ),
       );
       expect(unlabelled.requestId, isNull);
-      expect(unlabelled.requestIdLabel, isEmpty);
+      expect('$unlabelled', isNot(contains('requestId')));
+    });
+
+    test('every refusal describes its codes and request id', () {
+      const requestId = 'req-7:0';
+      expect(
+        const BbxOrderLimitFailure(
+          bound: BbxOrderLimitBound.minimum,
+          amount: 20,
+          currency: 'CAD',
+          code: -32603,
+          apiCode: 'ERR_ORD_LIMIT',
+          requestId: requestId,
+        ).toString(),
+        'BbxOrderLimitFailure(bound: minimum, amount: 20.0, currency: CAD, '
+        'code: -32603, apiCode: ERR_ORD_LIMIT, requestId=$requestId)',
+      );
+      expect(
+        const BbxConfidentialSepaInactiveFailure(
+          code: -32603,
+          apiCode: 'ERR_ORD_CSRCP400',
+          requestId: requestId,
+        ).toString(),
+        'BbxConfidentialSepaInactiveFailure(code: -32603, '
+        'apiCode: ERR_ORD_CSRCP400, requestId=$requestId)',
+      );
     });
 
     test('a body that is not an object is a format failure', () async {
@@ -490,6 +514,45 @@ void main() {
     });
   });
 
+  group('session rejection', () {
+    test('a 401 marks the client as rejected', () async {
+      final client = bbx(FakeHttp(status: 401, body: {'result': null}));
+      expect(client.sessionRejected, isFalse);
+
+      await client.users.getUserSummary();
+
+      expect(client.sessionRejected, isTrue);
+    });
+
+    test('a 401 to a write marks it too', () async {
+      final client = bbx(FakeHttp(status: 401, body: {'result': null}));
+
+      await client.users.saveUserPreferences(
+        const UserPreferences(language: 'en'),
+      );
+
+      expect(client.sessionRejected, isTrue);
+    });
+
+    test('another refusal does not', () async {
+      final client = bbx(FakeHttp(status: 403, body: {'result': null}));
+
+      await client.users.getUserSummary();
+
+      expect(client.sessionRejected, isFalse);
+    });
+
+    test('a request that was not sent does not', () async {
+      final http = FakeHttp(status: 401, body: {'result': null});
+      final client = bbx(http, readActiveApiKey: () => okApiKey(null));
+
+      await client.users.getUserSummary();
+
+      expect(http.requests, isEmpty);
+      expect(client.sessionRejected, isFalse);
+    });
+  });
+
   group('timeouts', () {
     test('no timeout by default', () async {
       final http = FakeHttp(body: {'result': null});
@@ -528,6 +591,123 @@ void main() {
       expect(request.connectTimeout, const Duration(seconds: 1));
       expect(request.sendTimeout, isNull);
       expect(request.receiveTimeout, const Duration(seconds: 2));
+    });
+  });
+
+  group('write', () {
+    Future<BbxFailure> writeFailureOver(
+      HttpClientAdapter http, {
+      Future<Result<String?, BbxFailure>> Function()? readActiveApiKey,
+    }) => failedCall(
+      bbx(
+        http,
+        readActiveApiKey: readActiveApiKey,
+      ).users.saveUserPreferences(const UserPreferences(language: 'en')),
+    );
+
+    for (final type in [
+      DioExceptionType.sendTimeout,
+      DioExceptionType.receiveTimeout,
+      DioExceptionType.connectionError,
+      DioExceptionType.transformTimeout,
+      DioExceptionType.unknown,
+    ]) {
+      test('${type.name} after sending is an unknown outcome', () async {
+        expect(
+          await writeFailureOver(FailingHttp(type)),
+          isA<BbxOutcomeUnknownFailure>(),
+        );
+      });
+    }
+
+    for (final (type, check) in [
+      (
+        DioExceptionType.connectionTimeout,
+        (BbxFailure f) =>
+            f is BbxTimeoutFailure && f.kind == BbxTimeoutKind.connect,
+      ),
+      (
+        DioExceptionType.badCertificate,
+        (BbxFailure f) => f is BbxBadCertificateFailure,
+      ),
+      (
+        DioExceptionType.cancel,
+        (BbxFailure f) => f is BbxRequestCancelledFailure,
+      ),
+    ]) {
+      test('${type.name} happens before sending and stays as it is', () async {
+        final failure = await writeFailureOver(FailingHttp(type));
+        expect(check(failure), isTrue, reason: '$failure');
+      });
+    }
+
+    for (final status in [204, 302, 502, 504]) {
+      test('status $status is an unknown outcome', () async {
+        expect(
+          await writeFailureOver(
+            FakeHttp(status: status, body: {'result': null}),
+          ),
+          isA<BbxOutcomeUnknownFailure>().having(
+            (f) => f.reason,
+            'reason',
+            'status $status',
+          ),
+        );
+      });
+    }
+
+    for (final status in [400, 401, 403, 500, 503]) {
+      test("status $status is the server's refusal", () async {
+        expect(
+          await writeFailureOver(
+            FakeHttp(status: status, body: {'result': null}),
+          ),
+          isA<BbxHttpFailure>().having((f) => f.status, 'status', status),
+        );
+      });
+    }
+
+    test('a reply that cannot be read is an unknown outcome', () async {
+      expect(
+        await failedCall(
+          bbx(FakeHttp(body: {'result': 'x'})).recipients.createMyRecipient(
+            recipientType: 'OUT_BITCOIN_ADDRESS',
+            address: 'bc1q',
+            isOwner: true,
+            isDefault: true,
+          ),
+        ),
+        isA<BbxOutcomeUnknownFailure>(),
+      );
+    });
+
+    test('a JSON-RPC error is a refusal', () async {
+      expect(
+        await writeFailureOver(
+          FakeHttp(
+            body: {
+              'error': {'code': -32000, 'message': 'no'},
+            },
+          ),
+        ),
+        isA<BbxRpcFailure>().having((f) => f.code, 'code', -32000),
+      );
+    });
+
+    test('a missing credential never sends the write', () async {
+      final http = FakeHttp(body: {'result': null});
+      expect(
+        await writeFailureOver(http, readActiveApiKey: () => okApiKey(null)),
+        isA<BbxMissingCredentialFailure>(),
+      );
+      expect(http.requests, isEmpty);
+    });
+
+    test('the outcome text names the failure, not the payload', () async {
+      final failure = await writeFailureOver(
+        FailingHttp(DioExceptionType.receiveTimeout),
+      );
+      expect('$failure', 'BbxOutcomeUnknownFailure(receive timeout)');
     });
   });
 }

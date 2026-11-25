@@ -35,6 +35,7 @@ final class OrderDeadlineScheduler {
 
   Timer? _timer;
   int _retries = 0;
+  bool _isCancelled = false;
   bool _isDisposed = false;
 
   OrderDeadlineScheduler({
@@ -53,6 +54,7 @@ final class OrderDeadlineScheduler {
   /// nothing to watch.
   void track(DateTime? deadline) {
     if (_isDisposed) return;
+    _isCancelled = false;
     _clearTimer();
     if (deadline == null) {
       _retries = 0;
@@ -67,15 +69,19 @@ final class OrderDeadlineScheduler {
     _retry();
   }
 
-  /// The refresh request itself failed: retry after [retryDelay].
+  /// The refresh request itself failed: retry after [retryDelay]. Ignored
+  /// after [cancel] until the next [track]: a refresh that was in flight when
+  /// the owner cancelled must not re-arm the timer (B14).
   void refreshFailed() {
-    if (_isDisposed) return;
+    if (_isDisposed || _isCancelled) return;
     _clearTimer();
     _retry();
   }
 
-  /// The order is gone or must not be refreshed any more.
+  /// The order is gone or must not be refreshed any more. Nothing fires and
+  /// [refreshFailed] is ignored until the next [track].
   void cancel() {
+    _isCancelled = true;
     _clearTimer();
     _retries = 0;
   }

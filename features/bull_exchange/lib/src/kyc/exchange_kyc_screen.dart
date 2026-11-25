@@ -12,6 +12,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
+import '../auth/exchange_auth_machine.dart';
 import 'exchange_kyc_host.dart';
 import 'exchange_kyc_navigation.dart';
 
@@ -26,6 +27,7 @@ class ExchangeKycScreen extends StatefulWidget {
 
 class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   late final WebViewController _controller = WebViewController();
+  ExchangeKycState _kyc = ExchangeKycState.browsing;
   bool _isLoadingConfiguration = true;
   ExchangeFailure? _configurationFailure;
 
@@ -34,6 +36,18 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
     super.initState();
 
     unawaited(_load());
+  }
+
+  void _leave(ExchangeKycEvent event) {
+    final next = transitionKyc(_kyc, event);
+    if (next == _kyc) return;
+    _kyc = next;
+    switch (next) {
+      case ExchangeKycState.leaving:
+        widget.host.onExit(context);
+      case ExchangeKycState.browsing:
+        break;
+    }
   }
 
   Future<void> _retry() async {
@@ -81,10 +95,9 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
                 //  an in-app browser view.
                 launchUrl(url, mode: LaunchMode.inAppBrowserView);
               } else {
-                // Fetch the user summary to update the exchange state before
-                // going back, since the user might have completed the KYC
-                // process and the exchange state needs to be updated accordingly.
-                widget.host.onExit(context);
+                // The user may have completed KYC: onExit refreshes the
+                // account before going back. A redirect chain leaves once.
+                _leave(const KycLeftFlow());
               }
             }
           },

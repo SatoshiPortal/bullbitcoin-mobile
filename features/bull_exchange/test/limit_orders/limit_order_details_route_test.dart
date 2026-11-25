@@ -20,7 +20,10 @@ void main() {
     final orders = _Orders();
     when(() => orders.get('selected'))
         .thenAnswer((_) async => Ok(limitOrder(id: 'selected')));
-    final exchange = exchangeForTesting(limitOrders: orders);
+    final exchange = exchangeForTesting(
+      limitOrders: orders,
+      access: fixedAccessForTesting(const ExchangeAccessSignedIn(limitSession)),
+    );
     final feature = mountBullExchange(
       networkUnavailable: () async => false,
       showWebsiteOnly: (_) => false,

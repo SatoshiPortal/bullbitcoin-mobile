@@ -28,9 +28,10 @@ import 'package:bull_exchange/bull_exchange.dart'
         BullExchangeNavigation,
         BuyRoute,
         ExchangeFailureL10n,
+        ExchangeGuardedPaths,
         ExchangeHomeAction,
         ExchangeSessionScope,
-        ExchangeTradingGuard,
+        ExchangeRouteGuard,
         PayRoute,
         SellRoute;
 import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
@@ -250,10 +251,14 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    onEnter: ExchangeTradingGuard(
+    onEnter: ExchangeRouteGuard(
       navigatorKey: rootNavigatorKey,
       checkAvailability: locator<Exchange>().guardTradingEntry,
       resolveAccess: locator<Exchange>().resolveAccess,
+      // The exchange settings routes are nested under the settings hub below.
+      paths:
+          ExchangeGuardedPaths.mounted +
+          ExchangeGuardedPaths.settingsUnder(SettingsNavigation.homePath),
     ).onEnter,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the

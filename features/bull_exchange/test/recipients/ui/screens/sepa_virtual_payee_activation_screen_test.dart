@@ -138,6 +138,20 @@ void main() {
     expect(activated, 1);
   });
 
+  testWidgets('an unknown status says so and does not continue', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester);
+
+    await emit(tester, const Ok(SepaVirtualPayeeStatus.unknown));
+
+    expect(
+      find.text(loc.recipientsConfidentialSepaStatusUnknownTitle),
+      findsOne,
+    );
+    expect(activated, 0);
+  });
+
   testWidgets('the user can pay through regular SEPA instead', (tester) async {
     final loc = await pumpView(tester);
     await emit(tester, const Ok(SepaVirtualPayeeStatus.pending));

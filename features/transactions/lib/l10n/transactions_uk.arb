@@ -184,7 +184,7 @@
     "description": "Message shown when start date is after end date"
   },
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
-  "retry": "Птиця",
+  "retry": "Повторити",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -222,5 +222,6 @@
   "transactionPayjoinBroadcastFailed": "Не вдалося опублікувати початкову транзакцію. Будь ласка, спробуйте ще раз.",
   "transactionPayjoinOriginalUnavailable": "Початкова транзакція більше недоступна для публікації.",
   "transactionLabelLimitReached": "Ви можете мати щонайбільше 10 міток.",
-  "copiedToClipboard": "Скопійовано в буфер обміну"
+  "copiedToClipboard": "Скопійовано в буфер обміну",
+  "transactionListExchangeOrdersUnavailable": "Не вдалося завантажити ордери біржі."
 }

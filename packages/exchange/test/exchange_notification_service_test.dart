@@ -70,7 +70,6 @@ BbxApiNotificationDatasource _fakeDatasource({
 );
 
 void main() {
-  late ExchangeEnvironment currentEnvironment;
   late _Connector mainnetConnector;
   late _Connector testnetConnector;
   late BbxApiNotificationDatasource mainnet;
@@ -82,7 +81,6 @@ void main() {
   subscription;
 
   setUp(() {
-    currentEnvironment = ExchangeEnvironment.mainnet;
     mainnetConnector = _Connector();
     testnetConnector = _Connector();
     mainnetCredential = const Ok('synthetic');
@@ -99,7 +97,6 @@ void main() {
     service = ExchangeNotificationService(
       mainnetDatasource: mainnet,
       testnetDatasource: testnet,
-      readEnvironment: () async => Ok(currentEnvironment),
     );
     messages = [];
     subscription = service.messageStream.listen((event) {
@@ -113,7 +110,7 @@ void main() {
   });
 
   test('forwards the current network only, with its owned fields', () async {
-    await service.connect();
+    await service.connect(ExchangeEnvironment.mainnet);
     expect(mainnetConnector.channels, hasLength(1));
     expect(testnetConnector.channels, isEmpty);
 
@@ -135,9 +132,8 @@ void main() {
   });
 
   test('reconnect follows the environment switch', () async {
-    await service.connect();
-    currentEnvironment = ExchangeEnvironment.testnet;
-    await service.reconnect();
+    await service.connect(ExchangeEnvironment.mainnet);
+    await service.reconnect(ExchangeEnvironment.testnet);
     expect(mainnet.isConnected, isFalse);
     expect(testnet.isConnected, isTrue);
     testnetConnector.channels.single.server.add(
@@ -148,11 +144,32 @@ void main() {
     expect(messages.single.event, 'VIRTUAL_IBAN_ACTIVATED');
   });
 
+  test(
+    'the forwarded environment is the one connected, not a read (B9)',
+    () async {
+      await service.connect(ExchangeEnvironment.testnet);
+      await mainnet.connect();
+      mainnetConnector.channels.single.server.add('{"type":"balance"}');
+      await pumpEventQueue();
+      expect(messages, isEmpty);
+
+      service.disconnect();
+      await testnet.connect();
+      testnetConnector.channels.last.server.add('{"type":"balance"}');
+      await pumpEventQueue();
+      expect(
+        messages,
+        isEmpty,
+        reason: 'nothing is forwarded after disconnect',
+      );
+    },
+  );
+
   test('reports invalid frames and keeps accepting later messages', () async {
     final events = <Object>[];
     final subscription = service.messageStream.listen(events.add);
     addTearDown(subscription.cancel);
-    await service.connect();
+    await service.connect(ExchangeEnvironment.mainnet);
     mainnetConnector.channels.single.server
       ..add('invalid JSON')
       ..add('{"type":"balance"}');
@@ -176,7 +193,7 @@ void main() {
     final logger = _Logger();
     log = logger;
     addTearDown(() => log = previous);
-    await service.connect();
+    await service.connect(ExchangeEnvironment.mainnet);
     mainnetConnector.channels.single.server
       ..add('invalid JSON SYNTHETIC_PRIVATE_FRAME')
       ..add('{"type":"order"}');
@@ -205,7 +222,7 @@ void main() {
       addTearDown(() => log = previous);
       mainnetCredential = const Err(ExchangeCredentialReadFailure());
 
-      await service.connect();
+      await service.connect(ExchangeEnvironment.mainnet);
       await pumpEventQueue();
 
       expect(messages, isEmpty);

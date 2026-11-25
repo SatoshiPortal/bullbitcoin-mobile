@@ -14,8 +14,8 @@ import '../domain/usecases/get_secure_file_upload_status_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
 import '../presentation/account_info_cubit.dart';
-import '../presentation/exchange_preferences_cubit.dart';
-import '../presentation/secure_file_upload_cubit.dart';
+import '../presentation/exchange_preferences_bloc.dart';
+import '../presentation/secure_file_upload_bloc.dart';
 import '../presentation/statistics_cubit.dart';
 import 'exchange_access_settings_route.dart';
 import 'exchange_settings_route.dart';
@@ -33,6 +33,10 @@ final class ExchangeSettingsHost {
   final SaveAccountPreferences savePreferences;
   final Future<void> Function(BuildContext) refreshSession;
   final bool Function(BuildContext) isSuperuser;
+
+  /// [ExchangePlatform.websiteOnly] for this device and the current user.
+  bool websiteOnly(BuildContext context) =>
+      ExchangePlatform.current.websiteOnly(isSuperuser: isSuperuser(context));
   final Uri? Function(BuildContext) securityUrl;
   final String Function(BuildContext) title;
   final String Function(BuildContext) signedOutMessage;
@@ -74,7 +78,7 @@ class ExchangeSettingsRouter {
     if (config.access case final access?)
       exchangeAccessSettingsRoute(
         host: access,
-        isSuperuser: config.isSuperuser,
+        websiteOnly: config.websiteOnly,
         onOpenAccount: ExchangeSettingsRoute.home.open,
       ),
     GoRoute(
@@ -84,7 +88,7 @@ class ExchangeSettingsRouter {
         isLoggedIn: () => exchangeSignedIn(config.exchange().currentAccess),
         sessionChanges: () =>
             config.exchange().watchAccess().map(exchangeSignedIn),
-        isSuperuser: config.isSuperuser(context),
+        websiteOnly: config.websiteOnly(context),
         title: config.title,
         signedOutMessage: config.signedOutMessage,
         buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
@@ -128,14 +132,19 @@ class ExchangeSettingsRouter {
       name: ExchangeSettingsRoute.preferences.name,
       path: ExchangeSettingsRoute.preferences.path,
       builder: (context, state) => BlocProvider(
-        create: (_) => ExchangePreferencesCubit(
-          getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
-            exchange: config.exchange(),
-          ),
-          updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
-            save: config.savePreferences,
-          ),
-        ),
+        create: (_) {
+          final exchange = config.exchange();
+          return ExchangePreferencesBloc(
+            getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
+              exchange: exchange,
+            ),
+            updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
+              save: config.savePreferences,
+            ),
+            writeGate: exchange.writeGate,
+            session: exchange.currentSession,
+          );
+        },
         child: ExchangePreferencesScreen(refreshSession: config.refreshSession),
       ),
     ),
@@ -143,7 +152,7 @@ class ExchangeSettingsRouter {
       name: ExchangeSettingsRoute.secureFileUpload.name,
       path: ExchangeSettingsRoute.secureFileUpload.path,
       builder: (context, state) => BlocProvider(
-        create: (_) => SecureFileUploadCubit(
+        create: (_) => SecureUploadBloc(
           getUploadStatusUsecase: GetSecureFileUploadStatusUsecase(
             exchange: config.exchange(),
           ),

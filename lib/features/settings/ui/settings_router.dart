@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bull_ui/bull_ui.dart' show SizedBox, Widget;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
@@ -31,12 +29,8 @@ class SettingsRouter {
 
   static final exchangeSettingsHost = ExchangeSettingsHost(
     exchange: () => locator<Exchange>(),
-    savePreferences: ({language, currency, emailNotificationsEnabled}) =>
-        locator<Exchange>().updateCurrentPreferences(
-          language: language,
-          currency: currency,
-          emailNotificationsEnabled: emailNotificationsEnabled,
-        ),
+    savePreferences: (patch) =>
+        locator<Exchange>().updateCurrentPreferences(patch),
     refreshSession: ExchangeSessionScope.refresh,
     isSuperuser: (context) => Settings.isSuperuserOf(context),
     securityUrl: (context) => switch (Settings.networkOf(context)) {
@@ -66,7 +60,6 @@ class SettingsRouter {
         signOut: () => locator<Exchange>().signOut(),
         resolve: () => locator<Exchange>().resolveAccess(),
       ),
-      platform: Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other,
       description: (context) => context.loc.exchangeAccessSettingsDescription,
       onAuthenticate: (context) => context.pushNamed<void>(
         BullExchangeNavigation.authName,

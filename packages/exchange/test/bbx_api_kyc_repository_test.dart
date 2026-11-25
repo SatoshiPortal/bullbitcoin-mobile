@@ -180,7 +180,7 @@ void main() {
       final failure = (result as Err<void, ExchangeFailure>).failure;
       expect(
         failure.logMessage,
-        'Failed to upload document: BbxTimeoutFailure',
+        'Failed to upload document: BbxTimeoutFailure(kind: connect)',
       );
       expect(
         failure.logMessage,

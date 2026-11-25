@@ -184,7 +184,7 @@
   "transactionSwapDescLnReceiveClaimable": "链式交易得到了确认。 我们现在要求这些资金来完成你们的交换.",
   "transactionNotesLabel": "交易说明",
   "transactionDetailLabelRecipientAddress": "客户地址",
-  "retry": "学历",
+  "retry": "重试",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -222,5 +222,6 @@
   "transactionPayjoinBroadcastFailed": "无法广播原始交易。请重试。",
   "transactionPayjoinOriginalUnavailable": "原始交易已无法广播。",
   "transactionLabelLimitReached": "最多只能添加 10 个标签。",
-  "copiedToClipboard": "已复制到剪贴板"
+  "copiedToClipboard": "已复制到剪贴板",
+  "transactionListExchangeOrdersUnavailable": "无法加载交易所订单。"
 }

@@ -7,12 +7,22 @@ import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _recipient = RecipientViewModel(
-  id: 'saved-sepa',
-  type: RecipientType.sepaEur,
-  firstname: 'Satoshi',
-  lastname: 'Nakamoto',
-  iban: 'FR7616958000016918327146718',
+const _iban = 'FR7616958000016918327146718';
+final _recipient = RecipientViewModel(
+  Recipient.create(
+    recipientId: 'saved-sepa',
+    userId: 'user',
+    userNbr: 1,
+    isArchived: false,
+    createdAt: DateTime.utc(2026),
+    updatedAt: DateTime.utc(2026),
+    details: SepaEurDetails.create(
+      iban: _iban,
+      isCorporate: false,
+      firstname: 'Satoshi',
+      lastname: 'Nakamoto',
+    ),
+  ),
 );
 
 void main() {
@@ -53,7 +63,7 @@ void main() {
     );
     expect(
       unselected.getSemanticsData().label,
-      allOf(contains('Satoshi Nakamoto'), contains(_recipient.iban)),
+      allOf(contains('Satoshi Nakamoto'), contains(_iban)),
     );
     expect(find.byType(BullIcon), findsNothing);
     await tester.tap(find.text('Satoshi Nakamoto'));
