@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:primitives/primitives.dart';
 
 import '../../ark.dart';
@@ -49,23 +48,15 @@ final class ScuttleNativeOpener implements ArkNativeOpener {
     });
     final wallet = await stages.run('scuttle-open', () async {
       onNativeAdmission();
-      final childSeed = bip39.Mnemonic.fromWords(
-        words: mnemonic.split(' '),
-        language: bip39.Language.english,
-      ).seed;
-      try {
-        return await scuttle.ScuttleWallet.open(
-          network: scuttle.ScuttleNetwork.regtest,
-          mode: exists ? scuttle.OpenMode.existing : scuttle.OpenMode.new_,
-          datadir: datadir,
-          serverAddress: config.arkUrl.toString(),
-          esploraAddress: chainSource.toString(),
-          childSeed: childSeed,
-          allowUnreachableServer: false,
-        );
-      } finally {
-        childSeed.fillRange(0, childSeed.length, 0);
-      }
+      return scuttle.ScuttleWallet.open(
+        network: scuttle.ScuttleNetwork.regtest,
+        mode: exists ? scuttle.OpenMode.existing : scuttle.OpenMode.new_,
+        datadir: datadir,
+        serverAddress: config.arkUrl.toString(),
+        esploraAddress: chainSource.toString(),
+        childMnemonic: mnemonic,
+        allowUnreachableServer: false,
+      );
     });
     try {
       onOnchainOpened();

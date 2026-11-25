@@ -128,22 +128,25 @@ pub struct ScuttleBoardResult {
 }
 
 impl ScuttleWallet {
-    /// The seed is child-only material; the caller remains responsible for its copy.
+    /// The mnemonic is child-only material; the caller remains responsible for its copy.
     pub async fn open(
         network: ScuttleNetwork,
         mode: OpenMode,
         datadir: String,
         server_address: String,
         esplora_address: String,
-        child_seed: Vec<u8>,
+        child_mnemonic: String,
         allow_unreachable_server: bool,
     ) -> Result<Self, String> {
-        let child_seed = Zeroizing::new(child_seed);
-        let mut seed_bytes = Zeroizing::new([0u8; 64]);
-        if child_seed.len() != seed_bytes.len() {
-            return Err("Invalid child seed".into());
-        }
-        seed_bytes.copy_from_slice(&child_seed);
+        let child_mnemonic = Zeroizing::new(child_mnemonic);
+        let seed_bytes = Zeroizing::new(
+            bark::bip39::Mnemonic::parse_in_normalized(
+                bark::bip39::Language::English,
+                &child_mnemonic,
+            )
+            .map_err(|_| "Invalid child mnemonic")?
+            .to_seed(""),
+        );
         let network = match network {
             ScuttleNetwork::Bitcoin => Network::Bitcoin,
             ScuttleNetwork::Testnet => Network::Testnet,
@@ -152,7 +155,7 @@ impl ScuttleWallet {
         };
         let account_id = child_account_id(network, &seed_bytes)?;
         let seed = WalletSeed::new_from_seed(network, &seed_bytes);
-        drop(child_seed);
+        drop(child_mnemonic);
 
         let path = PathBuf::from(datadir);
         if matches!(mode, OpenMode::New) {

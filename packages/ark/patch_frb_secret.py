@@ -1,11 +1,11 @@
-"""Keep the child seed out of FRB's handler-visible argument metadata."""
+"""Keep the child mnemonic out of FRB's handler-visible argument metadata."""
 from pathlib import Path
 import sys
 
 path = Path(sys.argv[1])
 source = path.read_text()
 before = """          esploraAddress,
-          childSeed,
+          childMnemonic,
           allowUnreachableServer,
         ],
         apiImpl: this,"""
