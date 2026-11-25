@@ -23,6 +23,7 @@ class BBTextFormField extends StatelessWidget {
     this.suffix,
     this.suffixText,
     this.disabled,
+    this.errorText,
   });
 
   final String? labelText;
@@ -42,6 +43,10 @@ class BBTextFormField extends StatelessWidget {
   final String? suffixText;
   final Widget? suffix;
   final bool? disabled;
+
+  /// An error to show under the field when its validator has none, such as
+  /// the exchange refusing the value on the last save.
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +114,8 @@ class BBTextFormField extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
             hintText: hintText,
+            errorText: errorText,
+            errorMaxLines: 3,
             hintStyle: context.bullType.body.copyWith(
               color: context.appColors.outline,
             ),

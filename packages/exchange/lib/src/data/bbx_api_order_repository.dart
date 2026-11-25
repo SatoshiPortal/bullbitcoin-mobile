@@ -2,12 +2,18 @@ import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/catalog/exchange_catalog.dart';
+import '../domain/entities/btc_network.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/order.dart';
 import '../domain/entities/sepa_payment_processor.dart';
+import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/exchange_orders.dart';
 import 'bbx_api_order_mapper.dart';
+import 'btc_network_wire.dart';
+import 'dca_frequency_wire.dart';
+import 'exchange_call_classifier.dart';
 
 typedef RunOrderOperation = Future<Result<T, ExchangeFailure>> Function<T>(
   Future<Result<T, ExchangeFailure>> Function(bbx.Bbx),
@@ -43,11 +49,14 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   ) => _read((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
 
   @override
-  Future<Result<BuyOrder, ExchangeFailure>> confirmBuyOrder(String orderId) =>
-      _write((api) => _readOrder(api.orders.confirmOrderSummary(orderId)));
+  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId) =>
+      _orderWrite<BuyOrder>(
+        'confirmBuyOrder',
+        (api) => api.orders.confirmOrderSummary(orderId),
+      );
 
   @override
-  Future<Result<WithdrawOrder, ExchangeFailure>> confirmWithdrawOrder(
+  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -56,11 +65,11 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       String? securityAnswer,
     })?
     interacUpdate,
-  }) => _write((api) async {
-    final result = await _readOrder<WithdrawOrder>(
-      api.orders.confirmOrderSummary(orderId),
-    );
-    if (result is Ok<WithdrawOrder, ExchangeFailure> && interacUpdate != null) {
+  }) => _orderWrite<WithdrawOrder>(
+    'confirmWithdrawOrder',
+    (api) => api.orders.confirmOrderSummary(orderId),
+    afterDone: (api) async {
+      if (interacUpdate == null) return;
       final update = await api.recipients.updateInteracSecurityDetails(
         recipientId: interacUpdate.recipientId,
         email: interacUpdate.email,
@@ -72,99 +81,96 @@ final class BbxApiOrderRepository implements ExchangeOrders {
           'Withdrawal completed without updating Interac security details',
         );
       }
-    }
-    return result;
-  });
+    },
+  );
 
   @override
-  Future<Result<BuyOrder, ExchangeFailure>> accelerateBuyOrder(
-    String orderId,
-  ) => _write((api) => _readOrder(api.orders.unbatchAndExpressOrder(orderId)));
+  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId) =>
+      _orderWrite<BuyOrder>(
+        'accelerateBuyOrder',
+        (api) => api.orders.unbatchAndExpressOrder(orderId),
+      );
 
   @override
-  Future<Result<BuyOrder, ExchangeFailure>> placeBuyOrder({
+  Future<ExchangeWrite<BuyOrder>> placeBuyOrder({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     required bool isOwner,
     String? payjoinBip21,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.createOrderBuy(
-        fiatCurrency: currency.code,
-        network: network.value,
-        isOwner: isOwner,
-        address: payjoinBip21 == null ? toAddress : null,
-        bip21URI: payjoinBip21,
-        fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
-        bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
-      ),
-      creatingOrder: true,
+  }) => _orderCreate(
+    'placeBuyOrder',
+    (api) => api.orders.createOrderBuy(
+      fiatCurrency: currency.code,
+      network: BtcNetworkWire.orderNetwork(network),
+      isOwner: isOwner,
+      address: payjoinBip21 == null ? toAddress : null,
+      bip21URI: payjoinBip21,
+      fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+      bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
     ),
   );
 
   @override
-  Future<Result<SellOrder, ExchangeFailure>> placeSellOrder({
+  Future<ExchangeWrite<SellOrder>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     bool usePayjoin = false,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.sellToBalance(
-        fiatCurrency: currency.code,
-        bitcoinNetwork: network.value,
-        usePayjoin: usePayjoin,
-        fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
-        bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
-      ),
-      creatingOrder: true,
+  }) => _orderCreate(
+    'placeSellOrder',
+    (api) => api.orders.sellToBalance(
+      fiatCurrency: currency.code,
+      bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
+      usePayjoin: usePayjoin,
+      fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+      bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
     ),
   );
 
   @override
-  Future<Result<FiatPaymentOrder, ExchangeFailure>> placePayOrder({
+  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.sellToRecipient(
-        recipientId: recipientId,
-        paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
-        bitcoinNetwork: network.value,
-        usePayjoin: usePayjoin,
-        fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
-        bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
-        paymentDescription: paymentDescription?.isNotEmpty == true
-            ? paymentDescription
-            : null,
-      ),
-      creatingOrder: true,
+    String? securityQuestion,
+    String? securityAnswer,
+  }) => _orderCreate(
+    'placePayOrder',
+    (api) => api.orders.sellToRecipient(
+      recipientId: recipientId,
+      paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
+      bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
+      usePayjoin: usePayjoin,
+      fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+      bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
+      paymentDescription: paymentDescription?.isNotEmpty == true
+          ? paymentDescription
+          : null,
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
     ),
   );
 
   @override
-  Future<Result<WithdrawOrder, ExchangeFailure>> placeWithdrawalOrder({
+  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
     String? securityQuestion,
     String? securityAnswer,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.createWithdrawalOrder(
-        fiatAmount: fiatAmount,
-        recipientId: recipientId,
-        paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
-        securityQuestion: securityQuestion,
-        securityAnswer: securityAnswer,
-      ),
-      creatingOrder: true,
+  }) => _orderCreate(
+    'placeWithdrawalOrder',
+    (api) => api.orders.createWithdrawalOrder(
+      fiatAmount: fiatAmount,
+      recipientId: recipientId,
+      paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
     ),
   );
 
@@ -210,133 +216,131 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   });
 
   @override
-  Future<Result<Dca, ExchangeFailure>> createDca({
+  Future<ExchangeWrite<Dca>> createDca({
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
-    required DcaNetwork network,
+    required BtcNetwork network,
     required String address,
-    bool enablePreference = false,
-  }) => _write((api) async {
-    bbx.UserSummary? summary;
-    if (enablePreference) {
-      switch (await api.users.getUserSummary()) {
-        case Ok(value: final value?):
-          summary = value;
-        case Ok() || Err():
-          return const Err(ExchangeAccountUnavailableFailure());
-      }
-    }
+  }) async {
+    final result = await _write<ExchangeWrite<Dca>>((api) async {
+      final write = await exchangeWrite<bbx.Dca, Dca>(
+        'createDca',
+        () => api.orderTriggers.createDca(
+          amount: amount,
+          currencyCode: currency.code,
+          frequency: DcaFrequencyWire.toWire(frequency),
+          recipientType: BtcNetworkWire.dcaRecipientType(network),
+          address: address,
+        ),
+        _toDca,
+      );
+      return Ok(write);
+    });
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => writeNotRun(failure),
+    };
+  }
 
-    switch (await api.orderTriggers.createDca(
-      amount: amount,
-      currencyCode: currency.code,
-      frequency: switch (frequency) {
-        DcaBuyFrequency.hourly => bbx.DcaFrequency.hourly,
-        DcaBuyFrequency.daily => bbx.DcaFrequency.daily,
-        DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
-        DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
-      },
-      recipientType: switch (network) {
-        DcaNetwork.bitcoin => bbx.DcaRecipientType.bitcoinAddress,
-        DcaNetwork.lightning => bbx.DcaRecipientType.lightningAddress,
-        DcaNetwork.liquid => bbx.DcaRecipientType.liquidAddress,
-      },
-      address: address,
+  /// The created DCA. A field the app can't read throws: the DCA exists, so
+  /// the classification makes it [WriteOutcomeUnknown], never a failure.
+  static Dca _toDca(bbx.Dca dca) {
+    final amount = double.tryParse(dca.amountStr);
+    final currency = switch (ExchangeCatalog.parse(dca.currencyCode)) {
+      KnownCurrency(:final currency) => currency,
+      UnknownCurrency() => null,
+    };
+    final nextPurchase = DateTime.tryParse(dca.nextRunAt);
+    final frequency = dcaFrequencyFromWire(dca.recurringFrequency);
+    final network = switch (BtcNetworkWire.parseRecipientType(
+      dca.recipientType,
     )) {
-      case Err(:final failure):
-        return Err(_mapFailure(failure));
-      case Ok(value: final dca):
-        final amount = double.tryParse(dca.amountStr);
-        final currency = FiatCurrency.tryFromCode(dca.currencyCode);
-        final nextPurchase = DateTime.tryParse(dca.nextRunAt);
-        final frequency = switch (dca.recurringFrequency) {
-          'HOURLY' => DcaBuyFrequency.hourly,
-          'DAILY' => DcaBuyFrequency.daily,
-          'WEEKLY' => DcaBuyFrequency.weekly,
-          'MONTHLY' => DcaBuyFrequency.monthly,
-          _ => null,
-        };
-        final network = switch (dca.recipientType) {
-          'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,
-          'OUT_LIGHTNING_ADDRESS' => DcaNetwork.lightning,
-          'OUT_LIQUID_ADDRESS' => DcaNetwork.liquid,
-          _ => null,
-        };
-        if (amount == null ||
-            currency == null ||
-            nextPurchase == null ||
-            frequency == null ||
-            network == null) {
-          return const Err(ExchangeOrderLoadFailure());
-        }
-        if (summary != null) {
-          final preference = await api.users.saveUserPreferences(
-            bbx.UserPreferences(
-              language: summary.language,
-              defaultFiatCurrencyCode: summary.currency,
-              dcaEnabled: 'true',
-              autoBuyEnabled: summary.autoBuy.isActive.toString(),
-              emailNotifications: summary.emailNotificationsEnabled.toString(),
-            ),
-          );
-          if (preference case Err(:final failure)) {
-            log.warning(
-              'DCA created but enabling the preference failed',
-              error: failure.runtimeType,
-            );
-          }
-        }
-        return Ok(
-          Dca(
-            amount: amount,
-            currency: currency,
-            frequency: frequency,
-            network: network,
-            address: dca.address,
-            nextPurchaseDate: nextPurchase,
-          ),
-        );
+      KnownBtcNetwork(:final network) => network,
+      UnknownBtcNetwork() => null,
+    };
+    if (amount == null ||
+        currency == null ||
+        nextPurchase == null ||
+        frequency == null ||
+        network == null) {
+      throw const _UnreadableDca();
     }
-  });
+    return Dca(
+      amount: amount,
+      currency: currency,
+      frequency: frequency,
+      network: network,
+      address: dca.address,
+      nextPurchaseDate: nextPurchase,
+    );
+  }
 
   Future<Result<T, ExchangeFailure>> _readOrder<T extends Order>(
-    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> request, {
-    bool creatingOrder = false,
-  }) async {
-    final result = await request;
-    if (result
-        case Err(
-          failure: bbx.BbxRpcFailure(
-                :final apiCode,
-                :final code,
-                :final requestId,
-              ) ||
-              bbx.BbxOrderLimitFailure(
-                :final apiCode,
-                :final code,
-                :final requestId,
-              ) ||
-              bbx.BbxConfidentialSepaInactiveFailure(
-                :final apiCode,
-                :final code,
-                :final requestId,
-              ),
-        )
-        when creatingOrder) {
-      log.warning(
-        'Exchange order creation refused',
-        error:
-            'apiCode: $apiCode, rpcCode: $code'
-            '${requestId == null ? '' : ', requestId=$requestId'}',
-      );
+    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> request,
+  ) async => switch (await request) {
+    Ok(:final value) => _mapOrder<T>(value),
+    Err(failure: bbx.BbxOrderLimitFailure(:final apiCode, :final code)) => Err(
+      ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code),
+    ),
+    Err(:final failure) => Err(_mapFailure(failure)),
+  };
+
+  /// Creates an order through [_orderWrite], logging a refusal by its codes
+  /// only (the server's text can quote the request).
+  Future<ExchangeWrite<T>> _orderCreate<T extends Order>(
+    String operation,
+    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function(bbx.Bbx) call,
+  ) => _orderWrite<T>(operation, (api) async {
+    final result = await call(api);
+    if (result case Err(:final failure) when _isRefusal(failure)) {
+      log.warning('Exchange order creation refused', error: '$failure');
     }
+    return result;
+  });
+
+  /// The server read the order and refused it.
+  static bool _isRefusal(bbx.BbxFailure failure) => switch (failure) {
+    bbx.BbxRpcFailure() ||
+    bbx.BbxOrderLimitFailure() ||
+    bbx.BbxConfidentialSepaInactiveFailure() => true,
+    bbx.BbxMissingCredentialFailure() ||
+    bbx.BbxCredentialUnavailableFailure() ||
+    bbx.BbxHttpFailure() ||
+    bbx.BbxTimeoutFailure() ||
+    bbx.BbxConnectionFailure() ||
+    bbx.BbxBadCertificateFailure() ||
+    bbx.BbxRequestCancelledFailure() ||
+    bbx.BbxTransformTimeoutFailure() ||
+    bbx.BbxTransportFailure() ||
+    bbx.BbxOutcomeUnknownFailure() ||
+    bbx.BbxResponseFormatFailure() => false,
+  };
+
+  /// Runs the order write [call] in the write session and classifies it. A
+  /// reply of another order type, or one that can't be mapped, is
+  /// [WriteOutcomeUnknown]: the server accepted the write. [afterDone] runs in
+  /// the same session after a [WriteDone] and can't change the result.
+  Future<ExchangeWrite<T>> _orderWrite<T extends Order>(
+    String operation,
+    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function(bbx.Bbx) call, {
+    Future<void> Function(bbx.Bbx)? afterDone,
+  }) async {
+    final result = await _write<ExchangeWrite<T>>((api) async {
+      final write = await exchangeWrite<bbx.OrderSummary, T>(
+        operation,
+        () => call(api),
+        (summary) => switch (orderFromBbxApi(summary, isTestnet: _isTestnet)) {
+          final T order => order,
+          final other => throw _UnexpectedOrderType(other.runtimeType),
+        },
+      );
+      if (write is WriteDone<T>) await afterDone?.call(api);
+      return Ok(write);
+    });
     return switch (result) {
-      Ok(:final value) => _mapOrder<T>(value),
-      Err(failure: bbx.BbxOrderLimitFailure(:final apiCode, :final code))
-          when !creatingOrder =>
-        Err(ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code)),
-      Err(:final failure) => Err(_mapFailure(failure)),
+      Ok(:final value) => value,
+      Err(:final failure) => writeNotRun(failure),
     };
   }
 
@@ -441,7 +445,32 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     bbx.BbxRpcFailure(:final apiCode, :final code) =>
       ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code),
     bbx.BbxTimeoutFailure() ||
-    bbx.BbxConnectionFailure() => const ExchangeNetworkFailure(),
-    _ => const ExchangeOrderLoadFailure(),
+    bbx.BbxConnectionFailure() ||
+    bbx.BbxOutcomeUnknownFailure() => const ExchangeNetworkFailure(),
+    bbx.BbxHttpFailure() ||
+    bbx.BbxBadCertificateFailure() ||
+    bbx.BbxRequestCancelledFailure() ||
+    bbx.BbxTransformTimeoutFailure() ||
+    bbx.BbxTransportFailure() ||
+    bbx.BbxResponseFormatFailure() => const ExchangeOrderLoadFailure(),
   };
+}
+
+/// The server answered a write with an order of another type.
+final class _UnexpectedOrderType implements Exception {
+  final Type type;
+
+  const _UnexpectedOrderType(this.type);
+
+  @override
+  String toString() => 'UnexpectedOrderType($type)';
+}
+
+/// The server created a DCA the app can't read (unknown frequency, network or
+/// currency, or an unreadable amount or date).
+final class _UnreadableDca implements Exception {
+  const _UnreadableDca();
+
+  @override
+  String toString() => 'UnreadableDca';
 }

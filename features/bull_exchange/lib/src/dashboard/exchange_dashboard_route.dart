@@ -16,6 +16,7 @@ typedef ExchangeDashboardHost = ({
   ExchangeAccess Function() currentAccess,
   Stream<ExchangeAccess> Function() watchAccess,
   ExchangeDashboardState Function(BuildContext) watchDashboard,
+  int Function(BuildContext) watchUnreadSupportMessages,
   Future<void> Function(BuildContext) refreshAccount,
   Future<void> Function(BuildContext) stopDca,
   void Function(BuildContext) onOpenSettings,
@@ -42,10 +43,10 @@ GoRoute exchangeDashboardRoute({
   redirect: (context, _) async {
     if (await networkUnavailable()) return homePath;
     if (!context.mounted) return null;
-    if (!_signedIn(host.currentAccess())) {
+    if (!_signedIn(host.currentAccess()) || showWebsiteOnly(context)) {
       return BullExchangeNavigation.landingPath;
     }
-    return showWebsiteOnly(context) ? homePath : null;
+    return null;
   },
   pageBuilder: (context, state) => NoTransitionPage(
     key: state.pageKey,
@@ -63,9 +64,7 @@ GoRoute exchangeDashboardRoute({
   routes: [?kycRoute],
 );
 
-bool _signedIn(ExchangeAccess access) =>
-    access is ExchangeAccessEnabled &&
-    access.session == ExchangeAccessSession.signedIn;
+bool _signedIn(ExchangeAccess access) => access.isSignedIn;
 
 class _DashboardContent extends StatefulWidget {
   final ExchangeDashboardHost host;
@@ -98,6 +97,7 @@ class _DashboardContentState extends State<_DashboardContent> {
     final host = widget.host;
     return ExchangeHomeScreen(
       watchDashboard: host.watchDashboard,
+      watchUnreadSupportMessages: host.watchUnreadSupportMessages,
       exchange: host.exchange,
       preferences: host.preferences,
       brandAsset: widget.brandAsset,
@@ -150,7 +150,7 @@ class _SessionReturnState extends State<_SessionReturn> {
       final ended = signedIn && !current;
       signedIn = current;
       if (!mounted || !ended) return;
-      if (widget.host.currentAccess() is ExchangeAccessEnabled) {
+      if (widget.host.currentAccess().isEnabled) {
         BullExchangeNavigation.goToLanding(context);
       } else {
         widget.onExit(context);

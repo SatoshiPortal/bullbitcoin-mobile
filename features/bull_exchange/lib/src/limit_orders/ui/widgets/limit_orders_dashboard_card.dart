@@ -1,21 +1,21 @@
-import '../../limit_order_failure_message.dart';
-import '../../limit_orders_navigation.dart';
-
-import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_cubit.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_state.dart';
+import 'package:bull_exchange/src/limit_orders/limit_orders_navigation.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_list.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_list_bloc.dart';
+import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 
+/// The dashboard's limit orders, built from [LimitOrdersListState].
 final class LimitOrdersDashboardCard extends StatelessWidget {
   const LimitOrdersDashboardCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<LimitOrdersCubit>().state;
+    final state = context.watch<LimitOrdersListBloc>().state;
     return BullBorderedTile(
       padding: const EdgeInsets.all(BullSpacing.md),
       backgroundColor: context.bull.surface,
@@ -26,9 +26,23 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
     );
   }
 
-  Widget _content(BuildContext context, LimitOrdersState state) {
-    if (state.isLoading && state.orders.isEmpty) {
-      return const Column(
+  Widget _content(BuildContext context, LimitOrdersListState state) {
+    final bloc = context.read<LimitOrdersListBloc>();
+    Widget failed(String message) => Column(
+      key: const ValueKey('error'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(message, style: TextStyle(color: context.bull.error)),
+        const Gap(12),
+        BullButton.secondary(
+          size: BullButtonSize.small,
+          label: context.loc.retry,
+          onPressed: () => bloc.add(const ListRetryPressed()),
+        ),
+      ],
+    );
+    return switch (state) {
+      ListLoading() || ListRefreshing(orders: []) => const Column(
         key: ValueKey('loading'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -42,29 +56,10 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 6),
           ),
         ],
-      );
-    }
-    final failure = state.failure;
-    if (failure != null && state.orders.isEmpty) {
-      return Column(
-        key: const ValueKey('error'),
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            failure.toLimitOrderMessage(context),
-            style: TextStyle(color: context.bull.error),
-          ),
-          const Gap(12),
-          BullButton.secondary(
-            size: BullButtonSize.small,
-            label: context.loc.retry,
-            onPressed: context.read<LimitOrdersCubit>().load,
-          ),
-        ],
-      );
-    }
-    if (state.orders.isEmpty) {
-      return InkWell(
+      ),
+      ListFailed() => failed(context.loc.limitOrdersLoadError),
+      ListSignedOut() => failed(context.loc.limitOrdersAccountUnavailableError),
+      ListShown(orders: []) || ListCancellingAll(orders: []) => InkWell(
         key: const ValueKey('inactive'),
         onTap: () => _openCreate(context),
         child: Row(
@@ -82,9 +77,41 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
             const Icon(Icons.chevron_right),
           ],
         ),
-      );
-    }
+      ),
+      ListShown(:final orders, :final problem) => _active(
+        context,
+        orders,
+        problem: problem,
+        cancelling: false,
+      ),
+      ListRefreshing(:final orders) => _active(
+        context,
+        orders,
+        problem: null,
+        cancelling: false,
+      ),
+      ListCancellingAll(:final orders) => _active(
+        context,
+        orders,
+        problem: null,
+        cancelling: true,
+      ),
+    };
+  }
 
+  Widget _active(
+    BuildContext context,
+    List<LimitOrder> orders, {
+    required LimitListProblem? problem,
+    required bool cancelling,
+  }) {
+    final canCreate = orders.length < maximumActiveLimitOrders;
+    final message = switch (problem) {
+      ListRefreshFailed() => context.loc.limitOrdersLoadError,
+      ListCancelAllRefused(:final refusal) => refusal.toTranslated(context),
+      ListCancelAllNotApplied() => context.loc.limitOrderCancellationError,
+      null => null,
+    };
     return Column(
       key: const ValueKey('active'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -105,17 +132,9 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
           ],
         ),
         const Gap(12),
-        for (final order in state.orders) ...[
+        for (final order in orders) ...[
           InkWell(
-            onTap: () async {
-              final changed = await context.pushNamed<bool>(
-                LimitOrdersNavigation.detailsName,
-                pathParameters: {'orderId': order.id},
-              );
-              if (changed == true && context.mounted) {
-                await context.read<LimitOrdersCubit>().load();
-              }
-            },
+            onTap: () => _openDetails(context, order.id),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
@@ -136,7 +155,7 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
           ),
           const Divider(),
         ],
-        if (!state.canCreate)
+        if (!canCreate)
           Text(
             context.loc.limitOrdersMaximumActiveHint,
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
@@ -149,13 +168,11 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
           children: [
             BullButton.secondary(
               label: context.loc.limitOrdersCancelAll,
-              onPressed: state.isCancellingAll
-                  ? null
-                  : () => _confirmCancelAll(context),
+              onPressed: cancelling ? null : () => _confirmCancelAll(context),
               size: BullButtonSize.small,
               compact: true,
             ),
-            if (state.canCreate)
+            if (canCreate)
               BullButton.primary(
                 label: context.loc.limitOrdersCreateNew,
                 onPressed: () => _openCreate(context),
@@ -164,25 +181,31 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
               ),
           ],
         ),
-        if (state.failure case final failure?)
-          Text(
-            failure.toLimitOrderMessage(context),
-            style: TextStyle(color: context.bull.error),
-          ),
+        if (message != null)
+          Text(message, style: TextStyle(color: context.bull.error)),
       ],
     );
   }
 
+  Future<void> _openDetails(BuildContext context, String orderId) async {
+    final bloc = context.read<LimitOrdersListBloc>();
+    final changed = await LimitOrdersNavigation.openDetails(context, orderId);
+    if (changed == true) bloc.add(const ListRefreshRequested());
+  }
+
   Future<void> _openCreate(BuildContext context) async {
-    final changed = await context.pushNamed<bool>(
-      LimitOrdersNavigation.createName,
-    );
-    if (changed == true && context.mounted) {
-      await context.read<LimitOrdersCubit>().load();
+    final bloc = context.read<LimitOrdersListBloc>();
+    final created = await LimitOrdersNavigation.openCreate(context);
+    if (created == null || !context.mounted) return;
+    // Opened from here, so a cancel there reloads this list (LIM-5).
+    if (created.openDetails) {
+      await LimitOrdersNavigation.openDetails(context, created.orderId);
     }
+    bloc.add(const ListRefreshRequested());
   }
 
   Future<void> _confirmCancelAll(BuildContext context) async {
+    final bloc = context.read<LimitOrdersListBloc>();
     final confirmed = await BullDialog.show<bool>(
       context: context,
       builder: (dialogContext) => Column(
@@ -208,8 +231,6 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
         ],
       ),
     );
-    if (confirmed == true && context.mounted) {
-      await context.read<LimitOrdersCubit>().cancelAll();
-    }
+    if (confirmed == true) bloc.add(const ListCancelAllPressed());
   }
 }

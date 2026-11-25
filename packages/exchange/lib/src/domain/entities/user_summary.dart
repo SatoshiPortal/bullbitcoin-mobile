@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../catalog/kyc_policy.dart';
+import 'btc_network.dart';
 import 'dca.dart';
 import 'order.dart';
 
@@ -7,15 +9,34 @@ part 'user_summary.freezed.dart';
 
 /// Status of KYC document uploads
 enum KycDocumentStatus {
-  notUploaded,
-  underReview,
-  accepted,
-  rejected;
+  notUploaded('NOT_UPLOADED'),
+  underReview('UNDER_REVIEW'),
+  accepted('ACCEPTED'),
+  rejected('REJECTED'),
+
+  /// A status this build doesn't know. Not read as "not uploaded", so the app
+  /// never offers an upload the exchange may not expect.
+  unknown('UNKNOWN');
+
+  final String value;
+
+  const KycDocumentStatus(this.value);
 
   bool get isNotUploaded => this == KycDocumentStatus.notUploaded;
   bool get isUnderReview => this == KycDocumentStatus.underReview;
   bool get isAccepted => this == KycDocumentStatus.accepted;
   bool get isRejected => this == KycDocumentStatus.rejected;
+
+  /// Whether the review is over (accepted or rejected).
+  bool get isTerminal => switch (this) {
+    KycDocumentStatus.accepted || KycDocumentStatus.rejected => true,
+    KycDocumentStatus.notUploaded ||
+    KycDocumentStatus.underReview ||
+    KycDocumentStatus.unknown => false,
+  };
+
+  /// A document review has no failed status; a refused one is [rejected].
+  bool get isFailed => false;
 }
 
 /// KYC documents status for ID, proof of residence, and selfie
@@ -85,7 +106,7 @@ sealed class UserDca with _$UserDca {
     DcaBuyFrequency? frequency,
     double? amount,
     FiatCurrency? currency,
-    DcaNetwork? network,
+    BtcNetwork? network,
     String? address,
   }) = _UserDca;
 }
@@ -135,9 +156,14 @@ sealed class UserSummary with _$UserSummary {
 
   const UserSummary._();
 
-  bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
-  bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
-  bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
+  /// The account's KYC groups. Which markets they allow, and up to what
+  /// amount, is the market's [KycPolicy].
+  Set<KycGroup> get kycGroups => KycGroup.fromServerGroups(groups);
+
+  bool get isFullyVerifiedKycLevel =>
+      groups.contains(KycGroup.identityVerified.serverName);
+  bool get isLightKycLevel => groups.contains(KycGroup.canadaLight.serverName);
+  bool get isLimitedKycLevel => groups.contains(KycGroup.limited.serverName);
   bool get isCorporate => groups.contains('KYC_IS_CORPORATE');
   bool get isEuropeanJurisdiction => groups.contains('JURI_EU');
   bool get isEligibleForConfidentialSepa =>
@@ -150,34 +176,4 @@ sealed class UserSummary with _$UserSummary {
   };
 
   bool get isFundingRestricted => groups.any(_fundingRestrictedGroups.contains);
-
-  static const _lightKycCurrencies = {
-    FiatCurrency.cad,
-    FiatCurrency.crc,
-    FiatCurrency.ars,
-  };
-
-  static const _cadLimitedKycMaxAmount = 999.0;
-  static const _cadLightKycMaxAmount = 3000.0;
-
-  /// Whether the user's KYC level permits transactions in [currency].
-  bool isKycOk(FiatCurrency currency) {
-    if (isFullyVerifiedKycLevel) return true;
-    return (isLimitedKycLevel || isLightKycLevel) &&
-        _lightKycCurrencies.contains(currency);
-  }
-
-  /// Whether [amount] exceeds the per-transaction limit for the user's
-  /// KYC level in [currency]. Currently only CAD limits are enforced.
-  bool isAmountExceeded(double amount, FiatCurrency currency) {
-    return !isFullyVerifiedKycLevel &&
-        currency == FiatCurrency.cad &&
-        ((isLimitedKycLevel && amount > _cadLimitedKycMaxAmount) ||
-            (isLightKycLevel && amount > _cadLightKycMaxAmount));
-  }
-
-  /// Returns true when the user needs to upgrade KYC to proceed.
-  bool needsKycUpgrade(double amount, FiatCurrency currency) {
-    return !isKycOk(currency) || isAmountExceeded(amount, currency);
-  }
 }

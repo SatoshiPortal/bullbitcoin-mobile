@@ -4,13 +4,13 @@
 
 Account reads, preferences, announcements, order statistics and KYC uploads use the same environment-bound capability and return typed failures. The account read distinguishes a server rejection from absent or unreadable credentials; the historical summary read preserves its missing-account semantics. File selection and validation stay with Exchange Settings.
 
-Support chat uses the standard timeout for identity lookup and an untimed client for message and attachment calls. Both clients check the same session before sending requests, and are disposed when the operation ends.
+Every exchange call runs on one client with the 30 s connect, send and receive timeouts, checked against the session before each request and disposed when the operation ends. Uploads (KYC documents, support messages with attachments) have no send timeout and report progress; their connect and receive timeouts still apply. Virtual IBAN creation and SEPA virtual payee activation wait up to 8 minutes for the answer (the server polls Fiat Republic before it replies); their connect and send timeouts stay at 30 s.
 
 `Exchange.notifications` publishes decoded notification events and typed recoverable socket failures for the active environment. Failures do not close the stream or include raw frames. Session management owns when to connect and disconnect. `Exchange.close()` releases the socket and its subscriptions; obsolete connect and reconnect attempts do not reopen it.
 
-`Exchange.limitOrders` owns order-trigger operations and rates. It preserves the historical untimed client and maps the transport's rejection codes to typed limit-order problems.
+`Exchange.limitOrders` owns order-trigger operations and rates. It maps the transport's rejection codes to typed limit-order problems.
 
-`Exchange.funding` owns institutions, payment instructions and consent. It uses the untimed client and returns a typed refusal for incomplete instructions instead of returning unusable bank details.
+`Exchange.funding` owns institutions, payment instructions and consent. It returns a typed refusal for incomplete instructions instead of returning unusable bank details.
 
 `Exchange.virtualIbans` finds or provisions the virtual IBAN for an explicit exchange environment. A successful lookup with no IBAN returns `Ok(null)`; missing credentials and unavailable credentials remain distinct failures.
 

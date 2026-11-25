@@ -6,6 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+void _ignoreProgress(int sent, int total) {}
+
 /// The authenticated JSON-RPC transport behind `Bbx`.
 ///
 /// Internal: callers build a `Bbx` and use its operations. Every request reads
@@ -17,6 +19,13 @@ final class BbxTransport {
   final Future<Result<String?, BbxFailure>> Function() readActiveApiKey;
 
   BbxTransport({required this.http, required this.readActiveApiKey});
+
+  bool _sessionRejected = false;
+
+  /// Whether the server answered HTTP 401 to a request this transport sent:
+  /// every request carries the key read for it, so the key is no longer
+  /// valid. Never set by a request that was not sent.
+  bool get sessionRejected => _sessionRejected;
 
   /// A transport for the API at [endpoint], with [timeouts] on each phase.
   factory BbxTransport.open({
@@ -57,6 +66,13 @@ final class BbxTransport {
   /// [id] is the JSON-RPC request id and [headers] are added to the request's
   /// headers. [rejection] reads a JSON-RPC error object into the failure to
   /// return.
+  ///
+  /// A non-null [onUploadProgress] makes the call an upload: sending its body
+  /// has no time limit, and [onUploadProgress] reports the bytes sent. The
+  /// connect and receive timeouts still apply.
+  ///
+  /// A non-null [receiveTimeout] replaces the client's receive timeout for
+  /// this request only, for a method the server is known to answer slowly.
   Future<Result<T, BbxFailure>> request<T>(
     String endpoint,
     String method, {
@@ -64,6 +80,8 @@ final class BbxTransport {
     String id = '0',
     Map<String, Object?>? headers,
     BbxFailure Function(Object error) rejection = bbxRpcFailure,
+    BbxProgress? onUploadProgress,
+    Duration? receiveTimeout,
     required T Function(Object? result) read,
   }) async {
     final credential = await _credential();
@@ -73,18 +91,57 @@ final class BbxTransport {
         endpoint,
         {'jsonrpc': '2.0', 'id': id, 'method': method, 'params': params},
         headers: {'X-API-Key': value, ...?headers},
+        onUploadProgress: onUploadProgress,
+        receiveTimeout: receiveTimeout,
         read: (body) => Ok(read(_resultOf(body, rejection))),
       ),
+    };
+  }
+
+  /// Sends the write [method] like [request], reading its `result` with
+  /// [read] inside the same classification.
+  ///
+  /// A failure after the request may have reached the server is a
+  /// [BbxOutcomeUnknownFailure] (see [writeFailure]): the write may have
+  /// happened. A JSON-RPC refusal and a failure before sending are returned
+  /// unchanged.
+  Future<Result<T, BbxFailure>> write<T>(
+    String endpoint,
+    String method, {
+    Map<String, Object?> params = const {},
+    String id = '0',
+    Map<String, Object?>? headers,
+    BbxFailure Function(Object error) rejection = bbxRpcFailure,
+    Duration? receiveTimeout,
+    required T Function(Object? result) read,
+  }) async {
+    final result = await request(
+      endpoint,
+      method,
+      params: params,
+      id: id,
+      headers: headers,
+      rejection: rejection,
+      receiveTimeout: receiveTimeout,
+      read: read,
+    );
+    return switch (result) {
+      Ok() => result,
+      Err(:final failure) => Err(writeFailure(failure)),
     };
   }
 
   /// Posts a `multipart/form-data` request to [path] with [fields] and
   /// [files], keyed by form field name, and reads the response body with
   /// [read].
+  ///
+  /// Sending has no time limit ([uploadSendTimeout]); [onProgress] reports the
+  /// bytes sent.
   Future<Result<T, BbxFailure>> upload<T>(
     String path, {
     Map<String, String> fields = const {},
     Map<String, BbxFile> files = const {},
+    BbxProgress? onProgress,
     required Result<T, BbxFailure> Function(Object? body) read,
   }) async {
     final credential = await _credential();
@@ -103,6 +160,7 @@ final class BbxTransport {
           ]),
         headers: {'X-API-Key': value},
         contentType: 'multipart/form-data',
+        onUploadProgress: onProgress ?? _ignoreProgress,
         read: read,
       ),
     };
@@ -120,26 +178,42 @@ final class BbxTransport {
     return body['result'];
   }
 
+  /// The send timeout of an upload: none (Dio reads zero as no limit, and a
+  /// per-request value overrides the client's). A slow connection may take
+  /// longer than any fixed limit to send a file; the progress callback shows
+  /// it is alive.
+  static const uploadSendTimeout = Duration.zero;
+
   Future<Result<T, BbxFailure>> _post<T>(
     String path,
     Object? data, {
     required Map<String, Object?> headers,
     required Result<T, BbxFailure> Function(Object? body) read,
     String? contentType,
+    BbxProgress? onUploadProgress,
+    Duration? receiveTimeout,
   }) async {
     final Response<Object?> response;
     try {
       response = await http.post<Object?>(
         path,
         data: data,
-        options: Options(headers: headers, contentType: contentType),
+        options: Options(
+          headers: headers,
+          contentType: contentType,
+          sendTimeout: onUploadProgress == null ? null : uploadSendTimeout,
+          receiveTimeout: receiveTimeout,
+        ),
+        onSendProgress: onUploadProgress,
       );
     } on DioException catch (e) {
       if (e.error case final Error bug) {
         Error.throwWithStackTrace(bug, e.stackTrace);
       }
+      if (e.response?.statusCode == 401) _sessionRejected = true;
       return Err(transportFailure(e));
     }
+    if (response.statusCode == 401) _sessionRejected = true;
     if (response.statusCode != 200) {
       return Err(
         BbxHttpFailure(response.statusCode, origin: StackTrace.current),
@@ -201,12 +275,14 @@ BbxFailure _withOrigin(
     :final code,
     :final message,
     :final apiCode,
+    :final fieldErrors,
     :final requestId,
   ) =>
     BbxRpcFailure(
       code: code,
       message: message,
       apiCode: apiCode,
+      fieldErrors: fieldErrors,
       requestId: requestId,
       origin: origin,
     ),
@@ -244,10 +320,60 @@ BbxFailure _withOrigin(
   BbxRequestCancelledFailure() => BbxRequestCancelledFailure(origin: origin),
   BbxTransformTimeoutFailure() => BbxTransformTimeoutFailure(origin: origin),
   BbxTransportFailure() => BbxTransportFailure(origin: origin),
+  BbxOutcomeUnknownFailure(:final reason) => BbxOutcomeUnknownFailure(
+    reason,
+    origin: origin,
+  ),
   BbxResponseFormatFailure(:final reason) => BbxResponseFormatFailure(
     reason,
     origin: origin,
   ),
+};
+
+/// The failure of a write that failed with [failure].
+///
+/// A failure after the request may have reached the server becomes a
+/// [BbxOutcomeUnknownFailure]: a send or receive timeout, a dropped
+/// connection, an unknown transport failure, a gateway error (502, 504), a
+/// status below 400 other than 200, a bad response without a status, or a
+/// reply that could not be read. A missing or unreadable credential, a
+/// connect timeout, a rejected certificate and a cancel happen before
+/// sending; a JSON-RPC refusal and any other HTTP status are the server's
+/// answer. Those are returned unchanged.
+BbxFailure writeFailure(BbxFailure failure) => switch (failure) {
+  BbxTimeoutFailure(:final kind, :final origin) => switch (kind) {
+    BbxTimeoutKind.connect => failure,
+    BbxTimeoutKind.send || BbxTimeoutKind.receive => BbxOutcomeUnknownFailure(
+      '${kind.name} timeout',
+      origin: origin,
+    ),
+  },
+  BbxConnectionFailure(:final origin) => BbxOutcomeUnknownFailure(
+    'connection lost',
+    origin: origin,
+  ),
+  BbxTransformTimeoutFailure(:final origin) => BbxOutcomeUnknownFailure(
+    'transform timeout',
+    origin: origin,
+  ),
+  BbxTransportFailure(:final origin) => BbxOutcomeUnknownFailure(
+    'transport failure',
+    origin: origin,
+  ),
+  BbxHttpFailure(:final status, :final origin)
+      when status == null || status < 400 || status == 502 || status == 504 =>
+    BbxOutcomeUnknownFailure('status $status', origin: origin),
+  BbxResponseFormatFailure(:final reason, :final origin) =>
+    BbxOutcomeUnknownFailure(reason, origin: origin),
+  BbxHttpFailure() ||
+  BbxMissingCredentialFailure() ||
+  BbxCredentialUnavailableFailure() ||
+  BbxRpcFailure() ||
+  BbxOrderLimitFailure() ||
+  BbxConfidentialSepaInactiveFailure() ||
+  BbxBadCertificateFailure() ||
+  BbxRequestCancelledFailure() ||
+  BbxOutcomeUnknownFailure() => failure,
 };
 
 /// The failure of a failed request.

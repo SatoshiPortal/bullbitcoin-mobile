@@ -271,7 +271,7 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "retry": "Retry",
+  "retry": "إعادة المحاولة",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -726,5 +726,6 @@
   "transactionPayjoinBroadcastFailed": "تعذر بث المعاملة الأصلية. يرجى المحاولة مرة أخرى.",
   "transactionPayjoinOriginalUnavailable": "لم تعد المعاملة الأصلية متاحة للبث.",
   "transactionLabelLimitReached": "يمكنك إضافة 10 تسميات كحد أقصى.",
-  "copiedToClipboard": "تم النسخ إلى الحافظة"
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "transactionListExchangeOrdersUnavailable": "تعذّر تحميل أوامر البورصة."
 }

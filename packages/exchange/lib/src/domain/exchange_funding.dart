@@ -1,51 +1,86 @@
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
 
-import 'entities/funding_details.dart';
+import '../funding/funding_request.dart';
+import 'catalog/jurisdiction.dart';
 import 'entities/funding_institution.dart';
-import 'entities/funding_jurisdiction.dart';
-import 'entities/funding_method.dart';
-import 'exchange_failure.dart';
+import 'exchange_access.dart';
+import 'exchange_call_result.dart';
 
+/// The funding calls, each tied to the [ExchangeSession] the flow opened
+/// with and answering a closed result.
 abstract interface class ExchangeFunding {
+  /// The account facts the fund flow decides from.
   @useResult
-  Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
-    required FundingMethod fundingMethod,
-  });
+  Future<ExchangeRead<FundingAccount>> account(ExchangeSession session);
+
+  /// A rail's instructions, or the exchange's refusal.
   @useResult
-  Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
-    required FundingJurisdiction jurisdiction,
-  });
+  Future<ExchangeRead<FundingAnswer>> instructions(
+    ExchangeSession session,
+    FundingRequest request,
+  );
+
+  /// The banks of [jurisdiction] (COP). An empty list is an answer.
   @useResult
-  Future<Result<void, ExchangeFailure>> registerResponsibilityConsent();
+  Future<ExchangeRead<List<FundingInstitution>>> institutions(
+    ExchangeSession session,
+    Jurisdiction jurisdiction,
+  );
+
+  /// Records the scam-warning consent.
+  @useResult
+  Future<ExchangeWrite<void>> consent(ExchangeSession session);
+
+  /// Whether the consent is on the account (the re-read after an unknown
+  /// consent write).
+  @useResult
+  Future<ExchangeRead<bool>> consentOnAccount(ExchangeSession session);
 }
 
 final class ExchangeFundingImpl implements ExchangeFunding {
-  final Future<Result<FundingDetails, ExchangeFailure>> Function(FundingMethod)
-  _get;
-  final Future<Result<List<FundingInstitution>, ExchangeFailure>> Function(
-    FundingJurisdiction,
+  final Future<ExchangeRead<FundingAccount>> Function(ExchangeSession) _account;
+  final Future<ExchangeRead<FundingAnswer>> Function(
+    ExchangeSession,
+    FundingRequest,
   )
-  _list;
-  final Future<Result<void, ExchangeFailure>> Function() _consent;
+  _instructions;
+  final Future<ExchangeRead<List<FundingInstitution>>> Function(
+    ExchangeSession,
+    Jurisdiction,
+  )
+  _institutions;
+  final Future<ExchangeWrite<void>> Function(ExchangeSession) _consent;
+  final Future<ExchangeRead<bool>> Function(ExchangeSession) _consentOnAccount;
 
   const ExchangeFundingImpl({
-    required this._get,
-    required this._list,
+    required this._account,
+    required this._instructions,
+    required this._institutions,
     required this._consent,
+    required this._consentOnAccount,
   });
 
   @override
-  Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
-    required FundingMethod fundingMethod,
-  }) => _get(fundingMethod);
+  Future<ExchangeRead<FundingAccount>> account(ExchangeSession session) =>
+      _account(session);
 
   @override
-  Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
-    required FundingJurisdiction jurisdiction,
-  }) => _list(jurisdiction);
+  Future<ExchangeRead<FundingAnswer>> instructions(
+    ExchangeSession session,
+    FundingRequest request,
+  ) => _instructions(session, request);
 
   @override
-  Future<Result<void, ExchangeFailure>> registerResponsibilityConsent() =>
-      _consent();
+  Future<ExchangeRead<List<FundingInstitution>>> institutions(
+    ExchangeSession session,
+    Jurisdiction jurisdiction,
+  ) => _institutions(session, jurisdiction);
+
+  @override
+  Future<ExchangeWrite<void>> consent(ExchangeSession session) =>
+      _consent(session);
+
+  @override
+  Future<ExchangeRead<bool>> consentOnAccount(ExchangeSession session) =>
+      _consentOnAccount(session);
 }

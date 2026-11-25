@@ -4,7 +4,9 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/entities/support_chat_message.dart';
 import '../domain/entities/support_chat_message_attachment.dart';
+import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
+import 'exchange_call_classifier.dart';
 
 /// Support chat through the `bbx_api` package.
 ///
@@ -96,41 +98,23 @@ final class BbxApiSupportChatRepository {
     }
   }
 
-  Future<Result<int, ExchangeFailure>> getUnreadMessageCount() async {
-    try {
-      final result = await _commcenter.getUnreadMessageCount();
-      return switch (result) {
-        Ok(:final value) => Ok(value < 0 ? 0 : value),
-        Err(:final failure) => Err(
-          _failure(
-            failure,
-            ExchangeChatLoadMessagesFailure.new,
-            'count unread',
-          ),
-        ),
-      };
-    } catch (e, st) {
-      return Err(
-        _unexpected(e, st, ExchangeChatLoadMessagesFailure.new, 'count unread'),
-      );
-    }
-  }
+  /// How many support messages the user has not read. A count the server
+  /// can't have meant (below zero) is [ReadMalformed], never shown as zero.
+  Future<ExchangeRead<int>> readUnreadMessageCount() => exchangeRead<int, int>(
+    'getUnreadMessageCount',
+    _commcenter.getUnreadMessageCount,
+    (count) => count < 0
+        ? throw const FormatException('negative unread count')
+        : count,
+  );
 
-  Future<Result<void, ExchangeFailure>> markAllMessagesRead() async {
-    try {
-      final result = await _commcenter.setAllMessagesAsRead();
-      return switch (result) {
-        Ok() => const Ok(null),
-        Err(:final failure) => Err(
-          _failure(failure, ExchangeChatLoadMessagesFailure.new, 'mark read'),
-        ),
-      };
-    } catch (e, st) {
-      return Err(
-        _unexpected(e, st, ExchangeChatLoadMessagesFailure.new, 'mark read'),
+  /// Marks every support message of the user as read.
+  Future<ExchangeWrite<void>> markAllMessagesRead() =>
+      exchangeWrite<void, void>(
+        'setAllMessagesAsRead',
+        _commcenter.setAllMessagesAsRead,
+        (_) {},
       );
-    }
-  }
 
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   getMessageAttachment(String attachmentId) async {
@@ -165,19 +149,16 @@ final class BbxApiSupportChatRepository {
   ) {
     switch (failure) {
       case bbx.BbxMissingCredentialFailure():
-        log.warning(
-          'Support chat: not authenticated',
-          error: failure.runtimeType,
-        );
+        log.warning('Support chat: not authenticated', error: '$failure');
         return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
         return onFailure('Exchange credential unavailable');
       default:
         log.warning(
-          'Failed to $operation support chat data${failure.requestIdLabel}',
-          error: failure.runtimeType,
+          'Failed to $operation support chat data',
+          error: '$failure',
         );
-        return onFailure('$operation failed: ${failure.runtimeType}');
+        return onFailure('$operation failed: $failure');
     }
   }
 

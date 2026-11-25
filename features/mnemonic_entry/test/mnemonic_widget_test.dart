@@ -1249,26 +1249,35 @@ void main() {
     ) async {
       await pumpWidget(tester, onSubmit: (_) {});
 
-      // Reference colours from the first field: a non-word prefix (invalid),
-      // then a valid wordlist word.
-      await typeWord(tester, 0, 'aban');
-      final invalidColor = badgeColor(tester, 0);
-      await clearField(tester, 0);
-      await typeWord(tester, 0, validWords.first);
-      final validColor = badgeColor(tester, 0);
-
       // Complete the first eleven words so the last field has a candidate pool.
-      for (var i = 1; i < 11; i++) {
+      for (var i = 0; i < 11; i++) {
         await typeWord(tester, i, validWords[i]);
       }
 
-      // 'zoo' is a wordlist word but not a checksum candidate here: wrong word.
+      // 'zoo' is a wordlist word but not a checksum candidate here: wrong word,
+      // shown once the field is left.
       await typeWord(tester, 11, 'zoo');
-      expect(badgeColor(tester, 11), equals(invalidColor));
+      await focusField(tester, 0);
+      expect(badgeColor(tester, 11), testBullTheme.error);
 
       await clearField(tester, 11);
       await typeWord(tester, 11, 'senior');
-      expect(badgeColor(tester, 11), equals(validColor));
+      expect(badgeColor(tester, 11), testBullTheme.success);
+    });
+
+    testWidgets('a half-typed word stays neutral until the field is left', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+
+      await typeWord(tester, 0, 'ab');
+      expect(badgeColor(tester, 0), testBullTheme.onSurface);
+
+      await focusField(tester, 1);
+      expect(badgeColor(tester, 0), testBullTheme.error);
+
+      await typeWord(tester, 1, validWords[1]);
+      expect(badgeColor(tester, 1), testBullTheme.success);
     });
   });
 }

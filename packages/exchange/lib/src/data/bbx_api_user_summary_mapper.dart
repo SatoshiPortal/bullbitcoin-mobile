@@ -1,8 +1,10 @@
 import 'package:bbx_api/bbx_api.dart' as bbx;
 
-import '../domain/entities/dca.dart';
-import '../domain/entities/order.dart' show FiatCurrency;
+import '../domain/catalog/exchange_catalog.dart';
 import '../domain/entities/user_summary.dart';
+import 'btc_network_wire.dart';
+import 'dca_frequency_wire.dart';
+import 'unknown_server_value.dart';
 
 /// Maps the `bbx_api` user summary to the app entity.
 UserSummary userSummaryFromBbxApi(bbx.UserSummary s) => UserSummary(
@@ -46,32 +48,38 @@ UserSummary userSummaryFromBbxApi(bbx.UserSummary s) => UserSummary(
 
 UserDca _dca(bbx.UserDca dca) => UserDca(
   isActive: dca.isActive,
-  frequency: switch (dca.frequency?.toLowerCase()) {
-    'hourly' => DcaBuyFrequency.hourly,
-    'daily' => DcaBuyFrequency.daily,
-    'weekly' => DcaBuyFrequency.weekly,
-    'monthly' => DcaBuyFrequency.monthly,
-    _ => null,
-  },
+  frequency: dcaFrequencyFromWire(dca.frequency),
   // A DCA currency this build doesn't support must not fail the whole user
   // summary (balances, stats and preferences come with it).
-  currency: switch (dca.currencyCode) {
-    final String code => FiatCurrency.tryFromCode(code),
-    null => null,
+  currency: switch (dca.currencyCode == null
+      ? null
+      : ExchangeCatalog.parse(dca.currencyCode!)) {
+    KnownCurrency(:final currency) => currency,
+    UnknownCurrency() || null => null,
   },
   amount: dca.amount,
-  network: switch (dca.recipientType) {
-    'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,
-    'OUT_LIGHTNING_ADDRESS' => DcaNetwork.lightning,
-    'OUT_LIQUID_ADDRESS' => DcaNetwork.liquid,
-    _ => null,
+  // An unknown rail leaves the summary's DCA network empty, as an unknown
+  // currency does.
+  network: switch (dca.recipientType == null
+      ? null
+      : BtcNetworkWire.parseRecipientType(dca.recipientType!)) {
+    KnownBtcNetwork(:final network) => network,
+    UnknownBtcNetwork() || null => null,
   },
   address: dca.address,
 );
 
-KycDocumentStatus _kycStatus(String status) => switch (status.toUpperCase()) {
-  'ACCEPTED' => KycDocumentStatus.accepted,
-  'UNDER_REVIEW' => KycDocumentStatus.underReview,
-  'REJECTED' => KycDocumentStatus.rejected,
-  _ => KycDocumentStatus.notUploaded,
-};
+KycDocumentStatus _kycStatus(String status) =>
+    kycDocumentStatusFromWire(status);
+
+/// The one mapper from the server's KYC document status (API-Users
+/// `KycStatusEndUser`), case-insensitive as before. An unknown value is
+/// [KycDocumentStatus.unknown] (it used to read as not uploaded) and is
+/// logged once.
+KycDocumentStatus kycDocumentStatusFromWire(String? raw) => serverValue(
+  'KYC document status',
+  raw?.toUpperCase(),
+  values: KycDocumentStatus.values,
+  wire: (status) => status.value,
+  unknown: KycDocumentStatus.unknown,
+);

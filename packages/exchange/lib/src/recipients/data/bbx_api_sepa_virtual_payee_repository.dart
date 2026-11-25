@@ -126,7 +126,7 @@ final class BbxApiSepaVirtualPayeeRepository
       case bbx.BbxCredentialUnavailableFailure():
         return onApiFailure('Exchange credential unavailable');
       case bbx.BbxRpcFailure() || bbx.BbxHttpFailure():
-        final description = _describe(failure);
+        final description = '$failure';
         log.warning('API refused to $operation — $description');
         return onApiFailure(description);
       case bbx.BbxTimeoutFailure(:final kind):
@@ -163,13 +163,5 @@ final class BbxApiSepaVirtualPayeeRepository
     bbx.BbxTimeoutKind.connect => 'connectionTimeout',
     bbx.BbxTimeoutKind.send => 'sendTimeout',
     bbx.BbxTimeoutKind.receive => 'receiveTimeout',
-  };
-
-  /// The JSON-RPC error message can quote account details: keep the codes.
-  static String _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code, :final apiCode) =>
-      'BbxRpcFailure(code: $code, apiCode: $apiCode)'
-          '${failure.requestIdLabel}',
-    _ => failure.runtimeType.toString(),
   };
 }

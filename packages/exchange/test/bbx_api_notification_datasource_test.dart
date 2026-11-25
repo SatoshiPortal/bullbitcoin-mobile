@@ -64,6 +64,31 @@ class _FakeChannel implements WebSocketChannel {
   Object? noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// A handshake the server answers with [status] instead of upgrading.
+class _RefusingChannel implements WebSocketChannel {
+  final int status;
+  final _FakeSink fakeSink = _FakeSink();
+  final _server = StreamController<Object?>();
+
+  _RefusingChannel(this.status);
+
+  @override
+  Stream<Object?> get stream => _server.stream;
+
+  @override
+  Future<void> get ready => Future.error(
+    WebSocketChannelException.from(
+      WebSocketException('Connection was not upgraded to websocket', status),
+    ),
+  );
+
+  @override
+  WebSocketSink get sink => fakeSink;
+
+  @override
+  Object? noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class _Handshake {
   final Uri uri;
   final Map<String, Object> headers;
@@ -77,8 +102,10 @@ BbxApiNotificationDatasource _fakeDatasource({
   required String baseUrl,
   required Future<Result<String?, ExchangeFailure>> Function() readApiKey,
   required BbxWebSocketConnector connector,
+  void Function()? onSessionRejected,
 }) => BbxApiNotificationDatasource.forTesting(
   baseUrl: baseUrl,
+  onSessionRejected: onSessionRejected,
   readApiKey: readApiKey,
   openSocket: (baseUrl, readApiKey, log) => bbxNotificationSocketForTesting(
     baseUrl: baseUrl,
@@ -112,6 +139,29 @@ void main() {
   setUp(() => handshakes = []);
 
   group('with a fake socket', () {
+    for (final (status, rejected) in [(401, 1), (403, 0)]) {
+      test('a handshake refused with $status '
+          '${rejected == 1 ? 'reports' : 'does not report'} a rejected '
+          'session (INT-7)', () async {
+        var reports = 0;
+        final datasource = _fakeDatasource(
+          baseUrl: 'https://api.bullbitcoin.com',
+          readApiKey: () async => const Ok('synthetic-key'),
+          connector: (uri, {required headers, required pingInterval}) =>
+              _RefusingChannel(status),
+          onSessionRejected: () => reports++,
+        );
+        addTearDown(datasource.dispose);
+        expect(
+          _failureOfVoid(await datasource.connect()),
+          isA<BbxHttpFailure>().having((f) => f.status, 'status', status),
+        );
+        await pumpEventQueue();
+        expect(datasource.isConnected, isFalse);
+        expect(reports, rejected);
+      });
+    }
+
     for (final (baseUrl, url) in [
       ('https://api.bullbitcoin.com', 'wss://api.bullbitcoin.com'),
       ('https://api05.bullbitcoin.dev', 'wss://api05.bullbitcoin.dev'),
@@ -263,7 +313,8 @@ void main() {
         time.elapse(const Duration(seconds: 1));
         readsOverTime.add(reads);
         available = true;
-        time.elapse(const Duration(seconds: 5));
+        // The second failure in a row waits twice as long.
+        time.elapse(const Duration(seconds: 10));
         readsOverTime.add(reads);
         time.elapse(const Duration(seconds: 30));
         readsOverTime.add(reads);
@@ -392,9 +443,9 @@ const _expectedRuns = <String, List<Object?>>{
   'refused': [
     ['GET /ak/api-commcenter synthetic-header'],
     false,
-    ['err: BbxConnectionFailure'],
+    ['err: BbxHttpFailure(status: 403)'],
     [
-      'Symbol("warning") [WebSocket unavailable] [BbxConnectionFailure, null]',
+      'Symbol("warning") [WebSocket unavailable] [BbxHttpFailure, null]',
       'Symbol("info") [WebSocket manually disconnected] [null, null]',
     ],
   ],

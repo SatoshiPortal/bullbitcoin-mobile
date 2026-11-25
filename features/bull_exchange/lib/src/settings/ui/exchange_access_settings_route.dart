@@ -1,10 +1,9 @@
-import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../domain/manage_exchange_access_usecase.dart';
-import '../presentation/exchange_access_settings_cubit.dart';
+import '../presentation/exchange_access_settings_bloc.dart';
 import 'screens/exchange_access_settings_screen.dart';
 
 /// Navigation to the exchange access controls nested under app settings.
@@ -18,7 +17,6 @@ abstract final class ExchangeAccessSettingsNavigation {
 
 typedef ExchangeAccessSettingsHost = ({
   ExchangeAccessActions actions,
-  ExchangePlatform platform,
   String Function(BuildContext) description,
   Future<void> Function(BuildContext) onAuthenticate,
   void Function(BuildContext) onDisabled,
@@ -26,24 +24,20 @@ typedef ExchangeAccessSettingsHost = ({
 
 GoRoute exchangeAccessSettingsRoute({
   required ExchangeAccessSettingsHost host,
-  required bool Function(BuildContext) isSuperuser,
+  required bool Function(BuildContext) websiteOnly,
   required void Function(BuildContext) onOpenAccount,
 }) => GoRoute(
   name: ExchangeAccessSettingsNavigation.name,
   path: ExchangeAccessSettingsNavigation.path,
   builder: (context, state) => BlocProvider(
-    create: (_) => ExchangeAccessSettingsCubit(
+    create: (_) => ExchangeAccessSettingsBloc(
       WatchExchangeAccessUsecase(host.actions),
       ManageExchangeAccessUsecase(host.actions),
     ),
     child: Builder(
       builder: (context) => ExchangeAccessSettingsScreen(
         description: host.description(context),
-        activationAllowed: ExchangeAvailability.platformAllowed(
-          host.platform,
-          isSuperuser:
-              host.platform == ExchangePlatform.ios && isSuperuser(context),
-        ),
+        activationAllowed: !websiteOnly(context),
         onBack: () => context.pop(),
         onAuthenticate: () => host.onAuthenticate(context),
         onOpenAccount: () => onOpenAccount(context),

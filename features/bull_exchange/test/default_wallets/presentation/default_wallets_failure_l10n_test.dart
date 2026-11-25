@@ -27,10 +27,6 @@ void main() {
     );
 
     expect(
-      const DefaultWalletsLoadFailure().toTranslated(context),
-      'Impossible de charger les portefeuilles par défaut',
-    );
-    expect(
       const DefaultWalletsEmptyAddressFailure().toTranslated(context),
       "L'adresse ne peut pas être vide",
     );

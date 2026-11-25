@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart' show BtcNetwork;
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show WalletKey;
 
@@ -17,4 +18,6 @@ final class ExchangePayinWallet {
 
   String get id => key.id;
   bool get isLiquid => key.network is LiquidNetwork;
+  BtcNetwork get btcNetwork =>
+      isLiquid ? BtcNetwork.liquid : BtcNetwork.bitcoin;
 }

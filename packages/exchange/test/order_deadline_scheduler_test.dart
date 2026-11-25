@@ -139,6 +139,34 @@ void main() {
     });
   });
 
+  test('cancel is terminal: a late failed refresh arms nothing (B14)', () {
+    fakeAsync((time) {
+      scheduler.track(clock.now().subtract(const Duration(minutes: 1)));
+      scheduler.cancel();
+
+      scheduler.refreshFailed();
+      expect(scheduler.isPending, isFalse);
+      time.elapse(retryDelay * (maxRetries + 2));
+      expect(dueCount, 0);
+      expect(giveUpCount, 0);
+    });
+  });
+
+  test('the next track after cancel watches again', () {
+    fakeAsync((time) {
+      scheduler.cancel();
+      scheduler.track(clock.now().add(const Duration(seconds: 10)));
+      expect(scheduler.isPending, isTrue);
+
+      time.elapse(const Duration(seconds: 10));
+      expect(dueCount, 1);
+
+      scheduler.refreshFailed();
+      time.elapse(retryDelay);
+      expect(dueCount, 2);
+    });
+  });
+
   test('dispose is final: a late refresh outcome arms nothing', () {
     // A refresh still in flight when the owner closes reports back after
     // dispose; a timer armed then would call onDue on a closed bloc.

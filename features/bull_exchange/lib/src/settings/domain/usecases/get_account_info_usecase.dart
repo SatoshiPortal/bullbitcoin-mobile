@@ -22,7 +22,14 @@ class GetAccountInfoUsecase {
               verificationLevel: _verificationLevel(summary),
             ),
           )
-          .mapErr((_) => const ExchangeSettingsAccountUnavailableFailure());
+          .mapErr(
+            (failure) => switch (failure) {
+              ExchangeNotAuthenticatedFailure() ||
+              ExchangeSessionRejectedFailure() =>
+                const ExchangeSettingsNotAuthenticatedFailure(),
+              _ => const ExchangeSettingsAccountUnavailableFailure(),
+            },
+          );
 
   VerificationLevel _verificationLevel(UserSummary summary) {
     if (summary.isFullyVerifiedKycLevel) {

@@ -20,8 +20,8 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   final bool isLoading;
   final List<FiatCurrency> currencies;
   final FiatCurrency? initialCurrency;
-  final String? selectedCurrency;
-  final ValueChanged<String> onCurrencyChanged;
+  final FiatCurrency? selectedCurrency;
+  final ValueChanged<FiatCurrency> onCurrencyChanged;
   final List<UserBalance>? balances;
 
   String _label(FiatCurrency currency) {
@@ -50,15 +50,15 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
         if (isLoading)
           const SizedBox(height: 56, child: Center(child: BullShimmerLine()))
         else
-          BullDropdown<String>(
-            value: selectedCurrency ?? initialCurrency?.code,
+          BullDropdown<FiatCurrency>(
+            value: selectedCurrency ?? initialCurrency,
             items: [
               for (final currency in currencies)
-                BullPickerItem(value: currency.code, label: _label(currency)),
+                BullPickerItem(value: currency, label: _label(currency)),
             ],
             onChanged: onCurrencyChanged,
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (value == null) {
                 return context.loc.exchangeCurrencyDropdownValidation;
               }
               return null;

@@ -21,4 +21,15 @@ final class ExchangePreferences {
     emailNotificationsEnabled:
         emailNotificationsEnabled ?? this.emailNotificationsEnabled,
   );
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExchangePreferences &&
+      other.language == language &&
+      other.currency == currency &&
+      other.emailNotificationsEnabled == emailNotificationsEnabled;
+
+  @override
+  int get hashCode =>
+      Object.hash(language, currency, emailNotificationsEnabled);
 }

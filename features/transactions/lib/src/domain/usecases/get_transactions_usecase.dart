@@ -8,6 +8,7 @@ import 'package:meta/meta.dart';
 import 'package:transactions/src/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:transactions/src/domain/entities/transaction.dart';
+import 'package:transactions/src/domain/entities/transaction_history.dart';
 import 'package:transactions/src/domain/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:transactions/src/domain/usecases/order_swap_transaction_match.dart';
 import 'package:transactions/src/domain/transaction_failure.dart';
@@ -34,7 +35,7 @@ class GetTransactionsUsecase {
   });
 
   @useResult
-  Future<Result<List<Transaction>, TransactionFailure>> execute({
+  Future<Result<TransactionHistory, TransactionFailure>> execute({
     String? walletId,
     bool sync = false,
   }) async {
@@ -58,10 +59,18 @@ class GetTransactionsUsecase {
             );
         if (walletResult case Err(:final failure)) return Err(failure);
         return Ok(
-          (walletResult as Ok<List<WalletTransaction>, TransactionFailure>)
-              .value
-              .map((transaction) => Transaction(walletTransaction: transaction))
-              .toList(),
+          TransactionHistory(
+            transactions:
+                (walletResult
+                        as Ok<List<WalletTransaction>, TransactionFailure>)
+                    .value
+                    .map(
+                      (transaction) =>
+                          Transaction(walletTransaction: transaction),
+                    )
+                    .toList(),
+            exchangeOrders: const ExchangeOrdersNotOffered(),
+          ),
         );
       }
       final exchangeOrders = _exchange.orders(
@@ -70,17 +79,18 @@ class GetTransactionsUsecase {
             : ExchangeEnvironment.mainnet,
       );
 
-      final orderResult = await exchangeOrders.getOrders();
-      final orders = switch (orderResult) {
-        Ok(:final value) => value,
-        Err(:final failure) => () {
-          log.warning(
-            'Exchange enrichment unavailable: ${failure.runtimeType}',
-          );
-          return <Order>[];
-        }(),
-      };
-      await _labelExchangeOrdersUsecase.execute(orders: orders);
+      final List<Order> orders;
+      final ExchangeOrdersInHistory exchangeOrdersRead;
+      switch (await exchangeOrders.getOrders()) {
+        case Ok(:final value):
+          orders = value;
+          exchangeOrdersRead = const ExchangeOrdersMerged();
+          await _labelExchangeOrdersUsecase.execute(orders: orders);
+        case Err(:final failure):
+          log.warning('Exchange orders unavailable: ${failure.runtimeType}');
+          orders = const <Order>[];
+          exchangeOrdersRead = ExchangeOrdersInHistory.ofFailure(failure);
+      }
 
       // Labels must exist before wallet transactions are hydrated.
       final (
@@ -324,55 +334,62 @@ class GetTransactionsUsecase {
       // Combine results of broadcasted transactions, remaining swaps which are
       //  ongoing and remaining payjoins that are unbroadcasted as well
       //  into a single list of Transaction entities.
-      return Ok([
-        ...dedupedBroadcastedTransactions,
-        // A resolved recovered swap with no wallet tx here was only associated
-        // via a default/counterpart wallet id; don't show it on that chain.
-        ...swaps
-            .asMap()
-            .entries
-            .where(
-              (entry) =>
-                  !consumedSwapIndices.contains(entry.key) &&
-                  !(entry.value.recovered && entry.value.status.isTerminal),
-            )
-            .map((entry) => entry.value)
-            .map((s) => Transaction(swap: s)),
-        // An aborted Payjoin means its original transaction was successfully
-        // broadcast or observed. If that wallet transaction is not visible in
-        // this fetch yet, do not render the terminal session as a second
-        // standalone `0 sats / pending` row; the real transaction will be
-        // joined through originalTxId once wallet sync catches up.
-        ...payjoins
-            .asMap()
-            .entries
-            .where(
-              (entry) =>
-                  !consumedPayjoinIndices.contains(entry.key) &&
-                  !entry.value.isAborted,
-            )
-            .map((entry) => entry.value)
-            .map((p) => Transaction(payjoin: p)),
-        ...orderSwaps
-            .asMap()
-            .entries
-            .where((entry) => !consumedOrderSwapIndices.contains(entry.key))
-            .map((entry) => Transaction(orderSwap: entry.value)),
-        // If walletId is not null, the orders should be linked to a wallet transaction.
-        // TODO: We could still check on the address of the order to see if it
-        // is related to the wallet id, even without a wallet transaction yet.
-        //  Another option is to persist order data and include the wallet id
-        //  there already so it can be linked easily. The latter might be the
-        //  most efficient and robust way for the future. But for now we assume that
-        //  orders without a wallet transaction are not relevant for a specific wallet yet.
-        ...(walletId == null
-            ? orders
-                  .asMap()
-                  .entries
-                  .where((entry) => !consumedOrderIndices.contains(entry.key))
-                  .map((entry) => Transaction(order: entry.value))
-            : <Transaction>[]),
-      ]);
+      return Ok(
+        TransactionHistory(
+          exchangeOrders: exchangeOrdersRead,
+          transactions: [
+            ...dedupedBroadcastedTransactions,
+            // A resolved recovered swap with no wallet tx here was only associated
+            // via a default/counterpart wallet id; don't show it on that chain.
+            ...swaps
+                .asMap()
+                .entries
+                .where(
+                  (entry) =>
+                      !consumedSwapIndices.contains(entry.key) &&
+                      !(entry.value.recovered && entry.value.status.isTerminal),
+                )
+                .map((entry) => entry.value)
+                .map((s) => Transaction(swap: s)),
+            // An aborted Payjoin means its original transaction was successfully
+            // broadcast or observed. If that wallet transaction is not visible in
+            // this fetch yet, do not render the terminal session as a second
+            // standalone `0 sats / pending` row; the real transaction will be
+            // joined through originalTxId once wallet sync catches up.
+            ...payjoins
+                .asMap()
+                .entries
+                .where(
+                  (entry) =>
+                      !consumedPayjoinIndices.contains(entry.key) &&
+                      !entry.value.isAborted,
+                )
+                .map((entry) => entry.value)
+                .map((p) => Transaction(payjoin: p)),
+            ...orderSwaps
+                .asMap()
+                .entries
+                .where((entry) => !consumedOrderSwapIndices.contains(entry.key))
+                .map((entry) => Transaction(orderSwap: entry.value)),
+            // If walletId is not null, the orders should be linked to a wallet transaction.
+            // TODO: We could still check on the address of the order to see if it
+            // is related to the wallet id, even without a wallet transaction yet.
+            //  Another option is to persist order data and include the wallet id
+            //  there already so it can be linked easily. The latter might be the
+            //  most efficient and robust way for the future. But for now we assume that
+            //  orders without a wallet transaction are not relevant for a specific wallet yet.
+            ...(walletId == null
+                ? orders
+                      .asMap()
+                      .entries
+                      .where(
+                        (entry) => !consumedOrderIndices.contains(entry.key),
+                      )
+                      .map((entry) => Transaction(order: entry.value))
+                : <Transaction>[]),
+          ],
+        ),
+      );
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to fetch transactions',

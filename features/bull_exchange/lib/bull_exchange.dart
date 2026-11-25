@@ -33,9 +33,6 @@ export 'src/limit_orders/ui/widgets/limit_orders_loading_bar.dart'
 export 'src/recipients/presentation/recipient_type_l10n.dart';
 export 'src/recipients/public/recipient_filter_criteria.dart'
     show RecipientFilterCriteria;
-export 'src/recipients/public/recipient_selection.dart' show RecipientSelection;
-export 'src/recipients/public/recipient_selection_screen.dart'
-    show RecipientSelectionScreen;
 export 'src/recipients/public/recipient_view_model.dart';
 export 'src/recipients/recipients_scope.dart' show RecipientsScope;
 export 'src/recipients/ui/screens/recipients_screen.dart' show RecipientsScreen;
@@ -58,6 +55,7 @@ export 'src/ui/widgets/exchange_amount_currency_dropdown.dart'
     show ExchangeAmountCurrencyDropdown;
 export 'src/ui/widgets/exchange_amount_input_field.dart'
     show ExchangeAmountInputField;
-export 'src/ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
+export 'src/ui/exchange_route_guard.dart'
+    show ExchangeGuardedPaths, ExchangeRouteGuard;
 export 'src/ui/widgets/wizard_exchange_option.dart' show WizardExchangeOption;
 export 'src/withdraw/ui/withdraw_router.dart' show WithdrawRoute;

@@ -79,6 +79,12 @@ final class ExchangeSettingsDocumentUploadFailure
 
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
+/// Another exchange write of the account is running, or the journal can't
+/// tell whether one is unsettled: nothing was sent.
+final class ExchangeSettingsWriteBusyFailure extends ExchangeSettingsFailure {
+  const ExchangeSettingsWriteBusyFailure();
+}
+
 final class ExchangeSettingsUnexpectedFailure extends ExchangeSettingsFailure {
   const ExchangeSettingsUnexpectedFailure([super.logMessage]);
 }

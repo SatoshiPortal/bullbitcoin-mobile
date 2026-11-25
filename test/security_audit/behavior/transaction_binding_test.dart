@@ -24,9 +24,9 @@ import 'package:mocktail/mocktail.dart';
 /// The use case returns a `Result`; these tests are about what it binds, so a
 /// failure is a test failure rather than a case to assert on.
 List<Transaction> _transactionsOf(
-  bb.Result<List<Transaction>, TransactionFailure> result,
+  bb.Result<TransactionHistory, TransactionFailure> result,
 ) => switch (result) {
-  bb.Ok(:final value) => value,
+  bb.Ok(:final value) => value.transactions,
   bb.Err(:final failure) => fail('expected transactions, got $failure'),
 };
 

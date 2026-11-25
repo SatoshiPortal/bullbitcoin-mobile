@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -7,11 +8,19 @@ import 'package:primitives/primitives.dart';
 import '../domain/entities/exchange_api_key.dart';
 import '../domain/exchange_access.dart';
 import '../domain/exchange_availability.dart';
+import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
+import '../session/exchange_access_machine.dart';
 import 'exchange_credentials.dart';
 
 /// Foreground session authority. Platform storage and WebView cleanup are
 /// supplied during setup; their ordering and the journal belong here.
+///
+/// Every state change goes through [transitionAccess]. A session starts only
+/// when a key is stored or found for an environment without a current
+/// session, so a failed sign-in or a repeated read ends nothing. The
+/// notification socket is an effect of [ExchangeAccessSignedIn]: it is
+/// opened on entering it and closed on leaving it.
 abstract interface class ExchangeAccessLifecycle {
   factory ExchangeAccessLifecycle.open({
     required ExchangeCredentials apiKeyRepository,
@@ -21,12 +30,17 @@ abstract interface class ExchangeAccessLifecycle {
     required Future<void> Function() clearCookies,
     required Future<Object?> Function() readPreference,
     required Future<bool> Function(String) writePreference,
+    Future<void> Function(ExchangeEnvironment, {required bool reconnect})?
+    connectNotifications,
+    String Function()? newSessionId,
   }) = _ExchangeAccessLifecycle;
 
   static const preferenceKey = 'exchange_access';
 
   ExchangeAccess get current;
-  int get epoch;
+
+  /// The current session, only while signed in.
+  ExchangeSession? get session;
   Stream<ExchangeAccess> watch();
   @useResult
   Future<Result<void, ExchangeFailure>> resolve();
@@ -47,6 +61,9 @@ abstract interface class ExchangeAccessLifecycle {
   /// for queued reconciliation before it is trusted.
   @useResult
   Future<Result<ExchangeAvailability, ExchangeFailure>> tradingAvailability();
+
+  /// Expires the session with [epoch] when its key was rejected. Any other
+  /// session, or none, is left alone.
   @useResult
   Future<Result<void, ExchangeFailure>> expireSession({
     required int epoch,
@@ -59,6 +76,10 @@ abstract interface class ExchangeAccessLifecycle {
     required bool isTestnet,
     required bool Function() isCurrent,
   });
+
+  /// Reopens the socket of the current session (the platform may have
+  /// dropped it while the app was hidden). Nothing while signed out.
+  Future<void> reconnectNotifications();
 }
 
 final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
@@ -70,29 +91,91 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
     required this._clearCookies,
     required this._readPreference,
     required this._writePreference,
-  }) : _keys = apiKeyRepository;
+    Future<void> Function(ExchangeEnvironment, {required bool reconnect})?
+    connectNotifications,
+    String Function()? newSessionId,
+  }) : _keys = apiKeyRepository,
+       _connectNotifications = connectNotifications ?? _noSocket,
+       _newSessionId = newSessionId ?? _randomSessionId;
 
   final ExchangeCredentials _keys;
   final Future<bool> Function() _readEnvironment;
   final Future<bool> Function() _platformAllowed;
   final Future<void> Function() _disconnectNotifications;
+  final Future<void> Function(ExchangeEnvironment, {required bool reconnect})
+  _connectNotifications;
   final Future<void> Function() _clearCookies;
   final Future<Object?> Function() _readPreference;
   final Future<bool> Function(String) _writePreference;
+  final String Function() _newSessionId;
   final _changes = StreamController<ExchangeAccess>.broadcast(sync: true);
   Future<void> _queue = Future.value();
   ExchangeAccess _current = const ExchangeAccessResolving();
-  int _epoch = 0;
+
+  /// The epoch of the newest session of this run.
+  int _sessions = 0;
+
+  /// Lets a newer resolve, enable or sign-out supersede a queued older one.
+  /// Never seen outside: sessions carry their own epoch.
+  int _generation = 0;
   bool _cleanupPending = false;
+
+  static Future<void> _noSocket(
+    ExchangeEnvironment _, {
+    required bool reconnect,
+  }) async {}
+
+  static String _randomSessionId() {
+    final random = Random.secure();
+    return [
+      for (var i = 0; i < 16; i++)
+        random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ].join();
+  }
 
   @override
   ExchangeAccess get current => _current;
-  @override
-  int get epoch => _epoch;
 
-  void _emit(ExchangeAccess value) {
-    _current = value;
-    _changes.add(value);
+  @override
+  ExchangeSession? get session => _current.signedInSession;
+
+  /// The session a key found or stored now would start. Its epoch is taken
+  /// only if the transition starts it.
+  ExchangeSession _candidate(ExchangeEnvironment environment) =>
+      ExchangeSession(
+        environment: environment,
+        epoch: _sessions + 1,
+        sessionId: _newSessionId(),
+      );
+
+  void _apply(ExchangeAccessEvent event) {
+    final previous = _current;
+    final next = transitionAccess(previous, event);
+    if (next == previous) return;
+    final started = switch (next) {
+      ExchangeAccessSignedIn(:final session) ||
+      ExchangeAccessExpiring(:final session) => session.epoch,
+      ExchangeAccessResolving() ||
+      ExchangeAccessUnreadable() ||
+      ExchangeAccessDisabled() ||
+      ExchangeAccessSignOutIncomplete() ||
+      ExchangeAccessSignedOut() ||
+      ExchangeAccessCredentialUnreadable() => 0,
+    };
+    if (started > _sessions) _sessions = started;
+    _current = next;
+    _changes.add(next);
+    final before = previous.signedInSession;
+    final after = next.signedInSession;
+    if (before == after) return;
+    if (before != null) unawaited(_attempt(_disconnectNotifications));
+    if (after != null) {
+      unawaited(
+        _attempt(
+          () => _connectNotifications(after.environment, reconnect: false),
+        ),
+      );
+    }
   }
 
   @override
@@ -151,33 +234,36 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
     }
   }
 
+  static ExchangeEnvironment _environment(bool isTestnet) =>
+      isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet;
+
   @override
   Future<Result<void, ExchangeFailure>> resolve() {
-    final token = ++_epoch;
-    final disconnected = _attempt(_disconnectNotifications);
+    final token = ++_generation;
     return _serial(() async {
-      await disconnected;
       try {
         if (_cleanupPending) {
           return await _signOutCleanup();
         }
         final preference = await _read();
-        if (token != _epoch) {
+        if (token != _generation) {
           return const Ok(null);
         }
         if (preference.pending) {
           return await _signOutCleanup();
         }
-        final isTestnet = await _readEnvironment();
-        final key = await _keys.readActiveApiKey(isTestnet: isTestnet);
-        if (token != _epoch) {
+        final environment = _environment(await _readEnvironment());
+        final key = await _keys.readActiveApiKey(
+          isTestnet: environment == ExchangeEnvironment.testnet,
+        );
+        if (token != _generation) {
           return const Ok(null);
         }
         if (key case Err()) {
-          _emit(
+          _apply(
             preference.enabled == false
-                ? const ExchangeAccessDisabled()
-                : const ExchangeAccessEnabled(ExchangeAccessSession.unreadable),
+                ? const AccessFoundDisabled()
+                : AccessKeyUnreadable(environment),
           );
           return const Err(ExchangeApiKeyStorageFailure());
         }
@@ -185,30 +271,28 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
         final enabled = preference.enabled ?? present;
         if (preference.enabled == null && present) {
           final saved = await _write(true, false);
-          if (token != _epoch) {
+          if (token != _generation) {
             return const Ok(null);
           }
           if (!saved) {
-            _emit(const ExchangeAccessUnreadable());
+            _apply(const AccessChoiceUnreadable());
             return const Err(ExchangeUnexpectedFailure());
           }
         }
-        if (token != _epoch) {
+        if (token != _generation) {
           return const Ok(null);
         }
-        _emit(
-          enabled
-              ? ExchangeAccessEnabled(
-                  present
-                      ? ExchangeAccessSession.signedIn
-                      : ExchangeAccessSession.signedOut,
-                )
-              : const ExchangeAccessDisabled(),
+        _apply(
+          !enabled
+              ? const AccessFoundDisabled()
+              : present
+              ? AccessFoundKey(_candidate(environment))
+              : AccessFoundSignedOut(environment),
         );
         return const Ok(null);
       } on Exception catch (_) {
-        if (token == _epoch) {
-          _emit(const ExchangeAccessUnreadable());
+        if (token == _generation) {
+          _apply(const AccessChoiceUnreadable());
         }
         return const Err(ExchangeUnexpectedFailure());
       }
@@ -221,9 +305,9 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
     bool choice = true,
     bool forSupport = false,
   }) {
-    final token = onlyIfUnset ? _epoch : ++_epoch;
+    final token = onlyIfUnset ? _generation : ++_generation;
     return _serial(() async {
-      if (token != _epoch || _cleanupPending) {
+      if (token != _generation || _cleanupPending) {
         return const Err(ExchangeSessionClearFailure());
       }
       try {
@@ -235,37 +319,37 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
           return const Ok(null);
         }
         if (choice && !forSupport && !await _platformAllowed()) {
-          return const Err(ExchangeUnexpectedFailure());
+          return const Err(ExchangePlatformNotAllowedFailure());
         }
-        final environment = await _readEnvironment();
-        final key = await _keys.readActiveApiKey(isTestnet: environment);
+        final environment = _environment(await _readEnvironment());
+        final key = await _keys.readActiveApiKey(
+          isTestnet: environment == ExchangeEnvironment.testnet,
+        );
         if (key case Err()) {
           return const Err(ExchangeApiKeyStorageFailure());
         }
         final present = (key as Ok<String?, dynamic>).value != null;
         final enabled = choice || present;
-        if (token != _epoch || _cleanupPending) {
+        if (token != _generation || _cleanupPending) {
           return const Err(ExchangeUnexpectedFailure());
         }
         if (!await _write(enabled, false)) {
           return const Err(ExchangeUnexpectedFailure());
         }
-        if (token != _epoch) {
+        if (token != _generation) {
           return const Err(ExchangeUnexpectedFailure());
         }
-        _emit(
-          enabled
-              ? ExchangeAccessEnabled(
-                  present
-                      ? ExchangeAccessSession.signedIn
-                      : ExchangeAccessSession.signedOut,
-                )
-              : const ExchangeAccessDisabled(),
+        _apply(
+          !enabled
+              ? const AccessFoundDisabled()
+              : present
+              ? AccessFoundKey(_candidate(environment))
+              : AccessFoundSignedOut(environment),
         );
         return const Ok(null);
       } on Exception catch (_) {
-        if (token == _epoch) {
-          _emit(const ExchangeAccessUnreadable());
+        if (token == _generation) {
+          _apply(const AccessChoiceUnreadable());
         }
         return const Err(ExchangeUnexpectedFailure());
       }
@@ -283,7 +367,7 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
 
   Future<Result<void, ExchangeFailure>> _signOutCleanup() async {
     _cleanupPending = true;
-    _emit(const ExchangeAccessSignOutIncomplete());
+    _apply(const AccessFoundSignOutPending());
     final journaled = await _write(false, true);
     final disconnected = await _attempt(_disconnectNotifications);
     var mainCleared = false;
@@ -303,25 +387,24 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
         !testCleared ||
         !cookiesCleared ||
         !await _write(false, false)) {
+      _apply(const AccessSignOutFailed());
       return const Err(ExchangeSessionClearFailure());
     }
     _cleanupPending = false;
-    _emit(const ExchangeAccessDisabled());
+    _apply(const AccessSignOutCompleted());
     return const Ok(null);
   }
 
   @override
   Future<Result<void, ExchangeFailure>> signOut() {
-    ++_epoch;
+    ++_generation;
     _cleanupPending = true;
-    _emit(const ExchangeAccessSignOutIncomplete());
+    _apply(const AccessSignOutStarted());
     // Journal before queued work finishes, so a killed app still completes the
     // sign-out at the next start. The cleanup writes the journal again.
     final journaled = _write(false, true);
-    final disconnected = _attempt(_disconnectNotifications);
     return _serial(() async {
       await journaled;
-      await disconnected;
       return _signOutCleanup();
     });
   }
@@ -330,22 +413,18 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
   Future<Result<void, ExchangeFailure>> runAuthenticated(
     Future<Result<void, ExchangeFailure>> Function() operation,
   ) {
-    final token = _epoch;
+    // Queued behind any resolve or sign-out already asked for, so the
+    // session it sees is the settled one.
     return _serial(() async {
-      if (token != _epoch) {
+      final session = _current.signedInSession;
+      if (session == null) {
+        return const Err(ExchangeNotAuthenticatedFailure());
+      }
+      final result = await operation();
+      if (_current.signedInSession != session) {
         return const Err(ExchangeOperationStaleFailure());
       }
-      if (_current case ExchangeAccessEnabled(
-        session: ExchangeAccessSession.signedIn,
-      )) {
-        final result = await operation();
-        if (token != _epoch) {
-          await _attempt(_disconnectNotifications);
-          return const Err(ExchangeOperationStaleFailure());
-        }
-        return result;
-      }
-      return const Err(ExchangeNotAuthenticatedFailure());
+      return result;
     });
   }
 
@@ -381,27 +460,30 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
     required int epoch,
     required bool isTestnet,
   }) {
-    if (epoch != _epoch) {
+    if (_current.signedInSession?.epoch != epoch) {
       return Future.value(const Ok(null));
     }
     return _serial(() async {
-      if (epoch != _epoch || _current is! ExchangeAccessEnabled) {
+      final session = _current.signedInSession;
+      if (session == null ||
+          session.epoch != epoch ||
+          session.environment != _environment(isTestnet)) {
         return const Ok(null);
       }
       try {
         final environment = await _readEnvironment();
-        if (epoch != _epoch || environment != isTestnet) {
+        if (_current.signedInSession != session || environment != isTestnet) {
           return const Ok(null);
         }
-        final cleanupEpoch = ++_epoch;
-        _emit(const ExchangeAccessEnabled(ExchangeAccessSession.unreadable));
-        final disconnected = await _attempt(_disconnectNotifications);
-        if (cleanupEpoch != _epoch) return const Ok(null);
+        ++_generation;
+        _apply(AccessSessionRejected(epoch));
         final saved = await _write(true, false);
-        if (cleanupEpoch != _epoch) {
+        // A sign-out started meanwhile owns the credentials now.
+        if (_current != ExchangeAccessExpiring(session)) {
           return const Ok(null);
         }
         if (!saved) {
+          _apply(AccessExpiryFailed(epoch));
           return const Err(ExchangeUnexpectedFailure());
         }
         var removed = false;
@@ -410,14 +492,14 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
           removed = deleted is Ok;
         } on Exception catch (_) {}
         final cookies = await _attempt(_clearCookies);
-        if (!disconnected || !removed || !cookies) {
+        if (!removed || !cookies) {
+          _apply(AccessExpiryFailed(epoch));
           return const Err(ExchangeSessionClearFailure());
         }
-        if (cleanupEpoch == _epoch) {
-          _emit(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
-        }
+        _apply(AccessExpiryCompleted(epoch));
         return const Ok(null);
       } on Exception catch (_) {
+        _apply(AccessExpiryFailed(epoch));
         return const Err(ExchangeSessionClearFailure());
       }
     });
@@ -430,27 +512,23 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
     required bool isTestnet,
     required bool Function() isCurrent,
   }) async {
-    if (!isCurrent() || _current is! ExchangeAccessEnabled) {
-      return const Err(ExchangeAuthenticationFailure());
-    }
-    final token = ++_epoch;
     try {
-      if (token != _epoch || !isCurrent()) {
+      if (!isCurrent() || !accessAcceptsKey(_current)) {
         return const Err(ExchangeAuthenticationFailure());
       }
     } on Exception {
       return const Err(ExchangeAuthenticationFailure());
     }
+    // Nothing changes before the key exists: a failed generation ends no
+    // session and cancels no work.
     final generated = await generateApiKey();
     if (generated case Err(:final failure)) {
       return Err(failure);
     }
     return _serial(() async {
-      if (token != _epoch ||
-          !isCurrent() ||
-          _current is! ExchangeAccessEnabled ||
+      if (!isCurrent() ||
+          !accessAcceptsKey(_current) ||
           await _readEnvironment() != isTestnet ||
-          token != _epoch ||
           !isCurrent()) {
         return const Err(ExchangeAuthenticationFailure());
       }
@@ -463,11 +541,20 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
       }
       // A committed native write cannot be undone by merely closing its view.
       // Explicit sign-out is queued behind this write and owns credential deletion.
-      if (token != _epoch) {
+      if (!accessAcceptsKey(_current)) {
         return const Err(ExchangeOperationStaleFailure());
       }
-      _emit(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      _apply(AccessKeyStored(_candidate(_environment(isTestnet))));
       return const Ok(null);
     });
+  }
+
+  @override
+  Future<void> reconnectNotifications() async {
+    final session = _current.signedInSession;
+    if (session == null) return;
+    await _attempt(
+      () => _connectNotifications(session.environment, reconnect: true),
+    );
   }
 }

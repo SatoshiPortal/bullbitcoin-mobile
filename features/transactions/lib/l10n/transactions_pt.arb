@@ -184,7 +184,7 @@
   "transactionSwapDescLnReceiveClaimable": "A transação em cadeia foi confirmada. Estamos agora a reivindicar os fundos para completar a sua troca.",
   "transactionNotesLabel": "Notas de transação",
   "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
-  "retry": "Repito",
+  "retry": "Tentar novamente",
   "@retry": {
     "description": "Generic retry button label"
   },
@@ -222,5 +222,6 @@
   "transactionPayjoinBroadcastFailed": "Não foi possível transmitir a transação original. Por favor, tente novamente.",
   "transactionPayjoinOriginalUnavailable": "A transação original já não está disponível para transmissão.",
   "transactionLabelLimitReached": "Pode ter no máximo 10 etiquetas.",
-  "copiedToClipboard": "Copiado para a área de transferência"
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "transactionListExchangeOrdersUnavailable": "Não foi possível carregar as ordens da exchange."
 }

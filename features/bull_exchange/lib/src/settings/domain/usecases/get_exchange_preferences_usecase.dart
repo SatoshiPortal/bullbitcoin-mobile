@@ -20,5 +20,12 @@ class GetExchangePreferencesUsecase {
           emailNotificationsEnabled: summary.emailNotificationsEnabled,
         ),
       )
-      .mapErr((_) => const ExchangeSettingsAccountUnavailableFailure());
+      .mapErr(
+        (failure) => switch (failure) {
+          ExchangeNotAuthenticatedFailure() ||
+          ExchangeSessionRejectedFailure() =>
+            const ExchangeSettingsNotAuthenticatedFailure(),
+          _ => const ExchangeSettingsAccountUnavailableFailure(),
+        },
+      );
 }

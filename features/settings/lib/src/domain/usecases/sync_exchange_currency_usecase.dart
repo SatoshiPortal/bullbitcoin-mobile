@@ -19,9 +19,12 @@ class SyncExchangeCurrencyUsecase {
 
   @useResult
   Future<Result<void, SettingsFailure>> execute(String currencyCode) async {
-    final currency = FiatCurrency.tryFromCode(currencyCode);
-    if (currency == null) {
-      return const Ok(null);
+    final FiatCurrency currency;
+    switch (ExchangeCatalog.parse(currencyCode)) {
+      case KnownCurrency(currency: final known):
+        currency = known;
+      case UnknownCurrency():
+        return const Ok(null);
     }
 
     final Environment environment;
@@ -47,41 +50,19 @@ class SyncExchangeCurrencyUsecase {
     )) {
       return const Ok(null);
     }
-    final exchangeEnvironment = environment.requireHistoricalTestnet()
-        ? ExchangeEnvironment.testnet
-        : ExchangeEnvironment.mainnet;
-
-    final UserSummary summary;
-    switch (await _exchange.getUserSummary(exchangeEnvironment)) {
-      case Ok(:final value):
-        summary = value;
+    // The writer re-reads the account, so a currency it already has sends
+    // nothing and the other preferences are kept.
+    switch (await _exchange.updateCurrentPreferences(
+      ExchangePreferencesPatch(currency: currency.code),
+    )) {
+      case Ok() || Err(failure: ExchangeNotAuthenticatedFailure()):
+        break;
       case Err(:final failure):
-        if (failure is ExchangeNotAuthenticatedFailure) {
-          return const Ok(null);
-        }
-        // Without the summary a preference write would reset the other
-        // preferences (the exchange replaces the whole set), so don't write.
         return Err(
           SettingsExchangeSyncFailure(
             failure.logMessage ?? '${failure.runtimeType}',
           ),
         );
-    }
-
-    if (summary.currency == currency.code) {
-      return const Ok(null);
-    }
-
-    final saved = await _exchange.saveUserPreference(
-      exchangeEnvironment,
-      language: summary.language,
-      currency: currency.code,
-      dcaEnabled: summary.dca.isActive,
-      autoBuyEnabled: summary.autoBuy.isActive.toString(),
-      emailNotificationsEnabled: summary.emailNotificationsEnabled,
-    );
-    if (saved case Err(:final failure)) {
-      return Err(SettingsExchangeSyncFailure(failure.logMessage));
     }
 
     return const Ok(null);

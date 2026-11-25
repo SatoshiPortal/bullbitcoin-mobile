@@ -11,8 +11,8 @@ class DcaWalletRadioList extends StatelessWidget {
     this.errorText,
   });
 
-  final DcaNetwork? selectedWallet;
-  final ValueChanged<DcaNetwork?>? onChanged;
+  final BtcNetwork? selectedWallet;
+  final ValueChanged<BtcNetwork?>? onChanged;
   final String? errorText;
 
   @override
@@ -32,50 +32,57 @@ class DcaWalletRadioList extends StatelessWidget {
           style: context.bullType.body,
         ),
         const Gap(4),
-        RadioGroup<DcaNetwork>(
+        RadioGroup<BtcNetwork>(
           groupValue: selectedWallet,
           onChanged: onChanged ?? (_) {},
           child: Column(
-            children: DcaNetwork.values.map((walletType) {
-              return Column(
-                children: [
-                  RadioListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        context.bullShapes.card,
+            children:
+                const [
+                  BtcNetwork.bitcoin,
+                  BtcNetwork.lightning,
+                  BtcNetwork.liquid,
+                ].map((walletType) {
+                  return Column(
+                    children: [
+                      RadioListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.card,
+                          ),
+                          side: BorderSide(color: borderColor),
+                        ),
+                        title: Text(
+                          switch (walletType) {
+                            BtcNetwork.bitcoin =>
+                              context.loc.dcaWalletTypeBitcoin,
+                            BtcNetwork.lightning =>
+                              context.loc.dcaWalletTypeLightning,
+                            BtcNetwork.liquid =>
+                              context.loc.dcaWalletTypeLiquid,
+                          },
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        subtitle: Text(
+                          switch (walletType) {
+                            BtcNetwork.bitcoin =>
+                              context.loc.dcaWalletBitcoinSubtitle,
+                            BtcNetwork.lightning =>
+                              context.loc.dcaWalletLightningSubtitle,
+                            BtcNetwork.liquid =>
+                              context.loc.dcaWalletLiquidSubtitle,
+                          },
+                          style: context.bullType.label.copyWith(
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        value: walletType,
                       ),
-                      side: BorderSide(color: borderColor),
-                    ),
-                    title: Text(
-                      switch (walletType) {
-                        DcaNetwork.bitcoin => context.loc.dcaWalletTypeBitcoin,
-                        DcaNetwork.lightning =>
-                          context.loc.dcaWalletTypeLightning,
-                        DcaNetwork.liquid => context.loc.dcaWalletTypeLiquid,
-                      },
-                      style: context.bullType.subtitle.copyWith(
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    subtitle: Text(
-                      switch (walletType) {
-                        DcaNetwork.bitcoin =>
-                          context.loc.dcaWalletBitcoinSubtitle,
-                        DcaNetwork.lightning =>
-                          context.loc.dcaWalletLightningSubtitle,
-                        DcaNetwork.liquid =>
-                          context.loc.dcaWalletLiquidSubtitle,
-                      },
-                      style: context.bullType.label.copyWith(
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    value: walletType,
-                  ),
-                  const Gap(16),
-                ],
-              );
-            }).toList(),
+                      const Gap(16),
+                    ],
+                  );
+                }).toList(),
           ),
         ),
         if (hasError) ...[

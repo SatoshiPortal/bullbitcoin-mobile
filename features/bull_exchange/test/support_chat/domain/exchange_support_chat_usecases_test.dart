@@ -40,8 +40,8 @@ void main() {
               sendMessage: ({required text, attachments}) async =>
                   fail('unexpected send'),
               getAttachment: (_) async => fail('unexpected download'),
-              getUnreadCount: () async => fail('unexpected unread count'),
-              markAllRead: () async => fail('unexpected mark read'),
+              getUnreadCount: (_) async => fail('unexpected unread count'),
+              markAllRead: (_) async => fail('unexpected mark read'),
             ),
           ),
         );
@@ -59,7 +59,7 @@ void main() {
           exchange: exchangeWithTransportForTesting(
             readSession: () => readLegacyExchangeSession(
               preferences: settingsRepository,
-              readEpoch: () => 0,
+              readSession: () => null,
               readKey: ({required isTestnet}) async =>
                   fail('unexpected credential read'),
             ),
@@ -88,8 +88,8 @@ void main() {
               sendMessage: ({required text, attachments}) async =>
                   const Err(ExchangeChatSendMessageFailure('raw')),
               getAttachment: (_) async => fail('unexpected download'),
-              getUnreadCount: () async => fail('unexpected unread count'),
-              markAllRead: () async => fail('unexpected mark read'),
+              getUnreadCount: (_) async => fail('unexpected unread count'),
+              markAllRead: (_) async => fail('unexpected mark read'),
             ),
           ),
         );
@@ -111,8 +111,8 @@ void main() {
                   fail('unexpected send'),
               getAttachment: (_) async =>
                   const Err(ExchangeChatLoadAttachmentFailure('raw')),
-              getUnreadCount: () async => fail('unexpected unread count'),
-              markAllRead: () async => fail('unexpected mark read'),
+              getUnreadCount: (_) async => fail('unexpected unread count'),
+              markAllRead: (_) async => fail('unexpected mark read'),
             ),
           ),
         );
