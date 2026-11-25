@@ -48,6 +48,12 @@ class Preferences implements domain.SettingsRepository {
   _currencyChangeController;
   final StreamController<Result<Environment, PreferencesFailure>>
   _environmentChangeController;
+  final _environmentTransitions = StreamController<bool>.broadcast(sync: true);
+  int _environmentWrites = 0;
+
+  /// Invalidates network-sensitive work before a network write begins.
+  Stream<bool> get environmentTransitions => _environmentTransitions.stream;
+  bool get isEnvironmentChanging => _environmentWrites != 0;
 
   late final RecoverBullPreferences recoverBull = RecoverBullPreferences._(
     _settingsDatasource,
@@ -135,6 +141,7 @@ class Preferences implements domain.SettingsRepository {
     // keep the tracked database or its background admission alive.
     unawaited(_currencyChangeController.close());
     unawaited(_environmentChangeController.close());
+    unawaited(_environmentTransitions.close());
     await _store?.handle.close();
   }
 
@@ -313,6 +320,8 @@ class Preferences implements domain.SettingsRepository {
   Future<Result<void, PreferencesFailure>> setEnvironment(
     Environment env,
   ) async {
+    _environmentWrites++;
+    if (!_environmentTransitions.isClosed) _environmentTransitions.add(true);
     try {
       await _settingsDatasource.setEnvironment(env);
     } on PreferencesMissingRowException {
@@ -326,6 +335,11 @@ class Preferences implements domain.SettingsRepository {
       return Err(
         PreferencesWriteFailure('setEnvironment failed: ${e.runtimeType}'),
       );
+    } finally {
+      _environmentWrites--;
+      if (!_environmentTransitions.isClosed) {
+        _environmentTransitions.add(_environmentWrites != 0);
+      }
     }
     if (!_environmentChangeController.isClosed) {
       _environmentChangeController.add(Ok(env));

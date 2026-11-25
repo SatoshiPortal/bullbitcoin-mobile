@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'metrics/daily_active.dart';
 import 'metrics/statistics_consent.dart';
 import 'metrics/statistics_transport.dart';
+import 'metrics/statistics_network.dart';
+import 'metrics/statistics_runtime.dart';
 
 /// Process-wide statistics authority. No producer can bypass its consent gate.
 final class Statistics {
@@ -18,8 +21,7 @@ final class Statistics {
       return File('${directory.path}/statistics_consent.v1');
     }),
   );
-  StatisticsTransport? _transport;
-  DailyActiveInstallations? _daily;
+  StatisticsRuntime? _runtime;
   bool _foreground = false;
   bool? _failedChoice;
 
@@ -40,36 +42,41 @@ final class Statistics {
     return saved;
   }
 
-  /// Starts the producer with a build-configured endpoint and environment.
-  Future<void> start({required String dsn, required String environment}) async {
+  /// Starts statistics only in release mode with a known mainnet wallet.
+  Future<void> start({
+    required String dsn,
+    required StatisticsNetwork network,
+  }) async {
+    _runtime?.dispose();
+    _runtime = null;
+    if (!kReleaseMode) return;
     final directory = await getApplicationSupportDirectory();
     final info = await PackageInfo.fromPlatform();
+    late final StatisticsRuntime runtime;
     final transport = StatisticsTransport(
       dsn,
       '${info.version}+${info.buildNumber}',
-      environment,
+      'mainnet',
+      () => runtime.canSend(),
     );
-    final daily = DailyActiveInstallations(
+    runtime = StatisticsRuntime(
+      network,
+      transport,
       FileActiveDayStore(File('${directory.path}/statistics_active_day.v1')),
-      transport.installationActive,
+      kReleaseMode,
     );
-    _daily?.setConsent(false);
-    _transport?.updateConsent(false);
-    _transport = transport;
-    _daily = daily;
+    _runtime = runtime;
     await _consent.initialize();
     _applyConsent(_consent.enabled);
-    daily.setForeground(_foreground);
+    runtime.setForeground(_foreground);
   }
 
   void setForeground(bool foreground) {
     _foreground = foreground;
-    _daily?.setForeground(foreground);
+    _runtime?.setForeground(foreground);
   }
 
   void _applyConsent(bool enabled) {
-    final transport = _transport;
-    transport?.updateConsent(enabled);
-    _daily?.setConsent(enabled && (transport?.available ?? false));
+    _runtime?.setConsent(enabled);
   }
 }

@@ -42,6 +42,7 @@ import 'package:sync/write.dart'
 import 'package:background_tasks/background_tasks.dart' show BackgroundSchedule;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
+import 'package:preferences/statistics.dart' show PreferencesStatisticsNetwork;
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
@@ -88,18 +89,6 @@ class Bull {
     const reportingDsn =
         'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
     await Report.init(dsn: reportingDsn, wizardConsent: consent);
-    try {
-      await Statistics.instance.start(
-        dsn: reportingDsn,
-        environment: const String.fromEnvironment(
-          'BULL_METRICS_ENVIRONMENT',
-          defaultValue: 'mainnet',
-        ),
-      );
-    } on Exception {
-      // Statistics are optional and must not block wallet startup.
-    }
-
     await initFlutterRustBridgeDependencies();
 
     // Foreground only: background tasks never read a price, and must not open
@@ -380,6 +369,14 @@ class Bull {
         () => loadTorDiagnosticContext(settings, locator<Tor>()),
       );
       await settings.refreshReportingConsent();
+      try {
+        await Statistics.instance.start(
+          dsn: reportingDsn,
+          network: PreferencesStatisticsNetwork(settings),
+        );
+      } on Exception {
+        // Statistics are optional and must not block wallet startup.
+      }
       await prepareBackgroundWalletStores(
         openNotifications: () => locator<PaymentNotificationStore>().open(),
       );

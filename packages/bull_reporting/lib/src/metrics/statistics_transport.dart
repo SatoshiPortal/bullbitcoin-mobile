@@ -6,24 +6,27 @@ import 'dart:math';
 import 'sentry_endpoint.dart';
 
 /// Best-effort statistics transport independent of the error-reporting SDK.
-/// The caller supplies the build-configured environment and manages consent.
+/// The caller supplies the network gate and manages consent.
 final class StatisticsTransport {
   final Uri? _endpoint;
   final String _release;
   final String _environment;
+  final Future<bool> Function() _canSend;
   final Random _random = Random.secure();
   final List<Map<String, Object>> _pending = [];
   HttpClient? _client;
   Timer? _timer;
   Future<void>? _sending;
 
-  StatisticsTransport(String dsn, this._release, this._environment)
-    : _endpoint = parseSentryEndpoint(dsn);
+  StatisticsTransport(
+    String dsn,
+    this._release,
+    this._environment,
+    this._canSend,
+  ) : _endpoint = parseSentryEndpoint(dsn);
 
-  /// Whether the endpoint and build environment permit sending observations.
-  bool get available =>
-      _endpoint != null &&
-      const {'mainnet', 'testnet', 'regtest'}.contains(_environment);
+  /// Whether the endpoint and mainnet label permit sending observations.
+  bool get available => _endpoint != null && _environment == 'mainnet';
 
   /// Disabling drops queued observations and aborts in-flight connections.
   /// Bytes already received by the server cannot be recalled.
@@ -84,6 +87,7 @@ final class StatisticsTransport {
   ) async {
     HttpClientRequest? request;
     try {
+      if (!await _canSend() || !identical(_client, client)) return;
       final payload = utf8.encode(jsonEncode({'items': batch}));
       final header = utf8.encode(
         '{}\n${jsonEncode({'type': 'trace_metric', 'item_count': batch.length, 'length': payload.length, 'content_type': 'application/vnd.sentry.items.trace-metric+json'})}\n',
@@ -91,7 +95,7 @@ final class StatisticsTransport {
       request = await client
           .postUrl(endpoint)
           .timeout(const Duration(seconds: 4));
-      if (!identical(_client, client)) {
+      if (!await _canSend() || !identical(_client, client)) {
         request.abort();
         return;
       }
