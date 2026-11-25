@@ -8,6 +8,8 @@ library;
 export 'src/buttons/bull_field_action.dart';
 export 'src/chrome/bull_step_bar.dart';
 export 'src/payments/bull_payment_animation.dart';
+export 'src/payments/bull_payment_progress.dart';
+export 'src/payments/bull_payment_step_rail.dart';
 export 'src/payments/bull_payment_transition.dart';
 
 export 'package:flutter/services.dart'
@@ -137,6 +139,7 @@ export 'src/theme/bull_loader_theme.dart';
 export 'src/theme/bull_shapes.dart';
 export 'src/theme/bull_theme.dart';
 export 'src/theme/bull_tokens.dart';
+export 'src/theme/payment_animation_palette.dart';
 export 'src/theme/bull_typography.dart';
 export 'src/theme/bull_ui_extensions.dart';
 
