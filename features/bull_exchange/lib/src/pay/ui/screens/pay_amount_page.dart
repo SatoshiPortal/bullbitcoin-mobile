@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_flow.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_exchange/src/ui/amount_problem_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/exchange_amount_input_field.dart';
