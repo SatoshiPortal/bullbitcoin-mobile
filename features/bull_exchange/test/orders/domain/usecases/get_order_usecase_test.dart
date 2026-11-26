@@ -12,7 +12,7 @@ const _session = ExchangeSession(
   sessionId: 's',
 );
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final Result<Order, ExchangeFailure> order;
   final asked = <String>[];
 

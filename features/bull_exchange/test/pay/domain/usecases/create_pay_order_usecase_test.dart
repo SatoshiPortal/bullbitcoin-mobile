@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../pay_fixtures.dart';
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final ExchangeWrite<FiatPaymentOrder> answer;
   final placed = <Map<String, Object?>>[];
 

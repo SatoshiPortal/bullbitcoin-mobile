@@ -85,15 +85,15 @@ Map<String, Object?> _list(List<Object?> elements) => {
   'result': {'elements': elements},
 };
 
-ExchangeOrders _repository(FakeBbxHttp http, {bool isTestnet = false}) {
+OrdersRepository _repository(FakeBbxHttp http, {bool isTestnet = false}) {
   http.endHistoryAfterFirstPage = true;
   return testExchangeOrders(http, isTestnet: isTestnet);
 }
 
-ExchangeOrders _signedOut(FakeBbxHttp http) =>
+OrdersRepository _signedOut(FakeBbxHttp http) =>
     testExchangeOrders(http, readApiKey: () async => const Ok(null));
 
-ExchangeOrders _unreadableKey(FakeBbxHttp http) => testExchangeOrders(
+OrdersRepository _unreadableKey(FakeBbxHttp http) => testExchangeOrders(
   http,
   readApiKey: () async => const Err(ExchangeCredentialReadFailure()),
 );
@@ -1237,7 +1237,7 @@ void main() {
     });
 
     final calls =
-        <String, Future<ExchangeWrite<Order>> Function(ExchangeOrders)>{
+        <String, Future<ExchangeWrite<Order>> Function(OrdersRepository)>{
           'confirmBuyOrder': (r) => r.confirmBuyOrder('o'),
           'confirmWithdrawOrder': (r) => r.confirmWithdrawOrder('o'),
           'accelerateBuyOrder': (r) => r.accelerateBuyOrder('o'),

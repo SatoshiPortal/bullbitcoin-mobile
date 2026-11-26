@@ -1,7 +1,7 @@
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/data/journaling_exchange_orders.dart';
+import 'package:exchange/src/data/journaling_orders_repository.dart';
 import 'package:exchange/src/data/journaling_exchange_recipients.dart';
 import 'package:exchange/testing.dart';
 import 'package:mocktail/mocktail.dart' show Fake;
@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 
 import 'bbx_api_test_http.dart';
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final ExchangeWrite<Never> Function() answer;
 
   _Orders(this.answer);
@@ -70,7 +70,7 @@ final class _Recipients extends Fake implements ExchangeRecipients {
   }
 }
 
-typedef _Call = Future<ExchangeWrite<Object?>> Function(ExchangeOrders);
+typedef _Call = Future<ExchangeWrite<Object?>> Function(OrdersRepository);
 
 final Map<UnknownWriteKind, (_Call, Map<String, String>, String?)> _calls = {
   UnknownWriteKind.buyConfirm: (
@@ -116,10 +116,10 @@ final Map<UnknownWriteKind, (_Call, Map<String, String>, String?)> _calls = {
 };
 
 void main() {
-  JournalingExchangeOrders journaling(
-    ExchangeOrders orders,
+  JournalingOrdersRepository journaling(
+    OrdersRepository orders,
     UnknownWriteJournal journal,
-  ) => JournalingExchangeOrders(
+  ) => JournalingOrdersRepository(
     orders,
     UnknownWriteRecorder(journal),
     environment: ExchangeEnvironment.testnet,

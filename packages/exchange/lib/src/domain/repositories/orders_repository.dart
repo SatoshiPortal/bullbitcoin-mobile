@@ -1,15 +1,15 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'entities/btc_network.dart';
-import 'entities/dca.dart';
-import 'entities/order.dart';
-import 'entities/sepa_payment_processor.dart';
-import 'exchange_call_result.dart';
-import 'exchange_failure.dart';
+import '../entities/btc_network.dart';
+import '../entities/dca.dart';
+import '../entities/order.dart';
+import '../entities/sepa_payment_processor.dart';
+import '../exchange_call_result.dart';
+import '../exchange_failure.dart';
 
 /// Orders for the selected backend; requests require the matching session.
-abstract interface class ExchangeOrders {
+abstract interface class OrdersRepository {
   /// [payjoinBip21] replaces [toAddress] on the wire when set: the exchange then
   /// pays through payjoin, extracting the payout address from the URI. The two
   /// are mutually exclusive and cannot be swapped after the order exists.

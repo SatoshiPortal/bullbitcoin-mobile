@@ -13,14 +13,14 @@ import 'data/bbx_api_kyc_repository.dart';
 import 'data/bbx_api_limit_order_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
 import 'data/bbx_api_order_stats_repository.dart';
-import 'data/bbx_api_order_repository.dart';
+import 'data/bbx_api_orders_repository.dart';
 import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
 import 'data/bbx_api_virtual_iban_repository.dart';
 import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
-import 'data/journaling_exchange_orders.dart';
+import 'data/journaling_orders_repository.dart';
 import 'data/journaling_exchange_recipients.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
@@ -44,7 +44,7 @@ import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
 import 'domain/exchange_kyc_configuration.dart';
 import 'domain/exchange_limit_orders.dart';
-import 'domain/exchange_orders.dart';
+import 'domain/repositories/orders_repository.dart';
 import 'domain/exchange_virtual_ibans.dart';
 import 'domain/exchange_write_gate.dart';
 import 'domain/order_create_journal.dart';
@@ -154,7 +154,7 @@ final class Exchange {
   _listAnnouncements;
   final _SaveUserPreference _saveUserPreference;
   final _DefaultWalletOperations _defaultWallets;
-  final ExchangeOrders Function(ExchangeEnvironment) _orders;
+  final OrdersRepository Function(ExchangeEnvironment) _orders;
   final ExchangeChatOperations _chat;
   final ExchangeNotificationOperations _notifications;
   final ExchangeLimitOrders limitOrders;
@@ -502,7 +502,7 @@ final class Exchange {
               Err(:final failure) => writeNotRun(failure),
             },
       ),
-      (environment) => BbxApiOrderRepository(
+      (environment) => BbxApiOrdersRepository(
         isTestnet: environment == ExchangeEnvironment.testnet,
         read: <T>(operation) => withClient<T>(
           (client) => operation(client),
@@ -1066,9 +1066,9 @@ final class Exchange {
   ///
   /// With a journal, a confirm, accelerate or DCA create whose outcome is
   /// unknown is recorded before its result is returned.
-  ExchangeOrders orders(ExchangeEnvironment environment) =>
+  OrdersRepository orders(ExchangeEnvironment environment) =>
       switch (_unknownWrites) {
-        final journal? => JournalingExchangeOrders(
+        final journal? => JournalingOrdersRepository(
           _orders(environment),
           UnknownWriteRecorder(journal),
           environment: environment,
@@ -1337,7 +1337,7 @@ Exchange exchangeForTesting({
     required String address,
   })?
   deleteDefaultWallet,
-  ExchangeOrders Function(ExchangeEnvironment)? orders,
+  OrdersRepository Function(ExchangeEnvironment)? orders,
   ExchangeChatOperations? chat,
   ExchangeNotificationOperations? notifications,
   ExchangeLimitOrders? limitOrders,

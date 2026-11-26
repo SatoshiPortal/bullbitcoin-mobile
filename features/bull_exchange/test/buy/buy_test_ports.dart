@@ -8,7 +8,7 @@ import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 /// The buy order calls of one test: each answers what it was given and
 /// throws when the test gave none; every call is logged.
-final class BuyTestOrders extends Fake implements ExchangeOrders {
+final class BuyTestOrders extends Fake implements OrdersRepository {
   ExchangeWrite<BuyOrder>? placed;
   Result<List<Order>, ExchangeFailure>? listed;
   Result<BuyOrder, ExchangeFailure>? refreshed;

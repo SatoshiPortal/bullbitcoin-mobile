@@ -10,7 +10,7 @@ import '../domain/entities/order.dart';
 import '../domain/entities/user_summary.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
-import '../domain/exchange_orders.dart';
+import '../domain/repositories/orders_repository.dart';
 import '../domain/order_create_journal.dart';
 import '../domain/unknown_write_journal.dart';
 import '../recipients/domain/entities/recipient.dart';
@@ -46,7 +46,7 @@ final class UnknownWriteReconciliation {
 /// [UnknownWrite.maxAge]: then it is closed as expired and logged.
 final class ReconcileUnknownWritesUsecase {
   final UnknownWriteJournal _journal;
-  final ExchangeOrders Function(ExchangeEnvironment) _orders;
+  final OrdersRepository Function(ExchangeEnvironment) _orders;
   final Future<Result<UserSummary, ExchangeFailure>> Function(
     ExchangeEnvironment,
   )

@@ -10,7 +10,7 @@ import '../recipients/domain/entities/recipient_type.dart';
 import '../recipients/domain/entities/sepa_virtual_payee_status.dart';
 import '../recipients/domain/recipient_identity.dart';
 import '../recipients/exchange_recipients.dart';
-import 'journaling_exchange_orders.dart';
+import 'journaling_orders_repository.dart';
 
 /// [ExchangeRecipients] whose recipient create is journaled when its outcome
 /// is unknown. Everything else is passed through.

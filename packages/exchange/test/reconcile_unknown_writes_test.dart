@@ -55,7 +55,7 @@ LimitOrder _limitOrder({
   address: address,
 );
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final Map<String, Result<Order, ExchangeFailure>> answers;
   final Result<List<Order>, ExchangeFailure> recent;
   final reads = <String>[];

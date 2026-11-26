@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../dca_fixtures.dart';
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final ExchangeWrite<Dca> answer;
   final created = <String>[];
 

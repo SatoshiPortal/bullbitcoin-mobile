@@ -38,7 +38,7 @@ void main() {
   late _NoNetwork network;
   late Bbx api;
   late Exchange user;
-  late ExchangeOrders orders;
+  late OrdersRepository orders;
   Result<String?, ExchangeFailure> credential = const Ok(null);
 
   setUp(() {

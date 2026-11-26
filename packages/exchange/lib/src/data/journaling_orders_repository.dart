@@ -8,7 +8,7 @@ import '../domain/entities/sepa_payment_processor.dart';
 import '../domain/exchange_call_result.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
-import '../domain/exchange_orders.dart';
+import '../domain/repositories/orders_repository.dart';
 import '../domain/unknown_write_journal.dart';
 
 /// Records a write with an unknown outcome in the journal before its result
@@ -44,15 +44,15 @@ final class UnknownWriteRecorder {
   }
 }
 
-/// [ExchangeOrders] whose confirm, accelerate and DCA writes are journaled
+/// [OrdersRepository] whose confirm, accelerate and DCA writes are journaled
 /// when their outcome is unknown. Everything else is passed through.
-final class JournalingExchangeOrders implements ExchangeOrders {
-  final ExchangeOrders _orders;
+final class JournalingOrdersRepository implements OrdersRepository {
+  final OrdersRepository _orders;
   final UnknownWriteRecorder _recorder;
   final ExchangeEnvironment _environment;
   final Future<int?> Function() _readEpoch;
 
-  const JournalingExchangeOrders(
+  const JournalingOrdersRepository(
     this._orders,
     this._recorder, {
     required this._environment,

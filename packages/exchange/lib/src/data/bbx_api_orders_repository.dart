@@ -9,7 +9,7 @@ import '../domain/entities/order.dart';
 import '../domain/entities/sepa_payment_processor.dart';
 import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
-import '../domain/exchange_orders.dart';
+import '../domain/repositories/orders_repository.dart';
 import 'bbx_api_order_mapper.dart';
 import 'btc_network_wire.dart';
 import 'dca_frequency_wire.dart';
@@ -19,13 +19,13 @@ typedef RunOrderOperation = Future<Result<T, ExchangeFailure>> Function<T>(
   Future<Result<T, ExchangeFailure>> Function(bbx.Bbx),
 );
 
-final class BbxApiOrderRepository implements ExchangeOrders {
+final class BbxApiOrdersRepository implements OrdersRepository {
   static const _maximumPages = 1000;
   final RunOrderOperation _read;
   final RunOrderOperation _write;
   final bool _isTestnet;
 
-  BbxApiOrderRepository({
+  BbxApiOrdersRepository({
     required this._read,
     required this._write,
     required this._isTestnet,

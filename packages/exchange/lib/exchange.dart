@@ -40,7 +40,7 @@ export 'src/domain/exchange_limit_orders.dart'
     show ExchangeLimitOrders, LimitOrderRefusal, limitOrderRefusalOf;
 export 'src/domain/exchange_funding.dart' show ExchangeFunding;
 export 'src/domain/exchange_virtual_ibans.dart' show ExchangeVirtualIbans;
-export 'src/domain/exchange_orders.dart' show ExchangeOrders;
+export 'src/domain/repositories/orders_repository.dart' show OrdersRepository;
 export 'src/domain/order_deadline_scheduler.dart';
 export 'src/domain/unknown_write_journal.dart';
 export 'src/domain/order_create_journal.dart';

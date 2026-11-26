@@ -20,7 +20,7 @@ class _Swaps extends Fake implements SwapStore {}
 
 class _Payjoins extends Fake implements PayjoinSessions {}
 
-class _Orders extends Fake implements ExchangeOrders {}
+class _Orders extends Fake implements OrdersRepository {}
 
 class _LabelOrders extends Fake implements LabelExchangeOrdersUsecase {}
 

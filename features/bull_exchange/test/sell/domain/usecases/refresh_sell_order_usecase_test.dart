@@ -8,7 +8,7 @@ import '../../../pay/pay_fixtures.dart';
 import '../../../withdraw/withdraw_fixtures.dart';
 import '../../sell_fixtures.dart';
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final asked = <String>[];
 
   @override

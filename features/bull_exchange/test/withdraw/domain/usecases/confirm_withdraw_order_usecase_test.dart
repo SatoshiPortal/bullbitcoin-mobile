@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../recipients/recipient_fixture.dart';
 import '../../withdraw_fixtures.dart';
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final ExchangeWrite<WithdrawOrder> answer;
   final placed = <Map<String, Object?>>[];
   final confirmed = <(String, Object?)>[];
