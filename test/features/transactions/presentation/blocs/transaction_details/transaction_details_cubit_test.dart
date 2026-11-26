@@ -231,6 +231,51 @@ void main() {
     );
   });
 
+  test('a stale wallet lookup cannot overwrite a newer observation', () async {
+    final first = Completer<Result<List<Transaction>, TransactionFailure>>();
+    final old = Transaction(
+      walletTransaction: _walletTx(txId: 'tx', amountSat: 1),
+    );
+    final current = Transaction(
+      walletTransaction: _walletTx(txId: 'tx', amountSat: 2),
+    );
+    var calls = 0;
+    when(() => getTransactionsByTxId.execute('tx')).thenAnswer((_) {
+      calls++;
+      return calls == 1 ? first.future : Future.value(Ok([current]));
+    });
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    final initial = cubit.initByWalletTxId('tx', walletId: 'w1');
+    await pumpEventQueue();
+    await cubit.refresh();
+    first.complete(Ok([old]));
+    await initial;
+    expect(cubit.state.walletTransaction?.amountSat, 2);
+  });
+
+  test(
+    'an empty Regtest lookup can later resolve the wallet transaction',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByWalletTxId('tx', walletId: 'w1');
+      expect(cubit.state.failure, isA<TransactionNotFoundFailure>());
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'tx',
+          network: BitcoinNetwork.regtest,
+        ),
+      );
+      when(() => getTransactionsByTxId.execute('tx')).thenAnswer(
+        (_) async => Ok<List<Transaction>, TransactionFailure>([transaction]),
+      );
+      await cubit.refresh();
+      expect(cubit.state.transaction, transaction);
+      expect(cubit.state.failure, isNull);
+    },
+  );
+
   test(
     'loads the destination wallet transaction for a Lightning receive',
     () async {

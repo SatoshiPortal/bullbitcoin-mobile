@@ -143,6 +143,7 @@ void main() {
     Stream<SendState>? updates,
     GoRouter? router,
     bool animations = true,
+    bool silent = false,
     Locale? locale,
     LocalizationsDelegate<SendLocalizations>? localizationOverride,
   }) async {
@@ -157,7 +158,7 @@ void main() {
       (next) => when(() => cubit.state).thenReturn(next),
     );
     if (subscription != null) addTearDown(subscription.cancel);
-    when(() => cubit.isSpMode).thenReturn(false);
+    when(() => cubit.isSpMode).thenReturn(silent);
     when(cubit.readShowPaymentAnimations).thenAnswer((_) async => animations);
     when(() => cubit.preparedMaxAmountSat)
         .thenReturn(value.isMaxSend ? 80000 : null);
@@ -679,6 +680,12 @@ void main() {
     await tester.pump();
 
     expect(find.byType(BullPaymentTransition), findsOneWidget);
+    expect(
+      tester
+          .widget<BullPaymentTransition>(find.byType(BullPaymentTransition))
+          .onSkip,
+      isNull,
+    );
     verify(cubit.onConfirmTransactionClicked).called(1);
 
     pending.complete();
@@ -937,7 +944,7 @@ void main() {
     });
   });
 
-  testWidgets('payment animations on: View details opens the details view', (
+  testWidgets('payment animations on: broadcast opens status once', (
     tester,
   ) async {
     final updates = StreamController<SendState>.broadcast();
@@ -970,105 +977,222 @@ void main() {
     expect(find.byType(BullPaymentTransition), findsOneWidget);
     updates.add(
       state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.bitcoin, txId: ''),
+    );
+    await tester.pump();
+    expect(opened, isEmpty);
+    updates.add(
+      state(step: SendStep.confirm)
           .copyWith(sendType: SendType.bitcoin, txId: 'broadcast-tx'),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(opened, isEmpty);
-    tester
-        .widget<BullPaymentTransition>(find.byType(BullPaymentTransition))
-        .onSkip!();
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(opened, hasLength(1));
-    expect(opened.single, contains('view=details'));
+    expect(opened.single, isNot(contains('view=details')));
     pending.complete();
     await tester.pumpAndSettle();
   });
 
-  testWidgets(
-    'Bitcoin send: tag and headline follow the step, success stays on screen',
-    (tester) async {
+  for (final animations in [true, false]) {
+    testWidgets('Liquid broadcast passes private wallet context: $animations', (
+      tester,
+    ) async {
       final updates = StreamController<SendState>.broadcast();
       addTearDown(updates.close);
-      final opened = <String>[];
+      final extras = <Object?>[];
+      final uris = <Uri>[];
       final router = GoRouter(
         routes: [
           GoRoute(path: '/', builder: (_, _) => const SendScreen()),
           GoRoute(
             name: TransactionsRoute.transactionDetails.name,
             path: TransactionsRoute.transactionDetails.path,
-            builder: (_, routeState) {
-              opened.add(routeState.uri.toString());
+            builder: (_, state) {
+              extras.add(state.extra);
+              uris.add(state.uri);
               return const Scaffold(body: Text('Details'));
             },
           ),
         ],
       );
       addTearDown(router.dispose);
-      final base = state(step: SendStep.confirm)
-          .copyWith(sendType: SendType.bitcoin);
+      final base = liquidState(step: SendStep.confirm);
       final cubit = await pump(
         tester,
         base,
         updates: updates.stream,
         router: router,
+        animations: animations,
       );
       final pending = Completer<void>();
       when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
       tester.widget<BullButton>(find.byType(BullButton)).onPressed();
       await tester.pump();
-
-      // Broadcasted: tag and headline are the current step label.
-      updates.add(base.copyWith(txId: 'broadcast-tx'));
+      updates.add(base.copyWith(txId: 'liquid-tx'));
       await tester.pump();
-      await tester.pump(const Duration(seconds: 6));
-      var transition = tester.widget<BullPaymentTransition>(
-        find.byType(BullPaymentTransition),
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(extras, [(txId: 'liquid-tx', walletId: 'liquid', isLiquid: true)]);
+      expect(uris.single.queryParameters.containsKey('isLiquid'), isFalse);
+      expect(
+        uris.single.queryParameters['view'],
+        animations ? isNull : 'details',
       );
-      expect(transition.status, 'Broadcasted');
-      expect(transition.statusTag, 'Broadcasted');
-      expect(transition.phase, isNot(BullPaymentPhase.success));
-
-      // Confirmed: success, and the animation finishing never dismisses it.
-      updates.add(
-        base.copyWith(
-          txId: 'broadcast-tx',
-          walletTransaction: WalletTransaction(
-            walletId: 'mono',
-            network: BitcoinNetwork.mainnet,
-            direction: WalletTransactionDirection.outgoing,
-            status: WalletTransactionStatus.confirmed,
-            txId: 'broadcast-tx',
-            amountSat: 10000,
-            feeSat: 200,
-            vsize: 140,
-            inputs: const [],
-            outputs: const [],
-            isRbf: false,
-          ),
-        ),
-      );
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 15));
-      transition = tester.widget<BullPaymentTransition>(
-        find.byType(BullPaymentTransition),
-      );
-      expect(transition.phase, BullPaymentPhase.success);
-      expect(transition.status, 'Confirmed');
-      expect(transition.statusTag, 'Confirmed');
-      transition.onDone();
-      await tester.pump(const Duration(seconds: 5));
-      expect(find.byType(BullPaymentTransition), findsOneWidget);
-      expect(opened, isEmpty);
-
-      transition.onSkip!();
-      await tester.pumpAndSettle();
-      expect(opened, hasLength(1));
-      expect(opened.single, contains('view=details'));
       pending.complete();
-      await tester.pumpAndSettle();
-    },
-  );
+      await tester.pump();
+    });
+  }
+
+  testWidgets('back during signing does not navigate after broadcast', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast();
+    addTearDown(updates.close);
+    final opened = <String>[];
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, state) {
+            opened.add(state.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final base = state(step: SendStep.confirm)
+        .copyWith(sendType: SendType.bitcoin);
+    final cubit = await pump(
+      tester,
+      base,
+      updates: updates.stream,
+      router: router,
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+    await tester.pump();
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    updates.add(base.copyWith(txId: 'broadcast-tx'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(opened, isEmpty);
+    pending.complete();
+    await tester.pump();
+  });
+
+  testWidgets('Silent Payments never opens the artificial sp wallet target', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast();
+    addTearDown(updates.close);
+    final opened = <String>[];
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, state) {
+            opened.add(state.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final base = state(step: SendStep.confirm).copyWith(
+      sendType: SendType.bitcoin,
+      selectedWallet: SendWalletSp(
+        label: 'Silent Payments',
+        network: BitcoinNetwork.mainnet,
+        balanceSat: BigInt.from(100000),
+      ),
+    );
+    final cubit = await pump(
+      tester,
+      base,
+      updates: updates.stream,
+      router: router,
+      silent: true,
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    tester.widget<BullButton>(find.byType(BullButton).last).onPressed();
+    await tester.pump();
+    updates.add(base.copyWith(txId: 'silent-tx', step: SendStep.success));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(opened, isEmpty);
+    pending.complete();
+    await tester.pump();
+  });
+
+  testWidgets('Bitcoin broadcast and confirmation navigate only once', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast();
+    addTearDown(updates.close);
+    final opened = <String>[];
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, routeState) {
+            opened.add(routeState.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final base = state(step: SendStep.confirm)
+        .copyWith(sendType: SendType.bitcoin);
+    final cubit = await pump(
+      tester,
+      base,
+      updates: updates.stream,
+      router: router,
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+    await tester.pump();
+
+    updates.add(base.copyWith(txId: 'broadcast-tx'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(opened, hasLength(1));
+    expect(opened.single, isNot(contains('view=details')));
+
+    updates.add(
+      base.copyWith(
+        txId: 'broadcast-tx',
+        walletTransaction: WalletTransaction(
+          walletId: 'mono',
+          network: BitcoinNetwork.mainnet,
+          direction: WalletTransactionDirection.outgoing,
+          status: WalletTransactionStatus.confirmed,
+          txId: 'broadcast-tx',
+          amountSat: 10000,
+          feeSat: 200,
+          vsize: 140,
+          inputs: const [],
+          outputs: const [],
+          isRbf: false,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(opened, hasLength(1));
+    pending.complete();
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('mono MAX review shows the actual drain recipient amount', (
     tester,
