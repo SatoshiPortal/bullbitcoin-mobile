@@ -715,5 +715,7 @@
   "swapsFailureRefundNotFinal": "The refund is not spendable yet (timelock). Try again later.",
   "@swapsFailureRefundNotFinal": {"description": "Rescue failure: refund timelock not passed"},
   "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
-  "@swapsFailureUnexpected": {"description": "Rescue failure: generic catch-all, never shows raw details"}
+  "@swapsFailureUnexpected": {"description": "Rescue failure: generic catch-all, never shows raw details"},
+  "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
+  "@walletLoadFailed": {"description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."}
 }

@@ -74,7 +74,6 @@
   },
   "selectAmountTitle": "აირჩიეთ თანხა",
   "sendAdvancedOptions": "დამატებითი პარამეტრები",
-  "sendDone": "დასრულდა",
   "sendErrorBuildFailed": "ამ გადახდის მომზადება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "sendErrorSwapCreationFailed": "სვაპის შექმნა ვერ მოხერხდა.",
   "sendFastFee": "სწრაფი",

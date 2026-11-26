@@ -226,7 +226,6 @@
     "description": "Title for manual coin selection bottom sheet"
   },
   "sendAdvancedOptions": "উন্নত বিকল্পসমূহ",
-  "sendDone": "সম্পন্ন",
   "sendErrorBuildFailed": "এই পৰিশোধ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"

@@ -19,10 +19,16 @@ class SwapBalanceRow extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
+    final loading = context.select(
+      (TransferBloc bloc) => bloc.state.isStarting,
+    );
     final balanceSat = fromWallet?.balanceSat?.toInt();
-    // Unknown while the wallets load; a failed load shows as the page error.
+    // "…" only while the wallets load; a balance still missing after that is
+    // a failure, said plainly rather than shown as a load that never ends.
     final balance = balanceSat == null
-        ? '…'
+        ? loading
+              ? '…'
+              : context.swapCopyForLocale.walletLoadFailed
         : bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(balanceSat)
         : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));

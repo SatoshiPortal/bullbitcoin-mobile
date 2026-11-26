@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "انجام کارها",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "این پرداخت آماده نشد. لطفاً دوباره تلاش کنید.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"

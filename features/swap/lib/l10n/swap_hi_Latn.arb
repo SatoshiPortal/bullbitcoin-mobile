@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Ho Gaya",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Yah payment taiyar nahi ki ja saki. Kripya phir koshish karein.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"

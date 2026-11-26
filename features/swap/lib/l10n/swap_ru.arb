@@ -96,7 +96,6 @@
   },
   "selectAmountTitle": "Выберите сумму",
   "sendAdvancedOptions": "Дополнительные параметры",
-  "sendDone": "Дон",
   "sendErrorBuildFailed": "Не удалось подготовить этот платёж. Пожалуйста, попробуйте снова.",
   "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
   "sendFastFee": "Быстро",

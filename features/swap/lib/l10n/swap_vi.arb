@@ -65,7 +65,6 @@
   "receiveNote": "Ghi chú",
   "selectAmountTitle": "Chọn số tiền",
   "sendAdvancedOptions": "Tùy chọn nâng cao",
-  "sendDone": "Xong",
   "sendErrorBuildFailed": "Không thể chuẩn bị khoản thanh toán này. Vui lòng thử lại.",
   "sendErrorSwapCreationFailed": "Không thể tạo swap.",
   "sendFastFee": "Nhanh",
