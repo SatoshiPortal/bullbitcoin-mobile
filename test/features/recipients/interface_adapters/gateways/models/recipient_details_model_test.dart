@@ -46,6 +46,16 @@ void main() {
     });
   });
 
+  test('a saved recipient without a last name is kept', () {
+    final json = _sepaJson(virtualPayeeStatus: 'ACTIVE')..remove('lastname');
+
+    final details =
+        RecipientDetailsModel.fromJson(json).toDomain() as SepaEurDetails;
+
+    expect(details.firstname, 'Satoshi');
+    expect(details.isVirtualPayeeActive, isTrue);
+  });
+
   test('a confidential recipient is sent to the api as a SEPA recipient', () {
     final details = SepaEurDetails.create(
       iban: 'FR7630006000011234567890189',

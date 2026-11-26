@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_electrum_cache.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -51,6 +52,7 @@ class BdkWalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
+  final Set<String> _deletingWallets = {};
   final StreamController<String> _walletSyncStartedController;
   final StreamController<String> _walletSyncFinishedController;
 
@@ -89,6 +91,9 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     required ElectrumConnection electrumServer,
   }) {
+    if (_deletingWallets.contains(wallet.id)) {
+      return Future.error(StateError('Wallet deletion in progress'));
+    }
     // putIfAbsent ensures only one sync starts for each wallet ID,
     //  all others await the same Future.
     // TODO: if needed, add these debugPrint to a filterable logger.debug
@@ -561,6 +566,41 @@ class BdkWalletDatasource {
     return walletTxs.whereType<WalletTransactionModel>().toList();
   }
 
+  /// The id of the wallet transaction that spends every one of [outpoints],
+  /// or null. Reads only bdk's raw inputs, without mapping any transaction.
+  ///
+  /// While one of them is still a wallet utxo nothing spends them, which
+  /// `getUtxo()` answers without walking the history.
+  Future<String?> findTransactionSpending({
+    required WalletModel wallet,
+    required Set<Outpoint> outpoints,
+  }) async {
+    if (outpoints.isEmpty) return null;
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    for (final outpoint in outpoints) {
+      final utxo = bdkWallet.getUtxo(
+        op: bdk.OutPoint(
+          txid: bdk.Txid.fromString(hex: outpoint.txId),
+          vout: outpoint.vout,
+        ),
+      );
+      if (utxo != null) return null;
+    }
+    for (final tx in bdkWallet.transactions()) {
+      final spent = {
+        for (final input in tx.transaction.input())
+          (
+            txId: input.previousOutput.txid.toString(),
+            vout: input.previousOutput.vout,
+          ),
+      };
+      if (spent.containsAll(outpoints)) {
+        return tx.transaction.computeTxid().toString();
+      }
+    }
+    return null;
+  }
+
   Future<({String address, int index})> getNewAddress({
     required WalletModel wallet,
     bool isChange = false,
@@ -859,8 +899,20 @@ class BdkWalletDatasource {
   }
 
   Future<void> delete({required WalletModel wallet}) async {
-    await BdkFacade.delete(wallet);
-    log.fine('Deleted wallet ${wallet.id} BDK database');
+    if (!_deletingWallets.add(wallet.id)) {
+      throw StateError('Wallet deletion in progress');
+    }
+    try {
+      try {
+        await _activeSyncs[wallet.id];
+      } catch (_) {
+        // A failed sync must not prevent an explicit deletion.
+      }
+      await BdkFacade.delete(wallet);
+      log.fine('Deleted wallet ${wallet.id} BDK database');
+    } finally {
+      _deletingWallets.remove(wallet.id);
+    }
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
@@ -921,6 +973,7 @@ class _SyncParams {
 }
 
 Future<void> _performFullScan(_SyncParams params) async {
+  final watch = Stopwatch()..start();
   // Initialize the binary messenger for platform channel access in isolate
   // Needed for things like getting the database path from BdkFacade which
   // uses path_provider under the hood
@@ -935,22 +988,45 @@ Future<void> _performFullScan(_SyncParams params) async {
   );
 
   final bdkWallet = await BdkFacade.createWallet(wallet);
-  final blockchain = _createElectrumClient(
-    url: params.electrumUrl,
-    socks5: params.electrumSocks5,
-    timeout: params.electrumTimeout,
-    retry: params.electrumRetry,
-    validateDomain: params.electrumValidateDomain,
-  );
+  bdk.ElectrumClient? blockchain;
+  BdkElectrumCache? cache;
   try {
-    final scanRequest = bdkWallet.startFullScan().build();
-    final update = blockchain.fullScan(
-      request: scanRequest,
-      stopGap: params.electrumStopGap,
-      batchSize: _batchSizeFor(params.electrumStopGap),
-      fetchPrevTxouts: true,
+    blockchain = _createElectrumClient(
+      url: params.electrumUrl,
+      socks5: params.electrumSocks5,
+      timeout: params.electrumTimeout,
+      retry: params.electrumRetry,
+      validateDomain: params.electrumValidateDomain,
     );
-    bdkWallet.applyUpdate(update: update);
+    cache = await BdkFacade.openElectrumCache(params.walletHexId);
+    final prefill = cache?.prefill(blockchain, bdkWallet);
+    final builder = bdkWallet.startFullScan();
+    try {
+      final scanRequest = builder.build();
+      try {
+        final update = blockchain.fullScan(
+          request: scanRequest,
+          stopGap: params.electrumStopGap,
+          batchSize: _batchSizeFor(params.electrumStopGap),
+          fetchPrevTxouts: true,
+        );
+        try {
+          bdkWallet.applyUpdate(update: update);
+        } finally {
+          update.dispose();
+        }
+      } finally {
+        scanRequest.dispose();
+      }
+    } finally {
+      builder.dispose();
+    }
+    await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
+    final parents = cache?.rememberParents(blockchain, bdkWallet);
+    log.fine(
+      'Bitcoin full scan finished elapsed_ms=${watch.elapsedMilliseconds} '
+      '${BdkElectrumCache.describe(opened: cache != null, prefill: prefill, parents: parents)}',
+    );
   } catch (e, st) {
     log.warning(
       'full_scan failed for wallet ${params.walletId}',
@@ -958,8 +1034,11 @@ Future<void> _performFullScan(_SyncParams params) async {
       trace: st,
     );
     rethrow;
+  } finally {
+    cache?.close();
+    blockchain?.dispose();
+    bdkWallet.dispose();
   }
-  await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
 }
 
 class FailedToSignPsbtException extends BullException {

@@ -32,7 +32,6 @@ class BullbitcoinApiVirtualIbanDatasource {
           'paginator': {'page': 1, 'pageSize': 1},
           'filters': {
             'recipientTypeFiat': ['SEPA_EUR_VIRTUAL_ACCOUNT'],
-            'isOwner': true,
           },
         },
       },

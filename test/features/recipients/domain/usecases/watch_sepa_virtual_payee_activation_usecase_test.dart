@@ -13,15 +13,20 @@ class _MockGetRecipientsEnvironmentUsecase extends Mock
 
 class _FakeSepaVirtualPayeeRepository implements SepaVirtualPayeeRepository {
   final List<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findResults;
-  final Result<SepaVirtualPayeeStatus, RecipientsFailure> activateResult;
+
+  /// One result per activation request; the last one repeats.
+  final List<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activateResults;
   int finds = 0;
   int activations = 0;
   bool? lastIsTestnet;
 
   _FakeSepaVirtualPayeeRepository({
     required this.findResults,
-    this.activateResult = const Ok(SepaVirtualPayeeStatus.pending),
-  });
+    Result<SepaVirtualPayeeStatus, RecipientsFailure> activateResult = const Ok(
+      SepaVirtualPayeeStatus.pending,
+    ),
+    List<Result<SepaVirtualPayeeStatus, RecipientsFailure>>? activateResults,
+  }) : activateResults = activateResults ?? [activateResult];
 
   @override
   Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
@@ -37,8 +42,10 @@ class _FakeSepaVirtualPayeeRepository implements SepaVirtualPayeeRepository {
     required String recipientId,
     required bool isTestnet,
   }) async {
+    final result =
+        activateResults[activations.clamp(0, activateResults.length - 1)];
     activations++;
-    return activateResult;
+    return result;
   }
 }
 
@@ -122,48 +129,78 @@ void main() {
     ]);
   });
 
-  test('a failed activation is the last event', () async {
+  test('asks again after a failed activation and keeps checking', () async {
     final repository = _FakeSepaVirtualPayeeRepository(
-      findResults: [_absent],
-      activateResult: const Err(RecipientsUnexpectedFailure()),
+      findResults: [_absent, _absent, _active],
+      activateResults: const [
+        Err(RecipientsUnexpectedFailure()),
+        Ok(SepaVirtualPayeeStatus.pending),
+      ],
     );
 
     final events = await run(repository);
 
-    expect(events, hasLength(2));
-    expect(
-      (events.first as Ok<SepaVirtualPayeeStatus, RecipientsFailure>).value,
+    expect(repository.activations, 2);
+    expect(events, hasLength(5));
+    expect(events[1], isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>());
+    expect(statuses([events[0], events[2], events[3], events[4]]), [
       SepaVirtualPayeeStatus.absent,
-    );
-    expect(events.last, isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>());
-    expect(repository.finds, 1);
+      SepaVirtualPayeeStatus.absent,
+      SepaVirtualPayeeStatus.pending,
+      SepaVirtualPayeeStatus.active,
+    ]);
   });
 
-  test('a failed refresh stops the polling', () async {
+  test('a successful activation is not asked again while pending', () async {
     final repository = _FakeSepaVirtualPayeeRepository(
-      findResults: [_pending, const Err(RecipientsNetworkFailure())],
+      findResults: [_absent, _absent, _pending, _active],
+      activateResult: const Ok(SepaVirtualPayeeStatus.absent),
+    );
+
+    await run(repository);
+
+    expect(repository.activations, 1);
+  });
+
+  test('keeps checking after a failed check', () async {
+    final repository = _FakeSepaVirtualPayeeRepository(
+      findResults: [
+        _pending,
+        const Err(RecipientsNetworkFailure()),
+        _pending,
+        _active,
+      ],
     );
 
     final events = await run(repository);
 
-    expect(events, hasLength(2));
     expect(
-      (events.last as Err<SepaVirtualPayeeStatus, RecipientsFailure>).failure,
+      (events[1] as Err<SepaVirtualPayeeStatus, RecipientsFailure>).failure,
       isA<RecipientsNetworkFailure>(),
     );
-  });
-
-  test('a recipient that is not found is a failure', () async {
-    final repository = _FakeSepaVirtualPayeeRepository(
-      findResults: [const Ok(null)],
-    );
-
-    final events = await run(repository);
-
-    expect(
-      events.single,
-      isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>(),
-    );
+    expect(statuses([events[0], events[2], events[3]]), [
+      SepaVirtualPayeeStatus.pending,
+      SepaVirtualPayeeStatus.pending,
+      SepaVirtualPayeeStatus.active,
+    ]);
     expect(repository.activations, 0);
   });
+
+  test(
+    'a recipient that is not found is a failure until it is found',
+    () async {
+      final repository = _FakeSepaVirtualPayeeRepository(
+        findResults: [const Ok(null), _active],
+      );
+
+      final events = await run(repository);
+
+      expect(
+        events.first,
+        isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>(),
+      );
+      expect(statuses([events.last]), [SepaVirtualPayeeStatus.active]);
+      expect(repository.activations, 0);
+    },
+  );
 }

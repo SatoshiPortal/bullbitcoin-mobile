@@ -61,6 +61,32 @@ void main() {
     });
   });
 
+  group('names', () {
+    test('a new individual recipient needs a first and a last name', () {
+      expect(
+        () => SepaEurDetails.create(
+          iban: 'FR7630006000011234567890189',
+          isCorporate: false,
+          firstname: 'Satoshi',
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('a saved individual recipient can have only one name', () {
+      final details = SepaEurDetails.saved(
+        iban: 'FR7630006000011234567890189',
+        isCorporate: false,
+        isOwner: true,
+        firstname: 'Satoshi',
+        virtualPayeeStatus: SepaVirtualPayeeStatus.active,
+      );
+
+      expect(details.isVirtualPayeeActive, isTrue);
+      expect(details.lastname, isNull);
+    });
+  });
+
   test('the confidential copy keeps the details and changes the type', () {
     final regular = _individual(status: SepaVirtualPayeeStatus.active);
 

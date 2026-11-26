@@ -87,7 +87,6 @@ void main() {
       expect(request['method'], 'listRecipientsFiat');
       expect((request['params'] as Map)['filters'], {
         'recipientTypeFiat': ['SEPA_EUR_VIRTUAL_ACCOUNT'],
-        'isOwner': true,
       });
       verifyNever(
         () => mainnet.post<dynamic>(

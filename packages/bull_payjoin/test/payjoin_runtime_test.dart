@@ -2,6 +2,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
+import 'package:bull_payjoin/src/data/payjoin_database.dart';
+import 'package:bull_payjoin/src/data/payjoin_model.dart';
+import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
@@ -64,6 +68,12 @@ final class _TransactionPort implements PayjoinTransactionPort {
   }) async => false;
 
   @override
+  Future<String?> findTransactionSpending({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) async => null;
+
+  @override
   Future<void> refreshWallet(String walletId) async {}
 
   @override
@@ -124,6 +134,87 @@ void main() {
       log: log ?? _LogPort(),
     );
   }
+
+  group('ownership of a receiver whose payjoin landed under another txid', () {
+    // The sender's input 11..:0 pays 50 000 sat to the receiver's address;
+    //  the proposal adds the receiver's input 44..:1.
+    const paymentAddress = 'tb1qyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zjuhu9x';
+    const originalHex =
+        '0200000001111111111111111111111111111111111111111111111111111111111111'
+        '11110000000000fdffffff0150c30000000000001600142222222222222222222222'
+        '22222222222222222200000000';
+    const proposalPsbt =
+        'cHNidP8BAHsCAAAAAhERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
+        'REREREREREREREREREREREREREREREREREREREREREQBAAAAAP3///8B8EkCAAAAAAAWABQi'
+        'IiIiIiIiIiIiIiIiIiIiIiIiIgAAAAAAAQEfaIcBAAAAAAAWABQzMzMzMzMzMzMzMzMzMzMz'
+        'MzMzMwABAR8YxAAAAAAAABYAFFVVVVVVVVVVVVVVVVVVVVVVVVVVAAA=';
+    const sessionId = '0123456789abcdef';
+    final landedTxId = '77' * 32;
+
+    Future<PayjoinSession?> stored({required bool isCompleted}) async {
+      final originalBytes = Uint8List.fromList([
+        for (var i = 0; i < originalHex.length; i += 2)
+          int.parse(originalHex.substring(i, i + 2), radix: 16),
+      ]);
+      // Created and migrated by the runtime itself first.
+      await switch (await open()) {
+        Ok(:final value) => value.dispose(),
+        Err(:final failure) => throw failure,
+      };
+      final database = PayjoinDatabase.open('${directory.path}/payjoin.sqlite');
+      await LocalPayjoinDatasource(db: database).storeReceiver(
+        (PayjoinModel.receiver(
+                  id: sessionId,
+                  address: paymentAddress,
+                  isTestnet: true,
+                  receiver: '[]',
+                  walletId: 'wallet-1',
+                  pjUri:
+                      'bitcoin:$paymentAddress?amount=0.0005'
+                      '&pj=https://payjo.in/$sessionId',
+                  maxFeeRateSatPerVb: BigInt.from(10000),
+                  createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                  expireAfterSec: 3600,
+                  originalTxBytes: originalBytes,
+                  originalTxId: BitcoinTx.fromBytesSync(originalBytes).txid,
+                  amountSat: 50000,
+                  proposalPsbt: proposalPsbt,
+                  txId: landedTxId,
+                )
+                as PayjoinReceiverModel)
+            .copyWith(isCompleted: isCompleted),
+      );
+      await database.close();
+
+      final lifecycle = switch (await open()) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      addTearDown(lifecycle.dispose);
+      return switch (await lifecycle.payjoin.sessions.byId(sessionId)) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+    }
+
+    test('a completed one keeps its breakdown', () async {
+      final session = await stored(isCompleted: true);
+
+      expect(session?.transactionId, landedTxId);
+      expect(session?.ownership?.inputs, [
+        PayjoinParty.sender,
+        PayjoinParty.recipient,
+      ]);
+      expect(session?.ownership?.outputs, [PayjoinParty.recipient]);
+    });
+
+    test('an unfinished one has none', () async {
+      final session = await stored(isCompleted: false);
+
+      expect(session, isNotNull);
+      expect(session?.ownership, isNull);
+    });
+  });
 
   test('a sender that cannot start says why in the log', () async {
     final log = _LogPort();

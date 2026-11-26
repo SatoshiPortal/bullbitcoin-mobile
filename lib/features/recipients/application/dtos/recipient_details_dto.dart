@@ -81,7 +81,9 @@ class RecipientDetailsDto {
   });
 
   // DTO → VO
-  RecipientDetails toDomain() {
+  /// [isSaved] is true for a recipient that the API returned, which skips
+  /// the checks that apply only to a new recipient.
+  RecipientDetails toDomain({bool isSaved = false}) {
     final def = isDefault ?? false;
 
     switch (recipientType) {
@@ -157,7 +159,10 @@ class RecipientDetailsDto {
         final inferredIsCorporate =
             isCorporate ??
             (corporateName != null && corporateName!.trim().isNotEmpty);
-        return SepaEurDetails.create(
+        final createSepaEur = isSaved
+            ? SepaEurDetails.saved
+            : SepaEurDetails.create;
+        return createSepaEur(
           label: label,
           isDefault: def,
           isOwner: isOwner,

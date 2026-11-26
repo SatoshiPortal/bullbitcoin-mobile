@@ -3574,7 +3574,7 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "ইমেইল মানি ট্ৰান্সফাৰ",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -3610,7 +3610,7 @@
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
   },
-  "sellInteracEmail": "Interac ইমেইল",
+  "sellInteracEmail": "ট্ৰান্সফাৰৰ ইমেইল",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -8440,7 +8440,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, one{১ টা কইন} other{{count} টা কইন}}",
+  "coinsSummaryCoinsCount": "{count, plural, one{{count} টা কইন} other{{count} টা কইন}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -8477,7 +8477,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, one{১ টা খৰচ নকৰা আউটপুট} other{{count} টা খৰচ নকৰা আউটপুট}}",
+  "coinsUnspentOutputsCount": "{count, plural, one{{count} টা খৰচ নকৰা আউটপুট} other{{count} টা খৰচ নকৰা আউটপুট}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -8554,7 +8554,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, one{১ টা বাছনি কৰা হৈছে} other{{count} টা বাছনি কৰা হৈছে}}",
+  "coinsSelectedCount": "{count, plural, one{{count} টা বাছনি কৰা হৈছে} other{{count} টা বাছনি কৰা হৈছে}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -8579,7 +8579,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, one{১ টা কইন ফ্ৰীজ কৰিবনে?} other{{count} টা কইন ফ্ৰীজ কৰিবনে?}}",
+  "coinsFreezeConfirmTitle": "{count, plural, one{{count} টা কইন ফ্ৰীজ কৰিবনে?} other{{count} টা কইন ফ্ৰীজ কৰিবনে?}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -8596,7 +8596,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, one{১ টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে} other{{count} টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে}}",
+  "coinsFrozenToast": "{count, plural, one{{count} টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে} other{{count} টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -8605,7 +8605,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, one{১ টা কইন আনফ্ৰীজ কৰা হৈছে} other{{count} টা কইন আনফ্ৰীজ কৰা হৈছে}}",
+  "coinsUnfrozenToast": "{count, plural, one{{count} টা কইন আনফ্ৰীজ কৰা হৈছে} other{{count} টা কইন আনফ্ৰীজ কৰা হৈছে}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -8614,7 +8614,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, one{১ টা নিশ্চিতি} other{{count} টা নিশ্চিতি}}",
+  "coinsConfsCount": "{count, plural, one{{count} টা নিশ্চিতি} other{{count} টা নিশ্চিতি}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -8667,7 +8667,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{{count} UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {
@@ -8690,7 +8690,7 @@
   "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
   "coreSwapsStatusRefunded": "ঘূৰাই দিয়া হৈছে",
   "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ",
-  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি 1টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
+  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
   "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো swap পোৱা নগ'ল",
   "swapRestoreRecoverableSection": "পুনৰুদ্ধাৰযোগ্য",
   "swapRestoreAllSection": "সকলো swap",
@@ -8817,7 +8817,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colombia",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "ইমেইল মানি ট্ৰান্সফাৰ",
   "recipientsTypeBillPayment": "Bill Payment",
   "recipientsTypeBankTransfer": "Bank Transfer",
   "recipientsTypeSepa": "SEPA Transfer",
@@ -9087,7 +9087,7 @@
   "testBackupErrorSeedUnavailable": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ পঢ়িব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "testBackupErrorSeedNotMnemonic": "এই ৱালেটত পৰীক্ষা কৰিবলৈ কোনো পুনৰুদ্ধাৰ বাক্যাংশ নাই।",
   "testBackupErrorCompletionFailed": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ শুদ্ধ আছিল, কিন্তু আমি ফলাফল সংৰক্ষণ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "withdrawInteracSecurityDetailsTitle": "Interac সুৰক্ষা বিৱৰণ",
+  "withdrawInteracSecurityDetailsTitle": "ট্ৰান্সফাৰৰ সুৰক্ষা বিৱৰণ",
   "withdrawInteracSaveAsDefault": "এই বিৱৰণসমূহ ডিফল্ট হিচাপে সংৰক্ষণ কৰক",
   "withdrawInteracSecurityQuestionLengthError": "সুৰক্ষা প্ৰশ্ন 3-40টা আখৰৰ হ’ব লাগিব",
   "withdrawInteracSecurityAnswerLengthError": "সুৰক্ষা উত্তৰ 3-40টা আখৰৰ হ’ব লাগিব",
@@ -9191,8 +9191,8 @@
   "limitOrdersInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
   "limitOrdersInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
   "limitOrdersFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 টা লেনদেন} other{{count} টা লেনদেন}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 টা লেনদেন ({currency})} other{{count} টা লেনদেন ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} টা লেনদেন} other{{count} টা লেনদেন}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} টা লেনদেন ({currency})} other{{count} টা লেনদেন ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "আপোনাৰ আপলোডৰ স্থিতি ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "এই ফান্ডিং বিকল্পত প্ৰৱেশ কৰিবলৈ আপোনাৰ প্ৰয়োজনীয় অনুমতি নাই। আপোনাৰ KYC অপৰ্যাপ্ত নাইবা এই বিকল্প আপোনাৰ একাউণ্টৰ বাবে উপলব্ধ নহয়",

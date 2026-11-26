@@ -7965,7 +7965,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac ईमेल",
+  "sellInteracEmail": "ट्रांसफर के लिए ईमेल",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -10119,7 +10119,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "इंटरैक ई-ट्रांसफर",
+  "sellInteracTransfer": "ईमेल मनी ट्रांसफर",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11257,7 +11257,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 कॉइन} other{{count} कॉइन}}",
+  "coinsSummaryCoinsCount": "{count, plural, =1{{count} कॉइन} other{{count} कॉइन}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -11294,7 +11294,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 अव्ययित आउटपुट} other{{count} अव्ययित आउटपुट}}",
+  "coinsUnspentOutputsCount": "{count, plural, =1{{count} अव्ययित आउटपुट} other{{count} अव्ययित आउटपुट}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -11371,7 +11371,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, =1{1 चयनित} other{{count} चयनित}}",
+  "coinsSelectedCount": "{count, plural, =1{{count} चयनित} other{{count} चयनित}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -11396,7 +11396,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{1 कॉइन फ्रीज़ करें?} other{{count} कॉइन फ्रीज़ करें?}}",
+  "coinsFreezeConfirmTitle": "{count, plural, =1{{count} कॉइन फ्रीज़ करें?} other{{count} कॉइन फ्रीज़ करें?}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -11413,7 +11413,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, =1{1 कॉइन फ्रोज़न · खर्च से बाहर} other{{count} कॉइन फ्रोज़न · खर्च से बाहर}}",
+  "coinsFrozenToast": "{count, plural, =1{{count} कॉइन फ्रोज़न · खर्च से बाहर} other{{count} कॉइन फ्रोज़न · खर्च से बाहर}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -11422,7 +11422,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, =1{1 कॉइन अनफ्रोज़न} other{{count} कॉइन अनफ्रोज़न}}",
+  "coinsUnfrozenToast": "{count, plural, =1{{count} कॉइन अनफ्रोज़न} other{{count} कॉइन अनफ्रोज़न}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -11431,7 +11431,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, =1{1 कन्फर्म} other{{count} कन्फर्म}}",
+  "coinsConfsCount": "{count, plural, =1{{count} कन्फर्म} other{{count} कन्फर्म}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -11484,7 +11484,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{{count} UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {
@@ -11507,7 +11507,7 @@
   "logsExportFailedMessage": "लॉग निर्यात करने में विफल",
   "coreSwapsStatusRefunded": "वापस किया गया",
   "swapRestoreTitle": "Swap रिस्टोर",
-  "swapRestoreActionable": "{count, plural, =0{रिकवर करने के लिए कोई Swap नहीं} =1{आप 1 Swap रिकवर करने का प्रयास कर सकते हैं। यह पहले से ही अंतिम स्थिति में हो सकता है।} other{आप {count} Swaps रिकवर करने का प्रयास कर सकते हैं। ध्यान दें, इनमें से कुछ पहले से ही अंतिम स्थिति में हो सकते हैं।}}",
+  "swapRestoreActionable": "{count, plural, =0{रिकवर करने के लिए कोई Swap नहीं} =1{आप {count} Swap रिकवर करने का प्रयास कर सकते हैं। यह पहले से ही अंतिम स्थिति में हो सकता है।} other{आप {count} Swaps रिकवर करने का प्रयास कर सकते हैं। ध्यान दें, इनमें से कुछ पहले से ही अंतिम स्थिति में हो सकते हैं।}}",
   "swapRestoreNoSwaps": "रिस्टोर करने के लिए कोई Swap नहीं मिला",
   "swapRestoreRecoverableSection": "रिकवर करने योग्य",
   "swapRestoreAllSection": "सभी Swaps",
@@ -11633,7 +11633,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colombia",
-  "recipientsTypeInteracEmail": "इंटरैक ई-ट्रांसफर",
+  "recipientsTypeInteracEmail": "ईमेल मनी ट्रांसफर",
   "recipientsTypeBillPayment": "बिल भुगतान",
   "recipientsTypeBankTransfer": "बैंक ट्रांसफर",
   "recipientsTypeSepa": "SEPA ट्रांसफर",
@@ -11903,7 +11903,7 @@
   "testBackupErrorSeedUnavailable": "आपका रिकवरी वाक्यांश पढ़ा नहीं जा सका। कृपया फिर से प्रयास करें।",
   "testBackupErrorSeedNotMnemonic": "इस वॉलेट में जाँचने के लिए कोई रिकवरी वाक्यांश नहीं है।",
   "testBackupErrorCompletionFailed": "आपका रिकवरी वाक्यांश सही था, लेकिन हम परिणाम सहेज नहीं सके। कृपया फिर से प्रयास करें।",
-  "withdrawInteracSecurityDetailsTitle": "Interac सुरक्षा विवरण",
+  "withdrawInteracSecurityDetailsTitle": "ट्रांसफर सुरक्षा विवरण",
   "withdrawInteracSaveAsDefault": "इन विवरणों को डिफ़ॉल्ट के रूप में सहेजें",
   "withdrawInteracSecurityQuestionLengthError": "सुरक्षा प्रश्न 3–40 अक्षरों का होना चाहिए",
   "withdrawInteracSecurityAnswerLengthError": "सुरक्षा उत्तर 3–40 अक्षरों का होना चाहिए",
@@ -12007,8 +12007,8 @@
   "limitOrdersInsufficientBalance": "अपर्याप्त संतुलन",
   "limitOrdersInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
   "limitOrdersFundAccount": "अपने खाते को फंड करें",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 ट्रेड} other{{count} ट्रेड}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 ट्रेड ({currency})} other{{count} ट्रेड ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} ट्रेड} other{{count} ट्रेड}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} ट्रेड ({currency})} other{{count} ट्रेड ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "आपके अपलोड की स्थिति लोड नहीं हो सकी। कृपया पुनः प्रयास करें।",
   "recipientsTypeConfidentialSepa": "गोपनीय SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",

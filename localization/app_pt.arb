@@ -2560,7 +2560,7 @@
   "backupSettingsLabel": "Backup da carteira",
   "ledgerWalletTypeNestedSegwit": "Segwit (BIP49)",
   "fundExchangeJurisdictionMexico": "🇲🇽 México",
-  "sellInteracEmail": "E-mail Interac",
+  "sellInteracEmail": "Email para a transferência",
   "coreSwapsActionClose": "Fechar",
   "kruxStep6": "Se você tiver problemas de digitalização:",
   "autoswapMaximumFeeError": "Limite máximo de taxa é {threshold}%",
@@ -3287,7 +3287,7 @@
   "sendSuccessfullySent": "Enviado com sucesso",
   "sendSwapAmount": "Montante do balanço",
   "autoswapTitle": "Configurações de transferência automática",
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Transferência de dinheiro por email",
   "bitboxScreenPairingCodeSubtext": "Verifique se este código corresponde à sua tela BitBox02 e, em seguida, confirme no dispositivo.",
   "createdAtLabel": "Criado em:",
   "pinConfirmMismatchError": "PINs não correspondem",
@@ -4036,7 +4036,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colômbia",
-  "recipientsTypeInteracEmail": "Transferência Interac",
+  "recipientsTypeInteracEmail": "Transferência de dinheiro por email",
   "recipientsTypeBillPayment": "Pagamento de faturas",
   "recipientsTypeBankTransfer": "Transferência bancária",
   "recipientsTypeSepa": "Transferência SEPA",
@@ -4206,7 +4206,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 moeda} other{{count} moedas}}",
+  "coinsSummaryCoinsCount": "{count, plural, =1{{count} moeda} other{{count} moedas}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -4243,7 +4243,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 saída não gasta} other{{count} saídas não gastas}}",
+  "coinsUnspentOutputsCount": "{count, plural, =1{{count} saída não gasta} other{{count} saídas não gastas}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -4320,7 +4320,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, =1{1 selecionada} other{{count} selecionadas}}",
+  "coinsSelectedCount": "{count, plural, =1{{count} selecionada} other{{count} selecionadas}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -4345,7 +4345,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Congelar 1 moeda?} other{Congelar {count} moedas?}}",
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Congelar {count} moeda?} other{Congelar {count} moedas?}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -4362,7 +4362,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, =1{1 moeda congelada · excluída dos gastos} other{{count} moedas congeladas · excluídas dos gastos}}",
+  "coinsFrozenToast": "{count, plural, =1{{count} moeda congelada · excluída dos gastos} other{{count} moedas congeladas · excluídas dos gastos}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -4371,7 +4371,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, =1{1 moeda descongelada} other{{count} moedas descongeladas}}",
+  "coinsUnfrozenToast": "{count, plural, =1{{count} moeda descongelada} other{{count} moedas descongeladas}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -4380,7 +4380,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, =1{1 conf.} other{{count} confs.}}",
+  "coinsConfsCount": "{count, plural, =1{{count} conf.} other{{count} confs.}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -4433,7 +4433,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, one{1 UTXO} other{{count} UTXOs}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, one{{count} UTXO} other{{count} UTXOs}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {
@@ -4456,7 +4456,7 @@
   "logsExportFailedMessage": "Falha ao exportar os registos",
   "coreSwapsStatusRefunded": "Reembolsada",
   "swapRestoreTitle": "Restauro de swaps",
-  "swapRestoreActionable": "{count, plural, =0{Não há swaps para recuperar} =1{Podes tentar recuperar 1 swap. Pode já estar num estado terminal.} other{Podes tentar recuperar {count} swaps. Nota que alguns já podem estar num estado terminal.}}",
+  "swapRestoreActionable": "{count, plural, =0{Não há swaps para recuperar} =1{Podes tentar recuperar {count} swap. Pode já estar num estado terminal.} other{Podes tentar recuperar {count} swaps. Nota que alguns já podem estar num estado terminal.}}",
   "swapRestoreNoSwaps": "Não foram encontrados swaps para restaurar",
   "swapRestoreRecoverableSection": "Recuperáveis",
   "swapRestoreAllSection": "Todos os swaps",
@@ -4764,7 +4764,7 @@
   "testBackupErrorSeedUnavailable": "Não foi possível ler a sua frase de recuperação. Tente novamente.",
   "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
   "testBackupErrorCompletionFailed": "A sua frase de recuperação estava correta, mas não foi possível guardar o resultado. Tente novamente.",
-  "withdrawInteracSecurityDetailsTitle": "Dados de segurança do Interac",
+  "withdrawInteracSecurityDetailsTitle": "Dados de segurança da transferência",
   "withdrawInteracSaveAsDefault": "Guardar estes dados como predefinição",
   "withdrawInteracSecurityQuestionLengthError": "A pergunta de segurança deve ter entre 3 e 40 caracteres",
   "withdrawInteracSecurityAnswerLengthError": "A resposta de segurança deve ter entre 3 e 40 caracteres",
@@ -4868,8 +4868,8 @@
   "limitOrdersInsufficientBalance": "Balança insuficiente",
   "limitOrdersInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "limitOrdersFundAccount": "Fina sua conta",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 transação} other{{count} transações}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 transação ({currency})} other{{count} transações ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} transação} other{{count} transações}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} transação ({currency})} other{{count} transações ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Não foi possível carregar o estado do seu envio. Por favor, tente novamente.",
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",
   "recipientsErrorVirtualIbanNotAvailable": "Você não tem as permissões necessárias para aceder a esta opção de financiamento. Ou o seu KYC é insuficiente ou esta opção não está disponível para a sua conta",

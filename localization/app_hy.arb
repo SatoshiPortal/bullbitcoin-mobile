@@ -333,7 +333,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 մետաղադրամ} other{{count} մետաղադրամ}}",
+  "coinsSummaryCoinsCount": "{count, plural, =1{{count} մետաղադրամ} other{{count} մետաղադրամ}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -370,7 +370,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 չծախսված ելք} other{{count} չծախսված ելք}}",
+  "coinsUnspentOutputsCount": "{count, plural, =1{{count} չծախսված ելք} other{{count} չծախսված ելք}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -447,7 +447,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, =1{1 ընտրված} other{{count} ընտրված}}",
+  "coinsSelectedCount": "{count, plural, =1{{count} ընտրված} other{{count} ընտրված}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -472,7 +472,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Սառեցնե՞լ 1 մետաղադրամ} other{Սառեցնե՞լ {count} մետաղադրամ}}",
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Սառեցնե՞լ {count} մետաղադրամ} other{Սառեցնե՞լ {count} մետաղադրամ}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -489,7 +489,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, =1{1 մետաղադրամ սառեցվեց · բացառված է ծախսելուց} other{{count} մետաղադրամ սառեցվեց · բացառված է ծախսելուց}}",
+  "coinsFrozenToast": "{count, plural, =1{{count} մետաղադրամ սառեցվեց · բացառված է ծախսելուց} other{{count} մետաղադրամ սառեցվեց · բացառված է ծախսելուց}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -498,7 +498,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, =1{1 մետաղադրամ ապասառեցվեց} other{{count} մետաղադրամ ապասառեցվեց}}",
+  "coinsUnfrozenToast": "{count, plural, =1{{count} մետաղադրամ ապասառեցվեց} other{{count} մետաղադրամ ապասառեցվեց}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -507,7 +507,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, =1{1 հաստ.} other{{count} հաստ.}}",
+  "coinsConfsCount": "{count, plural, =1{{count} հաստ.} other{{count} հաստ.}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -560,7 +560,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{{count} UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {
@@ -593,7 +593,7 @@
   "coreSwapsStatusCompleted": "Ավարտված",
   "coreSwapsStatusRefunded": "Վերադարձված",
   "swapRestoreTitle": "Փոխանակման վերականգնում",
-  "swapRestoreActionable": "{count, plural, =0{Վերականգնման ենթակա փոխանակումներ չկան} =1{Կարող եք փորձել վերականգնել 1 փոխանակում։ Այն միգուցե արդեն վերջնական կարգավիճակում է։} other{Կարող եք փորձել վերականգնել {count} փոխանակում։ Նկատի ունեցեք, որ դրանցից մի քանիսը միգուցե արդեն վերջնական կարգավիճակում են։}}",
+  "swapRestoreActionable": "{count, plural, =0{Վերականգնման ենթակա փոխանակումներ չկան} =1{Կարող եք փորձել վերականգնել {count} փոխանակում։ Այն միգուցե արդեն վերջնական կարգավիճակում է։} other{Կարող եք փորձել վերականգնել {count} փոխանակում։ Նկատի ունեցեք, որ դրանցից մի քանիսը միգուցե արդեն վերջնական կարգավիճակում են։}}",
   "swapRestoreNoSwaps": "Վերականգնման ենթակա փոխանակումներ չեն գտնվել",
   "swapRestoreRecoverableSection": "Վերականգնելի",
   "swapRestoreAllSection": "Բոլոր փոխանակումները",
@@ -2092,7 +2092,7 @@
   "sellWalletBalance": "Մնացորդ․ {amount}",
   "sellPaymentMethod": "Վճարման եղանակ",
   "sellBankTransfer": "Բանկային փոխանցում",
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Գումարի փոխանցում էլ. փոստով",
   "sellCashPickup": "Կանխիկի ստացում",
   "sellBankDetails": "Բանկային տվյալներ",
   "sellAccountName": "Հաշվի անուն",
@@ -2101,7 +2101,7 @@
   "sellInstitutionNumber": "Հաստատության համար",
   "sellSwiftCode": "SWIFT/BIC կոդ",
   "sellIBAN": "IBAN",
-  "sellInteracEmail": "Interac էլ. փոստ",
+  "sellInteracEmail": "Փոխանցման էլ. փոստ",
   "sellReviewOrder": "Վերանայել վաճառքի պատվերը",
   "sellConfirmOrder": "Հաստատել վաճառքի պատվերը",
   "sellProcessingOrder": "Պատվերը մշակվում է...",
@@ -3295,7 +3295,7 @@
   "recipientsFilterByJurisdiction": "Զտել ըստ իրավազորության.",
   "recipientsListEmpty": "Ստացողներ չեն գտնվել։",
   "recipientsJurisdictionAll": "Բոլոր իրավազորությունները",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Գումարի փոխանցում էլ. փոստով",
   "recipientsTypeBillPayment": "Հաշիվների վճարում",
   "recipientsTypeSepa": "SEPA փոխանցում",
   "recipientsTypeSpeiClabe": "SPEI CLABE",
@@ -3521,7 +3521,7 @@
   "testBackupErrorSeedUnavailable": "Ձեր վերականգնման արտահայտությունը չհաջողվեց կարդալ։ Փորձեք կրկին։",
   "testBackupErrorSeedNotMnemonic": "Այս դրամապանակը չունի վերականգնման արտահայտություն՝ ստուգելու համար։",
   "testBackupErrorCompletionFailed": "Ձեր վերականգնման արտահայտությունը ճիշտ էր, բայց չհաջողվեց պահել արդյունքը։ Փորձեք կրկին։",
-  "withdrawInteracSecurityDetailsTitle": "Interac-ի անվտանգության տվյալներ",
+  "withdrawInteracSecurityDetailsTitle": "Փոխանցման անվտանգության տվյալներ",
   "withdrawInteracSaveAsDefault": "Պահպանել այս տվյալները որպես կանխադրված",
   "withdrawInteracSecurityQuestionLengthError": "Անվտանգության հարցը պետք է պարունակի 3–40 նիշ",
   "withdrawInteracSecurityAnswerLengthError": "Անվտանգության պատասխանը պետք է պարունակի 3–40 նիշ",
@@ -3625,8 +3625,8 @@
   "limitOrdersInsufficientBalance": "Անբավարար մնացորդ",
   "limitOrdersInsufficientBalanceMessage": "Այս պատվերը ստեղծելու համար բավարար մնացորդ չունեք։",
   "limitOrdersFundAccount": "Ֆինանսավորեք ձեր հաշիվը",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 գործարք} other{{count} գործարք}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 գործարք ({currency})} other{{count} գործարք ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} գործարք} other{{count} գործարք}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} գործարք ({currency})} other{{count} գործարք ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Չհաջողվեց բեռնել ձեր վերբեռնման կարգավիճակը։ Խնդրում ենք փորձել կրկին։",
   "recipientsTypeConfidentialSepa": "Գաղտնի SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Դուք չունեք այս ֆինանսավորման տարբերակին մուտք գործելու անհրաժեշտ թույլտվություններ։ Կամ ձեր KYC-ն բավարար չէ, կամ այս տարբերակը հասանելի չէ ձեր հաշվի համար",

@@ -280,6 +280,6 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       documentType: documentType,
     );
 
-    return dto.toDomain();
+    return dto.toDomain(isSaved: true);
   }
 }

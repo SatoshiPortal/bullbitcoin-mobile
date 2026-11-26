@@ -5451,7 +5451,7 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Email Money Transfer",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -5487,7 +5487,7 @@
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "Transfer email",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -11434,7 +11434,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 coin} other{{count} coins}}",
+  "coinsSummaryCoinsCount": "{count, plural, =1{{count} coin} other{{count} coins}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -11471,7 +11471,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 unspent output} other{{count} unspent outputs}}",
+  "coinsUnspentOutputsCount": "{count, plural, =1{{count} unspent output} other{{count} unspent outputs}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -11548,7 +11548,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, =1{1 selected} other{{count} selected}}",
+  "coinsSelectedCount": "{count, plural, =1{{count} selected} other{{count} selected}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -11573,7 +11573,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{1 coin freeze karein?} other{{count} coins freeze karein?}}",
+  "coinsFreezeConfirmTitle": "{count, plural, =1{{count} coin freeze karein?} other{{count} coins freeze karein?}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -11590,7 +11590,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, =1{1 coin frozen · spending se bahar} other{{count} coins frozen · spending se bahar}}",
+  "coinsFrozenToast": "{count, plural, =1{{count} coin frozen · spending se bahar} other{{count} coins frozen · spending se bahar}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -11599,7 +11599,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, =1{1 coin unfrozen · spending ke liye available} other{{count} coins unfrozen · spending ke liye available}}",
+  "coinsUnfrozenToast": "{count, plural, =1{{count} coin unfrozen · spending ke liye available} other{{count} coins unfrozen · spending ke liye available}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -11608,7 +11608,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, =1{1 conf} other{{count} confs}}",
+  "coinsConfsCount": "{count, plural, =1{{count} conf} other{{count} confs}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -11661,7 +11661,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{{count} UTXO} other{{count} UTXOs}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {
@@ -11684,7 +11684,7 @@
   "logsExportFailedMessage": "Logs export karne mein vifal",
   "coreSwapsStatusRefunded": "Refund Hua",
   "swapRestoreTitle": "Swap Restore",
-  "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi swap nahi} =1{Aap 1 swap recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} swaps recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
+  "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi swap nahi} =1{Aap {count} swap recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} swaps recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
   "swapRestoreNoSwaps": "Restore karne ke liye koi swap nahi mila",
   "swapRestoreRecoverableSection": "Recoverable",
   "swapRestoreAllSection": "Sabhi swaps",
@@ -11827,7 +11827,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colombia",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Email Money Transfer",
   "recipientsTypeBillPayment": "Bill Payment",
   "recipientsTypeBankTransfer": "Bank Transfer",
   "recipientsTypeSepa": "SEPA Transfer",
@@ -12098,7 +12098,7 @@
   "testBackupErrorSeedUnavailable": "Aapka recovery phrase padha nahin ja saka. Kripya phir se prayas karein.",
   "testBackupErrorSeedNotMnemonic": "Is wallet mein jaanchne ke liye koi recovery phrase nahin hai.",
   "testBackupErrorCompletionFailed": "Aapka recovery phrase sahi tha, lekin hum parinaam save nahin kar sake. Kripya phir se prayas karein.",
-  "withdrawInteracSecurityDetailsTitle": "Interac security details",
+  "withdrawInteracSecurityDetailsTitle": "Transfer security details",
   "withdrawInteracSaveAsDefault": "In details ko default ke roop mein save karein",
   "withdrawInteracSecurityQuestionLengthError": "Security question 3-40 characters ka hona chahiye",
   "withdrawInteracSecurityAnswerLengthError": "Security answer 3-40 characters ka hona chahiye",
@@ -12202,8 +12202,8 @@
   "limitOrdersInsufficientBalance": "Insufficient balance",
   "limitOrdersInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
   "limitOrdersFundAccount": "Apna account fund karo",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 trade} other{{count} trades}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 trade ({currency})} other{{count} trades ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} trade} other{{count} trades}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} trade ({currency})} other{{count} trades ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Aapke upload ki sthiti load nahin ho saki. Kripya dobara koshish karein.",
   "recipientsTypeConfidentialSepa": "Confidential SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "Is funding option tak pahunchne ke liye aapke paas zaroori permissions nahin hain. Ya to aapka KYC aparyaapt hai ya yeh option aapke account ke liye uplabdh nahin hai",

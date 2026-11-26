@@ -8,27 +8,48 @@ import 'package:primitives/primitives.dart';
 
 class _MockPayjoinSender extends Mock implements PayjoinSender {}
 
-PayjoinSenderSession _session() => PayjoinSenderSession(
-  status: PayjoinStatus.requested,
+class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
+
+PayjoinSenderSession _session({
+  PayjoinStatus status = PayjoinStatus.requested,
+  DateTime? createdAt,
+}) => PayjoinSenderSession(
+  status: status,
   uri: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
   network: BitcoinNetwork.mainnet,
   walletId: 'wallet-1',
   amount: Sats.fromInt(10000),
   originalTransactionId: 'original-txid',
-  createdAt: DateTime(2026),
-  expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+  createdAt: createdAt ?? DateTime(2026),
+  expiresAt: (createdAt ?? DateTime(2026)).add(const Duration(minutes: 1)),
+);
+
+/// A session as stored by the start under way: its createdAt is taken while
+/// starting and kept in whole seconds.
+PayjoinSenderSession _createdNow(PayjoinStatus status) => _session(
+  status: status,
+  createdAt: DateTime.fromMillisecondsSinceEpoch(
+    DateTime.now().millisecondsSinceEpoch ~/ 1000 * 1000,
+  ),
 );
 
 Future<core.Result<PayjoinSenderSession, SendFailure>> _start(
-  PayjoinSender sender,
-) => SendWithPayjoinUsecase(sender).execute(
-  walletId: 'wallet-1',
-  isTestnet: false,
-  bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
-  unsignedOriginalPsbt: 'cHNidP8=',
-  amountSat: 10000,
-  networkFeesSatPerVb: 2,
-);
+  PayjoinSender sender, {
+  PayjoinSession Function()? persisted,
+}) {
+  final sessions = _MockPayjoinSessions();
+  when(() => sessions.byId(any())).thenAnswer(
+    (_) async => Ok<PayjoinSession?, PayjoinFailure>(persisted?.call()),
+  );
+  return SendWithPayjoinUsecase(sender, sessions).execute(
+    walletId: 'wallet-1',
+    isTestnet: false,
+    bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
+    unsignedOriginalPsbt: 'cHNidP8=',
+    amountSat: 10000,
+    networkFeesSatPerVb: 2,
+  );
+}
 
 void main() {
   setUpAll(() {
@@ -80,5 +101,70 @@ void main() {
         // retry from the confirm screen.
         expect(failure, isA<SendTransactionConfirmationFailure>());
     }
+  });
+
+  group('a failed start whose session was persisted', () {
+    void failStart(PayjoinSender sender) =>
+        when(() => sender.start(any())).thenAnswer(
+          (_) async => const Err<PayjoinSenderSession, PayjoinFailure>(
+            PayjoinProtocolRejectedFailure('Sender start failed'),
+          ),
+        );
+
+    test('adopts the live session instead of failing', () async {
+      final sender = _MockPayjoinSender();
+      failStart(sender);
+      final persisted = _session();
+
+      final result = await _start(sender, persisted: () => persisted);
+
+      expect(
+        (result as core.Ok<PayjoinSenderSession, SendFailure>).value,
+        persisted,
+      );
+    });
+
+    test('adopts a session this start created and already settled', () async {
+      final sender = _MockPayjoinSender();
+      failStart(sender);
+      PayjoinSenderSession? persisted;
+
+      final result = await _start(
+        sender,
+        persisted: () => persisted = _createdNow(PayjoinStatus.aborted),
+      );
+
+      expect(
+        (result as core.Ok<PayjoinSenderSession, SendFailure>).value,
+        persisted,
+      );
+    });
+
+    for (final status in [PayjoinStatus.completed, PayjoinStatus.aborted]) {
+      test('does not adopt a session an earlier payment left '
+          '${status.name}', () async {
+        final sender = _MockPayjoinSender();
+        failStart(sender);
+
+        final result = await _start(
+          sender,
+          persisted: () => _session(status: status),
+        );
+
+        expect(result, isA<core.Err<PayjoinSenderSession, SendFailure>>());
+      });
+    }
+
+    test('does not adopt an expired session', () async {
+      final sender = _MockPayjoinSender();
+      failStart(sender);
+
+      final result = await _start(
+        sender,
+        persisted: () => _createdNow(PayjoinStatus.expired),
+      );
+
+      expect(result, isA<core.Err<PayjoinSenderSession, SendFailure>>());
+    });
   });
 }

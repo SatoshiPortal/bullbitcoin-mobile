@@ -1209,6 +1209,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
   void _emitSendPaymentError(Emitter<SellState> emit, SellFailure error) {
     final current = _currentPaymentState;
     if (current == null) return;
+    final confirmationDeadline = current.sellOrder.confirmationDeadline;
+    log.fine(
+      'Sell confirm refused: failure=${error.runtimeType}, '
+      'broadcast=${current.isPayinBroadcast}, '
+      'secondsToDeadline=${confirmationDeadline?.difference(clock.now()).inSeconds}',
+    );
     if (current.isPayinBroadcast) {
       // The transaction is already on the wire. Showing a retryable error here
       // would re-arm Confirm and risk a second payment (#2522), so stay in the
@@ -1220,7 +1226,6 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // Confirm is live again. If the lock lapsed during this failed attempt,
     // the refresh the scheduler fired meanwhile was skipped as in flight, so
     // ask now — unless a retry is already on its way.
-    final confirmationDeadline = current.sellOrder.confirmationDeadline;
     if (confirmationDeadline != null &&
         !confirmationDeadline.isAfter(clock.now()) &&
         !_quoteScheduler.isPending) {
