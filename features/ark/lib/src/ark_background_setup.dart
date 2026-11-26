@@ -23,7 +23,9 @@ import 'package:notifications/payment_store.dart';
 import 'package:notifications/notifications.dart'
     show ScheduledNotificationPort;
 
+import 'data/ark_exit_notification_setup.dart';
 import 'data/ark_exit_notifier.dart';
+import 'data/ark_payment_observer.dart';
 
 /// Only existing stores are opened. Every resource remains alive until the
 /// admitted native work has completed and the runner closes its resources.
@@ -154,7 +156,7 @@ final class _BackgroundExitObserver implements native.ArkExitObserverPort {
   final ScheduledNotificationPort notifications;
   final native.ArkStageBudget budget;
   final List<Future<void> Function()> _cleanup = [];
-  Future<ArkExitNotifier>? _opening;
+  Future<native.ArkExitObserverPort>? _opening;
   bool failed = false;
 
   _BackgroundExitObserver({
@@ -165,7 +167,7 @@ final class _BackgroundExitObserver implements native.ArkExitObserverPort {
     required this.budget,
   });
 
-  Future<ArkExitNotifier> _open() => _opening ??= () async {
+  Future<native.ArkExitObserverPort> _open() => _opening ??= () async {
     final allocator = await PaymentNotifications.initializeBackground(
       documents,
       locale,
@@ -174,18 +176,25 @@ final class _BackgroundExitObserver implements native.ArkExitObserverPort {
     if (allocator == null) {
       throw const FormatException('Notification store unavailable');
     }
-    final copy = arkExitClaimableCopy(locale);
-    final observer = ArkExitNotifier.open(
-      path: '$directory/exit-notices.sqlite',
+    final observer = LazyArkExitObserver(() async {
+      final copy = arkExitClaimableCopy(locale);
+      return ArkExitNotifier.open(
+        path: '$directory/exit-notices.sqlite',
+        foreground: false,
+        allocator: allocator,
+        notifications: notifications,
+        budget: budget,
+        title: copy.title,
+        body: copy.body,
+      );
+    });
+    _cleanup.add(observer.close);
+    return ArkPaymentObserver(
+      notifications: allocator,
+      exits: observer,
       foreground: false,
-      allocator: allocator,
-      notifications: notifications,
-      budget: budget,
-      title: copy.title,
-      body: copy.body,
+      copy: PaymentNotifications.copy(locale),
     );
-    _cleanup.add(() async => observer.close());
-    return observer;
   }();
 
   Future<void> close() async {

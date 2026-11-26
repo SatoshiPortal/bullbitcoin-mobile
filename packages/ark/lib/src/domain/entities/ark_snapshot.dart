@@ -56,6 +56,9 @@ final class ArkMovement {
   /// Native movement direction; incoming does not prove an external sender.
   final ArkMovementDirection direction;
   final Sats? amount;
+
+  /// True only when the native signed effective balance was positive.
+  final bool positiveEffectiveAmount;
   final Sats? fee;
   final DateTime? createdAt;
   final List<String> inputVtxoIds;
@@ -76,6 +79,7 @@ final class ArkMovement {
     required this.status,
     this.direction = ArkMovementDirection.unknown,
     this.amount,
+    this.positiveEffectiveAmount = false,
     this.fee,
     this.createdAt,
     List<String> inputVtxoIds = const [],

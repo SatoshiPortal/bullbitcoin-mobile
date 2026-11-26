@@ -597,7 +597,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
                     skipLabel: BullUiLocalizations.of(context)
                         .paymentViewStatus,
                     onSkip: _openStatus,
-                    onDone: _openStatus,
+                    onDone: completed ? () {} : _openStatus,
                     onBackdropTap: () =>
                         setState(() => _showTransition = false),
                   ),

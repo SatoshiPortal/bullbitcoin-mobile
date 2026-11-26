@@ -127,6 +127,13 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
         : showIntro
         ? _initialStatus
         : widget.status;
+    // The rail text turns orange for a broadcast current step; the headline
+    // follows it (success stays green, failure keeps the foreground).
+    final broadcast =
+        !successful &&
+        widget.phase != BullPaymentPhase.failed &&
+        widget.progress?.failedAt == null &&
+        widget.progress?.currentState == BullPaymentStepState.broadcast;
     return Listener(
       behavior: HitTestBehavior.opaque,
       child: Material(
@@ -189,6 +196,8 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
                               fontFamily: BullTypography.brandFamily,
                               color: successful
                                   ? palette.success
+                                  : broadcast
+                                  ? palette.broadcast
                                   : palette.foreground,
                             ),
                           ),

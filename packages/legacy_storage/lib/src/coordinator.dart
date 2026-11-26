@@ -12,6 +12,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 
 import '../legacy_storage.dart';
 import 'lifecycle.dart';
+import 'retirement.dart';
 
 /// Last published schema of the source imported by split-v1.
 const splitV1SourceSchemaVersion = 16;
@@ -62,7 +63,7 @@ abstract interface class LegacyImportParticipant {
   );
   @useResult
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   );
 }
 
@@ -179,18 +180,27 @@ final class StorageCutover {
   final Set<String> expectedOwners;
   final List<LegacyImportParticipant> participants;
   final List<File> destinationFamilies;
+  final List<LegacyRetirementParticipant> retirementParticipants;
+  final Set<String> requiredRetirementOwners;
   final Future<void> Function(String)? durableStep;
 
+  /// Production supplies no [retirementParticipants] until the activation
+  /// step: without them the retirement gate refuses and nothing is evaluated
+  /// as eligible.
   StorageCutover({
     required this.directory,
     required this.legacy,
     required Set<String> expectedOwners,
     required List<LegacyImportParticipant> participants,
     List<File> destinationFamilies = const [],
+    List<LegacyRetirementParticipant> retirementParticipants = const [],
+    Set<String> requiredRetirementOwners = legacyRetirementOwners,
     this.durableStep,
   }) : expectedOwners = Set.unmodifiable(expectedOwners),
        participants = List.unmodifiable(participants),
-       destinationFamilies = List.unmodifiable(destinationFamilies);
+       destinationFamilies = List.unmodifiable(destinationFamilies),
+       retirementParticipants = List.unmodifiable(retirementParticipants),
+       requiredRetirementOwners = Set.unmodifiable(requiredRetirementOwners);
 
   File get _marker => File('${directory.path}/split-v1.json');
   NativeFileGate get _gate =>
@@ -218,6 +228,10 @@ final class StorageCutover {
         throw const LifecycleException('admission');
       }
       var marker = await _read(recover: true);
+      if (marker != null && marker.state != RetirementState.importing) {
+        _validate(marker);
+        return Err(_retirementBlock(marker));
+      }
       if (marker == null) {
         for (final destination in destinationFamilies) {
           if ([
@@ -363,6 +377,9 @@ final class StorageCutover {
       final marker = await _read();
       if (marker == null) throw const LifecycleException('not_started');
       _validate(marker);
+      if (marker.state != RetirementState.importing) {
+        return Err(_retirementBlock(marker));
+      }
       if (!marker.sourceEstablished) {
         throw const LifecycleException('not_ready');
       }
@@ -452,6 +469,158 @@ final class StorageCutover {
         (!marker.sourceEstablished && marker.admittedOwners.isNotEmpty)) {
       throw const LifecycleException('manifest');
     }
+    if (marker.state != RetirementState.importing &&
+        (!marker.sourceEstablished ||
+            marker.admittedOwners.length != expectedOwners.length ||
+            !marker.admittedOwners.containsAll(expectedOwners))) {
+      throw const LifecycleException('retirement');
+    }
+    if (marker.retireDoneSteps.any(
+      (step) =>
+          !step.startsWith('keychain:') ||
+          !expectedOwners.contains(step.substring('keychain:'.length)),
+    )) {
+      throw const LifecycleException('retirement');
+    }
+  }
+
+  /// A marker past `importing` never admits: `retiring` waits for the resumed
+  /// cleanup, `retired` is handled by the activation step.
+  LegacyImportFailure _retirementBlock(_CutoverMarker marker) =>
+      marker.state == RetirementState.retiring
+      ? const LegacyImportDeferred()
+      : const LegacyImportUnavailable();
+
+  /// Evaluates the retirement gate without changing business data or markers.
+  /// Acquiring the lease may create its lock file. Opening destination stores
+  /// read-write may create or update SQLite WAL/SHM files; this is not a claim
+  /// of physical filesystem immutability. A shared lease blocks this check.
+  Future<RetirementReport> evaluateRetirement({
+    Duration timeout = const Duration(seconds: 2),
+  }) async {
+    LifecycleAdmission? held;
+    try {
+      final LifecycleAdmission exclusive;
+      try {
+        exclusive = await _gate.acquire(exclusive: true, timeout: timeout);
+      } on LifecycleException {
+        return RetirementReport(null, const ['lease_not_exclusive']);
+      }
+      held = exclusive;
+      if (exclusive is! ExclusiveAdmission) {
+        return RetirementReport(null, const ['lease_not_exclusive']);
+      }
+      final _CutoverMarker? marker;
+      try {
+        marker = await _read();
+      } on Exception {
+        return RetirementReport(null, const ['marker_unreadable']);
+      }
+      if (marker == null) {
+        return RetirementReport(null, const ['marker_missing']);
+      }
+      try {
+        _validate(marker);
+      } on LifecycleException {
+        return RetirementReport(marker.state, const ['marker_invalid']);
+      }
+      if (marker.state != RetirementState.importing) {
+        return RetirementReport(marker.state, [
+          marker.state == RetirementState.retiring
+              ? 'retiring_in_progress'
+              : 'already_retired',
+        ]);
+      }
+      return RetirementReport(
+        marker.state,
+        await _gateBlockers(exclusive, marker),
+      );
+    } on Exception {
+      return RetirementReport(null, const ['evaluation_failed']);
+    } finally {
+      try {
+        await held?.close();
+      } on LifecycleException {
+        // Failed resources remain strongly retained by the admission.
+      }
+    }
+  }
+
+  /// Every blocker, or none when the retirement is allowed. Structural
+  /// blockers stop the evaluation before any owner database is opened.
+  Future<List<String>> _gateBlockers(
+    ExclusiveAdmission exclusive,
+    _CutoverMarker marker,
+  ) async {
+    final blockers = <String>[];
+    final imported = participants.map((p) => p.ownerId).toList();
+    final retiring = retirementParticipants.map((p) => p.ownerId).toList();
+    if (imported.toSet().length != imported.length ||
+        !imported.toSet().containsAll(expectedOwners) ||
+        imported.toSet().length != expectedOwners.length ||
+        marker.origins.length != expectedOwners.length ||
+        !marker.admittedOwners.containsAll(expectedOwners) ||
+        marker.admittedOwners.length != expectedOwners.length) {
+      blockers.add('owner_manifest');
+    }
+    if (retiring.toSet().length != retiring.length ||
+        !retiring.toSet().containsAll(requiredRetirementOwners) ||
+        !expectedOwners.containsAll(retiring)) {
+      blockers.add('retirement_participants');
+    }
+    if (!marker.sourceEstablished) blockers.add('source_not_established');
+    if (blockers.isNotEmpty) return blockers;
+    try {
+      _checkFamily(allowAbsent: false);
+      legacy.verify();
+    } on Exception {
+      return ['source_family'];
+    }
+    for (final participant in participants) {
+      final ownerId = participant.ownerId;
+      final origin = marker.origins[ownerId];
+      if (origin == null) {
+        blockers.add('owner_manifest');
+        continue;
+      }
+      if (!await participant.hasState()) {
+        blockers.add('destination:$ownerId');
+        continue;
+      }
+      Result<OwnerReadiness, LegacyImportFailure> inspection;
+      try {
+        inspection = await participant.inspect(exclusive);
+      } on Exception {
+        inspection = const Err(LegacyImportUnavailable());
+      }
+      if (!_ready(inspection, origin)) blockers.add('receipt:$ownerId');
+    }
+    if (blockers.isNotEmpty) return blockers;
+    for (final participant in retirementParticipants) {
+      final origin = marker.origins[participant.ownerId];
+      if (origin == null) {
+        blockers.add('owner_manifest');
+        continue;
+      }
+      Result<void, LegacyImportFailure> verdict;
+      try {
+        verdict = await participant.verifyRetirable(
+          exclusive,
+          origin: origin,
+          source: legacy.source,
+        );
+      } on Exception {
+        verdict = const Err(LegacyImportUnavailable());
+      }
+      if (verdict case Err(:final failure)) {
+        blockers.add('proof:${participant.ownerId}:${failure.runtimeType}');
+      }
+    }
+    // D94 recovery provenance is not yet available on this base. A receipt
+    // alone cannot establish that every historical owner survived recovery.
+    // Remain closed until the recovery journal has an independent verifier.
+    blockers.add('recovery_provenance_unavailable');
+    return blockers;
   }
 
   Future<_CutoverMarker?> _read({bool recover = false}) async {
@@ -493,6 +662,9 @@ final class _CutoverMarker {
   final bool sourceEstablished;
   final Map<String, OwnerOrigin> origins;
   final Set<String> admittedOwners;
+  final RetirementState state;
+  final int? retireIntentAt;
+  final Set<String> retireDoneSteps;
 
   const _CutoverMarker({
     required this.sourceSchemaVersion,
@@ -500,45 +672,71 @@ final class _CutoverMarker {
     required this.sourceEstablished,
     required this.origins,
     this.admittedOwners = const {},
+    this.state = RetirementState.importing,
+    this.retireIntentAt,
+    this.retireDoneSteps = const {},
   });
 
-  _CutoverMarker established() => _CutoverMarker(
+  _CutoverMarker _copy({
+    bool? sourceEstablished,
+    Map<String, OwnerOrigin>? origins,
+    Set<String>? admittedOwners,
+    RetirementState? state,
+    int? retireIntentAt,
+    Set<String>? retireDoneSteps,
+  }) => _CutoverMarker(
     sourceSchemaVersion: sourceSchemaVersion,
     initialFresh: initialFresh,
-    sourceEstablished: true,
-    origins: origins,
-    admittedOwners: admittedOwners,
+    sourceEstablished: sourceEstablished ?? this.sourceEstablished,
+    origins: origins ?? this.origins,
+    admittedOwners: admittedOwners ?? this.admittedOwners,
+    state: state ?? this.state,
+    retireIntentAt: retireIntentAt ?? this.retireIntentAt,
+    retireDoneSteps: retireDoneSteps ?? this.retireDoneSteps,
   );
 
-  _CutoverMarker withAdmittedOwner(String owner) => _CutoverMarker(
-    sourceSchemaVersion: sourceSchemaVersion,
-    initialFresh: initialFresh,
-    sourceEstablished: sourceEstablished,
-    origins: origins,
-    admittedOwners: {...admittedOwners, owner},
-  );
+  _CutoverMarker established() => _copy(sourceEstablished: true);
 
+  _CutoverMarker withAdmittedOwner(String owner) =>
+      _copy(admittedOwners: {...admittedOwners, owner});
+
+  /// Importing markers keep the format of the shipped coordinator so a
+  /// downgrade still reads them. Only a retirement bumps the version, and the
+  /// older decoders reject it: that is the anti-rollback protection.
   Map<String, Object> get json => {
-    'version': 2,
+    'version': state == RetirementState.importing ? 2 : 3,
     'protocol': 'split-v1',
     'sourceSchemaVersion': sourceSchemaVersion,
-    'state': 'importing',
+    'state': state.name,
     'initialFresh': initialFresh,
     'sourceEstablished': sourceEstablished,
     'origins': origins.map((key, value) => MapEntry(key, value.name)),
     'admittedOwners': admittedOwners.toList()..sort(),
+    if (state != RetirementState.importing)
+      'retire': {
+        'intentAt': ?retireIntentAt,
+        'doneSteps': retireDoneSteps.toList()..sort(),
+      },
   };
 
   static _CutoverMarker decode(String text) {
     final value = jsonDecode(text);
     if (value is! Map<String, dynamic> ||
-        (value['version'] != 1 && value['version'] != 2) ||
+        (value['version'] != 1 &&
+            value['version'] != 2 &&
+            value['version'] != 3) ||
         value['protocol'] != 'split-v1' ||
-        value['state'] != 'importing' ||
         value['sourceSchemaVersion'] is! int ||
         value['initialFresh'] is! bool ||
         value['sourceEstablished'] is! bool ||
         value['origins'] is! Map<String, dynamic>) {
+      throw const FormatException('Invalid cutover marker');
+    }
+    final state = RetirementState.values
+        .where((candidate) => candidate.name == value['state'])
+        .firstOrNull;
+    if (state == null ||
+        (state != RetirementState.importing && value['version'] != 3)) {
       throw const FormatException('Invalid cutover marker');
     }
     final origins = <String, OwnerOrigin>{};
@@ -551,7 +749,7 @@ final class _CutoverMarker {
     }
     // The field did not exist in the provisional S1a development marker.
     final admittedOwners = <String>{};
-    if (value['version'] == 2 || value.containsKey('admittedOwners')) {
+    if (value['version'] != 1 || value.containsKey('admittedOwners')) {
       final raw = value['admittedOwners'];
       if (raw is! List<dynamic>) {
         throw const FormatException('Invalid owner admission');
@@ -562,12 +760,36 @@ final class _CutoverMarker {
         }
       }
     }
+    int? intentAt;
+    final doneSteps = <String>{};
+    final retire = value['retire'];
+    if (state == RetirementState.importing) {
+      if (retire != null) throw const FormatException('Invalid retirement');
+    } else {
+      if (retire is! Map<String, dynamic> ||
+          retire['intentAt'] is! int ||
+          retire['doneSteps'] is! List<dynamic>) {
+        throw const FormatException('Invalid retirement');
+      }
+      intentAt = retire['intentAt'] as int;
+      for (final step in retire['doneSteps'] as List<dynamic>) {
+        if (step is! String ||
+            !step.startsWith('keychain:') ||
+            !origins.containsKey(step.substring('keychain:'.length)) ||
+            !doneSteps.add(step)) {
+          throw const FormatException('Invalid retirement');
+        }
+      }
+    }
     return _CutoverMarker(
       sourceSchemaVersion: value['sourceSchemaVersion'] as int,
       initialFresh: value['initialFresh'] as bool,
       sourceEstablished: value['sourceEstablished'] as bool,
       origins: origins,
       admittedOwners: admittedOwners,
+      state: state,
+      retireIntentAt: intentAt,
+      retireDoneSteps: doneSteps,
     );
   }
 }

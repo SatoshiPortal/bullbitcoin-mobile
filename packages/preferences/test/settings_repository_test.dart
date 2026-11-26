@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/testing.dart';
 import 'package:preferences/src/domain/settings_entity.dart';
@@ -143,6 +145,57 @@ void main() {
   });
 
   group('environment change stream', () {
+    test('network transitions invalidate before a pending write', () async {
+      final gate = Completer<void>();
+      when(() => datasource.setEnvironment(any()))
+          .thenAnswer((_) => gate.future);
+      final repository = build();
+      final seen = <bool>[];
+      final sub = repository.environmentTransitions.listen(seen.add);
+      addTearDown(sub.cancel);
+      final write = repository.setEnvironment(Environment.testnet);
+      expect(repository.isEnvironmentChanging, isTrue);
+      expect(seen, [true]);
+      gate.complete();
+      expect(await write, isA<Ok>());
+      expect(repository.isEnvironmentChanging, isFalse);
+      expect(seen, [true, false]);
+    });
+
+    test('failed network writes release the transition gate', () async {
+      when(() => datasource.setEnvironment(any()))
+          .thenThrow(Exception('failed'));
+      final repository = build();
+      final seen = <bool>[];
+      final sub = repository.environmentTransitions.listen(seen.add);
+      addTearDown(sub.cancel);
+      expect(await repository.setEnvironment(Environment.testnet), isA<Err>());
+      expect(repository.isEnvironmentChanging, isFalse);
+      expect(seen, [true, false]);
+    });
+
+    test('overlapping writes keep the transition gate closed', () async {
+      final first = Completer<void>();
+      final second = Completer<void>();
+      when(() => datasource.setEnvironment(Environment.testnet))
+          .thenAnswer((_) => first.future);
+      when(() => datasource.setEnvironment(Environment.mainnet))
+          .thenAnswer((_) => second.future);
+      final repository = build();
+      final seen = <bool>[];
+      final sub = repository.environmentTransitions.listen(seen.add);
+      addTearDown(sub.cancel);
+      final firstWrite = repository.setEnvironment(Environment.testnet);
+      final secondWrite = repository.setEnvironment(Environment.mainnet);
+      first.complete();
+      expect(await firstWrite, isA<Ok>());
+      expect(repository.isEnvironmentChanging, isTrue);
+      second.complete();
+      expect(await secondWrite, isA<Ok>());
+      expect(repository.isEnvironmentChanging, isFalse);
+      expect(seen, [true, true, true, false]);
+    });
+
     test('a successful write emits the new environment', () async {
       when(() => datasource.setEnvironment(any())).thenAnswer((_) async {});
       final repository = build();

@@ -39,8 +39,6 @@ bool _isSettled(ReceiveState state) =>
 
 class _ReceivePayjoinInProgressScreenState
     extends State<ReceivePayjoinInProgressScreen> {
-  String? _completedId;
-
   void _showDetails(
     String id, {
     TransactionDetailsView view = TransactionDetailsView.status,
@@ -88,9 +86,9 @@ class _ReceivePayjoinInProgressScreenState
         } else if (MediaQuery.disableAnimationsOf(context) ||
             MediaQuery.reduceMotionOf(context)) {
           _showDetails(payjoin.id);
-        } else {
-          setState(() => _completedId = payjoin.id);
         }
+        // With animations on, the completed state stays on screen until the
+        // user leaves (close or View details).
       },
       // TODO: PopScope can be removed since we can do pop here now
       child: PopScope(
@@ -117,11 +115,7 @@ class _ReceivePayjoinInProgressScreenState
               ),
             ),
           ),
-          body: PayjoinInProgressPage(
-            onAnimationDone: () {
-              if (_completedId case final id?) _showDetails(id);
-            },
-          ),
+          body: const PayjoinInProgressPage(),
         ),
       ),
     );

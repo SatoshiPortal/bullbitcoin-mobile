@@ -1,6 +1,10 @@
 {
   "@@locale": "en",
   "settingsLanguageTitle": "Language",
+  "wizardAdvancedOptionsTitle": "Advanced Options",
+  "@wizardAdvancedOptionsTitle": {
+    "description": "Entry to the developer-only network options before setup"
+  },
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
   },
@@ -68,15 +72,15 @@
   "@wizardMissionQuestion": {
     "description": "Yes/No question on the wizard error-reporting page"
   },
-  "wizardMissionYes": "Yes",
+  "wizardMissionYes": "Send error reports",
   "@wizardMissionYes": {
     "description": "Affirmative response button on the wizard error-reporting page"
   },
-  "wizardMissionNo": "No",
+  "wizardMissionNo": "Don't send error reports",
   "@wizardMissionNo": {
     "description": "Negative response button on the wizard error-reporting page"
   },
-  "wizardMissionRequired": "Please choose Yes or No before continuing.",
+  "wizardMissionRequired": "Please choose whether to send error reports before continuing.",
   "@wizardMissionRequired": {
     "description": "Snackbar shown when the user tries to leave the wizard without answering the error-reporting question"
   },

@@ -429,7 +429,7 @@ final class ProjectedOwner<T extends GeneratedDatabase>
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     final opened = await open(admission, existing: true);
     if (opened case Err(:final failure)) return Err(failure);

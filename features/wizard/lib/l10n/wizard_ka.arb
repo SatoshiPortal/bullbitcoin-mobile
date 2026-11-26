@@ -1,4 +1,5 @@
 {
+  "wizardAdvancedOptionsTitle": "გაფართოებული პარამეტრები",
   "getStartedButton": "დაწყება",
   "@getStartedButton": {
     "description": "Final call-to-action button that finishes the install/upgrade wizard"

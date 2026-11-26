@@ -880,8 +880,10 @@ void _bitcoin(
   final failed = phase == BullPaymentPhase.failed,
       success = phase == BullPaymentPhase.success;
   final n = s.count;
-  const centerX = 206.0, y = 320.0, rot = .6;
-  final x = centerX + gx * 2600 / 18;
+  const centerX = bitcoinCubeCenterX, y = 320.0, rot = .6;
+  final x =
+      centerX +
+      (gx * 30).clamp(-bitcoinCubeTravel, bitcoinCubeTravel).toDouble();
   _directionSignal(c, p, p.bitcoin, e, incoming);
   final rx = -.55 + spring * .3;
   Offset project(int i) {

@@ -67,7 +67,7 @@ final class MempoolImport implements LegacyImportParticipant {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     final opened = await MempoolStore.open(
       file,

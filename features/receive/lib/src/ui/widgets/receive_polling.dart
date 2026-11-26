@@ -90,7 +90,10 @@ class _ReceivePollingState extends State<ReceivePolling> {
         path == '$liquid/amount' ||
         path == lightning ||
         path == lightningQr ||
-        path == '$lightningQr/${ReceiveRoute.lightningPaymentInProgress.path}';
+        path ==
+            '$lightningQr/${ReceiveRoute.lightningPaymentInProgress.path}' ||
+        // The claim still awaits confirmation once the payment is received.
+        path == '$lightningQr/${ReceiveRoute.lightningPaymentReceived.path}';
     if (_visible == visible) return;
     _visible = visible;
     _restart();

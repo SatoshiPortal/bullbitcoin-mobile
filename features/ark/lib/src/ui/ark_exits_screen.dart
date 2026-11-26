@@ -260,23 +260,23 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     if (animated) {
       final showingStatus = !_showDetails;
       if (showingStatus) _statusBuilt = true;
-      final switcher = _switcher(context, showingStatus);
-      body = IndexedStack(
-        sizing: StackFit.expand,
-        index: showingStatus ? 0 : 1,
-        children: [
-          // A hidden view must not tick: its scene stops animating.
-          TickerMode(
-            enabled: showingStatus,
-            child: !_statusBuilt
-                ? const SizedBox.shrink()
-                : _status(context, detail, phase, switcher),
-          ),
-          TickerMode(
-            enabled: !showingStatus,
-            child: _page(context, switcher: switcher),
-          ),
-        ],
+      body = BullPaymentViews(
+        showingStatus: showingStatus,
+        switcher: _switcher(context, showingStatus),
+        views: IndexedStack(
+          sizing: StackFit.expand,
+          index: showingStatus ? 0 : 1,
+          children: [
+            // A hidden view must not tick: its scene stops animating.
+            TickerMode(
+              enabled: showingStatus,
+              child: !_statusBuilt
+                  ? const SizedBox.shrink()
+                  : _status(context, detail, phase),
+            ),
+            TickerMode(enabled: !showingStatus, child: _page(context)),
+          ],
+        ),
       );
     } else {
       _statusBuilt = false;
@@ -310,12 +310,7 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     );
   }
 
-  Widget _status(
-    BuildContext context,
-    ArkExit exit,
-    BullPaymentPhase phase,
-    Widget switcher,
-  ) {
+  Widget _status(BuildContext context, ArkExit exit, BullPaymentPhase phase) {
     final l10n = arkLocalizationsOf(context);
     final label = arkExitStatusLabel(l10n, exit.status);
     return BullPaymentTransition(
@@ -333,13 +328,12 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
       ),
       status: label,
       statusTag: label,
-      bottom: switcher,
       onBack: _closeDetails,
       onDone: () {},
     );
   }
 
-  Widget _page(BuildContext context, {Widget? switcher}) {
+  Widget _page(BuildContext context) {
     final l10n = arkLocalizationsOf(context);
     final account = widget.snapshot.account;
     final detail = _detail;
@@ -362,17 +356,7 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                   bgColor: context.bull.primary,
                   textColor: context.bull.onPrimary,
                 )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (switcher != null) ...[
-                      Center(child: switcher),
-                      const Gap(BullSpacing.sm),
-                    ],
-                    _detailAction(context, account, detail),
-                  ],
-                ),
+              : _detailAction(context, account, detail),
         ),
       ),
       body: SafeArea(

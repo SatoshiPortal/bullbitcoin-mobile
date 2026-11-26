@@ -55,7 +55,7 @@ final class LabelsImport implements LegacyImportParticipant {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     final opened = await LabelsStore.open(
       file,

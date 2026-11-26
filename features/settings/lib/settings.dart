@@ -16,4 +16,7 @@ export 'src/settings_menu.dart'
 export 'src/translation_warning_bottom_sheet.dart'
     show TranslationWarningBottomSheet;
 export 'src/ui/settings_route.dart' show SettingsRoute;
-export 'src/ui/widgets/superuser_tap_unlocker.dart' show SuperuserTapUnlocker;
+export 'src/ui/widgets/superuser_tap_unlocker.dart'
+    show SuperuserTapUnlocker, SevenTapUnlocker;
+export 'src/ui/widgets/statistics_consent_switch.dart'
+    show StatisticsConsentSwitch;

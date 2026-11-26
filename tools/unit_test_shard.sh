@@ -32,4 +32,14 @@ if [[ ${#files[@]} -eq 0 ]]; then
   exit 0
 fi
 echo "Shard $index of $total: ${#files[@]} test files."
+if [[ ${TRACE_ACCESS_SHARD:-0} == 1 && $runner == flutter && ${MELOS_PACKAGE_NAME:-} == access && $total == 3 && $index == 1 ]]; then
+  # The normal test output remains untouched; CI timestamps its loading lines.
+  # Emit only fixed labels and numeric values, never environment or arguments.
+  start=$SECONDS
+  echo "Access shard trace: start"
+  status=0
+  fvm "$runner" test "$@" "${files[@]}" || status=$?
+  echo "Access shard trace: end (elapsed $((SECONDS - start))s, exit $status)"
+  exit "$status"
+fi
 exec fvm "$runner" test "$@" "${files[@]}"

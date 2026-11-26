@@ -10,5 +10,6 @@ abstract interface class WizardRepository {
 
   Future<void> savePending(WizardChoices choices);
   Future<WizardChoices?> readPending();
+  Future<void> clearPendingNetwork();
   Future<void> clearPending();
 }

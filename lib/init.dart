@@ -41,10 +41,14 @@ import 'package:sync/write.dart'
     show ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:background_tasks/background_tasks.dart' show BackgroundSchedule;
 import 'package:bb_mobile/background_entrypoint.dart';
-import 'package:preferences/preferences.dart' show Preferences;
+import 'package:preferences/preferences.dart' show Environment, Preferences;
+import 'package:preferences/statistics.dart' show PreferencesStatisticsNetwork;
+import 'package:settings/setup.dart' show StartupNetwork;
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
+import 'package:bull_reporting/statistics.dart';
 import 'package:network/setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
@@ -86,11 +90,9 @@ class Bull {
       case Err(:final failure):
         return Err(failure);
     }
-    await Report.init(
-      dsn: 'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1',
-      wizardConsent: consent,
-    );
-
+    const reportingDsn =
+        'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
+    await Report.init(dsn: reportingDsn, wizardConsent: consent);
     await initFlutterRustBridgeDependencies();
 
     // Foreground only: background tasks never read a price, and must not open
@@ -273,6 +275,10 @@ class Bull {
       final protection = await inventory.isProtected();
       if (protection case Err(:final failure)) return Err(failure);
       final pinProtected = (protection as Ok<bool, SecretFailure>).value;
+      final pendingNetwork = await startupWizard.readPendingNetwork();
+      if (pendingNetwork case Err(:final failure)) return Err(failure);
+      final selectedNetwork =
+          (pendingNetwork as Ok<Environment?, WizardFailure>).value;
       locator.registerSingleton(payjoin);
       locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
       locator.registerSingleton(recoverBull);
@@ -355,6 +361,22 @@ class Bull {
           'ark-funding.sqlite',
         ),
         initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
+        prepareInitialNetwork: selectedNetwork == null
+            ? null
+            : (preferences, electrum) async {
+                final result = await StartupNetwork.apply(
+                  preferences: preferences,
+                  electrum: electrum,
+                  network: selectedNetwork.networkEnv,
+                  superuserUnlocked: true,
+                  developerConsent: true,
+                  isProtected: inventory.isProtected,
+                  hasWallets: inventory.hasWallets,
+                  listSecrets: secrets.list,
+                );
+                if (result case Err(:final failure)) return Err(failure);
+                return startupWizard.clearPendingNetwork();
+              },
       );
       if (setup case Err()) return setup;
       if (!pinProtected) await locator<ForegroundWalletStartup>().start();
@@ -370,6 +392,12 @@ class Bull {
         exchange: locator<Exchange>(),
       );
       if (applied case Err(:final failure)) return Err(failure);
+      final privacySettings = await locator<Preferences>().fetch();
+      if (privacySettings case Err(:final failure)) return Err(failure);
+      if (privacySettings case Ok(:final value)) {
+        ScreenCaptureProtection.instance.enabledByUser =
+            value.screenCaptureProtectionEnabled;
+      }
       await locator<QuickActionsCubit>().load();
       await AppLocator.setupRecoverBull(
         locator,
@@ -383,6 +411,14 @@ class Bull {
         () => loadTorDiagnosticContext(settings, locator<Tor>()),
       );
       await settings.refreshReportingConsent();
+      try {
+        await Statistics.instance.start(
+          dsn: reportingDsn,
+          network: PreferencesStatisticsNetwork(settings),
+        );
+      } on Exception {
+        // Statistics are optional and must not block wallet startup.
+      }
       await prepareBackgroundWalletStores(
         openNotifications: () => locator<PaymentNotificationStore>().open(),
       );

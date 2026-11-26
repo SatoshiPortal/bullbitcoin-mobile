@@ -572,6 +572,6 @@ class _InspectionOwner extends FixtureOwner {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async => result;
 }

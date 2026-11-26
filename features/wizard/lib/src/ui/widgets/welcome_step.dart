@@ -9,9 +9,10 @@ import 'package:bull_ui/bull_ui.dart'
 /// red + patterned background is painted behind the whole `Scaffold`
 /// body by `WizardScreen` so it extends under the dots + Next button.
 class WelcomeStep extends StatelessWidget {
-  const WelcomeStep({required this.logo, super.key});
+  const WelcomeStep({required this.logo, this.logoWidget, super.key});
 
   final ImageProvider logo;
+  final Widget? logoWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class WelcomeStep extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           const Spacer(flex: 2),
-          Image(image: logo, height: 127),
+          logoWidget ?? Image(image: logo, height: 127),
           const Gap(36),
           BullText(
             context.loc.onboardingBullBitcoin,
