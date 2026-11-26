@@ -94,6 +94,15 @@ void main() {
     );
   });
 
+  test('catalog failure is reported as storage failure', () async {
+    when(() => references.referencedFingerprints())
+        .thenAnswer((_) async => const Err(KeystoreLockedFailure()));
+
+    final result = await provisioning().load();
+
+    expect((result as Err).failure, isA<NetworkWalletSetupStorageFailure>());
+  });
+
   test('setup offers French and protected mnemonic seeds for reuse', () async {
     final frenchWords = bip39.Mnemonic(
       List.filled(16, 0),
@@ -239,4 +248,46 @@ void main() {
       ),
     );
   });
+
+  test('backup required from default provisioning remains distinct', () async {
+    when(
+      () => create.execute(
+        secret: any(named: 'secret'),
+        expectedNetwork: NetworkEnv.regtest,
+      ),
+    ).thenAnswer((_) async => const Err(DefaultWalletBackupRequiredFailure()));
+
+    final result = await provisioning().create(network: NetworkEnv.regtest);
+
+    expect(
+      (result as Err).failure,
+      isA<NetworkWalletSetupBackupRequiredFailure>(),
+    );
+  });
+
+  test(
+    'stale catalog reference is refused before fetching or provisioning',
+    () async {
+      when(() => references.referencedFingerprints())
+          .thenAnswer((_) async => const Ok([]));
+      final reads = storage.reads;
+
+      final result = await provisioning().create(
+        network: NetworkEnv.regtest,
+        reuse: secret.id,
+      );
+
+      expect(
+        (result as Err).failure,
+        isA<NetworkWalletSetupReferenceNotFoundFailure>(),
+      );
+      expect(storage.reads, reads);
+      verifyNever(
+        () => create.execute(
+          secret: any(named: 'secret'),
+          expectedNetwork: NetworkEnv.regtest,
+        ),
+      );
+    },
+  );
 }
