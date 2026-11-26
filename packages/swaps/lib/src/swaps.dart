@@ -193,6 +193,13 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
   /// Starts listening for environment changes; does not start polling.
   void followEnvironment() => _switcher.start();
 
+  /// Revokes the swap driver for a locked session. Completes once it is
+  /// confirmed stopped; see [SwapEngineSwitcher.suspendSession].
+  Future<void> suspend() => _switcher.suspendSession();
+
+  /// Starts the driver again, once, after [suspend] completed.
+  void resume() => _switcher.resumeSession();
+
   Future<void> close() => _closing ??= _switcher.dispose();
 
   @override

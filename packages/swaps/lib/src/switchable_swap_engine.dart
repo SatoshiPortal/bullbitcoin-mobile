@@ -38,6 +38,9 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
 
   void resumeCreation() => _creationSuspended = false;
 
+  /// Completes when every creation admitted so far has finished.
+  Future<void> get creationsSettled => Future.wait(_creations.toList());
+
   Future<Result<T, SwapsFailure>> _create<T>(
     Future<Result<T, SwapsFailure>> Function(BoltzSwapRepository) action,
   ) async {
