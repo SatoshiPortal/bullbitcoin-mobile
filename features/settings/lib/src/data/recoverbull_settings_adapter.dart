@@ -107,7 +107,7 @@ final class RecoverBullSettingsAdapter
 
   @override
   Stream<TorConnectionState> watch() {
-    if (regtestProfile == null) {
+    if (regtestProfile?.endpoint == null) {
       return _embedded.states;
     }
     if (_closed) {
@@ -132,7 +132,8 @@ final class RecoverBullSettingsAdapter
 
   @override
   bool get snowflakeAvailable =>
-      regtestProfile == null && _embedded.mode == TorTransportMode.automatic;
+      regtestProfile?.endpoint == null &&
+      _embedded.mode == TorTransportMode.automatic;
 
   @override
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
@@ -150,10 +151,12 @@ final class RecoverBullSettingsAdapter
       if (!_matchesRuntime(settings)) {
         return const Err(VaultContextChangedFailure());
       }
-      final profile = regtestProfile;
-      if (profile != null) {
+      // A local stack's fixture onion is only reachable through its own
+      // proxy; a hosted onion service takes the ordinary Tor route below.
+      final regtestProxy = regtestProfile?.endpoint;
+      if (regtestProxy != null) {
         _publish(const TorConnecting(source: TorSource.external));
-        final ready = await _tor.external.verify(profile.endpoint);
+        final ready = await _tor.external.verify(regtestProxy);
         if (!await _runtimeIsCurrent()) {
           return const Err(VaultContextChangedFailure());
         }

@@ -94,7 +94,21 @@ Development is tracked in [GitHub issues](https://github.com/SatoshiPortal/bullb
 
 ## Explicit regtest development profile
 
-Regtest is offered in developer mode only when the build defines a valid service host. Normal builds have no implicit regtest host. Build a deliberately configured development app, for example:
+Regtest is offered in developer mode only, on the regtest stack selected by the build.
+
+### Hosted stack
+
+Every build, including release, beta and CI builds, carries the shared hosted regtest stack: one TLS Electrum endpoint per chain, the Esplora APIs, Boltz, the RecoverBull onion service and the Ark server. Its endpoints are the defaults of `RegtestHostedDefines` and of the Ark profile in `lib/init.dart`, mirrored in [`tools/regtest/hosted.json`](tools/regtest/hosted.json); a test keeps them equal. Each `BULL_REGTEST_HOSTED_*` or `BULL_ARK_REGTEST_*` define overrides one endpoint.
+
+```sh
+make regtest-hosted-check   # read-only reachability check of the hosted endpoints
+```
+
+The check covers the RecoverBull onion service only when `TOR_SOCKS=host:port` names a Tor SOCKS proxy. The hosted stack offers no Payjoin: its mailrooms do not relay OHTTP, so the Payjoin runtime reports itself unavailable there.
+
+### Local stack
+
+`BULL_REGTEST_HOST` selects a local stack instead of the hosted one, as the CI integration tests do. Build a deliberately configured development app, for example:
 
 ```sh
 fvm flutter run --dart-define=BULL_REGTEST_HOST=stack.example

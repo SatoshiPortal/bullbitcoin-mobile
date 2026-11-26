@@ -93,4 +93,20 @@ void main() {
       expect(observed, 'ws://fixture:9004');
     },
   );
+  for (final (url, expected) in [
+    ('https://boltz.example/v2', 'https://boltz.example/v2'),
+    ('http://fixture:9001/v2', 'http://fixture:9001/v2'),
+    ('api.boltz.exchange/v2', 'https://api.boltz.exchange/v2'),
+  ]) {
+    test('the API origin keeps an explicit scheme: $url', () {
+      final backend = BoltzDatasource(
+        environment: NetworkEnv.regtest,
+        url: url,
+        webSocketUrl: 'wss://boltz.example/v2',
+        boltzStore: _Storage(),
+      );
+      addTearDown(backend.close);
+      expect(backend.apiBaseUrl, expected);
+    });
+  }
 }

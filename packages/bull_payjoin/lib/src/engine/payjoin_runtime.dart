@@ -97,7 +97,12 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoinWithStorage({
   final host = regtestHostProfile ?? regtestProfile?.hostProfile;
   final regtest = host != null;
   PayjoinFailure? unavailable;
-  if (host != null && regtestProfile == null) {
+  if (host is HostedRegtestStack) {
+    // No relay serves the hosted stack: refuse rather than reach production.
+    unavailable = const PayjoinUnavailableFailure(
+      'Payjoin is unavailable on the hosted regtest stack',
+    );
+  } else if (host is LocalRegtestHost && regtestProfile == null) {
     try {
       regtestProfile = PayjoinRegtestProfile.fromBuildEnvironment(
         hostProfile: host,

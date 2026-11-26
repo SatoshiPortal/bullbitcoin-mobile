@@ -1,0 +1,12 @@
+{
+  "BULL_REGTEST_HOSTED_ELECTRUM_BITCOIN": "ssl://scuttle-regtest.tailc408a.ts.net:443",
+  "BULL_REGTEST_HOSTED_ELECTRUM_LIQUID": "ssl://scuttle-regtest.tailc408a.ts.net:8443",
+  "BULL_REGTEST_HOSTED_ESPLORA_BITCOIN": "https://scuttle-regtest-esplora.vibecode.casa",
+  "BULL_REGTEST_HOSTED_ESPLORA_LIQUID": "https://scuttle-regtest-liquid.vibecode.casa",
+  "BULL_REGTEST_HOSTED_BOLTZ_API": "https://scuttle-regtest-boltz.vibecode.casa/v2",
+  "BULL_REGTEST_HOSTED_BOLTZ_WS": "wss://scuttle-regtest-boltz.vibecode.casa/v2/ws",
+  "BULL_REGTEST_HOSTED_RECOVERBULL": "http://jvoev3472o6kq5cja7h622jogk6duperesp35st66y5coirxjbs6pwid.onion",
+  "BULL_ARK_REGTEST_URL": "https://scuttle-regtest-ark.vibecode.casa",
+  "BULL_ARK_REGTEST_ESPLORA_URL": "https://scuttle-regtest-esplora.vibecode.casa",
+  "BULL_ARK_REGTEST_INITIALIZE_NEW": "true"
+}
