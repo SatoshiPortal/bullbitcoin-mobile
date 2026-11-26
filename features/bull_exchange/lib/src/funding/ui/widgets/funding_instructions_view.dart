@@ -32,6 +32,7 @@ class FundingInstructionsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final copy = rail.instructionsCopy(context);
+    final qrLabel = copy.fields[InstructionField.transferCode]?.label;
     final subtitle = context.bullType.subtitle.copyWith(
       fontWeight: FontWeight.w400,
     );
@@ -68,26 +69,26 @@ class FundingInstructionsView extends StatelessWidget {
           const Gap(24.0),
         ],
         ...switch (instructions) {
+          // Each rail's copy names every field the rail shows (pinned by
+          // funding_rail_copy_test), so every row has its label.
           FundingInstructionRows(:final rows) => [
             for (final row in rows)
-              ..._row(context, copy.fields[row.field]!, row.value),
+              if (copy.fields[row.field] case final field?)
+                ..._row(context, field, row.value),
           ],
           FundingInstructionQr(:final payload) => [
             Center(
               child: Column(
                 children: [
-                  BullText(
-                    copy.fields[InstructionField.transferCode]!.label,
-                    style: context.bullType.body,
-                    textAlign: .center,
-                  ),
-                  const Gap(8.0),
-                  BullQrCode(
-                    data: payload,
-                    size: 250,
-                    semanticsLabel:
-                        copy.fields[InstructionField.transferCode]!.label,
-                  ),
+                  if (qrLabel case final label?) ...[
+                    BullText(
+                      label,
+                      style: context.bullType.body,
+                      textAlign: .center,
+                    ),
+                    const Gap(8.0),
+                  ],
+                  BullQrCode(data: payload, size: 250, semanticsLabel: qrLabel),
                   const Gap(24.0),
                 ],
               ),
