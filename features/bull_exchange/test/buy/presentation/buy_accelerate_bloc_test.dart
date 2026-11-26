@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_exchange/src/buy/presentation/buy_accelerate_bloc.dart';
-import 'package:bull_exchange/src/buy/presentation/buy_accelerate_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
