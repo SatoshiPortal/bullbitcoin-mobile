@@ -11,6 +11,7 @@ import '../testing/send_source_fixture.dart';
 import 'package:go_router/go_router.dart';
 
 import 'dart:async';
+import 'dart:convert';
 
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_payment_page.dart';
@@ -69,6 +70,12 @@ class _DuplicateFeeLabelsDelegate
   @override
   bool shouldReload(_DuplicateFeeLabelsDelegate old) => false;
 }
+
+final _transparentPixel = MemoryImage(
+  base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mNgAAIAAAUAAen63NgAAAAASUVORK5CYII=',
+  ),
+);
 
 void main() {
   setUpAll(() {
@@ -166,7 +173,7 @@ void main() {
                 GoRouter.of(context)
                     .pushReplacementNamed('coins', extra: wallet),
             orderUnderReview: (_) => const SizedBox.shrink(),
-            arrowImage: const AssetImage('assets/logos/bitcoin.png'),
+            arrowImage: _transparentPixel,
             successImage: const AssetImage('unused-success'),
             child: child ?? const SizedBox.shrink(),
           ),
