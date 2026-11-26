@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# The binaries and Linux application must be built before entering the isolated network.
+engine=${CONTAINER_ENGINE:-docker}
+case "$engine" in docker|podman) ;; *) echo "Unsupported container engine" >&2; exit 2 ;; esac
+
+# Core 32 currently returns a PSBT the pinned peer cannot parse.
+bitcoin=ghcr.io/getumbrel/docker-bitcoind@sha256:89185fc2792a9824cbe18f7ad4ead02a3a9a14adf5b34eb42f60ebec36201fa0
+electrs=ghcr.io/vulpemventures/electrs@sha256:999a2218f423c0fb167ee53b282aa7929a9d4abba38ef16f67f407acd00589d4
+runtime=docker.io/library/python@sha256:a83ba18aef0f865b1a4a611c2cf460fe446f2795673bbb9fe43be570439e3b39
+if [[ "${1:-}" == --pull-images && $# == 1 ]]; then
+  for image in "$bitcoin" "$electrs" "$runtime"; do "$engine" pull "$image"; done
+  exit 0
+fi
+[[ $# == 0 ]] || { echo "Usage: $0 [--pull-images]" >&2; exit 2; }
+
+# The binaries, images and Linux application must be ready before isolation.
 : "${BULL_PAYJOIN_TEST_PEER:?Set the path to the pinned payjoin-cli binary}"
 : "${BULL_PAYJOIN_MAILROOMS:?Set the path to the local mailrooms binary}"
 [[ -x "$BULL_PAYJOIN_TEST_PEER" && -x "$BULL_PAYJOIN_MAILROOMS" ]] || {
   echo "Payjoin fixture binaries must be executable" >&2
   exit 2
 }
-engine=${CONTAINER_ENGINE:-docker}
-case "$engine" in docker|podman) ;; *) echo "Unsupported container engine" >&2; exit 2 ;; esac
 state=$(mktemp -d "${TMPDIR:-/tmp}/bull-payjoin-regtest.XXXXXXXX")
 name="bull-payjoin-${state##*.}"
 cleanup() {
@@ -24,10 +35,6 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-# Core 32 currently returns a PSBT the pinned peer cannot parse.
-bitcoin=ghcr.io/getumbrel/docker-bitcoind@sha256:89185fc2792a9824cbe18f7ad4ead02a3a9a14adf5b34eb42f60ebec36201fa0
-electrs=ghcr.io/vulpemventures/electrs@sha256:999a2218f423c0fb167ee53b282aa7929a9d4abba38ef16f67f407acd00589d4
-runtime=docker.io/library/python@sha256:a83ba18aef0f865b1a4a611c2cf460fe446f2795673bbb9fe43be570439e3b39
 mkdir -p "$state/node" "$state/mailrooms"
 openssl req -x509 -newkey rsa:2048 -nodes -keyout "$state/mailrooms/key.pem" -out "$state/mailrooms/cert.pem" \
   -days 1 -subj /CN=localhost -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1' \

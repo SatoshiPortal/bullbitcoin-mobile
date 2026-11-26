@@ -404,6 +404,17 @@ jobs:
       - name: Coins and prices on isolated local regtest
         run: bash tools/local_regtest_integration.sh
 
+      - name: Payjoin on isolated local regtest
+        run: |
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/payjoin-mailrooms"
+          cargo build --locked --manifest-path tools/local_payjoin_mailrooms/Cargo.toml
+          tools/local_payjoin_mailrooms/build-peer.sh "$RUNNER_TEMP/payjoin-peer"
+          tools/local_payjoin_integration.sh --pull-images
+          export BULL_PAYJOIN_MAILROOMS="$CARGO_TARGET_DIR/debug/bull-regtest-mailrooms"
+          export BULL_PAYJOIN_TEST_PEER="$RUNNER_TEMP/payjoin-peer/bin/payjoin-cli"
+          unset CARGO_TARGET_DIR
+          tools/local_payjoin_integration.sh
+
   ci:
     name: CI
     if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false) }}
