@@ -194,6 +194,48 @@ void main() {
     },
   );
 
+  test(
+    'BIP85 keeps a committed reservation but reveals nothing after lock',
+    () async {
+      final secrets = Secrets(
+        authority: authority,
+        scratchDirectory: () async => directory.path,
+      );
+      final secret = _value(await secrets.generate());
+      final fingerprint = secret.id;
+      _value(
+        await inventory.registerWallet(
+          RegisteredWallet(
+            id: 'bip85-parent',
+            secretFingerprint: fingerprint.hex,
+            masterFingerprint: fingerprint.hex,
+            signer: 'local',
+            network: 'bitcoinTestnet',
+            xpub: 'public-key-marker',
+            externalDescriptor: 'external-marker',
+            internalDescriptor: 'internal-marker',
+            label: null,
+            birthday: null,
+            isDefault: false,
+          ),
+        ),
+      );
+      storage.skipReads = 1;
+      storage.block = true;
+      final deriving = inventory
+          .bip85(secrets)
+          .deriveNextHex(parent: fingerprint, length: 16);
+      await storage.entered.future.timeout(const Duration(seconds: 5));
+      expect(_value(await inventory.listDerivations()), hasLength(1));
+      final locking = inventory.lock();
+      storage.release.complete();
+      expect(await deriving, isA<Err>());
+      expect(await locking, isTrue);
+      _value(await inventory.resumeUnprotected());
+      expect(_value(await inventory.listDerivations()), hasLength(1));
+    },
+  );
+
   test('unprotected reopening cannot supersede a later lock', () async {
     final first = inventory.lock();
     expect(inventory.isLocked, isTrue);
@@ -237,6 +279,7 @@ void main() {
 
 class _BlockingStorage extends FakeSecureStoragePlatform {
   bool block = false;
+  int skipReads = 0;
   final entered = Completer<void>();
   final release = Completer<void>();
 
@@ -246,9 +289,13 @@ class _BlockingStorage extends FakeSecureStoragePlatform {
     required Map<String, String> options,
   }) async {
     if (block) {
-      block = false;
-      entered.complete();
-      await release.future;
+      if (skipReads > 0) {
+        skipReads--;
+      } else {
+        block = false;
+        entered.complete();
+        await release.future;
+      }
     }
     return super.read(key: key, options: options);
   }
