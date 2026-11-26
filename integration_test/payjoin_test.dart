@@ -111,6 +111,12 @@ Future<void> main({bool isInitialized = false}) async {
       policy = locator<PayjoinPolicyAccess>();
       spend = locator<Spend>();
 
+      final settings = requireValue(
+        await locator<Preferences>().fetch(),
+        'read startup environment',
+      );
+      expect(settings.environment, Environment.regtest);
+      expect(settings.activeNetwork, NetworkEnv.regtest);
       final currentPolicy = await policy.load();
       previousPayjoinPolicy = switch (currentPolicy) {
         Ok(:final value) => value,
