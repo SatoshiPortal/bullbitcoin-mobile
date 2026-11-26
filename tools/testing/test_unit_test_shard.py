@@ -52,6 +52,64 @@ class UnitTestShardTest(unittest.TestCase):
         result, _ = self.run_shard(3, 3)
         self.assertEqual(result.returncode, 2)
 
+    def test_access_trace_preserves_inventory_output_and_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in FILES:
+                (root / name).parent.mkdir(parents=True, exist_ok=True)
+                (root / name).write_text("")
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            fvm = bin_dir / "fvm"
+            fvm.write_text(
+                '#!/bin/sh\nprintf "%s\\n" "$@" > "$ARGUMENTS"\n'
+                'echo "test stdout"\necho "test stderr" >&2\nexit 23\n'
+            )
+            fvm.chmod(0o755)
+            env = dict(
+                os.environ,
+                PATH=f"{bin_dir}:{os.environ['PATH']}",
+                TEST_TOTAL_SHARDS="3",
+                TEST_SHARD_INDEX="1",
+                MELOS_PACKAGE_NAME="access",
+                ARGUMENTS=str(root / "arguments"),
+                SENSITIVE_FIXTURE="do-not-print-this-value",
+            )
+            command = ["bash", str(SCRIPT), "flutter", "--enable-vmservice", "--reporter=compact"]
+            plain = subprocess.run(command, cwd=root, env=env, text=True, capture_output=True, check=False)
+            plain_args = (root / "arguments").read_text()
+            traced = subprocess.run(command, cwd=root, env=dict(env, TRACE_ACCESS_SHARD="1"), text=True, capture_output=True, check=False)
+            traced_args = (root / "arguments").read_text()
+        self.assertEqual(plain.returncode, 23)
+        self.assertEqual(traced.returncode, plain.returncode)
+        self.assertEqual(traced_args, plain_args)
+        self.assertEqual(traced.stderr, plain.stderr)
+        lines = traced.stdout.splitlines()
+        markers = [line for line in lines if line.startswith("Access shard trace:")]
+        self.assertEqual(len(markers), 2)
+        self.assertEqual(markers[0], "Access shard trace: start")
+        self.assertRegex(markers[1], r"^Access shard trace: end \(elapsed \d+s, exit 23\)$")
+        self.assertEqual("\n".join(line for line in lines if line not in markers) + "\n", plain.stdout)
+        self.assertNotIn(env["SENSITIVE_FIXTURE"], traced.stdout + traced.stderr)
+
+    def test_real_access_shard_inventory_is_unchanged(self):
+        access = SCRIPT.parents[1] / "features" / "access"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fvm = root / "fvm"
+            fvm.write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+            fvm.chmod(0o755)
+            env = dict(os.environ, PATH=f"{root}:{os.environ['PATH']}", TEST_TOTAL_SHARDS="3", TEST_SHARD_INDEX="1", MELOS_PACKAGE_NAME="access")
+            command = ["bash", str(SCRIPT), "flutter", "--enable-vmservice", "--reporter=compact"]
+            plain = subprocess.run(command, cwd=access, env=env, text=True, capture_output=True, check=False)
+            traced = subprocess.run(command, cwd=access, env=dict(env, TRACE_ACCESS_SHARD="1"), text=True, capture_output=True, check=False)
+        self.assertEqual(plain.returncode, 0)
+        self.assertEqual(traced.returncode, 0)
+        plain_files = [line for line in plain.stdout.splitlines() if line.endswith("_test.dart")]
+        traced_files = [line for line in traced.stdout.splitlines() if line.endswith("_test.dart")]
+        self.assertEqual(traced_files, plain_files)
+        self.assertTrue(plain_files)
+
 
 if __name__ == "__main__":
     unittest.main()
