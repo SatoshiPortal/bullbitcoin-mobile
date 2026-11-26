@@ -12,6 +12,14 @@ final class SecretsArkChildProvider implements ArkChildProviderPort {
   final Secrets _secrets;
   final ArkAccountRegistryRepository _registry;
   const SecretsArkChildProvider(this._secrets, this._registry);
+
+  /// The foreground session is the authority here: the seed read in
+  /// [withChild] already needs it, and a lock ends the runtime.
+  @override
+  Future<Result<void, ArkWalletFailure>> admitBatch(
+    ArkAccountId account,
+  ) async => const Ok(null);
+
   @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,

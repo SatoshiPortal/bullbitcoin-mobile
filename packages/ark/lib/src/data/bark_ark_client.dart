@@ -81,12 +81,6 @@ final class BarkArkClient implements ArkClient {
     bool create = false,
     bool forbidBackground = false,
   }) => _track(() async {
-    if (forbidBackground &&
-        executionMode == ArkExecutionMode.backgroundExisting) {
-      return const Err(
-        ArkUnavailableFailure(ArkFailureReason.renewalNotPermitted),
-      );
-    }
     if (!_mayRun(account)) {
       return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
     }
@@ -98,6 +92,14 @@ final class BarkArkClient implements ArkClient {
     final root = Directory(storagePath);
     if (!root.existsSync() && !create) {
       return const Err(ArkUnavailableFailure(ArkFailureReason.accountMissing));
+    }
+    // After the policy, budget and storage refusals, before any lock or open:
+    // only a renewal may read a seed in the background.
+    if (forbidBackground &&
+        executionMode == ArkExecutionMode.backgroundExisting) {
+      return const Err(
+        ArkUnavailableFailure(ArkFailureReason.renewalNotPermitted),
+      );
     }
     final lifecycle = ArkWriterLock.acquire(
       '$storagePath/lifecycle.sqlite',
@@ -1157,6 +1159,12 @@ final class BarkArkClient implements ArkClient {
                 in (batches as Ok<List<List<ArkVtxo>>, ArkWalletFailure>)
                     .value) {
               if (!_mayRun(account)) {
+                failed.add('deferred');
+                break;
+              }
+              // The open's own admission says nothing about this lot: ask
+              // again, so a policy change between two lots stops the second.
+              if (await childProvider.admitBatch(account) is Err) {
                 failed.add('deferred');
                 break;
               }

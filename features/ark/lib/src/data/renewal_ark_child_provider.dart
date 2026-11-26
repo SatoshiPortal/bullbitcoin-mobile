@@ -19,6 +19,27 @@ final class RenewalArkChildProvider implements ArkChildProviderPort {
   const RenewalArkChildProvider(this._authority, this._registry);
 
   @override
+  Future<Result<void, ArkWalletFailure>> admitBatch(
+    ArkAccountId account,
+  ) async {
+    switch (await _registry.list()) {
+      case Err():
+        return const Err(ArkStorageFailure());
+      case Ok(:final value):
+        if (!value.any((c) => c.id == account)) {
+          return const Err(ArkRecoveryRequiredFailure());
+        }
+    }
+    final authority = _authority;
+    if (authority == null) return const Err(ArkUnavailableFailure());
+    return await authority.mayRenew(account.parent)
+        ? const Ok(null)
+        : const Err(
+            ArkUnavailableFailure(ArkFailureReason.renewalNotPermitted),
+          );
+  }
+
+  @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
     Future<Result<T, ArkWalletFailure>> Function(
