@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/default_wallets/domain/default_wallets_failure.dart';
-import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_machine.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';

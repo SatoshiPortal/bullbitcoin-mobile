@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bull_exchange/src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_bloc.dart';
-import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_machine.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';

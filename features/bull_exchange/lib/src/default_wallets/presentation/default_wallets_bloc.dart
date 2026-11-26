@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/validate_default_wallet_destination_usecase.dart';
-import 'default_wallets_machine.dart';
+import '../domain/default_wallets_machine.dart';
 
 /// Runs one effect of [transitionDefaultWallets] and answers with the event
 /// that carries its result and the attempt that started it.

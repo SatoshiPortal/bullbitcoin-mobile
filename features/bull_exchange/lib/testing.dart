@@ -8,11 +8,11 @@ import 'src/autobuy/domain/autobuy_flow.dart';
 import 'src/autobuy/domain/usecases/load_autobuy_context_usecase.dart';
 import 'src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'src/default_wallets/presentation/default_wallets_bloc.dart';
-import 'src/default_wallets/presentation/default_wallets_machine.dart';
+import 'src/default_wallets/domain/default_wallets_machine.dart';
 
 export 'src/default_wallets/presentation/default_wallets_bloc.dart'
     show DefaultWalletsBloc;
-export 'src/default_wallets/presentation/default_wallets_machine.dart';
+export 'src/default_wallets/domain/default_wallets_machine.dart';
 export 'src/pay/domain/pay_flow.dart';
 export 'src/pay/presentation/pay_flow_bloc.dart';
 export 'src/pay/ui/pay_flow_shell.dart' show payPagesFor;

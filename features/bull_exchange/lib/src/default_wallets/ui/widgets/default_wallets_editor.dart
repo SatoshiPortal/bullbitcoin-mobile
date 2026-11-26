@@ -8,7 +8,7 @@ import '../../default_wallets_payout_fields.dart';
 import '../../domain/validate_default_wallet_destination_usecase.dart';
 import '../../presentation/default_wallets_bloc.dart';
 import '../../presentation/default_wallets_failure_l10n.dart';
-import '../../presentation/default_wallets_machine.dart';
+import '../../domain/default_wallets_machine.dart';
 
 typedef DefaultWalletsFooterBuilder = Widget Function(
   BuildContext context,
