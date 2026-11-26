@@ -119,32 +119,6 @@ void main() {
     directory.deleteSync(recursive: true);
   });
 
-  test(
-    'with renewal disabled the task delivers saved claims and renews nothing',
-    () async {
-      final repository = ArkRepositoryImpl(client);
-      final keyless = RunArkBackgroundTaskUsecase(
-        registry,
-        budget,
-        RunArkSavedClaimsUsecase(repository, budget),
-        RunArkBackgroundUsecase(
-          SynchronizeArkUsecase(repository),
-          UpdateArkExpiryWarningUsecase(Reminders()),
-        ),
-        renewalEnabled: false,
-      );
-
-      expect(await keyless.execute(), isA<Ok>());
-
-      expect(
-        client.calls,
-        contains('submit'),
-        reason: 'saved claims still run',
-      );
-      expect(client.calls, isNot(contains('renew')), reason: 'no seed lane');
-    },
-  );
-
   test('foreground delivers saved claims before keyed renewal', () async {
     final maintenance = ArkMaintenance(
       client: client,

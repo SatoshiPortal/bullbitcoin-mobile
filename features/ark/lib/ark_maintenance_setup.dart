@@ -83,18 +83,14 @@ final class ArkMaintenance {
     };
   }
 
-  /// [renewal] is false in the headless task: it reads no seed, so only saved
-  /// claims run there and renewal waits for the foreground.
-  BackgroundTaskHandler backgroundHandler({bool renewal = true}) =>
-      arkRenewalHandler(
-        usecase: RunArkBackgroundTaskUsecase(
-          accounts,
-          budget,
-          RunArkSavedClaimsUsecase(_repository, budget),
-          _renew,
-          renewalEnabled: renewal,
-        ),
-      );
+  BackgroundTaskHandler backgroundHandler() => arkRenewalHandler(
+    usecase: RunArkBackgroundTaskUsecase(
+      accounts,
+      budget,
+      RunArkSavedClaimsUsecase(_repository, budget),
+      _renew,
+    ),
+  );
 }
 
 /// Schedule only from an authoritative registry observation. A failed read

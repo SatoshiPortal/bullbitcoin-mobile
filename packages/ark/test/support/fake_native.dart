@@ -22,7 +22,7 @@ final class FakeChild implements ArkChildProviderPort {
   ) async {
     final index = batchAdmissions++;
     return index == refuseBatchAt
-        ? const Err(ArkRenewalDisabledFailure())
+        ? const Err(ArkRenewalNotPermittedFailure())
         : const Ok(null);
   }
 

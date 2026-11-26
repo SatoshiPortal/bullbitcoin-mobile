@@ -23,8 +23,8 @@ enum ArkFailureReason {
   budgetExhausted,
   closed,
 
-  /// The headless renewal policy refused to read the seed (D92). Not a
-  /// recovery: nothing is wrong with the wallet, the view is protected.
+  /// The headless renewal policy refused to hand over the account's dedicated
+  /// child (D105). Not a recovery: nothing is wrong with the wallet.
   renewalNotPermitted,
 }
 
@@ -37,11 +37,11 @@ final class ArkUnavailableFailure extends ArkWalletFailure {
   const ArkUnavailableFailure([super.reason = ArkFailureReason.unavailable]);
 }
 
-/// Renewal does not run headless: it would hand the Ark child's words to the
-/// native opener from a process that has no session (D92). Nothing is wrong
-/// with the wallet; the foreground renews.
-final class ArkRenewalDisabledFailure extends ArkWalletFailure {
-  const ArkRenewalDisabledFailure()
+/// The headless renewal policy refused to hand over the account's dedicated
+/// child (D105): the account has no background access, or it is not the
+/// registered account. Nothing is wrong with the wallet and nothing was read.
+final class ArkRenewalNotPermittedFailure extends ArkWalletFailure {
+  const ArkRenewalNotPermittedFailure()
     : super(ArkFailureReason.renewalNotPermitted);
 }
 

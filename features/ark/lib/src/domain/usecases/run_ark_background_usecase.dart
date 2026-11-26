@@ -99,17 +99,12 @@ final class RunArkBackgroundTaskUsecase {
   final ArkStageBudget _budget;
   final RunArkSavedClaimsUsecase _savedDelivery;
   final RunArkBackgroundUsecase _renew;
-
-  /// False in the headless task: no seed is read in the background, so only
-  /// saved claims run there. Renewal happens in the foreground.
-  final bool renewalEnabled;
   const RunArkBackgroundTaskUsecase(
     this._protectedAccounts,
     this._budget,
     this._savedDelivery,
-    this._renew, {
-    this.renewalEnabled = true,
-  });
+    this._renew,
+  );
 
   Future<Result<void, ArkFailure>> execute() async {
     if (!_budget.mayAdmitNextStage) return const Err(ArkOperationBusyFailure());
@@ -129,8 +124,7 @@ final class RunArkBackgroundTaskUsecase {
       if (delivery case Err(:final failure)) failed ??= failure;
     }
     // No account's keyed work can strand another account's saved delivery.
-    for (final config
-        in renewalEnabled ? accounts : const <ArkAccountConfig>[]) {
+    for (final config in accounts) {
       if (!_budget.mayAdmitNextStage) {
         return const Err(ArkOperationBusyFailure());
       }

@@ -10,7 +10,7 @@ import '../ark_notification_setup.dart';
 import '../ark_setup.dart';
 import '../ark_wallet_setup.dart';
 import '../bull_ark.dart';
-import 'data/disabled_renewal_child_provider.dart';
+import 'data/ark_renewal_client.dart';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
@@ -111,12 +111,14 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     budget: budget,
   );
   resources.onClose(exitNotifier.close);
-  // D92: the task never builds a `Secrets` and reads no seed: renewal runs in
-  // the foreground, saved claims still run here. The inventory is asked only
-  // whether a view still permits a reminder.
+  // D105: the task never builds a `Secrets`. Refresh goes through the trusted
+  // renewal client, which reads only the account's dedicated BIP85 child under
+  // a fresh admission; saved claims never ask for a seed. The inventory is
+  // asked directly only whether a view still permits a reminder.
   final support = await getApplicationSupportDirectory();
+  final secretsFile = File('${support.path}/databases/secrets.sqlite');
   final backgroundAccess = switch (await ArkBackgroundAccess.open(
-    file: File('${support.path}/databases/secrets.sqlite'),
+    file: secretsFile,
     admission: admission,
   )) {
     Ok(:final value) => value,
@@ -143,25 +145,32 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   );
   if (sourceAuthority case Ok(:final value)) resources.onClose(value.close);
   const policy = _RegtestBackgroundPolicy();
-  final client =
-      existingClient?.call(policy, budget) ??
-      createArkNativeClient(
-        storagePath: '$directory/native',
-        childProvider: const DisabledRenewalChildProvider(),
-        transactionVerifier: const ArkTransactionVerifier(),
-        boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
-        executionPolicy: policy,
-        executionMode: native.ArkExecutionMode.backgroundExisting,
-        stageBudget: budget,
-        exitObserver: exitNotifier,
-      );
-  resources.onClose(client.close);
+  final injected = existingClient?.call(policy, budget);
+  final ArkClient client;
+  if (injected != null) {
+    client = injected;
+    resources.onClose(client.close);
+  } else {
+    final renewal = await openArkRenewalClient(
+      storagePath: '$directory/native',
+      secretsFile: secretsFile,
+      admission: admission,
+      registry: registry,
+      transactionVerifier: const ArkTransactionVerifier(),
+      executionPolicy: policy,
+      stageBudget: budget,
+      boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
+      exitObserver: exitNotifier,
+    );
+    client = renewal.client;
+    resources.onClose(renewal.close);
+  }
   final handler = ArkMaintenance(
     client: client,
     reminders: reminders,
     accounts: _ExistingRegtestAccounts(registry, policy),
     budget: budget,
-  ).backgroundHandler(renewal: false);
+  ).backgroundHandler();
   return () async {
     final result = await handler();
     return reminderFailure || exitNotifier.failed

@@ -97,7 +97,7 @@ final class BarkArkClient implements ArkClient {
     // only a renewal may read a seed in the background.
     if (forbidBackground &&
         executionMode == ArkExecutionMode.backgroundExisting) {
-      return const Err(ArkRenewalDisabledFailure());
+      return const Err(ArkRenewalNotPermittedFailure());
     }
     final lifecycle = ArkWriterLock.acquire(
       '$storagePath/lifecycle.sqlite',

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ark/ark.dart';
+import 'package:ark/ark_setup.dart' show ArkChildProviderPort;
 import 'package:bull_ark/src/data/sqlite_ark_reminder_repository.dart';
 import 'package:bull_ark/src/domain/ark_expiry_warning.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
@@ -13,7 +14,6 @@ import 'package:material_ui/material_ui.dart' hide Row;
 import 'package:notifications/notifications.dart';
 import 'package:bull_ark/src/domain/ark_reminder_policy_evidence.dart';
 import 'package:bull_ark/src/domain/usecases/update_ark_expiry_warning_usecase.dart';
-import 'package:bull_ark/src/data/disabled_renewal_child_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -401,17 +401,16 @@ void main() {
     },
   );
 
-  test('renewal disabled does not stop a permitted reminder', () async {
+  test('a refused renewal does not stop a permitted reminder', () async {
     expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
     final platformId = rows().single['platform_id'] as int;
     await store.close();
     gateway.actions.clear();
     reopen();
 
-    // Renewal is refused for good in the headless task; notifying is a
-    // separate permission the view still grants.
-    const renewal = DisabledRenewalChildProvider();
-    expect(await renewal.admitBatch(account()), isA<Err>());
+    // Renewal and notifying are separate permissions: a refused renewal does
+    // not decide the reminder.
+    expect(await _RefusedRenewal().admitBatch(account()), isA<Err>());
 
     expect(
       await store.reapplyStored(permitsParent: (_) async => true),
@@ -685,4 +684,18 @@ void main() {
       );
     });
   }
+}
+
+/// A renewal policy that refuses every lot.
+final class _RefusedRenewal implements ArkChildProviderPort {
+  @override
+  Future<Result<void, ArkWalletFailure>> admitBatch(
+    ArkAccountId account,
+  ) async => const Err(ArkRenewalNotPermittedFailure());
+
+  @override
+  Future<Result<T, ArkWalletFailure>> withChild<T>(
+    ArkAccountId account,
+    Future<Result<T, ArkWalletFailure>> Function(String, Fingerprint) action,
+  ) async => const Err(ArkRenewalNotPermittedFailure());
 }
