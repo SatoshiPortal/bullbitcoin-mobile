@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bull_exchange/src/settings/domain/manage_exchange_access_usecase.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_bloc.dart';
-import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_machine.dart';
+import 'package:bull_exchange/src/settings/domain/exchange_access_settings_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

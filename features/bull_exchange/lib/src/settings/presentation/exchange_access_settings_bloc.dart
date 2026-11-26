@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/manage_exchange_access_usecase.dart';
-import 'exchange_access_settings_machine.dart';
+import '../domain/exchange_access_settings_machine.dart';
 
 /// Shell of [transitionAccessSettings]: applies events in order and runs
 /// the attempt of the [AccessSettingsWorking] state it enters.

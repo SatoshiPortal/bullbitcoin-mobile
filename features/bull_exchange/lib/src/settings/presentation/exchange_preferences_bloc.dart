@@ -9,7 +9,7 @@ import '../domain/exchange_settings_failure.dart';
 
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
-import 'exchange_preferences_machine.dart';
+import '../domain/exchange_preferences_machine.dart';
 
 /// Shell of [transitionPreferences]. The save runs through the write gate
 /// ([FinancialWriteKind.preferenceWrite]) of the session the screen opened

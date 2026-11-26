@@ -5,7 +5,7 @@ import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.da
 import 'package:bull_exchange/src/settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bull_exchange/src/settings/presentation/secure_file_upload_bloc.dart';
-import 'package:bull_exchange/src/settings/presentation/secure_file_upload_machine.dart';
+import 'package:bull_exchange/src/settings/domain/secure_file_upload_machine.dart';
 import 'package:bull_exchange/src/settings/ui/screens/secure_file_upload_screen.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';

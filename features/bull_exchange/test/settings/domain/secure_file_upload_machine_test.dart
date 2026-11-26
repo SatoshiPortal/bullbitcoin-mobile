@@ -1,7 +1,7 @@
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
 import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/upload_exchange_document_usecase.dart';
-import 'package:bull_exchange/src/settings/presentation/secure_file_upload_machine.dart';
+import 'package:bull_exchange/src/settings/domain/secure_file_upload_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

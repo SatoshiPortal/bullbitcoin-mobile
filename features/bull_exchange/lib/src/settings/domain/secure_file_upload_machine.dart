@@ -3,9 +3,9 @@ import 'package:exchange/steps.dart' show StepNext;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/entities/secure_file_upload.dart';
-import '../domain/exchange_settings_failure.dart';
-import '../domain/usecases/upload_exchange_document_usecase.dart';
+import 'entities/secure_file_upload.dart';
+import 'exchange_settings_failure.dart';
+import 'usecases/upload_exchange_document_usecase.dart';
 
 /// Status for the secure file upload UI (matches BB-Exchange DocStatus).
 enum SecureUploadStatus {

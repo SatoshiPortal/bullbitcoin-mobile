@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../exchange_l10n.dart';
 import '../../presentation/exchange_access_settings_bloc.dart';
-import '../../presentation/exchange_access_settings_machine.dart';
+import '../../domain/exchange_access_settings_machine.dart';
 
 enum _AccessView { controls, signOutIncomplete, unreadable, expiring }
 
