@@ -17,7 +17,7 @@ import 'package:startup/generated/l10n/startup_localizations.dart';
 /// Blocks startup when the wallet storage cannot be read.
 ///
 /// Offers no action that touches the data: retry, support and quit only.
-class InventoryUnreadableScreen extends StatelessWidget {
+class InventoryUnreadableScreen extends StatefulWidget {
   const InventoryUnreadableScreen({
     super.key,
     required this.onRetry,
@@ -28,6 +28,27 @@ class InventoryUnreadableScreen extends StatelessWidget {
   final VoidCallback onRetry;
   final VoidCallback onQuit;
   final List<LocalizationsDelegate<dynamic>> extraLocalizations;
+
+  @override
+  State<InventoryUnreadableScreen> createState() =>
+      _InventoryUnreadableScreenState();
+}
+
+class _InventoryUnreadableScreenState extends State<InventoryUnreadableScreen> {
+  bool _retrying = false;
+
+  @override
+  void didUpdateWidget(covariant InventoryUnreadableScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.onRetry != widget.onRetry) _retrying = false;
+  }
+
+  // The caller completes a one-shot future: a second call would throw.
+  void _retry() {
+    if (_retrying) return;
+    setState(() => _retrying = true);
+    widget.onRetry();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +70,7 @@ class InventoryUnreadableScreen extends StatelessWidget {
       locale: locale,
       localizationsDelegates: [
         StartupLocalizations.delegate,
-        ...extraLocalizations,
+        ...widget.extraLocalizations,
         ...GlobalMaterialLocalizations.delegates,
       ],
       supportedLocales: StartupLocalizations.supportedLocales,
@@ -76,7 +97,10 @@ class InventoryUnreadableScreen extends StatelessWidget {
                     role: BullTextRole.body,
                   ),
                   const Gap(24),
-                  BullButton.primary(label: loc.retry, onPressed: onRetry),
+                  BullButton.primary(
+                    label: loc.retry,
+                    onPressed: _retrying ? null : _retry,
+                  ),
                   const Gap(12),
                   BullSupportButton.big(
                     label: loc.appInitErrorContactSupportButton,
@@ -87,7 +111,7 @@ class InventoryUnreadableScreen extends StatelessWidget {
                   const Gap(12),
                   BullButton.secondary(
                     label: loc.inventoryUnreadableQuitButton,
-                    onPressed: onQuit,
+                    onPressed: widget.onQuit,
                   ),
                 ],
               ),
