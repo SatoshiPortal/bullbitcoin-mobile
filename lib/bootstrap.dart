@@ -16,6 +16,7 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:legacy_storage/legacy_storage.dart' show LegacyImportFailure;
 import 'package:material_ui/material_ui.dart';
 import 'package:wizard/wizard.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future<void> startApp() async {
   await runZonedGuarded(
@@ -23,7 +24,17 @@ Future<void> startApp() async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
         final wizard = WizardFeature.mount();
+        var allowDeveloperNetwork = false;
+        try {
+          allowDeveloperNetwork = await WizardFeature.mayOfferInitialNetwork(
+            documents: await getApplicationDocumentsDirectory(),
+            support: await getApplicationSupportDirectory(),
+          );
+        } on Exception {
+          // Unavailable evidence must not unlock first-install controls.
+        }
         final startup = await wizard.runIfNeeded(
+          allowDeveloperNetwork: allowDeveloperNetwork,
           notificationChannelId: PaymentNotifications.channelId,
           branding: WizardBranding(
             headerLogo: AssetImage(Assets.logos.bbLogoSmall.path),

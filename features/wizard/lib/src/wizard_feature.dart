@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -24,11 +25,55 @@ final class WizardFeature {
   WizardFeature.mount()
     : _repository = WizardRepositoryImpl(WizardLocalDatasourceImpl());
 
+  /// Conservatively hides first-install controls when any prior app storage
+  /// is visible. Custody is checked again after its inventory is opened.
+  static Future<bool> mayOfferInitialNetwork({
+    required Directory documents,
+    required Directory support,
+  }) async {
+    try {
+      if (await WizardLocalDatasourceImpl().readCompletedVersion() != null) {
+        return false;
+      }
+      final legacy = Directory(documents.path);
+      await for (final entry in legacy.list(followLinks: false)) {
+        final name = entry.uri.pathSegments
+            .where((part) => part.isNotEmpty)
+            .last;
+        if ([
+          'bullbitcoin_sqlite.sqlite',
+          'recoverbull',
+          'boltz_swaps',
+          'payjoin',
+          'ark',
+        ].any(name.startsWith)) {
+          return false;
+        }
+      }
+      for (final name in ['databases', 'storage-coordination']) {
+        final directory = Directory('${support.path}/$name');
+        final type = await FileSystemEntity.type(
+          directory.path,
+          followLinks: false,
+        );
+        if (type == FileSystemEntityType.notFound) continue;
+        if (type != FileSystemEntityType.directory) return false;
+        await for (final _ in directory.list(followLinks: false)) {
+          return false;
+        }
+      }
+      return true;
+    } on Exception {
+      return false;
+    }
+  }
+
   /// Shows the standalone wizard before migrations or networking can run.
   Future<Result<void, WizardFailure>> runIfNeeded({
     required String notificationChannelId,
     required bool exchangeAllowed,
     required WizardBranding branding,
+    bool allowDeveloperNetwork = false,
   }) async {
     try {
       if (await IsWizardCompleteUsecase(repository: _repository).execute()) {
@@ -44,6 +89,7 @@ final class WizardFeature {
         notificationChannelId: notificationChannelId,
         exchangeAllowed: exchangeAllowed,
         branding: branding,
+        allowDeveloperNetwork: allowDeveloperNetwork,
         onDone: (_) => completer.complete(),
       ),
     );
@@ -61,6 +107,24 @@ final class WizardFeature {
       return Ok(pending?.reportingConsent);
     } on Exception {
       log.warning('Wizard could not read pending reporting consent');
+      return const Err(WizardStorageFailure());
+    }
+  }
+
+  Future<Result<Environment?, WizardFailure>> readPendingNetwork() async {
+    try {
+      final pending = await _repository.readPending();
+      return Ok(pending?.network);
+    } on Exception {
+      return const Err(WizardStorageFailure());
+    }
+  }
+
+  Future<Result<void, WizardFailure>> clearPendingNetwork() async {
+    try {
+      await _repository.clearPendingNetwork();
+      return const Ok(null);
+    } on Exception {
       return const Err(WizardStorageFailure());
     }
   }

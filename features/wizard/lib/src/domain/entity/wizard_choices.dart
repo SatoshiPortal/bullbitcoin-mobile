@@ -13,6 +13,7 @@ enum WizardField {
   reportingConsent,
   exchangeAccess,
   backgroundTasks,
+  network,
 }
 
 /// Tagged variant for the `reportingConsent` parameter of
@@ -47,6 +48,7 @@ class WizardChoices {
     this.reportingConsent,
     this.exchangeAccess = true,
     this.backgroundTasks = true,
+    this.network,
     this.touched = const <WizardField>{},
   });
 
@@ -61,6 +63,9 @@ class WizardChoices {
 
   /// Shown from the stored interval until the user picks it.
   final bool backgroundTasks;
+
+  /// Explicitly confirmed developer-network choice, or null when untouched.
+  final Environment? network;
 
   /// Tracks which fields the user explicitly picked via the wizard's UI
   /// controls (theme/language/currency pickers, mission Yes/No buttons).
@@ -81,6 +86,8 @@ class WizardChoices {
     bool? exchangeAccess,
     bool confirmExchange = false,
     bool? backgroundTasks,
+    Environment? network,
+    bool clearNetwork = false,
   }) {
     final t = Set<WizardField>.from(touched);
     if (language != null) t.add(WizardField.language);
@@ -91,9 +98,12 @@ class WizardChoices {
     }
     if (confirmExchange) t.add(WizardField.exchangeAccess);
     if (backgroundTasks != null) t.add(WizardField.backgroundTasks);
+    if (network != null) t.add(WizardField.network);
+    if (clearNetwork) t.remove(WizardField.network);
     return WizardChoices(
       exchangeAccess: exchangeAccess ?? this.exchangeAccess,
       backgroundTasks: backgroundTasks ?? this.backgroundTasks,
+      network: clearNetwork ? null : network ?? this.network,
       language: language ?? this.language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
@@ -116,6 +126,7 @@ class WizardChoices {
     return WizardChoices(
       exchangeAccess: exchangeAccess,
       backgroundTasks: backgroundTasks ?? this.backgroundTasks,
+      network: network,
       language: language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency,

@@ -15,7 +15,7 @@ class SuperuserTapUnlocker extends StatelessWidget {
     final isSuperuser = context.select(
       (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
-    return _MultiTapTrigger(
+    return SevenTapUnlocker(
       onRequiredTaps: () async {
         await context.read<SettingsCubit>().toggleSuperuserMode(!isSuperuser);
       },
@@ -27,22 +27,27 @@ class SuperuserTapUnlocker extends StatelessWidget {
   }
 }
 
-class _MultiTapTrigger extends StatefulWidget {
+class SevenTapUnlocker extends StatefulWidget {
   final VoidCallback onRequiredTaps;
   final Widget child;
   final String tapsReachedMessage;
+  final String? semanticsIdentifier;
+  final bool showMessage;
 
-  const _MultiTapTrigger({
+  const SevenTapUnlocker({
+    super.key,
     required this.onRequiredTaps,
     required this.tapsReachedMessage,
     required this.child,
+    this.semanticsIdentifier,
+    this.showMessage = true,
   });
 
   @override
-  State<_MultiTapTrigger> createState() => _MultiTapTriggerState();
+  State<SevenTapUnlocker> createState() => _MultiTapTriggerState();
 }
 
-class _MultiTapTriggerState extends State<_MultiTapTrigger> {
+class _MultiTapTriggerState extends State<SevenTapUnlocker> {
   int _tapCount = 0;
   Timer? _resetTimer;
 
@@ -61,7 +66,9 @@ class _MultiTapTriggerState extends State<_MultiTapTrigger> {
     if (_tapCount >= 7) {
       _resetTimer?.cancel();
       widget.onRequiredTaps();
-      BullSnackBar.show(context, message: widget.tapsReachedMessage);
+      if (widget.showMessage) {
+        BullSnackBar.show(context, message: widget.tapsReachedMessage);
+      }
       setState(() {
         _tapCount = 0;
       });
@@ -77,6 +84,7 @@ class _MultiTapTriggerState extends State<_MultiTapTrigger> {
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      identifier: widget.semanticsIdentifier,
       label: context.loc.onboardingBullBitcoin,
       button: true,
       child: GestureDetector(

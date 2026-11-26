@@ -41,7 +41,8 @@ import 'package:sync/write.dart'
     show ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:background_tasks/background_tasks.dart' show BackgroundSchedule;
 import 'package:bb_mobile/background_entrypoint.dart';
-import 'package:preferences/preferences.dart' show Preferences;
+import 'package:preferences/preferences.dart' show Environment, Preferences;
+import 'package:settings/setup.dart' show StartupNetwork;
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
@@ -269,6 +270,10 @@ class Bull {
       final protection = await inventory.isProtected();
       if (protection case Err(:final failure)) return Err(failure);
       final pinProtected = (protection as Ok<bool, SecretFailure>).value;
+      final pendingNetwork = await startupWizard.readPendingNetwork();
+      if (pendingNetwork case Err(:final failure)) return Err(failure);
+      final selectedNetwork =
+          (pendingNetwork as Ok<Environment?, WizardFailure>).value;
       locator.registerSingleton(payjoin);
       locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
       locator.registerSingleton(recoverBull);
@@ -341,6 +346,22 @@ class Bull {
           'ark-funding.sqlite',
         ),
         initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
+        prepareInitialNetwork: selectedNetwork == null
+            ? null
+            : (preferences, electrum) async {
+                final result = await StartupNetwork.apply(
+                  preferences: preferences,
+                  electrum: electrum,
+                  network: selectedNetwork.networkEnv,
+                  superuserUnlocked: true,
+                  developerConsent: true,
+                  isProtected: inventory.isProtected,
+                  hasWallets: inventory.hasWallets,
+                  listSecrets: secrets.list,
+                );
+                if (result case Err(:final failure)) return Err(failure);
+                return startupWizard.clearPendingNetwork();
+              },
       );
       if (setup case Err()) return setup;
       if (!pinProtected) await locator<ForegroundWalletStartup>().start();
