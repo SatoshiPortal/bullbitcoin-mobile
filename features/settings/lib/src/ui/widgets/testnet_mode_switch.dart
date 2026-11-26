@@ -1,12 +1,8 @@
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
-
-import 'dart:io' show exit;
-
 import 'package:settings/src/l10n.dart';
+import 'package:settings/src/ui/widgets/settings_restart_dialog.dart';
 import 'package:preferences/preferences.dart';
 import 'package:settings/src/presentation/bloc/settings_cubit.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullPickerChip, BullPickerItem;
+import 'package:bull_ui/bull_ui.dart' show BullPickerChip, BullPickerItem;
 import 'package:primitives/primitives.dart' show RegtestHostProfile;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,23 +52,9 @@ Future<void> showNetworkRestartDialog(
   BuildContext context, {
   VoidCallback? onClose,
 }) {
-  return BullDialog.show<void>(
-    context: context,
-    isDismissible: false,
-    builder: (dialogContext) => AlertDialog(
-      title: Text(dialogContext.loc.networkRestartDialogTitle),
-      content: PopScope(
-        canPop: false,
-        child: Text(dialogContext.loc.networkRestartDialogMessage),
-      ),
-      actions: [
-        BullButton.primary(
-          label: dialogContext.loc.networkRestartDialogAction,
-          onPressed: onClose ?? () => exit(0),
-          size: BullButtonSize.small,
-          compact: true,
-        ),
-      ],
-    ),
+  return showSettingsRestartDialog(
+    context,
+    message: context.loc.networkRestartDialogMessage,
+    onClose: onClose,
   );
 }
