@@ -580,9 +580,19 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
       _db.execute('COMMIT');
       admitted = false;
       final filter = permitsParent;
-      return await _replay(
-        filter == null ? desired : await _permittedRows(desired, filter),
-      );
+      if (filter == null) return await _replay(desired);
+      final split = await _splitByPermission(desired, filter);
+      final replayed = await _replay(split.permitted);
+      // An alarm already programmed for a view that no longer permits it must
+      // not fire: cancel it. The ledger row stays, so the foreground can
+      // schedule it again once the view permits it.
+      ArkFailure? cancelFailed;
+      for (final row in split.refused) {
+        final cancelled = await _apply(row['platform_id'] as int, null);
+        if (cancelled case Err(:final failure)) cancelFailed ??= failure;
+      }
+      if (replayed case Err()) return replayed;
+      return cancelFailed != null ? Err(cancelFailed) : replayed;
     } on Exception catch (_) {
       return const Err(ArkFeatureStorageFailure());
     } finally {
@@ -599,27 +609,29 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     }
   }
 
-  /// Keeps the rows whose account the caller still permits, asking once per
-  /// parent. A row whose owner cannot be read is dropped: reapplying an alarm
-  /// is never what proves the view may still see it. Dropped rows are neither
-  /// applied nor cancelled.
-  Future<List<Row>> _permittedRows(
+  /// Splits the rows by whether the caller still permits their exact owner,
+  /// asking once per parent. A row whose owner cannot be read is refused:
+  /// reapplying an alarm is never what proves the view may still see it.
+  Future<({List<Row> permitted, List<Row> refused})> _splitByPermission(
     List<Row> rows,
     Future<bool> Function(Fingerprint parent) permitsParent,
   ) async {
     final decisions = <String, bool>{};
-    final kept = <Row>[];
+    final permitted = <Row>[];
+    final refused = <Row>[];
     for (final row in rows) {
-      final Fingerprint parent;
+      Fingerprint? parent;
       try {
         parent = Fingerprint(_owner(row).split('|').first);
       } on Object {
-        continue;
+        parent = null;
       }
-      final allowed = decisions[parent.hex] ??= await permitsParent(parent);
-      if (allowed) kept.add(row);
+      final allowed =
+          parent != null &&
+          (decisions[parent.hex] ??= await permitsParent(parent));
+      (allowed ? permitted : refused).add(row);
     }
-    return kept;
+    return (permitted: permitted, refused: refused);
   }
 
   Future<void> close() async {

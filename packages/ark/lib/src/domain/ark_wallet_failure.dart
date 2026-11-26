@@ -37,6 +37,14 @@ final class ArkUnavailableFailure extends ArkWalletFailure {
   const ArkUnavailableFailure([super.reason = ArkFailureReason.unavailable]);
 }
 
+/// Renewal does not run headless: it would hand the Ark child's words to the
+/// native opener from a process that has no session (D92). Nothing is wrong
+/// with the wallet; the foreground renews.
+final class ArkRenewalDisabledFailure extends ArkWalletFailure {
+  const ArkRenewalDisabledFailure()
+    : super(ArkFailureReason.renewalNotPermitted);
+}
+
 final class ArkWriterBusyFailure extends ArkWalletFailure {
   const ArkWriterBusyFailure() : super(ArkFailureReason.writerBusy);
 }

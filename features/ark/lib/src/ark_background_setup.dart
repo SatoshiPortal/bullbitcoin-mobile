@@ -10,7 +10,7 @@ import '../ark_notification_setup.dart';
 import '../ark_setup.dart';
 import '../ark_wallet_setup.dart';
 import '../bull_ark.dart';
-import 'data/renewal_ark_child_provider.dart';
+import 'data/disabled_renewal_child_provider.dart';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
@@ -19,7 +19,7 @@ import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/storage.dart' show ArkRenewalAuthority;
+import 'package:secrets/storage.dart' show ArkBackgroundAccess;
 import 'package:notifications/payment_store.dart';
 import 'package:notifications/notifications.dart'
     show ScheduledNotificationPort;
@@ -111,27 +111,27 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     budget: budget,
   );
   resources.onClose(exitNotifier.close);
-  // D92: the task never builds a `Secrets`. Only a renewal may read a seed,
-  // through one admission that refuses views protected by a PIN. Without the
-  // inventory, renewals are unavailable and saved claims still run.
+  // D92: the task never builds a `Secrets` and reads no seed: renewal runs in
+  // the foreground, saved claims still run here. The inventory is asked only
+  // whether a view still permits a reminder.
   final support = await getApplicationSupportDirectory();
-  final renewalAuthority = switch (await ArkRenewalAuthority.open(
+  final backgroundAccess = switch (await ArkBackgroundAccess.open(
     file: File('${support.path}/databases/secrets.sqlite'),
     admission: admission,
   )) {
     Ok(:final value) => value,
     Err() => null,
   };
-  if (renewalAuthority != null) resources.onClose(renewalAuthority.close);
+  if (backgroundAccess != null) resources.onClose(backgroundAccess.close);
   // Stored alarms are reapplied only for the accounts a view still permits to
   // run in the background; without the inventory none can be proved, so none
   // is reapplied and the task retries.
   if (reminders case final SqliteArkReminderRepository stored) {
-    final authority = renewalAuthority;
+    final authority = backgroundAccess;
     final restored = await stored.reapplyStored(
       permitsParent: authority == null
           ? (_) async => false
-          : authority.mayRenew,
+          : authority.mayNotify,
     );
     if (restored case Err()) reminderFailure = true;
     if (authority == null) reminderFailure = true;
@@ -147,7 +147,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
       existingClient?.call(policy, budget) ??
       createArkNativeClient(
         storagePath: '$directory/native',
-        childProvider: RenewalArkChildProvider(renewalAuthority, registry),
+        childProvider: const DisabledRenewalChildProvider(),
         transactionVerifier: const ArkTransactionVerifier(),
         boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
         executionPolicy: policy,
@@ -161,7 +161,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     reminders: reminders,
     accounts: _ExistingRegtestAccounts(registry, policy),
     budget: budget,
-  ).backgroundHandler();
+  ).backgroundHandler(renewal: false);
   return () async {
     final result = await handler();
     return reminderFailure || exitNotifier.failed
