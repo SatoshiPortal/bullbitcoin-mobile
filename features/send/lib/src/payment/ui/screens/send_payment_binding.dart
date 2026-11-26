@@ -2,11 +2,14 @@ part of 'send_screen.dart';
 
 /// Owns ephemeral mono UI state; transaction intent remains in SendCubit.
 final class _SendPaymentSession {
-  _SendPaymentSession(this.cubit, this.confirm)
+  _SendPaymentSession(this.cubit, this.confirm, this.startMultipleRecipients)
     : amountController = TextEditingController(text: cubit.state.amount),
       unit = ValueNotifier(cubit.state.bitcoinUnit ?? BitcoinUnit.btc);
   final SendCubit cubit;
   final Future<void> Function() confirm;
+
+  /// Hands over to the classic recipient screen, which owns several recipients.
+  final VoidCallback startMultipleRecipients;
   final TextEditingController amountController;
   final FocusNode amountFocus = FocusNode();
   final ValueNotifier<BitcoinUnit> unit;
@@ -41,6 +44,21 @@ final class _SendPaymentSession {
         const BitcoinRecipientListPolicy().isPlainAddress(request);
   }
 
+  bool supportsLiquidReview(SendState state) =>
+      _isPlainLiquidPayment(state, spMode: cubit.isSpMode);
+
+  /// Several recipients paid by a wallet that signs here confirm on the same
+  /// review. Hardware wallets and coin control keep the classic screen.
+  bool supportsMultipleReview(SendState state) =>
+      !cubit.isSpMode &&
+      state.hasMultipleRecipients &&
+      state.selectedWallet?.isLiquid == false &&
+      state.selectedWallet?.signsLocally == true &&
+      state.selectedWallet?.isHardwareWallet == false &&
+      state.selectedUtxos.isEmpty &&
+      !state.usesSelectedInputsOnly &&
+      !state.isSweep;
+
   void update(SendState state) {
     if (_canonicalText == state.amount) return;
     _canonicalText = state.amount;
@@ -60,6 +78,13 @@ final class _SendPaymentSession {
         cubit.state.failure != null) {
       return;
     }
+    await _toAmount(revision);
+  }
+
+  /// Confirms the recipient already entered, as after Edit, where nothing is typed again.
+  Future<void> confirmRecipient() => _toAmount(++_inputRevision);
+
+  Future<void> _toAmount(int revision) async {
     await cubit.continueOnAddressConfirmed();
     if (_disposed ||
         revision != _inputRevision ||
@@ -101,6 +126,21 @@ final class _SendPaymentSession {
         FeeSelection.slow => context.loc.feePrioritySlow,
         FeeSelection.custom => context.loc.sendFeeCustom,
       };
+
+  /// How long a custom fee takes, read against the current presets.
+  String customFeeTime(BuildContext context, SendState state, int? satPerKwu) {
+    final presets = state.bitcoinFeesList;
+    if (presets == null || satPerKwu == null) return '';
+    int? rate(NetworkFee fee) => fee is RelativeFee ? fee.satPerKwu : null;
+    if (rate(presets.fastest) case final fastest? when satPerKwu >= fastest) {
+      return context.loc.sendFeeTimeFast;
+    }
+    if (rate(presets.economic) case final economic?
+        when satPerKwu >= economic) {
+      return context.loc.sendEstimatedDelivery10to30Minutes;
+    }
+    return context.loc.sendEstimatedDeliveryHours;
+  }
 
   String feeTime(BuildContext context, FeeSelection selection) =>
       switch (selection) {
@@ -165,7 +205,14 @@ final class _SendPaymentSession {
       recipient: ready
           ? BullBorderedTile(
               onTap: null,
-              padding: const EdgeInsets.all(BullSpacing.xs),
+              // The text inset of the other fields; the edit action keeps
+              // the field's own small end inset.
+              padding: const EdgeInsetsDirectional.only(
+                start: BullSpacing.md,
+                top: BullSpacing.xs,
+                end: BullSpacing.xs,
+                bottom: BullSpacing.xs,
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -175,6 +222,7 @@ final class _SendPaymentSession {
                       style: context.bullType.body,
                     ),
                   ),
+                  const Gap(BullSpacing.sm),
                   BullFieldAction(
                     icon: BullIcons.edit,
                     label: context.loc.sendEdit,
@@ -185,7 +233,6 @@ final class _SendPaymentSession {
             )
           : AddressField(onInput: input, onScanned: scan, showLabel: false),
       amountLabel: context.loc.sendAmount,
-      lockedAmountLabel: context.loc.sendAmountLocked,
       amount: ValueListenableBuilder<BitcoinUnit>(
         valueListenable: unit,
         builder: (_, displayUnit, _) => BullAmountInput(
@@ -242,12 +289,17 @@ final class _SendPaymentSession {
         ],
       ),
       fromLabel: context.loc.sendFrom,
-      walletLabel: wallet?.displayLabel(context) ?? '',
-      walletColor: switch (state.selectedBitcoinWallet) {
-        final wallet? => wallet.tagColor(context),
-        null => context.bull.secondary,
-      },
-      walletActionLabel: context.loc.sendFrom,
+      wallet: BullDropdown<String>(
+        value: wallet?.id,
+        items: [
+          for (final source in state.selectableWallets)
+            BullPickerItem(
+              value: source.id,
+              label: source.displayLabel(context),
+            ),
+        ],
+        onChanged: ready ? selectWallet : null,
+      ),
       maxLabel: context.loc.swapMax,
       settingsLabel: context.loc.sendAdvancedSettings,
       feeSummary: feeName(context, state.selectedFeeOption),
@@ -263,14 +315,15 @@ final class _SendPaymentSession {
       },
       onSettings: () => settings(context),
       onMax: ready ? () => max(context) : null,
-      onWallet: ready ? () => wallets(context) : null,
-      onContinue:
-          ready &&
-              state.effectiveAmountSat > 0 &&
-              state.hasValidAmountEntry &&
-              state.failure == null &&
-              !state.amountConfirmedClicked &&
-              !state.buildingTransaction
+      onContinue: !ready
+          ? (state.hasValidPaymentRequest && state.failure == null
+                ? confirmRecipient
+                : null)
+          : state.effectiveAmountSat > 0 &&
+                state.hasValidAmountEntry &&
+                state.failure == null &&
+                !state.amountConfirmedClicked &&
+                !state.buildingTransaction
           ? () {
               amountFocus.unfocus();
               cubit.onAmountConfirmed();
@@ -279,30 +332,11 @@ final class _SendPaymentSession {
     );
   }
 
-  Future<void> wallets(BuildContext context) async {
+  Future<void> selectWallet(String id) async {
     amountFocus.unfocus();
-    final wallets = cubit.state.wallets
-        .where((wallet) => !wallet.isLiquid && wallet.signerDevice == null)
-        .toList();
-    final selected = await BullBottomSheet.show<SendSource>(
-      context: context,
-      child: BullPickerSheet<SendSource>(
-        title: context.loc.sendFrom,
-        options: wallets,
-        isSelected: (wallet) => wallet.id == cubit.state.selectedWallet?.id,
-        label: (wallet) => wallet.displayLabel(context),
-        subtitle: (wallet) {
-          final type = wallet.isWatchOnly || wallet.signsRemotely
-              ? wallet.typeLabel(context)
-              : context.loc.sendSecureWalletDescription;
-          final balance = switch (wallet.balanceSat) {
-            final amount? => FormatAmount.sats(amount.toInt()),
-            null => context.loc.walletLoadFailed,
-          };
-          return '$type · $balance';
-        },
-      ),
-    );
+    final selected = cubit.state.selectableWallets
+        .where((source) => source.id == id)
+        .firstOrNull;
     if (!_disposed && selected != null) {
       await cubit.updateSelectedWallet(selected);
     }
@@ -319,36 +353,45 @@ final class _SendPaymentSession {
     final walletName = cubit.state.selectedWallet?.displayLabel(context) ?? '';
     final selected = preview.selectedCoins;
     final protected = preview.protectedCoinsRemain;
-    final accepted = await BullDialog.show<bool>(
+    final value = context.bullType.label.copyWith(fontWeight: FontWeight.w700);
+    final accepted = await BullBottomSheet.show<bool>(
       context: context,
-      builder: (dialogContext) => SendWholeBalanceDialog(
-        title: selected
-            ? context.loc.sendSelectedCoinsTitle
-            : protected
-            ? context.loc.sendAvailableBalanceTitle
-            : context.loc.sendWholeBalanceTitle,
-        description: selected
-            ? context.loc.sendSelectedCoinsDescription(walletName)
-            : protected
-            ? context.loc.sendAvailableBalanceDescription(walletName)
-            : context.loc.sendWholeBalanceDescription(walletName),
-        balanceLabel: selected
-            ? context.loc.sendSelectedCoinsLabel
-            : context.loc.sendBalance,
-        balance: money(context, preview.availableSat),
-        feeLabel:
-            '${context.loc.sendNetworkFees} · ${feeName(context, cubit.state.selectedFeeOption)}',
-        fee: money(context, preview.feeSat, negative: true),
-        receivesLabel: context.loc.sendRecipientGets,
-        receives: money(
-          context,
-          preview.recipientSat,
-          style: context.bullType.subtitle,
+      child: Builder(
+        builder: (sheetContext) => SendWholeBalanceDialog(
+          title: selected
+              ? context.loc.sendSelectedCoinsTitle
+              : protected
+              ? context.loc.sendAvailableBalanceTitle
+              : context.loc.sendWholeBalanceTitle,
+          description: selected
+              ? context.loc.sendSelectedCoinsDescription(walletName)
+              : protected
+              ? context.loc.sendAvailableBalanceDescription(walletName)
+              : context.loc.sendWholeBalanceDescription(walletName),
+          balanceLabel: selected
+              ? context.loc.sendSelectedCoinsLabel
+              : context.loc.sendBalance,
+          balance: money(context, preview.availableSat, style: value),
+          feeLabel:
+              '${context.loc.sendNetworkFees} · ${feeName(context, cubit.state.selectedFeeOption)}',
+          fee: money(context, preview.feeSat, negative: true, style: value),
+          receivesLabel: context.loc.sendRecipientGets,
+          receives: money(
+            context,
+            preview.recipientSat,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          receivesEquivalent: switch (fiat(cubit.state, preview.recipientSat)) {
+            '' => null,
+            final text => text,
+          },
+          closeLabel: context.loc.sendClose,
+          sendAllLabel: context.loc.sendAllAction,
+          onClose: () => Navigator.pop(sheetContext, false),
+          onSendAll: () => Navigator.pop(sheetContext, true),
         ),
-        cancelLabel: context.loc.cancel,
-        sendAllLabel: context.loc.sendAllAction,
-        onCancel: () => Navigator.pop(dialogContext, false),
-        onSendAll: () => Navigator.pop(dialogContext, true),
       ),
     );
     if (!_disposed && accepted == true) {
@@ -359,7 +402,12 @@ final class _SendPaymentSession {
     }
   }
 
-  Future<void> settings(BuildContext context) async {
+  /// [multipleSwitch] false on the classic amount step, whose recipients are
+  /// managed on its own recipient step.
+  Future<void> settings(
+    BuildContext context, {
+    bool multipleSwitch = true,
+  }) async {
     amountFocus.unfocus();
     cubit.requestPresetPreviews();
     var custom = false;
@@ -435,6 +483,7 @@ final class _SendPaymentSession {
                 replaceByFee: state.replaceByFee,
                 multipleLabel: context.loc.sendMultipleRecipients,
                 multipleRecipients: false,
+                showMultipleRecipients: multipleSwitch,
                 coinsLabel: context.loc.sendCoinsInstead,
                 onClose: () => Navigator.pop(sheetContext),
                 onFeeSelected: (selection) {
@@ -445,9 +494,20 @@ final class _SendPaymentSession {
                   }
                 },
                 onReplaceByFee: (value) => cubit.replaceByFeeChanged(value),
-                onMultipleRecipients: null,
+                onMultipleRecipients: state.canAddRecipient
+                    ? (_) {
+                        Navigator.pop(sheetContext);
+                        if (cubit.state.step != SendStep.address) edit();
+                        startMultipleRecipients();
+                      }
+                    : null,
+                // Coins belong to a wallet, picked once the address is in:
+                // say so instead of a tap that does nothing.
                 onCoins: state.selectedBitcoinWallet == null
-                    ? null
+                    ? () => BullSnackBar.show(
+                        sheetContext,
+                        message: context.loc.sendCoinsNeedRecipient,
+                      )
                     : () async {
                         if (_openingCoins) return;
                         _openingCoins = true;
@@ -497,17 +557,25 @@ final class _SendPaymentSession {
                 context.loc.sendCustomSizeUnavailable,
               _ => context.loc.sendCustomInvalid,
             };
-            final effective = evaluation.effectiveRate;
+            // ≈ fiat · the other unit · how long it takes, like the presets.
+            final rateMode = mode == SendFeeInputMode.rate;
+            final feeSats = rateMode
+                ? evaluation.estimatedSats?.toInt()
+                : evaluation.absoluteSats;
+            final effectiveSatPerKwu = rateMode
+                ? evaluation.relativeSatPerKwu
+                : switch ((evaluation.absoluteSats, previewSize)) {
+                    (final sats?, final size?) when size > 0 =>
+                      (sats * 250 / size).round(),
+                    _ => null,
+                  };
             final help = [
-              if (effective != null)
-                context.loc.sendCustomEffectiveRate(
-                  '${evaluation.effectiveRateIsApproximate ? '≈ ' : ''}$effective',
-                ),
-              if (evaluation.estimatedSats case final n?)
-                '≈ $n ${context.loc.sendSats}',
-              if (evaluation.estimatedSats case final n?)
-                fiat(state, n.toInt()),
-              feeTime(context, state.selectedFeeOption),
+              if (feeSats case final sats?) fiat(state, sats),
+              if (rateMode && feeSats != null)
+                '≈ $feeSats ${context.loc.sendSats}'
+              else if (!rateMode && evaluation.effectiveRate != null)
+                '${evaluation.effectiveRateIsApproximate ? '≈ ' : ''}${evaluation.effectiveRate} ${context.loc.sendSatsPerVB}',
+              customFeeTime(context, state, effectiveSatPerKwu),
             ].where((s) => s.isNotEmpty).join(' · ');
             return SendCustomFeeEditor(
               title: context.loc.sendCustomFee,
@@ -525,7 +593,7 @@ final class _SendPaymentSession {
                   ? context.loc.sendSatsPerVB
                   : context.loc.sendSats,
               help: help,
-              applyHint: context.loc.sendCustomApplyHint,
+              doneLabel: context.loc.sendDone,
               error: error,
               warning: evaluation.warnSubOne
                   ? context.loc.sendCustomSubOne
@@ -667,32 +735,38 @@ final class _SendPaymentSession {
               entered.currencyCode,
               '${quoteTime.hour.toString().padLeft(2, '0')}:${quoteTime.minute.toString().padLeft(2, '0')}',
             ),
-      recipients: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              '${context.loc.sendTo} · ${context.loc.exchangeDcaAddressLabelBitcoin}',
-              style: context.bullType.label.copyWith(
-                color: context.bull.textMuted,
-                fontWeight: FontWeight.w400,
+      recipients: state.hasMultipleRecipients
+          ? [
+              for (var i = 0; i < state.recipientDrafts.length; i++)
+                (
+                  label: context.loc.sendToRecipientNumber(i + 1),
+                  value: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      if (state.recipientAmountsSat.length > i)
+                        money(context, state.recipientAmountsSat[i]),
+                      AddressViewer(
+                        state.recipientDrafts[i].address,
+                        style: context.bullType.label,
+                        color: context.bull.textMuted,
+                        textAlign: TextAlign.end,
+                      ),
+                    ],
+                  ),
+                ),
+            ]
+          : [
+              (
+                label: context.loc.sendTo,
+                value: AddressViewer(
+                  state.paymentRequestAddress,
+                  clipboardText: state.copiedRawPaymentRequest,
+                  style: context.bullType.body,
+                  color: context.bull.text,
+                  textAlign: TextAlign.end,
+                ),
               ),
-            ),
-            const Gap(BullSpacing.xs),
-            SendGroupedAddress(
-              address: state.paymentRequestAddress,
-              onOpen: () => AddressViewer.showDetail(
-                context,
-                data: state.paymentRequestAddress,
-                clipboardText: state.copiedRawPaymentRequest,
-              ),
-              onCopy: () => Clipboard.setData(
-                ClipboardData(text: state.paymentRequestAddress),
-              ),
-            ),
-          ],
-        ),
-      ],
+            ],
       fromLabel: context.loc.sendFrom,
       source: Text(
         state.selectedWallet?.displayLabel(context) ?? '',
@@ -700,16 +774,17 @@ final class _SendPaymentSession {
       ),
       editLabel: context.loc.sendEdit,
       noteLabel: context.loc.transactionNoteHint,
-      note: state.label.isEmpty
-          ? context.loc.transactionNoteAddTitle
-          : state.label,
+      note: state.label,
       feeLabel: context.loc.sendNetworkFees,
       fee: fee == null ? const BullLoader.small() : money(context, fee),
-      feeDetail: [
-        feeName(context, state.selectedFeeOption),
-        feeDescription(context, state, confirmed: true),
-      ].where((part) => part.isNotEmpty).join(' · '),
-      totalLabel: context.loc.sendTotalDebited,
+      // Liquid has a single network rate: no preset to name.
+      feeDetail: state.selectedWallet?.isLiquid == true
+          ? ''
+          : [
+              feeName(context, state.selectedFeeOption),
+              feeDescription(context, state, confirmed: true),
+            ].where((part) => part.isNotEmpty).join(' · '),
+      totalLabel: context.loc.sendTotal,
       total: fee == null
           ? const BullLoader.small()
           : money(
@@ -721,8 +796,20 @@ final class _SendPaymentSession {
             ),
       totalEquivalent: fee == null ? null : fiat(state, sats + fee),
       error: state.failure == null ? null : const _SendError(),
-      feeWarning: state.showFeeWarning
-          ? _HighFeeWarning(state.getFeeAsPercentOfAmount())
+      feeWarning:
+          state.showFeeWarning || state.isUnconfidentialLiquidDestination
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (state.isUnconfidentialLiquidDestination)
+                  const _UnconfidentialLiquidWarning(),
+                if (state.showFeeWarning &&
+                    state.isUnconfidentialLiquidDestination)
+                  const Gap(BullSpacing.sm),
+                if (state.showFeeWarning)
+                  _HighFeeWarning(state.getFeeAsPercentOfAmount()),
+              ],
+            )
           : null,
       confirmLabel: context.loc.sendConfirm,
       onBack: cubit.backClicked,
@@ -733,6 +820,8 @@ final class _SendPaymentSession {
           initialValue: state.label.isEmpty ? null : state.label,
           hint: context.loc.transactionNoteHint,
           suggestionsFuture: cubit.fetchDistinctLabels(),
+          // The note is optional: saving it empty removes it.
+          allowEmpty: true,
         );
         if (!_disposed && note != null) cubit.noteChanged(note);
       },

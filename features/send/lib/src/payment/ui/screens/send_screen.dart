@@ -8,7 +8,6 @@ import 'package:signers/signers.dart';
 import 'package:send/src/payment/public/send_psbt_handoff.dart';
 
 import '../widgets/send_leave_payment_dialog.dart';
-import '../widgets/send_grouped_address.dart';
 
 import 'dart:async';
 
@@ -47,8 +46,6 @@ import 'package:send/src/payment/presentation/bloc/send_cubit.dart';
 import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:send/src/payment/presentation/send_failure_l10n.dart';
 import 'package:send/src/payment/presentation/send_wallet_view.dart';
-import 'package:fees_feature/fee_ui.dart';
-import 'package:send/src/payment/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:send/src/payment/ui/widgets/multi_recipient_transaction_review.dart';
 import 'package:send/src/payment/ui/widgets/recipient_fields.dart';
 import 'package:send/src/payment/ui/widgets/send_info_row.dart';
@@ -65,12 +62,12 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmount,
         BullKeyboardActions,
         BullOnchainSendInfoSection,
-        BullAdvancedOptionsLink,
         BullFieldAction,
         BullIcons,
         BullSpacing,
+        BullStepBar,
+        BullSettingsEntryTile,
         BullThemeX,
-        BullPickerSheet,
         BullAmountInput,
         BullAmountCurrency,
         BullAmountInputValue,
@@ -108,6 +105,35 @@ String _sendFlowTitle(BuildContext context) {
   return isSweep ? context.loc.coinsSweepTitle : context.loc.sendTitle;
 }
 
+/// A plain Liquid payment signed here: confirmed on the same review as
+/// Bitcoin. Swaps, several recipients, coin control and wallets that sign
+/// elsewhere (the review has no PSBT or device action) keep the classic screens.
+bool _isPlainLiquidPayment(SendState state, {required bool spMode}) =>
+    !spMode &&
+    state.selectedWallet?.isLiquid == true &&
+    state.selectedWallet?.signsLocally == true &&
+    state.selectedWallet?.isHardwareWallet == false &&
+    !state.isChainSwap &&
+    !state.isLightning &&
+    state.lightningSwap == null &&
+    state.chainSwap == null &&
+    state.lightningOrder == null &&
+    !state.hasMultipleRecipients &&
+    !state.usesSelectedInputsOnly &&
+    !state.isSweep;
+
+/// Recipient, amount and confirmation, as on the Bitcoin send page, so every
+/// payment shows where it is in the same three steps.
+Widget _sendStepBar(BuildContext context, int step) => BullStepBar(
+  labels: [
+    context.loc.sendRecipient,
+    context.loc.sendAmount,
+    context.loc.sendConfirm,
+  ],
+  currentStep: step,
+  semanticLabel: (index, label) => '${index + 1}: $label',
+);
+
 class SendScreen extends StatefulWidget {
   const SendScreen({super.key});
 
@@ -126,7 +152,11 @@ class _SendScreenState extends State<SendScreen> {
   @override
   void initState() {
     super.initState();
-    _payment = _SendPaymentSession(context.read<SendCubit>(), _confirm);
+    _payment = _SendPaymentSession(
+      context.read<SendCubit>(),
+      _confirm,
+      () => setState(() => multipleRecipients = true),
+    );
   }
 
   Future<void> _confirm() async {
@@ -347,7 +377,8 @@ class _SendScreenState extends State<SendScreen> {
 
   Widget _content(BuildContext context, SendState state) {
     final step = state.step;
-    if (_payment.supports(state) &&
+    if (!multipleRecipients &&
+        _payment.supports(state) &&
         (step == SendStep.address ||
             step == SendStep.amount ||
             step == SendStep.confirm)) {
@@ -355,6 +386,11 @@ class _SendScreenState extends State<SendScreen> {
         listener: (_, state) => _payment.update(state),
         child: _payment.build(context, state),
       );
+    }
+    if (step == SendStep.confirm &&
+        (_payment.supportsLiquidReview(state) ||
+            _payment.supportsMultipleReview(state))) {
+      return _payment.review(context, state);
     }
     switch (step) {
       case SendStep.address:
@@ -475,6 +511,7 @@ class SendAddressScreen extends StatelessWidget {
               backgroundColor: context.appColors.onSecondary,
               foregroundColor: context.appColors.primary,
             ),
+            _sendStepBar(context, 0),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
@@ -619,15 +656,7 @@ Future<void> _showWalletSheet(BuildContext context, SendCubit cubit) async {
                       Container(
                         decoration: BoxDecoration(
                           color: context.appColors.surface,
-                          border: Border(
-                            left: BorderSide(
-                              color: wallet.tagColor(context),
-                              width: 6,
-                            ),
-                            top: BorderSide(color: context.appColors.border),
-                            right: BorderSide(color: context.appColors.border),
-                            bottom: BorderSide(color: context.appColors.border),
-                          ),
+                          border: Border.all(color: context.appColors.border),
                         ),
                         child: Material(
                           type: MaterialType.transparency,
@@ -846,14 +875,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          context.loc.amountInputHeader,
-          style: context.bullType.label.copyWith(
-            color: context.appColors.textMuted,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const Gap(4),
         if (bitcoin)
           BullAmountUnitToggle(
             text: code,
@@ -868,9 +889,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             tooltip: context.loc.settingsCurrencyTitle,
             icon: bitcoin
                 ? Icon(
-                    Icons.arrow_drop_down,
+                    Icons.expand_more,
                     color: context.appColors.text,
-                    size: 24,
+                    size: 20,
                   )
                 : Text('$code ▾', style: style),
             onPressed: () async {
@@ -954,6 +975,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       initialValue: state.label.isEmpty ? null : state.label,
       hint: context.loc.transactionNoteHint,
       suggestionsFuture: cubit.fetchDistinctLabels(),
+      // The note is optional: saving it empty removes it.
+      allowEmpty: true,
     );
     if (saved == null || !context.mounted) {
       return;
@@ -1003,6 +1026,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             backgroundColor: context.appColors.background,
             foregroundColor: context.appColors.primary,
           ),
+          _sendStepBar(context, 1),
           Expanded(
             child: BullKeyboardActions(
               doneText: context.loc.doneButton,
@@ -1075,6 +1099,64 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     );
                     final request = state.paymentRequest;
                     final fixedAmount = state.hasFixedRequestAmount;
+                    final balanceRow = Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                style: context.bullType.label.copyWith(
+                                  color: context.appColors.textMuted,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: state.usesSelectedInputsOnly
+                                        ? context.loc.sendSelectedCoinsLabel
+                                        : context.loc.addressViewBalance,
+                                  ),
+                                  TextSpan(
+                                    text: ' ${state.formattedWalletBalance()}',
+                                    style: context.bullType.label.copyWith(
+                                      color: context.appColors.text,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (!fixedAmount &&
+                              !isLightning &&
+                              !isChainSwap &&
+                              !state.hasMultipleRecipients)
+                            Padding(
+                              // Aligns with the tiles' actions.
+                              padding: const EdgeInsetsDirectional.only(
+                                end: BullSpacing.xs,
+                              ),
+                              child: Semantics(
+                                toggled: state.isMaxSend,
+                                child: BullFieldAction(
+                                  label: context.loc.swapMax,
+                                  onPressed: () {
+                                    final isMax = !state.isMaxSend;
+                                    context.read<SendCubit>().amountChanged(
+                                      amount: isMax
+                                          ? null
+                                          : _amountController.text,
+                                      isMax: isMax,
+                                    );
+                                    if (!isMax) {
+                                      _amountFocusNode.requestFocus();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
                     return IgnorePointer(
                       ignoring: state.amountConfirmedClicked,
                       child: Column(
@@ -1090,6 +1172,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 children: [
                                   if (!state.showsRecipientAmountList) ...[
                                     const Gap(16),
+                                    Text(
+                                      context.loc.sendTo,
+                                      style: context.bullType.body,
+                                    ),
+                                    const Gap(8),
                                     BullBorderedTile(
                                       onTap: () => context
                                           .read<SendCubit>()
@@ -1102,17 +1189,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  context.loc.sendTo,
-                                                  style: context.bullType.label
-                                                      .copyWith(
-                                                        color: context
-                                                            .appColors
-                                                            .textMuted,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                      ),
-                                                ),
                                                 if (request?.isBolt11 == true)
                                                   Text(
                                                     (request?.amountSat ?? 0) >
@@ -1153,7 +1229,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   ],
                                   Text(
                                     context.loc.sendFrom,
-                                    style: context.bullType.body,
+                                    style: state.showsRecipientAmountList
+                                        ? context.bullType.label.copyWith(
+                                            color: context.appColors.textMuted,
+                                            fontWeight: FontWeight.w400,
+                                          )
+                                        : context.bullType.body,
                                   ),
                                   const Gap(8),
                                   ColoredBox(
@@ -1192,6 +1273,24 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             ),
                                           )
                                         : BullDropdown<String>(
+                                            // Several recipients: the balance sits in the field, not on a line of its own.
+                                            trailing:
+                                                state.showsRecipientAmountList
+                                                ? Text(
+                                                    state
+                                                        .formattedWalletBalance(),
+                                                    style: context
+                                                        .bullType
+                                                        .label
+                                                        .copyWith(
+                                                          color: context
+                                                              .appColors
+                                                              .textMuted,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                        ),
+                                                  )
+                                                : null,
                                             value: selectedWallet.id,
                                             items: [
                                               for (final w in wallets)
@@ -1212,85 +1311,17 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                 ),
                                           ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: RichText(
-                                            text: TextSpan(
-                                              style: context.bullType.label
-                                                  .copyWith(
-                                                    color: context
-                                                        .appColors
-                                                        .textMuted,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                              children: [
-                                                TextSpan(
-                                                  text:
-                                                      state
-                                                          .usesSelectedInputsOnly
-                                                      ? context
-                                                            .loc
-                                                            .sendSelectedCoinsLabel
-                                                      : context
-                                                            .loc
-                                                            .addressViewBalance,
-                                                ),
-                                                TextSpan(
-                                                  text:
-                                                      ' ${state.formattedWalletBalance()}',
-                                                  style: context.bullType.label
-                                                      .copyWith(
-                                                        color: context
-                                                            .appColors
-                                                            .text,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        if (!fixedAmount &&
-                                            !isLightning &&
-                                            !isChainSwap &&
-                                            !state.hasMultipleRecipients)
-                                          Padding(
-                                            // Aligns with the tiles' actions.
-                                            padding:
-                                                const EdgeInsetsDirectional.only(
-                                                  end: BullSpacing.xs,
-                                                ),
-                                            child: Semantics(
-                                              toggled: state.isMaxSend,
-                                              child: BullFieldAction(
-                                                label: context.loc.swapMax,
-                                                onPressed: () {
-                                                  final isMax =
-                                                      !state.isMaxSend;
-                                                  context
-                                                      .read<SendCubit>()
-                                                      .amountChanged(
-                                                        amount: isMax
-                                                            ? null
-                                                            : _amountController
-                                                                  .text,
-                                                        isMax: isMax,
-                                                      );
-                                                  if (!isMax) {
-                                                    _amountFocusNode
-                                                        .requestFocus();
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
+                                  if (state.showsRecipientAmountList &&
+                                      pickableWallet != null &&
+                                      !state.usesSelectedInputsOnly)
+                                    const Gap(24)
+                                  // A typed amount shows its balance under
+                                  // the field, as on the Bitcoin send page.
+                                  else if (!state.showsRecipientAmountList &&
+                                      !fixedAmount)
+                                    const Gap(24)
+                                  else
+                                    balanceRow,
                                   if (state.showsRecipientAmountList)
                                     RecipientAmounts(
                                       amountHeader: _multiAmountHeader(
@@ -1298,36 +1329,60 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                         state,
                                       ),
                                       amountFieldBuilder:
-                                          (recipient, focusNode) =>
-                                              _RecipientKitAmount(
-                                                key: ValueKey(recipient.id),
-                                                amount: recipient.amount,
-                                                canonicalUnit:
-                                                    BitcoinUnit.fromCode(
-                                                      inputCurrency,
-                                                    ),
-                                                currencyCode:
-                                                    _multiCurrency ??
-                                                    state.bitcoinUnit?.code ??
-                                                    'sats',
-                                                defaultCurrencyCode:
-                                                    state.fiatCurrencyCode,
-                                                quotes: state.amountQuotes,
-                                                focusNode: focusNode,
-                                                onChanged: (entry) => context
-                                                    .read<SendCubit>()
-                                                    .recipientEntryChanged(
-                                                      recipient.id,
-                                                      entry.sats,
-                                                      isValid: entry.isValid,
-                                                      isEdit: entry.isEdit,
-                                                      currencyCode:
-                                                          entry.currencyCode,
-                                                      text: entry.text,
-                                                      rate: entry.price,
-                                                      quotedAt: entry.priceAt,
-                                                    ),
-                                              ),
+                                          (
+                                            recipient,
+                                            focusNode,
+                                          ) => _RecipientKitAmount(
+                                            key: ValueKey(recipient.id),
+                                            // The rest is computed after fees: shown like the others, never typed.
+                                            readOnly:
+                                                recipient.receivesRemainder,
+                                            amount: !recipient.receivesRemainder
+                                                ? recipient.amount
+                                                : switch (state
+                                                      .recipientAmountsSat
+                                                      .elementAtOrNull(
+                                                        state.recipientDrafts
+                                                            .indexOf(recipient),
+                                                      )) {
+                                                    final rest? =>
+                                                      Sats.fromInt(
+                                                        rest,
+                                                      ).toBitcoinText(
+                                                        BitcoinUnit.fromCode(
+                                                          inputCurrency,
+                                                        ),
+                                                      ),
+                                                    null => '',
+                                                  },
+                                            canonicalUnit: BitcoinUnit.fromCode(
+                                              inputCurrency,
+                                            ),
+                                            currencyCode:
+                                                _multiCurrency ??
+                                                state.bitcoinUnit?.code ??
+                                                'sats',
+                                            defaultCurrencyCode:
+                                                state.fiatCurrencyCode,
+                                            quotes: state.amountQuotes,
+                                            focusNode: focusNode,
+                                            onChanged:
+                                                recipient.receivesRemainder
+                                                ? (_) {}
+                                                : (entry) => context
+                                                      .read<SendCubit>()
+                                                      .recipientEntryChanged(
+                                                        recipient.id,
+                                                        entry.sats,
+                                                        isValid: entry.isValid,
+                                                        isEdit: entry.isEdit,
+                                                        currencyCode:
+                                                            entry.currencyCode,
+                                                        text: entry.text,
+                                                        rate: entry.price,
+                                                        quotedAt: entry.priceAt,
+                                                      ),
+                                          ),
                                       recipients: state.recipientDrafts,
                                       preparedAmounts:
                                           state.recipientAmountsSat,
@@ -1366,28 +1421,45 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       onRemainderChanged: context
                                           .read<SendCubit>()
                                           .setRemainderRecipient,
-                                      amountBuilder: (amountSat) => Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          BullAmount.signedSats(
-                                            amountSat,
-                                            color: context.appColors.textMuted,
-                                            style: context.bullType.body,
-                                            interactive: false,
+                                      amountBuilder:
+                                          (
+                                            amountSat, {
+                                            bool emphasized = false,
+                                          }) => Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              BullAmount.signedSats(
+                                                amountSat,
+                                                color: context.appColors.text,
+                                                style:
+                                                    (emphasized
+                                                            ? context
+                                                                  .bullType
+                                                                  .subtitle
+                                                            : context
+                                                                  .bullType
+                                                                  .label)
+                                                        .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                interactive: false,
+                                              ),
+                                              if (totalQuote case final quote?)
+                                                Text(
+                                                  '≈ ${FormatAmount.fiat(quote.fiatValueOf(BigInt.from(amountSat)), quote.currency.code)}',
+                                                  style: context
+                                                      .bullType
+                                                      .caption
+                                                      .copyWith(
+                                                        color: context
+                                                            .appColors
+                                                            .textMuted,
+                                                      ),
+                                                ),
+                                            ],
                                           ),
-                                          if (totalQuote case final quote?)
-                                            Text(
-                                              '≈ ${FormatAmount.fiat(quote.fiatValueOf(BigInt.from(amountSat)), quote.currency.code)}',
-                                              style: context.bullType.caption
-                                                  .copyWith(
-                                                    color: context
-                                                        .appColors
-                                                        .textMuted,
-                                                  ),
-                                            ),
-                                        ],
-                                      ),
                                     )
                                   else if (fixedAmount)
                                     Column(
@@ -1433,6 +1505,13 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
+                                        Text(
+                                          context.loc.sendAmount,
+                                          style: context.bullType.body.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const Gap(8),
                                         BullAmountInput(
                                           inCard: true,
                                           framed: true,
@@ -1508,6 +1587,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                 ),
                                           ),
                                         ],
+                                        balanceRow,
                                       ],
                                     ),
                                   if (suggestsInstantPayments)
@@ -1525,50 +1605,58 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
-                                  Gap(Device.screen.height * 0.02),
-                                  BullBorderedTile(
-                                    onTap: () => _editNote(context, state),
-                                    padding: _fieldTilePadding,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              BullText(
-                                                '${context.loc.receiveNote} (optional)',
-                                                style: context.bullType.body
-                                                    .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                color:
-                                                    context.appColors.secondary,
-                                              ),
-                                              const Gap(4),
-                                              BullText(
-                                                state.label.isEmpty
-                                                    ? context
-                                                          .loc
-                                                          .receiveEnterHere
-                                                    : state.label,
-                                                style: context.bullType.body,
-                                                maxLines: 4,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
+                                  // A plain Liquid payment takes its note on the review, as Bitcoin does.
+                                  if (!_isPlainLiquidPayment(
+                                    state,
+                                    spMode: context.read<SendCubit>().isSpMode,
+                                  )) ...[
+                                    Gap(Device.screen.height * 0.02),
+                                    BullBorderedTile(
+                                      onTap: () => _editNote(context, state),
+                                      padding: _fieldTilePadding,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                BullText(
+                                                  '${context.loc.receiveNote} (optional)',
+                                                  style: context.bullType.body
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                  color: context
+                                                      .appColors
+                                                      .secondary,
+                                                ),
+                                                const Gap(4),
+                                                BullText(
+                                                  state.label.isEmpty
+                                                      ? context
+                                                            .loc
+                                                            .receiveEnterHere
+                                                      : state.label,
+                                                  style: context.bullType.body,
+                                                  maxLines: 4,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        BullFieldAction(
-                                          icon: BullIcons.edit,
-                                          label: context.loc.sendEdit,
-                                          onPressed: () =>
-                                              _editNote(context, state),
-                                        ),
-                                      ],
+                                          BullFieldAction(
+                                            icon: BullIcons.edit,
+                                            label: context.loc.sendEdit,
+                                            onPressed: () =>
+                                                _editNote(context, state),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                   if (state.consolidationRequired) ...[
                                     const Gap(16),
                                     BullAlertCard(
@@ -1598,8 +1686,37 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               16,
                               math.max(16, Device.screen.height * 0.04),
                             ),
-                            child: SendAmountConfirmButton(
-                              amountController: _amountController,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Fee, replace-by-fee and coins are chosen
+                                // here, as on the Bitcoin send page.
+                                if (!selectedWallet.isLiquid &&
+                                    !context.read<SendCubit>().isSpMode &&
+                                    MediaQuery.viewInsetsOf(context).bottom ==
+                                        0)
+                                  if (context
+                                          .findAncestorStateOfType<
+                                            _SendScreenState
+                                          >()
+                                      case final owner?) ...[
+                                    BullSettingsEntryTile(
+                                      label: context.loc.sendAdvancedSettings,
+                                      summary: owner._payment.feeName(
+                                        context,
+                                        state.selectedFeeOption,
+                                      ),
+                                      onPressed: () => owner._payment.settings(
+                                        context,
+                                        multipleSwitch: false,
+                                      ),
+                                    ),
+                                    const Gap(16),
+                                  ],
+                                SendAmountConfirmButton(
+                                  amountController: _amountController,
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -1738,6 +1855,7 @@ class SendConfirmScreen extends StatelessWidget {
             backgroundColor: context.appColors.background,
             foregroundColor: context.appColors.primary,
           ),
+          _sendStepBar(context, 2),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
@@ -1779,15 +1897,42 @@ class SendConfirmScreen extends StatelessWidget {
                       const _LiquidOnchainSendInfoSection()
                     else
                       const _OnchainTransactionReview(),
+                    // Every payment but a plain Liquid one warns about a high fee, right under its total.
+                    if ((isLnSwap || isChainSwap || !isLiquid) &&
+                        context.select(
+                          (SendCubit cubit) => cubit.state.showFeeWarning,
+                        )) ...[
+                      const Gap(16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _HighFeeWarning(
+                          context.select(
+                            (SendCubit cubit) =>
+                                cubit.state.getFeeAsPercentOfAmount(),
+                          ),
+                        ),
+                      ),
+                    ],
                     if (isUnconfidentialLiquidDestination) ...[
                       const Gap(16),
                       const _UnconfidentialLiquidWarning(),
                     ],
-                    const Gap(40),
-                    const _SendError(),
-                    const _BottomButtons(),
+                    const Gap(24),
                   ],
                 ),
+              ),
+            ),
+          ),
+          // Pinned under the details, so Confirm sits at the bottom of the
+          // screen however short the review is.
+          const SafeArea(
+            top: false,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(8, 8, 8, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [_SendError(), _BottomButtons()],
               ),
             ),
           ),
@@ -1917,13 +2062,6 @@ class _BottomButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isBitcoinWallet = context.select(
-      (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
-    );
-    final isOnchainSend = context.select(
-      (SendCubit cubit) => !cubit.state.isLightning && !cubit.state.isChainSwap,
-    );
-    final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
@@ -1931,37 +2069,12 @@ class _BottomButtons extends StatelessWidget {
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
     final isSpMode = context.read<SendCubit>().isSpMode;
-    final transactionBusy = context.select(
-      (SendCubit cubit) =>
-          cubit.state.buildingTransaction ||
-          cubit.state.signingTransaction ||
-          cubit.state.broadcastingTransaction,
-    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if ((isBitcoinWallet || (isOnchainSend && !isSweep)) &&
-              !hasFinalizedTx &&
-              !isSpMode) ...[
-            BullAdvancedOptionsLink(
-              label: context.loc.sendAdvancedSettings,
-              onPressed: (transactionBusy)
-                  ? null
-                  : () {
-                      BullBottomSheet.show(
-                        context: context,
-                        child: BlocProvider.value(
-                          value: context.read<SendCubit>(),
-                          child: const AdvancedOptionsBottomSheet(),
-                        ),
-                      );
-                    },
-            ),
-            const Gap(12),
-          ],
           if (!isSpMode &&
               wallet != null &&
               !wallet.signsLocally &&
@@ -2030,25 +2143,18 @@ class _OnchainTransactionReview extends StatelessWidget {
         recipientAmountsSat: state.recipientAmountsSat,
         label: state.label,
         formattedAbsoluteFees: state.formattedAbsoluteFees,
-        feePriorityTitle: state.selectedFeeOption.title(),
         amountBuilder: (amountSat) => BullAmount.signedSats(
           amountSat,
           interactive: true,
-          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
-          color: context.appColors.secondary,
+          style: context.bullType.body,
+          color: context.appColors.text,
         ),
-        onFeePriorityTap: state.signedBitcoinTx == null
-            ? () => _showBitcoinFeeOptions(context)
-            : null,
         selectedCoinsDetails: state.selectedUtxos.isEmpty
             ? null
             : _SelectedCoinsDetails(
                 count: state.selectedUtxos.length,
                 totalSat: state.selectedSpendableBalanceSat,
               ),
-        feeWarning: state.showFeeWarning
-            ? _HighFeeWarning(state.getFeeAsPercentOfAmount())
-            : null,
       );
     }
     final selectedWallet = context.select(
@@ -2066,21 +2172,6 @@ class _OnchainTransactionReview extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
-    final hasFinalizedTx = context.select(
-      (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
-    );
-    final selectedFeeOption = context.select(
-      (SendCubit cubit) => cubit.state.selectedFeeOption,
-    );
-    final customFee = context.select(
-      (SendCubit cubit) => cubit.state.customFee,
-    );
-    final feePercent = context.select(
-      (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
-    );
-    final showFeeWarning = context.select(
-      (SendCubit cubit) => cubit.state.showFeeWarning,
-    );
     final isToSelf = context.select(
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
@@ -2091,7 +2182,6 @@ class _OnchainTransactionReview extends StatelessWidget {
     final willAttemptPayjoin = context.select(
       (SendCubit cubit) => cubit.state.willAttemptPayjoin,
     );
-    final isSpMode = context.read<SendCubit>().isSpMode;
     final selectedCoins = context.select(
       (SendCubit cubit) => (
         count: cubit.state.selectedUtxos.length,
@@ -2112,21 +2202,14 @@ class _OnchainTransactionReview extends StatelessWidget {
               ? ''
               : '~$formattedFiatEquivalent',
           absoluteFees: formattedAbsoluteFees,
-          selectedFeeOptionTitle: feeSelectionRowLabel(
-            context,
-            ui: FeeUi.standard,
-            selection: selectedFeeOption,
-            customFee: customFee,
-            fastestLabel: context.loc.sendFastFee,
-          ),
+          selectedFeeOptionTitle: '',
           isToSelf: isToSelf,
           payjoinToggleValue: isPayjoinAvailable ? willAttemptPayjoin : null,
           onPayjoinToggleChanged: (attempt) =>
               context.read<SendCubit>().togglePayjoin(attempt),
           note: label,
-          onFeePriorityTap: hasFinalizedTx || isSpMode
-              ? null
-              : () => _showBitcoinFeeOptions(context),
+          // The fee is chosen before this step; the review only shows it.
+          onFeePriorityTap: null,
         ),
         if (selectedCoins.count > 0)
           Padding(
@@ -2139,10 +2222,6 @@ class _OnchainTransactionReview extends StatelessWidget {
               ),
             ),
           ),
-        if (showFeeWarning == true) ...[
-          const Gap(16),
-          _HighFeeWarning(feePercent),
-        ],
       ],
     );
   }
@@ -2173,29 +2252,6 @@ class _SelectedCoinsDetails extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-Future<void> _showBitcoinFeeOptions(BuildContext context) async {
-  final sendCubit = context.read<SendCubit>();
-  final selected = await BullBottomSheet.show<String>(
-    context: context,
-    child: FeeOptionsModal(
-      ui: FeeUi.standard,
-      viewState: sendCubit,
-      actions: sendCubit,
-      defaultAbsoluteCustomFee: false,
-      customFeeColors: FeeModalCustomFeeColors(
-        tile: context.appColors.surface,
-        shadow: context.appColors.border,
-        unselectedIcon: context.appColors.textMuted,
-      ),
-    ),
-  );
-  if (selected != null) {
-    await sendCubit.feeOptionSelected(FeeSelectionName.fromString(selected));
-  } else {
-    await sendCubit.finalizeArmedCustomFee();
   }
 }
 
@@ -2287,7 +2343,7 @@ class _UnconfidentialLiquidWarning extends StatelessWidget {
 class _LnSwapSendInfoSection extends StatelessWidget {
   const _LnSwapSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.appColors.secondaryFixedDim);
+    return Container(height: 1, color: context.appColors.border);
   }
 
   @override
@@ -2306,12 +2362,6 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     );
     final receiveAmountSat = context.select(
       (SendCubit cubit) => cubit.state.lightningPayoutAmountSat,
-    );
-    final feePercent = context.select(
-      (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
-    );
-    final showFeeWarning = context.select(
-      (SendCubit cubit) => cubit.state.showFeeWarning,
     );
     final isSlowPayment = context.select(
       (SendCubit cubit) => cubit.state.isSlowPayment,
@@ -2333,9 +2383,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             details: BullText(
               selectedWallet!.displayLabel(context),
               style: context.bullType.body.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
-              color: context.appColors.secondary,
+              color: context.appColors.text,
               textAlign: .end,
             ),
           ),
@@ -2350,9 +2400,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     child: BullText(
                       swapReference,
                       style: context.bullType.body.copyWith(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                       ),
-                      color: context.appColors.secondary,
+                      color: context.appColors.text,
                       textAlign: .end,
                     ),
                   ),
@@ -2382,9 +2432,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   child: AddressViewer(
                     paymentRequestAddress,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
-                    color: context.appColors.secondary,
+                    color: context.appColors.text,
                     textAlign: TextAlign.end,
                   ),
                 ),
@@ -2411,9 +2461,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               details: BullText(
                 label,
                 style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                 ),
-                color: context.appColors.secondary,
+                color: context.appColors.text,
                 textAlign: .end,
               ),
             ),
@@ -2429,9 +2479,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     sendAmountSat,
                     interactive: true,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
-                    color: context.appColors.secondary,
+                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -2448,9 +2498,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     receiveAmountSat,
                     interactive: true,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
-                    color: context.appColors.secondary,
+                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -2466,9 +2516,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   networkFee,
                   interactive: true,
                   style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
-                  color: context.appColors.secondary,
+                  color: context.appColors.text,
                   textAlign: TextAlign.end,
                 ),
               ),
@@ -2484,17 +2534,13 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   swapFee,
                   interactive: true,
                   style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
-                  color: context.appColors.secondary,
+                  color: context.appColors.text,
                   textAlign: TextAlign.end,
                 ),
               ),
             ),
-          if (showFeeWarning == true) ...[
-            const Gap(16),
-            _HighFeeWarning(feePercent),
-          ],
           if (isSlowPayment == true) ...[
             const Gap(8),
             const _SlowPaymentWarning(),
@@ -2628,7 +2674,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
 class _ChainSwapSendInfoSection extends StatelessWidget {
   const _ChainSwapSendInfoSection();
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.appColors.secondaryFixedDim);
+    return Container(height: 1, color: context.appColors.border);
   }
 
   @override
@@ -2650,12 +2696,6 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
         orderSwap?.order?.payinAmountSat.toInt() ?? legacySwap!.sendAmount!;
     final receiveAmount =
         orderSwap?.order?.payoutAmountSat.toInt() ?? legacySwap?.receieveAmount;
-    final feePercent = context.select(
-      (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
-    );
-    final showFeeWarning = context.select(
-      (SendCubit cubit) => cubit.state.showFeeWarning,
-    );
     final absoluteFees = context.select(
       (SendCubit cubit) => cubit.state.absoluteFees,
     );
@@ -2669,9 +2709,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             details: BullText(
               selectedWallet!.displayLabel(context),
               style: context.bullType.body.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
-              color: context.appColors.secondary,
+              color: context.appColors.text,
               textAlign: .end,
             ),
           ),
@@ -2685,9 +2725,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   child: BullText(
                     swapId,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
-                    color: context.appColors.secondary,
+                    color: context.appColors.text,
                     textAlign: .end,
                   ),
                 ),
@@ -2716,9 +2756,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   child: AddressViewer(
                     paymentRequestAddress,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
-                    color: context.appColors.secondary,
+                    color: context.appColors.text,
                     textAlign: TextAlign.end,
                   ),
                 ),
@@ -2748,9 +2788,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   sendAmount,
                   interactive: true,
                   style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
-                  color: context.appColors.secondary,
+                  color: context.appColors.text,
                 ),
               ],
             ),
@@ -2766,9 +2806,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                     receiveAmount,
                     interactive: true,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
-                    color: context.appColors.secondary,
+                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -2784,9 +2824,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                     absoluteFees,
                     interactive: true,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                     ),
-                    color: context.appColors.secondary,
+                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -2807,9 +2847,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                       .toInt(),
                   interactive: true,
                   style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
-                  color: context.appColors.secondary,
+                  color: context.appColors.text,
                   textAlign: TextAlign.end,
                 ),
               ),
@@ -2817,11 +2857,6 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           const Gap(16),
 
           const _SlowPaymentWarning(),
-
-          if (showFeeWarning == true) ...[
-            const Gap(8),
-            _HighFeeWarning(feePercent),
-          ],
           _divider(context),
         ],
       ),
@@ -2832,40 +2867,40 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
 class SendConfirmTopArea extends StatelessWidget {
   const SendConfirmTopArea({super.key});
 
+  /// The review header of the Bitcoin send page: what leaves, and its worth.
   @override
   Widget build(BuildContext context) {
     final amountBitcoin = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
     );
-
+    final amountFiat = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
     return Column(
-      // crossAxisAlignment: .stretch,
       children: [
-        Container(
-          alignment: Alignment.center,
-          height: 72,
-          width: 72,
-          decoration: BoxDecoration(
-            color: context.appColors.secondaryFixedDim,
-            shape: .circle,
+        Text(
+          context.loc.sendYouSend,
+          textAlign: TextAlign.center,
+          style: context.bullType.body.copyWith(
+            color: context.appColors.textMuted,
           ),
-          child: switch (SendPaymentUi.maybeOf(context)?.arrowImage) {
-            final image? => Image(image: image, height: 24, width: 24),
-            null => const Icon(Icons.arrow_forward, size: 24),
-          },
-        ),
-        const Gap(16),
-        BullText(
-          context.loc.sendConfirmSend,
-          style: context.bullType.body,
-          color: context.appColors.secondary,
         ),
         const Gap(4),
         BullText(
           amountBitcoin,
           style: context.bullType.headline,
-          color: context.appColors.secondary,
+          color: context.appColors.text,
         ),
+        if (amountFiat.isNotEmpty) ...[
+          const Gap(4),
+          Text(
+            '≈ $amountFiat',
+            textAlign: TextAlign.center,
+            style: context.bullType.label.copyWith(
+              color: context.appColors.textMuted,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -3518,6 +3553,7 @@ class _RecipientKitAmount extends StatefulWidget {
   final Map<SupportedCurrency, BitcoinPrice> quotes;
   final FocusNode? focusNode;
   final ValueChanged<BullAmountInputValue> onChanged;
+  final bool readOnly;
 
   const _RecipientKitAmount({
     super.key,
@@ -3528,6 +3564,7 @@ class _RecipientKitAmount extends StatefulWidget {
     required this.quotes,
     required this.focusNode,
     required this.onChanged,
+    this.readOnly = false,
   });
 
   @override
@@ -3565,6 +3602,9 @@ class _RecipientKitAmountState extends State<_RecipientKitAmount> {
     defaultCurrencyCode: widget.defaultCurrencyCode,
     amountController: _controller,
     focusNode: widget.focusNode,
+    readOnly: widget.readOnly,
+    // The list header shows the unit once for every row.
+    showUnit: false,
     currencies: [
       for (final currency in SupportedCurrency.values)
         BullAmountCurrency(

@@ -501,10 +501,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "견적 요청",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "스왑은 진행 중입니다. 송장은 몇 초 안에 지급됩니다.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

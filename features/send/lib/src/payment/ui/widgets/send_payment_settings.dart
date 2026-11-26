@@ -22,6 +22,7 @@ class SendPaymentSettings extends StatelessWidget {
     required this.onFeeSelected,
     required this.onReplaceByFee,
     required this.onMultipleRecipients,
+    this.showMultipleRecipients = true,
     required this.onCoins,
     this.onCustomFeeEdit,
     this.change,
@@ -43,6 +44,9 @@ class SendPaymentSettings extends StatelessWidget {
   final ValueChanged<FeeSelection> onFeeSelected;
   final ValueChanged<bool>? onReplaceByFee;
   final ValueChanged<bool>? onMultipleRecipients;
+
+  /// False hides the switch where recipients are managed elsewhere.
+  final bool showMultipleRecipients;
   final VoidCallback? onCoins;
   final VoidCallback? onCustomFeeEdit;
   final Widget? change;
@@ -132,12 +136,12 @@ class SendPaymentSettings extends StatelessWidget {
                     value: replaceByFee,
                     onChanged: onReplaceByFee,
                   ),
-                  _SettingSwitch(
-                    label: multipleLabel,
-                    value: multipleRecipients,
-                    onChanged: onMultipleRecipients,
-                  ),
-                  const Gap(BullSpacing.md),
+                  if (showMultipleRecipients)
+                    _SettingSwitch(
+                      label: multipleLabel,
+                      value: multipleRecipients,
+                      onChanged: onMultipleRecipients,
+                    ),
                   Semantics(
                     button: true,
                     enabled: onCoins != null,

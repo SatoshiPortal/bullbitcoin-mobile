@@ -5,7 +5,7 @@ import 'package:send/src/send_localizations.dart';
 import 'package:address_view/address_view.dart';
 import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:send/src/payment/ui/widgets/send_info_row.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 class MultiRecipientTransactionReview extends StatelessWidget {
@@ -14,10 +14,7 @@ class MultiRecipientTransactionReview extends StatelessWidget {
   final List<int> recipientAmountsSat;
   final String label;
   final String formattedAbsoluteFees;
-  final String feePriorityTitle;
   final Widget Function(int amountSat) amountBuilder;
-  final VoidCallback? onFeePriorityTap;
-  final Widget? feeWarning;
   final Widget? selectedCoinsDetails;
   final Map<int, SendAmountConversion> conversions;
 
@@ -28,16 +25,13 @@ class MultiRecipientTransactionReview extends StatelessWidget {
     required this.recipientAmountsSat,
     required this.label,
     required this.formattedAbsoluteFees,
-    required this.feePriorityTitle,
     required this.amountBuilder,
-    required this.onFeePriorityTap,
-    required this.feeWarning,
     this.selectedCoinsDetails,
     this.conversions = const {},
   });
 
   Widget _divider(BuildContext context) =>
-      Container(height: 1, color: context.appColors.secondaryFixedDim);
+      Container(height: 1, color: context.appColors.border);
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +44,8 @@ class MultiRecipientTransactionReview extends StatelessWidget {
             title: context.loc.coreScreensFromLabel,
             details: BullText(
               walletLabel,
-              style: context.bullType.body.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-              color: context.appColors.secondary,
+              style: context.bullType.body,
+              color: context.appColors.text,
               textAlign: TextAlign.end,
             ),
           ),
@@ -63,10 +55,8 @@ class MultiRecipientTransactionReview extends StatelessWidget {
               title: context.loc.sendToRecipientNumber(index + 1),
               details: AddressViewer(
                 recipients[index].address,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-                color: context.appColors.secondary,
+                style: context.bullType.body,
+                color: context.appColors.text,
               ),
             ),
             _divider(context),
@@ -78,10 +68,8 @@ class MultiRecipientTransactionReview extends StatelessWidget {
                     ? amountBuilder(recipientAmountsSat[index])
                     : BullText(
                         '…',
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                        color: context.appColors.secondary,
+                        style: context.bullType.body,
+                        color: context.appColors.text,
                       ),
               ),
             ),
@@ -107,10 +95,8 @@ class MultiRecipientTransactionReview extends StatelessWidget {
               title: context.loc.receiveNote,
               details: BullText(
                 label,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-                color: context.appColors.secondary,
+                style: context.bullType.body,
+                color: context.appColors.text,
                 textAlign: TextAlign.end,
               ),
             ),
@@ -124,40 +110,12 @@ class MultiRecipientTransactionReview extends StatelessWidget {
             title: context.loc.coreScreensNetworkFeesLabel,
             details: BullText(
               formattedAbsoluteFees,
-              style: context.bullType.body.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-              color: context.appColors.secondary,
+              style: context.bullType.body,
+              color: context.appColors.text,
               textAlign: TextAlign.end,
             ),
           ),
           _divider(context),
-          SendInfoRow(
-            title: context.loc.coreScreensFeePriorityLabel,
-            details: InkWell(
-              onTap: onFeePriorityTap,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  BullText(
-                    feePriorityTitle,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    color: context.appColors.primary,
-                  ),
-                  const Gap(4),
-                  Icon(
-                    Icons.arrow_forward_ios_sharp,
-                    color: context.appColors.primary,
-                    size: 12,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          _divider(context),
-          if (feeWarning case final warning?) ...[const Gap(16), warning],
         ],
       ),
     );

@@ -7,7 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
-  Widget page({bool ready = false, VoidCallback? onContinue}) => MaterialApp(
+  Widget page({
+    bool ready = false,
+    VoidCallback? onContinue,
+    Widget amount = const Text('Amount editor'),
+  }) => MaterialApp(
     theme: ThemeData(
       extensions: testBullExtensions,
       textTheme: testBullTypography.toTextTheme(),
@@ -22,13 +26,10 @@ void main() {
         recipientLabel: 'To',
         recipient: const Text('Recipient editor'),
         amountLabel: 'Amount',
-        lockedAmountLabel: 'Enter a valid recipient first',
-        amount: const Text('Amount editor'),
+        amount: amount,
         balance: const Text('Balance 1,250,000 sats'),
         fromLabel: 'From',
-        walletLabel: 'bitcoin',
-        walletColor: context.bull.primary,
-        walletActionLabel: 'Send from',
+        wallet: const Text('Wallet picker'),
         maxLabel: 'MAX',
         settingsLabel: 'Advanced settings',
         feeSummary: 'Fast',
@@ -36,7 +37,6 @@ void main() {
         onBack: () {},
         onSettings: () {},
         onMax: () {},
-        onWallet: () {},
         onContinue: onContinue,
         recipientReady: ready,
       ),
@@ -47,8 +47,9 @@ void main() {
     tester,
   ) async {
     var continued = false;
-    await tester.pumpWidget(page(onContinue: () => continued = true));
-    expect(find.text('Enter a valid recipient first'), findsOneWidget);
+    await tester.pumpWidget(page());
+    expect(find.text('Amount'), findsOneWidget, reason: 'only the step bar');
+    expect(find.text('From'), findsNothing);
     expect(find.text('Amount editor'), findsNothing);
     expect(tester.widget<BullButton>(find.byType(BullButton)).disabled, isTrue);
     expect(continued, isFalse);
@@ -67,7 +68,11 @@ void main() {
     );
     expect(
       tester.getTopLeft(find.text('From')).dy,
-      greaterThan(tester.getBottomLeft(find.text('Amount editor')).dy),
+      greaterThan(tester.getBottomLeft(find.text('Recipient editor')).dy),
+    );
+    expect(
+      tester.getBottomLeft(find.text('Wallet picker')).dy,
+      lessThan(tester.getTopLeft(find.text('Amount').last).dy),
     );
     await tester.tap(find.text('Continue'));
     expect(continued, isTrue);
@@ -86,9 +91,23 @@ void main() {
     expect(find.text('Advanced settings'), findsNothing);
     expect(tester.getBottomLeft(find.text('Continue')).dy, lessThan(544));
     expect(
-      tester.getBottomLeft(find.text('bitcoin')).dy,
+      tester.getBottomLeft(find.text('Balance 1,250,000 sats')).dy,
       lessThan(tester.getTopLeft(find.text('Continue')).dy),
     );
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('tapping outside the amount closes the keyboard', (tester) async {
+    final focus = FocusNode();
+    addTearDown(focus.dispose);
+    await tester.pumpWidget(
+      page(ready: true, amount: TextField(focusNode: focus)),
+    );
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    expect(focus.hasFocus, isTrue);
+    await tester.tap(find.text('From'));
+    await tester.pump();
+    expect(focus.hasFocus, isFalse);
   });
 }

@@ -16,10 +16,12 @@ import 'package:bull_ui/bull_ui.dart'
         BullPickerItem,
         BullInputText,
         BullPaymentDestinationInput,
+        BullSpacing,
         BullTypographyX,
         Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart' show NumberFormat;
 
 class RecipientAddressFields extends StatelessWidget {
   final List<SendRecipientDraft> recipients;
@@ -119,16 +121,7 @@ class _RecipientRow extends StatelessWidget {
     height: 56,
     decoration: BoxDecoration(
       color: context.appColors.surface,
-      border: Border(
-        bottom: BorderSide(color: context.appColors.border),
-        left: switch (wallet) {
-          final ownWallet? => BorderSide(
-            color: ownWallet.tagColor(context),
-            width: 6,
-          ),
-          null => BorderSide.none,
-        },
-      ),
+      border: Border(bottom: BorderSide(color: context.appColors.border)),
     ),
     child: Row(
       children: [
@@ -277,7 +270,7 @@ class RecipientAmounts extends StatelessWidget {
   final ValueChanged<int> onRemoveRecipient;
   final Future<void> Function(int id, String value) onAmountChanged;
   final void Function(int id, bool receivesRemainder) onRemainderChanged;
-  final Widget Function(int amountSat) amountBuilder;
+  final Widget Function(int amountSat, {bool emphasized}) amountBuilder;
 
   const RecipientAmounts({
     super.key,
@@ -327,129 +320,63 @@ class RecipientAmounts extends StatelessWidget {
             Expanded(
               child: Text(
                 context.loc.sendRecipients,
-                style: context.bullType.body,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             ?amountHeader,
           ],
         ),
-        for (var index = 0; index < recipients.length; index++) ...[
-          Builder(
-            builder: (context) {
-              final recipient = recipients[index];
-              final wallet = internalRecipientWallets[recipient.id];
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  color: context.appColors.surface,
-                  border: Border(
-                    bottom: BorderSide(color: context.appColors.border),
-                    left: wallet == null
-                        ? BorderSide.none
-                        : BorderSide(color: wallet.tagColor(context), width: 6),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        if (wallet != null) const Gap(8),
-                        CircleAvatar(
-                          radius: 12,
-                          backgroundColor:
-                              context.appColors.surfaceContainerHighest,
-                          child: Text(
-                            '${index + 1}',
-                            style: context.bullType.caption.copyWith(
-                              color: context.appColors.text,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        const Gap(8),
-                        Expanded(
-                          child: wallet == null
-                              ? AddressViewer(
-                                  recipient.address,
-                                  style: context.bullType.body,
-                                )
-                              : Text(
-                                  wallet.displayLabel(context),
-                                  style: context.bullType.body.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                        ),
-                        const Gap(8),
-                        SizedBox(
-                          width: 150,
-                          child:
-                              !recipient.receivesRemainder &&
-                                  amountFieldBuilder != null
-                              ? Semantics(
-                                  label: context.loc.sendRecipientNumber(
-                                    index + 1,
-                                  ),
-                                  child: amountFieldBuilder?.call(
-                                    recipient,
-                                    focusNodes[recipient.id],
-                                  ),
-                                )
-                              : BullInputText(
-                                  key: ValueKey(
-                                    'send-recipient-amount-${recipient.id}',
-                                  ),
-                                  onChanged: (value) =>
-                                      onAmountChanged(recipient.id, value),
-                                  value: recipient.receivesRemainder
-                                      ? context.loc.sendRemaining
-                                      : recipient.amount,
-                                  hint: context.loc.coreScreensAmountLabel,
-                                  suffixText: inputCurrency,
-                                  style: context.bullType.body,
-                                  onlyNumbers: true,
-                                  focusNode: focusNodes[recipient.id],
-                                  disabled: recipient.receivesRemainder,
-                                ),
-                        ),
-                      ],
+        const Gap(BullSpacing.xs),
+        Divider(height: 1, color: context.appColors.border),
+        for (var index = 0; index < recipients.length; index++)
+          _RecipientAmountRow(
+            number: index + 1,
+            recipient: recipients[index],
+            wallet: internalRecipientWallets[recipients[index].id],
+            note: recipients[index].receivesRemainder
+                ? context.loc.sendRestCalculated
+                : qrAmountRecipientIds.contains(recipients[index].id)
+                ? context.loc.sendAmountFromQrEditable
+                : null,
+            amount: amountFieldBuilder != null
+                ? Semantics(
+                    label: context.loc.sendRecipientNumber(index + 1),
+                    child: amountFieldBuilder?.call(
+                      recipients[index],
+                      focusNodes[recipients[index].id],
                     ),
-                    if (recipient.receivesRemainder) ...[
-                      const Gap(4),
-                      Row(
-                        children: [
-                          Text(context.loc.sendRestCalculated, style: muted),
-                          const Spacer(),
-                          if (preparedAmounts.length > index)
-                            amountBuilder(preparedAmounts[index])
-                          else
-                            Text('…', style: muted),
-                        ],
-                      ),
-                    ] else if (qrAmountRecipientIds.contains(recipient.id)) ...[
-                      const Gap(4),
-                      Text(context.loc.sendAmountFromQrEditable, style: muted),
-                    ],
-                  ],
-                ),
-              );
-            },
+                  )
+                : BullInputText(
+                    key: ValueKey(
+                      'send-recipient-amount-${recipients[index].id}',
+                    ),
+                    onChanged: (value) =>
+                        onAmountChanged(recipients[index].id, value),
+                    // The rest is computed after fees, so it is shown, not typed.
+                    value: !recipients[index].receivesRemainder
+                        ? recipients[index].amount
+                        : preparedAmounts.length > index
+                        ? NumberFormat('#,##0').format(preparedAmounts[index])
+                        : '…',
+                    hint: context.loc.coreScreensAmountLabel,
+                    suffixText: recipients[index].receivesRemainder
+                        ? context.loc.sendSats
+                        : inputCurrency,
+                    style: context.bullType.body,
+                    onlyNumbers: true,
+                    focusNode: focusNodes[recipients[index].id],
+                    disabled: recipients[index].receivesRemainder,
+                  ),
           ),
-        ],
         const Gap(12),
         Row(
           children: [
-            Expanded(
-              child: Text(
-                context.loc.sendRestGoesTo,
-                style: context.bullType.body,
-              ),
-            ),
+            Expanded(child: Text(context.loc.sendRestGoesTo, style: muted)),
+            // Wide enough that "Recipient 3" keeps clear of the dropdown button.
             SizedBox(
-              width: 160,
+              width: 200,
               child: BullDropdown<int>(
                 value: remainderId ?? -1,
                 items: [
@@ -474,13 +401,12 @@ class RecipientAmounts extends StatelessWidget {
             ),
           ],
         ),
-        if (!isSweep) ...[
+        // Only when nobody takes the rest does it stay behind as change.
+        if (!isSweep && !hasRemainder) ...[
           const Gap(4),
           Text(context.loc.sendRestChangeHint, style: muted),
         ],
-        const Gap(12),
-        Divider(height: 1, color: context.appColors.border),
-        const Gap(8),
+        const Gap(BullSpacing.md),
         _AmountSummaryRow(
           label: context.loc.sendToRecipients,
           value: totalRecipients,
@@ -491,8 +417,11 @@ class RecipientAmounts extends StatelessWidget {
           value: fee,
           amountBuilder: amountBuilder,
         ),
+        const Gap(BullSpacing.xs),
+        Divider(height: 1, color: context.appColors.border),
+        const Gap(BullSpacing.xs),
         _AmountSummaryRow(
-          label: context.loc.sendTotalDebited,
+          label: context.loc.sendTotal,
           value: totalDebited,
           amountBuilder: amountBuilder,
           emphasized: true,
@@ -510,6 +439,88 @@ class RecipientAmounts extends StatelessWidget {
   }
 }
 
+/// One recipient: number, destination and an optional note on the left, the
+/// amount on the right. Every row has the same height and the same amount
+/// column, whether it holds a typed amount or the rest.
+class _RecipientAmountRow extends StatelessWidget {
+  final int number;
+  final SendRecipientDraft recipient;
+  final SendSource? wallet;
+  final String? note;
+  final Widget amount;
+
+  const _RecipientAmountRow({
+    required this.number,
+    required this.recipient,
+    required this.wallet,
+    required this.note,
+    required this.amount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ownWallet = wallet;
+    return Container(
+      constraints: const BoxConstraints(minHeight: 64),
+      padding: const EdgeInsets.symmetric(vertical: BullSpacing.xs),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.appColors.border)),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 12,
+            backgroundColor: context.appColors.surfaceContainerHighest,
+            child: Text(
+              '$number',
+              style: context.bullType.caption.copyWith(
+                color: context.appColors.text,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const Gap(BullSpacing.sm),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (ownWallet == null)
+                  AddressViewer(
+                    recipient.address,
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                  )
+                else
+                  Text(
+                    ownWallet.displayLabel(context),
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                if (note case final text?) ...[
+                  const Gap(BullSpacing.xxs),
+                  Text(
+                    text,
+                    style: context.bullType.caption.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const Gap(BullSpacing.sm),
+          SizedBox(width: 112, child: amount),
+        ],
+      ),
+    );
+  }
+}
+
 class _AmountSummaryRow extends StatelessWidget {
   const _AmountSummaryRow({
     required this.label,
@@ -519,19 +530,20 @@ class _AmountSummaryRow extends StatelessWidget {
   });
   final String label;
   final int? value;
-  final Widget Function(int amountSat) amountBuilder;
+  final Widget Function(int amountSat, {bool emphasized}) amountBuilder;
   final bool emphasized;
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 2),
+    padding: const EdgeInsets.symmetric(vertical: BullSpacing.xxs),
     child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Text(
             label,
             style: emphasized
-                ? context.bullType.body.copyWith(fontWeight: FontWeight.w500)
+                ? context.bullType.body.copyWith(fontWeight: FontWeight.w600)
                 : context.bullType.label.copyWith(
                     fontWeight: FontWeight.w400,
                     color: context.appColors.textMuted,
@@ -539,7 +551,7 @@ class _AmountSummaryRow extends StatelessWidget {
           ),
         ),
         if (value case final amount?)
-          amountBuilder(amount)
+          amountBuilder(amount, emphasized: emphasized)
         else
           Text('…', style: context.bullType.label),
       ],

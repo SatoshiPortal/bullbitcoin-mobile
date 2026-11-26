@@ -27,7 +27,7 @@ void main() {
         value: '',
         unit: 'sat/vB',
         help: 'Enter a fee',
-        applyHint: 'Apply with keyboard check',
+        doneLabel: 'Done',
         onMode: (_) {},
         onChanged: (_) {},
         onBack: () {},
@@ -66,6 +66,20 @@ void main() {
     expect(values, ['0.333']);
     expect(focus.hasFocus, isFalse);
   });
+
+  testWidgets('Done on the iOS keyboard bar applies the value', (tester) async {
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetViewInsets);
+    final values = <String>[];
+    final focus = FocusNode();
+    addTearDown(focus.dispose);
+    await tester.pumpWidget(shell(editor(focus: focus, submit: values.add)));
+    await tester.showKeyboard(find.byType(TextField));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+    expect(values, ['']);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
   testWidgets('translated segments fit at large text scale', (tester) async {
     tester.view.physicalSize = const Size(320, 844);

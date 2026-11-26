@@ -42,7 +42,9 @@ class SendPaymentReview extends StatelessWidget {
   final String? enteredDetail;
   final Widget? error;
   final Widget? feeWarning;
-  final List<Widget> recipients;
+
+  /// One row per recipient, laid out like every other fact on the review.
+  final List<({String label, Widget value})> recipients;
   final String fromLabel;
   final Widget source;
   final String? changeLabel;
@@ -120,10 +122,6 @@ class SendPaymentReview extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (feeWarning case final warning?) ...[
-                    warning,
-                    const Gap(BullSpacing.md),
-                  ],
                   Container(
                     decoration: BoxDecoration(
                       border: Border(
@@ -134,7 +132,10 @@ class SendPaymentReview extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         for (final recipient in recipients)
-                          _ReviewBorder(child: recipient),
+                          _ReviewFact(
+                            label: recipient.label,
+                            child: recipient.value,
+                          ),
                         _ReviewFact(label: fromLabel, child: source),
                         if ((changeLabel, change) case (
                           final label?,
@@ -154,14 +155,16 @@ class SendPaymentReview extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Flexible(
-                                    child: Text(
-                                      note,
-                                      textAlign: TextAlign.end,
-                                      style: context.bullType.body,
+                                  if (note.isNotEmpty) ...[
+                                    Flexible(
+                                      child: Text(
+                                        note,
+                                        textAlign: TextAlign.end,
+                                        style: context.bullType.body,
+                                      ),
                                     ),
-                                  ),
-                                  const Gap(BullSpacing.xxs),
+                                    const Gap(BullSpacing.xxs),
+                                  ],
                                   BullFieldAction(
                                     label: editLabel,
                                     icon: BullIcons.edit,
@@ -178,13 +181,14 @@ class SendPaymentReview extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               fee,
-                              Text(
-                                feeDetail,
-                                textAlign: TextAlign.end,
-                                style: context.bullType.caption.copyWith(
-                                  color: context.bull.textMuted,
+                              if (feeDetail.isNotEmpty)
+                                Text(
+                                  feeDetail,
+                                  textAlign: TextAlign.end,
+                                  style: context.bullType.caption.copyWith(
+                                    color: context.bull.textMuted,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -209,6 +213,11 @@ class SendPaymentReview extends StatelessWidget {
                       ],
                     ),
                   ),
+                  // Right under the total it is about.
+                  if (feeWarning case final warning?) ...[
+                    const Gap(BullSpacing.md),
+                    warning,
+                  ],
                 ],
               ),
             ),

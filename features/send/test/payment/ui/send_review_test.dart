@@ -25,7 +25,10 @@ void main() {
             youSendLabel: 'You send',
             amount: const Text('50,000 sats'),
             equivalent: '≈ 50 CAD',
-            recipients: const [Text('External destination'), Text('My wallet')],
+            recipients: const [
+              (label: 'To', value: Text('External destination')),
+              (label: 'To', value: Text('My wallet')),
+            ],
             fromLabel: 'From',
             source: const Text('bitcoin'),
             editLabel: 'Edit note',
@@ -34,7 +37,7 @@ void main() {
             feeLabel: 'Network fee',
             fee: const Text('200 sats'),
             feeDetail: 'Fast · 2 sat/vB',
-            totalLabel: 'Total debited',
+            totalLabel: 'Total',
             total: const Text('50,200 sats'),
             confirmLabel: 'Confirm payment',
             onBack: () {},
@@ -57,6 +60,14 @@ void main() {
       );
       expect(tester.getTopLeft(find.text('From')).dx, 16);
       expect(
+        tester.getTopLeft(find.text('To').first).dx,
+        tester.getTopLeft(find.text('From')).dx,
+      );
+      expect(
+        tester.getBottomRight(find.text('External destination')).dx,
+        closeTo(tester.getBottomRight(find.text('200 sats')).dx, 1),
+      );
+      expect(
         tester.getTopLeft(find.text('You send')).dy -
             tester.getBottomLeft(find.byType(BullStepBar)).dy,
         greaterThanOrEqualTo(24),
@@ -76,4 +87,43 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('a high fee warning sits right under the total', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          extensions: testBullExtensions,
+          textTheme: testBullTypography.toTextTheme(),
+        ),
+        home: SendPaymentReview(
+          title: 'Send',
+          stepLabels: const ['Recipient', 'Amount', 'Confirm'],
+          stepSemanticLabel: (i, text) => text,
+          youSendLabel: 'You send',
+          amount: const Text('50,000 sats'),
+          equivalent: '≈ 50 CAD',
+          recipients: const [(label: 'To', value: Text('bc1qdest'))],
+          fromLabel: 'From',
+          source: const Text('bitcoin'),
+          editLabel: 'Edit note',
+          noteLabel: 'Note',
+          note: '',
+          feeLabel: 'Network fee',
+          fee: const Text('9,000 sats'),
+          feeDetail: 'Fast',
+          totalLabel: 'Total',
+          total: const Text('59,000 sats'),
+          feeWarning: const Text('High fee'),
+          confirmLabel: 'Confirm payment',
+          onBack: () {},
+          onNote: () {},
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final warning = tester.getRect(find.text('High fee'));
+    final total = tester.getRect(find.text('59,000 sats'));
+    expect(warning.top, greaterThan(total.bottom));
+    expect(warning.top - total.bottom, lessThan(48));
+  });
 }

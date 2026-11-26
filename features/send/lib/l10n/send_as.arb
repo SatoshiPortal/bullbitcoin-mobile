@@ -230,10 +230,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "sendConfirmSend": "প্ৰেৰণ নিশ্চিত কৰক",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSelfTransfer": "নিজলৈ Transfer",
   "@sendSelfTransfer": {
     "description": "Label shown when the transaction is sending to the same wallet"

@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:material_ui/material_ui.dart' show FocusScope;
 
 /// Recipient and amount share a page; the screen owner supplies verified views
 /// and callbacks without exposing wallet entities to the layout.
@@ -11,13 +12,10 @@ class SendPaymentPage extends StatelessWidget {
     required this.recipientLabel,
     required this.recipient,
     required this.amountLabel,
-    required this.lockedAmountLabel,
     required this.amount,
     required this.balance,
     required this.fromLabel,
-    required this.walletLabel,
-    required this.walletColor,
-    required this.walletActionLabel,
+    required this.wallet,
     required this.maxLabel,
     required this.settingsLabel,
     required this.feeSummary,
@@ -25,7 +23,6 @@ class SendPaymentPage extends StatelessWidget {
     required this.onBack,
     required this.onSettings,
     required this.onMax,
-    required this.onWallet,
     required this.onContinue,
     this.recipientReady = false,
     this.isBusy = false,
@@ -37,13 +34,12 @@ class SendPaymentPage extends StatelessWidget {
   final String recipientLabel;
   final Widget recipient;
   final String amountLabel;
-  final String lockedAmountLabel;
   final Widget amount;
   final Widget balance;
   final String fromLabel;
-  final String walletLabel;
-  final Color walletColor;
-  final String walletActionLabel;
+
+  /// The source wallet picker, shown under the recipient once it is valid.
+  final Widget wallet;
   final String maxLabel;
   final String settingsLabel;
   final String feeSummary;
@@ -51,7 +47,6 @@ class SendPaymentPage extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onSettings;
   final VoidCallback? onMax;
-  final VoidCallback? onWallet;
   final VoidCallback? onContinue;
   final bool recipientReady;
   final bool isBusy;
@@ -71,116 +66,54 @@ class SendPaymentPage extends StatelessWidget {
             semanticLabel: stepSemanticLabel,
           ),
           Expanded(
-            child: SingleChildScrollView(
-              reverse:
-                  recipientReady && MediaQuery.viewInsetsOf(context).bottom > 0,
-              padding: const EdgeInsets.all(BullSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(recipientLabel, style: context.bullType.body),
-                  const Gap(BullSpacing.xs),
-                  recipient,
-                  const Gap(BullSpacing.lg),
-                  Text(
-                    amountLabel,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Gap(BullSpacing.xs),
-                  if (recipientReady) ...[
-                    amount,
-                    const Gap(BullSpacing.md),
-                    Row(
-                      children: [
-                        Expanded(child: balance),
-                        Padding(
-                          padding: const EdgeInsets.only(right: BullSpacing.xs),
-                          child: BullFieldAction(
-                            label: maxLabel,
-                            onPressed: onMax,
-                          ),
-                        ),
-                      ],
-                    ),
+            // Tapping outside a field closes the keyboard: the iOS number pad
+            // has no key to do it.
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: SingleChildScrollView(
+                reverse:
+                    recipientReady &&
+                    MediaQuery.viewInsetsOf(context).bottom > 0,
+                padding: const EdgeInsets.all(BullSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(recipientLabel, style: context.bullType.body),
                     const Gap(BullSpacing.xs),
-                    Text(fromLabel, style: context.bullType.body),
-                    const Gap(BullSpacing.xs),
-                    Semantics(
-                      button: true,
-                      enabled: onWallet != null,
-                      label: walletActionLabel,
-                      value: walletLabel,
-                      onTap: onWallet,
-                      excludeSemantics: true,
-                      child: GestureDetector(
-                        onTap: onWallet,
-                        child: Container(
-                          padding: const EdgeInsets.all(BullSpacing.xs),
-                          decoration: BoxDecoration(
-                            color: context.bull.surface,
-                            border: Border(
-                              left: BorderSide(color: walletColor, width: 4),
-                              top: BorderSide(color: context.bull.border),
-                              right: BorderSide(color: context.bull.border),
-                              bottom: BorderSide(color: context.bull.border),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: BullSpacing.xs,
-                                  ),
-                                  child: Text(
-                                    walletLabel,
-                                    style: context.bullType.body,
-                                  ),
-                                ),
-                              ),
-                              ExcludeSemantics(
-                                child: BullFieldAction(
-                                  label: walletActionLabel,
-                                  icon: BullIcons.expandMore,
-                                  onPressed: onWallet,
-                                ),
-                              ),
-                            ],
-                          ),
+                    recipient,
+                    if (recipientReady) ...[
+                      const Gap(BullSpacing.lg),
+                      Text(fromLabel, style: context.bullType.body),
+                      const Gap(BullSpacing.xs),
+                      wallet,
+                      const Gap(BullSpacing.lg),
+                      Text(
+                        amountLabel,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                  ] else
-                    Container(
-                      padding: const EdgeInsets.all(BullSpacing.md),
-                      decoration: BoxDecoration(
-                        color: context.bull.surface,
-                        border: Border.all(color: context.bull.border),
-                        borderRadius: BorderRadius.circular(
-                          context.bullShapes.input,
-                        ),
-                      ),
-                      child: Row(
+                      const Gap(BullSpacing.xs),
+                      amount,
+                      const Gap(BullSpacing.md),
+                      Row(
                         children: [
-                          BullIcon(
-                            BullIcons.lock,
-                            color: context.bull.textMuted,
-                          ),
-                          const Gap(BullSpacing.xs),
-                          Expanded(
-                            child: Text(
-                              lockedAmountLabel,
-                              style: context.bullType.label.copyWith(
-                                color: context.bull.textMuted,
-                              ),
+                          Expanded(child: balance),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: BullSpacing.xs,
+                            ),
+                            child: BullFieldAction(
+                              label: maxLabel,
+                              onPressed: onMax,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                ],
+                    ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -204,7 +137,7 @@ class SendPaymentPage extends StatelessWidget {
                 ],
                 BullButton.primary(
                   label: continueLabel,
-                  onPressed: isBusy || !recipientReady ? null : onContinue,
+                  onPressed: isBusy ? null : onContinue,
                 ),
               ],
             ),

@@ -129,7 +129,6 @@
   "sendTransferFeeDescription": "Սա ուղարկվող գումարից հանված ընդհանուր վճարն է",
   "sendReceiveNetworkFee": "Ստացման ցանցի վճար",
   "sendServerNetworkFees": "Սերվերի ցանցի վճարներ",
-  "sendConfirmSend": "Հաստատել ուղարկումը",
   "sendSelfTransfer": "Ինքնափոխանցում",
   "sendSending": "Ուղարկվում է",
   "sendBroadcastingTransaction": "Գործարքը հեռարձակվում է։",

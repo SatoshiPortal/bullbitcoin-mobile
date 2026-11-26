@@ -1,4 +1,3 @@
-import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show Network, ScriptType;
 import 'package:signers/signers.dart';
 import 'package:flutter/widgets.dart';
@@ -86,12 +85,6 @@ extension SendSourcePresentation on SendSource {
     return isBitcoin
         ? context.loc.walletTypeBitcoinNetwork
         : context.loc.walletTypeLiquidAndLightning;
-  }
-
-  Color tagColor(BuildContext context) {
-    final colors = context.appColors;
-    if (isWatchOnly || signsRemotely) return colors.secondary;
-    return isLiquid ? colors.tertiary : colors.onTertiary;
   }
 }
 

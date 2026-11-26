@@ -129,7 +129,6 @@
   "sendTransferFeeDescription": "Đây là tổng phí bị trừ từ số tiền được gửi",
   "sendReceiveNetworkFee": "Phí mạng nhận",
   "sendServerNetworkFees": "Phí mạng của máy chủ",
-  "sendConfirmSend": "Xác nhận gửi",
   "sendSelfTransfer": "Tự chuyển khoản",
   "sendSending": "Đang gửi",
   "sendBroadcastingTransaction": "Đang phát giao dịch.",

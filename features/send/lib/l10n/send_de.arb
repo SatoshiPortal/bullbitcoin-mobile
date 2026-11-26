@@ -178,7 +178,6 @@
   "transactionNetworkLiquid": "Liquid",
   "coreWalletTransactionStatusConfirmed": "Bestätigt",
   "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
-  "sendConfirmSend": "Senden bestätigen",
   "sendSwapInProgressInvoice": "Der Swap läuft. Die Invoice wird in wenigen Sekunden bezahlt.",
   "sendScanBitcoinQRCode": "Scannen Sie einen beliebigen Bitcoin- oder Lightning-QR-Code, um mit Bitcoin zu bezahlen.",
   "sendConfirm": "Bestätigen",

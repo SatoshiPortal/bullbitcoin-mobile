@@ -129,7 +129,6 @@
   "sendTransferFeeDescription": "Hii ndiyo jumla ya ada iliyoondolewa kutoka kwa kiasi kilichotumwa",
   "sendReceiveNetworkFee": "Ada ya Mtandao ya Kupokea",
   "sendServerNetworkFees": "Ada za Mtandao za Seva",
-  "sendConfirmSend": "Thibitisha Kutuma",
   "sendSelfTransfer": "Uhamisho wa nafsi",
   "sendSending": "Inatuma",
   "sendBroadcastingTransaction": "Inatangaza muamala.",

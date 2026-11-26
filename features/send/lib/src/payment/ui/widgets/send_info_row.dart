@@ -17,7 +17,7 @@ class SendInfoRow extends StatelessWidget {
           BullText(
             title,
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
-            color: context.appColors.onSurfaceVariant,
+            color: context.appColors.textMuted,
           ),
           const Gap(24),
           Expanded(child: details),

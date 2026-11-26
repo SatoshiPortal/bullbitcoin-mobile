@@ -181,7 +181,6 @@
   "transactionNetworkLiquid": "Líquido",
   "coreWalletTransactionStatusConfirmed": "Confirmado",
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
-  "sendConfirmSend": "Enviar",
   "sendSwapInProgressInvoice": "A troca está em andamento. A fatura será paga em alguns segundos.",
   "sendScanBitcoinQRCode": "Digitalize qualquer código QR Bitcoin ou Lightning para pagar com bitcoin.",
   "sendConfirm": "Confirmação",

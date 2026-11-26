@@ -181,7 +181,6 @@
   "transactionNetworkLiquid": "流动资金",
   "coreWalletTransactionStatusConfirmed": "1. 确认",
   "sendErrorBuildFailed": "无法准备此支付。请重试。",
-  "sendConfirmSend": "Confirm Send",
   "sendSwapInProgressInvoice": "该轮车正在铺设。 发票将分几秒支付.",
   "sendScanBitcoinQRCode": "页: 1.",
   "sendConfirm": "执 行",

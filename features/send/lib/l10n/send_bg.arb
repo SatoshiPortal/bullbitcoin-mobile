@@ -437,10 +437,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "Потвърди изпращане\n==WEBLATE_PART==",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "Обменът е в ход. Инвойсът ще бъде платен след няколко секунди.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

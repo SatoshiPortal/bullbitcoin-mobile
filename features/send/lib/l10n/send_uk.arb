@@ -183,7 +183,6 @@
   "sendCoinControl": "Монета управління",
   "sendViewDetails": "Переглянути подробиці",
   "sendErrorBuildFailed": "Не вдалося підготувати цей платіж. Будь ласка, спробуйте ще раз.",
-  "sendConfirmSend": "Підтвердження",
   "sendSwapInProgressInvoice": "Ведуться ковпа. Оплатити рахунок за кілька секунд.",
   "sendSuccessfullySent": "Успішно",
   "sendSwapFailed": "Не вдалося. Ваше повернення буде оброблятися найближчим часом.",

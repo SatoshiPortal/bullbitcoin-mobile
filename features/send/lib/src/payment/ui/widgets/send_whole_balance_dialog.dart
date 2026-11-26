@@ -1,7 +1,9 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:material_ui/material_ui.dart' show Divider;
 
-/// Display facts from one real whole-balance preview. The screen owner checks
-/// that preview is still current before applying MAX after confirmation.
+/// Display facts from one real whole-balance preview, shown in a bottom sheet.
+/// The screen owner checks that preview is still current before applying MAX
+/// after confirmation.
 class SendWholeBalanceDialog extends StatelessWidget {
   const SendWholeBalanceDialog({
     super.key,
@@ -13,10 +15,11 @@ class SendWholeBalanceDialog extends StatelessWidget {
     required this.fee,
     required this.receivesLabel,
     required this.receives,
-    required this.cancelLabel,
+    required this.closeLabel,
     required this.sendAllLabel,
-    required this.onCancel,
+    required this.onClose,
     required this.onSendAll,
+    this.receivesEquivalent,
   });
 
   final String title;
@@ -27,44 +30,76 @@ class SendWholeBalanceDialog extends StatelessWidget {
   final Widget fee;
   final String receivesLabel;
   final Widget receives;
-  final String cancelLabel;
+
+  /// The recipient's amount in the display currency, under it.
+  final String? receivesEquivalent;
+  final String closeLabel;
   final String sendAllLabel;
-  final VoidCallback onCancel;
+  final VoidCallback onClose;
   final VoidCallback? onSendAll;
 
   @override
-  Widget build(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text(title, style: context.bullType.subtitle),
-      const Gap(BullSpacing.sm),
-      Text(description, style: context.bullType.body),
-      const Gap(BullSpacing.lg),
-      _PreviewRow(label: balanceLabel, value: balance),
-      const Gap(BullSpacing.sm),
-      _PreviewRow(label: feeLabel, value: fee),
-      const Gap(BullSpacing.sm),
-      _PreviewRow(label: receivesLabel, value: receives, strong: true),
-      const Gap(BullSpacing.lg),
-      Row(
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(
+        BullSpacing.md,
+        BullSpacing.md,
+        BullSpacing.md,
+        BullSpacing.md,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: BullButton.secondary(
-              label: cancelLabel,
-              onPressed: onCancel,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Semantics(
+                  header: true,
+                  child: Text(
+                    title,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              BullInlineIconButton(
+                onPressed: onClose,
+                tooltip: closeLabel,
+                icon: const BullIcon(BullIcons.close),
+              ),
+            ],
           ),
           const Gap(BullSpacing.sm),
-          Expanded(
-            child: BullButton.primary(
-              label: sendAllLabel,
-              onPressed: onSendAll,
+          Text(
+            description,
+            style: context.bullType.label.copyWith(
+              color: context.bull.textMuted,
             ),
           ),
+          const Gap(BullSpacing.md),
+          _PreviewRow(label: balanceLabel, value: balance),
+          const Gap(BullSpacing.xs),
+          _PreviewRow(label: feeLabel, value: fee),
+          const Gap(BullSpacing.sm),
+          Divider(height: 1, color: context.bull.border),
+          const Gap(BullSpacing.sm),
+          _PreviewRow(label: receivesLabel, value: receives, strong: true),
+          if (receivesEquivalent case final fiat?)
+            Text(
+              fiat,
+              textAlign: TextAlign.end,
+              style: context.bullType.caption.copyWith(
+                color: context.bull.textMuted,
+              ),
+            ),
+          const Gap(BullSpacing.lg),
+          BullButton.primary(label: sendAllLabel, onPressed: onSendAll),
         ],
       ),
-    ],
+    ),
   );
 }
 
@@ -82,9 +117,9 @@ class _PreviewRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = Text(
       label,
-      style: context.bullType.label.copyWith(
-        fontWeight: strong ? FontWeight.w500 : FontWeight.w400,
-      ),
+      style: strong
+          ? context.bullType.body.copyWith(fontWeight: FontWeight.w700)
+          : context.bullType.label.copyWith(color: context.bull.textMuted),
     );
     if (MediaQuery.textScalerOf(context).scale(14) > 17) {
       return Column(
