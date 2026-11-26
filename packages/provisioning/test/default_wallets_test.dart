@@ -33,6 +33,7 @@ final class _Accounts implements WalletProvisioning {
   int resumes = 0;
   Network? failNetwork;
   Object? failure;
+  WalletProvisioningFailure? resultFailure;
   void Function(Secret secret, Network network)? onCreate;
 
   @override
@@ -49,6 +50,7 @@ final class _Accounts implements WalletProvisioning {
   }) async {
     created.add(network);
     received.add(secret);
+    if (resultFailure case final failure?) return Err(failure);
     if (network == failNetwork) {
       failNetwork = null;
       throw failure ?? Exception('temporary failure');
@@ -166,6 +168,16 @@ void main() {
     expect(wallets.first.secretFingerprint, wallets.last.secretFingerprint);
     expect(accounts.created, [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]);
     expect(accounts.resumes, 1);
+  });
+
+  test('preserves backup-required refusal from account provisioning', () async {
+    accounts.resultFailure = const WalletProvisioningBackupRequiredFailure();
+
+    final result = await provisioning.execute();
+
+    expect((result as Err).failure, isA<DefaultWalletBackupRequiredFailure>());
+    expect(accounts.created, [BitcoinNetwork.mainnet]);
+    expect(registrations, isEmpty);
   });
 
   test(

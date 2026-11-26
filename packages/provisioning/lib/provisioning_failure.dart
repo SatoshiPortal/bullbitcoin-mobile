@@ -1,5 +1,7 @@
 import 'package:primitives/primitives.dart';
 
+import 'src/default_wallet_secret_policy.dart' show DefaultWalletSecretRefusal;
+
 sealed class ProvisioningFailure extends Failure {
   const ProvisioningFailure();
 }
@@ -83,4 +85,43 @@ final class WalletProvisioningBackupRequiredFailure
 /// The inventory, a property owner or the native store refused the write.
 final class WalletProvisioningStorageFailure extends WalletProvisioningFailure {
   const WalletProvisioningStorageFailure();
+}
+
+/// Creating the default pair of a developer network, or listing the secrets
+/// that may back it, was refused or could not complete.
+sealed class NetworkWalletSetupFailure extends ProvisioningFailure {
+  const NetworkWalletSetupFailure();
+}
+
+/// The network, developer mode or superuser right does not allow setup.
+final class NetworkWalletSetupContextFailure extends NetworkWalletSetupFailure {
+  const NetworkWalletSetupContextFailure();
+}
+
+/// The referenced secret cannot back a default wallet.
+final class NetworkWalletSetupSecretFailure extends NetworkWalletSetupFailure {
+  final DefaultWalletSecretRefusal reason;
+
+  const NetworkWalletSetupSecretFailure(this.reason);
+}
+
+/// The wallet catalog could not be read.
+final class NetworkWalletSetupStorageFailure extends NetworkWalletSetupFailure {
+  const NetworkWalletSetupStorageFailure();
+}
+
+/// The requested secret is no longer referenced by the catalog.
+final class NetworkWalletSetupReferenceNotFoundFailure
+    extends NetworkWalletSetupFailure {
+  const NetworkWalletSetupReferenceNotFoundFailure();
+}
+
+final class NetworkWalletSetupUnavailableFailure
+    extends NetworkWalletSetupFailure {
+  const NetworkWalletSetupUnavailableFailure();
+}
+
+final class NetworkWalletSetupBackupRequiredFailure
+    extends NetworkWalletSetupFailure {
+  const NetworkWalletSetupBackupRequiredFailure();
 }

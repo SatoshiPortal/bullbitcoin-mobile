@@ -1,8 +1,6 @@
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
-import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
-import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provisioning/provisioning.dart';
 
 extension NetworkWalletSetupFailureL10n on NetworkWalletSetupFailure {
   String toTranslated(BuildContext context) => switch (this) {
@@ -11,9 +9,9 @@ extension NetworkWalletSetupFailureL10n on NetworkWalletSetupFailure {
         context.loc.networkWalletReuseNoRecoveryPhrase,
     },
     NetworkWalletSetupContextFailure() => context.loc.networkFeatureUnavailable,
-    NetworkWalletSetupReadFailure(:final failure) => failure.toTranslated(
-      context,
-    ),
+    NetworkWalletSetupReferenceNotFoundFailure() =>
+      context.loc.walletDeletionErrorWalletNotFound,
+    NetworkWalletSetupStorageFailure() ||
     NetworkWalletSetupUnavailableFailure() => context.loc.walletLoadFailed,
     NetworkWalletSetupBackupRequiredFailure() =>
       context.loc.networkWalletBackupRequired,

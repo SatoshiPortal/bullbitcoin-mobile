@@ -1,8 +1,6 @@
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:preferences/preferences.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
@@ -36,12 +34,10 @@ void main() {
         )),
       );
       final cubit = NetworkWalletSetupCubit(
-        LoadNetworkWalletSetupUsecase(settings, references),
-        CreateNetworkWalletUsecase(
-          settings,
-          references,
-          Secrets(scratchDirectory: () async => '/tmp'),
-          _Defaults(),
+        NetworkWalletProvisioning(
+          settings: settings,
+          inventory: references,
+          defaults: _Defaults(),
         ),
       );
       final wallets = _WalletBloc();
