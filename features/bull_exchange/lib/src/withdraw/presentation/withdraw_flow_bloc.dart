@@ -1,160 +1,63 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_exchange/src/exchange_answers.dart';
+import 'package:bull_exchange/src/orders/domain/usecases/find_created_order_usecase.dart';
+import 'package:bull_exchange/src/orders/domain/usecases/get_market_rate_usecase.dart';
+import 'package:bull_exchange/src/orders/domain/usecases/get_order_usecase.dart';
 import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
+import 'package:bull_exchange/src/withdraw/domain/usecases/confirm_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/usecases/create_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/usecases/load_withdraw_context_usecase.dart';
 import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
 import 'package:clock/clock.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:primitives/primitives.dart';
-
-/// The exchange calls of the withdraw flow, bound to one session.
-typedef WithdrawFlowCalls = ({
-  Future<ExchangeRead<WithdrawContext>> Function() loadContext,
-  Future<ExchangeRead<double>> Function(Market market) rate,
-  Future<OrderCreateAnswered<WithdrawRequest, WithdrawOrder>> Function(
-    OrderSendCreate<WithdrawRequest> effect,
-  )
-  create,
-  Future<ExchangeRead<WithdrawOrder>> Function(
-    WithdrawRequest request,
-    DateTime sentAt,
-  )
-  findCreated,
-  Future<ConfirmAnswered<WithdrawConfirmTarget, WithdrawOrder>> Function(
-    ConfirmSend<WithdrawConfirmTarget> effect,
-  )
-  confirm,
-  Future<ExchangeRead<Order>> Function(String orderId) readOrder,
-  PayoutRequirementsUsecases requirements,
-});
-
-WithdrawFlowCalls withdrawFlowCallsOf(
-  Exchange exchange,
-  ExchangeSession session,
-) {
-  final orders = exchange.orders(session.environment);
-  return (
-    loadContext: () async {
-      final summary = readOfResult(
-        await exchange.getUserSummary(session.environment),
-      );
-      // A journal that can't be read leaves no entry to start from; the
-      // write gate then refuses the confirm itself (JournalUnreadable).
-      final entries = switch (await exchange.openUnknownWrites()) {
-        Ok(:final value) => value,
-        Err() => const <UnknownWrite>[],
-      };
-      return switch (summary) {
-        ReadGot(:final value) => ReadGot(WithdrawContext(value, entries)),
-        ReadMissing() => const ReadMissing(),
-        ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable(
-          reason,
-          isNetwork: isNetwork,
-        ),
-        ReadSessionRejected(:final why) => ReadSessionRejected(why),
-        ReadMalformed(:final reason) => ReadMalformed(reason),
-      };
-    },
-    rate: (market) async =>
-        switch (await exchange.limitOrders.getRate(market.currency.code)) {
-          Ok(:final value) => ReadGot(value.indexPrice),
-          Err(:final failure) => readOfExchangeFailure(failure),
-        },
-    create: (effect) => runOrderCreate(
-      gate: exchange.writeGate,
-      session: session,
-      effect: effect,
-      create: (request) {
-        final payout = request.payout;
-        return orders.placeWithdrawalOrder(
-          fiatAmount: request.amount.fiat,
-          recipientId: payout.recipientId,
-          paymentProcessor: payout.paymentProcessor,
-          securityQuestion: payout.interacAnswer?.question,
-          securityAnswer: payout.interacAnswer?.answer,
-        );
-      },
-      journalUnknown: (request) =>
-          exchange.journalUnknownOrderCreate(session, request.journal),
-    ),
-    findCreated: (request, sentAt) async =>
-        switch (await orders.getOrders(type: OrderType.withdraw)) {
-          Ok(:final value) => switch (findCreatedOrder(
-            request.journal,
-            sentAt,
-            value,
-          )) {
-            final WithdrawOrder order => ReadGot(order),
-            _ => const ReadMissing(),
-          },
-          Err(:final failure) => readOfExchangeFailure(failure),
-        },
-    confirm: (effect) => runServerConfirm(
-      gate: exchange.writeGate,
-      session: session,
-      policy: withdrawConfirmPolicy,
-      effect: effect,
-      confirm: (target) => orders.confirmWithdrawOrder(
-        target.order.orderId,
-        interacUpdate: _interacUpdate(target.recipient),
-      ),
-    ),
-    readOrder: (orderId) async => readOfResult(await orders.getOrder(orderId)),
-    requirements: PayoutRequirementsUsecases.of(exchange),
-  );
-}
-
-/// The Interac answer saved on the recipient with the confirm: only when
-/// the user asked to save it as the default.
-({
-  String recipientId,
-  String email,
-  String? securityQuestion,
-  String? securityAnswer,
-})?
-_interacUpdate(ReadyRecipient recipient) {
-  final evidence = recipient.interac;
-  final details = recipient.chosen.recipient.details;
-  if (evidence == null || details is! InteracEmailCadDetails) return null;
-  final save = evidence.saveAsDefault;
-  return (
-    recipientId: recipient.chosen.recipient.recipientId,
-    email: details.email,
-    securityQuestion: save ? evidence.answer.question : null,
-    securityAnswer: save ? evidence.answer.answer : null,
-  );
-}
 
 /// Shell of [transitionWithdrawFlow]: applies events one at a time, emits the
-/// new state and runs its effects. Every answer carries the attempt, ticket
-/// or market that asked for it; the machine drops stale ones.
+/// new state and runs each effect through its use case with the flow's
+/// session. Every answer carries the attempt, ticket or market that asked
+/// for it; the machine drops stale ones.
 class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
   WithdrawFlowBloc({
-    required WithdrawFlowCalls Function(ExchangeSession session) calls,
     required ExchangeSession? session,
     required Stream<ExchangeAccess> accessChanges,
+    required LoadWithdrawContextUsecase loadContext,
+    required GetMarketRateUsecase getMarketRate,
+    required CreateWithdrawOrderUsecase createOrder,
+    required FindCreatedOrderUsecase findCreatedOrder,
+    required ConfirmWithdrawOrderUsecase confirmOrder,
+    required GetOrderUsecase getOrder,
+    required PayoutRequirementsUsecases requirements,
   }) : this._(
-         session,
-         session == null ? null : calls(session),
-         accessChanges,
          withdrawFlowStart(session),
+         session,
+         accessChanges,
+         loadContext,
+         getMarketRate,
+         createOrder,
+         findCreatedOrder,
+         confirmOrder,
+         getOrder,
+         requirements,
        );
 
   WithdrawFlowBloc._(
-    ExchangeSession? session,
-    this._calls,
-    Stream<ExchangeAccess> accessChanges,
     WithdrawFlowNext start,
+    this._session,
+    Stream<ExchangeAccess> accessChanges,
+    this._loadContext,
+    this._getMarketRate,
+    this._createOrder,
+    this._findCreatedOrder,
+    this._confirmOrder,
+    this._getOrder,
+    PayoutRequirementsUsecases requirements,
   ) : super(start.state) {
     on<WithdrawFlowEvent>(_onEvent, transformer: sequential());
-    final calls = _calls;
-    if (calls != null && session != null) {
-      _requirements = PayoutRequirementsRunner(calls.requirements, session, (
-        event,
-      ) {
+    final session = _session;
+    if (session != null) {
+      _requirements = PayoutRequirementsRunner(requirements, session, (event) {
         if (!isClosed) add(WithdrawRequirementsChanged(event));
       });
     }
@@ -164,7 +67,15 @@ class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
     _run(start.effects);
   }
 
-  final WithdrawFlowCalls? _calls;
+  /// The session the flow opened with; null runs nothing (the flow starts
+  /// ended).
+  final ExchangeSession? _session;
+  final LoadWithdrawContextUsecase _loadContext;
+  final GetMarketRateUsecase _getMarketRate;
+  final CreateWithdrawOrderUsecase _createOrder;
+  final FindCreatedOrderUsecase _findCreatedOrder;
+  final ConfirmWithdrawOrderUsecase _confirmOrder;
+  final GetOrderUsecase _getOrder;
   PayoutRequirementsRunner? _requirements;
   late final StreamSubscription<ExchangeAccess> _access;
 
@@ -180,18 +91,20 @@ class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
   }
 
   void _run(List<WithdrawFlowEffect> effects) {
-    final calls = _calls;
-    if (calls == null) return;
+    final session = _session;
+    if (session == null) return;
     for (final effect in effects) {
       switch (effect) {
         case WithdrawLoadContext(:final attempt):
           _answer(
-            calls.loadContext().then((r) => WithdrawContextLoaded(attempt, r)),
+            _loadContext
+                .execute(session)
+                .then((r) => WithdrawContextLoaded(attempt, r)),
           );
         case WithdrawFetchRate(:final market):
           _answer(
-            calls
-                .rate(market)
+            _getMarketRate
+                .execute(market)
                 .then(
                   (r) => WithdrawAmountChanged(AmountRateArrived(market, r)),
                 ),
@@ -199,25 +112,31 @@ class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
         case WithdrawRequirementsEffect(:final effect):
           _requirements?.run([effect]);
         case WithdrawOrderEffect(:final effect):
-          _order(calls, effect);
+          _order(session, effect);
         case WithdrawConfirmEffect(:final effect):
-          _confirm(calls, effect);
+          _confirm(session, effect);
       }
     }
   }
 
   void _order(
-    WithdrawFlowCalls calls,
+    ExchangeSession session,
     OrderStepEffect<WithdrawRequest> effect,
   ) {
     switch (effect) {
       case final OrderSendCreate<WithdrawRequest> send:
         _sentAt[send.attempt] = clock.now();
-        _answer(calls.create(send).then(WithdrawOrderChanged.new));
+        _answer(
+          _createOrder.execute(session, send).then(WithdrawOrderChanged.new),
+        );
       case OrderFindCreated(:final request, :final attempt):
         _answer(
-          calls
-              .findCreated(request, _sentAt[attempt] ?? clock.now())
+          _findCreatedOrder
+              .execute<WithdrawOrder>(
+                session,
+                request.journal,
+                _sentAt[attempt] ?? clock.now(),
+              )
               .then((r) => WithdrawOrderChanged(OrderFindAnswered(attempt, r))),
         );
       // A withdrawal order has no quote lock (withdrawOrderPolicy): the
@@ -232,16 +151,18 @@ class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
   }
 
   void _confirm(
-    WithdrawFlowCalls calls,
+    ExchangeSession session,
     ServerConfirmEffect<WithdrawConfirmTarget> effect,
   ) {
     switch (effect) {
       case final ConfirmSend<WithdrawConfirmTarget> send:
-        _answer(calls.confirm(send).then(WithdrawConfirmChanged.new));
+        _answer(
+          _confirmOrder.execute(session, send).then(WithdrawConfirmChanged.new),
+        );
       case ConfirmVerify(:final target, :final attempt):
         _answer(
-          calls
-              .readOrder(target.order.orderId)
+          _getOrder
+              .execute(session, target.order.orderId)
               .then(
                 (read) => WithdrawConfirmChanged(
                   ConfirmVerified(attempt, withdrawConfirmCheck(read)),
