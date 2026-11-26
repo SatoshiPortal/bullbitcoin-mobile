@@ -204,6 +204,43 @@ void main() {
     expect(ran, isFalse);
   });
 
+  test('a batch admission reads the policy afresh and reads no seed', () async {
+    expect(await authority.mayRenew(parent), isTrue);
+
+    // A PIN set between two lots refuses the second one.
+    await protect('all');
+    expect(await authority.mayRenew(parent), isFalse);
+  });
+
+  test(
+    'a batch admission is per account: one forbidden, one allowed',
+    () async {
+      final stranger = Fingerprint('01234567');
+      expect(
+        await authority.mayRenew(stranger),
+        isFalse,
+        reason: 'no membership',
+      );
+      expect(await authority.mayRenew(parent), isTrue);
+
+      await addView('protected');
+      await protect('protected');
+      expect(
+        await authority.mayRenew(parent),
+        isFalse,
+        reason: 'the seed is shared with a protected view',
+      );
+    },
+  );
+
+  test(
+    'a batch admission fails closed when the policy cannot be read',
+    () async {
+      await sql('DROP TABLE view_members');
+      expect(await authority.mayRenew(parent), isFalse);
+    },
+  );
+
   test(
     'a PIN set after admission does not interrupt the admitted run',
     () async {
