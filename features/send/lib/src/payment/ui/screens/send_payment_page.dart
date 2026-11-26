@@ -18,7 +18,6 @@ class SendPaymentPage extends StatelessWidget {
     required this.wallet,
     required this.maxLabel,
     required this.settingsLabel,
-    required this.feeSummary,
     required this.continueLabel,
     required this.onBack,
     required this.onSettings,
@@ -45,7 +44,6 @@ class SendPaymentPage extends StatelessWidget {
   final Widget wallet;
   final String maxLabel;
   final String settingsLabel;
-  final String feeSummary;
   final String continueLabel;
   final VoidCallback onBack;
   final VoidCallback onSettings;
@@ -142,7 +140,6 @@ class SendPaymentPage extends StatelessWidget {
                     MediaQuery.viewInsetsOf(context).bottom == 0) ...[
                   BullSettingsEntryTile(
                     label: settingsLabel,
-                    summary: feeSummary,
                     onPressed: onSettings,
                   ),
                   const Gap(BullSpacing.md),

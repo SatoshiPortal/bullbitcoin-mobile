@@ -32,7 +32,6 @@ void main() {
         wallet: const Text('Wallet picker'),
         maxLabel: 'MAX',
         settingsLabel: 'Advanced settings',
-        feeSummary: 'Fast',
         continueLabel: 'Continue',
         onBack: () {},
         onSettings: () {},

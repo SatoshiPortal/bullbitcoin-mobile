@@ -366,9 +366,6 @@ final class _SendPaymentSession {
       ),
       maxLabel: context.loc.swapMax,
       settingsLabel: context.loc.sendAdvancedSettings,
-      feeSummary: wallet?.isLiquid == true
-          ? ''
-          : feeName(context, state.selectedFeeOption),
       extra: state.consolidationRequired && wallet != null
           ? BullAlertCard(
               title: context.loc.consolidationRequiredTitle,

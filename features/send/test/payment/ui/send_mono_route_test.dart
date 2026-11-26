@@ -22,6 +22,7 @@ import 'package:sync/sync.dart' show WalletKey;
 import 'package:fees/fees.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:secrets/secrets.dart' show WalletSigner;
+import 'package:signers/signers.dart' show SignerDevice;
 import 'package:send/src/payment/domain/send_amount_conversion.dart';
 import 'package:primitives/primitives.dart' show Sats;
 import 'package:send/src/payment/domain/send_failure.dart';
@@ -505,6 +506,84 @@ void main() {
     expect(find.byType(SendPaymentReview), findsNothing);
     expect(find.byType(SendConfirmScreen), findsOneWidget);
   });
+
+  testWidgets('a Liquid payment on the classic screen keeps coin selection', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    final liquid = sendSourceFixture(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(100000),
+    );
+    await pump(
+      tester,
+      state().copyWith(
+        sendType: SendType.lightning,
+        selectedWallet: SendWalletBitcoin(liquid),
+        paymentRequest: const PaymentRequest.lnAddress(address: 'a@b.com'),
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+      ),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Select coins manually'), findsOneWidget);
+  });
+
+  testWidgets('a single sweep chooses its fee on the recipient step', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    await pump(
+      tester,
+      state(step: SendStep.address)
+          .copyWith(sweepOutpoints: {(txId: 'sweep', vout: 0)}),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Replace-by-fee activated'), findsOneWidget);
+  });
+
+  testWidgets(
+    'picking a wallet the page cannot sign hands over to the classic screen',
+    (tester) async {
+      Device.screen = const Size(390, 844);
+      final hardware = sendSourceFixture(
+        id: 'hardware',
+        network: BitcoinNetwork.mainnet,
+        balanceSat: BigInt.from(1000000),
+        signerDevice: SignerDevice.ledgerNanoX,
+        signer: WalletSigner.remote,
+        label: 'Ledger',
+      );
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final start = state().copyWith(wallets: [wallet, hardware]);
+      final cubit = await pump(tester, start, updates: updates.stream);
+      when(() => cubit.updateSelectedWallet(hardware)).thenAnswer((_) async {
+        updates.add(
+          start.copyWith(selectedWallet: SendWalletBitcoin(hardware)),
+        );
+      });
+
+      await tester.tap(find.byType(BullDropdown<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ledger').last);
+      await tester.pumpAndSettle();
+
+      verify(() => cubit.updateSelectedWallet(hardware)).called(1);
+      expect(find.byType(SendPaymentPage), findsNothing);
+      expect(find.byType(SendAmountScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('a regtest payment URI keeps the legacy Send page', (
     tester,

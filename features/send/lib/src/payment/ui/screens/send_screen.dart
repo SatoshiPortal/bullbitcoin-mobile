@@ -130,6 +130,11 @@ bool _isPlainLiquidPayment(SendState state, {required bool spMode}) =>
     !state.usesSelectedInputsOnly &&
     !state.isSweep;
 
+/// Opens the Advanced settings of a classic send step. Given by the screen
+/// owner, so a step hosted elsewhere states the dependency instead of looking
+/// for its parent.
+typedef SendAdvancedSettings = VoidCallback;
+
 /// Recipient, amount and confirmation, as on the Bitcoin send page, so every
 /// payment shows where it is in the same three steps.
 Widget _sendStepBar(BuildContext context, int step) => BullStepBar(
@@ -640,6 +645,19 @@ class _SendScreenState extends State<SendScreen> {
     );
   }
 
+  /// Fee, RBF and coins for Bitcoin; manual coin selection for Liquid.
+  SendAdvancedSettings? _advancedSettings(
+    BuildContext context,
+    SendState state,
+  ) {
+    final wallet = state.selectedWallet;
+    if (wallet == null || _payment.cubit.isSpMode) return null;
+    if (wallet.isLiquid) {
+      return () => _payment.liquidSettings(context);
+    }
+    return () => _payment.settings(context, multipleSwitch: false);
+  }
+
   Widget _content(BuildContext context, SendState state) {
     final step = state.step;
     if (!multipleRecipients &&
@@ -659,9 +677,18 @@ class _SendScreenState extends State<SendScreen> {
         return SendAddressScreen(
           multipleRecipients: multipleRecipients,
           onToggle: (value) => setState(() => multipleRecipients = value),
+          // A single sweep skips the amount step: its fee is chosen here.
+          advancedSettings:
+              state.isSweep &&
+                  !state.hasMultipleRecipients &&
+                  !multipleRecipients
+              ? _advancedSettings(context, state)
+              : null,
         );
       case SendStep.amount:
-        return const SendAmountScreen();
+        return SendAmountScreen(
+          advancedSettings: _advancedSettings(context, state),
+        );
       case SendStep.confirm:
         return const SendConfirmScreen();
       case SendStep.sending:
@@ -677,10 +704,12 @@ class SendAddressScreen extends StatelessWidget {
     super.key,
     this.multipleRecipients = false,
     this.onToggle,
+    this.advancedSettings,
   });
 
   final bool multipleRecipients;
   final ValueChanged<bool>? onToggle;
+  final SendAdvancedSettings? advancedSettings;
 
   Future<void> _toggle(
     BuildContext context,
@@ -859,6 +888,14 @@ class SendAddressScreen extends StatelessWidget {
                     ),
                   ),
                   const Gap(16),
+                  if (advancedSettings case final settings?
+                      when MediaQuery.viewInsetsOf(context).bottom == 0) ...[
+                    BullSettingsEntryTile(
+                      label: context.loc.sendAdvancedSettings,
+                      onPressed: settings,
+                    ),
+                    const Gap(16),
+                  ],
                   const SendArkRoutingActions(
                     fallback: SendContinueWithAddressButton(),
                   ),
@@ -1092,7 +1129,9 @@ class AddressErrorSection extends StatelessWidget {
 }
 
 class SendAmountScreen extends StatefulWidget {
-  const SendAmountScreen({super.key});
+  const SendAmountScreen({super.key, this.advancedSettings});
+
+  final SendAdvancedSettings? advancedSettings;
 
   @override
   State<SendAmountScreen> createState() => _SendAmountScreenState();
@@ -1953,28 +1992,16 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               children: [
                                 // Fee, replace-by-fee and coins are chosen
                                 // here, as on the Bitcoin send page.
-                                if (!selectedWallet.isLiquid &&
-                                    !context.read<SendCubit>().isSpMode &&
-                                    MediaQuery.viewInsetsOf(context).bottom ==
-                                        0)
-                                  if (context
-                                          .findAncestorStateOfType<
-                                            _SendScreenState
-                                          >()
-                                      case final owner?) ...[
-                                    BullSettingsEntryTile(
-                                      label: context.loc.sendAdvancedSettings,
-                                      summary: owner._payment.feeName(
-                                        context,
-                                        state.selectedFeeOption,
-                                      ),
-                                      onPressed: () => owner._payment.settings(
-                                        context,
-                                        multipleSwitch: false,
-                                      ),
-                                    ),
-                                    const Gap(16),
-                                  ],
+                                if (widget.advancedSettings case final settings?
+                                    when MediaQuery.viewInsetsOf(context)
+                                            .bottom ==
+                                        0) ...[
+                                  BullSettingsEntryTile(
+                                    label: context.loc.sendAdvancedSettings,
+                                    onPressed: settings,
+                                  ),
+                                  const Gap(16),
+                                ],
                                 SendAmountConfirmButton(
                                   amountController: _amountController,
                                 ),
