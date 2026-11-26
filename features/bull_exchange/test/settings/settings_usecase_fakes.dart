@@ -1,4 +1,8 @@
+import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
+import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/enable_exchange_access_usecase.dart';
+import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_preferences_usecase.dart';
+import 'package:bull_exchange/src/settings/domain/usecases/update_exchange_preferences_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_access_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/resolve_exchange_access_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/sign_out_of_exchange_usecase.dart';
@@ -80,4 +84,35 @@ ExchangeAccessSettingsBloc accessSettingsBloc({
     signOut: FakeSignOutOfExchangeUsecase(logged('signOut', signOut)),
     resolveAccess: FakeResolveExchangeAccessUsecase(logged('resolve', resolve)),
   );
+}
+
+final class FakeGetExchangePreferencesUsecase
+    implements GetExchangePreferencesUsecase {
+  final Future<Result<ExchangePreferences, ExchangeSettingsFailure>> Function()
+  answer;
+
+  FakeGetExchangePreferencesUsecase(this.answer);
+
+  @override
+  Future<Result<ExchangePreferences, ExchangeSettingsFailure>> execute() =>
+      answer();
+}
+
+final class FakeUpdateExchangePreferencesUsecase
+    implements UpdateExchangePreferencesUsecase {
+  final Future<GatedWrite<Result<void, ExchangeSettingsFailure>>> Function(
+    ExchangeSession? session, {
+    required ExchangePreferences loaded,
+    required ExchangePreferences edited,
+  })
+  answer;
+
+  FakeUpdateExchangePreferencesUsecase(this.answer);
+
+  @override
+  Future<GatedWrite<Result<void, ExchangeSettingsFailure>>> execute(
+    ExchangeSession? session, {
+    required ExchangePreferences loaded,
+    required ExchangePreferences edited,
+  }) => answer(session, loaded: loaded, edited: edited);
 }

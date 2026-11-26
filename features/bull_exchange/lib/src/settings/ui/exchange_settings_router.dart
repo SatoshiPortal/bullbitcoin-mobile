@@ -135,14 +135,12 @@ class ExchangeSettingsRouter {
         create: (_) {
           final exchange = config.exchange();
           return ExchangePreferencesBloc(
-            getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
-              exchange: exchange,
-            ),
-            updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
-              save: config.savePreferences,
-            ),
-            writeGate: exchange.writeGate,
             session: exchange.currentSession,
+            getPreferences: GetExchangePreferencesUsecase(exchange: exchange),
+            updatePreferences: UpdateExchangePreferencesUsecase(
+              save: config.savePreferences,
+              writeGate: exchange.writeGate,
+            ),
           );
         },
         child: ExchangePreferencesScreen(refreshSession: config.refreshSession),

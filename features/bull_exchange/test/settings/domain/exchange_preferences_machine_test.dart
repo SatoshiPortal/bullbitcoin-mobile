@@ -1,21 +1,9 @@
-import 'dart:async';
-
 import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
 import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
-import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_preferences_usecase.dart';
-import 'package:bull_exchange/src/settings/domain/usecases/update_exchange_preferences_usecase.dart';
-import 'package:bull_exchange/src/settings/presentation/exchange_preferences_bloc.dart';
 import 'package:bull_exchange/src/settings/domain/exchange_preferences_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-
-class _MockGetPreferences extends Mock
-    implements GetExchangePreferencesUsecase {}
-
-class _MockUpdatePreferences extends Mock
-    implements UpdateExchangePreferencesUsecase {}
 
 const _a = ExchangePreferences(
   language: 'EN',
@@ -245,78 +233,6 @@ void main() {
       PreferencesSaving,
       PreferencesSaved,
       PreferencesSaveFailed,
-    });
-  });
-
-  group('bloc', () {
-    const session = ExchangeSession(
-      environment: ExchangeEnvironment.mainnet,
-      epoch: 1,
-      sessionId: 's',
-    );
-    late _MockGetPreferences get;
-    late _MockUpdatePreferences update;
-
-    setUpAll(() => registerFallbackValue(_a));
-
-    setUp(() {
-      get = _MockGetPreferences();
-      update = _MockUpdatePreferences();
-      when(get.execute).thenAnswer((_) async => const Ok(_a));
-    });
-
-    Future<void> settle() async {
-      for (var i = 0; i < 5; i++) {
-        await Future<void>.delayed(Duration.zero);
-      }
-    }
-
-    test('the save goes through the write gate of the session', () async {
-      final gate = ExchangeWriteGate();
-      final release = Completer<String>();
-      final running = gate.run(
-        session,
-        FinancialWriteKind.orderConfirm,
-        () => release.future,
-      );
-      final bloc = ExchangePreferencesBloc(
-        getExchangePreferencesUsecase: get,
-        updateExchangePreferencesUsecase: update,
-        writeGate: gate,
-        session: session,
-      );
-      addTearDown(bloc.close);
-      await settle();
-      bloc
-        ..add(const PreferencesLanguageChosen('FR'))
-        ..add(const PreferencesSavePressed());
-      await settle();
-
-      expect(
-        bloc.state,
-        const PreferencesSaveFailed(_a, _b, ExchangeSettingsWriteBusyFailure()),
-      );
-      verifyNever(
-        () => update.execute(
-          loaded: any(named: 'loaded'),
-          edited: any(named: 'edited'),
-        ),
-      );
-      release.complete('done');
-      await running;
-    });
-
-    test('without a session nothing is read', () async {
-      final bloc = ExchangePreferencesBloc(
-        getExchangePreferencesUsecase: get,
-        updateExchangePreferencesUsecase: update,
-        writeGate: ExchangeWriteGate(),
-        session: null,
-      );
-      addTearDown(bloc.close);
-      await settle();
-      expect(bloc.state, const PreferencesSignedOut());
-      verifyNever(get.execute);
     });
   });
 }
