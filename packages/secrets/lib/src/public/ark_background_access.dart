@@ -1,14 +1,12 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart' show Variable;
 import 'package:legacy_storage/coordination.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../data/backup_guard.dart';
+import '../data/ark_notify_policy.dart';
 import '../data/inventory_store.dart';
 import '../data/ready_inventory_store.dart';
-import '../data/secrets_database.dart';
 import '../domain/domain.dart';
 
 /// BIP85 index of the Ark child derived from a wallet seed.
@@ -39,48 +37,11 @@ final class ArkBackgroundAccess {
     admission,
   )).map(ArkBackgroundAccess._);
 
-  /// Whether Ark may still notify for [parent] while locked, read afresh under
-  /// the inventory's write lock (a PIN set concurrently is serialized with
-  /// this read):
-  ///
-  /// 1. [parent] belongs to at least one view with background access enabled;
-  ///    no membership never satisfies "every view is unprotected";
-  /// 2. no view that contains [parent] has a credential.
-  ///
-  /// An unreadable policy is a refusal.
+  /// Whether Ark may still notify for [parent] while locked; see
+  /// [arkNotifyPermitted] for the rule.
   @useResult
-  Future<bool> mayNotify(Fingerprint parent) async {
-    try {
-      return await inventoryWriteTransaction(_store.database, () async {
-        await serializeInventoryWrites(_store.database);
-        return _permitted(_store.database, parent);
-      });
-    } on Object {
-      return false;
-    }
-  }
-
-  static Future<bool> _permitted(
-    SecretsDatabase database,
-    Fingerprint parent,
-  ) async {
-    final rows = await database
-        .customSelect(
-          'SELECT v.background_enabled AS background, '
-          'v.credential_id AS credential FROM view_members m '
-          'JOIN views v ON v.id = m.view_id WHERE m.member = ?',
-          variables: [Variable('secret:${parent.hex}')],
-          readsFrom: {database.viewMembers, database.views},
-        )
-        .get();
-    if (rows.isEmpty) return false;
-    var background = false;
-    for (final row in rows) {
-      if (row.readNullable<String>('credential') != null) return false;
-      if (row.read<bool>('background')) background = true;
-    }
-    return background;
-  }
+  Future<bool> mayNotify(Fingerprint parent) =>
+      arkNotifyPermitted(_store.database, parent);
 
   Future<void> close() => _store.close();
 }

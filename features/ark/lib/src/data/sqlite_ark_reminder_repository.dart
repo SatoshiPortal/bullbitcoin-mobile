@@ -32,6 +32,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
   final ScheduledNotificationPort _notifications;
   final String title;
   final String body;
+  final Future<bool> Function(Fingerprint parent)? _permitsParent;
   bool _closed = false;
   Completer<void>? _active;
   SqliteArkReminderRepository._(
@@ -40,6 +41,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     this._notifications, {
     required this.title,
     required this.body,
+    this._permitsParent,
   });
 
   /// Ordinary startup, including foreground, is existing-only. Set
@@ -55,6 +57,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     required bool foreground,
     bool initializeNew = false,
     bool migrateLegacy = false,
+    Future<bool> Function(Fingerprint parent)? permitsParent,
   }) {
     Database? opened;
     ArkReminderGuard? guard;
@@ -137,6 +140,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
           notifications,
           title: title,
           body: body,
+          permitsParent: permitsParent,
         ),
       );
     } on Exception catch (_) {
@@ -172,6 +176,12 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     var admitted = false;
     var guarded = false;
     try {
+      // The owner's permission decides every alarm, new ones included: a
+      // refused owner gets none, and the alarm it already has is cancelled.
+      final permit = _permitsParent;
+      if (permit != null && !await permit(account.parent)) {
+        return await _cancelAccountAlarms(account);
+      }
       _guard.acquire();
       guarded = true;
       _db.execute('BEGIN IMMEDIATE');
@@ -564,6 +574,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
   Future<Result<void, ArkFailure>> reapplyStored({
     Future<bool> Function(Fingerprint parent)? permitsParent,
   }) async {
+    permitsParent ??= _permitsParent;
     if (_closed) return const Err(ArkFeatureStorageFailure());
     if (_active != null) return const Err(ArkOperationBusyFailure());
     final settled = Completer<void>();
@@ -606,6 +617,30 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
           settled.complete();
         }
       }
+    }
+  }
+
+  /// Cancels the OS alarms of [account] and keeps its ledger rows, so the
+  /// foreground can schedule them again once its owner permits it.
+  Future<Result<void, ArkFailure>> _cancelAccountAlarms(
+    ArkAccountId account,
+  ) async {
+    try {
+      ArkFailure? failed;
+      for (final row in _db.select('SELECT * FROM ark_reminders')) {
+        final String owner;
+        try {
+          owner = _owner(row);
+        } on Object {
+          continue;
+        }
+        if (owner != account.canonical) continue;
+        final cancelled = await _apply(row['platform_id'] as int, null);
+        if (cancelled case Err(:final failure)) failed ??= failure;
+      }
+      return failed == null ? const Ok(null) : Err(failed);
+    } on Exception {
+      return const Err(ArkFeatureStorageFailure());
     }
   }
 

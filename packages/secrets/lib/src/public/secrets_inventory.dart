@@ -22,6 +22,7 @@ import 'package:secrets/src/data/data.dart'
         unreadableBip85RecordFailure;
 
 import '../data/access_repository.dart';
+import '../data/ark_notify_policy.dart';
 import '../data/backup_guard.dart';
 import '../data/derivation_repository.dart';
 import '../data/inventory_import.dart';
@@ -116,6 +117,15 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   @useResult
   Future<Result<AccessAttempt, SecretFailure>> accessStatus() =>
       _access.status();
+
+  /// Whether Ark may notify for [parent] while the app is locked: the rule of
+  /// [ArkBackgroundAccess.mayNotify], asked in the foreground so an OS alarm is
+  /// scheduled by the same rule there. It reads no seed and is not gated by
+  /// the session: it answers a bool about the policy, never about a secret.
+  @override
+  @useResult
+  Future<bool> mayNotifyArk(Fingerprint parent) =>
+      arkNotifyPermitted(_store.database, parent);
 
   /// Whether no session may use secrets right now.
   bool get isLocked => !_unlocked;

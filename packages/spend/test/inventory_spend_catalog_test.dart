@@ -27,6 +27,9 @@ void main() {
 }
 
 final class _UnavailableInventory implements WalletInventory {
+  @override
+  Future<bool> mayNotifyArk(Fingerprint parent) async => false;
+
   final requestedIds = <String>[];
 
   @override
