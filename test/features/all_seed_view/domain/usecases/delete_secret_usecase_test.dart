@@ -200,5 +200,35 @@ void main() {
       expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
       expect(storedSecrets(), isEmpty);
     });
+
+    test('refuses, and keeps the secret, without a tested backup', () async {
+      // The words exist nowhere else: an orphan is not a reason to destroy
+      // the only copy.
+      when(() => walletRepository.getCustodyFingerprints())
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+      proofs.verified.clear();
+
+      final result = await usecase.execute(id);
+
+      expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
+      expect(storedSecrets(), hasLength(1));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed delete refused reason=backup_required',
+      ]);
+    });
+
+    test('refuses when the backup state cannot be read', () async {
+      when(() => walletRepository.getCustodyFingerprints())
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+      proofs.unreadable = true;
+
+      final result = await usecase.execute(id);
+
+      expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
+      expect(storedSecrets(), hasLength(1));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed delete refused reason=backup_unavailable',
+      ]);
+    });
   });
 }

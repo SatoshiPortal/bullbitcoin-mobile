@@ -274,6 +274,38 @@ void main() {
       expect(await findWallet(walletId), isNull);
       expect(storedSeeds(), [seedKey]);
     });
+
+    test('and keeps the seed that has no tested backup', () async {
+      await registerLocal(walletId);
+      proofs.verified.clear();
+
+      final result = await usecase.execute(walletId);
+
+      // The wallet deletion the user asked for still succeeds; the seed stays,
+      // because without a tested backup those words exist nowhere else.
+      expect(result, isA<Ok<void, WalletDetailsFailure>>());
+      expect(await findWallet(walletId), isNull);
+      expect(storedSeeds(), [seedKey]);
+      expect(await deletionLog(), [
+        'Wallet deleted outcome=ok',
+        'Seed cleanup refused reason=backup_required',
+      ]);
+    });
+
+    test('and keeps the seed when the backup state cannot be read', () async {
+      await registerLocal(walletId);
+      proofs.unreadable = true;
+
+      final result = await usecase.execute(walletId);
+
+      expect(result, isA<Ok<void, WalletDetailsFailure>>());
+      expect(await findWallet(walletId), isNull);
+      expect(storedSeeds(), [seedKey]);
+      expect(await deletionLog(), [
+        'Wallet deleted outcome=ok',
+        'Seed cleanup refused reason=backup_unavailable',
+      ]);
+    });
   });
 
   group('keeps the seed and refuses unsafe deletions', () {
