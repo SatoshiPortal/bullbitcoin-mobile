@@ -16,6 +16,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:access/src/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:access/src/domain/usecases/delete_pin_code_usecase.dart';
+import 'package:access/src/presentation/bloc/pin_code_setting_bloc.dart';
 
 import 'support/inventory_fixture.dart';
 
@@ -33,6 +35,8 @@ Widget app(Widget child) => MaterialApp(
 );
 
 class _DelayedPinCheck extends Mock implements CheckPinCodeExistsUsecase {}
+
+class _DelayedPinDelete extends Mock implements DeletePinCodeUsecase {}
 
 Future<void> waitFor(WidgetTester tester, bool Function() ready) async {
   final clock = Stopwatch()..start();
@@ -97,6 +101,42 @@ void main() {
     expect(fixture.inventory.isLocked, isTrue);
     await locking;
   });
+
+  test(
+    'a committed PIN deletion does not emit after the session locks',
+    () async {
+      expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
+      final committed = Completer<void>();
+      final release = Completer<void>();
+      final delete = _DelayedPinDelete();
+      when(() => delete.execute()).thenAnswer((_) async {
+        final result = await fixture.inventory.removeCredential();
+        expect(result, isA<Ok>());
+        committed.complete();
+        await release.future;
+        return const Ok(null);
+      });
+      await services.unregister<DeletePinCodeUsecase>();
+      services.registerFactory<DeletePinCodeUsecase>(() => delete);
+      final bloc = services<PinCodeSettingBloc>();
+      addTearDown(bloc.close);
+      await bloc.stream.firstWhere(
+        (state) => state.status == PinCodeSettingStatus.unlock,
+      );
+      final emitted = <PinCodeSettingStatus>[];
+      final subscription = bloc.stream.listen(
+        (state) => emitted.add(state.status),
+      );
+      bloc.add(const PinCodeDelete());
+      await committed.future.timeout(const Duration(seconds: 5));
+      expect((await fixture.inventory.isProtected() as Ok).value, isFalse);
+      await const Access().lock();
+      release.complete();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(emitted, isNot(contains(PinCodeSettingStatus.deleted)));
+      await subscription.cancel();
+    },
+  );
 
   test('an unprotected session stays locked until foreground resume', () async {
     const access = Access();
