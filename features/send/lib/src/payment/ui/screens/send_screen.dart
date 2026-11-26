@@ -163,10 +163,12 @@ class _SendScreenState extends State<SendScreen> {
       _confirmInFlight = false;
       return;
     }
-    if (cubit.state.willAttemptPayjoin || cubit.state.payjoinSender != null) {
+    if (cubit.isSpMode ||
+        cubit.state.willAttemptPayjoin ||
+        cubit.state.payjoinSender != null) {
       // Without animations the Payjoin progress stays on this screen and
       // hands off to the details once the session settles.
-      if (!_showAnimations) _awaitingPayjoinDetails = true;
+      if (!cubit.isSpMode && !_showAnimations) _awaitingPayjoinDetails = true;
       try {
         await cubit.onConfirmTransactionClicked();
       } finally {
@@ -176,7 +178,6 @@ class _SendScreenState extends State<SendScreen> {
     }
     setState(() {
       _transitionVisible = _showAnimations;
-      _awaitingDetails = !_showAnimations;
       _previousTxId = cubit.state.txId;
       final previousOrder = cubit.state.lightningOrder;
       final previousSwap = cubit.state.boltzSendSwap;
@@ -192,6 +193,7 @@ class _SendScreenState extends State<SendScreen> {
           cubit.state.requireChainSwap ||
           cubit.state.lightningOrder != null ||
           cubit.state.boltzSendSwap != null;
+      _awaitingDetails = !_showAnimations || !_expectsSwap;
     });
     try {
       await cubit.onConfirmTransactionClicked();
@@ -240,12 +242,20 @@ class _SendScreenState extends State<SendScreen> {
     if (target == null) return;
     _awaitingDetails = false;
     if (!mounted || ModalRoute.of(context)?.isCurrent == false) return;
+    if (!_expectsSwap && _transitionVisible) {
+      setState(() => _transitionVisible = false);
+    }
     unawaited(
       TransactionsNavigation.openDetails(
         context,
         target,
         returnHome: true,
-        view: TransactionDetailsView.details,
+        view: _showAnimations
+            ? TransactionDetailsView.status
+            : TransactionDetailsView.details,
+        provenBroadcastIsLiquid: _expectsSwap
+            ? null
+            : state.selectedWallet?.isLiquid,
       ),
     );
   }
@@ -288,7 +298,10 @@ class _SendScreenState extends State<SendScreen> {
     }
     if (_expectsSwap) return false;
     final txId = state.txId;
-    return txId != null && txId != _previousTxId && state.payjoinSender == null;
+    return txId != null &&
+        txId.isNotEmpty &&
+        txId != _previousTxId &&
+        state.payjoinSender == null;
   }
 
   BullPaymentPhase? _terminalPhase(SendState state) {
@@ -460,7 +473,11 @@ class _SendScreenState extends State<SendScreen> {
           : progress.steps.length - 1];
 
   void _dismissTransition() {
-    if (mounted) setState(() => _transitionVisible = false);
+    if (!mounted) return;
+    setState(() {
+      _transitionVisible = false;
+      if (_showAnimations && !_expectsSwap) _awaitingDetails = false;
+    });
   }
 
   TransactionDetailsTarget? _detailsTarget(SendState state) {
@@ -473,7 +490,12 @@ class _SendScreenState extends State<SendScreen> {
     if (_expectsSwap) return null;
     final txId = state.txId;
     final walletId = state.selectedWallet?.id;
-    if (txId == null || txId == _previousTxId || walletId == null) return null;
+    if (txId == null ||
+        txId.isEmpty ||
+        txId == _previousTxId ||
+        walletId == null) {
+      return null;
+    }
     return TransactionDetailsTarget.wallet(txId, walletId: walletId);
   }
 
@@ -559,10 +581,10 @@ class _SendScreenState extends State<SendScreen> {
                 progress: progress,
                 status: _transitionStatus(context, state, terminal, progress),
                 statusTag: _transitionStatusTag(context, state, progress),
-                skipLabel: _detailsTarget(state) != null && !_expectsSwap
-                    ? context.loc.sendViewDetails
-                    : BullUiLocalizations.of(context).paymentViewStatus,
-                onSkip: _openTransitionDetails,
+                skipLabel: _expectsSwap
+                    ? BullUiLocalizations.of(context).paymentViewStatus
+                    : null,
+                onSkip: _expectsSwap ? _openTransitionDetails : null,
                 onBackdropTap: _dismissTransition,
                 onDone: () {
                   // Success stays on screen until the user leaves it (back or

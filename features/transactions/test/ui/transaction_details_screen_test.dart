@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' show Tristate;
 
 import 'package:bull_ui/app_theme.dart';
@@ -87,12 +88,18 @@ void main() {
   Future<void> pump(
     WidgetTester tester, {
     Transaction? transaction,
+    TransactionDetailsState? detailsState,
     bool? animationsEnabled = true,
     String query = '?returnHome=true',
     TransactionStatusState? statusState,
+    Object? extra,
+    SettlementPoll? pollOverride,
+    Size size = const Size(800, 1600),
+    double textScale = 1,
   }) async {
     details = _FakeDetailsCubit(
-      TransactionDetailsState(transaction: transaction ?? pendingSend()),
+      detailsState ??
+          TransactionDetailsState(transaction: transaction ?? pendingSend()),
     );
     status = _FakeStatusCubit(
       statusState ??
@@ -100,17 +107,23 @@ void main() {
     )..observed.clear();
     polls = [];
     _MockActions.homes = 0;
-    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final router = GoRouter(
       initialLocation: '/transaction/tx$query',
+      initialExtra: extra,
       routes: [
         GoRoute(
           path: '/home',
           builder: (context, _) => const Scaffold(body: Text('home')),
         ),
         GoRoute(
+          path: '/other',
+          builder: (context, _) => const Scaffold(body: Text('other')),
+        ),
+        GoRoute(
+          name: 'transactionDetails',
           path: '/transaction/:txId',
           builder: (context, state) => MultiBlocProvider(
             providers: [
@@ -119,9 +132,11 @@ void main() {
             ],
             child: TransactionDetailsScreen(
               actions: _MockActions.actions,
-              pollSettlement: (walletId, {required isActive}) async {
-                polls.add(walletId);
-              },
+              pollSettlement:
+                  pollOverride ??
+                  (walletId, {required isActive}) async {
+                    polls.add(walletId);
+                  },
             ),
           ),
         ),
@@ -133,6 +148,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp.router(
         routerConfig: router,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child ?? const SizedBox.shrink(),
+        ),
         theme: AppTheme.themeData(AppThemeType.dark),
         localizationsDelegates: const [
           ...TransactionsLocalizations.localizationsDelegates,
@@ -150,6 +170,280 @@ void main() {
   bool selected(WidgetTester tester, String label) =>
       tester.getSemantics(button(label)).flagsCollection.isSelected ==
       Tristate.isTrue;
+
+  testWidgets('broadcast keeps its scene and switch across observation', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: false),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    final transition = find.byType(BullPaymentTransition);
+    final switcher = find.byType(BullPaymentViewSwitch);
+    expect(find.byType(BullPaymentViews), findsOneWidget);
+    expect(switcher, findsOneWidget);
+    final oldState = tester.state(transition);
+    final sceneRect = tester.getRect(transition);
+    final switchRect = tester.getRect(switcher);
+    details.emit(TransactionDetailsState(transaction: pendingSend()));
+    await tester.pump();
+    expect(tester.state(transition), same(oldState));
+    expect(tester.getRect(transition), sceneRect);
+    expect(tester.getRect(switcher), switchRect);
+  });
+
+  for (final animated in [true, false]) {
+    testWidgets('broadcast intent prevents a preference flash: $animated', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        query: animated ? '?walletId=w1' : '?walletId=w1&view=details',
+        extra: (txId: 'tx', walletId: 'w1', isLiquid: false),
+        animationsEnabled: null,
+        detailsState: const TransactionDetailsState(
+          failure: TransactionNotFoundFailure(),
+        ),
+      );
+      expect(
+        find.byType(BullPaymentTransition),
+        animated ? findsOneWidget : findsNothing,
+      );
+      expect(find.byType(AppBar), animated ? findsNothing : findsOneWidget);
+      expect(find.text('Waiting for the transaction'), findsOneWidget);
+      status.emit(TransactionStatusState(animationsEnabled: animated));
+      await tester.pump();
+      expect(
+        find.byType(BullPaymentTransition),
+        animated ? findsOneWidget : findsNothing,
+      );
+    });
+  }
+
+  testWidgets('waiting selector fits a narrow screen with enlarged text', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      size: const Size(320, 700),
+      textScale: 2,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: false),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    expect(find.widgetWithText(BullToolButton, 'Transaction'), findsOneWidget);
+    expect(find.widgetWithText(BullToolButton, 'Details'), findsOneWidget);
+    await tester.tap(find.widgetWithText(BullToolButton, 'Details'));
+    await tester.pump();
+    expect(find.text('Waiting for the transaction'), findsOneWidget);
+  });
+
+  testWidgets('a proven broadcast waits and syncs its wallet', (tester) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: false),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    expect(polls, ['w1']);
+    expect(find.text('Waiting for the transaction'), findsOneWidget);
+    expect(find.text('Could not load transaction'), findsNothing);
+  });
+
+  testWidgets('a missing ordinary transaction remains an error', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    expect(polls, isEmpty);
+    expect(find.text('Waiting for the transaction'), findsNothing);
+  });
+
+  testWidgets('broadcast context cannot apply to a different wallet', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'other', isLiquid: false),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    expect(polls, isEmpty);
+    expect(find.text('Waiting for the transaction'), findsNothing);
+  });
+
+  testWidgets('broadcast lookup is bounded and Retry starts a new attempt', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: true),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 20));
+    await tester.pump(const Duration(seconds: 20));
+    await tester.pump(const Duration(minutes: 2));
+    expect(polls, ['w1', 'w1', 'w1']);
+    expect(find.text('Retry'), findsOneWidget);
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+    expect(polls, hasLength(4));
+  });
+
+  testWidgets('Details offers Retry when the indexing wait expires', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: true),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    await tester.tap(button('Details'));
+    await tester.pump();
+    expect(find.text('Waiting for the transaction'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 20));
+    await tester.pump(const Duration(seconds: 20));
+    expect(find.text('Retry'), findsOneWidget);
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+    expect(polls, hasLength(4));
+  });
+
+  testWidgets('broadcast lookup pauses while the app is not resumed', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: true),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    await tester.pump();
+    await tester.pump(const Duration(minutes: 2));
+    expect(polls, hasLength(1));
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    await tester.pump();
+    expect(polls, hasLength(2));
+  });
+
+  testWidgets('broadcast lookup pauses while another route is visible', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: true),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+    );
+    final router = GoRouter.of(
+      tester.element(find.byType(TransactionDetailsScreen)),
+    );
+    unawaited(router.push('/other'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(minutes: 2));
+    expect(polls, hasLength(1));
+    router.pop();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(polls, hasLength(2));
+  });
+
+  testWidgets('a stalled sync is bounded and loses its admission', (
+    tester,
+  ) async {
+    final gate = Completer<void>();
+    late bool Function() active;
+    await pump(
+      tester,
+      query: '?walletId=w1',
+      extra: (txId: 'tx', walletId: 'w1', isLiquid: true),
+      detailsState: const TransactionDetailsState(
+        failure: TransactionNotFoundFailure(),
+      ),
+      pollOverride: (_, {required isActive}) {
+        active = isActive;
+        return gate.future;
+      },
+    );
+    expect(active(), isTrue);
+    await tester.pump(const Duration(seconds: 30));
+    await tester.pump();
+    expect(active(), isFalse);
+    expect(details.refreshes, 1);
+    gate.complete();
+  });
+
+  for (final animations in [true, false]) {
+    testWidgets('observation opens the configured view: $animations', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        query: '?walletId=w1',
+        extra: (txId: 'tx', walletId: 'w1', isLiquid: false),
+        animationsEnabled: animations,
+        detailsState: const TransactionDetailsState(
+          failure: TransactionNotFoundFailure(),
+        ),
+      );
+      details.emit(TransactionDetailsState(transaction: pendingSend()));
+      await tester.pump();
+      await tester.pump();
+      expect(
+        status.observed,
+        contains(
+          const TransactionSettlementTarget(walletId: 'wallet', txId: 'tx'),
+        ),
+      );
+      expect(
+        find.byType(BullPaymentTransition),
+        animations ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.byType(BullTransactionDetailsPage),
+        animations ? findsNothing : findsOneWidget,
+      );
+    });
+  }
 
   group('initial view', () {
     testWidgets('opens on the payment status by default', (tester) async {
@@ -231,7 +525,7 @@ void main() {
       tester,
     ) async {
       await pump(tester);
-      expect(button('Status'), findsOneWidget);
+      expect(button('Transaction'), findsOneWidget);
       expect(button('Details'), findsOneWidget);
       expect(find.text('Transaction details'), findsNothing);
 
@@ -239,9 +533,9 @@ void main() {
       await tester.pump();
       expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
       expect(find.byType(BullPaymentTransition), findsNothing);
-      expect(button('Status'), findsOneWidget);
+      expect(button('Transaction'), findsOneWidget);
 
-      await tester.tap(button('Status'));
+      await tester.tap(button('Transaction'));
       await tester.pump();
       expect(find.byType(BullPaymentTransition), findsOneWidget);
       expect(find.byType(BullTransactionDetailsPage), findsNothing);
@@ -260,7 +554,7 @@ void main() {
       final onDetails = tester.getRect(find.byType(BullPaymentViewSwitch));
       expect(onDetails, onStatus);
 
-      await tester.tap(button('Status'));
+      await tester.tap(button('Transaction'));
       await tester.pump();
       expect(tester.getRect(find.byType(BullPaymentViewSwitch)), onStatus);
       // Centred on the screen.
@@ -301,14 +595,17 @@ void main() {
 
     testWidgets('the shown view is primary and selected', (tester) async {
       await pump(tester);
-      expect(tester.widget<BullToolButton>(button('Status')).primary, isTrue);
+      expect(
+        tester.widget<BullToolButton>(button('Transaction')).primary,
+        isTrue,
+      );
       expect(tester.widget<BullToolButton>(button('Details')).primary, isFalse);
-      expect(selected(tester, 'Status'), isTrue);
+      expect(selected(tester, 'Transaction'), isTrue);
       expect(selected(tester, 'Details'), isFalse);
 
       await tester.tap(button('Details'));
       await tester.pump();
-      expect(selected(tester, 'Status'), isFalse);
+      expect(selected(tester, 'Transaction'), isFalse);
       expect(selected(tester, 'Details'), isTrue);
       expect(tester.widget<BullToolButton>(button('Details')).primary, isTrue);
     });
@@ -332,7 +629,7 @@ void main() {
 
     testWidgets('the hidden status view does not tick', (tester) async {
       await pump(tester, query: '?view=details');
-      await tester.tap(button('Status'));
+      await tester.tap(button('Transaction'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.binding.transientCallbackCount, greaterThan(0));
@@ -365,11 +662,11 @@ void main() {
     testWidgets('carries the same Status | Details pair', (tester) async {
       await pump(tester, query: '?view=details');
       await tester.scrollUntilVisible(
-        button('Status'),
+        button('Transaction'),
         200,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(button('Status'), findsOneWidget);
+      expect(button('Transaction'), findsOneWidget);
       expect(selected(tester, 'Details'), isTrue);
     });
   });
@@ -458,7 +755,7 @@ void main() {
         ),
       );
       expect(polls, isEmpty);
-      await tester.tap(button('Status'));
+      await tester.tap(button('Transaction'));
       await tester.pump();
       expect(polls, ['wallet']);
     });

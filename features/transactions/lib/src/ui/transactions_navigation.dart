@@ -82,6 +82,16 @@ final class TransactionDetailsTarget {
     if (returnHome) 'returnHome': 'true',
     if (returnToExchange) 'returnToExchange': 'true',
   };
+
+  Object? _broadcastExtra(bool? isLiquid) {
+    final walletId = _walletId;
+    if (isLiquid == null ||
+        walletId == null ||
+        _route != TransactionsRoute.transactionDetails) {
+      return null;
+    }
+    return (txId: _id, walletId: walletId, isLiquid: isLiquid);
+  }
 }
 
 abstract final class TransactionsNavigation {
@@ -98,12 +108,16 @@ abstract final class TransactionsNavigation {
   static Future<void> openExport(BuildContext context) =>
       context.pushNamed<void>(TransactionsRoute.exportTransactions.name);
 
+  /// [provenBroadcastIsLiquid] is only for a wallet transaction whose
+  /// broadcast has succeeded. It passes an ephemeral indexing context, never a
+  /// URL parameter, and has no effect for non-wallet targets.
   static Future<void> openDetails(
     BuildContext context,
     TransactionDetailsTarget target, {
     bool returnHome = false,
     bool returnToExchange = false,
     TransactionDetailsView view = TransactionDetailsView.status,
+    bool? provenBroadcastIsLiquid,
   }) => context.pushNamed<void>(
     target._route.name,
     pathParameters: {target._parameter: target._id},
@@ -112,6 +126,7 @@ abstract final class TransactionsNavigation {
       returnToExchange: returnToExchange,
       view: view,
     ),
+    extra: target._broadcastExtra(provenBroadcastIsLiquid),
   );
 
   static void goToDetails(

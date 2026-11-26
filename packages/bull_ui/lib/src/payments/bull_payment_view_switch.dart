@@ -58,13 +58,22 @@ class BullPaymentViewSwitch extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          button(showingStatus, statusLabel, BullIcons.showChart, onStatus),
+          Flexible(
+            child: button(
+              showingStatus,
+              statusLabel,
+              BullIcons.showChart,
+              onStatus,
+            ),
+          ),
           const SizedBox(width: 8),
-          button(
-            !showingStatus,
-            detailsLabel,
-            BullIcons.receiptLong,
-            onDetails,
+          Flexible(
+            child: button(
+              !showingStatus,
+              detailsLabel,
+              BullIcons.receiptLong,
+              onDetails,
+            ),
           ),
         ],
       ),
