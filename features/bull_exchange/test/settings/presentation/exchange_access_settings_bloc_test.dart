@@ -1,43 +1,47 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/settings/domain/manage_exchange_access_usecase.dart';
-import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_bloc.dart';
 import 'package:bull_exchange/src/settings/domain/exchange_access_settings_machine.dart';
+import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Watch extends Mock implements WatchExchangeAccessUsecase {}
-
-class _Set extends Mock implements ManageExchangeAccessUsecase {}
+import '../settings_usecase_fakes.dart';
 
 Future<void> _settle() => Future<void>.delayed(Duration.zero);
 
 void main() {
-  late _Watch watch;
-  late _Set set;
   late StreamController<ExchangeAccess> changes;
   late ExchangeAccess current;
-  late ExchangeAccessSettingsBloc bloc;
+  late List<String> calls;
+
+  ExchangeAccessSettingsBloc build({
+    AccessAnswer? enable,
+    AccessAnswer? signOut,
+    AccessAnswer? resolve,
+  }) {
+    final bloc = accessSettingsBloc(
+      current: () => current,
+      changes: changes.stream,
+      calls: calls,
+      enable: enable,
+      signOut: signOut,
+      resolve: resolve,
+    );
+    addTearDown(bloc.close);
+    return bloc;
+  }
 
   setUp(() {
-    watch = _Watch();
-    set = _Set();
     changes = StreamController<ExchangeAccess>();
     current = const ExchangeAccessDisabled();
-    when(() => watch.current).thenAnswer((_) => current);
-    when(watch.execute).thenAnswer((_) => changes.stream);
-    bloc = ExchangeAccessSettingsBloc(watch, set);
+    calls = [];
   });
-  tearDown(() async {
-    await bloc.close();
-    await changes.close();
-  });
+  tearDown(() => changes.close());
 
   test('a second tap while the first attempt runs sends nothing', () async {
     final pending = Completer<Result<void, ExchangeFailure>>();
-    when(() => set.execute(true)).thenAnswer((_) => pending.future);
+    final bloc = build(enable: () => pending.future);
     bloc.add(const AccessSettingsEnableRequested());
     await _settle();
     expect(bloc.state, isA<AccessSettingsWorking>());
@@ -45,8 +49,7 @@ void main() {
       ..add(const AccessSettingsSignOutRequested())
       ..add(const AccessSettingsEnableRequested());
     await _settle();
-    verify(() => set.execute(true)).called(1);
-    verifyNever(() => set.execute(false));
+    expect(calls, ['enable']);
     current = const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet);
     pending.complete(const Ok(null));
     await _settle();
@@ -62,16 +65,16 @@ void main() {
   test(
     'an unfinished sign-out refuses enabling and retries sign-out',
     () async {
+      final bloc = build(signOut: () async => const Ok(null));
       changes.add(const ExchangeAccessSignOutIncomplete());
       await _settle();
-      when(() => set.execute(false)).thenAnswer((_) async => const Ok(null));
       bloc.add(const AccessSettingsEnableRequested());
       await _settle();
-      verifyNever(() => set.execute(true));
+      expect(calls, isEmpty);
       bloc.add(const AccessSettingsSignOutRequested());
       await _settle();
       await _settle();
-      verify(() => set.execute(false)).called(1);
+      expect(calls, ['signOut']);
       expect(bloc.state, isA<AccessSettingsSucceeded>());
     },
   );
@@ -79,8 +82,9 @@ void main() {
   test(
     'a failure stays with its attempt until access changes (INT-15)',
     () async {
-      when(() => set.execute(false))
-          .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
+      final bloc = build(
+        signOut: () async => const Err(ExchangeSessionClearFailure()),
+      );
       bloc.add(const AccessSettingsSignOutRequested());
       await _settle();
       await _settle();
@@ -102,11 +106,11 @@ void main() {
   );
 
   test('retry resolves access', () async {
-    when(set.retry).thenAnswer((_) async => const Ok(null));
+    final bloc = build(resolve: () async => const Ok(null));
     bloc.add(const AccessSettingsRetryRequested());
     await _settle();
     await _settle();
-    verify(set.retry).called(1);
+    expect(calls, ['resolve']);
     expect(
       bloc.state,
       const AccessSettingsSucceeded(
