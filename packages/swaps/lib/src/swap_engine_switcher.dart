@@ -126,6 +126,7 @@ class SwapEngineSwitcher {
   Future<void> suspendSession() {
     _sessionSuspended = true;
     _engine.suspendCreation();
+    _engine.suspendEffects();
     _swapWatcher.suspend();
     return _sessionStop ??= _stopSession();
   }
@@ -136,6 +137,7 @@ class SwapEngineSwitcher {
       await _swapWatcher.drained;
       await _pending;
       await _engine.creationsSettled;
+      await _engine.effectsSettled;
     } finally {
       _sessionStop = null;
     }
@@ -148,6 +150,7 @@ class SwapEngineSwitcher {
     _sessionSuspended = false;
     if (_disposed || _failed) return;
     _engine.resumeCreation();
+    _engine.resumeEffects();
     unawaited(_swapWatcher.start());
   }
 
