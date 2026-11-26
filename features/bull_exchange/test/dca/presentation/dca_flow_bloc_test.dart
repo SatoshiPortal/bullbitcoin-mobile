@@ -6,35 +6,52 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../account/account_usecase_fakes.dart';
+import '../../default_wallets/default_wallets_usecase_fakes.dart';
+import '../../orders/order_usecase_fakes.dart';
 import '../dca_fixtures.dart';
+import '../dca_usecase_fakes.dart';
 
+/// The DCA use cases as fakes; every call is logged, with the session it
+/// got where it takes one.
 final class _Calls {
   final log = <String>[];
+  final sessions = <ExchangeSession>{};
   Completer<GatedWrite<ExchangeWrite<DcaPlan>>> answer = Completer();
   ExchangeRead<UserSummary> reread = ReadGot(buySummaryWith());
 
-  DcaFlowCalls of(ExchangeSession session) => (
-    loadContext: () async {
-      log.add('load');
+  void _called(ExchangeSession session, String call) {
+    sessions.add(session);
+    log.add(call);
+  }
+
+  DcaFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => DcaFlowBloc(
+    session: session,
+    accessChanges: accessChanges,
+    loadContext: FakeLoadDcaContextUsecase((session) async {
+      _called(session, 'load');
       return ReadGot(dcaContext);
-    },
-    rate: (market) async {
+    }),
+    getMarketRate: FakeGetMarketRateUsecase((market) async {
       log.add('rate ${market.currency.code}');
       return const ReadGot(50000.0);
-    },
-    defaultWallets: () async {
+    }),
+    getDefaultWallets: FakeGetDefaultWalletsUsecase(() async {
       log.add('wallets');
       return const ReadGot(DefaultWallets());
-    },
-    create: (effect) async {
-      log.add('create ${effect.attempt}');
+    }),
+    createDca: FakeCreateDcaUsecase((session, effect) async {
+      _called(session, 'create ${effect.attempt}');
       return ConfirmAnswered(effect.attempt, await answer.future);
-    },
-    readSummary: () async {
-      log.add('summary');
+    }),
+    getUserSummary: FakeGetUserSummaryUsecase((session) async {
+      _called(session, 'summary');
       return reread;
-    },
-    activate: () async => log.add('activate'),
+    }),
+    activateDca: FakeActivateDcaUsecase(() async => log.add('activate')),
   );
 }
 
@@ -52,11 +69,7 @@ void main() {
   setUp(() {
     calls = _Calls();
     access = StreamController<ExchangeAccess>.broadcast();
-    bloc = DcaFlowBloc(
-      calls: calls.of,
-      session: buySession,
-      accessChanges: access.stream,
-    );
+    bloc = calls.bloc(session: buySession, accessChanges: access.stream);
   });
 
   tearDown(() async {
@@ -93,6 +106,7 @@ void main() {
     await _settle();
     expect(bloc.state, isA<DcaDone>());
     expect(calls.log.last, 'activate');
+    expect(calls.sessions, {buySession});
   });
 
   test('an unknown create re-reads the account', () async {
@@ -126,5 +140,14 @@ void main() {
     access.add(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     await _settle();
     expect(bloc.state, isA<DcaSessionEnded>());
+  });
+
+  test('without a session nothing runs', () async {
+    final none = _Calls();
+    final ended = none.bloc(session: null, accessChanges: const Stream.empty());
+    addTearDown(ended.close);
+    await _settle();
+    expect(ended.state, isA<DcaSessionEnded>());
+    expect(none.log, isEmpty);
   });
 }
