@@ -3,7 +3,11 @@ import 'package:primitives/primitives.dart' show Err;
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
-import 'package:startup/startup.dart' show AppInitErrorScreen;
+import 'package:startup/startup.dart'
+    show
+        AppInitErrorScreen,
+        InventoryRecoveryRequired,
+        InventoryUnreadableScreen;
 import 'package:settings/settings.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotifications;
@@ -13,9 +17,11 @@ import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
 import 'package:exchange/exchange.dart'
     show ExchangeAvailability, ExchangePlatform;
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
+import 'package:flutter/services.dart' show SystemNavigator;
 import 'package:legacy_storage/legacy_storage.dart' show LegacyImportFailure;
 import 'package:material_ui/material_ui.dart';
 import 'package:wizard/wizard.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future<void> startApp() async {
   await runZonedGuarded(
@@ -23,7 +29,17 @@ Future<void> startApp() async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
         final wizard = WizardFeature.mount();
+        var allowDeveloperNetwork = false;
+        try {
+          allowDeveloperNetwork = await WizardFeature.mayOfferInitialNetwork(
+            documents: await getApplicationDocumentsDirectory(),
+            support: await getApplicationSupportDirectory(),
+          );
+        } on Exception {
+          // Unavailable evidence must not unlock first-install controls.
+        }
         final startup = await wizard.runIfNeeded(
+          allowDeveloperNetwork: allowDeveloperNetwork,
           notificationChannelId: PaymentNotifications.channelId,
           branding: WizardBranding(
             headerLogo: AssetImage(Assets.logos.bbLogoSmall.path),
@@ -40,7 +56,11 @@ Future<void> startApp() async {
           _showInitError(failure);
           return;
         }
-        if (await Bull.init(retryStorage: _retryStorage, wizard: wizard)
+        if (await Bull.init(
+              retryStorage: _retryStorage,
+              blockedInventory: _blockedInventory,
+              wizard: wizard,
+            )
             case Err(:final failure)) {
           log.severe(
             message: 'App Init Error',
@@ -93,6 +113,30 @@ Future<void> _retryStorage(LegacyImportFailure failure) async {
   final retry = Completer<void>();
   log.warning('Application storage preparation could not complete');
   _showInitError(failure, onRetry: retry.complete);
+  await log.flush();
+  await retry.future;
+}
+
+/// Blocks on an unreadable wallet storage until the user asks to retry. The
+/// screen has no action that changes the stored data.
+Future<void> _blockedInventory(InventoryRecoveryRequired failure) async {
+  final retry = Completer<void>();
+  log.severe(
+    message: 'Wallet storage unreadable',
+    error: failure,
+    trace: StackTrace.current,
+  );
+  runApp(
+    BullSupportScope(
+      onContactSupport: Support.contactSupport,
+      child: InventoryUnreadableScreen(
+        onRetry: retry.complete,
+        onQuit: () => unawaited(SystemNavigator.pop()),
+        extraLocalizations: const [SettingsLocalizations.delegate],
+      ),
+    ),
+  );
+  _refreshDiagnosticContextAfterFirstFrame();
   await log.flush();
   await retry.future;
 }

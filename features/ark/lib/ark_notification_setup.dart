@@ -41,6 +41,11 @@ initializeArkNotifications(Locale locale) async {
   return (title: copy.expiryTitle, body: copy.expiryBody);
 }
 
+({String title, String body}) arkExitClaimableCopy(Locale locale) {
+  final copy = lookupArkLocalizations(_supportedLocale(locale));
+  return (title: copy.exitClaimableTitle, body: copy.exitClaimableBody);
+}
+
 Locale _supportedLocale(Locale locale) =>
     locale.languageCode == 'fr' ? const Locale('fr') : const Locale('en');
 
@@ -57,6 +62,7 @@ final class _UnavailableArkNotifications implements ScheduledNotificationPort {
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   }) async => const Err(NotificationsGatewayFailure());
 
   @override

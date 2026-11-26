@@ -486,6 +486,47 @@ void main() {
   });
 
   test(
+    'a new poll coalesces with a running pass after the first caller expires',
+    () async {
+      final a = manualWallet('a');
+      when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
+      final held = Completer<void>();
+      when(
+        () => syncWallet.sync(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).thenAnswer((_) => held.future);
+      var active = true;
+      final first = coordinator.pollWallet('a', isActive: () => active);
+      await Future<void>.delayed(Duration.zero);
+      active = false;
+      final second = coordinator.pollWallet('a', isActive: () => true);
+      await Future<void>.delayed(Duration.zero);
+      verify(
+        () => syncWallet.sync(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).called(1);
+      held.complete();
+      await Future.wait([first, second]);
+      verifyNever(
+        () => syncWallet.sync(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      );
+    },
+  );
+
+  test(
     'pass summary preserves the native connection failure category',
     () async {
       final directory = Directory.systemTemp.createTempSync('connection-sync-');

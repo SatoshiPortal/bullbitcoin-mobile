@@ -306,5 +306,21 @@
   "sendLeavePaymentDescription": "Se borrarán el destinatario y el importe. Se abrirá la página de UTXO para elegir cuáles gastar.",
   "sendOpenCoins": "Abrir UTXO",
   "sendErrorInvoiceExpiryTooShort": "Esta factura caduca demasiado pronto. Solicite una nueva factura al destinatario.",
-  "closeDialogButton": "Cerrar"
+  "closeDialogButton": "Cerrar",
+  "paymentStepSigning": "Firmando",
+  "paymentStepSendingPayin": "Enviando pago",
+  "paymentStepBroadcasted": "Difundida",
+  "paymentStepConfirmed": "Confirmada",
+  "paymentStepSendingLockup": "Enviando depósito",
+  "paymentStepLockupSent": "Depósito enviado",
+  "paymentStepInvoicePaid": "Factura pagada",
+  "paymentStepClaimable": "Reclamable",
+  "paymentStepRequested": "Solicitud enviada",
+  "paymentStepProposed": "Propuesta recibida",
+  "paymentStepPayinBroadcast": "Pago difundido",
+  "paymentStepCompleted": "Completado",
+  "paymentStepClaimBroadcast": "Reclamación difundida",
+  "paymentStepPayoutInProgress": "Pago en curso",
+  "paymentPendingMempool": "Pendiente en la mempool",
+  "paymentExchangeDescriptor": "EXCHANGE // ORDEN"
 }

@@ -115,7 +115,13 @@ void main() {
         isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
           (result) => result.failure,
           'admission after owner loss',
-          isA<LegacyImportUnavailable>(),
+          isA<LegacyOwnerFailure>()
+              .having((f) => f.ownerId, 'ownerId', 'pilot')
+              .having(
+                (f) => f.cause,
+                'cause',
+                LegacyOwnerFailureCause.missingAfterAdmission,
+              ),
         ),
       );
       expect(file.existsSync(), isFalse);
@@ -126,7 +132,11 @@ void main() {
         isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
           (result) => result.failure,
           'headless admission after owner loss',
-          isA<LegacyImportUnavailable>(),
+          isA<LegacyOwnerFailure>().having(
+            (f) => f.cause,
+            'cause',
+            LegacyOwnerFailureCause.missingAfterAdmission,
+          ),
         ),
       );
     },
@@ -206,6 +216,206 @@ void main() {
     expect(await fixtureCutover(directory).prepare(), isA<Err>());
     expect(File('${directory.path}/legacy.sqlite').existsSync(), isFalse);
   });
+
+  group('source provenance', () {
+    StorageCutover cutoverWith(List<LegacyImportParticipant> participants) {
+      final fixture = fixtureCutover(directory);
+      return StorageCutover(
+        directory: fixture.directory,
+        legacy: fixture.legacy,
+        expectedOwners: fixture.expectedOwners,
+        participants: participants,
+      );
+    }
+
+    test('a refusal precedes the first marker and creates nothing', () async {
+      final owner = ProvenanceOwner(
+        'pilot',
+        File('${directory.path}/pilot.sqlite'),
+        verdict: const Err(LegacyImportVerificationFailed()),
+      );
+      final result = await cutoverWith([owner]).prepare();
+      expect(
+        result,
+        isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+          (err) => err.failure,
+          'failure',
+          isA<LegacyImportVerificationFailed>(),
+        ),
+      );
+      expect(owner.asked, [false]);
+      expect(
+        File('${directory.path}/coordination/split-v1.json').existsSync(),
+        isFalse,
+      );
+      expect(File('${directory.path}/legacy.sqlite').existsSync(), isFalse);
+      expect(File('${directory.path}/pilot.sqlite').existsSync(), isFalse);
+    });
+
+    test('an existing legacy database is reported as present', () async {
+      final legacy = FixtureDatabase(
+        File('${directory.path}/legacy.sqlite'),
+        legacy: true,
+      );
+      await legacy.customStatement('SELECT 1');
+      await legacy.close();
+      final owner = ProvenanceOwner(
+        'pilot',
+        File('${directory.path}/pilot.sqlite'),
+      );
+      await (await cutoverWith([owner]).prepare()
+              as Ok<RuntimeAdmission, LegacyImportFailure>)
+          .value
+          .close();
+      expect(owner.asked, [true, true]);
+    });
+
+    test(
+      'a marker published before the owner joined is checked before its import',
+      () async {
+        await (await prepare()).close();
+        final marker = File('${directory.path}/coordination/split-v1.json');
+        final before = await marker.readAsString();
+        final later = ProvenanceOwner(
+          'later',
+          File('${directory.path}/later.sqlite'),
+          verdict: const Err(LegacyImportVerificationFailed()),
+        );
+        final blocked = await cutoverWith([
+          FixtureOwner('pilot', File('${directory.path}/pilot.sqlite')),
+          later,
+        ]).prepare();
+        expect(
+          blocked,
+          isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+            (err) => err.failure,
+            'failure',
+            isA<LegacyImportVerificationFailed>(),
+          ),
+        );
+        // The marker was created fresh, so the legacy database cannot
+        // explain residue held by the later owner.
+        expect(later.asked, [false]);
+        expect(File('${directory.path}/later.sqlite').existsSync(), isFalse);
+        expect(await marker.readAsString(), before);
+
+        final admitted = ProvenanceOwner(
+          'later',
+          File('${directory.path}/later.sqlite'),
+        );
+        final result = await cutoverWith([
+          FixtureOwner('pilot', File('${directory.path}/pilot.sqlite')),
+          admitted,
+        ]).prepare();
+        expect(result, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
+        await (result as Ok<RuntimeAdmission, LegacyImportFailure>).value
+            .close();
+        expect(admitted.asked, [false]);
+        expect(File('${directory.path}/later.sqlite').existsSync(), isTrue);
+      },
+    );
+  });
+
+  for (final (version, initialFresh) in [(1, true), (1, false), (2, true)]) {
+    test(
+      'a v$version marker with initialFresh=$initialFresh checks an owner it '
+      'never admitted',
+      () async {
+        final legacy = FixtureDatabase(
+          File('${directory.path}/legacy.sqlite'),
+          legacy: true,
+        );
+        await legacy.customStatement('SELECT 1');
+        await legacy.close();
+        final marker = File('${directory.path}/coordination/split-v1.json');
+        await marker.parent.create();
+        await marker.writeAsString(
+          jsonEncode({
+            'version': version,
+            'protocol': 'split-v1',
+            'state': 'importing',
+            'sourceSchemaVersion': 16,
+            'initialFresh': initialFresh,
+            'sourceEstablished': true,
+            'origins': {'pilot': 'legacy', 'later': 'legacy'},
+            if (version == 2) 'admittedOwners': <String>[],
+          }),
+        );
+        final later = ProvenanceOwner(
+          'later',
+          File('${directory.path}/later.sqlite'),
+          verdict: const Err(LegacyImportVerificationFailed()),
+        );
+        final fixture = fixtureCutover(directory);
+        final blocked = await StorageCutover(
+          directory: fixture.directory,
+          legacy: fixture.legacy,
+          expectedOwners: fixture.expectedOwners,
+          participants: [later],
+        ).prepare();
+        expect(
+          blocked,
+          isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+            (err) => err.failure,
+            'failure',
+            isA<LegacyImportVerificationFailed>(),
+          ),
+        );
+        expect(later.asked, [!initialFresh]);
+        expect(File('${directory.path}/later.sqlite').existsSync(), isFalse);
+      },
+    );
+  }
+
+  for (final initialFresh in [true, false]) {
+    test(
+      'an owner joining a kept marker keeps its legacy origin and imports the '
+      'database that now exists (initialFresh=$initialFresh)',
+      () async {
+        final legacy = FixtureDatabase(
+          File('${directory.path}/legacy.sqlite'),
+          legacy: true,
+        );
+        await legacy.customStatement('SELECT 1');
+        await legacy.close();
+        final marker = File('${directory.path}/coordination/split-v1.json');
+        await marker.parent.create();
+        await marker.writeAsString(
+          jsonEncode({
+            'version': 2,
+            'protocol': 'split-v1',
+            'state': 'importing',
+            'sourceSchemaVersion': 16,
+            'initialFresh': initialFresh,
+            'sourceEstablished': true,
+            'origins': {'pilot': 'legacy', 'later': 'legacy'},
+            'admittedOwners': <String>[],
+          }),
+        );
+        final later = ProvenanceOwner(
+          'later',
+          File('${directory.path}/later.sqlite'),
+        );
+        final fixture = fixtureCutover(directory);
+        final result = await StorageCutover(
+          directory: fixture.directory,
+          legacy: fixture.legacy,
+          expectedOwners: fixture.expectedOwners,
+          participants: [later],
+        ).prepare();
+        expect(result, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
+        await (result as Ok<RuntimeAdmission, LegacyImportFailure>).value
+            .close();
+        expect(later.prepared, [OwnerOrigin.legacy]);
+        final published =
+            jsonDecode(await marker.readAsString()) as Map<String, Object?>;
+        expect(
+          (published['origins'] as Map<String, Object?>)['later'],
+          'legacy',
+        );
+      },
+    );
+  }
 
   test('unknown marker blocks background and foreground', () async {
     final marker = File('${directory.path}/coordination/split-v1.json');
@@ -372,6 +582,6 @@ class _InspectionOwner extends FixtureOwner {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async => result;
 }

@@ -27,6 +27,15 @@ class DelayedRead extends FakeArkClient {
   }
 }
 
+class DelayedRefresh extends FakeArkClient {
+  final reply = Completer<Result<ArkPassOutcome, ArkWalletFailure>>();
+  @override
+  Future<Result<ArkPassOutcome, ArkWalletFailure>> synchronize(
+    ArkAccountId account, {
+    required bool renew,
+  }) => reply.future;
+}
+
 ArkCubit controller(FakeArkClient client) {
   final repository = ArkRepositoryImpl(client);
   return ArkCubit(
@@ -37,6 +46,60 @@ ArkCubit controller(FakeArkClient client) {
 }
 
 void main() {
+  test(
+    'watch keeps the newest revision when an older read completes',
+    () async {
+      final changes =
+          StreamController<Result<ArkSnapshot, ArkWalletFailure>>.broadcast();
+      addTearDown(changes.close);
+      final client = DelayedRead()..changes = changes.stream;
+      final cubit = controller(client);
+      addTearDown(cubit.close);
+      final loading = cubit.load();
+      await Future<void>.delayed(Duration.zero);
+      changes.add(Ok(projection(3)));
+      await Future<void>.delayed(Duration.zero);
+      client.reply.complete(Ok(projection(1)));
+      await loading;
+      changes.add(Ok(projection(2)));
+      await Future<void>.delayed(Duration.zero);
+      expect((cubit.state as ArkObserved).snapshot.revision, 3);
+    },
+  );
+
+  test('closing cancels the observation subscription', () async {
+    var cancelled = false;
+    final changes = StreamController<Result<ArkSnapshot, ArkWalletFailure>>(
+      onCancel: () => cancelled = true,
+    );
+    addTearDown(changes.close);
+    final client = FakeArkClient()
+      ..snapshot = Ok(projection(1))
+      ..changes = changes.stream;
+    final cubit = controller(client);
+    await cubit.load();
+    await cubit.close();
+    expect(cancelled, isTrue);
+  });
+
+  test('a late refresh cannot replace a newer watched revision', () async {
+    final changes =
+        StreamController<Result<ArkSnapshot, ArkWalletFailure>>.broadcast();
+    addTearDown(changes.close);
+    final client = DelayedRefresh()
+      ..snapshot = Ok(projection(1))
+      ..changes = changes.stream;
+    final cubit = controller(client);
+    addTearDown(cubit.close);
+    await cubit.load();
+    final refreshing = cubit.refresh();
+    changes.add(Ok(projection(3)));
+    await Future<void>.delayed(Duration.zero);
+    client.reply.complete(Ok(ArkPassOutcome(snapshot: projection(2))));
+    await refreshing;
+    expect((cubit.state as ArkObserved).snapshot.revision, 3);
+  });
+
   for (final failed in [false, true]) {
     test(
       'late initial read failed=$failed cannot replace a newer refresh',

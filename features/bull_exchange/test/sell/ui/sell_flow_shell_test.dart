@@ -1,3 +1,4 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
@@ -17,15 +18,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
 
-import '../../payin/fake_address_viewer.dart';
 import '../sell_fixtures.dart';
 
 final ExchangePayinUi _ui = (
   walletCards: (context, onSelected) => const SizedBox(key: Key('wallets')),
-  addressViewer: fakeAddressViewer,
   openWalletHome: (context) {},
-  openOrder: (context, orderId, {required returnToExchange}) {},
-  openPayjoinTransaction: (context, txid) {},
   brandAsset: 'assets/none.png',
   successAsset: 'assets/none.png',
 );
@@ -119,7 +116,9 @@ void main() {
     final labels = await _pump(tester, sellReviewState);
     expect(find.text(labels.sellPriceWillRefreshIn), findsOneWidget);
     expect(find.text(labels.sellDepositAddress), findsOneWidget);
-    expect(find.text('bc1qdeposit'), findsOneWidget);
+    final viewer = tester.widget<AddressViewer>(find.byType(AddressViewer));
+    expect(viewer.data, 'bc1qdeposit');
+    expect(viewer.textAlign, TextAlign.end);
     expect(find.text(labels.sellPayoutRecipient), findsOneWidget);
     expect(find.text(labels.sellCadBalance), findsOneWidget);
     expect(find.text(labels.sellFeePriority), findsOneWidget);
@@ -200,6 +199,10 @@ void main() {
     );
     expect(find.text(labels.sellPriceWillRefreshIn), findsOneWidget);
     expect(find.text(labels.sellCopyInvoice), findsOneWidget);
+    expect(
+      tester.widget<AddressViewer>(find.byType(AddressViewer)).data,
+      'bc1qdeposit',
+    );
     await tester.ensureVisible(find.text(labels.sellShowQrCode));
     await tester.tap(find.text(labels.sellShowQrCode));
     await tester.pumpAndSettle();

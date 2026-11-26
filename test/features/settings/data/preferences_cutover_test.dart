@@ -69,7 +69,6 @@ void main() {
     preferences = (await PreferencesTesting.open(
       file: ownerFile,
       admission: admission,
-      legacyDatabase: legacy,
       keys: keys,
     ) as Ok<Preferences, PreferencesFailure>).value;
   });
@@ -79,77 +78,33 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  test(
-    'owner writes and web environment never use stale legacy preferences',
-    () async {
-      final before =
-          (await legacy.customSelect('SELECT * FROM settings').getSingle())
-              .data;
-      expect(await preferences.setEnvironment(Environment.mainnet), isA<Ok>());
-      expect(await preferences.setCurrency('EUR'), isA<Ok>());
-      expect(
-        (await legacy.customSelect('SELECT * FROM settings').getSingle()).data,
-        before,
-      );
-      final web =
-          (await preferences.readExchangeWebPreferences()
-                  as Ok<ExchangeWebPreferences, PreferencesFailure>)
-              .value;
-      expect(web.environment, Environment.mainnet);
-      expect(web.exchangeTestnetBasicAuthUsername, isNull);
-      expect(web.exchangeTestnetBasicAuthPassword, isNull);
-      expect(await preferences.setEnvironment(Environment.testnet), isA<Ok>());
-      final testnet =
-          (await preferences.readExchangeWebPreferences()
-                  as Ok<ExchangeWebPreferences, PreferencesFailure>)
-              .value;
-      expect(testnet.exchangeTestnetBasicAuthUsername, 'synthetic-user');
-      expect(testnet.exchangeTestnetBasicAuthPassword, 'synthetic-password');
-      expect(
-        await preferences.setExchangeTestnetBasicAuth(
-          username: 'updated-synthetic',
-          password: null,
-        ),
-        isA<Ok>(),
-      );
-      expect(
-        (await preferences.readCurrency() as Ok<String, PreferencesFailure>)
-            .value,
-        'EUR',
-      );
-      final after =
-          (await legacy.customSelect('SELECT * FROM settings').getSingle())
-              .data;
-      expect(after, {
-        ...before,
-        'exchange_testnet_basic_auth_username': 'updated-synthetic',
-        'exchange_testnet_basic_auth_password': null,
-      });
-    },
-  );
+  test('owner writes never reach the stale legacy preferences', () async {
+    final before =
+        (await legacy.customSelect('SELECT * FROM settings').getSingle()).data;
+    expect(await preferences.setEnvironment(Environment.mainnet), isA<Ok>());
+    expect(await preferences.setCurrency('EUR'), isA<Ok>());
+    expect(
+      (await legacy.customSelect('SELECT * FROM settings').getSingle()).data,
+      before,
+    );
+    expect(
+      (await preferences.readCurrency() as Ok<String, PreferencesFailure>)
+          .value,
+      'EUR',
+    );
+  });
 
-  test(
-    'owner-only readers do not depend on the legacy credentials row',
-    () async {
-      await legacy.customStatement('DELETE FROM settings');
-      expect(
-        await preferences.fetch(),
-        isA<Ok<SettingsEntity, PreferencesFailure>>().having(
-          (result) => result.value.environment,
-          'owner environment',
-          Environment.testnet,
-        ),
-      );
-      expect(
-        await preferences.readExchangeWebPreferences(),
-        isA<Err<ExchangeWebPreferences, PreferencesFailure>>().having(
-          (result) => result.failure,
-          'missing legacy credentials row',
-          isA<PreferencesMissingFailure>(),
-        ),
-      );
-    },
-  );
+  test('owner readers do not depend on the legacy settings row', () async {
+    await legacy.customStatement('DELETE FROM settings');
+    expect(
+      await preferences.fetch(),
+      isA<Ok<SettingsEntity, PreferencesFailure>>().having(
+        (result) => result.value.environment,
+        'owner environment',
+        Environment.testnet,
+      ),
+    );
+  });
 
   test(
     'display watcher sees owner updates without changing legacy settings',
@@ -218,17 +173,11 @@ void main() {
   });
 
   test(
-    'borrowed legacy connection survives capability close; lease covers both',
+    'a paused listener does not delay close; the lease covers the store',
     () async {
       final paused = preferences.currencyChangeStream.listen((_) {})..pause();
       addTearDown(paused.cancel);
       await preferences.close().timeout(const Duration(seconds: 1));
-      expect(
-        (await legacy.customSelect('SELECT 1 AS alive').getSingle()).read<int>(
-          'alive',
-        ),
-        1,
-      );
       await expectLater(
         gate.acquire(exclusive: true, timeout: Duration.zero),
         throwsA(isA<LifecycleException>()),
@@ -307,20 +256,4 @@ void main() {
       );
     },
   );
-
-  test('missing legacy credential row fails explicitly without seeding either store', () async {
-    await legacy.customStatement('DELETE FROM settings');
-    expect(
-      await preferences.setExchangeTestnetBasicAuth(username: 'synthetic'),
-      isA<Err>(),
-    );
-    expect(await preferences.readExchangeWebPreferences(), isA<Err>());
-    expect(
-      (await preferences.readActiveEnvironment()
-              as Ok<Environment, PreferencesFailure>)
-          .value,
-      Environment.testnet,
-    );
-    expect(await legacy.customSelect('SELECT * FROM settings').get(), isEmpty);
-  });
 }

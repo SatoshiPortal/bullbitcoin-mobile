@@ -36,6 +36,9 @@ class _MockSetThemeModeUsecase extends Mock implements SetThemeModeUsecase {}
 class _MockSetScreenCaptureProtectionUsecase extends Mock
     implements SetScreenCaptureProtectionUsecase {}
 
+class _MockSetShowPaymentAnimationsUsecase extends Mock
+    implements SetShowPaymentAnimationsUsecase {}
+
 class _MockSetPayjoinEnabledUsecase extends Mock
     implements SetPayjoinEnabledUsecase {}
 
@@ -59,6 +62,16 @@ class _MockSetErrorReportingUsecase extends Mock
 
 class _MockSetExchangeTestnetBasicAuthUsecase extends Mock
     implements SetExchangeTestnetBasicAuthUsecase {}
+
+class _MockLoadExchangeTestnetBasicAuthUsecase extends Mock
+    implements LoadExchangeTestnetBasicAuthUsecase {}
+
+LoadExchangeTestnetBasicAuthUsecase _loadBasicAuth() {
+  final usecase = _MockLoadExchangeTestnetBasicAuthUsecase();
+  when(usecase.execute)
+      .thenAnswer((_) async => const Ok((username: null, password: null)));
+  return usecase;
+}
 
 SettingsEntity _settings({bool isDevModeEnabled = true}) => SettingsEntity(
   environment: Environment.mainnet,
@@ -115,6 +128,8 @@ void main() {
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setScreenCaptureProtectionUsecase:
           _MockSetScreenCaptureProtectionUsecase(),
+      loadExchangeTestnetBasicAuthUsecase: _loadBasicAuth(),
+      setShowPaymentAnimationsUsecase: _MockSetShowPaymentAnimationsUsecase(),
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),
       setPayjoinEnabledUsecase: _MockSetPayjoinEnabledUsecase(),

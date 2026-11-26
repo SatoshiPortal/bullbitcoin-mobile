@@ -66,6 +66,9 @@ catalogues:
   settings:
     path: features/settings
     description: settings navigation and preferences
+  swap:
+    path: features/swap
+    description: swap recovery and transfer screens
   onboarding:
     path: features/onboarding
     output-dir: features/onboarding/lib/generated/novlang
@@ -80,14 +83,14 @@ entries:
   - {catalogue: all_seed_view, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreNoSwaps, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreAllSection, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRestoreFailed, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRescueTitle, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRescueIdLabel, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: swapRescueSuccess, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreNoSwaps, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreAllSection, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRestoreFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRescueTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRescueIdLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: swap, key: swapRescueSuccess, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreSwapsLnReceivePending, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreSwapsLnReceiveClaimable, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreSwapsLnReceiveRefundable, store: apple, word: swap, euphemism: transfer}

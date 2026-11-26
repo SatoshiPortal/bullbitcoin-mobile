@@ -14,6 +14,7 @@ import '../presentation/ark_operation_status_l10n.dart';
 import 'ark_amount.dart';
 import 'ark_review.dart';
 import 'ark_board_amount_screen.dart';
+import 'ark_payment_progress_policy.dart';
 
 class ArkBoardScreen extends StatefulWidget {
   final ArkBoardCubit cubit;
@@ -29,6 +30,9 @@ class ArkBoardScreen extends StatefulWidget {
   /// The app's confirmation arrow, for the review header.
   final Widget? confirmIcon;
 
+  /// Reads once whether payment transitions play; they do when absent.
+  final Future<bool> Function()? readPaymentAnimations;
+
   const ArkBoardScreen({
     super.key,
     this.displayData,
@@ -37,6 +41,7 @@ class ArkBoardScreen extends StatefulWidget {
     this.onViewDetails,
     this.onClose,
     this.confirmIcon,
+    this.readPaymentAnimations,
   });
   @override
   State<ArkBoardScreen> createState() => _ArkBoardScreenState();
@@ -126,9 +131,29 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
     });
   }
 
+  // Null until the preference is read: confirming waits for it, so a payment
+  // can never take the animation path against a stored "off".
+  bool? _animations;
+
+  Future<void> _readAnimations() async {
+    final read = widget.readPaymentAnimations;
+    if (read == null) {
+      _animations = true;
+      return;
+    }
+    bool value;
+    try {
+      value = await read();
+    } on Object {
+      value = true;
+    }
+    if (mounted) setState(() => _animations = value);
+  }
+
   @override
   void initState() {
     super.initState();
+    unawaited(_readAnimations());
     _listen();
   }
 
@@ -210,7 +235,7 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
               ? arkLocalizationsOf(context).retry
               : arkLocalizationsOf(context).confirm,
           height: 56,
-          onPressed: busy
+          onPressed: busy || _animations == null
               ? null
               : () {
                   if (_current(owner, reviewed)) {
@@ -219,7 +244,7 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
                         reviewed.failure is! ArkReviewExpiredFailure) {
                       setState(() {
                         _transitionId = reviewed.preparation.operationId;
-                        _showTransition = true;
+                        _showTransition = _animations == true;
                       });
                     }
                     unawaited(submission);
@@ -340,9 +365,28 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
       }
 
       final l10n = arkLocalizationsOf(context);
+      final progress = arkPaymentProgress(
+        operation?.status,
+        pendingState: BullPaymentStepState.broadcast,
+        // Until an operation exists the funding is still being sent, and an
+        // unknown outcome is not evidence of a broadcast.
+        steps: [
+          switch (operation?.status) {
+            ArkOperationStatus.pending ||
+            ArkOperationStatus.succeeded ||
+            ArkOperationStatus.failed ||
+            ArkOperationStatus.conflicted => l10n.operationFundingSent,
+            ArkOperationStatus.outcomeUnknown => l10n.operationFundingUnknown,
+            _ => l10n.operationSendingFunding,
+          },
+          l10n.operationCompleted,
+        ],
+      );
       return BullPaymentTransition(
         network: BullPaymentNetwork.ark,
         phase: phase,
+        statusTag: operation?.status.toTranslated(context),
+        progress: progress,
         status: operation?.status.toTranslated(context) ?? l10n.loading,
         skipLabel: BullUiLocalizations.of(context).paymentViewStatus,
         onSkip: dismiss,

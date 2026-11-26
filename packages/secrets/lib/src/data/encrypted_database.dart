@@ -80,7 +80,15 @@ Future<Result<QueryExecutor, DatabaseOpenFailure>> openEncryptedDatabase(
     // PRAGMA key itself succeeds even for a wrong key.
     database.select('SELECT count(*) FROM sqlite_master');
     if (background) {
-      if (database.userVersion != existingSchemaVersion) {
+      final version = database.userVersion;
+      // An older file has not been migrated yet by the foreground app: wait.
+      // A newer one was written by a schema this build does not know.
+      if (version > existingSchemaVersion) {
+        return const Err(
+          DatabaseFileUnavailable(DatabaseFileProblem.schemaMismatch),
+        );
+      }
+      if (version != existingSchemaVersion) {
         return const Err(DatabaseNotReady());
       }
     } else {
@@ -102,18 +110,24 @@ Future<Result<QueryExecutor, DatabaseOpenFailure>> openEncryptedDatabase(
     return Ok(executor);
   } on SqliteException catch (error) {
     // The causing SQL statement can include the key. Never forward the error.
-    final reason = switch (error.resultCode) {
-      SqlError.SQLITE_NOTADB ||
-      SqlError.SQLITE_CORRUPT => DatabaseFileProblem.unreadable,
-      _ => DatabaseFileProblem.inaccessible,
-    };
-    return Err(DatabaseFileUnavailable(reason));
+    return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
   } on FileSystemException {
     return const Err(DatabaseFileUnavailable(DatabaseFileProblem.inaccessible));
   } finally {
     database?.close();
   }
 }
+
+/// Classifies an engine error without reading its message, which can carry the
+/// statement and therefore the key.
+DatabaseFileProblem databaseFileProblemOf(SqliteException error) =>
+    switch (error.resultCode) {
+      SqlError.SQLITE_NOTADB ||
+      SqlError.SQLITE_CORRUPT => DatabaseFileProblem.unreadable,
+      SqlError.SQLITE_BUSY ||
+      SqlError.SQLITE_LOCKED => DatabaseFileProblem.contended,
+      _ => DatabaseFileProblem.inaccessible,
+    };
 
 // Only a missing path can permit provisioning. An inaccessible path must
 // leave any existing key untouched.

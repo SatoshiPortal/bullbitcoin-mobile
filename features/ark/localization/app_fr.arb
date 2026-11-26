@@ -1,5 +1,9 @@
 {
   "@@locale": "fr",
+  "exitClaimableTitle": "Sortie Ark réclamable",
+  "@exitClaimableTitle": {},
+  "exitClaimableBody": "Ouvrez l’application pour vérifier votre sortie Ark.",
+  "@exitClaimableBody": {},
   "title": "Ark",
   "loading": "Chargement d’Ark…",
   "unavailable": "Ark est indisponible. Réessayez.",
@@ -90,11 +94,17 @@
   "exitStatusSubmitted": "Récupération",
   "exitStatusClaimed": "Récupéré",
   "exitStatusFailed": "Échec",
+  "exitProgressUnrolling": "Déroulement",
+  "exitProgressClaimBroadcast": "Récupération diffusée",
+  "exitProgressConfirmed": "Confirmée",
   "spendableInSats": "Disponible (sats)",
   "operationPrepared": "Préparée",
   "operationAdmitted": "Admise",
   "operationPending": "En attente",
   "operationCompleted": "Terminée",
+  "operationFundingSent": "Financement envoyé",
+  "operationSendingFunding": "Envoi du financement",
+  "operationFundingUnknown": "Issue du financement inconnue",
   "operationFailed": "Échec",
   "operationUnknown": "Résultat inconnu",
   "operationConflicted": "Transaction conflictuelle observée",
@@ -375,5 +385,8 @@
   "receiveTabArk": "Ark",
   "receiveTabLightning": "Lightning",
   "receiveAddressLabel": "Adresse",
-  "receiveInvoiceLabel": "Facture"
+  "receiveInvoiceLabel": "Facture",
+  "exitViewStatus": "Statut",
+  "exitViewDetails": "Détails",
+  "exitViewsLabel": "Vues de la sortie"
 }

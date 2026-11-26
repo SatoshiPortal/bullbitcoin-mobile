@@ -238,6 +238,10 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
+  "sendDone": "Feito",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -430,5 +434,31 @@
   "typeLabel": "Tipo: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  }
+  },
+  "walletLoadFailed": "Não foi possível carregar suas carteiras. Verifique sua conexão e tente novamente.",
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "coreSwapsStatusCompleted": "Completada",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "Pendente",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "Montante",
+  "swapRescueButton": "Restaurar",
+  "swapRescueCreatedLabel": "Criado em",
+  "swapRescueIdLabel": "ID do swap",
+  "swapRescueRouteLabel": "Rota",
+  "swapRescueStatusLabel": "Estado",
+  "swapRescueSuccess": "Swap restaurado — agora ele será retomado",
+  "swapRescueTitle": "Resgatar swap",
+  "swapRescueTypeLabel": "Tipo",
+  "swapRescueWalletHint": "Selecione uma carteira",
+  "swapRescueWalletLabel": "Restaurar para a carteira",
+  "swapRestoreActionable": "{count, plural, =0{Nenhum swap para recuperar} =1{Você pode tentar recuperar 1 swap. Ele já pode estar em um status final.} other{Você pode tentar recuperar {count} swaps. Observe que alguns deles já podem estar em um status final.}}",
+  "swapRestoreAllSection": "Todos os swaps",
+  "swapRestoreFailed": "Não foi possível restaurar os swaps",
+  "swapRestoreKindCrossChain": "Entre Cadeias",
+  "swapRestoreKindLightningReceive": "Recebimento Lightning",
+  "swapRestoreKindLightningSend": "Envio Lightning",
+  "swapRestoreNoSwaps": "Nenhum swap encontrado para restaurar",
+  "swapRestoreRecoverableSection": "Recuperáveis",
+  "swapRestoreTitle": "Restaurar swap"
 }

@@ -4,6 +4,8 @@ Protocol boundary for the Scuttle Ark wallet. `ark.dart` publishes accounts, imm
 
 The native wallet is Scuttle's `bark-wallet`, reached through the `rust_lib_scuttle` bridge in `rust/`. Native calls live only in `scuttle_native_opener.dart`. The adapter opens one wallet per account under the account lock and runs no daemon. It never receives the parent seed, signs a BULL source transaction or broadcasts a source-wallet funding PSBT. Synchronization stages never run Scuttle's general sync, which can rebroadcast stored transactions; exit observation uses `progress_exits_without_broadcast`, and every exit CPFP and claim is journalled before delivery.
 
+Movement projections retain Scuttle's local movement ID and payment direction where the native subsystem and kind identify it. Incoming direction does not prove an external sender; legacy snapshots without a direction remain unknown and this signal alone must not trigger an external-payment notification.
+
 ## Admission and recovery
 
 The host must register a durable parent obligation under parent-custody admission before calling `create`. Lock order is parent admission, package lifecycle admission, account writer, short metadata transaction. The child provider executes inside the account writer and must not reacquire parent admission. A durable obligation protects subsequent scoped derivation. Source-wallet funding admission happens separately after all Ark native locks are released.

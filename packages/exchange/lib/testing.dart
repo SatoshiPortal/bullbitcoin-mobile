@@ -3,6 +3,9 @@ library;
 
 export 'src/exchange.dart'
     show exchangeForTesting, exchangeWithTransportForTesting;
+export 'src/data/storage/exchange_credential_storage.dart'
+    show ExchangeCredentialStorage;
+export 'src/testing/in_memory_exchange_credential_storage.dart';
 export 'src/setup/fixed_access_for_testing.dart';
 export 'src/testing/fake_exchange_users.dart';
 export 'src/data/unknown_write_journal_store.dart'
@@ -20,5 +23,6 @@ export 'src/session/exchange_web_auth_datasource.dart';
 export 'src/session/get_exchange_account_usecase.dart';
 export 'src/session/get_exchange_announcements_usecase.dart';
 export 'src/session/get_exchange_web_settings_usecase.dart';
+export 'src/data/stored_exchange_basic_auth.dart';
 export 'src/session/update_exchange_preferences.dart';
 export 'src/session/watch_exchange_notifications_usecase.dart';

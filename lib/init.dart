@@ -41,15 +41,21 @@ import 'package:sync/write.dart'
     show ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:background_tasks/background_tasks.dart' show BackgroundSchedule;
 import 'package:bb_mobile/background_entrypoint.dart';
-import 'package:preferences/preferences.dart' show Preferences;
+import 'package:preferences/preferences.dart' show Environment, Preferences;
+import 'package:preferences/statistics.dart' show PreferencesStatisticsNetwork;
+import 'package:settings/setup.dart' show StartupNetwork;
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
+import 'package:bull_reporting/statistics.dart';
 import 'package:network/setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
 import 'package:exchange/exchange.dart' show Exchange;
+import 'package:exchange/migration.dart' show ExchangeCredentialImport;
+import 'package:exchange/setup.dart' show ExchangeCredentialStorage;
 import 'package:wizard/wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
@@ -62,7 +68,11 @@ import 'package:path_provider/path_provider.dart';
 class Bull {
   static Future<Result<void, Failure>> init({
     Future<void> Function(LegacyImportFailure)? retryStorage,
+    Future<void> Function(InventoryRecoveryRequired)? blockedInventory,
     WizardFeature? wizard,
+    // First-run network chosen by the caller. It goes through the same
+    // guarded path as the wizard's pending choice and wins over it.
+    Environment? initialNetwork,
   }) async {
     final startupWizard = wizard ?? WizardFeature.mount();
     final bullDirectory = await getApplicationDocumentsDirectory();
@@ -84,11 +94,9 @@ class Bull {
       case Err(:final failure):
         return Err(failure);
     }
-    await Report.init(
-      dsn: 'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1',
-      wizardConsent: consent,
-    );
-
+    const reportingDsn =
+        'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
+    await Report.init(dsn: reportingDsn, wizardConsent: consent);
     await initFlutterRustBridgeDependencies();
 
     // Foreground only: background tasks never read a price, and must not open
@@ -190,6 +198,7 @@ class Bull {
     final secretsFile = destination('secrets');
     final signersFile = destination('signers');
     final syncFile = destination('sync');
+    final exchangeFile = destination('exchange');
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -228,47 +237,58 @@ class Bull {
         ),
         ElectrumImport(file: electrumFile),
         LabelsImport(file: labelsFile),
+        ExchangeCredentialImport(file: exchangeFile, secrets: secrets),
       ],
     );
-    var admitted = await cutover.prepare();
-    while (admitted is Err<RuntimeAdmission, LegacyImportFailure>) {
-      if (retryStorage == null) return Err(admitted.failure);
-      switch (admitted.failure) {
-        case final failure
-            when failure is LegacyImportUnavailable ||
-                failure is LegacyImportDeferred:
-          await retryStorage(failure);
-          admitted = await cutover.prepare();
-        case final failure:
-          return Err(failure);
-      }
-    }
-    final admission =
-        (admitted as Ok<RuntimeAdmission, LegacyImportFailure>).value;
-    locator.registerSingleton<RuntimeAdmission>(
-      admission,
-      dispose: (value) => value.close(),
-    );
+    final admittedInventory =
+        await admitInventory<RuntimeAdmission, SecretsInventory>(
+          prepare: () => cutover.prepare(),
+          openInventory: (admission) async {
+            locator.registerSingleton<RuntimeAdmission>(
+              admission,
+              dispose: (value) => value.close(),
+            );
+            return openWalletInventory(
+              locator,
+              admission: admission,
+              legacy: legacy.source,
+              inventoryFile: secretsFile,
+              signersFile: signersFile,
+              syncFile: syncFile,
+              signerKeys: signerKeys,
+              syncKeys: syncKeys,
+              recoverBull: recoverBull,
+              regtestRecoverBull: regtestRecoverBull,
+            );
+          },
+          release: (admission) async {
+            try {
+              await locator.reset();
+            } finally {
+              await admission.close();
+            }
+          },
+          retryStorage: retryStorage,
+          blockedInventory: blockedInventory,
+        );
+    if (admittedInventory case Err(:final failure)) return Err(failure);
+    final (:admission, :inventory) =
+        (admittedInventory
+                as Ok<
+                  AdmittedInventory<RuntimeAdmission, SecretsInventory>,
+                  Failure
+                >)
+            .value;
     var initialized = false;
     try {
-      final openedInventory = await openWalletInventory(
-        locator,
-        admission: admission,
-        legacy: legacy.source,
-        inventoryFile: secretsFile,
-        signersFile: signersFile,
-        syncFile: syncFile,
-        signerKeys: signerKeys,
-        syncKeys: syncKeys,
-        recoverBull: recoverBull,
-        regtestRecoverBull: regtestRecoverBull,
-      );
-      if (openedInventory case Err(:final failure)) return Err(failure);
-      final inventory =
-          (openedInventory as Ok<SecretsInventory, Failure>).value;
       final protection = await inventory.isProtected();
       if (protection case Err(:final failure)) return Err(failure);
       final pinProtected = (protection as Ok<bool, SecretFailure>).value;
+      final pendingNetwork = await startupWizard.readPendingNetwork();
+      if (pendingNetwork case Err(:final failure)) return Err(failure);
+      final selectedNetwork =
+          initialNetwork ??
+          (pendingNetwork as Ok<Environment?, WizardFailure>).value;
       locator.registerSingleton(payjoin);
       locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
       locator.registerSingleton(recoverBull);
@@ -309,6 +329,19 @@ class Bull {
           dispose: (_) => value.handle.close(),
         );
       }
+      // Existing-only: a store that is missing or unreadable after admission
+      // blocks startup rather than reading as a signed-out user.
+      final exchangeStorage = await ExchangeCredentialStorage.open(
+        file: exchangeFile,
+        admission: admission,
+      );
+      if (exchangeStorage case Err(:final failure)) return Err(failure);
+      if (exchangeStorage case Ok(:final value)) {
+        locator.registerSingleton<ExchangeCredentialStorage>(
+          value,
+          dispose: (_) => value.close(),
+        );
+      }
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),
@@ -325,11 +358,8 @@ class Bull {
           readPreferences: readPreferences,
           tor: tor,
         ),
-        openPreferences: (legacy) => Preferences.open(
-          file: preferencesFile,
-          admission: admission,
-          legacyDatabase: legacy,
-        ),
+        openPreferences: () =>
+            Preferences.open(file: preferencesFile, admission: admission),
         openMempool: (tor, http) => Mempool.open(
           file: mempoolFile,
           admission: admission,
@@ -341,6 +371,22 @@ class Bull {
           'ark-funding.sqlite',
         ),
         initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
+        prepareInitialNetwork: selectedNetwork == null
+            ? null
+            : (preferences, electrum) async {
+                final result = await StartupNetwork.apply(
+                  preferences: preferences,
+                  electrum: electrum,
+                  network: selectedNetwork.networkEnv,
+                  superuserUnlocked: true,
+                  developerConsent: true,
+                  isProtected: inventory.isProtected,
+                  hasWallets: inventory.hasWallets,
+                  listSecrets: secrets.list,
+                );
+                if (result case Err(:final failure)) return Err(failure);
+                return startupWizard.clearPendingNetwork();
+              },
       );
       if (setup case Err()) return setup;
       if (!pinProtected) await locator<ForegroundWalletStartup>().start();
@@ -356,6 +402,12 @@ class Bull {
         exchange: locator<Exchange>(),
       );
       if (applied case Err(:final failure)) return Err(failure);
+      final privacySettings = await locator<Preferences>().fetch();
+      if (privacySettings case Err(:final failure)) return Err(failure);
+      if (privacySettings case Ok(:final value)) {
+        ScreenCaptureProtection.instance.enabledByUser =
+            value.screenCaptureProtectionEnabled;
+      }
       await locator<QuickActionsCubit>().load();
       await AppLocator.setupRecoverBull(
         locator,
@@ -369,6 +421,14 @@ class Bull {
         () => loadTorDiagnosticContext(settings, locator<Tor>()),
       );
       await settings.refreshReportingConsent();
+      try {
+        await Statistics.instance.start(
+          dsn: reportingDsn,
+          network: PreferencesStatisticsNetwork(settings),
+        );
+      } on Exception {
+        // Statistics are optional and must not block wallet startup.
+      }
       await prepareBackgroundWalletStores(
         openNotifications: () => locator<PaymentNotificationStore>().open(),
       );
@@ -389,15 +449,30 @@ class Bull {
   }
 }
 
-/// Explicit regtest Ark profile supplied at build time. Builds without both
-/// endpoints keep the unavailable Ark routes; existing custody is still read.
+/// Regtest Ark profile. Without a local `BULL_REGTEST_HOST`, it defaults to
+/// the shared hosted stack (mirrored in tools/regtest/hosted.json), whose
+/// fresh profiles may create their account registry and funding authority.
+/// A local stack keeps Ark unavailable unless both endpoints are defined.
 /// BULL_ARK_REGTEST_INITIALIZE_NEW authorizes creating the account registry
 /// and funding authority of a fresh, controlled regtest profile; it is never
 /// inferred from files.
-const _arkUrl = String.fromEnvironment('BULL_ARK_REGTEST_URL');
-const _arkEsploraUrl = String.fromEnvironment('BULL_ARK_REGTEST_ESPLORA_URL');
+const _localRegtestHost = String.fromEnvironment('BULL_REGTEST_HOST');
+const _hostedRegtest = _localRegtestHost == '';
+const _arkUrl = String.fromEnvironment(
+  'BULL_ARK_REGTEST_URL',
+  defaultValue: _hostedRegtest
+      ? 'https://scuttle-regtest-ark.vibecode.casa'
+      : '',
+);
+const _arkEsploraUrl = String.fromEnvironment(
+  'BULL_ARK_REGTEST_ESPLORA_URL',
+  defaultValue: _hostedRegtest
+      ? 'https://scuttle-regtest-esplora.vibecode.casa'
+      : '',
+);
 const _arkInitializeNew = bool.fromEnvironment(
   'BULL_ARK_REGTEST_INITIALIZE_NEW',
+  defaultValue: _hostedRegtest,
 );
 const _arkProfileAdmitted = _arkUrl != '' && _arkEsploraUrl != '';
 

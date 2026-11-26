@@ -79,11 +79,21 @@ class _ReceivePollingState extends State<ReceivePolling> {
         : configuration?.uri.path;
     final bitcoin = ReceiveRoute.receiveBitcoin.path;
     final liquid = ReceiveRoute.receiveLiquid.path;
+    final lightning = ReceiveRoute.receiveLightning.path;
+    final lightningQr = '$lightning/${ReceiveRoute.lightningQr.path}';
     final visible =
         path == bitcoin ||
         path == '$bitcoin/amount' ||
+        // The Payjoin screen awaits confirmation of the receiving wallet.
+        path == '$bitcoin/${ReceiveRoute.payjoinInProgress.path}' ||
         path == liquid ||
-        path == '$liquid/amount';
+        path == '$liquid/amount' ||
+        path == lightning ||
+        path == lightningQr ||
+        path ==
+            '$lightningQr/${ReceiveRoute.lightningPaymentInProgress.path}' ||
+        // The claim still awaits confirmation once the payment is received.
+        path == '$lightningQr/${ReceiveRoute.lightningPaymentReceived.path}';
     if (_visible == visible) return;
     _visible = visible;
     _restart();

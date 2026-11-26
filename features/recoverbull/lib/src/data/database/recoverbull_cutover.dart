@@ -90,10 +90,12 @@ final class RecoverBullCutover {
     return false;
   }
 
+  @internal
   Future<Result<OwnerDatabase<RecoverBullDatabase>, LegacyImportFailure>> open(
     RuntimeAdmission admission,
   ) => _openReady(admission);
 
+  @internal
   Future<Result<OwnerDatabase<RecoverBullDatabase>, LegacyImportFailure>>
   openForInventory(ExclusiveAdmission admission) => _openReady(admission);
 

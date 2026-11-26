@@ -32,7 +32,15 @@ ArkMovement projectScuttleMovement(scuttle.ScuttleMovement movement) =>
       transactionId: movement.offboardTxid,
       kind: scuttleMovementKind(movement.subsystem),
       status: scuttleMovementStatus(movement.status),
+      direction: switch ((movement.subsystem, movement.kind)) {
+        ('bark.arkoor', 'receive') ||
+        ('bark.lightning_receive', 'receive') => ArkMovementDirection.incoming,
+        ('bark.arkoor', 'send') ||
+        ('bark.lightning_send', 'send') => ArkMovementDirection.outgoing,
+        _ => ArkMovementDirection.unknown,
+      },
       amount: Sats.fromInt(movement.effectiveSats.abs()),
+      positiveEffectiveAmount: movement.effectiveSats > 0,
       fee: Sats(movement.feeSats),
       createdAt: _seconds(movement.createdAt),
       completedAt: switch (movement.completedAt) {

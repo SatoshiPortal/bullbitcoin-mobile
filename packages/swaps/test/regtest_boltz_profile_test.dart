@@ -27,18 +27,34 @@ void main() {
     expect(profile?.liquidExplorer.toString(), 'http://localhost:3001');
   });
 
-  test('regtest requires an explicit build host', () {
+  test('a hosted stack takes its Boltz and explorer endpoints', () {
+    final profile = RegtestBoltzProfile.forNetwork(
+      NetworkEnv.regtest,
+      host: '',
+      hosted: const RegtestHostedDefines(
+        electrumBitcoin: 'ssl://electrum.example:443',
+        electrumLiquid: 'ssl://electrum.example:8443',
+        esploraBitcoin: 'https://esplora.example',
+        esploraLiquid: 'https://liquid.example',
+        boltzApi: 'https://boltz.example/v2',
+        boltzWebSocket: 'wss://boltz.example/v2/ws',
+        recoverBull: 'http://keyserver.onion',
+      ),
+    );
+    expect(profile?.api.toString(), 'https://boltz.example/v2');
+    // The stream client appends `/ws` to this base.
+    expect(profile?.webSocket.toString(), 'wss://boltz.example/v2');
+    expect(profile?.bitcoinExplorer.toString(), 'https://esplora.example');
+    expect(profile?.liquidExplorer.toString(), 'https://liquid.example');
+  });
+
+  test('the build selects the local host or the hosted stack', () {
     const host = String.fromEnvironment('BULL_REGTEST_HOST');
+    final api = RegtestBoltzProfile.forNetwork(NetworkEnv.regtest)?.api;
     if (host.isEmpty) {
-      expect(
-        () => RegtestBoltzProfile.forNetwork(NetworkEnv.regtest),
-        throwsArgumentError,
-      );
+      expect(api?.scheme, 'https');
     } else {
-      expect(
-        RegtestBoltzProfile.forNetwork(NetworkEnv.regtest)?.api.host,
-        Uri.parse('http://$host').host,
-      );
+      expect(api?.host, Uri.parse('http://$host').host);
     }
   });
 }

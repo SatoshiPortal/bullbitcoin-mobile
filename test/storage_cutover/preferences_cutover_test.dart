@@ -177,7 +177,6 @@ void main() {
         final opened = await PreferencesTesting.open(
           file: file,
           admission: runtime,
-          legacyDatabase: db,
           keys: keys,
         );
         expect(opened, isA<Ok>());
@@ -256,7 +255,7 @@ void main() {
         expect(
           (await probe.customSelect('PRAGMA table_info(settings)').get())
               .length,
-          16,
+          17,
         );
         await preferences.close();
         await runtime.close();

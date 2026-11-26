@@ -108,7 +108,7 @@
   "@errorReportingCancelButton": {
     "description": "Button to cancel error reporting"
   },
-  "errorReportingRestartSnackbar": "Relancez l'application pour appliquer ce changement",
+  "errorReportingRestartSnackbar": "Fermez et rouvrez l’application pour appliquer ce changement.",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
@@ -128,6 +128,9 @@
   "settingsPayjoinAdvancedTitle": "Réglages avancés du Payjoin",
   "settingsScreenPrivacyTitle": "Confidentialité de l’écran",
   "settingsScreenPrivacyDisabledMessage": "Les captures d’écran sont désormais autorisées sur les écrans sensibles",
+  "settingsPaymentAnimationsTitle": "Animations de paiement",
+  "settingsPaymentAnimationsSubtitle": "Désactivées : les paiements ouvrent leurs détails.",
+  "settingsSearchPaymentAnimationsKeywords": "animation de paiement|animation|animation de progression|détails de la transaction|réduire les animations",
   "settingsErrorSavingSetting": "Ce paramètre n'a pas pu être enregistré. Veuillez réessayer.",
   "settingsErrorConsentNotGiven": "Ce paramètre nécessite votre confirmation avant d'être modifié.",
   "settingsErrorLoadingLogs": "Les journaux de diagnostic n'ont pas pu être préparés. Veuillez réessayer.",
@@ -186,5 +189,9 @@
   "permissionsTitle": "Autorisations",
   "settingsSearchPermissionsKeywords": "notifications|tâches en arrière-plan|batterie|alertes",
   "amountInputBitcoin": "Bitcoin",
-  "amountInputTitle": "Saisir les montants en"
+  "amountInputTitle": "Saisir les montants en",
+  "statisticsConsentTitle": "Partager les statistiques d’utilisation",
+  "statisticsConsentDescription": "Partager une observation quotidienne d’activité avec la version de l’application et l’environnement, sans identifiant d’installation permanent. Vous pouvez modifier ce choix à tout moment.",
+  "statisticsConsentWriteFailed": "Impossible d’enregistrer ce choix. Le choix précédent peut revenir au redémarrage. Veuillez réessayer.",
+  "statisticsConsentRetry": "Réessayer"
 }

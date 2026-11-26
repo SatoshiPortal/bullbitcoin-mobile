@@ -1,5 +1,6 @@
 import 'package:exchange/setup.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
@@ -112,13 +113,8 @@ void main() {
         },
       );
       final _ = await access.enable();
-      when(settings.readExchangeWebPreferences).thenAnswer(
-        (_) async => const Ok((
-          environment: Environment.testnet,
-          exchangeTestnetBasicAuthUsername: null,
-          exchangeTestnetBasicAuthPassword: null,
-        )),
-      );
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => const Ok(Environment.testnet));
       platform.evaluate = (_) {
         generations++;
         return jsonEncode(
@@ -143,6 +139,9 @@ void main() {
         readSession: () async => fail('unexpected Exchange network request'),
         access: access,
         sessionPreferences: settings,
+        basicAuth: ExchangeCredentials.openBasicAuth(
+          InMemoryExchangeCredentialStorage(),
+        ),
         webAuthEndpoints: (
           mainnet: Uri.parse(ExchangeDefaults.bbAuthUrl),
           testnet: Uri.parse(ExchangeDefaults.bbAuthTestUrl),

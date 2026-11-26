@@ -143,6 +143,12 @@ class AppLocator {
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
       admission: locator<RuntimeAdmission>(),
+      inventory: locator<SecretsInventory>(),
+      activeEnvironment: locator<ActiveEnvironmentReader>(),
+      normalBackups: locator<RecoverBullWalletBackups>(),
+      regtestBackups: locator<RecoverBullWalletBackups>(
+        instanceName: 'regtest',
+      ),
       cutover: locator<RecoverBullCutover>(instanceName: family),
     );
     locator.registerSingleton<RecoverBullFeature>(
@@ -166,9 +172,7 @@ class AppLocator {
       Tor Function() tor,
     )
     openElectrum,
-    required Future<Result<Preferences, PreferencesFailure>> Function(
-      SqliteDatabase legacy,
-    )
+    required Future<Result<Preferences, PreferencesFailure>> Function()
     openPreferences,
     required Future<Result<Mempool, MempoolFailure>> Function(
       Tor Function() tor,
@@ -182,6 +186,11 @@ class AppLocator {
     String? arkFundingDatabasePath,
     bool initializeArkFunding = false,
     RegtestElectrumProfile? regtestProfile,
+    Future<Result<void, Failure>> Function(
+      Preferences,
+      ElectrumDefaultsProvisioner,
+    )?
+    prepareInitialNetwork,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
     locator.registerSingleton(
@@ -266,10 +275,23 @@ class AppLocator {
       openLabels: openLabels,
     );
     if (labels case Err(:final failure)) return Err(failure);
-    final openedPreferences = await openPreferences(database);
+    final openedPreferences = await openPreferences();
     if (openedPreferences case Err(:final failure)) return Err(failure);
     final preferences =
         (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
+    if (prepareInitialNetwork case final prepare?) {
+      var prepared = false;
+      try {
+        final result = await prepare(
+          preferences,
+          locator<ElectrumDefaultsProvisioner>(),
+        );
+        if (result case Err()) return result;
+        prepared = true;
+      } finally {
+        if (!prepared) await preferences.close();
+      }
+    }
     final repositories = await CoreLocator.registerRepositories(
       locator,
       preferences: preferences,
@@ -330,17 +352,10 @@ class AppLocator {
         catalog: SpendCatalog.fromInventory(inventory),
       ),
     );
-    final backupVerification = locator<InventoryBackupVerification>();
     locator.registerSingleton<AccessFeature>(
       AccessFeature.mount(
         services: locator,
         inventory: inventory,
-        backupVerification: backupVerification,
-        hasVerifiedBackup: () async =>
-            switch (await inventory.hasVerifiedBackups(backupVerification)) {
-              Ok(:final value) => value,
-              Err() => false,
-            },
         onUnlocked: (context) async {
           await startWalletsAfterUnlock(locator);
           if (!context.mounted) return;
@@ -476,6 +491,8 @@ class AppLocator {
         syncStarted: () => electrumSync.started.map((key) => key.id),
         syncFinished: () => electrumSync.finished.map((event) => event.key.id),
         orderSwaps: () => locator<OrderSwaps>(),
+        pollSettlement: (id, {required isActive}) =>
+            overviewSync().coordinator.pollWallet(id, isActive: isActive),
         actions: TransactionUiActions(
           openExchange: (context) =>
               context.goNamed(BullExchangeNavigation.dashboardName),
@@ -582,6 +599,8 @@ class AppLocator {
         receive: locator<Receive>(),
         labels: locator<Labels>(),
         transactions: locator<Transactions>(),
+        pollSettlement: (id, {required isActive}) =>
+            overviewSync().coordinator.pollWallet(id, isActive: isActive),
         scheduler: () => locator<SwapSyncPort>(),
         ark: () => locator.isRegistered<ArkTransferFacade>()
             ? locator<ArkTransferFacade>()

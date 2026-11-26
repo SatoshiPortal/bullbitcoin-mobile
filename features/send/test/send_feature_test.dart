@@ -39,6 +39,7 @@ void main() {
       payment: () => throw StateError('payment not opened'),
       openCoins: (_, _) {},
       orderUnderReview: (_) => const SizedBox.shrink(),
+      pollSettlement: (_, {required isActive}) async {},
     );
     final router = GoRouter(
       initialLocation: '/broadcast-signed-tx',

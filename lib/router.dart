@@ -246,6 +246,11 @@ class AppRouter {
         : null,
     openCoins: CoinsNavigation.replace,
     orderUnderReview: (order) => OrderSwapUnderReviewCard(orderSwap: order),
+    pollSettlement: (id, {required isActive}) =>
+        locator<OverviewSynchronization>().coordinator.pollWallet(
+          id,
+          isActive: isActive,
+        ),
   );
 
   static final GoRouter router = GoRouter(
@@ -336,6 +341,7 @@ class AppRouter {
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
+          swapRecoveryRoutes: locator<SwapFeature>().recoveryRoutes,
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
           addressRoutes: [locator<AddressViewFeature>().route],
           accessRoutes: locator<AccessFeature>().routes.settings,

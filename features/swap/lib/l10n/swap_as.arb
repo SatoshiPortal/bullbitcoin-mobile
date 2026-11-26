@@ -226,6 +226,7 @@
     "description": "Title for manual coin selection bottom sheet"
   },
   "sendAdvancedOptions": "উন্নত বিকল্পসমূহ",
+  "sendDone": "সম্পন্ন",
   "sendErrorBuildFailed": "এই পৰিশোধ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -391,5 +392,29 @@
   "typeLabel": "ধৰণ: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  }
+  },
+  "walletLoadFailed": "আপোনাৰ ৱালেটসমূহ লʼড কৰিব পৰা নগʼল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
+  "coreSwapsStatusCompleted": "সম্পন্ন হৈছে",
+  "coreSwapsStatusPending": "অপেক্ষাৰত",
+  "swapRescueAmountLabel": "পৰিমাণ",
+  "swapRescueButton": "পুনৰুদ্ধাৰ কৰক",
+  "swapRescueCreatedLabel": "তৈয়াৰ হৈছে",
+  "swapRescueIdLabel": "Swap আইডি",
+  "swapRescueRouteLabel": "ৰুট",
+  "swapRescueStatusLabel": "স্থিতি",
+  "swapRescueSuccess": "Swap পুনৰুদ্ধাৰ কৰা হ'ল — ই এতিয়া পুনৰ আৰম্ভ হ'ব",
+  "swapRescueTitle": "Swap ৰক্ষা কৰক",
+  "swapRescueTypeLabel": "ধৰণ",
+  "swapRescueWalletHint": "এটা wallet বাছনি কৰক",
+  "swapRescueWalletLabel": "wallet লৈ পুনৰুদ্ধাৰ কৰক",
+  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি 1টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
+  "swapRestoreAllSection": "সকলো swap",
+  "swapRestoreFailed": "Swap পুনৰুদ্ধাৰ কৰিব পৰা নগ'ল",
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "swapRestoreKindLightningReceive": "Lightning গ্ৰহণ",
+  "swapRestoreKindLightningSend": "Lightning প্ৰেৰণ",
+  "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো swap পোৱা নগ'ল",
+  "swapRestoreRecoverableSection": "পুনৰুদ্ধাৰযোগ্য",
+  "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ"
 }

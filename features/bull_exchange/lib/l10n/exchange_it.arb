@@ -897,8 +897,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Controlla di nuovo",
   "exchangeBitcoinWalletsSessionEnded": "Non sei più connesso all'exchange. Accedi di nuovo per modificare i portafogli predefiniti.",
   "destinationExpectedType": "Inserisci o scansiona un {type} valido.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Compra, vendi e paga con Bull Bitcoin direttamente dal tuo portafoglio.",
   "exchangeTradingUnavailable": "Il trading non è disponibile.",
   "priceChartShowTooltip": "Mostra il grafico dei prezzi",
   "recipientsErrorSaveOutcomeUnknown": "Non sappiamo se questo destinatario è stato salvato. Controlla i tuoi destinatari prima di aggiungerlo di nuovo.",

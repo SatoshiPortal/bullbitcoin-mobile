@@ -819,8 +819,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Kiểm tra lại",
   "exchangeBitcoinWalletsSessionEnded": "Bạn không còn đăng nhập vào sàn giao dịch. Hãy đăng nhập lại để chỉnh sửa các ví mặc định.",
   "destinationExpectedType": "Nhập hoặc quét {type} hợp lệ.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Mua, bán và thanh toán với Bull Bitcoin ngay từ ví của bạn.",
   "exchangeTradingUnavailable": "Giao dịch không khả dụng.",
   "priceChartShowTooltip": "Hiển thị biểu đồ giá",
   "recipientsErrorSaveOutcomeUnknown": "Chúng tôi không biết người nhận này đã được lưu hay chưa. Hãy kiểm tra danh sách người nhận trước khi thêm lại.",

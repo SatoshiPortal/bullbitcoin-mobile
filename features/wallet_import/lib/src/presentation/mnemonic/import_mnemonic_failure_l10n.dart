@@ -6,6 +6,8 @@ extension ImportMnemonicFailureL10n on ImportMnemonicFailure {
   String toTranslated(BuildContext context) => switch (this) {
     ImportMnemonicCustodyMetadataFailure() =>
       context.loc.parentCustodyMetadataUnavailable,
+    ImportMnemonicBackupRequiredFailure() =>
+      context.loc.importMnemonicBackupRequiredError,
     ImportMnemonicDuplicateFailure() =>
       context.loc.importMnemonicDuplicateError,
     ImportMnemonicEmptyLabelFailure() =>

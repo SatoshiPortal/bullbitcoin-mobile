@@ -4,6 +4,7 @@ import 'package:wizard/src/ui/wizard_page.dart';
 import 'package:wizard/src/ui/widgets/wizard_step_layout.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
+import 'package:settings/settings.dart' show StatisticsConsentSwitch;
 
 /// Mission / consent page body — text only. The Yes/No choice is
 /// rendered by [WizardScreen] in the bottom chrome (in place of the
@@ -30,6 +31,12 @@ class MissionStep extends StatelessWidget {
           SizedBox(height: vGapMd),
           BullText(loc.wizardMissionBody2, style: bodyStyle),
           SizedBox(height: vGapLg),
+          // Independent of the error-report question below, which the
+          // Yes/No buttons answer on their own.
+          const StatisticsConsentSwitch(),
+          SizedBox(height: vGapMd),
+          Divider(height: 1, color: context.appColors.border),
+          SizedBox(height: vGapMd),
           BullText(
             loc.wizardMissionQuestion,
             style: context.bullType.body

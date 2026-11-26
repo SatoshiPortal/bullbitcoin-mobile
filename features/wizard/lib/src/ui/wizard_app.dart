@@ -44,12 +44,14 @@ class WizardApp extends StatelessWidget {
     required this.notificationChannelId,
     required this.exchangeAllowed,
     required this.branding,
+    this.allowDeveloperNetwork = false,
   });
 
   final ValueChanged<WizardChoices> onDone;
   final String notificationChannelId;
   final bool exchangeAllowed;
   final WizardBranding branding;
+  final bool allowDeveloperNetwork;
 
   WizardBloc _createBloc() {
     final datasource = WizardLocalDatasourceImpl();
@@ -81,6 +83,7 @@ class WizardApp extends StatelessWidget {
         onDone: onDone,
         exchangeAllowed: exchangeAllowed,
         branding: branding,
+        allowDeveloperNetwork: allowDeveloperNetwork,
       ),
     );
   }
@@ -91,11 +94,13 @@ class _WizardAppView extends StatelessWidget {
     required this.onDone,
     required this.exchangeAllowed,
     required this.branding,
+    required this.allowDeveloperNetwork,
   });
 
   final ValueChanged<WizardChoices> onDone;
   final bool exchangeAllowed;
   final WizardBranding branding;
+  final bool allowDeveloperNetwork;
 
   @override
   Widget build(BuildContext context) {
@@ -140,6 +145,7 @@ class _WizardAppView extends StatelessWidget {
             backgroundTasksAvailable: backgroundSyncAvailable,
             exchangeAllowed: exchangeAllowed,
             branding: branding,
+            allowDeveloperNetwork: allowDeveloperNetwork,
           ),
         );
       },

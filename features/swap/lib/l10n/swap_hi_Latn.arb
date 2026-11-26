@@ -238,6 +238,10 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
+  "sendDone": "Ho Gaya",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
   "sendErrorBuildFailed": "Yah payment taiyar nahi ki ja saki. Kripya phir koshish karein.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -433,5 +437,31 @@
   "typeLabel": "Type: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  }
+  },
+  "walletLoadFailed": "Aapke wallet load nahi ho sake. Apna connection check karein aur dobara koshish karein.",
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "coreSwapsStatusCompleted": "Poora Ho Gaya",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "Baaki Hai",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "Amount",
+  "swapRescueButton": "Restore Karo",
+  "swapRescueCreatedLabel": "Banaya Gaya",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueRouteLabel": "Route",
+  "swapRescueStatusLabel": "Status",
+  "swapRescueSuccess": "Swap restore ho gaya — ab ye resume hoga",
+  "swapRescueTitle": "Swap Rescue",
+  "swapRescueTypeLabel": "Type",
+  "swapRescueWalletHint": "Ek wallet chuniye",
+  "swapRescueWalletLabel": "Wallet mein restore karo",
+  "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi swap nahi} =1{Aap 1 swap recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} swaps recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
+  "swapRestoreAllSection": "Sabhi swaps",
+  "swapRestoreFailed": "Swaps restore nahi ho sake",
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "swapRestoreKindLightningReceive": "Lightning Receive",
+  "swapRestoreKindLightningSend": "Lightning Send",
+  "swapRestoreNoSwaps": "Restore karne ke liye koi swap nahi mila",
+  "swapRestoreRecoverableSection": "Recoverable",
+  "swapRestoreTitle": "Swap Restore"
 }

@@ -32,9 +32,15 @@ class Gateway extends Notifications {
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   }) async {
     actions.add('schedule:$platformId');
-    await super.schedule(notification, platformId: platformId, at: at);
+    await super.schedule(
+      notification,
+      platformId: platformId,
+      at: at,
+      cancelExisting: cancelExisting,
+    );
     return fail || failId == platformId
         ? const Err(NotificationsGatewayFailure())
         : const Ok(null);

@@ -135,7 +135,6 @@ void main() {
             (await PreferencesTesting.open(
               file: preferencesFile,
               admission: admission,
-              legacyDatabase: database,
               keys: keys,
             )).fold(
               (value) => value,

@@ -9,6 +9,7 @@ import 'package:sqlite3/sqlite3.dart';
 import '../../ark.dart';
 import '../domain/ark_execution_policy.dart';
 import '../domain/ark_board_abandonment_port.dart';
+import '../domain/ark_exit_observer_port.dart';
 import '../domain/ark_renewal_batches.dart';
 import 'ark_chain_preflight.dart';
 import 'ark_claim_delivery.dart';
@@ -28,6 +29,7 @@ final class BarkArkClient implements ArkClient {
   final ArkExecutionMode executionMode;
   final ArkStageBudget stageBudget;
   final ArkBoardAbandonmentPort? boardAbandonment;
+  final ArkExitObserverPort? exitObserver;
   final ArkNativeOpener opener;
   final String nativeVersion;
   final ArkChainPreflight preflight;
@@ -49,6 +51,7 @@ final class BarkArkClient implements ArkClient {
     required this.preflight,
     this.nativeVersion = 'scuttle-2ad259dc',
     this.boardAbandonment,
+    this.exitObserver,
     DateTime Function()? clock,
     this.claimDelivery = const HttpArkClaimDelivery(),
   }) : now = clock ?? DateTime.now;
@@ -208,6 +211,21 @@ final class BarkArkClient implements ArkClient {
       store?.close();
     }
   });
+
+  bool _hasClaimToObserve(ArkSnapshot snapshot) => snapshot.exitDetails.any(
+    (exit) =>
+        exit.status == ArkExitStatus.submitted ||
+        (exit.status == ArkExitStatus.claimable &&
+            snapshot.operations.any(
+              (operation) =>
+                  operation.kind == ArkOperationKind.claim &&
+                  (operation.status == ArkOperationStatus.admitted ||
+                      operation.status == ArkOperationStatus.pending ||
+                      operation.status == ArkOperationStatus.succeeded) &&
+                  operation.actualIds.contains(exit.id),
+            )),
+  );
+
   @override
   Future<Result<ArkOperation?, ArkWalletFailure>> progressStartedExits(
     ArkAccountId account,
@@ -222,6 +240,25 @@ final class BarkArkClient implements ArkClient {
           when !value.exitDetails.any(
             (exit) => exit.status == ArkExitStatus.pending,
           ):
+        if (_hasClaimToObserve(value)) {
+          return _exclusive<ArkOperation?>(account, (store, path) async {
+            final snapshot = store.snapshot;
+            if (snapshot == null ||
+                !_hasClaimToObserve(
+                  copySnapshot(
+                    snapshot,
+                    operations: await _verifiedOperations(store, account),
+                  ),
+                )) {
+              return const Ok(null);
+            }
+            return _session(store, path, account, (session, source, _) async {
+              await session.synchronizeStage('exits-observe');
+              await _observe(store, session, account, source);
+              return const Ok(null);
+            });
+          });
+        }
         return const Ok(null);
       case Ok():
     }
@@ -1215,15 +1252,21 @@ final class BarkArkClient implements ArkClient {
               : barriers.causes,
         ),
       );
-      return Ok(
-        ArkPassOutcome(
-          snapshot: snapshot,
-          failedStages: failed,
-          submittedRounds: rounds,
-          completedStages: completed,
-          failedStageKinds: failedKinds,
-        ),
+      final outcome = ArkPassOutcome(
+        snapshot: snapshot,
+        failedStages: failed,
+        submittedRounds: rounds,
+        completedStages: completed,
+        failedStageKinds: failedKinds,
       );
+      if (_mayRun(account)) {
+        try {
+          await exitObserver?.observe(outcome);
+        } on Exception {
+          // A notification failure must never invalidate a committed sync.
+        }
+      }
+      return Ok(outcome);
     }),
   );
   @override
@@ -1837,16 +1880,19 @@ final class BarkArkClient implements ArkClient {
                 null)) {
       return const Err(ArkUnavailableFailure());
     }
-    final authority = store.admitClaim(
+    final admitted = _operation(
       quote,
-      _operation(
-        quote,
-        id,
-        ArkOperationStatus.admitted,
-        actualIds: quote.selectedIds,
-      ),
+      id,
+      ArkOperationStatus.admitted,
+      actualIds: quote.selectedIds,
     );
+    final authority = store.admitClaim(quote, admitted);
     if (authority == null) return const Err(ArkValidationFailure());
+    try {
+      await exitObserver?.claimAdmitted(quote.account, admitted);
+    } on Exception {
+      // A notification failure must never change claim authority.
+    }
     try {
       final claim = await session.prepareClaim(quote);
       final actual = claim.actualIds.toSet();

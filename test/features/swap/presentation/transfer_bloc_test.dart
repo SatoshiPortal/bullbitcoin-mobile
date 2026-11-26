@@ -48,6 +48,7 @@ import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart'
     show MaterialApp, Builder, SizedBox, Locale;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:transactions/transactions.dart' show Transactions;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
@@ -82,6 +83,8 @@ abstract interface class PrepareBitcoinSendUsecase {
 }
 
 class _MockGetSettings extends Mock implements Preferences {}
+
+class _MockTransactions extends Mock implements Transactions {}
 
 class _MockGetWallets extends Mock implements LoadSwapWalletsUsecase {}
 
@@ -162,6 +165,16 @@ class _MockOrders extends Mock implements OrderSwaps {}
 
 class _MockAdmission extends Mock implements CheckSwapSpendAdmissionUsecase {}
 
+class _DelayedAnimations implements PaymentAnimationPreferencesReader {
+  final Completer<Result<bool, PreferencesFailure>> _read;
+
+  _DelayedAnimations(this._read);
+
+  @override
+  Future<Result<bool, PreferencesFailure>> readShowPaymentAnimations() =>
+      _read.future;
+}
+
 void main() {
   late _MockOrders orders;
   final synchronizedWallets = <native.WalletKey>[];
@@ -229,9 +242,11 @@ void main() {
   TransferBloc buildBloc({
     BroadcastBitcoinTransactionUsecase? bitcoinBroadcast,
     GetSwapAmountQuotesUsecase? amountQuotes,
+    ReadTransferPaymentAnimationsUsecase? readPaymentAnimations,
   }) {
     late final TransferBloc flow;
     flow = TransferBloc(
+      watchSettlement: WatchTransferSettlementUsecase(_MockTransactions()),
       loadPreferencesUsecase: LoadTransferPreferencesUsecase(getSettings),
       getSwapAmountQuotesUsecase: amountQuotes,
       getWalletsUsecase: getWallets,
@@ -271,6 +286,7 @@ void main() {
       recordPendingSwapLockupUsecase: recordPendingLockup,
       dropPendingSwapLockupUsecase: dropPendingLockup,
       watchSwapUsecase: watchSwap,
+      readPaymentAnimationsUsecase: readPaymentAnimations,
     );
     return flow;
   }
@@ -498,6 +514,29 @@ void main() {
     expect(bloc.state.isMaxSelected, isFalse);
     expect(bloc.state.inputAmountSat, 2500);
     expect(bloc.state.amountConversion, isNull);
+  });
+
+  test(
+    'the animations preference is unknown until read, then emitted',
+    () async {
+      final read = Completer<Result<bool, PreferencesFailure>>();
+      final flow = buildBloc(
+        readPaymentAnimations: ReadTransferPaymentAnimationsUsecase(
+          _DelayedAnimations(read),
+        ),
+      );
+      addTearDown(flow.close);
+      expect(flow.state.showPaymentAnimations, isNull);
+      read.complete(const Ok(false));
+      await flow.stream.firstWhere((s) => s.showPaymentAnimations != null);
+      expect(flow.state.showPaymentAnimations, isFalse);
+    },
+  );
+
+  test('without a reader the animations stay on from the start', () {
+    final flow = buildBloc();
+    addTearDown(flow.close);
+    expect(flow.state.showPaymentAnimations, isTrue);
   });
 
   test(

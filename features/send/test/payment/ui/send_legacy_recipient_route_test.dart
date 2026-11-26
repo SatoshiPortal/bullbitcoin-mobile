@@ -62,6 +62,7 @@ void main() {
       ),
     );
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.stream).thenAnswer((_) => const Stream<SendState>.empty());
     when(() => cubit.addRecipient()).thenAnswer((_) async => true);
     when(() => cubit.addInternalRecipient(wallet.id)).thenAnswer((_) async {});

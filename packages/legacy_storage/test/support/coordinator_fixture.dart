@@ -52,7 +52,7 @@ class FixtureOwner implements LegacyImportParticipant {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     if (!file.existsSync()) return const Ok(OwnerReadiness.pending);
     final db = FixtureDatabase(file);
@@ -62,6 +62,31 @@ class FixtureOwner implements LegacyImportParticipant {
     } finally {
       await handle.close();
     }
+  }
+}
+
+class ProvenanceOwner extends FixtureOwner implements SourceProvenanceCheck {
+  final Result<void, LegacyImportFailure> verdict;
+  final List<bool> asked = [];
+  final List<OwnerOrigin> prepared = [];
+  ProvenanceOwner(super.ownerId, super.file, {this.verdict = const Ok(null)});
+
+  @override
+  Future<Result<PreparedOwner, LegacyImportFailure>> prepare(
+    ExclusiveAdmission admission,
+    OwnerOrigin origin,
+  ) {
+    prepared.add(origin);
+    return super.prepare(admission, origin);
+  }
+
+  @override
+  Future<Result<void, LegacyImportFailure>> verifyInitialSource(
+    ExclusiveAdmission admission, {
+    required bool legacySqlitePresent,
+  }) async {
+    asked.add(legacySqlitePresent);
+    return verdict;
   }
 }
 
@@ -134,10 +159,42 @@ class _Prepared implements PreparedOwner {
   }
 }
 
+class BrokenInspectOwner extends FixtureOwner {
+  BrokenInspectOwner(super.ownerId, super.file);
+  bool broken = false;
+  @override
+  Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
+    LifecycleAdmission admission,
+  ) async =>
+      broken ? const Err(LegacyImportUnavailable()) : super.inspect(admission);
+}
+
+class FixtureRetirement implements LegacyRetirementParticipant {
+  @override
+  final String ownerId;
+  Result<void, LegacyImportFailure> verdict = const Ok(null);
+  final List<String> calls = [];
+  final List<OwnerOrigin> origins = [];
+  FixtureRetirement(this.ownerId);
+
+  @override
+  Future<Result<void, LegacyImportFailure>> verifyRetirable(
+    ExclusiveAdmission admission, {
+    required OwnerOrigin origin,
+    required LegacySource source,
+  }) async {
+    calls.add('verify');
+    origins.add(origin);
+    return verdict;
+  }
+}
+
 StorageCutover fixtureCutover(
   Directory directory, {
   bool later = false,
   Future<void> Function(String)? durableStep,
+  List<LegacyRetirementParticipant> retirement = const [],
+  List<LegacyImportParticipant>? participants,
 }) => StorageCutover(
   directory: Directory('${directory.path}/coordination'),
   legacy: LegacySourceStore(
@@ -145,9 +202,14 @@ StorageCutover fixtureCutover(
     create: (executor) => FixtureDatabase.executor(executor, legacy: true),
   ),
   expectedOwners: {'pilot', 'later'},
-  participants: [
-    FixtureOwner('pilot', File('${directory.path}/pilot.sqlite')),
-    if (later) FixtureOwner('later', File('${directory.path}/later.sqlite')),
-  ],
+  participants:
+      participants ??
+      [
+        FixtureOwner('pilot', File('${directory.path}/pilot.sqlite')),
+        if (later)
+          FixtureOwner('later', File('${directory.path}/later.sqlite')),
+      ],
+  retirementParticipants: retirement,
+  requiredRetirementOwners: const {'pilot', 'later'},
   durableStep: durableStep,
 );

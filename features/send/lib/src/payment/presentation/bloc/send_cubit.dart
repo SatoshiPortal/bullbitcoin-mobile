@@ -9,6 +9,7 @@ import '../../domain/send_amount_conversion.dart';
 
 import 'package:send/src/payment/domain/fixed_amount_wallet_choice_policy.dart';
 import 'package:send/src/payment/domain/usecases/prepare_internal_recipient_usecase.dart';
+import 'package:send/src/payment/domain/usecases/read_send_payment_animations_usecase.dart';
 import 'package:send/src/payment/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:send/src/payment/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -98,6 +99,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:send/src/payment/domain/usecases/load_send_label_suggestions_usecase.dart';
 import 'package:send/src/payment/domain/usecases/store_send_transaction_label_usecase.dart';
+import 'package:send/src/payment/domain/usecases/watch_send_settlement_usecase.dart';
 
 part 'send_mono_actions.dart';
 
@@ -105,6 +107,7 @@ class SendCubit extends Cubit<SendState>
     implements FeeModalActionsPort, FeeModalStatePort {
   SendCubit({
     this._prepareInternalRecipientUsecase,
+    this._readPaymentAnimationsUsecase,
     this._readAmountQuotes,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._walletKey,
@@ -139,7 +142,7 @@ class SendCubit extends Cubit<SendState>
     required this._getSwapLimitsAndFeesUsecase,
     required this._createBitcoinToLiquidSwapUsecase,
     required this._createLiquidToBitcoinSwapUsecase,
-    required this._transactions,
+    required this._watchSettlement,
     required this._verifyChainSwapAmountSendUsecase,
     required this._verifyExchangePayinUsecase,
     required this._consolidation,
@@ -192,6 +195,7 @@ class SendCubit extends Cubit<SendState>
   final WalletKey? _walletKey;
   SendSource? _wallet;
   final PrepareInternalRecipientUsecase? _prepareInternalRecipientUsecase;
+  final ReadSendPaymentAnimationsUsecase? _readPaymentAnimationsUsecase;
   int _internalRecipientGeneration = 0;
   final SendMode mode;
   bool get isSpMode => mode is SendModeSp;
@@ -209,6 +213,10 @@ class SendCubit extends Cubit<SendState>
     }
     return state.unsignedPsbt == null ? null : state.maxSpendableBalanceSat;
   }
+
+  /// Whether the payment transition is played; read once per flow.
+  Future<bool> readShowPaymentAnimations() async =>
+      await _readPaymentAnimationsUsecase?.execute() ?? true;
 
   final LoadSendLabelSuggestionsUsecase _loadSendLabelSuggestions;
   final StoreSendTransactionLabelUsecase _storeSendTransactionLabel;
@@ -266,7 +274,7 @@ class SendCubit extends Cubit<SendState>
   final CreateBitcoinToLiquidSwapUsecase _createBitcoinToLiquidSwapUsecase;
   final CreateLiquidToBitcoinSwapUsecase _createLiquidToBitcoinSwapUsecase;
 
-  final Transactions _transactions;
+  final WatchSendSettlementUsecase _watchSettlement;
 
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final VerifyExchangePayinUsecase _verifyExchangePayinUsecase;
@@ -5017,6 +5025,9 @@ class SendCubit extends Cubit<SendState>
     );
     _payjoinSubscription?.cancel();
     if (walletId != null) {
+      // The payjoin session no longer emits: the settled transaction (the
+      // payjoin or the original fallback) is now observed like a direct send.
+      _watchWalletTransactionByTxId(walletId: walletId, txId: finalTxId);
       unawaited(
         _refreshSource(
           walletId,
@@ -5045,9 +5056,10 @@ class SendCubit extends Cubit<SendState>
   }) {
     // Cancel the previous subscription if it exists
     _txSubscription?.cancel();
-    _txSubscription = _transactions
-        .watchWalletTransactionByTxId(walletId: walletId, txId: txId)
+    _txSubscription = _watchSettlement
+        .execute(walletId: walletId, txId: txId)
         .listen((tx) {
+          if (isClosed) return;
           // log.info(
           //   '[SendBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
           // );

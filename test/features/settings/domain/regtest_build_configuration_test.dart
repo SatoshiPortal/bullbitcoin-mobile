@@ -13,7 +13,7 @@ import 'package:primitives/primitives.dart';
 class _Settings extends Mock implements SettingsCubit {}
 
 void main() {
-  testWidgets('regtest network choice requires the explicit build host', (
+  testWidgets('regtest network choice follows the configured stack', (
     tester,
   ) async {
     final settings = _Settings();
@@ -45,17 +45,19 @@ void main() {
     final chip = tester.widget<BullPickerChip<Environment>>(
       find.byType(BullPickerChip<Environment>),
     );
-    const host = String.fromEnvironment('BULL_REGTEST_HOST');
     expect(
       chip.items.any((item) => item.value == Environment.regtest),
-      host.isNotEmpty,
+      RegtestHostProfile.isConfigured,
     );
     expect(chip.items.any((item) => item.value == Environment.mainnet), isTrue);
     expect(chip.items.any((item) => item.value == Environment.testnet), isTrue);
   });
 
+  test('an empty host selects no local Electrum stack', () {
+    expect(() => RegtestElectrumProfile(host: ''), throwsFormatException);
+  });
+
   for (final host in [
-    '',
     ' localhost',
     'local host',
     'http://localhost',
@@ -76,32 +78,68 @@ void main() {
     );
   }
 
-  test('regtest services require an explicit build host', () {
+  test('regtest services follow the build-selected stack', () {
     const host = String.fromEnvironment('BULL_REGTEST_HOST');
     if (host.isEmpty) {
+      final profile = RegtestHostProfile.forNetwork(NetworkEnv.regtest);
+      final endpoints = (profile! as HostedRegtestStack).endpoints;
       expect(
-        () => RegtestHostProfile.forNetwork(NetworkEnv.regtest),
-        throwsArgumentError,
-      );
-      expect(
-        RegtestElectrumProfile.fromBuildEnvironment,
-        throwsFormatException,
+        RegtestElectrumProfile.fromBuildEnvironment().bitcoin,
+        endpoints.electrumBitcoin.toString(),
       );
     } else {
+      final profile = RegtestHostProfile.forNetwork(NetworkEnv.regtest);
       expect(
-        RegtestHostProfile.forNetwork(NetworkEnv.regtest)?.host,
+        (profile! as LocalRegtestHost).host,
         Uri.parse('http://$host').host,
       );
-      expect(RegtestElectrumProfile.fromBuildEnvironment().host, host);
+      expect(
+        RegtestElectrumProfile.fromBuildEnvironment().bitcoin,
+        startsWith('tcp://'),
+      );
     }
     expect(RegtestHostProfile.forNetwork(NetworkEnv.mainnet), isNull);
     expect(RegtestHostProfile.forNetwork(NetworkEnv.testnet), isNull);
+    final local = RegtestHostProfile.forNetwork(
+      NetworkEnv.regtest,
+      host: 'stack.example',
+      hosted: const RegtestHostedDefines(
+        electrumBitcoin: '',
+        electrumLiquid: '',
+        esploraBitcoin: '',
+        esploraLiquid: '',
+        boltzApi: '',
+        boltzWebSocket: '',
+        recoverBull: '',
+      ),
+    );
+    expect((local! as LocalRegtestHost).host, 'stack.example');
+  });
+
+  test('Electrum follows the selected regtest stack', () {
+    final local = RegtestElectrumProfile(host: 'stack.example');
+    expect(local.endpoint(isLiquid: false), 'tcp://stack.example:50000');
+    expect(local.endpoint(isLiquid: true), 'tcp://stack.example:50001');
     expect(
+      RegtestElectrumProfile(host: '[::1]').endpoint(isLiquid: false),
+      'tcp://[::1]:50000',
+    );
+    final hosted = RegtestElectrumProfile.of(
       RegtestHostProfile.forNetwork(
         NetworkEnv.regtest,
-        host: 'stack.example',
-      )?.host,
-      'stack.example',
+        host: '',
+        hosted: const RegtestHostedDefines(
+          electrumBitcoin: 'ssl://electrum.example:443',
+          electrumLiquid: 'ssl://electrum.example:8443',
+          esploraBitcoin: 'https://esplora.example',
+          esploraLiquid: 'https://liquid.example',
+          boltzApi: 'https://boltz.example/v2',
+          boltzWebSocket: 'wss://boltz.example/v2/ws',
+          recoverBull: 'http://keyserver.onion',
+        ),
+      )!,
     );
+    expect(hosted.endpoint(isLiquid: false), 'ssl://electrum.example:443');
+    expect(hosted.endpoint(isLiquid: true), 'ssl://electrum.example:8443');
   });
 }

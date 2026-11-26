@@ -1,5 +1,90 @@
 {
   "@@locale": "en",
+  "paymentStepOf": "Step {current} of {total} · {label}",
+  "@paymentStepOf": {
+    "description": "Current step of a payment in progress, followed by the step name",
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"},
+      "label": {"type": "String"}
+    }
+  },
+  "paymentStepFailed": "Stopped before step {current} of {total} · {label}",
+  "@paymentStepFailed": {
+    "description": "The first status a stopped payment never reached, followed by its name",
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"},
+      "label": {"type": "String"}
+    }
+  },
+  "paymentStepsLeft": "{count, plural, =0{Complete} =1{1 step left} other{{count} steps left}}",
+  "@paymentStepsLeft": {
+    "description": "How many steps of a payment remain",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "paymentNetworkBitcoin": "BITCOIN // ON-CHAIN",
+  "@paymentNetworkBitcoin": {
+    "description": "Top-left descriptor of the payment diagram"
+  },
+  "paymentNetworkLightning": "LIGHTNING // INVOICE",
+  "@paymentNetworkLightning": {
+    "description": "Top-left descriptor of the payment diagram"
+  },
+  "paymentNetworkLiquid": "LIQUID // CONFIDENTIAL",
+  "@paymentNetworkLiquid": {
+    "description": "Top-left descriptor of the payment diagram"
+  },
+  "paymentNetworkArk": "ARK // ROUND",
+  "@paymentNetworkArk": {
+    "description": "Top-left descriptor of the payment diagram"
+  },
+  "paymentNetworkArkExit": "ARK // UNILATERAL EXIT",
+  "@paymentNetworkArkExit": {
+    "description": "Top-left descriptor of the Ark unilateral exit diagram"
+  },
+  "paymentNetworkBoltz": "BOLTZ // SWAP",
+  "@paymentNetworkBoltz": {
+    "description": "Top-left descriptor of the payment diagram"
+  },
+  "paymentNetworkPayjoin": "PAYJOIN // BIP 77",
+  "@paymentNetworkPayjoin": {
+    "description": "Top-left descriptor of the payment diagram"
+  },
+  "paymentTagPreparing": "PREPARING",
+  "@paymentTagPreparing": {
+    "description": "Fallback status tag of the payment diagram when the caller supplies none"
+  },
+  "paymentTagSending": "SENDING",
+  "@paymentTagSending": {
+    "description": "Fallback status tag of the payment diagram when the caller supplies none"
+  },
+  "paymentTagReceiving": "RECEIVING",
+  "@paymentTagReceiving": {
+    "description": "Fallback status tag of the payment diagram when the caller supplies none"
+  },
+  "paymentTagSent": "SENT",
+  "@paymentTagSent": {
+    "description": "Fallback status tag of the payment diagram when the caller supplies none"
+  },
+  "paymentTagReceived": "RECEIVED",
+  "@paymentTagReceived": {
+    "description": "Fallback status tag of the payment diagram when the caller supplies none"
+  },
+  "paymentTagFailed": "FAILED",
+  "@paymentTagFailed": {
+    "description": "Fallback status tag of the payment diagram when the caller supplies none"
+  },
+  "paymentTagExiting": "EXITING",
+  "@paymentTagExiting": {
+    "description": "Fallback status tag of an Ark unilateral exit in progress"
+  },
+  "paymentTagExited": "EXITED",
+  "@paymentTagExited": {
+    "description": "Fallback status tag of a completed Ark unilateral exit"
+  },
   "paymentViewStatus": "View status",
   "@paymentViewStatus": {
     "description": "Opens the current status of a payment without waiting for its animation"

@@ -117,7 +117,18 @@ final class ExchangeCredentialReadFailure extends ExchangeFailure {
   const ExchangeCredentialReadFailure();
 }
 
-/// A legacy stored credential could not be decoded.
+/// The Exchange credential store is missing, unreadable or not admitted. It is
+/// never recreated, because an empty store would read as a signed-out user.
+final class ExchangeCredentialsUnavailableFailure extends ExchangeFailure {
+  const ExchangeCredentialsUnavailableFailure();
+}
+
+/// The testnet Basic Auth could not be stored.
+final class ExchangeBasicAuthSaveFailure extends ExchangeFailure {
+  const ExchangeBasicAuthSaveFailure();
+}
+
+/// A stored credential could not be decoded.
 final class ExchangeApiKeyInvalidFailure extends ExchangeFailure {
   const ExchangeApiKeyInvalidFailure([super.logMessage]);
 }

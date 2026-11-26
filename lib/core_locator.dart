@@ -4,7 +4,7 @@ import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bull_exchange/setup.dart';
 import 'package:exchange/exchange.dart' show Exchange;
-import 'package:secrets/secrets.dart' show Secrets;
+import 'package:exchange/setup.dart' show ExchangeCredentialStorage;
 import 'package:preferences/preferences.dart' as settings;
 import 'package:settings/setup.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
@@ -31,7 +31,7 @@ class CoreLocator {
     );
     locator.registerLazySingleton<Exchange>(
       () => BullExchangeServices.open(
-        keychain: locator<Secrets>().exchangeKeychain,
+        storage: locator<ExchangeCredentialStorage>(),
         preferences: locator<settings.Preferences>(),
       ),
       dispose: (exchange) => exchange.close(),

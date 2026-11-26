@@ -53,26 +53,17 @@ void main() {
   late GetIt services;
   late InventoryFixture fixture;
   late AccessFeature feature;
-  var backupReads = 0;
-  var backedUp = false;
   var defaultUnlocks = 0;
 
   setUp(() async {
     services = GetIt.asNewInstance();
     fixture = await InventoryFixture.open();
-    backupReads = 0;
-    backedUp = false;
     defaultUnlocks = 0;
     feature = AccessFeature.mount(
       services: services,
       inventory: fixture.inventory,
-      backupVerification: fixture.backup,
-      hasVerifiedBackup: () async {
-        backupReads++;
-        return backedUp;
-      },
       onUnlocked: (_) => defaultUnlocks++,
-      onBackUp: (_) async => backedUp = true,
+      onBackUp: (_) async => fixture.backup.verified = true,
     );
   });
 
@@ -87,20 +78,14 @@ void main() {
     final settings = feature.routes.settings.single as GoRoute;
     expect((root.name, root.path), ('appUnlock', '/app-unlock'));
     expect((settings.name, settings.path), ('pinCode', 'pin-code'));
-    expect(backupReads, 0);
+    expect(fixture.backup.reads, 0);
     expect(defaultUnlocks, 0);
   });
 
   test('PIN status is read from the inventory', () async {
     const access = Access();
     expect((await access.checkPinCodeExists() as Ok).value, isFalse);
-    expect(
-      await fixture.inventory.setCredential(
-        '1234',
-        backupVerification: fixture.backup,
-      ),
-      isA<Ok>(),
-    );
+    expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
     expect((await access.checkPinCodeExists() as Ok).value, isTrue);
   });
 
@@ -150,13 +135,7 @@ void main() {
   ) async {
     const pin = '1234';
     await tester.runAsync(() async {
-      expect(
-        await fixture.inventory.setCredential(
-          pin,
-          backupVerification: fixture.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await fixture.inventory.setCredential(pin), isA<Ok>());
     });
     fixture.inventory.lock();
     final grants = <AppUnlockGrant>[];
@@ -215,13 +194,7 @@ void main() {
   for (final scenario in ['wrong', 'cooldown', 'correct']) {
     testWidgets('gate preserves $scenario authorization', (tester) async {
       await tester.runAsync(() async {
-        expect(
-          await fixture.inventory.setCredential(
-            '1234',
-            backupVerification: fixture.backup,
-          ),
-          isA<Ok>(),
-        );
+        expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
         fixture.inventory.lock();
         if (scenario == 'cooldown') {
           for (var index = 0; index < 4; index++) {
@@ -262,6 +235,12 @@ void main() {
   testWidgets('typed routes preserve default, override and backup recheck', (
     tester,
   ) async {
+    await tester.runAsync(() async {
+      expect(await fixture.inventory.registerWallet(localWallet()), isA<Ok>());
+    });
+    fixture.backup
+      ..verified = false
+      ..reads = 0;
     var overrides = 0;
     final router = GoRouter(
       initialLocation: '/settings',
@@ -302,7 +281,7 @@ void main() {
     await tester.pumpAndSettle();
     final context = tester.element(find.text('settings'));
     final navigation = const PinSettingsRouteData().push(context);
-    await waitFor(tester, () => backupReads == 1);
+    await waitFor(tester, () => fixture.backup.reads == 1);
     await tester.pumpAndSettle();
     expect(
       GoRouterState.of(tester.element(find.byType(PinCodeSettingFlow)))
@@ -310,13 +289,13 @@ void main() {
           .path,
       '/settings/pin-code',
     );
-    expect(backupReads, 1);
+    expect(fixture.backup.reads, 1);
     final loc = AccessLocalizations.of(
       tester.element(find.byType(PinCodeSettingFlow)),
     );
     await tester.tap(find.text(loc.backupSettingsStartBackup));
     await tester.pumpAndSettle();
-    expect(backupReads, 2);
+    expect(fixture.backup.reads, 2);
     expect(find.text(loc.backupSettingsStartBackup), findsNothing);
     router.pop();
     await tester.pumpAndSettle();

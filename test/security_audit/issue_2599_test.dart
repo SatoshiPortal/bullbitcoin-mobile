@@ -102,14 +102,70 @@ void main() {
         final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
         expect(schemaGate, greaterThanOrEqualTo(0));
         expect(
-          source.indexOf('final sqlite = await LegacySourceStore(', schemaGate),
+          source.indexOf(
+            'final openedPreferences = await Preferences.open(',
+            schemaGate,
+          ),
           greaterThan(schemaGate),
         );
-        expect(source, contains(').open(admission)'));
+        expect(
+          source,
+          contains("File('\${support.path}/databases/preferences.sqlite')"),
+        );
+        expect(source, contains('preferencesFile: preferencesFile'));
+        expect(
+          source,
+          matches(
+            RegExp(
+              r'Preferences\.open\(\s*file: preferencesFile,\s*admission: admission,',
+            ),
+          ),
+        );
         expect(source, isNot(contains('cutover.prepare()')));
         expect(source, isNot(contains('SqliteDatabase();')));
       },
     );
+
+    test('iOS excludes the owner database directory before background setup', () {
+      final delegate = File('ios/Runner/AppDelegate.swift').readAsStringSync();
+      final launch = delegate.indexOf('excludeSensitiveFilesFromBackup()');
+      final registrant = delegate.indexOf(
+        'WorkmanagerPlugin.setPluginRegistrantCallback',
+      );
+      expect(launch, greaterThanOrEqualTo(0));
+      expect(registrant, greaterThan(launch));
+      expect(delegate, contains('.applicationSupportDirectory'));
+      expect(delegate, contains('excludeOwnerStorageFromBackup(in: support'));
+      expect(delegate, contains('["databases", "storage-coordination"]'));
+      expect(delegate, contains('support.appendingPathComponent(name'));
+      expect(delegate, contains('try excludeFromBackup(directory)'));
+      expect(delegate, contains('values.isExcludedFromBackup = true'));
+      expect(delegate, contains('try url.setResourceValues(values)'));
+      final preferences = File('packages/preferences/lib/src/preferences.dart')
+          .readAsStringSync();
+      expect(
+        preferences,
+        matches(
+          RegExp(
+            r'PreferencesStore\.open\(\s*file,\s*admission,\s*existing: true,',
+          ),
+        ),
+      );
+      final opener = File(
+        'packages/secrets/lib/src/data/encrypted_database.dart',
+      ).readAsStringSync();
+      expect(opener, contains('final path = file.path;'));
+      for (final suffix in ['-wal', '-shm', '-journal']) {
+        expect(opener, contains("'$suffix'"));
+      }
+      final nativeTests = File('ios/RunnerTests/RunnerTests.swift')
+          .readAsStringSync();
+      expect(
+        nativeTests,
+        contains('AppDelegate.excludeOwnerStorageFromBackup'),
+      );
+      expect(nativeTests, contains('.isExcludedFromBackupKey'));
+    });
 
     for (final (role, path) in [('foreground', 'lib/init.dart')]) {
       test(

@@ -1385,8 +1385,6 @@
   "exchangeBitcoinWalletsCheckAgain": "ตรวจสอบอีกครั้ง",
   "exchangeBitcoinWalletsSessionEnded": "คุณไม่ได้เข้าสู่ระบบแพลตฟอร์มซื้อขายแล้ว โปรดเข้าสู่ระบบอีกครั้งเพื่อแก้ไขกระเป๋าเงินเริ่มต้น",
   "destinationExpectedType": "ป้อนหรือสแกน {type} ที่ถูกต้อง",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "ซื้อ ขาย และชำระเงินด้วย Bull Bitcoin ได้โดยตรงจากกระเป๋าเงินของคุณ",
   "exchangeTradingUnavailable": "ไม่สามารถซื้อขายได้ในขณะนี้",
   "priceChartShowTooltip": "แสดงกราฟราคา",
   "recipientsErrorSaveOutcomeUnknown": "เราไม่ทราบว่าผู้รับเงินรายนี้ถูกบันทึกแล้วหรือไม่ โปรดตรวจสอบรายชื่อผู้รับเงินก่อนเพิ่มอีกครั้ง",

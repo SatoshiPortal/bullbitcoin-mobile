@@ -5,26 +5,50 @@ import '../theme/bull_tokens.dart';
 import '../theme/bull_typography.dart';
 import '../theme/payment_animation_palette.dart';
 import 'bull_payment_animation.dart';
+import 'bull_payment_progress.dart';
+import 'bull_payment_step_rail.dart';
 
 /// Hosts the presentation of one payment attempt. Skipping dismisses only
 /// the presentation; neither callback starts, cancels, or settles a payment.
 class BullPaymentTransition extends StatefulWidget {
   final BullPaymentNetwork network;
   final BullPaymentPhase phase;
+  final BullPaymentDirection direction;
+  final BullPaymentProgress? progress;
+
+  /// Translated real status of the tracked payment, shown as the scene tag.
+  final String? statusTag;
+
+  /// Translated top-left descriptor replacing the network's own.
+  final String? descriptor;
   final String status;
-  final String skipLabel;
+
+  /// Label of the skip button. The button shows only when both [skipLabel] and
+  /// [onSkip] are set and [bottom] is null.
+  final String? skipLabel;
   final VoidCallback? onSkip;
+
+  /// Replaces the skip button, in its slot under the step rail, with an owner
+  /// supplied control (for example a view switch).
+  final Widget? bottom;
   final VoidCallback? onBackdropTap;
+  final VoidCallback? onBack;
   final VoidCallback onDone;
 
   const BullPaymentTransition({
     super.key,
     required this.network,
     required this.phase,
+    this.direction = BullPaymentDirection.outgoing,
+    this.progress,
+    this.statusTag,
+    this.descriptor,
     required this.status,
-    required this.skipLabel,
-    required this.onSkip,
+    this.skipLabel,
+    this.onSkip,
+    this.bottom,
     this.onBackdropTap,
+    this.onBack,
     required this.onDone,
   });
 
@@ -96,6 +120,20 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
         Theme.of(context).extension<PaymentAnimationPalette>() ??
         PaymentAnimationPalette.standard;
     final onSkip = widget.onSkip;
+    final skipLabel = widget.skipLabel;
+    final successful = !showIntro && widget.phase == BullPaymentPhase.success;
+    final headline = successful
+        ? widget.progress?.steps.last ?? widget.status
+        : showIntro
+        ? _initialStatus
+        : widget.status;
+    // The rail text turns orange for a broadcast current step; the headline
+    // follows it (success stays green, failure keeps the foreground).
+    final broadcast =
+        !successful &&
+        widget.phase != BullPaymentPhase.failed &&
+        widget.progress?.failedAt == null &&
+        widget.progress?.currentState == BullPaymentStepState.broadcast;
     return Listener(
       behavior: HitTestBehavior.opaque,
       child: Material(
@@ -106,6 +144,10 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
             BullPaymentAnimation(
               network: widget.network,
               phase: showIntro ? BullPaymentPhase.initiated : widget.phase,
+              direction: widget.direction,
+              progress: widget.progress,
+              statusTag: widget.statusTag,
+              descriptor: widget.descriptor,
               onImpact: HapticFeedback.mediumImpact,
               onDone: widget.onDone,
             ),
@@ -115,47 +157,86 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
                 excludeFromSemantics: true,
                 onTap: onBackdropTap,
               ),
+            if (widget.onBack case final onBack?)
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: BackButton(
+                    color: palette.foreground,
+                    onPressed: onBack,
+                  ),
+                ),
+              ),
             SafeArea(
-              minimum: const EdgeInsets.all(BullSpacing.lg),
+              minimum: const EdgeInsets.fromLTRB(
+                BullSpacing.lg,
+                64,
+                BullSpacing.lg,
+                BullSpacing.lg,
+              ),
               child: Align(
                 alignment: Alignment.bottomLeft,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        palette.background.withValues(alpha: 0),
-                        palette.background,
-                      ],
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          palette.background.withValues(alpha: 0),
+                          palette.background,
+                        ],
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(BullSpacing.md),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            showIntro ? _initialStatus : widget.status,
-                            style: context.bullType.display.copyWith(
-                              fontFamily: BullTypography.brandFamily,
-                              color: palette.foreground,
+                    child: Padding(
+                      padding: const EdgeInsets.all(BullSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              headline,
+                              style: context.bullType.display.copyWith(
+                                fontFamily: BullTypography.brandFamily,
+                                color: successful
+                                    ? palette.success
+                                    : broadcast
+                                    ? palette.broadcast
+                                    : palette.foreground,
+                              ),
                             ),
                           ),
-                        ),
-                        if (onSkip != null)
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor: palette.foreground,
-                              minimumSize: const Size(48, 48),
+                          if (successful && headline != widget.status)
+                            Text(
+                              widget.status,
+                              style: context.bullType.body.copyWith(
+                                color: palette.foreground,
+                              ),
                             ),
-                            onPressed: onSkip,
-                            child: Text(widget.skipLabel),
-                          ),
-                      ],
+                          if (widget.progress case final progress?)
+                            BullPaymentStepRail(
+                              progress: progress,
+                              network: widget.network,
+                              phase: widget.phase,
+                              palette: palette,
+                              reduced: _reduced,
+                            ),
+                          if (widget.bottom case final bottom?)
+                            bottom
+                          else if (onSkip != null && skipLabel != null)
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: palette.foreground,
+                                minimumSize: const Size(48, 48),
+                              ),
+                              onPressed: onSkip,
+                              child: Text(skipLabel),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

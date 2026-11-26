@@ -13,8 +13,8 @@ const isDart = (path) => path.endsWith('.dart');
 // libraries by packages/secrets/tool/key_material_gate.dart). That keeps the
 // suppression flutter_rust_bridge writes into every file it generates, for its own runtime's internal
 // members, unable to silence the seal; hand-written files there stay checked.
-const inBindings = (path) => /^packages\/(rust_bindings|onion)\//.test(path);
-const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
+const inBindings = (path) => /^packages\/(rust_bindings|onion|ark)\//.test(path);
+const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion|ark)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
 
 const RULES = [

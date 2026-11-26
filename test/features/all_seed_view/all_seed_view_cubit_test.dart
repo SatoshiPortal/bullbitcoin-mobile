@@ -85,8 +85,6 @@ void main() {
     AccessFeature.mount(
       services: accessServices,
       inventory: inventoryFixture.inventory,
-      backupVerification: inventoryFixture.backup,
-      hasVerifiedBackup: () async => false,
       onUnlocked: (_) {},
       onBackUp: (_) async {},
     );

@@ -106,15 +106,18 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                   Expanded(
                     child: BullButton.primary(
                       label: context.loc.errorReportingAcceptButton,
-                      onPressed: () {
-                        context.read<SettingsCubit>().toggleErrorReporting(
-                          true,
-                        );
+                      onPressed: () async {
+                        final saved = await context
+                            .read<SettingsCubit>()
+                            .toggleErrorReporting(true);
+                        if (!context.mounted) return;
+                        final overlay = Overlay.of(context, rootOverlay: true);
+                        final message =
+                            context.loc.errorReportingRestartSnackbar;
                         Navigator.of(context).pop();
-                        BullSnackBar.show(
-                          context,
-                          message: context.loc.errorReportingRestartSnackbar,
-                        );
+                        if (saved) {
+                          BullSnackBar.showOnOverlay(overlay, message: message);
+                        }
                       },
                     ),
                   ),

@@ -57,5 +57,8 @@
   "logsExportFailedMessage": "Échec de l'exportation des journaux",
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
-  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil."
+  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
+  "inventoryUnreadableTitle": "Vos portefeuilles ne peuvent pas être ouverts",
+  "inventoryUnreadableMessage": "Le stockage qui contient vos portefeuilles est illisible sur cet appareil. Rien n'a été supprimé ni remplacé. Réessayez, ou contactez le support avant de désinstaller l'application ou de modifier quoi que ce soit sur cet appareil.",
+  "inventoryUnreadableQuitButton": "Quitter"
 }

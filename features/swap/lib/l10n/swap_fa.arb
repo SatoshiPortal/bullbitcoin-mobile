@@ -238,6 +238,10 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
+  "sendDone": "انجام کارها",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
   "sendErrorBuildFailed": "این پرداخت آماده نشد. لطفاً دوباره تلاش کنید.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -430,5 +434,31 @@
   "typeLabel": "نوع: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  }
+  },
+  "walletLoadFailed": "کیف‌پول‌های شما بارگذاری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد",
+  "coreSwapsStatusCompleted": "تکمیل شده",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "امتناع",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "مبلغ",
+  "swapRescueButton": "بازیابی",
+  "swapRescueCreatedLabel": "تاریخ ایجاد",
+  "swapRescueIdLabel": "شناسه مبادله",
+  "swapRescueRouteLabel": "مسیر",
+  "swapRescueStatusLabel": "وضعیت",
+  "swapRescueSuccess": "مبادله بازیابی شد — اکنون از سر گرفته می‌شود",
+  "swapRescueTitle": "نجات مبادله",
+  "swapRescueTypeLabel": "نوع",
+  "swapRescueWalletHint": "یک کیف پول را انتخاب کنید",
+  "swapRescueWalletLabel": "بازیابی به کیف پول",
+  "swapRestoreActionable": "{count, plural, =0{هیچ مبادله‌ای برای بازیابی وجود ندارد} =1{می‌توانید بازیابی ۱ مبادله را امتحان کنید. ممکن است این مبادله از قبل در وضعیت نهایی باشد.} other{می‌توانید بازیابی {count} مبادله را امتحان کنید. توجه داشته باشید که برخی از آن‌ها ممکن است از قبل در وضعیت نهایی باشند.}}",
+  "swapRestoreAllSection": "همه مبادله‌ها",
+  "swapRestoreFailed": "بازیابی مبادله‌ها ممکن نشد",
+  "swapRestoreKindCrossChain": "میان‌زنجیره‌ای",
+  "swapRestoreKindLightningReceive": "دریافت Lightning",
+  "swapRestoreKindLightningSend": "ارسال Lightning",
+  "swapRestoreNoSwaps": "هیچ مبادله‌ای برای بازیابی پیدا نشد",
+  "swapRestoreRecoverableSection": "قابل بازیابی",
+  "swapRestoreTitle": "بازیابی مبادله"
 }

@@ -189,16 +189,13 @@ void main() {
   );
 
   expectsLift(
-    'setExchangeTestnetBasicAuth',
-    () => when(
-      () => repository.setExchangeTestnetBasicAuth(
-        username: any(named: 'username'),
-        password: any(named: 'password'),
-      ),
-    ).thenAnswer((_) async => const Err(_sanitized)),
+    'setShowPaymentAnimations',
     () =>
-        SetExchangeTestnetBasicAuthUsecase(preferences: repository)
-            .execute(username: 'u', password: 'p'),
+        when(() => repository.setShowPaymentAnimations(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetShowPaymentAnimationsUsecase(settingsRepository: repository)
+            .execute(false),
   );
 
   test('a successful write is forwarded as Ok', () async {

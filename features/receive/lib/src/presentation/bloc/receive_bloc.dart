@@ -34,9 +34,11 @@ import 'package:receive/src/domain/usecases/create_boltz_receive_swap_usecase.da
 import 'package:receive/src/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:receive/src/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:receive/src/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:receive/src/domain/usecases/read_receive_payment_animations_usecase.dart';
 import 'package:receive/src/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_order_swap_usecase.dart';
+import 'package:receive/src/domain/usecases/watch_receive_settlement_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:receive/src/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:transactions/transactions.dart';
@@ -69,6 +71,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._broadcastOriginalTransactionUsecase,
     required this._watchPayjoinUsecase,
     required this._transactions,
+    required this._watchReceiveSettlementUsecase,
     required this._watchReceiveOrderSwapUsecase,
     required this._watchReceivePayjoinEnabledUsecase,
     required this._watchReceivePayjoinMinAmountUsecase,
@@ -79,7 +82,27 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     this._wallet,
     bool pollAmountQuotes = true,
     this._getReceiveSwapLimitsUsecase,
-  }) : super(const ReceiveState()) {
+    ReadReceivePaymentAnimationsUsecase? readPaymentAnimationsUsecase,
+  }) : _readPaymentAnimationsUsecase = readPaymentAnimationsUsecase,
+       super(
+         ReceiveState(
+           showPaymentAnimations: readPaymentAnimationsUsecase == null
+               ? true
+               : null,
+         ),
+       ) {
+    final readAnimations = _readPaymentAnimationsUsecase;
+    if (readAnimations != null) {
+      unawaited(
+        readAnimations.execute().then((enabled) {
+          if (!isClosed) add(ReceivePaymentAnimationsRead(enabled));
+        }),
+      );
+    }
+    on<ReceivePaymentAnimationsRead>(
+      (event, emit) =>
+          emit(state.copyWith(showPaymentAnimations: event.enabled)),
+    );
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
@@ -99,6 +122,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
     on<ReceivePayjoinSenderWaitElapsed>(_onPayjoinSenderWaitElapsed);
     on<ReceiveTransactionReceived>(_onReceiveTransactionReceived);
+    on<ReceiveSettlementObserved>(_onSettlementObserved);
     // restartable(): a rapid on/off/on toggle must not let a stale event's
     //  in-flight session creation land after a newer event already decided
     //  the opposite outcome — restartable() drops a handler's own emit()
@@ -153,6 +177,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   }
 
   final Receive _receive;
+  final ReadReceivePaymentAnimationsUsecase? _readPaymentAnimationsUsecase;
   Timer? _amountQuoteTimer;
   final GetReceiveSwapLimitsUsecase? _getReceiveSwapLimitsUsecase;
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
@@ -169,6 +194,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final Transactions _transactions;
+  final WatchReceiveSettlementUsecase _watchReceiveSettlementUsecase;
   final WatchReceiveOrderSwapUsecase _watchReceiveOrderSwapUsecase;
   final WatchReceivePayjoinEnabledUsecase _watchReceivePayjoinEnabledUsecase;
   final WatchReceivePayjoinMinAmountUsecase
@@ -179,6 +205,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   StreamSubscription<Result<PayjoinSession, ReceiveFailure>>?
   _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
+  StreamSubscription<WalletTransaction>? _settlementSubscription;
   int _receiveGeneration = 0;
   StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>>?
   _orderSwapSubscription;
@@ -198,6 +225,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     await Future.wait([
       _payjoinSubscription?.cancel() ?? Future.value(),
       _walletTransactionSubscription?.cancel() ?? Future.value(),
+      _settlementSubscription?.cancel() ?? Future.value(),
       _orderSwapSubscription?.cancel() ?? Future.value(),
       _lightningSwapSubscription?.cancel() ?? Future.value(),
       _payjoinSettingChangeSubscription.cancel(),
@@ -1578,33 +1606,37 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
         payjoin.hasOriginalTransaction &&
-        state.canOfferPayjoinFallback) {
+        state.canOfferPayjoinFallback &&
+        !state.isBroadcastingOriginalTransaction) {
       emit(
         state.copyWith(isBroadcastingOriginalTransaction: true, failure: null),
       );
-      final result = await _broadcastOriginalTransactionUsecase.execute(
-        payjoin.id,
-      );
-      switch (result) {
-        // Pattern-matched, not cast: an unchecked `as` here would throw if the
-        //  package ever returned a sender session, crashing the screen instead
-        //  of leaving it on a still-valid payjoin.
-        case Ok(value: final PayjoinReceiverSession session):
-          emit(state.copyWith(payjoin: session));
-        case Ok(:final value):
-          log.warning(
-            'Ignoring a non-receiver session from broadcastOriginal: '
-            '${value.runtimeType}',
-          );
-        case Err(failure: ReceiveBroadcastOriginalTxUnavailableFailure()):
-          // A competing transaction became visible after the button was shown.
-          // Existing Payjoin and wallet watchers will converge the screen, so
-          // there is nothing to tell the user.
-          break;
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
+      try {
+        final result = await _broadcastOriginalTransactionUsecase.execute(
+          payjoin.id,
+        );
+        switch (result) {
+          // Pattern-matched, not cast: an unchecked `as` here would throw if the
+          //  package ever returned a sender session, crashing the screen instead
+          //  of leaving it on a still-valid payjoin.
+          case Ok(value: final PayjoinReceiverSession session):
+            emit(state.copyWith(payjoin: session));
+          case Ok(:final value):
+            log.warning(
+              'Ignoring a non-receiver session from broadcastOriginal: '
+              '${value.runtimeType}',
+            );
+          case Err(failure: ReceiveBroadcastOriginalTxUnavailableFailure()):
+            // A competing transaction became visible after the button was shown.
+            // Existing Payjoin and wallet watchers will converge the screen, so
+            // there is nothing to tell the user.
+            break;
+          case Err(:final failure):
+            emit(state.copyWith(failure: failure));
+        }
+      } finally {
+        emit(state.copyWith(isBroadcastingOriginalTransaction: false));
       }
-      emit(state.copyWith(isBroadcastingOriginalTransaction: false));
     }
   }
 
@@ -1618,7 +1650,33 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx.network != state.wallet?.network) {
       return;
     }
-    emit(state.copyWith(tx: tx));
+    // The address watch emits the latest transaction for the address; `tx`
+    // follows it so a replacement (RBF) takes over and settles instead.
+    emit(state.copyWith(tx: tx, settlementTx: tx));
+  }
+
+  Future<void> _onSettlementObserved(
+    ReceiveSettlementObserved event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    if (event.tx.txId != state.settlement?.txId) return;
+    emit(state.copyWith(settlementTx: event.tx));
+  }
+
+  @override
+  void onChange(Change<ReceiveState> change) {
+    super.onChange(change);
+    final settlement = change.nextState.settlement;
+    if (settlement == change.currentState.settlement) return;
+    _settlementSubscription?.cancel();
+    _settlementSubscription = settlement == null
+        ? null
+        : _watchReceiveSettlementUsecase
+              .execute(walletId: settlement.walletId, txId: settlement.txId)
+              .listen((tx) {
+                if (isClosed) return;
+                add(ReceiveSettlementObserved(tx));
+              });
   }
 
   Future<void> _onOrderSwapUpdated(
@@ -1746,15 +1804,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(
       state.copyWith(
         lightningSwap: swap,
-        failure: switch (swap.status) {
-          SwapStatus.expired => const ReceiveSwapUnavailableFailure(
-            'Boltz swap expired',
-          ),
-          SwapStatus.failed => const ReceiveSwapUnavailableFailure(
-            'Boltz swap failed',
-          ),
-          _ => state.failure,
-        },
+        failure: swap.wasDirectPayment
+            ? state.failure
+            : switch (swap.status) {
+                SwapStatus.expired => const ReceiveSwapUnavailableFailure(
+                  'Boltz swap expired',
+                ),
+                SwapStatus.failed => const ReceiveSwapUnavailableFailure(
+                  'Boltz swap failed',
+                ),
+                _ => state.failure,
+              },
       ),
     );
     if (swap.status == SwapStatus.completed) {

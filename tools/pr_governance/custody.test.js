@@ -19,11 +19,13 @@ test('ignore_for_file and a list of codes are flagged too', () => {
   assert.deepEqual(rules(result), ['seal-ignore']);
 });
 
-test('the generated bridge of rust_bindings and onion may silence the seal, hand-written code may not', () => {
+test('the generated bridge of rust_bindings, onion and ark may silence the seal, hand-written code may not', () => {
   const line = '+// ignore_for_file: invalid_use_of_internal_member, unused_import';
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/src/rust/frb_generated.dart', [line])])), []);
   assert.deepEqual(rules(reviewFiles([file('packages/onion/lib/src/rust/api/client.dart', [line])])), []);
+  assert.deepEqual(rules(reviewFiles([file('packages/ark/lib/src/rust/frb_generated.dart', [line])])), []);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/boltz.dart', [line])])), ['seal-ignore']);
+  assert.deepEqual(rules(reviewFiles([file('packages/ark/lib/ark.dart', [line])])), ['seal-ignore']);
   assert.deepEqual(rules(reviewFiles([file('packages/secrets/lib/src/rust/x.dart', [line])])), ['seal-ignore']);
   assert.deepEqual(rules(reviewFiles([file('lib/src/rust/frb_generated.dart', [line])])), ['seal-ignore']);
 });
@@ -32,7 +34,9 @@ test('the bindings packages may not reach package:secrets, in Dart or in their p
   const line = "+import 'package:secrets/secrets.dart';";
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/src/rust/api/simple.dart', [line])])), ['bindings-secrets']);
   assert.deepEqual(rules(reviewFiles([file('packages/onion/lib/custom.dart', [line])])), ['bindings-secrets']);
+  assert.deepEqual(rules(reviewFiles([file('packages/ark/lib/src/rust/api/wallet.dart', [line])])), ['bindings-secrets']);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/pubspec.yaml', ['+  secrets:'])])), ['bindings-secrets-dependency']);
+  assert.deepEqual(rules(reviewFiles([file('packages/ark/pubspec.yaml', ['+  secrets:'])])), ['bindings-secrets-dependency']);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/a.dart', ['+  f(secrets: x);'])])), []);
   assert.deepEqual(rules(reviewFiles([file('packages/sync/lib/x.dart', [line])])), []);
 });

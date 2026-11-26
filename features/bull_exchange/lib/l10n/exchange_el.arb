@@ -1385,8 +1385,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Έλεγχος ξανά",
   "exchangeBitcoinWalletsSessionEnded": "Δεν είστε πλέον συνδεδεμένοι στο ανταλλακτήριο. Συνδεθείτε ξανά για να επεξεργαστείτε τα προεπιλεγμένα πορτοφόλια σας.",
   "destinationExpectedType": "Εισαγάγετε ή σαρώστε ένα έγκυρο {type}.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Αγοράστε, πουλήστε και πληρώστε με το Bull Bitcoin απευθείας από το πορτοφόλι σας.",
   "exchangeTradingUnavailable": "Οι συναλλαγές δεν είναι διαθέσιμες.",
   "priceChartShowTooltip": "Εμφάνιση γραφήματος τιμής",
   "recipientsErrorSaveOutcomeUnknown": "Δεν ήταν δυνατό να διαπιστωθεί αν αποθηκεύτηκε αυτός ο παραλήπτης. Ελέγξτε τους παραλήπτες σας πριν τον προσθέσετε ξανά.",

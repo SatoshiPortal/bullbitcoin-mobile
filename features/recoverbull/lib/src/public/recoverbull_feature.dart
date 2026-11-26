@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:secrets/secrets.dart';
 import 'package:legacy_storage/coordination.dart';
+import 'package:preferences/preferences.dart';
 
 import '../data/database/recoverbull_cutover.dart';
 
@@ -23,6 +24,8 @@ import '../domain/recoverbull_wallet_port.dart';
 import '../domain/usecases/create_vault_usecase.dart';
 import '../domain/usecases/restore_vault_usecase.dart';
 import '../domain/usecases/test_vault_usecase.dart';
+import '../domain/usecases/backup_warning_needed_usecase.dart';
+import '../data/database/recoverbull_wallet_backups.dart';
 import 'recoverbull_facade.dart';
 
 /// Composition stays separate from the feature's business interface.
@@ -47,6 +50,10 @@ final class RecoverBullFeature {
     required TorHttpClientFactory clients,
     required RecoverBullCutover cutover,
     required RuntimeAdmission admission,
+    required WalletInventory inventory,
+    required ActiveEnvironmentReader activeEnvironment,
+    required RecoverBullWalletBackups normalBackups,
+    required RecoverBullWalletBackups regtestBackups,
   }) async {
     final runtime = await RecoverBullRuntime.open(
       secrets: secrets,
@@ -72,6 +79,14 @@ final class RecoverBullFeature {
         runtime.settings,
         runtime.recoverServerVault,
         runtime.backupProjection,
+        BackupWarningNeededUsecase(
+          inventory: inventory,
+          environment: activeEnvironment,
+          certificateRegtest: cutover.regtest,
+          readBackup: (id, {required regtest}) =>
+              (regtest ? regtestBackups : normalBackups).read(id),
+          status: runtime.readStatus.execute,
+        ).execute,
       ),
       runtime,
     );

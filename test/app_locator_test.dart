@@ -47,6 +47,8 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:preferences/preferences.dart';
 import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:settings/setup.dart' show StartupNetwork;
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
 
 import 'support/preferences_database.dart';
 import '../packages/electrum/test/electrum_test_database.dart';
@@ -56,7 +58,7 @@ Future<Result<Preferences, PreferencesFailure>> _openTestPreferences(
 ) async {
   final owner = await createPreferencesDatabase(copySettingsFrom: legacy);
   addTearDown(owner.close);
-  return Ok(PreferencesTesting.fromDatabases(owner: owner, legacy: legacy));
+  return Ok(PreferencesTesting.fromDao(PreferencesDao(owner)));
 }
 
 class _SecureStorage extends FakeSecureStoragePlatform {
@@ -98,6 +100,85 @@ class _NativeTor implements TorNativeInitializer {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  test(
+    'initial network is applied before network services are mounted',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'initial-network-',
+      );
+      final previousPaths = PathProviderPlatform.instance;
+      PathProviderPlatform.instance = _Paths(directory.path);
+      FakeSecureStoragePlatform().install();
+      SharedPreferences.setMockInitialValues({});
+      final previousPreferences = SharedPreferencesAsyncPlatform.instance;
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      final database = SqliteDatabase(NativeDatabase.memory());
+      final locator = GetIt.asNewInstance();
+      registerTestOwnerDatabases(locator);
+      final inventory = await InventoryFixture.compose(directory, locator);
+      locator.registerSingleton<TorNativeInitializer>(_NativeTor());
+      addTearDown(() async {
+        await locator.reset();
+        await inventory.close();
+        await database.close();
+        PathProviderPlatform.instance = previousPaths;
+        SharedPreferencesAsyncPlatform.instance = previousPreferences;
+        await directory.delete(recursive: true);
+      });
+      var applied = false;
+      final result = await AppLocator.setup(
+        locator,
+        database,
+        openLabels: (sync, openWallet) async => Ok(
+          createLabelsForTesting(
+            database: database,
+            sync: sync,
+            openWallet: openWallet,
+          ),
+        ),
+        openElectrum: (readPreferences, tor) async => Ok(
+          createElectrumForTesting(
+            database: database,
+            readPreferences: readPreferences,
+            tor: tor,
+          ),
+        ),
+        openPreferences: () => _openTestPreferences(database),
+        openMempool: (tor, http) async => Ok(
+          createMempoolForTesting(database: database, tor: tor, torHttp: http),
+        ),
+        startPayjoinRecovery: false,
+        startOrderSwapWatcher: false,
+        startAutoswapWatcher: false,
+        prepareInitialNetwork: (preferences, electrum) async {
+          expect(locator.isRegistered<PayjoinLifecycle>(), isFalse);
+          final secrets = locator<Secrets>();
+          final selection = await StartupNetwork.apply(
+            preferences: preferences,
+            electrum: electrum,
+            network: NetworkEnv.testnet,
+            superuserUnlocked: true,
+            developerConsent: true,
+            isProtected: inventory.inventory.isProtected,
+            hasWallets: inventory.inventory.hasWallets,
+            listSecrets: secrets.list,
+          );
+          applied = selection is Ok;
+          return selection;
+        },
+      );
+      expect(result, isA<Ok>());
+      expect(applied, isTrue);
+      expect(locator.isRegistered<PayjoinLifecycle>(), isTrue);
+      final settings = await locator<Preferences>().fetch();
+      expect(
+        (settings as Ok<SettingsEntity, PreferencesFailure>).value.environment,
+        Environment.testnet,
+      );
+    },
+  );
 
   group('profile-independent Ark custody at restart', () {
     late Directory directory;
@@ -152,7 +233,7 @@ void main() {
               tor: tor,
             ),
           ),
-          openPreferences: _openTestPreferences,
+          openPreferences: () => _openTestPreferences(database),
           openMempool: (tor, http) async => Ok(
             createMempoolForTesting(
               database: database,
@@ -199,13 +280,7 @@ void main() {
 
     test('PIN protection defers Silent Payments and swap watchers', () async {
       final pin = DateTime.now().microsecondsSinceEpoch.toString();
-      expect(
-        await inventoryFixture.inventory.setCredential(
-          pin,
-          backupVerification: inventoryFixture.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await inventoryFixture.inventory.setCredential(pin), isA<Ok>());
       inventoryFixture.inventory.lock();
       await compose(startWatchers: true);
       final swap = locator<SwapFeature>();
@@ -265,7 +340,9 @@ void main() {
         arkUrl: Uri.parse('http://ark.regtest'),
         primaryEsploraUrl: Uri.parse('http://chain.regtest'),
         initializeNew: true,
+        dispatcher: dispatcher,
       );
+      expect(locator<ArkForegroundHost>().dispatcher, same(dispatcher));
       expect(
         File('${directory.path}/ark/accounts.sqlite').existsSync(),
         isFalse,
@@ -457,7 +534,7 @@ void main() {
             tor: tor,
           ),
         ),
-        openPreferences: _openTestPreferences,
+        openPreferences: () => _openTestPreferences(database),
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
@@ -493,13 +570,7 @@ void main() {
         isA<Ok>(),
       );
       expect(await catalog.find(key), isA<Ok>());
-      expect(
-        await inventoryFixture.inventory.setCredential(
-          '1234',
-          backupVerification: inventoryFixture.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await inventoryFixture.inventory.setCredential('1234'), isA<Ok>());
       inventoryFixture.inventory.lock();
       expect(await catalog.list(), isA<Err>());
       expect(
@@ -566,7 +637,7 @@ void main() {
           tor: tor,
         ),
       ),
-      openPreferences: _openTestPreferences,
+      openPreferences: () => _openTestPreferences(database),
       openMempool: (tor, http) async => Ok(
         createMempoolForTesting(database: database, tor: tor, torHttp: http),
       ),
@@ -593,3 +664,5 @@ void main() {
     );
   });
 }
+
+void dispatcher() {}

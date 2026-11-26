@@ -231,6 +231,51 @@ void main() {
     );
   });
 
+  test('a stale wallet lookup cannot overwrite a newer observation', () async {
+    final first = Completer<Result<List<Transaction>, TransactionFailure>>();
+    final old = Transaction(
+      walletTransaction: _walletTx(txId: 'tx', amountSat: 1),
+    );
+    final current = Transaction(
+      walletTransaction: _walletTx(txId: 'tx', amountSat: 2),
+    );
+    var calls = 0;
+    when(() => getTransactionsByTxId.execute('tx')).thenAnswer((_) {
+      calls++;
+      return calls == 1 ? first.future : Future.value(Ok([current]));
+    });
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    final initial = cubit.initByWalletTxId('tx', walletId: 'w1');
+    await pumpEventQueue();
+    await cubit.refresh();
+    first.complete(Ok([old]));
+    await initial;
+    expect(cubit.state.walletTransaction?.amountSat, 2);
+  });
+
+  test(
+    'an empty Regtest lookup can later resolve the wallet transaction',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.initByWalletTxId('tx', walletId: 'w1');
+      expect(cubit.state.failure, isA<TransactionNotFoundFailure>());
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'tx',
+          network: BitcoinNetwork.regtest,
+        ),
+      );
+      when(() => getTransactionsByTxId.execute('tx')).thenAnswer(
+        (_) async => Ok<List<Transaction>, TransactionFailure>([transaction]),
+      );
+      await cubit.refresh();
+      expect(cubit.state.transaction, transaction);
+      expect(cubit.state.failure, isNull);
+    },
+  );
+
   test(
     'loads the destination wallet transaction for a Lightning receive',
     () async {
@@ -1031,6 +1076,156 @@ void main() {
 
       verifyZeroInteractions(retrySwap);
       expect(cubit.state.retryingSwap, isFalse);
+    });
+  });
+
+  group('TransactionDetailsCubit.initBySwapId handoff', () {
+    final lockedUp = (Swap.chain(
+      id: 'swap-1',
+      keyIndex: 0,
+      type: SwapType.bitcoinToLiquid,
+      status: SwapStatus.paid,
+      environment: Environment.mainnet,
+      creationTime: DateTime.utc(2026),
+      sendWalletId: 'w1',
+      receiveWalletId: 'w2',
+      paymentAddress: 'address',
+      paymentAmount: 1000,
+      sendTxid: 'lockup-txid',
+    ) as ChainSwap);
+
+    test('keeps following the swap after it resolves to its wallet '
+        'transaction', () async {
+      var swap = lockedUp;
+      final getSwap = _MockGetTransactionSwapUsecase();
+      final watchSwap = _MockWatchTransactionSwapUsecase();
+      final updates =
+          StreamController<Result<Swap, TransactionFailure>>.broadcast();
+      addTearDown(updates.close);
+      when(() => getSwap.execute('swap-1')).thenAnswer((_) async => Ok(swap));
+      when(() => watchSwap.execute('swap-1')).thenAnswer((_) => updates.stream);
+      when(() => getTransactionsByTxId.execute('lockup-txid')).thenAnswer(
+        (_) async => Ok<List<Transaction>, TransactionFailure>([
+          Transaction(
+            walletTransaction: _walletTx(txId: 'lockup-txid'),
+            swap: swap,
+          ),
+        ]),
+      );
+      final cubit = buildCubit(
+        getTransactionSwapUsecase: getSwap,
+        watchTransactionSwapUsecase: watchSwap,
+      );
+      addTearDown(cubit.close);
+
+      await cubit.initBySwapId('swap-1', walletId: 'w1');
+      expect(cubit.state.transaction?.walletTransaction?.txId, 'lockup-txid');
+      expect(cubit.state.swap, lockedUp);
+
+      // The claim shows up on the swap long after the handoff.
+      swap = lockedUp.copyWith(
+        status: SwapStatus.completed,
+        receiveTxid: 'claim-txid',
+      );
+      updates.add(Ok(swap));
+      await pumpEventQueue();
+
+      expect((cubit.state.swap as ChainSwap).receiveTxid, 'claim-txid');
+      expect(
+        settlementTargetOf(cubit.state.transaction),
+        const TransactionSettlementTarget(
+          walletId: 'w2',
+          txId: 'claim-txid',
+          isLiquid: true,
+        ),
+      );
+      expect(updates.hasListener, isTrue);
+
+      await cubit.close();
+      expect(updates.hasListener, isFalse);
+    });
+
+    test('a wallet-txid entry watches the swap it resolves to', () async {
+      var swap = lockedUp;
+      final watchSwap = _MockWatchTransactionSwapUsecase();
+      final updates =
+          StreamController<Result<Swap, TransactionFailure>>.broadcast();
+      addTearDown(updates.close);
+      when(() => watchSwap.execute('swap-1')).thenAnswer((_) => updates.stream);
+      when(() => getTransactionsByTxId.execute('lockup-txid')).thenAnswer(
+        (_) async => Ok<List<Transaction>, TransactionFailure>([
+          Transaction(
+            walletTransaction: _walletTx(txId: 'lockup-txid'),
+            swap: swap,
+          ),
+        ]),
+      );
+      final cubit = buildCubit(watchTransactionSwapUsecase: watchSwap);
+      addTearDown(cubit.close);
+
+      await cubit.initByWalletTxId('lockup-txid', walletId: 'w1');
+      expect(cubit.state.swap, lockedUp);
+      expect(updates.hasListener, isTrue);
+
+      // A swap-only update (the claim) with no wallet event.
+      swap = lockedUp.copyWith(
+        status: SwapStatus.completed,
+        receiveTxid: 'claim-txid',
+      );
+      updates.add(Ok(swap));
+      await pumpEventQueue();
+
+      expect((cubit.state.swap as ChainSwap).receiveTxid, 'claim-txid');
+      expect(
+        settlementTargetOf(cubit.state.transaction),
+        const TransactionSettlementTarget(
+          walletId: 'w2',
+          txId: 'claim-txid',
+          isLiquid: true,
+        ),
+      );
+
+      await cubit.close();
+      expect(updates.hasListener, isFalse);
+    });
+
+    test('closing during the handoff installs no listener', () async {
+      final getSwap = _MockGetTransactionSwapUsecase();
+      final watchSwap = _MockWatchTransactionSwapUsecase();
+      final updates =
+          StreamController<Result<Swap, TransactionFailure>>.broadcast();
+      addTearDown(updates.close);
+      final gate = Completer<Result<Swap, TransactionFailure>>();
+      when(() => getSwap.execute('swap-1')).thenAnswer((_) => gate.future);
+      when(() => watchSwap.execute('swap-1')).thenAnswer((_) => updates.stream);
+      when(() => getTransactionsByTxId.execute('lockup-txid')).thenAnswer(
+        (_) async => Ok<List<Transaction>, TransactionFailure>([
+          Transaction(
+            walletTransaction: _walletTx(txId: 'lockup-txid'),
+            swap: lockedUp,
+          ),
+        ]),
+      );
+      final cubit = buildCubit(
+        getTransactionSwapUsecase: getSwap,
+        watchTransactionSwapUsecase: watchSwap,
+      );
+
+      final init = cubit.initBySwapId('swap-1', walletId: 'w1');
+      await pumpEventQueue();
+      await cubit.close();
+      gate.complete(Ok(lockedUp));
+      await init;
+      await pumpEventQueue();
+
+      expect(updates.hasListener, isFalse);
+      verify(() => watchSwap.execute('swap-1')).called(1);
+      verifyNever(
+        () => watchWalletTransactionByTxId.execute(
+          txId: any(named: 'txId'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
     });
   });
 

@@ -1,3 +1,4 @@
+import 'package:send/src/payment/domain/usecases/watch_send_settlement_usecase.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 
@@ -319,7 +320,7 @@ class _TestableSendCubit extends SendCubit {
     required super.loadLnurlPayLimitsUsecase,
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
-    required super.transactions,
+    required super.watchSettlement,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
     required super.consolidation,
@@ -609,7 +610,9 @@ void main() {
       ),
       updateSendSwapPayinUsecase: updateSendSwapPayinUsecase,
       watchSendSwapUsecase: watchSendSwapUsecase,
-      transactions: watchWalletTransactionByTxIdUsecase,
+      watchSettlement: WatchSendSettlementUsecase(
+        watchWalletTransactionByTxIdUsecase,
+      ),
       verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
       verifyExchangePayinUsecase: verifyExchangePayinUsecase,
       consolidation: consolidation,
@@ -785,6 +788,13 @@ void main() {
         .thenAnswer((_) async => const Ok(1));
     watchWalletTransactionByTxIdUsecase =
         _MockWatchWalletTransactionByTxIdUsecase();
+    // A settled Payjoin starts the by-txid watcher on its own transaction.
+    when(
+      () => watchWalletTransactionByTxIdUsecase.watchWalletTransactionByTxId(
+        walletId: any(named: 'walletId'),
+        txId: any(named: 'txId'),
+      ),
+    ).thenAnswer((_) => const Stream.empty());
     calculateBitcoinAbsoluteFeesUsecase =
         _MockCalculateBitcoinAbsoluteFeesUsecase();
     verifyChainSwapAmountSendUsecase = _MockVerifyChainSwapAmountSendUsecase();

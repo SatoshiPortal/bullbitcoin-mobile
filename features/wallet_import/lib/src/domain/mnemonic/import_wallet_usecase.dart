@@ -1,4 +1,6 @@
 import 'package:preferences/preferences.dart' hide Language;
+import 'package:provisioning/provisioning.dart'
+    show WalletProvisioningBackupRequiredFailure, WalletProvisioningException;
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, NetworkEnv, Ok, Result, ScriptType;
@@ -148,6 +150,16 @@ class ImportWalletUsecase {
       );
 
       return const Ok(null);
+    } on WalletProvisioningException catch (e) {
+      // Provisioning refused before publishing the catalog row; the stored
+      // words stay for a later import, which resumes them.
+      if (e.failure is WalletProvisioningBackupRequiredFailure) {
+        log.warning('Wallet import refused reason=backup_required');
+        return const Err(ImportMnemonicBackupRequiredFailure());
+      }
+      return Err(
+        ImportMnemonicUnexpectedFailure(e.failure.runtimeType.toString()),
+      );
     } on Exception catch (e) {
       // Provisioning may already have committed a catalog row. Preserve custody;
       // orphan cleanup is an explicit user action, never failure compensation.

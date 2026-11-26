@@ -106,6 +106,7 @@ void main() {
     testWidgets('destination card identifies ${entry.key}', (tester) async {
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state)
           .thenReturn(SendState(paymentRequest: entry.value));
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
@@ -156,6 +157,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -217,6 +219,7 @@ void main() {
       );
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state).thenReturn(state);
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
       when(() => cubit.onAmountConfirmed()).thenAnswer((_) async {});
@@ -288,6 +291,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => cubit.amountChanged(amount: null, isMax: true))
@@ -366,6 +370,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenAnswer((_) => state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(
@@ -471,6 +476,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -542,6 +548,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => cubit.amountChanged(amount: '999000', isMax: false))
@@ -639,6 +646,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -734,6 +742,7 @@ void main() {
     );
     final cubit = _MockSendCubit();
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -801,6 +810,7 @@ void main() {
       );
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state).thenReturn(state);
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -883,6 +893,7 @@ void main() {
       addTearDown(states.close);
       final cubit = _MockSendCubit();
       when(() => cubit.isSpMode).thenReturn(false);
+      when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
       when(() => cubit.state).thenAnswer((_) => state);
       when(() => cubit.stream).thenAnswer((_) => states.stream);
 

@@ -6,6 +6,7 @@ import '../domain/domain.dart';
 import '../domain/metadata_backup_wallet.dart';
 import '../domain/registered_wallet.dart';
 import '../domain/wallet_registration.dart';
+import 'backup_guard.dart';
 import 'boundary.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
@@ -93,15 +94,6 @@ final class InventoryRepository {
         }
         return Set.unmodifiable(fingerprints);
       }, orElse: FetchSecretFailure.new);
-
-  Future<Result<List<WalletRegistration>, SecretFailure>> listDefaults(
-    String view,
-  ) => boundary(() async {
-    final rows = await _listRows(view, defaultsOnly: true);
-    return List.unmodifiable([
-      for (final row in rows) ?decodeWalletRegistration(row.data),
-    ]);
-  }, orElse: FetchSecretFailure.new);
 
   Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>> recoveryWallets(
     String view,
@@ -270,60 +262,122 @@ final class InventoryRepository {
     );
   }, orElse: FetchSecretFailure.new);
 
+  /// Publishes a wallet and its membership. A secret that is not yet a member
+  /// of a protected view needs a tested backup first (D66, D97): no seed
+  /// without a backup is attached to a protected view. A wallet of a seed that
+  /// is already a member adds no seed. The decision and the insert run under
+  /// the same write lock as a credential change, so a concurrent PIN cannot
+  /// slip between them.
   Future<Result<void, SecretFailure>> register(
     RegisteredWallet wallet, {
     required String view,
-    Future<Result<void, SecretFailure>> Function()? prepareProperties,
-  }) =>
-      boundary(
-        () => _database.transaction(() async {
-          final secret = wallet.secretFingerprint;
-          if (wallet.signer == 'local'
-              ? secret != wallet.masterFingerprint || secret == null
-              : secret != null) {
+    required BackupGuard guard,
+    Future<Result<void, SecretFailure>> Function(bool existingSecretMember)?
+    prepareProperties,
+  }) async {
+    SecretFailure? refused;
+    final result = await boundary(
+      () => inventoryWriteTransaction(_database, () async {
+        final secret = wallet.secretFingerprint;
+        if (wallet.signer == 'local'
+            ? secret != wallet.masterFingerprint || secret == null
+            : secret != null) {
+          throw const _InvalidRegistration();
+        }
+        await serializeInventoryWrites(_database);
+        final exists = await (_database.select(
+          _database.wallets,
+        )..where((row) => row.id.equals(wallet.id))).getSingleOrNull();
+        if (exists != null) return false;
+        final member = secret == null
+            ? 'wallet:${wallet.id}'
+            : 'secret:$secret';
+        final known =
+            await (_database.select(_database.viewMembers)..where(
+                  (row) => row.viewId.equals(view) & row.member.equals(member),
+                ))
+                .getSingleOrNull();
+        final existingSecretMember = secret != null && known != null;
+        if (await _isProtected(view)) {
+          final members = await viewSecrets(_database, view);
+          final newSecret = secret == null
+              ? null
+              : Fingerprint.tryParse(secret);
+          if (secret != null && known == null && newSecret == null) {
             throw const _InvalidRegistration();
           }
-          final member = secret == null
-              ? 'wallet:${wallet.id}'
-              : 'secret:$secret';
-          final inserted = await _database
-              .into(_database.wallets)
-              .insertReturningOrNull(
-                WalletsCompanion.insert(
-                  id: wallet.id,
-                  secretFingerprint: Value(secret),
-                  masterFingerprint: wallet.masterFingerprint,
-                  signer: wallet.signer,
-                  network: wallet.network,
-                  xpub: wallet.xpub,
-                  externalDescriptor: wallet.externalDescriptor,
-                  internalDescriptor: wallet.internalDescriptor,
-                  label: Value(wallet.label),
-                  birthday: Value(wallet.birthday),
-                  isDefault: wallet.isDefault,
-                ),
-                onConflict: DoNothing(target: [_database.wallets.id]),
+          if ((known == null && newSecret != null) ||
+              prepareProperties != null) {
+            final regtest = switch (wallet.network) {
+              'bitcoinRegtest' || 'liquidRegtest' => true,
+              'bitcoinMainnet' ||
+              'bitcoinTestnet' ||
+              'liquidMainnet' ||
+              'liquidTestnet' => false,
+              _ => throw const _InvalidRegistration(),
+            };
+            final replacement = (walletId: wallet.id, regtest: regtest);
+            if (known == null && newSecret != null) {
+              refused = await guard.require(
+                [...members, newSecret],
+                replacingWallet: prepareProperties == null ? null : replacement,
               );
-          if (inserted == null) return false;
-          if (await prepareProperties?.call() case Err()) {
-            throw const _InvalidRegistration();
+            } else if (prepareProperties != null) {
+              refused = await guard.requirePreserved(
+                members.where((item) => item != newSecret),
+                replacingWallet: replacement,
+              );
+            }
+            if (refused != null) return false;
           }
-          await _database
-              .into(_database.viewMembers)
-              .insertOnConflictUpdate(
-                ViewMembersCompanion.insert(viewId: view, member: member),
-              );
-          return true;
-        }),
-        orElse: StoreSecretFailure.new,
-      ).then(
-        (result) => result.fold(
-          (inserted) => inserted
-              ? const Ok(null)
-              : const Err(WalletAlreadyRegisteredFailure()),
-          Err.new,
-        ),
-      );
+        }
+        final inserted = await _database
+            .into(_database.wallets)
+            .insertReturningOrNull(
+              WalletsCompanion.insert(
+                id: wallet.id,
+                secretFingerprint: Value(secret),
+                masterFingerprint: wallet.masterFingerprint,
+                signer: wallet.signer,
+                network: wallet.network,
+                xpub: wallet.xpub,
+                externalDescriptor: wallet.externalDescriptor,
+                internalDescriptor: wallet.internalDescriptor,
+                label: Value(wallet.label),
+                birthday: Value(wallet.birthday),
+                isDefault: wallet.isDefault,
+              ),
+              onConflict: DoNothing(target: [_database.wallets.id]),
+            );
+        if (inserted == null) return false;
+        if (await prepareProperties?.call(existingSecretMember) case Err()) {
+          throw const _InvalidRegistration();
+        }
+        await _database
+            .into(_database.viewMembers)
+            .insertOnConflictUpdate(
+              ViewMembersCompanion.insert(viewId: view, member: member),
+            );
+        return true;
+      }),
+      orElse: StoreSecretFailure.new,
+    );
+    final refusal = refused;
+    if (refusal != null) return Err(refusal);
+    return result.fold(
+      (inserted) => inserted
+          ? const Ok(null)
+          : const Err(WalletAlreadyRegisteredFailure()),
+      Err.new,
+    );
+  }
+
+  Future<bool> _isProtected(String view) async {
+    final row = await (_database.select(
+      _database.views,
+    )..where((row) => row.id.equals(view))).getSingleOrNull();
+    return row?.credentialId != null;
+  }
 
   Future<Result<void, SecretFailure>> updateProperties({
     required String view,

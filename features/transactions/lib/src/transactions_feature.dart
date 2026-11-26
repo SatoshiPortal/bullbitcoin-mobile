@@ -48,6 +48,7 @@ final class TransactionsFeature {
     required Stream<String> Function() syncFinished,
     required ReadOrderSwaps Function() orderSwaps,
     required TransactionUiActions actions,
+    required SettlementPoll pollSettlement,
     required Widget Function(Widget) scope,
   }) {
     services.registerFactory<ReadOrderSwaps>(orderSwaps);
@@ -75,7 +76,7 @@ final class TransactionsFeature {
         services<LabelExchangeOrdersUsecase>(),
       ),
     );
-    final router = TransactionsRouter(services, actions);
+    final router = TransactionsRouter(services, actions, pollSettlement);
     return TransactionsFeature._(services, [
       router.transactionsRoute(scope: scope),
       router.exchangeTransactionsRoute,

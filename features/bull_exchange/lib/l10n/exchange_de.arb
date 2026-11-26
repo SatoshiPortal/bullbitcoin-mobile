@@ -893,8 +893,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Erneut prüfen",
   "exchangeBitcoinWalletsSessionEnded": "Sie sind nicht mehr bei der Börse angemeldet. Melden Sie sich erneut an, um Ihre Standard-Wallets zu bearbeiten.",
   "destinationExpectedType": "Geben Sie eine gültige {type} ein oder scannen Sie sie.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Kaufen, verkaufen und bezahlen Sie mit Bull Bitcoin direkt aus Ihrer Wallet.",
   "exchangeTradingUnavailable": "Handel ist nicht verfügbar.",
   "priceChartShowTooltip": "Preisdiagramm anzeigen",
   "recipientsErrorSaveOutcomeUnknown": "Wir konnten nicht feststellen, ob dieser Empfänger gespeichert wurde. Prüfen Sie Ihre Empfänger, bevor Sie ihn erneut hinzufügen.",

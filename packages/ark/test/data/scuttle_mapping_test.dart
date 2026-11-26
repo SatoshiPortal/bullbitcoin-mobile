@@ -1,5 +1,6 @@
 import 'package:ark/ark.dart';
 import 'package:ark/src/data/ark_native_session.dart';
+import 'package:ark/src/data/ark_codec.dart';
 import 'package:ark/src/data/scuttle_mapping.dart';
 import 'package:ark/src/rust/api/payments.dart';
 import 'package:ark/src/rust/api/wallet.dart';
@@ -63,6 +64,37 @@ Matcher _reason(ArkFailureReason reason) => throwsA(
 );
 
 void main() {
+  test('signed effective amounts survive projection and persistence', () {
+    for (final (subsystem, amount, expected) in [
+      ('bark.arkoor', 1000, true),
+      ('bark.arkoor', 0, false),
+      ('bark.arkoor', -1000, false),
+      ('bark.lightning_receive', 1000, true),
+      ('bark.lightning_receive', 0, false),
+      ('bark.lightning_receive', -1000, false),
+    ]) {
+      final projected = projectScuttleMovement(
+        _movement(subsystem: subsystem, kind: 'receive', effective: amount),
+      );
+      expect(projected.direction, ArkMovementDirection.incoming);
+      expect(projected.amount?.value, BigInt.from(amount.abs()));
+      final encoded = movementToJson(projected);
+      expect(encoded['positiveEffectiveAmount'], expected);
+      expect(
+        movementToJson(movementFromJson(encoded))['positiveEffectiveAmount'],
+        expected,
+      );
+      encoded.remove('positiveEffectiveAmount');
+      expect(
+        movementToJson(movementFromJson(encoded))['positiveEffectiveAmount'],
+        false,
+      );
+    }
+    final outgoing = projectScuttleMovement(_movement(effective: -1000));
+    expect(outgoing.direction, ArkMovementDirection.outgoing);
+    expect(outgoing.amount?.value, BigInt.from(1000));
+  });
+
   test('movement subsystems map like Bark', () {
     expect(scuttleMovementKind('bark.board'), ArkMovementKind.board);
     expect(scuttleMovementKind('bark.round'), ArkMovementKind.renewal);
@@ -90,6 +122,61 @@ void main() {
       scuttleMovementStatus(ScuttleMovementStatus.pending),
       ArkMovementStatus.pending,
     );
+  });
+
+  test('native payment direction survives projection and persistence', () {
+    final incoming = projectScuttleMovement(
+      _movement(kind: 'receive', effective: 1000),
+    );
+    expect(incoming.id, '1');
+    expect(incoming.direction, ArkMovementDirection.incoming);
+    expect(
+      movementFromJson(movementToJson(incoming)).direction,
+      ArkMovementDirection.incoming,
+    );
+    expect(
+      projectScuttleMovement(_movement()).direction,
+      ArkMovementDirection.outgoing,
+    );
+    expect(
+      projectScuttleMovement(
+        _movement(subsystem: 'bark.board', kind: 'board', effective: 1000),
+      ).direction,
+      ArkMovementDirection.unknown,
+    );
+    expect(
+      projectScuttleMovement(
+        _movement(
+          subsystem: 'bark.lightning_receive',
+          kind: 'receive',
+          effective: 1000,
+        ),
+      ).direction,
+      ArkMovementDirection.incoming,
+    );
+    final legacy = movementToJson(incoming)..remove('direction');
+    expect(movementFromJson(legacy).direction, ArkMovementDirection.unknown);
+  });
+
+  test('only receive types of Ark and Lightning project as incoming', () {
+    for (final (subsystem, kind) in [
+      ('bark.board', 'board'),
+      ('bark.round', 'refresh'),
+      ('bark.exit', 'start'),
+      ('bark.offboard', 'receive'),
+      ('bark.lightning_send', 'receive'),
+      ('bark.arkoor', 'send'),
+      ('bark.lightning_receive', 'send'),
+      ('unknown.subsystem', 'receive'),
+    ]) {
+      expect(
+        projectScuttleMovement(
+          _movement(subsystem: subsystem, kind: kind, effective: 1000),
+        ).direction,
+        isNot(ArkMovementDirection.incoming),
+        reason: '$subsystem/$kind',
+      );
+    }
   });
 
   test('a movement projects absolute amounts and UTC seconds', () {

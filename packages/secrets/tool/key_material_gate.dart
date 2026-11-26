@@ -130,7 +130,7 @@ bool _isGeneratedBridge(String root, File file) =>
 /// seal-ignore exemption of their generated bridge holds only if none of them
 /// can reach package:secrets, whatever the import spelling or header.
 List<String> bindingsDartFiles(String root) => [
-  for (final package in ['rust_bindings', 'onion'])
+  for (final package in ['rust_bindings', 'onion', 'ark'])
     if (Directory('$root/packages/$package').existsSync())
       for (final file in Directory(
         '$root/packages/$package',

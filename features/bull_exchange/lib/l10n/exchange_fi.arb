@@ -871,8 +871,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Tarkista uudelleen",
   "exchangeBitcoinWalletsSessionEnded": "Et ole enää kirjautuneena pörssiin. Kirjaudu uudelleen muokataksesi oletuslompakoitasi.",
   "destinationExpectedType": "Syötä tai skannaa kelvollinen {type}.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Osta, myy ja maksa Bull Bitcoinilla suoraan lompakostasi.",
   "exchangeTradingUnavailable": "Kaupankäynti ei ole käytettävissä.",
   "priceChartShowTooltip": "Näytä hintakaavio",
   "recipientsErrorSaveOutcomeUnknown": "Emme saaneet selville, tallennettiinko tämä vastaanottaja. Tarkista vastaanottajasi ennen kuin lisäät sen uudelleen.",

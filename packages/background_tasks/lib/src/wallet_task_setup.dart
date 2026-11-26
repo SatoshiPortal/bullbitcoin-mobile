@@ -1,4 +1,3 @@
-import 'package:legacy_storage/coordination.dart';
 import 'package:preferences/preferences.dart'
     show Language, Preferences, PreferencesFailure;
 
@@ -79,17 +78,9 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
     log.fine('Background wallet task deferred: schema not current');
     return () async => const BackgroundTaskExecutionResult.retry();
   }
-  final sqlite = await LegacySourceStore(
-    source: LegacySource(
-      File('${documents.path}/bullbitcoin_sqlite.sqlite'),
-      SqliteDatabase.currentSchemaVersion,
-    ),
-    create: SqliteDatabase.new,
-  ).open(admission);
   final openedPreferences = await Preferences.open(
     file: preferencesFile,
     admission: admission,
-    legacyDatabase: sqlite,
   );
   if (openedPreferences case Err()) {
     return () async => const BackgroundTaskExecutionResult.retry();

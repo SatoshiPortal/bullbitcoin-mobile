@@ -22,6 +22,20 @@ final class AccessUnlockUnexpectedFailure extends AccessFailure {
   const AccessUnlockUnexpectedFailure([super.logMessage]);
 }
 
+/// Protecting the view needs a tested backup of [count] more seeds. The PIN was
+/// not saved.
+final class AccessBackupRequiredFailure extends AccessFailure {
+  final int count;
+
+  const AccessBackupRequiredFailure(this.count);
+}
+
+/// The backup state could not be read, so the view cannot be judged: neither
+/// "backed up" nor "missing".
+final class AccessBackupUnavailableFailure extends AccessFailure {
+  const AccessBackupUnavailableFailure();
+}
+
 final class AccessPinSaveFailure extends AccessFailure {
   const AccessPinSaveFailure();
 }

@@ -291,14 +291,12 @@ void main() {
             tor: tor,
           ),
         ),
-        openPreferences: (legacy) async {
+        openPreferences: () async {
           final owner = await createPreferencesDatabase(
-            copySettingsFrom: legacy,
+            copySettingsFrom: database,
           );
           addTearDown(owner.close);
-          return Ok(
-            PreferencesTesting.fromDatabases(owner: owner, legacy: legacy),
-          );
+          return Ok(PreferencesTesting.fromDao(PreferencesDao(owner)));
         },
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),

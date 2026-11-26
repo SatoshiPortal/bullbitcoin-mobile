@@ -1141,5 +1141,21 @@
   "closeDialogButton": "Close",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  }
+  },
+  "paymentStepSigning": "Signing",
+  "paymentStepSendingPayin": "Sending payin",
+  "paymentStepBroadcasted": "Broadcasted",
+  "paymentStepConfirmed": "Confirmed",
+  "paymentStepSendingLockup": "Sending lockup",
+  "paymentStepLockupSent": "Lockup sent",
+  "paymentStepInvoicePaid": "Invoice paid",
+  "paymentStepClaimable": "Claimable",
+  "paymentStepRequested": "Requested",
+  "paymentStepProposed": "Proposed",
+  "paymentStepPayinBroadcast": "Payin broadcast",
+  "paymentStepCompleted": "Completed",
+  "paymentStepClaimBroadcast": "Claim broadcast",
+  "paymentStepPayoutInProgress": "Payout in progress",
+  "paymentPendingMempool": "Pending in the mempool",
+  "paymentExchangeDescriptor": "EXCHANGE // ORDER"
 }

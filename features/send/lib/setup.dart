@@ -7,6 +7,7 @@ import 'package:preferences/preferences.dart';
 import 'package:spend/spend.dart';
 import 'package:swaps/order_swaps.dart' show OrderSwapRecord;
 import 'package:sync/sync.dart' show WalletKey;
+import 'package:transactions/transactions.dart' show SettlementPoll;
 
 import 'src/broadcast_signed_tx/router.dart';
 import 'src/payment/send_payment_dependencies.dart';
@@ -39,6 +40,7 @@ abstract final class SendFeature {
     required SendPaymentDependencies Function() payment,
     required void Function(BuildContext, WalletKey) openCoins,
     required Widget Function(OrderSwapRecord) orderUnderReview,
+    required SettlementPoll pollSettlement,
     ArkAccountsFacade? Function()? arkAccounts,
   }) => (
     payment: paymentRoute(
@@ -60,6 +62,7 @@ abstract final class SendFeature {
       openCoins: openCoins,
       orderUnderReview: orderUnderReview,
       successImage: broadcastSuccessImage,
+      pollSettlement: pollSettlement,
     ),
     broadcastSignedTx: broadcastSignedTxRoute(
       spend: spend,

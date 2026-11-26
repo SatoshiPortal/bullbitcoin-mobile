@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
+  "exitClaimableTitle": "Ark exit ready to claim",
+  "@exitClaimableTitle": {},
+  "exitClaimableBody": "Open the app to review your Ark exit.",
+  "@exitClaimableBody": {},
   "title": "Ark",
   "@title": {},
   "loading": "Loading Ark…",
@@ -196,6 +200,12 @@
   "@exitStatusClaimed": {},
   "exitStatusFailed": "Failed",
   "@exitStatusFailed": {},
+  "exitProgressUnrolling": "Unrolling",
+  "@exitProgressUnrolling": {},
+  "exitProgressClaimBroadcast": "Claim broadcast",
+  "@exitProgressClaimBroadcast": {},
+  "exitProgressConfirmed": "Confirmed",
+  "@exitProgressConfirmed": {},
   "spendableInSats": "Spendable (sats)",
   "@spendableInSats": {},
   "operationPrepared": "Prepared",
@@ -206,6 +216,12 @@
   "@operationPending": {},
   "operationCompleted": "Completed",
   "@operationCompleted": {},
+  "operationFundingSent": "Funding sent",
+  "@operationFundingSent": {},
+  "operationSendingFunding": "Sending funding",
+  "@operationSendingFunding": {},
+  "operationFundingUnknown": "Funding outcome unknown",
+  "@operationFundingUnknown": {},
   "operationFailed": "Failed",
   "@operationFailed": {},
   "operationUnknown": "Outcome unknown",
@@ -1359,5 +1375,17 @@
   "receiveTabArk": "Ark",
   "receiveTabLightning": "Lightning",
   "receiveAddressLabel": "Address",
-  "receiveInvoiceLabel": "Invoice"
+  "receiveInvoiceLabel": "Invoice",
+  "exitViewStatus": "Status",
+  "@exitViewStatus": {
+    "description": "Switch to the payment animation of an emergency exit"
+  },
+  "exitViewDetails": "Details",
+  "@exitViewDetails": {
+    "description": "Switch to the details of an emergency exit"
+  },
+  "exitViewsLabel": "Exit views",
+  "@exitViewsLabel": {
+    "description": "Accessible name of the Status and Details switch on an emergency exit"
+  }
 }

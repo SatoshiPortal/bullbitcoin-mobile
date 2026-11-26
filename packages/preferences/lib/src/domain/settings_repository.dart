@@ -47,30 +47,19 @@ abstract interface class TorProxyPreferencesReader {
   readTorProxyPreferences();
 }
 
-typedef ExchangeWebPreferences = ({
-  Environment environment,
-  String? exchangeTestnetBasicAuthUsername,
-  String? exchangeTestnetBasicAuthPassword,
-});
-
-abstract interface class ExchangeTestnetBasicAuthPreferences {
-  @useResult
-  Future<Result<ExchangeWebPreferences, PreferencesFailure>>
-  readExchangeWebPreferences();
-
-  @useResult
-  Future<Result<void, PreferencesFailure>> setExchangeTestnetBasicAuth({
-    String? username,
-    String? password,
-  });
-}
-
 abstract interface class RuntimeDisplayPreferencesReader {
   @useResult
   Future<Result<Language?, PreferencesFailure>> readLanguage();
   @useResult
   Future<Result<String, PreferencesFailure>> readCurrency();
   Stream<Result<String, PreferencesFailure>> get currencyChangeStream;
+}
+
+/// Whether the app plays payment progress animations. When false, consumers
+/// skip them and open the transaction details directly.
+abstract interface class PaymentAnimationPreferencesReader {
+  @useResult
+  Future<Result<bool, PreferencesFailure>> readShowPaymentAnimations();
 }
 
 abstract interface class AmountInputPreferences {
@@ -88,7 +77,7 @@ abstract interface class SettingsRepository
         DeveloperEnvironmentReader,
         TorProxyPreferencesReader,
         RuntimeDisplayPreferencesReader,
-        ExchangeTestnetBasicAuthPreferences {
+        PaymentAnimationPreferencesReader {
   /// The environment after each successful [setEnvironment].
   Stream<Result<Environment, PreferencesFailure>> get environmentChangeStream;
 
@@ -148,6 +137,11 @@ abstract interface class SettingsRepository
 
   @useResult
   Future<Result<void, PreferencesFailure>> setScreenCaptureProtectionEnabled(
+    bool enabled,
+  );
+
+  @useResult
+  Future<Result<void, PreferencesFailure>> setShowPaymentAnimations(
     bool enabled,
   );
 }

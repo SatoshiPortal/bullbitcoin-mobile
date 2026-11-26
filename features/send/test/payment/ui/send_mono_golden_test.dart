@@ -122,6 +122,7 @@ void main() {
     );
     if (subscription != null) addTearDown(subscription.cancel);
     when(() => cubit.isSpMode).thenReturn(false);
+    when(cubit.readShowPaymentAnimations).thenAnswer((_) async => true);
     when(() => cubit.preparedMaxAmountSat)
         .thenReturn(value.isMaxSend ? 80000 : null);
     when(() => cubit.customFeesChanged(any())).thenAnswer((_) async {});

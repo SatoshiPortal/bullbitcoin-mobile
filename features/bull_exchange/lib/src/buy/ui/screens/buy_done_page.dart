@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:bull_exchange/src/buy/domain/buy_payjoin_window.dart';
 import 'package:bull_exchange/src/buy/presentation/buy_flow.dart';
 import 'package:bull_exchange/src/buy/ui/buy_flow_shell.dart';
+import 'package:bull_exchange/src/buy/ui/buy_payment_progress.dart';
 import 'package:bull_exchange/src/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -9,9 +12,12 @@ import 'package:bull_ui/bull_ui.dart'
         BullAsyncStatusState,
         BullButton,
         BullCountdown,
+        BullPaymentNetwork,
+        BullPaymentStepRail,
         BullSuccessScreen,
         BullTypographyX,
-        Gap;
+        Gap,
+        PaymentAnimationPalette;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
@@ -20,7 +26,7 @@ import 'package:primitives/primitives.dart' show BitcoinUnit, FormatAmount;
 /// The confirmed buy, followed by the flow's payout watch: what was bought,
 /// the payjoin outcome while it applies, the scheduled payout countdown, and
 /// Accelerate while a bitcoin payout is still batched.
-class BuyDonePage extends StatelessWidget {
+class BuyDonePage extends StatefulWidget {
   const BuyDonePage({
     super.key,
     required this.done,
@@ -29,6 +35,7 @@ class BuyDonePage extends StatelessWidget {
     required this.onClose,
     required this.openOrder,
     required this.onAccelerate,
+    required this.showPaymentAnimations,
   });
 
   final BuyDone done;
@@ -38,8 +45,41 @@ class BuyDonePage extends StatelessWidget {
   final void Function(String orderId) openOrder;
   final void Function(String orderId) onAccelerate;
 
+  /// Resolves the payment-animation preference before the page picks between
+  /// its rail and the hand-off to the transaction details.
+  final Future<bool> Function() showPaymentAnimations;
+
+  @override
+  State<BuyDonePage> createState() => _BuyDonePageState();
+}
+
+class _BuyDonePageState extends State<BuyDonePage> {
+  /// Null until the preference is read: the rail is not shown before then.
+  bool? _animations;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_resolve());
+  }
+
+  // Runs once per page: payout-watch updates rebuild it without re-running
+  // this, so the hand-off navigates exactly once.
+  Future<void> _resolve() async {
+    final animations = await widget.showPaymentAnimations();
+    if (!mounted) return;
+    setState(() => _animations = animations);
+    if (!animations) widget.openOrder(widget.done.order.orderId);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final done = widget.done;
+    final unit = widget.unit;
+    final now = widget.now;
+    final onClose = widget.onClose;
+    final openOrder = widget.openOrder;
+    final onAccelerate = widget.onAccelerate;
     final order = done.order;
     final payoutTime = order.scheduledPayoutTime;
     final failed = switch (done.watch) {
@@ -66,6 +106,19 @@ class BuyDonePage extends StatelessWidget {
     };
     final payoutPending =
         order.payoutStatus != OrderPayoutStatus.completed && !failed;
+    final network = buyPaymentNetwork(order);
+    final palette =
+        Theme.of(context).extension<PaymentAnimationPalette>() ??
+        PaymentAnimationPalette.standard;
+    final steps = [
+      context.loc.buyStepOrderPlaced,
+      context.loc.buyStepPayoutInProgress,
+      if (network != BullPaymentNetwork.lightning) ...[
+        context.loc.buyStepPayoutBroadcast,
+        context.loc.buyStepPayoutSent,
+      ] else
+        context.loc.buyStepPaid,
+    ];
     return BullSuccessScreen(
       title: context.loc.buyConfirmTitle,
       headline: context.loc.buyYouBought(
@@ -76,6 +129,28 @@ class BuyDonePage extends StatelessWidget {
       message: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // The rail carries its own dark palette: give it that background so
+          // its white, orange and green segments read in a light theme too.
+          if (_animations ?? false) ...[
+            ColoredBox(
+              color: palette.background,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: BullPaymentStepRail(
+                  progress: buyPaymentProgress(
+                    steps: steps,
+                    order: order,
+                    watch: done.watch,
+                  ),
+                  network: network,
+                  phase: buyPaymentPhase(order: order, watch: done.watch),
+                  palette: palette,
+                  reduced: MediaQuery.disableAnimationsOf(context),
+                ),
+              ),
+            ),
+            const Gap(16),
+          ],
           BullAsyncStatus(
             state: switch (order.payjoinOutcome) {
               OrderPayjoinOutcome.none => BullAsyncStatusState.hidden,

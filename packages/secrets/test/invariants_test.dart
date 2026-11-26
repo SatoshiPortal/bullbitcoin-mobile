@@ -90,6 +90,7 @@ void main() {
       'lib/src/data/boundary.dart', // exception → failure, the one try/catch
       'lib/src/data/secret_repository.dart', // the two that are not exceptions: not-found, mnemonic required
       'lib/src/data/database_key_repository.dart', // not-found on an open-only read
+      'lib/src/data/backup_guard.dart', // typed outcomes from backup proof reads
     };
 
     // Absence, unreadable records and duplicate identities are Results from
@@ -369,6 +370,9 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseNotReady',
       // the failure family
       'SecretFailure',
+      'BackupRequiredFailure',
+      'BackupStateUnavailableFailure',
+      'BackupVerifierUnboundFailure',
       'SecretAlreadyExistsFailure',
       'SecretNotFoundFailure',
       'FetchSecretFailure',

@@ -1,4 +1,5 @@
 import 'package:access/src/access_l10n.dart';
+import 'package:access/src/presentation/access_failure_l10n.dart';
 import 'package:access/src/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,7 +56,9 @@ class PinSettingsScreen extends StatelessWidget {
                     if (backupRequired) ...[
                       const Gap(24),
                       BullInfoCard(
-                        description: context.loc.pinCodeBackupRequiredWarning,
+                        description:
+                            state.failure?.toTranslated(context) ??
+                            context.loc.pinCodeBackupRequiredWarning,
                         tagColor: context.bull.warning,
                         bgColor: context.bull.warningContainer,
                       ),

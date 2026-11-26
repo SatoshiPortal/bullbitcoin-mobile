@@ -328,7 +328,7 @@
   "@errorReportingCancelButton": {
     "description": "Button to cancel error reporting"
   },
-  "errorReportingRestartSnackbar": "Restart the app to apply this change",
+  "errorReportingRestartSnackbar": "Close and reopen the app to apply this change.",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
@@ -387,6 +387,18 @@
   "settingsScreenPrivacyDisabledMessage": "Screenshots are now allowed on sensitive screens",
   "@settingsScreenPrivacyDisabledMessage": {
     "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
+  },
+  "settingsPaymentAnimationsTitle": "Payment animations",
+  "@settingsPaymentAnimationsTitle": {
+    "description": "Settings entry title for the toggle that enables payment progress animations"
+  },
+  "settingsPaymentAnimationsSubtitle": "When off, payments open their details directly.",
+  "@settingsPaymentAnimationsSubtitle": {
+    "description": "Subtitle of the payment animations toggle: when off, the app opens the transaction details directly"
+  },
+  "settingsSearchPaymentAnimationsKeywords": "payment animation|animation|progress animation|transaction details|reduce motion",
+  "@settingsSearchPaymentAnimationsKeywords": {
+    "description": "Pipe-separated search keywords for the payment animations setting"
   },
   "settingsSearchHint": "Search settings",
   "@settingsSearchHint": {
@@ -679,5 +691,13 @@
   "amountInputBitcoin": "Bitcoin",
   "@amountInputBitcoin": {},
   "amountInputTitle": "Enter amounts in",
-  "@amountInputTitle": {}
+  "@amountInputTitle": {},
+  "statisticsConsentTitle": "Share usage statistics",
+  "@statisticsConsentTitle": {},
+  "statisticsConsentDescription": "Share one daily activity observation with the app version and environment, without a persistent installation identifier. You can change this at any time.",
+  "@statisticsConsentDescription": {},
+  "statisticsConsentWriteFailed": "Could not save this choice. The previous choice may return after restart. Please retry.",
+  "@statisticsConsentWriteFailed": {},
+  "statisticsConsentRetry": "Retry",
+  "@statisticsConsentRetry": {}
 }

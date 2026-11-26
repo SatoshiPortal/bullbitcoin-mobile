@@ -29,6 +29,13 @@ abstract class WizardLocalDatasource {
   Future<bool?> readPendingBackgroundTasks();
   Future<void> writePendingBackgroundTasks(bool enabled);
 
+  Future<bool?> readPendingScreenPrivacy();
+  Future<void> writePendingScreenPrivacy(bool enabled);
+
+  Future<String?> readPendingNetwork();
+  Future<void> writePendingNetwork(String name);
+  Future<void> clearPendingNetwork();
+
   Future<void> clearAllPending();
 }
 
@@ -41,6 +48,42 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   static const _pendingCurrencyKey = 'wizard_pending_currency';
   static const _pendingErrorReportingKey = 'wizard_pending_error_reporting';
   static const _pendingBackgroundTasksKey = 'wizard_pending_background_tasks';
+  static const _pendingScreenPrivacyKey = 'wizard_pending_screen_privacy';
+  static const _pendingNetworkKey = 'wizard_pending_network';
+
+  @override
+  Future<bool?> readPendingScreenPrivacy() async =>
+      (await SharedPreferences.getInstance()).getBool(_pendingScreenPrivacyKey);
+
+  @override
+  Future<void> writePendingScreenPrivacy(bool enabled) async {
+    if (!await (await SharedPreferences.getInstance()).setBool(
+      _pendingScreenPrivacyKey,
+      enabled,
+    )) {
+      throw Exception('Could not stage the screen privacy choice');
+    }
+  }
+
+  @override
+  Future<String?> readPendingNetwork() async =>
+      (await SharedPreferences.getInstance()).getString(_pendingNetworkKey);
+
+  @override
+  Future<void> writePendingNetwork(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!await prefs.setString(_pendingNetworkKey, name)) {
+      throw Exception('Could not stage the network choice');
+    }
+  }
+
+  @override
+  Future<void> clearPendingNetwork() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!await prefs.remove(_pendingNetworkKey)) {
+      throw Exception('Could not acknowledge the network choice');
+    }
+  }
 
   @override
   Future<int?> readCompletedVersion() async {
@@ -148,5 +191,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
     await prefs.remove(_pendingThemeKey);
     await prefs.remove(_pendingCurrencyKey);
     await prefs.remove(_pendingErrorReportingKey);
+    await prefs.remove(_pendingNetworkKey);
+    await prefs.remove(_pendingScreenPrivacyKey);
   }
 }

@@ -37,6 +37,14 @@ class WizardRepositoryImpl implements WizardRepository {
     await clearPending();
     if (choices.touched.isEmpty) return;
     await _datasource.writePendingVersion(kCurrentWizardVersion);
+    if (choices.touched.contains(WizardField.screenPrivacy)) {
+      await _datasource.writePendingScreenPrivacy(choices.screenPrivacy);
+    }
+    if (choices.touched.contains(WizardField.network)) {
+      if (choices.network case final network?) {
+        await _datasource.writePendingNetwork(network.name);
+      }
+    }
     if (choices.touched.contains(WizardField.language)) {
       await _datasource.writePendingLanguage(choices.language.name);
     }
@@ -71,16 +79,25 @@ class WizardRepositoryImpl implements WizardRepository {
     final errorReporting = await _datasource.readPendingErrorReporting();
     final exchangeAccess = await _datasource.readPendingExchangeAccess();
     final backgroundTasks = await _datasource.readPendingBackgroundTasks();
+    final network = await _datasource.readPendingNetwork();
+    final screenPrivacy = await _datasource.readPendingScreenPrivacy();
     if (languageName == null &&
         themeName == null &&
         currency == null &&
         errorReporting == null &&
         exchangeAccess == null &&
-        backgroundTasks == null) {
+        backgroundTasks == null &&
+        network == null &&
+        screenPrivacy == null) {
       return null;
     }
     final pendingVersion = await _datasource.readPendingVersion() ?? 0;
     if (pendingVersion != kCurrentWizardVersion) {
+      if (network != null || screenPrivacy != null) {
+        throw const FormatException(
+          'Pending advanced options version is unsupported',
+        );
+      }
       await clearPending();
       return null;
     }
@@ -91,9 +108,13 @@ class WizardRepositoryImpl implements WizardRepository {
     if (errorReporting != null) touched.add(WizardField.reportingConsent);
     if (exchangeAccess != null) touched.add(WizardField.exchangeAccess);
     if (backgroundTasks != null) touched.add(WizardField.backgroundTasks);
+    if (network != null) touched.add(WizardField.network);
+    if (screenPrivacy != null) touched.add(WizardField.screenPrivacy);
     return WizardChoices(
       exchangeAccess: exchangeAccess ?? true,
       backgroundTasks: backgroundTasks ?? true,
+      network: network == null ? null : Environment.fromName(network),
+      screenPrivacy: screenPrivacy ?? true,
       language: languageName == null
           ? Language.unitedStatesEnglish
           : Language.fromName(languageName),
@@ -108,4 +129,7 @@ class WizardRepositoryImpl implements WizardRepository {
 
   @override
   Future<void> clearPending() => _datasource.clearAllPending();
+
+  @override
+  Future<void> clearPendingNetwork() => _datasource.clearPendingNetwork();
 }

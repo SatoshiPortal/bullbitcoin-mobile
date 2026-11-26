@@ -20,6 +20,10 @@ SwapLocalizations swapCopy(String localeName) {
 }
 
 extension SwapCopyContext on BuildContext {
+  SwapLocalizations get loc =>
+      Localizations.of<SwapLocalizations>(this, SwapLocalizations) ??
+      swapCopy(Localizations.localeOf(this).toLanguageTag());
+
   SwapLocalizations get swapCopyForLocale =>
       swapCopy(Localizations.localeOf(this).toLanguageTag());
 }
