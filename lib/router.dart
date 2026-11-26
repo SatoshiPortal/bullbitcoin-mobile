@@ -17,6 +17,9 @@ import 'package:transactions/transactions.dart' show Transactions;
 import 'package:primitives/primitives.dart' show Err, NetworkEnv, Result;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
+import 'package:backup_metadata/backup_metadata_ui.dart'
+    show BackupMetadataLocalizations;
+import 'package:backup_metadata/setup.dart' show BackupMetadataFeature;
 import 'package:backups/backups.dart';
 import 'package:bull_recoverbull/storage.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -370,6 +373,14 @@ class AppRouter {
               successImage: AssetImage(Assets.animations.successTick.path),
               onTestSucceeded: _onBackupTestSucceeded,
               onExportTransactions: TransactionsNavigation.openExport,
+              dataBackup: locator.isRegistered<BackupMetadataFeature>()
+                  ? (context) => locator<BackupMetadataFeature>().page(
+                      onClose: () => context.pop(),
+                    )
+                  : null,
+              dataBackupStatus: locator.isRegistered<BackupMetadataFeature>()
+                  ? (context) => BackupMetadataLocalizations.of(context).off
+                  : null,
             ).route,
           ],
           priceRoutes: locator<BitcoinPriceFeature>().routes,
