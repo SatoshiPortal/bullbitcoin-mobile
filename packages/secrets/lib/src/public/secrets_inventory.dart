@@ -115,6 +115,12 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   Future<Result<AccessAttempt, SecretFailure>> accessStatus() =>
       _access.status();
 
+  /// Whether no session may use secrets right now.
+  bool get isLocked => !_unlocked;
+
+  /// True on every lock, false on every unlock, in order.
+  Stream<bool> get lockedChanges => _authority.changes.map((t) => t == null);
+
   @useResult
   Future<Result<AccessAttempt, SecretFailure>> unlock(String candidate) async {
     final current = _session;
