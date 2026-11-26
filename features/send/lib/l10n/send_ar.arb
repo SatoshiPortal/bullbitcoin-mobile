@@ -504,10 +504,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "إرسال",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "المبادلة جارية الفاتورة ستدفع خلال ثواني.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

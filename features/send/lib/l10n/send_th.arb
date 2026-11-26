@@ -501,10 +501,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "ยืนยัน",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "บันทึกในความคืบหน้า ใบแจ้งหนี้จะชําระเงินในไม่กี่วินาที.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

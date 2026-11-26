@@ -517,10 +517,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "Enviar",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "A troca está em andamento. A fatura será paga em alguns segundos.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

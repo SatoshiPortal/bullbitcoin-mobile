@@ -93,7 +93,6 @@
   "receiveNote": "Зареєструватися",
   "selectAmountTitle": "Оберіть розмір",
   "sendAdvancedOptions": "Додаткові параметри",
-  "sendDone": "Сонце",
   "sendErrorBuildFailed": "Не вдалося підготувати цей платіж. Будь ласка, спробуйте ще раз.",
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
   "sendFastFee": "Швидкий",

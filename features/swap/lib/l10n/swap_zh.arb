@@ -94,7 +94,6 @@
   "receiveNote": "说明",
   "selectAmountTitle": "选择性数额",
   "sendAdvancedOptions": "A. 先进选择",
-  "sendDone": "Done",
   "sendErrorBuildFailed": "无法准备此支付。请重试。",
   "sendErrorSwapCreationFailed": "未能制造 s.",
   "sendFastFee": "快速",

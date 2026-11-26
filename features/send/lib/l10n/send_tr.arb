@@ -501,10 +501,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "Onay Gönder",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "Değişim devam ediyor. Fatura birkaç saniyede ödenecektir.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

@@ -65,7 +65,6 @@
   "receiveNote": "Նշում",
   "selectAmountTitle": "Ընտրեք գումարը",
   "sendAdvancedOptions": "Ընդլայնված ընտրանքներ",
-  "sendDone": "Պատրաստ է",
   "sendErrorBuildFailed": "Այս վճարումը չհաջողվեց նախապատրաստել։ Խնդրում ենք կրկին փորձել։",
   "sendErrorSwapCreationFailed": "Չհաջողվեց ստեղծել փոխանակումը։",
   "sendFastFee": "Արագ",

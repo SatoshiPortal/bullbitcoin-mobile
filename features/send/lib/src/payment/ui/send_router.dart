@@ -21,7 +21,6 @@ GoRoute paymentRoute({
   required void Function(BuildContext) openHome,
   required void Function(BuildContext, WalletKey) openCoins,
   required Widget Function(OrderSwapRecord) orderUnderReview,
-  required ImageProvider arrowImage,
   required ImageProvider successImage,
   required SettlementPoll pollSettlement,
 }) => GoRoute(
@@ -46,7 +45,6 @@ GoRoute paymentRoute({
         openHome: openHome,
         openCoins: openCoins,
         orderUnderReview: orderUnderReview,
-        arrowImage: arrowImage,
         successImage: successImage,
         child: SendPsbtHandoff(
           openReader: openSignedTransactionReader,

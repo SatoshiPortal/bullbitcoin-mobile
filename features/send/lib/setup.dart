@@ -40,7 +40,6 @@ abstract final class SendFeature {
     required SendPaymentDependencies Function() payment,
     required void Function(BuildContext, WalletKey) openCoins,
     required Widget Function(OrderSwapRecord) orderUnderReview,
-    required ImageProvider paymentArrowImage,
     required SettlementPoll pollSettlement,
     ArkAccountsFacade? Function()? arkAccounts,
   }) => (
@@ -62,7 +61,6 @@ abstract final class SendFeature {
       openHome: goToWalletHome,
       openCoins: openCoins,
       orderUnderReview: orderUnderReview,
-      arrowImage: paymentArrowImage,
       successImage: broadcastSuccessImage,
       pollSettlement: pollSettlement,
     ),

@@ -126,7 +126,6 @@
   "sendTransferFeeDescription": "Tämä on lähetetystä summasta vähennetty kokonaiskulu",
   "sendReceiveNetworkFee": "Vastaanoton verkkokulu",
   "sendServerNetworkFees": "Palvelimen verkkokulut",
-  "sendConfirmSend": "Vahvista lähetys",
   "sendSending": "Lähetetään",
   "sendBroadcastingTransaction": "Lähetetään transaktiota.",
   "sendSwapInProgressInvoice": "Swap on käynnissä. Lasku maksetaan muutamassa sekunnissa.",

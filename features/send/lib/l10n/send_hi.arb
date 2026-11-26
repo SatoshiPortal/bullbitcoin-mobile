@@ -502,10 +502,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "पुष्टि करें",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "स्वैप प्रगति पर है। चालान कुछ सेकंड में भुगतान किया जाएगा।।",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

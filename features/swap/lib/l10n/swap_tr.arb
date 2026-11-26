@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Done",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Bu ödeme hazırlanamadı. Lütfen tekrar deneyin.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"

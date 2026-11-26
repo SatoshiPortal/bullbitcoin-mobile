@@ -50,7 +50,7 @@ class BullOnchainSendInfoSection extends StatelessWidget {
   final ValueChanged<bool>? _onPayjoinToggleChanged;
   final String _note;
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.bull.secondaryFixedDim);
+    return Container(height: 1, color: context.bull.border);
   }
 
   @override
@@ -64,9 +64,7 @@ class BullOnchainSendInfoSection extends StatelessWidget {
             title: labels.from,
             details: BullText(
               _sendWalletLabel,
-              style: context.bullType.body
-                  .copyWith(fontWeight: FontWeight.w500)
-                  .copyWith(color: context.bull.secondary),
+              style: context.bullType.body.copyWith(color: context.bull.text),
               textAlign: .end,
             ),
           ),
@@ -80,7 +78,7 @@ class BullOnchainSendInfoSection extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48),
                 child: addressBuilder(
-                  context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+                  context.bullType.body,
                   context.bull.secondary,
                 ),
               ),
@@ -129,9 +127,7 @@ class BullOnchainSendInfoSection extends StatelessWidget {
               title: labels.note,
               details: BullText(
                 _note,
-                style: context.bullType.body
-                    .copyWith(fontWeight: FontWeight.w500)
-                    .copyWith(color: context.bull.secondary),
+                style: context.bullType.body.copyWith(color: context.bull.text),
                 textAlign: .end,
               ),
             ),
@@ -144,14 +140,14 @@ class BullOnchainSendInfoSection extends StatelessWidget {
               children: [
                 BullText(
                   _formattedBitcoinAmount,
-                  style: context.bullType.body
-                      .copyWith(fontWeight: FontWeight.w500)
-                      .copyWith(color: context.bull.secondary),
+                  style: context.bullType.body.copyWith(
+                    color: context.bull.text,
+                  ),
                 ),
                 BullText(
                   _formattedFiatEquivalent,
                   style: context.bullType.caption.copyWith(
-                    color: context.bull.secondary,
+                    color: context.bull.textMuted,
                   ),
                 ),
               ],
@@ -162,9 +158,7 @@ class BullOnchainSendInfoSection extends StatelessWidget {
             title: labels.networkFee,
             details: BullText(
               _absoluteFees,
-              style: context.bullType.body
-                  .copyWith(fontWeight: FontWeight.w500)
-                  .copyWith(color: context.bull.secondary),
+              style: context.bullType.body.copyWith(color: context.bull.text),
               textAlign: .end,
             ),
           ),

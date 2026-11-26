@@ -13,7 +13,7 @@ void main() {
     tester.view.physicalSize = const Size(320, 400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    var cancelled = false;
+    var closed = false;
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(
@@ -33,9 +33,9 @@ void main() {
                 fee: const Text('− 200 sats'),
                 receivesLabel: 'Recipient gets',
                 receives: const Text('99,800 sats'),
-                cancelLabel: 'Cancel',
+                closeLabel: 'Close',
                 sendAllLabel: 'Send all',
-                onCancel: () => cancelled = true,
+                onClose: () => closed = true,
                 onSendAll: null,
               ),
             ),
@@ -48,9 +48,8 @@ void main() {
     expect(find.text('99,800 sats'), findsOneWidget);
     final send = tester.widget<BullButton>(find.byType(BullButton).last);
     expect(send.disabled, isTrue);
-    await tester.ensureVisible(find.text('Cancel'));
-    await tester.tap(find.text('Cancel'));
-    expect(cancelled, isTrue);
+    await tester.tap(find.byTooltip('Close'));
+    expect(closed, isTrue);
     expect(tester.takeException(), isNull);
   });
 }

@@ -184,10 +184,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Готово",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Това плащане не можа да бъде подготвено. Моля, опитайте отново.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"

@@ -93,7 +93,6 @@
   "receiveNote": "Notiz",
   "selectAmountTitle": "Betrag auswählen",
   "sendAdvancedOptions": "Erweiterte Optionen",
-  "sendDone": "Fertig",
   "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
   "sendErrorSelectedCoinsInsufficient": "Die ausgewählten Coins reichen nicht aus, um den Betrag und die Gebühren zu decken. Wählen Sie weitere Coins aus oder verringern Sie den Betrag.",
   "sendErrorSelectedCoinsUnavailable": "Ein oder mehrere ausgewählte Coins sind nicht mehr verfügbar. Überprüfen Sie Ihre Coin-Auswahl und versuchen Sie es erneut.",

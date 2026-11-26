@@ -93,7 +93,6 @@
   "receiveNote": "Nota",
   "selectAmountTitle": "Selecione o valor",
   "sendAdvancedOptions": "Opções avançadas",
-  "sendDone": "Feito",
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
   "sendFastFee": "Rápido",

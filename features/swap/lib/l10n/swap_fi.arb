@@ -93,7 +93,6 @@
   "receiveNote": "Kuvaus",
   "selectAmountTitle": "Valitse määrä",
   "sendAdvancedOptions": "Lisäasetukset",
-  "sendDone": "Valmis",
   "sendErrorBuildFailed": "Tätä maksua ei voitu valmistella. Yritä uudelleen.",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
   "sendFastFee": "Nopea",

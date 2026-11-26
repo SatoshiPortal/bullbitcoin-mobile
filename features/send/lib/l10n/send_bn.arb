@@ -498,10 +498,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "পাঠান নিশ্চিত করুন",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "বিনিময় প্রক্রিয়াধীন। চালানটি কয়েক সেকেন্ডের মধ্যে পরिशোধ হবে।",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"

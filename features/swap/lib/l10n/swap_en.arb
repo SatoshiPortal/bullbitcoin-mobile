@@ -345,10 +345,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Done",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "This payment could not be prepared. Please try again.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -656,10 +652,6 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
-  "@walletLoadFailed": {
-    "description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."
-  },
   "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
   "@walletSpendAwaitingObservation": {
     "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
@@ -723,5 +715,7 @@
   "swapsFailureRefundNotFinal": "The refund is not spendable yet (timelock). Try again later.",
   "@swapsFailureRefundNotFinal": {"description": "Rescue failure: refund timelock not passed"},
   "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
-  "@swapsFailureUnexpected": {"description": "Rescue failure: generic catch-all, never shows raw details"}
+  "@swapsFailureUnexpected": {"description": "Rescue failure: generic catch-all, never shows raw details"},
+  "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
+  "@walletLoadFailed": {"description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."}
 }

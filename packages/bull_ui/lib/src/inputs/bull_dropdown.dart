@@ -25,6 +25,7 @@ class BullDropdown<T> extends StatelessWidget {
     required this.onChanged,
     this.validator,
     this.hint,
+    this.trailing,
   });
 
   /// The choices, in menu order.
@@ -41,6 +42,10 @@ class BullDropdown<T> extends StatelessWidget {
 
   /// Placeholder shown while no item matches [value].
   final String? hint;
+
+  /// Optional detail drawn after the label, before the chevron, in the closed
+  /// field only, such as the selected wallet's balance.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +100,11 @@ class BullDropdown<T> extends StatelessWidget {
                                 .copyWith(color: labelColor),
                           ),
                         ),
+                        if (trailing case final detail?) ...[
+                          const Gap(BullSpacing.xs),
+                          detail,
+                          const Gap(BullSpacing.xs),
+                        ],
                         ExcludeSemantics(
                           child: ExcludeFocus(
                             child: BullFieldAction(

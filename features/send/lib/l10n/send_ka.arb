@@ -151,7 +151,6 @@
   "sendTransferFeeDescription": "ეს არის ჯამური საკომისიო, გამოკლებული გაგზავნილი თანხიდან",
   "sendReceiveNetworkFee": "მიღების ქსელის საკომისიო",
   "sendServerNetworkFees": "სერვერის ქსელის საკომისიო",
-  "sendConfirmSend": "გაგზავნის დადასტურება",
   "sendSelfTransfer": "საკუთარ თავზე გადარიცხვა",
   "sendSending": "იგზავნება",
   "sendBroadcastingTransaction": "ტრანზაქციის ტრანსლაცია.",

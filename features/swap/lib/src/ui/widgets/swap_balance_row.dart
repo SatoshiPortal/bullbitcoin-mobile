@@ -6,7 +6,7 @@ import 'package:swap_feature/src/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButtonSize, BullButton, Gap, BullTypographyX;
+    show BullButtonSize, BullButton, BullSpacing, Gap, BullTypographyX;
 
 class SwapBalanceRow extends StatelessWidget {
   const SwapBalanceRow({super.key});
@@ -19,9 +19,16 @@ class SwapBalanceRow extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
+    final loading = context.select(
+      (TransferBloc bloc) => bloc.state.isStarting,
+    );
     final balanceSat = fromWallet?.balanceSat?.toInt();
+    // "…" only while the wallets load; a balance still missing after that is
+    // a failure, said plainly rather than shown as a load that never ends.
     final balance = balanceSat == null
-        ? context.swapCopyForLocale.walletLoadFailed
+        ? loading
+              ? '…'
+              : context.swapCopyForLocale.walletLoadFailed
         : bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(balanceSat)
         : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
@@ -39,21 +46,27 @@ class SwapBalanceRow extends StatelessWidget {
           ),
         ),
         const Gap(4),
-        Text(balance, style: context.bullType.label),
-        const Spacer(),
-        BullButton.secondary(
-          size: BullButtonSize.small,
-          label: context.swapCopyForLocale.swapMaxButton,
-          height: 48,
-          width: 51,
-          textStyle: context.bullType.label,
-          onPressed: (maxAmountSat == null || maxAmountSat <= 0)
-              ? null
-              : () {
-                  context.read<TransferBloc>().add(
-                    const TransferEvent.maxSelected(),
-                  );
-                },
+        // A missing balance reads as a sentence: it wraps beside MAX rather
+        // than running under it.
+        Expanded(child: Text(balance, style: context.bullType.label)),
+        const Gap(8),
+        // Inset like the field actions above, so the black boxes line up.
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: BullSpacing.xs),
+          child: BullButton.secondary(
+            size: BullButtonSize.small,
+            label: context.swapCopyForLocale.swapMaxButton,
+            height: 48,
+            width: 51,
+            textStyle: context.bullType.label,
+            onPressed: (maxAmountSat == null || maxAmountSat <= 0)
+                ? null
+                : () {
+                    context.read<TransferBloc>().add(
+                      const TransferEvent.maxSelected(),
+                    );
+                  },
+          ),
         ),
       ],
     );

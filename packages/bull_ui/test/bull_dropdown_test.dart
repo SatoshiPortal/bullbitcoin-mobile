@@ -222,4 +222,24 @@ void main() {
       expect(banana.style?.color, const Color(0xFFFFFFFF));
     });
   });
+
+  testWidgets('a trailing detail sits between the label and the chevron', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullDropdown<String>(
+          items: const [BullPickerItem(value: 'w', label: 'Secure Bitcoin')],
+          value: 'w',
+          onChanged: (_) {},
+          trailing: const Text('10,429 sats'),
+        ),
+      ),
+    );
+    final label = tester.getRect(find.text('Secure Bitcoin'));
+    final detail = tester.getRect(find.text('10,429 sats'));
+    final chevron = tester.getRect(find.byType(BullFieldAction));
+    expect(detail.left, greaterThan(label.left));
+    expect(detail.right, lessThan(chevron.left));
+  });
 }

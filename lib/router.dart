@@ -246,7 +246,6 @@ class AppRouter {
         : null,
     openCoins: CoinsNavigation.replace,
     orderUnderReview: (order) => OrderSwapUnderReviewCard(orderSwap: order),
-    paymentArrowImage: AssetImage(Assets.icons.rightArrow.path),
     pollSettlement: (id, {required isActive}) =>
         locator<OverviewSynchronization>().coordinator.pollWallet(
           id,

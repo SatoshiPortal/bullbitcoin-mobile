@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -56,6 +57,56 @@ void main() {
     }
     semantics.dispose();
   });
+
+  for (final allowEmpty in [false, true]) {
+    testWidgets('an optional label can be cleared: $allowEmpty', (
+      tester,
+    ) async {
+      String? saved = 'untouched';
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: TextButton(
+                onPressed: () async => saved = await LabelEditor.label(
+                  context,
+                  title: 'Note',
+                  initialValue: 'Accidental note',
+                  allowEmpty: allowEmpty,
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          theme: ThemeData(extensions: testBullExtensions),
+          localizationsDelegates: const [
+            LabelEditorLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          supportedLocales: LabelEditorLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(EditableText), '');
+      await tester.pump();
+
+      final save = tester.widget<BullButton>(find.byType(BullButton));
+      expect(save.disabled, !allowEmpty);
+      if (allowEmpty) {
+        await tester.tap(find.byType(BullButton));
+        await tester.pumpAndSettle();
+        expect(saved, '');
+      }
+    });
+  }
 
   testWidgets('opens the mounted labels route and resolves labels lazily', (
     tester,

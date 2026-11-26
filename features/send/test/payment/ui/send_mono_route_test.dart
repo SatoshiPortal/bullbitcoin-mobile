@@ -11,7 +11,6 @@ import '../testing/send_source_fixture.dart';
 import 'package:go_router/go_router.dart';
 
 import 'dart:async';
-import 'dart:convert';
 
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_payment_page.dart';
@@ -22,6 +21,8 @@ import 'package:sync/sync.dart' show WalletKey;
 
 import 'package:fees/fees.dart';
 import 'package:satoshifier/payment_request.dart';
+import 'package:secrets/secrets.dart' show WalletSigner;
+import 'package:signers/signers.dart' show SignerDevice;
 import 'package:send/src/payment/domain/send_amount_conversion.dart';
 import 'package:primitives/primitives.dart' show Sats;
 import 'package:send/src/payment/domain/send_failure.dart';
@@ -70,12 +71,6 @@ class _DuplicateFeeLabelsDelegate
   @override
   bool shouldReload(_DuplicateFeeLabelsDelegate old) => false;
 }
-
-final _transparentPixel = MemoryImage(
-  base64Decode(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mNgAAIAAAUAAen63NgAAAAASUVORK5CYII=',
-  ),
-);
 
 void main() {
   setUpAll(() {
@@ -174,7 +169,6 @@ void main() {
                 GoRouter.of(context)
                     .pushReplacementNamed('coins', extra: wallet),
             orderUnderReview: (_) => const SizedBox.shrink(),
-            arrowImage: _transparentPixel,
             successImage: const AssetImage('unused-success'),
             child: child ?? const SizedBox.shrink(),
           ),
@@ -247,7 +241,8 @@ void main() {
     expect(find.text('Public amount'), findsOneWidget);
     expect(find.text('100 sats'), findsOneWidget);
     expect(find.text('10,100 sats'), findsOneWidget);
-    expect(find.byType(BullAdvancedOptionsLink), findsOneWidget);
+    // Advanced settings live on the amount step, not on the review.
+    expect(find.byType(BullAdvancedOptionsLink), findsNothing);
   });
 
   testWidgets('Liquid advanced settings retain manual coin selection', (
@@ -343,6 +338,252 @@ void main() {
 
     expect(find.byType(SendPaymentPage), findsOneWidget);
   });
+
+  testWidgets('Continue confirms a recipient kept after Edit', (tester) async {
+    final cubit = await pump(tester, state(step: SendStep.address));
+    when(cubit.continueOnAddressConfirmed).thenAnswer((_) async {});
+
+    expect(find.byType(SendPaymentPage), findsOneWidget);
+    final button = find.widgetWithText(BullButton, 'Continue');
+    expect(tester.widget<BullButton>(button).disabled, isFalse);
+    await tester.tap(button);
+    verify(cubit.continueOnAddressConfirmed).called(1);
+  });
+
+  testWidgets('From lists the Liquid wallet without subtitles', (tester) async {
+    final liquid = sendSourceFixture(
+      id: 'mono-liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(1000000),
+      label: 'Instant',
+    );
+    await pump(
+      tester,
+      state().copyWith(
+        wallets: [
+          sendSourceFixture(
+            id: 'mono',
+            network: BitcoinNetwork.mainnet,
+            balanceSat: BigInt.from(1000000),
+            label: 'Secure',
+          ),
+          liquid,
+        ],
+      ),
+    );
+
+    await tester.tap(find.text('Secure'));
+    await tester.pumpAndSettle();
+    expect(find.text('Instant'), findsWidgets);
+    expect(find.textContaining('Secure Bitcoin wallet'), findsNothing);
+  });
+
+  testWidgets('a plain Liquid payment confirms on the shared review', (
+    tester,
+  ) async {
+    final liquid = sendSourceFixture(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(4909),
+      label: 'Instant payments',
+    );
+    await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(
+        sendType: SendType.liquid,
+        selectedWallet: SendWalletBitcoin(liquid),
+        paymentRequest: const PaymentRequest.liquid(
+          address: 'lq1qqwzrpfmt9d7tx76jq6lgr7ylkg',
+          isTestnet: false,
+        ),
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+        confirmedAmountSat: 1000,
+        liquidAbsoluteFees: 26,
+      ),
+    );
+
+    expect(find.byType(SendPaymentReview), findsOneWidget);
+    expect(find.text('Note'), findsOneWidget);
+    expect(find.byType(SendConfirmScreen), findsNothing);
+  });
+
+  testWidgets('the classic amount step chooses the fee in Advanced settings', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    await pump(
+      tester,
+      state().copyWith(
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qfixture',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qsecond',
+            amount: '2000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+        recipientAmountsSat: [8000, 2000],
+      ),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Replace-by-fee activated'), findsOneWidget);
+    expect(find.text('Multiple recipients'), findsNothing);
+  });
+
+  testWidgets('several recipients confirm on the shared review', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qfixture',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qsecond',
+            amount: '2000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+        recipientAmountsSat: [8000, 2000],
+        confirmedAmountSat: 10000,
+      ),
+    );
+
+    expect(find.byType(SendPaymentReview), findsOneWidget);
+    expect(find.text('Total'), findsOneWidget);
+    expect(find.textContaining('2,000'), findsWidgets);
+  });
+
+  testWidgets('a watch-only Liquid payment keeps the classic confirmation', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    final liquid = sendSourceFixture(
+      id: 'liquid-watch',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(4909),
+      signer: WalletSigner.none,
+    );
+    await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(
+        sendType: SendType.liquid,
+        selectedWallet: SendWalletBitcoin(liquid),
+        paymentRequest: const PaymentRequest.liquid(
+          address: 'lq1qqwzrpfmt9d7tx76jq6lgr7ylkg',
+          isTestnet: false,
+        ),
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+        confirmedAmountSat: 1000,
+        liquidAbsoluteFees: 26,
+      ),
+    );
+
+    // The shared review has no PSBT or device action.
+    expect(find.byType(SendPaymentReview), findsNothing);
+    expect(find.byType(SendConfirmScreen), findsOneWidget);
+  });
+
+  testWidgets('a Liquid payment on the classic screen keeps coin selection', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    final liquid = sendSourceFixture(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(100000),
+    );
+    await pump(
+      tester,
+      state().copyWith(
+        sendType: SendType.lightning,
+        selectedWallet: SendWalletBitcoin(liquid),
+        paymentRequest: const PaymentRequest.lnAddress(address: 'a@b.com'),
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+      ),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Select coins manually'), findsOneWidget);
+  });
+
+  testWidgets('a single sweep chooses its fee on the recipient step', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    await pump(
+      tester,
+      state(step: SendStep.address)
+          .copyWith(sweepOutpoints: {(txId: 'sweep', vout: 0)}),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Replace-by-fee activated'), findsOneWidget);
+  });
+
+  testWidgets(
+    'picking a wallet the page cannot sign hands over to the classic screen',
+    (tester) async {
+      Device.screen = const Size(390, 844);
+      final hardware = sendSourceFixture(
+        id: 'hardware',
+        network: BitcoinNetwork.mainnet,
+        balanceSat: BigInt.from(1000000),
+        signerDevice: SignerDevice.ledgerNanoX,
+        signer: WalletSigner.remote,
+        label: 'Ledger',
+      );
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final start = state().copyWith(wallets: [wallet, hardware]);
+      final cubit = await pump(tester, start, updates: updates.stream);
+      when(() => cubit.updateSelectedWallet(hardware)).thenAnswer((_) async {
+        updates.add(
+          start.copyWith(selectedWallet: SendWalletBitcoin(hardware)),
+        );
+      });
+
+      await tester.tap(find.byType(BullDropdown<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ledger').last);
+      await tester.pumpAndSettle();
+
+      verify(() => cubit.updateSelectedWallet(hardware)).called(1);
+      expect(find.byType(SendPaymentPage), findsNothing);
+      expect(find.byType(SendAmountScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('a regtest payment URI keeps the legacy Send page', (
     tester,
@@ -465,7 +706,13 @@ void main() {
       ),
     );
     final page = tester.widget<SendPaymentPage>(find.byType(SendPaymentPage));
-    expect(page.onWallet, isNull);
+    // The From dropdown is the source picker.
+    expect(
+      tester
+          .widget<BullDropdown<String>>(find.byType(BullDropdown<String>))
+          .onChanged,
+      isNull,
+    );
     expect(page.onContinue, isNull);
     expect(page.isBusy, isTrue);
     verifyNever(() => cubit.onAmountConfirmed());
@@ -497,7 +744,12 @@ void main() {
     );
     final page = tester.widget<SendPaymentPage>(find.byType(SendPaymentPage));
     expect(page.onContinue, isNull);
-    expect(page.onWallet, isNotNull);
+    expect(
+      tester
+          .widget<BullDropdown<String>>(find.byType(BullDropdown<String>))
+          .onChanged,
+      isNotNull,
+    );
   });
 
   testWidgets('identical fee labels keep distinct preset actions', (
@@ -526,6 +778,37 @@ void main() {
       () => cubit.feeOptionSelected(FeeSelection.economic),
       () => cubit.feeOptionSelected(FeeSelection.fastest),
     ]);
+  });
+
+  testWidgets('Multiple recipients opens the recipient list', (tester) async {
+    await pump(tester, state(step: SendStep.address));
+
+    await tester.tap(find.byType(BullSettingsEntryTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Multiple recipients'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SendPaymentPage), findsNothing);
+    expect(find.byType(SendAddressScreen), findsOneWidget);
+  });
+
+  testWidgets('Send UTXOs instead asks for an address first', (tester) async {
+    await pump(
+      tester,
+      state(step: SendStep.address).copyWith(
+        selectedWallet: null,
+        paymentRequest: null,
+        amount: '',
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+      ),
+    );
+    await tester.tap(find.byType(BullSettingsEntryTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Send UTXOs instead'));
+    await tester.pump();
+    expect(find.text('Enter an address first'), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 4));
   });
 
   testWidgets('Advanced settings opens and reopens without a wallet', (
