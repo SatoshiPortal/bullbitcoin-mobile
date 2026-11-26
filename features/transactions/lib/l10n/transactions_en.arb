@@ -921,10 +921,6 @@
     "description": "Notice on the transaction history when the exchange orders could not be read; wallet transactions are still listed. Shown with a Retry button."
   },
   "paymentStatusViewStatus": "Status",
-  "paymentStatusViewTransaction": "Transaction",
-  "@paymentStatusViewTransaction": {
-    "description": "Label for the animated transaction view"
-  },
   "@paymentStatusViewStatus": {
     "description": "Label of the switch showing the animated status of a payment"
   },

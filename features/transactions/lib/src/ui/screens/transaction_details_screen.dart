@@ -229,7 +229,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
         ? null
         : BullPaymentViewSwitch(
             showingStatus: view == TransactionDetailsView.status,
-            statusLabel: context.loc.paymentStatusViewTransaction,
+            statusLabel: context.loc.paymentStatusViewStatus,
             detailsLabel: context.loc.paymentStatusViewDetails,
             semanticsLabel: context.loc.paymentStatusViewsLabel,
             onStatus: () => _show(TransactionDetailsView.status),

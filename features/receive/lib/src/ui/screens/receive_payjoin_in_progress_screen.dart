@@ -126,7 +126,7 @@ class _ReceivePayjoinInProgressScreenState
                       showingStatus: !_showDetailsView,
                       switcher: BullPaymentViewSwitch(
                         showingStatus: !_showDetailsView,
-                        statusLabel: labels.paymentStatusViewTransaction,
+                        statusLabel: labels.paymentStatusViewStatus,
                         detailsLabel: labels.paymentStatusViewDetails,
                         semanticsLabel: labels.paymentStatusViewsLabel,
                         onStatus: () =>

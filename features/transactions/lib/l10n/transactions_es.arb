@@ -240,7 +240,6 @@
   "transactionOrderTypeBalanceAdjustment": "Ajuste de saldo",
   "transactionListExchangeOrdersUnavailable": "No se pudieron cargar las órdenes del exchange.",
   "paymentStatusViewStatus": "Estado",
-  "paymentStatusViewTransaction": "Transacción",
   "paymentStatusViewDetails": "Detalles",
   "paymentStatusViewsLabel": "Vista de la transacción",
   "paymentStatusSigning": "Firmando",
