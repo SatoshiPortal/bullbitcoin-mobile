@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bull_exchange/src/autobuy/presentation/autobuy_bloc.dart';
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_flow.dart';
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_switch.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';

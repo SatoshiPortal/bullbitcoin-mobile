@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_exchange/src/autobuy/presentation/autobuy_bloc.dart';
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_flow.dart';
 import 'package:bull_exchange/src/default_wallets/default_wallets_payout_fields.dart';
 import 'package:bull_exchange/src/default_wallets/ui/widgets/default_wallets_editor.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';

@@ -6,7 +6,7 @@ import 'package:preferences/preferences.dart';
 
 import '../default_wallets/default_wallets_payout_fields.dart';
 import 'presentation/autobuy_bloc.dart';
-import 'presentation/autobuy_switch.dart';
+import 'domain/autobuy_switch.dart';
 import 'ui/autobuy_flow_shell.dart';
 import 'ui/widgets/autobuy_home_card.dart';
 

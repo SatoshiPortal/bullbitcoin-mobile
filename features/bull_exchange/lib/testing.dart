@@ -4,7 +4,7 @@ library;
 import 'package:exchange/exchange.dart';
 
 import 'src/autobuy/presentation/autobuy_bloc.dart';
-import 'src/autobuy/presentation/autobuy_flow.dart';
+import 'src/autobuy/domain/autobuy_flow.dart';
 import 'src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'src/default_wallets/presentation/default_wallets_bloc.dart';
 import 'src/default_wallets/presentation/default_wallets_machine.dart';

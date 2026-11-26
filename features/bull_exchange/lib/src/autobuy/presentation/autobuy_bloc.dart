@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_flow.dart';
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_switch.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
