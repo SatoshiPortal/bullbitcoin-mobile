@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -154,4 +155,52 @@ void main() {
     expect(blocked, [InventoryRecoveryCause.unreadable]);
     expect(result, isA<Ok<AdmittedInventory<String, String>, Failure>>());
   });
+
+  test(
+    'an exception after a partial registration cleans up once and propagates',
+    () async {
+      final locator = GetIt.asNewInstance();
+      final lease = _Lease();
+      var releases = 0;
+      var attempts = 0;
+      await expectLater(
+        admitInventory<_Lease, String>(
+          prepare: () async {
+            attempts++;
+            return Ok(lease);
+          },
+          openInventory: (admission) async {
+            locator.registerSingleton<_Lease>(
+              admission,
+              dispose: (value) => value.close(),
+            );
+            locator.registerSingleton<String>('partial');
+            throw StateError('boom');
+          },
+          release: (admission) async {
+            releases++;
+            try {
+              await locator.reset();
+            } finally {
+              await admission.close();
+            }
+          },
+          retryStorage: (_) async => fail('an exception is not retried'),
+          blockedInventory: (_) async => fail('an exception does not block'),
+        ),
+        throwsA(isA<StateError>().having((e) => e.message, 'message', 'boom')),
+      );
+      expect(releases, 1);
+      expect(attempts, 1);
+      expect(locator.isRegistered<String>(), isFalse);
+      expect(locator.isRegistered<_Lease>(), isFalse);
+      expect(lease.closed, isTrue);
+    },
+  );
+}
+
+final class _Lease {
+  bool closed = false;
+
+  Future<void> close() async => closed = true;
 }
