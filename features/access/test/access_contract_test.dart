@@ -89,6 +89,15 @@ void main() {
     expect((await access.checkPinCodeExists() as Ok).value, isTrue);
   });
 
+  test('lock revokes admission before returning its future', () async {
+    expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
+
+    final locking = const Access().lock();
+
+    expect(fixture.inventory.isLocked, isTrue);
+    await locking;
+  });
+
   testWidgets('every failure keeps its operation-specific localized message', (
     tester,
   ) async {

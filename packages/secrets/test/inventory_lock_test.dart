@@ -151,7 +151,22 @@ void main() {
     expect(_value(await inventory.findWallet(wallet().id)), isNotNull);
   });
 
+  test('unprotected reopening cannot supersede a later lock', () async {
+    final first = inventory.lockIfProtected();
+    expect(inventory.isLocked, isTrue);
+    final second = inventory.lock();
 
+    await first;
+    expect(await second, isTrue);
+    expect(inventory.isLocked, isTrue);
+  });
+
+  test('an unprotected view reopens only after the lock has drained', () async {
+    final locking = inventory.lockIfProtected();
+    expect(inventory.isLocked, isTrue);
+    expect(await locking, isFalse);
+    expect(inventory.isLocked, isFalse);
+  });
 }
 
 T _value<T, F extends Failure>(Result<T, F> result) {
