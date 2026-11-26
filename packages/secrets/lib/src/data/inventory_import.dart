@@ -10,6 +10,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../crypto/access_verifier.dart';
 import '../domain/domain.dart';
+import 'encrypted_database.dart' show databaseFileProblemOf;
 import 'inventory_store.dart';
 import 'owner_keychain.dart';
 import 'secret_repository.dart';
@@ -65,10 +66,11 @@ final class SecretsImport implements LegacyImportParticipant {
     final opened = await InventoryStore.open(_file, admission, existing: true);
     switch (opened) {
       case Err(:final failure):
-        return Err(_mapOpenFailure(failure));
+        // The owner is admitted by now: its own data is what failed.
+        return Err(_admittedOpenFailure(failure));
       case Ok(:final value):
         try {
-          return await readInventoryReadiness(value.database);
+          return await readInventoryReadiness(value.database, admitted: true);
         } finally {
           await value.close();
         }
@@ -83,11 +85,40 @@ final class SecretsImport implements LegacyImportParticipant {
         ) => const LegacyImportDeferred(),
         _ => const LegacyImportUnavailable(),
       };
+
+  /// Only [inspect] knows the owner was admitted, so only it may say the data
+  /// is lost. [prepare] still holds the legacy source and keeps the plain
+  /// mapping.
+  static LegacyImportFailure _admittedOpenFailure(DatabaseOpenFailure failure) {
+    LegacyImportFailure owner(LegacyOwnerFailureCause cause) =>
+        LegacyOwnerFailure('secrets', cause);
+    return switch (failure) {
+      DatabaseKeyUnavailable(reason: DatabaseKeyProblem.locked) => owner(
+        LegacyOwnerFailureCause.keystoreLocked,
+      ),
+      DatabaseKeyUnavailable(
+        reason: DatabaseKeyProblem.missing || DatabaseKeyProblem.corrupt,
+      ) =>
+        owner(LegacyOwnerFailureCause.keyLost),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.unreadable) => owner(
+        LegacyOwnerFailureCause.unreadable,
+      ),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.schemaMismatch) =>
+        owner(LegacyOwnerFailureCause.unsupportedSchema),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.contended) => owner(
+        LegacyOwnerFailureCause.contention,
+      ),
+      _ => _mapOpenFailure(failure),
+    };
+  }
 }
 
+/// [admitted] says the owner already passed admission, so unreadable content
+/// is lost data rather than an import that has not finished.
 Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
-  SecretsDatabase database,
-) async {
+  SecretsDatabase database, {
+  bool admitted = false,
+}) async {
   try {
     final state = await database.select(database.accessState).getSingleOrNull();
     return switch (state?.importReceipt) {
@@ -96,8 +127,15 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
       _fresh || _freshWithAccess => const Ok(OwnerReadiness.initialized),
       _ => const Err(LegacyImportVerificationFailed()),
     };
-  } on SqliteException {
-    return const Err(LegacyImportUnavailable());
+  } on SqliteException catch (error) {
+    return Err(
+      admitted && databaseFileProblemOf(error) == DatabaseFileProblem.unreadable
+          ? const LegacyOwnerFailure(
+              'secrets',
+              LegacyOwnerFailureCause.unreadable,
+            )
+          : const LegacyImportUnavailable(),
+    );
   }
 }
 
