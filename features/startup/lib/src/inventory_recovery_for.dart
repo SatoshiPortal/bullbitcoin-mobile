@@ -35,6 +35,8 @@ LegacyOwnerFailure? inventoryOpenFailureOf(Failure failure) {
   final cause = switch (failure) {
     DatabaseFileUnavailable(reason: DatabaseFileProblem.unreadable) =>
       LegacyOwnerFailureCause.unreadable,
+    DatabaseFileUnavailable(reason: DatabaseFileProblem.missing) =>
+      LegacyOwnerFailureCause.missingAfterAdmission,
     DatabaseFileUnavailable(reason: DatabaseFileProblem.contended) =>
       LegacyOwnerFailureCause.contention,
     DatabaseFileUnavailable(reason: DatabaseFileProblem.schemaMismatch) =>
