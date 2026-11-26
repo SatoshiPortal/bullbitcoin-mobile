@@ -95,9 +95,13 @@ class BoltzDatasource {
       throw ArgumentError('Regtest requires an explicit Boltz websocket');
     }
     // A bare host gets https (the production default cannot be downgraded);
-    // an explicit http:// is a deliberate dev/staging opt-in (SSH tunnel to
-    // a local backend) and the websocket follows it as ws://.
-    _httpsUrl = _baseUrl.startsWith('http://') ? _baseUrl : 'https://$_baseUrl';
+    // an explicit https:// is kept as is; an explicit http:// is a deliberate
+    // dev/staging opt-in (SSH tunnel to a local backend) and the websocket
+    // follows it as ws://.
+    _httpsUrl =
+        _baseUrl.startsWith('http://') || _baseUrl.startsWith('https://')
+        ? _baseUrl
+        : 'https://$_baseUrl';
     _http = Dio(
       BaseOptions(
         baseUrl: _httpsUrl,
@@ -107,6 +111,10 @@ class BoltzDatasource {
       ),
     );
   }
+
+  /// The API origin every HTTP call and native swap is built on.
+  @visibleForTesting
+  String get apiBaseUrl => _httpsUrl;
 
   String get _wsBaseUrl =>
       _webSocketUrl ??
