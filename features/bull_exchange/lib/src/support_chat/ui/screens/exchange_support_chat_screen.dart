@@ -16,7 +16,6 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:intl/intl.dart';
 
 import '../../../exchange_l10n.dart';
-import '../../data/attachment_picker_repository_impl.dart';
 import '../../domain/usecases/create_log_attachment_usecase.dart';
 import '../../domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import '../../domain/usecases/get_support_chat_messages_usecase.dart';
@@ -32,12 +31,14 @@ class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({
     super.key,
     required this.exchange,
+    required this.pickImages,
     required this.onExit,
     required this.onMessagesRead,
     this.initialMessage,
   });
 
   final Exchange exchange;
+  final PickImageAttachmentsUsecase pickImages;
   final VoidCallback onExit;
 
   /// Called each time the newest messages have been shown to the user.
@@ -50,9 +51,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
       create: (context) => SupportChatBloc(
         getMessages: GetSupportChatMessagesUsecase(exchange: exchange),
         sendMessage: SendSupportChatMessageUsecase(exchange: exchange),
-        pickImages: PickImageAttachmentsUsecase(
-          repository: AttachmentPickerRepositoryImpl(),
-        ),
+        pickImages: pickImages,
         createLogAttachment: CreateLogAttachmentUsecase(),
         openAttachment: OpenSupportChatAttachmentUsecase(
           getAttachment: GetSupportChatMessageAttachmentUsecase(

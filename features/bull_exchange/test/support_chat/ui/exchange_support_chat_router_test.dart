@@ -6,6 +6,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support_chat_usecase_fakes.dart';
+
 void main() {
   late int exits;
 
@@ -21,6 +23,9 @@ void main() {
         ),
         ExchangeSupportChatRouter.route(
           exchange: () => fail('unexpected Exchange lookup'),
+          pickImages: FakePickImageAttachmentsUsecase(
+            () => fail('unexpected image pick'),
+          ),
           isLoggedIn: (_) => false,
           enableLogin: (_) async => fail('unexpected activation'),
           onLogin: (_, _) => fail('unexpected authentication'),

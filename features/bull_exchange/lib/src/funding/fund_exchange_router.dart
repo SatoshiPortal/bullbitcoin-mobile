@@ -1,7 +1,9 @@
+import 'package:bull_exchange/src/funding/data/url_launcher_external_link_adapter.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_cop_funding_institutions_usecase.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_funding_account_usecase.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_funding_consent_usecase.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_funding_instructions_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/save_funding_consent_usecase.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_bloc.dart';
 import 'package:bull_exchange/src/funding/ui/fund_flow_shell.dart';
@@ -38,7 +40,11 @@ class FundExchangeRouter {
             getInstructions: GetFundingInstructionsUsecase(exchange),
           );
         },
-        child: const FundFlowShell(),
+        child: const FundFlowShell(
+          openLink: OpenFundingPaymentLinkUsecase(
+            externalLink: UrlLauncherExternalLinkAdapter(),
+          ),
+        ),
       ),
     ),
   ];

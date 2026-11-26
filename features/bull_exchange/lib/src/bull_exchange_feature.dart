@@ -42,6 +42,8 @@ import 'pay/mount_pay.dart';
 import 'payin/exchange_payin_host.dart';
 import 'sell/mount_sell.dart';
 import 'settings/ui/exchange_settings_router.dart';
+import 'support_chat/data/attachment_picker_repository_impl.dart';
+import 'support_chat/domain/usecases/pick_image_attachments_usecase.dart';
 import 'support_chat/exchange_support_chat_navigation.dart';
 import 'support_chat/ui/exchange_support_chat_router.dart';
 import 'ui/screens/exchange_landing_screen.dart';
@@ -301,6 +303,9 @@ BullExchangeFeature mountBullExchange({
         ? null
         : ExchangeSupportChatRouter.route(
             exchange: supportChat.exchange,
+            pickImages: PickImageAttachmentsUsecase(
+              repository: AttachmentPickerRepositoryImpl(),
+            ),
             isLoggedIn: supportChat.isLoggedIn,
             enableLogin: supportChat.enableLogin,
             onLogin: supportChat.onLogin,

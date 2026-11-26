@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/usecases/pick_image_attachments_usecase.dart';
 import '../exchange_support_chat_navigation.dart';
 import 'screens/exchange_support_chat_screen.dart';
 import 'screens/exchange_support_login_screen.dart';
@@ -10,6 +11,7 @@ import 'screens/exchange_support_login_screen.dart';
 class ExchangeSupportChatRouter {
   static GoRoute route({
     required Exchange Function() exchange,
+    required PickImageAttachmentsUsecase pickImages,
     required bool Function(BuildContext) isLoggedIn,
     required Future<Result<void, ExchangeFailure>> Function(BuildContext)
     enableLogin,
@@ -34,6 +36,7 @@ class ExchangeSupportChatRouter {
         child: isLoggedIn(context)
             ? ExchangeSupportChatScreen(
                 exchange: exchange(),
+                pickImages: pickImages,
                 onExit: exit,
                 onMessagesRead: () => onMessagesRead(context),
                 initialMessage: draft?.initialMessage,
