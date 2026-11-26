@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_exchange/src/dca/presentation/dca_flow.dart';
+import 'package:bull_exchange/src/dca/domain/dca_flow.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
