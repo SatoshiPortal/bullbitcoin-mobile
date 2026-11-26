@@ -316,7 +316,11 @@ void main() {
       );
       id = (result as Ok<Secret, SecretFailure>).value.id;
       owner = _References();
-      references = SeedReferences(owner, admission: admission);
+      references = SeedReferences(
+        owner,
+        admission: admission,
+        backupVerification: FakeInventoryBackups(verified: {id}),
+      );
     });
 
     test('provisioning wins before deletion inventory', () async {

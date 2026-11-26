@@ -19,6 +19,25 @@ import '../support/inventory.dart';
 
 class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
+/// The backup proofs the deletion stage judges, per test. A seed is missing
+/// unless this test states it is verified.
+final class _Proofs implements InventoryBackupVerification {
+  final Set<Fingerprint> verified = {};
+  bool unreadable = false;
+
+  @override
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async => unreadable
+      ? const Err(BackupStateUnavailableFailure())
+      : Ok(
+          verified.contains(secret)
+              ? BackupProof.verified
+              : BackupProof.missing,
+        );
+}
+
 /// Fail-closed wallet deletion, against the real inventory and the real
 /// [Secrets] keystore.
 ///
@@ -59,6 +78,7 @@ void main() {
   late FakeNativeLifecycle native;
   late FakeSwapStore swaps;
   late _MockOrderSwaps orders;
+  late _Proofs proofs;
   late SeedReferences references;
   late DeleteWalletUsecase usecase;
 
@@ -133,6 +153,8 @@ void main() {
         directory: () async => inventory.directory.path,
         mayCreate: true,
       ),
+      backupVerification: proofs = _Proofs()
+        ..verified.add(Fingerprint(fingerprint)),
     );
     usecase = DeleteWalletUsecase(
       inventory: inventory.inventory,
