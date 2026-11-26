@@ -32,6 +32,8 @@ class _Paths extends PathProviderPlatform {
   Future<String> getApplicationDocumentsPath() async => path;
   @override
   Future<String> getTemporaryPath() async => path;
+  @override
+  Future<String> getApplicationSupportPath() async => path;
 }
 
 void main() {
@@ -47,8 +49,10 @@ void main() {
     previousPaths = PathProviderPlatform.instance;
     PathProviderPlatform.instance = _Paths(directory.path);
     FakeSecureStoragePlatform().install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'preferences');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'preferences');
     resources = BackgroundTaskResources(
       admission: await NativeFileGate(
         File('${locks.path}/lifecycle.lock'),
