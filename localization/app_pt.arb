@@ -1648,5 +1648,11 @@
   "walletDetailsDescriptorLabel": "Descritores",
   "walletDetailsSignerDeviceLabel": "Dispositivo de sinalização",
   "walletDetailsPubkeyLabel": "Pubkey",
-  "walletDetailsNetworkLabel": "Rede"
+  "walletDetailsNetworkLabel": "Rede",
+  "destinationExpectedType": "Introduza ou digitalize um {type} válido.",
+  "exchangeAccessSignIn": "Iniciar sessão ou criar conta",
+  "networkFeatureUnavailable": "Esta funcionalidade não está disponível na rede selecionada.",
+  "sendPayjoinSpendPaused": "Este pagamento Payjoin está em pausa porque a carteira não pode continuar em segurança. As suas entradas continuam reservadas. Atualize a carteira ou use \"Procurar transações em falta\" e volte a tentar esta proposta enquanto ainda for válida. Se tiver expirado, verifique o pagamento em Transações antes de fazer mais alguma coisa.",
+  "walletSpendAwaitingObservation": "Não é possível gastar até esta carteira estar sincronizada e ter visto os seus pagamentos anteriores na rede. Atualize a carteira ou use \"Procurar transações em falta\" e tente novamente.",
+  "walletSpendBusy": "A carteira está ocupada. Tente novamente dentro de momentos."
 }

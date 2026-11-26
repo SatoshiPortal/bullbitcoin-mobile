@@ -1180,5 +1180,11 @@
   "blockedInSystemSettings": "Imezuiwa katika mipangilio ya mfumo",
   "notificationsTitle": "Arifa",
   "openSystemSettings": "Fungua mipangilio ya mfumo",
-  "sendErrorInvoiceExpiryTooShort": "Muda wa ankara hii unaisha mapema mno. Muombe mpokeaji ankara mpya."
+  "sendErrorInvoiceExpiryTooShort": "Muda wa ankara hii unaisha mapema mno. Muombe mpokeaji ankara mpya.",
+  "destinationExpectedType": "Weka au changanua {type} halali.",
+  "exchangeAccessSignIn": "Ingia au unda akaunti",
+  "networkFeatureUnavailable": "Kipengele hiki hakipatikani kwenye mtandao uliochaguliwa.",
+  "sendPayjoinSpendPaused": "Malipo haya ya Payjoin yamesitishwa kwa sababu pochi haiwezi kuendelea kwa usalama. Ingizo zake zinabaki zimehifadhiwa. Sasisha pochi au tumia Changanua miamala inayokosekana, kisha ujaribu pendekezo hili tena likiwa bado halali. Ikiwa limeisha muda, angalia malipo kwenye Miamala kabla ya kuchukua hatua zaidi.",
+  "walletSpendAwaitingObservation": "Matumizi hayapatikani hadi pochi hii isawazishwe na ione malipo yake ya awali kwenye mtandao. Sasisha pochi au tumia Changanua miamala inayokosekana, kisha ujaribu tena.",
+  "walletSpendBusy": "Pochi ina shughuli. Jaribu tena baada ya muda mfupi."
 }

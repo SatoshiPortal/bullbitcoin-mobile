@@ -406,5 +406,8 @@
   "swapRestoreKindLightningSend": "Изпращане през Lightning",
   "swapRestoreNoSwaps": "Няма намерени обмени за възстановяване",
   "swapRestoreRecoverableSection": "Възстановими",
-  "swapRestoreTitle": "Възстановяване на обмен"
+  "swapRestoreTitle": "Възстановяване на обмен",
+  "networkFeatureUnavailable": "Тази функция не е налична в избраната мрежа.",
+  "walletSpendAwaitingObservation": "Харченето не е възможно, докато този портфейл не се синхронизира и не види предишните си плащания в мрежата. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново.",
+  "walletSpendBusy": "Портфейлът е зает. Опитайте отново след малко."
 }

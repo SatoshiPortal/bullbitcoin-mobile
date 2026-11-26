@@ -352,5 +352,14 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Redémarrez votre BitBox02 Nova et essayez de vous reconnecter.",
   "psbtFlowInvalidPsbtError": "Cette transaction n'a pas pu être lue. Retournez en arrière et créez-la à nouveau.",
   "psbtFlowQrEncodingError": "Cette transaction n'a pas pu être convertie en code QR.",
-  "psbtFlowQrDensity": "Densité du code QR"
+  "psbtFlowQrDensity": "Densité du code QR",
+  "ledgerErrorPermissionDenied": "Les autorisations Bluetooth sont nécessaires pour se connecter aux appareils Ledger.",
+  "ledgerErrorNoDevicesFound": "Aucun appareil Ledger détecté. Vérifiez que votre appareil est allumé et que le Bluetooth est activé.",
+  "ledgerErrorMultipleDevicesFound": "Plusieurs appareils Ledger ont été détectés. Assurez-vous qu’un seul appareil se trouve à proximité.",
+  "ledgerErrorDeviceNotFound": "Appareil Ledger introuvable.",
+  "ledgerErrorDeviceMismatch": "L’appareil connecté ne correspond pas à l’appareil attendu.",
+  "ledgerErrorInvalidPsbt": "Format PSBT invalide.",
+  "ledgerErrorMissingDerivationPath": "Un chemin de dérivation est requis",
+  "ledgerErrorMissingScriptType": "Un type de script est requis",
+  "ledgerErrorDeviceBusy": "Un autre programme utilise votre Ledger. Fermez ce programme (par exemple Ledger Live), puis réessayez."
 }

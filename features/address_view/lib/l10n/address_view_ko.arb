@@ -95,5 +95,6 @@
   "exchangeDcaAddressLabelLightning": "연락처",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "유효한 {type}을(를) 입력하거나 스캔하세요."
 }

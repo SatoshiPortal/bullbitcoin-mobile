@@ -95,5 +95,6 @@
   "exchangeDcaAddressLabelLightning": "عنوان البرق",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "أدخل أو امسح {type} صالحًا."
 }

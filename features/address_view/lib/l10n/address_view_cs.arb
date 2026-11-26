@@ -95,5 +95,6 @@
   "exchangeDcaAddressLabelLightning": "Blesková adresa",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "Zadejte nebo naskenujte platnou hodnotu {type}."
 }

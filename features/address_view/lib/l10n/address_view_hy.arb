@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Անվավեր Bitcoin վճարման հասցե կամ ապրանքագիր",
   "exchangeDcaAddressLabelBitcoin": "Bitcoin հասցե",
   "exchangeDcaAddressLabelLiquid": "Liquid հասցե",
-  "exchangeDcaAddressLabelLightning": "Lightning հասցե"
+  "exchangeDcaAddressLabelLightning": "Lightning հասցե",
+  "destinationExpectedType": "Մուտքագրեք կամ սկանավորեք վավեր {type}։"
 }

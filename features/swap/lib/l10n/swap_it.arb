@@ -190,5 +190,8 @@
   "swapRestoreKindLightningSend": "Invio Lightning",
   "swapRestoreNoSwaps": "Nessuno swap trovato da ripristinare",
   "swapRestoreRecoverableSection": "Recuperabili",
-  "swapRestoreTitle": "Ripristino swap"
+  "swapRestoreTitle": "Ripristino swap",
+  "networkFeatureUnavailable": "Questa funzione non è disponibile sulla rete selezionata.",
+  "walletSpendAwaitingObservation": "Non puoi spendere finché questo portafoglio non è sincronizzato e non ha rilevato i suoi pagamenti precedenti sulla rete. Aggiorna il portafoglio o usa \"Cerca transazioni mancanti\", poi riprova.",
+  "walletSpendBusy": "Il portafoglio è occupato. Riprova tra un momento."
 }

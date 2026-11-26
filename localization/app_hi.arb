@@ -4507,5 +4507,18 @@
   "walletDetailsNetworkLabel": "नेटवर्क",
   "@walletDetailsNetworkLabel": {
     "description": "Label for the network field in wallet details"
-  }
+  },
+  "destinationExpectedType": "एक मान्य {type} दर्ज करें या स्कैन करें।",
+  "exchangeAccessSignIn": "साइन इन करें या खाता बनाएँ",
+  "importQrDevicePassportStep10": "BULL वॉलेट ऐप में, डेरिवेशन विकल्प के रूप में \"Segwit (BIP84)\" चुनें",
+  "importQrDevicePassportStep11": "अपने पासपोर्ट वॉलेट के लिए एक लेबल दर्ज करें और \"आयात\" टैप करें।",
+  "importQrDevicePassportStep12": "सेटअप पूरा हुआ।",
+  "mempoolErrorTorNotRunning": ".onion पते तक नहीं पहुँचा जा सका। सुनिश्चित करें कि Tor/Orbot चल रहा है और पुनः प्रयास करें।",
+  "networkFeatureUnavailable": "यह सुविधा चुने गए नेटवर्क पर उपलब्ध नहीं है।",
+  "sendPayjoinSpendPaused": "यह Payjoin भुगतान रोका गया है क्योंकि वॉलेट सुरक्षित रूप से आगे नहीं बढ़ सकता। इसके इनपुट आरक्षित रहेंगे। वॉलेट रीफ़्रेश करें या \"छूटे हुए लेनदेन स्कैन करें\" का उपयोग करें, फिर जब तक यह प्रस्ताव मान्य है, इसे दोबारा आज़माएँ। अगर इसकी समय-सीमा निकल गई है, तो आगे कुछ भी करने से पहले लेनदेन में भुगतान जाँचें।",
+  "torSettingsDescUnknown": "Tor की स्थिति निर्धारित नहीं की जा सकी। सुनिश्चित करें कि Orbot स्थापित है और चल रहा है।",
+  "torSettingsPortHelper": "Orbot का डिफ़ॉल्ट पोर्ट: 9050",
+  "walletSpendAwaitingObservation": "जब तक यह वॉलेट सिंक होकर नेटवर्क पर अपने पिछले भुगतान नहीं देख लेता, तब तक खर्च करना उपलब्ध नहीं है। वॉलेट रीफ़्रेश करें या \"छूटे हुए लेनदेन स्कैन करें\" का उपयोग करें, फिर दोबारा प्रयास करें।",
+  "walletSpendBusy": "वॉलेट व्यस्त है। थोड़ी देर में फिर से प्रयास करें।",
+  "walletTypeBitcoinNetwork": "Bitcoin नेटवर्क"
 }

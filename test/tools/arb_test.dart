@@ -6,13 +6,9 @@ import 'package:path/path.dart' as p;
 
 /// End-to-end tests for `tools/arb.dart`.
 ///
-/// The tool is deliberately not parameterised: it hardcodes the `localization/`
-/// directory relative to the current working directory. So rather than import
-/// it, each test spins up a throwaway fixture dir with a `localization/` folder
-/// and runs the real script as a subprocess with that dir as CWD — exercising
-/// exactly the binary a developer/agent invokes. The whole value of the tool is
-/// "never corrupt these files", so the load-bearing assertion throughout is the
-/// byte-for-byte comparison of untouched content.
+/// Each test runs the script as a subprocess from a throwaway workspace.
+/// The tests compare untouched content byte-for-byte to verify that edits stay
+/// within the selected file and keys.
 void main() {
   // Resolve the script once. The test file lives at test/tools/, the script at
   // tools/arb.dart, both under the repo root.
@@ -74,6 +70,78 @@ void main() {
       '  "@@locale": "fr",\n'
       '  "greeting": "Bonjour"\n'
       '}\n';
+
+  group('workspace catalog', () {
+    const member = 'features/wallet_import';
+
+    File memberFile(String relativePath) =>
+        File(p.join(tmp.path, member, relativePath));
+
+    test(
+      'exports and fills the configured catalog without changing the app',
+      () {
+        writeLocale('en', enTemplate);
+        writeLocale('fr', frTemplate);
+        final config = memberFile('l10n.yaml')..createSync(recursive: true);
+        config.writeAsStringSync(
+          'arb-dir: strings\ntemplate-arb-file: import_en.arb\n',
+        );
+        final english = memberFile('strings/import_en.arb')
+          ..createSync(recursive: true);
+        english.writeAsStringSync(enTemplate);
+        final locale = memberFile('strings/import_hi_Latn.arb');
+        const initial = '{\n  "@@locale": "hi_Latn"\n}\n';
+        locale.writeAsStringSync(initial);
+
+        final detail = run(['missing-detail', 'hi_Latn', '--catalog', member]);
+        expect(detail.exitCode, 0, reason: '${detail.stderr}');
+        final missing = jsonDecode(detail.stdout as String) as Map;
+        expect(missing['greeting'], {
+          'en': 'Hello',
+          'description': 'a greeting',
+        });
+
+        File(p.join(tmp.path, 'reviewed.json'))
+            .writeAsStringSync('{"greeting":"Namaste"}');
+        final fill = [
+          'fill',
+          'hi_Latn',
+          '--catalog',
+          member,
+          '--translations-file',
+          'reviewed.json',
+        ];
+        final dryRun = run([...fill, '--dry-run']);
+        expect(dryRun.exitCode, 0, reason: '${dryRun.stderr}');
+        expect(locale.readAsStringSync(), initial);
+
+        final applied = run(fill);
+        expect(applied.exitCode, 0, reason: '${applied.stderr}');
+        expect(locale.readAsStringSync(), contains('"greeting": "Namaste"'));
+        expect(english.readAsStringSync(), enTemplate);
+        expect(readLocale('en'), enTemplate);
+        expect(readLocale('fr'), frTemplate);
+      },
+    );
+
+    test('reports an invalid member instead of falling back to the app', () {
+      writeLocale('en', enTemplate);
+      final missingConfig = run(['validate', '--catalog', member]);
+      expect(missingConfig.exitCode, 1);
+      expect(missingConfig.stderr, contains('l10n.yaml'));
+
+      final config = memberFile('l10n.yaml')..createSync(recursive: true);
+      config.writeAsStringSync('arb-dir: [unterminated');
+      final malformedConfig = run(['validate', '--catalog', member]);
+      expect(malformedConfig.exitCode, 1);
+      expect(malformedConfig.stderr, contains('Invalid'));
+
+      config.writeAsStringSync('template-arb-file: import_en.arb\n');
+      final missingTemplate = run(['validate', '--catalog', member]);
+      expect(missingTemplate.exitCode, 1);
+      expect(missingTemplate.stderr, contains('import_en.arb'));
+    });
+  });
 
   group('validate', () {
     test('accepts well-formed files', () {

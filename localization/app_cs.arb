@@ -4409,5 +4409,11 @@
   "walletDetailsNetworkLabel": "Čeština",
   "@walletDetailsNetworkLabel": {
     "description": "Label for the network field in wallet details"
-  }
+  },
+  "destinationExpectedType": "Zadejte nebo naskenujte platnou hodnotu {type}.",
+  "exchangeAccessSignIn": "Přihlásit se nebo vytvořit účet",
+  "networkFeatureUnavailable": "Tato funkce není ve vybrané síti dostupná.",
+  "sendPayjoinSpendPaused": "Tato platba Payjoin je pozastavena, protože peněženka nemůže bezpečně pokračovat. Její vstupy zůstávají rezervované. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a poté tento návrh zopakujte, dokud je platný. Pokud vypršel, zkontrolujte platbu v Transakcích, než uděláte cokoli dalšího.",
+  "walletSpendAwaitingObservation": "Utrácení není dostupné, dokud tato peněženka není synchronizovaná a nevidí v síti své předchozí platby. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a zkuste to znovu.",
+  "walletSpendBusy": "Peněženka je zaneprázdněná. Zkuste to za chvíli znovu."
 }

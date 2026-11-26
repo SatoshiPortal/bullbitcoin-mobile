@@ -123,5 +123,13 @@
   "receiveEditAmount": "Modifier le montant",
   "receiveRecipientMessageHint": "Facultatif, visible par le payeur",
   "receiveVerifyBitbox": "Vérifier sur BitBox",
-  "receiveFeeDetails": "Détail des frais"
+  "receiveFeeDetails": "Détail des frais",
+  "receivePayjoinExpired": "Délai Payjoin dépassé",
+  "receivePayjoinExpiredSubtext": "Le délai Payjoin est écoulé. Le paiement est en cours de réception sous forme de transaction classique.",
+  "receivePayjoinBelowMinimum": "Montant inférieur au minimum Payjoin",
+  "receivePayjoinBelowMinimumSubtext": "Le montant de ce paiement était inférieur à votre minimum Payjoin. Il a donc été reçu sous forme de transaction classique. Vous pouvez modifier ce seuil dans les paramètres Bitcoin.",
+  "receivePayjoinFallbackCompleted": "Reçu sans Payjoin",
+  "receivePayjoinFallbackCompletedSubtext": "Le Payjoin n’a pas pu aboutir. Le paiement a donc été reçu sous forme de transaction classique.",
+  "receiveViewDetails": "Voir les détails",
+  "receivePayjoinQrBadge": "Payjoin"
 }

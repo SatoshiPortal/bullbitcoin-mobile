@@ -150,40 +150,47 @@ build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
 	@cd "$(if $(MEMBER),$(MEMBER),.)" && fvm dart run build_runner watch $(if $(MEMBER),,--workspace) --force-jit
 
+# Flutter prints this configuration reminder for every catalog.
+gen-l10n = bash -o pipefail -c 'fvm flutter gen-l10n | awk "$$1"' -- \
+	'$$0 == "Because l10n.yaml exists, the options defined there will be used instead." { next } \
+	 $$0 == "To use the command line arguments, delete the l10n.yaml file in the Flutter project." { skip_blank = 1; next } \
+	 skip_blank && !NF { next } \
+	 { skip_blank = 0; print }'
+
 translations:
 	@echo "🌐 Generating translations files"
 	@$(MAKE) novlang-translations
-	@fvm flutter gen-l10n
-	@(cd features/announcements && fvm flutter gen-l10n)
-	@(cd features/bitcoin_price && fvm flutter gen-l10n)
-	@(cd features/btc_map && fvm flutter gen-l10n)
-	@(cd features/bull_exchange && fvm flutter gen-l10n)
-	@(cd features/logs && fvm flutter gen-l10n)
-	@(cd features/quick_actions && fvm flutter gen-l10n)
-	@(cd features/signers && fvm flutter gen-l10n)
-	@(cd features/scanning && fvm flutter gen-l10n)
-	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
-	@(cd features/backups && fvm flutter gen-l10n)
-	@(cd features/backup_metadata && fvm flutter gen-l10n)
-	@(cd features/access && fvm flutter gen-l10n)
-	@(cd features/startup && fvm flutter gen-l10n)
-	@(cd features/bip85 && fvm flutter gen-l10n)
-	@(cd features/all_seed_view && fvm flutter gen-l10n)
-	@(cd features/silent && fvm flutter gen-l10n)
-	@(cd features/swap && fvm flutter gen-l10n)
-	@(cd features/wallet_import && fvm flutter gen-l10n)
-	@(cd features/transactions && fvm flutter gen-l10n)
-	@(cd features/send && fvm flutter gen-l10n)
-	@(cd features/address_view && fvm flutter gen-l10n)
-	@(cd features/receive && fvm flutter gen-l10n)
-	@(cd features/coins && fvm flutter gen-l10n)
-	@(cd features/label_editor && fvm flutter gen-l10n)
-	@(cd features/fees && fvm flutter gen-l10n)
-	@(cd features/network && fvm flutter gen-l10n)
-	@(cd features/settings && fvm flutter gen-l10n)
-	@(cd features/wizard && fvm flutter gen-l10n)
-	@(cd features/onboarding && fvm flutter gen-l10n)
-	@(cd packages/notifications && fvm flutter gen-l10n)
+	@$(gen-l10n)
+	@(cd features/announcements && $(gen-l10n))
+	@(cd features/bitcoin_price && $(gen-l10n))
+	@(cd features/btc_map && $(gen-l10n))
+	@(cd features/bull_exchange && $(gen-l10n))
+	@(cd features/logs && $(gen-l10n))
+	@(cd features/quick_actions && $(gen-l10n))
+	@(cd features/signers && $(gen-l10n))
+	@(cd features/scanning && $(gen-l10n))
+	@(cd features/mnemonic_entry && $(gen-l10n))
+	@(cd features/backups && $(gen-l10n))
+	@(cd features/backup_metadata && $(gen-l10n))
+	@(cd features/access && $(gen-l10n))
+	@(cd features/startup && $(gen-l10n))
+	@(cd features/bip85 && $(gen-l10n))
+	@(cd features/all_seed_view && $(gen-l10n))
+	@(cd features/silent && $(gen-l10n))
+	@(cd features/swap && $(gen-l10n))
+	@(cd features/wallet_import && $(gen-l10n))
+	@(cd features/transactions && $(gen-l10n))
+	@(cd features/send && $(gen-l10n))
+	@(cd features/address_view && $(gen-l10n))
+	@(cd features/receive && $(gen-l10n))
+	@(cd features/coins && $(gen-l10n))
+	@(cd features/label_editor && $(gen-l10n))
+	@(cd features/fees && $(gen-l10n))
+	@(cd features/network && $(gen-l10n))
+	@(cd features/settings && $(gen-l10n))
+	@(cd features/wizard && $(gen-l10n))
+	@(cd features/onboarding && $(gen-l10n))
+	@(cd packages/notifications && $(gen-l10n))
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) ark-translations
@@ -191,15 +198,15 @@ translations:
 
 .PHONY: ark-translations
 ark-translations:
-	@(cd features/ark && fvm flutter gen-l10n)
+	@(cd features/ark && $(gen-l10n))
 
 .PHONY: bull-ui-translations
 bull-ui-translations:
-	@(cd packages/bull_ui && fvm flutter gen-l10n)
+	@(cd packages/bull_ui && $(gen-l10n))
 
 .PHONY: novlang-translations
 novlang-translations:
-	@(cd packages/novlang && fvm flutter gen-l10n)
+	@(cd packages/novlang && $(gen-l10n))
 
 # Generates store-aware delegates from the novlang manifest and gen-l10n
 # output for each catalogue. `dart <file>` on purpose: `dart run` would run
@@ -210,7 +217,7 @@ novlang-bridge:
 
 .PHONY: recoverbull-translations
 recoverbull-translations:
-	@(cd features/recoverbull && fvm flutter gen-l10n)
+	@(cd features/recoverbull && $(gen-l10n))
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \

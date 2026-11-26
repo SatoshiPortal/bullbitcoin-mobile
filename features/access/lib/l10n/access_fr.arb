@@ -44,5 +44,7 @@
   "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
   "pinCodeLengthHint": "Saisissez {min} à {max} chiffres",
   "pinCodeShowPin": "Afficher le code PIN",
-  "pinCodeHidePin": "Masquer le code PIN"
+  "pinCodeHidePin": "Masquer le code PIN",
+  "pinCodeBackupRequiredCount": "{count, plural, one{{count} phrase de récupération n’a pas encore de sauvegarde vérifiée. Sauvegardez-la avant de définir un code PIN.} other{{count} phrases de récupération n’ont pas encore de sauvegarde vérifiée. Sauvegardez-les avant de définir un code PIN.}}",
+  "pinCodeBackupUnavailable": "Impossible de vérifier l’état de vos sauvegardes. Vous ne pouvez pas encore définir de code PIN. Réessayez."
 }

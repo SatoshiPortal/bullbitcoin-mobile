@@ -4,3 +4,4 @@ output-localization-file: transactions_localizations.dart
 output-class: TransactionsLocalizations
 output-dir: lib/generated/l10n
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

@@ -188,5 +188,8 @@
   "swapsFailureNetwork": "无法连接任何服务器。请检查网络连接后重试。",
   "swapsFailureNotRestorable": "无法从服务器重建此 Swap。请携带您的 Swap ID 联系客服。",
   "swapsFailureRefundNotFinal": "退款尚不可花费（时间锁）。请稍后重试。",
-  "swapsFailureUnexpected": "Swap 出现问题，请重试。"
+  "swapsFailureUnexpected": "Swap 出现问题，请重试。",
+  "networkFeatureUnavailable": "所选网络不支持此功能。",
+  "walletSpendAwaitingObservation": "在此钱包完成同步并在网络上看到之前的付款之前，无法进行支出。请刷新钱包或使用“扫描缺失的交易”，然后重试。",
+  "walletSpendBusy": "钱包正忙。请稍后重试。"
 }

@@ -968,5 +968,19 @@
   "recipientsValidationDebitCard": "Un numéro de carte de débit comporte 16 chiffres",
   "recipientsErrorFieldRefused": "La plateforme n’a pas accepté cette valeur",
   "recipientsErrorCheckFields": "Certaines informations n’ont pas été acceptées. Vérifiez les champs signalés ci-dessus.",
-  "recipientsErrorFieldsRefused": "Certaines informations n’ont pas été acceptées : {fields}"
+  "recipientsErrorFieldsRefused": "Certaines informations n’ont pas été acceptées : {fields}",
+  "limitOrderDetailsEstimatedBitcoin": "Quantité estimée de bitcoins",
+  "limitOrdersLightningAddressHint": "vous@exemple.com",
+  "sellYouSold": "Vous avez vendu {amount} pour {fiatAmount}",
+  "payPaymentInProgressDescriptionDetails": "Le paiement de {fiatAmount} à {recipient} sera envoyé après la première confirmation de votre transaction sur la chaîne.",
+  "payPaymentPayinConfirmedDescriptionDetails": "Votre transaction est confirmée. Le paiement de {fiatAmount} à {recipient} est en cours de traitement.",
+  "exchangePaymentSentRefreshingOrder": "Paiement envoyé, actualisation de votre ordre…",
+  "payErrorFeesUnavailable": "Impossible de charger les frais de réseau. Vérifiez votre connexion et réessayez.",
+  "limitOrdersYourWalletsTitle": "Vos portefeuilles",
+  "limitOrdersLightningAddressLabel": "Adresse Lightning",
+  "limitOrdersLightningAddressError": "Saisissez une adresse Lightning valide plutôt qu’une facture",
+  "limitOrdersAmountBelowOnchainMin": "Le montant est inférieur au minimum de {amount} sur la chaîne",
+  "limitOrdersAmountBelowLiquidMin": "Le montant est inférieur au minimum de {amount} sur Liquid",
+  "limitOrdersAmountAboveLightningMax": "Le montant dépasse le maximum de {amount} sur Lightning",
+  "limitOrdersViewOrder": "Voir les détails de l’ordre"
 }

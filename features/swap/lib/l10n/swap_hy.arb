@@ -140,5 +140,8 @@
   "swapRestoreKindLightningSend": "Lightning ուղարկում",
   "swapRestoreNoSwaps": "Վերականգնման ենթակա փոխանակումներ չեն գտնվել",
   "swapRestoreRecoverableSection": "Վերականգնելի",
-  "swapRestoreTitle": "Փոխանակման վերականգնում"
+  "swapRestoreTitle": "Փոխանակման վերականգնում",
+  "networkFeatureUnavailable": "Այս գործառույթն անհասանելի է ընտրված ցանցում։",
+  "walletSpendAwaitingObservation": "Ծախսելն անհասանելի է, մինչև այս դրամապանակը համաժամեցվի և ցանցում տեսնի իր նախորդ վճարումները։ Թարմացրեք դրամապանակը կամ օգտագործեք «Սկանավորել բացակայող գործարքները», ապա կրկին փորձեք։",
+  "walletSpendBusy": "Դրամապանակը զբաղված է։ Կրկին փորձեք մի փոքր ուշ։"
 }

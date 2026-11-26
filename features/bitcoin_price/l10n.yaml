@@ -4,3 +4,4 @@ output-localization-file: bitcoin_price_localizations.dart
 output-class: BitcoinPriceLocalizations
 output-dir: lib/generated/l10n
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

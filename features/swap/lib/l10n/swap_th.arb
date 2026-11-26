@@ -460,5 +460,8 @@
   "swapRestoreKindLightningSend": "ส่งผ่าน Lightning",
   "swapRestoreNoSwaps": "ไม่พบ Swap ที่สามารถกู้คืนได้",
   "swapRestoreRecoverableSection": "กู้คืนได้",
-  "swapRestoreTitle": "กู้คืน Swap"
+  "swapRestoreTitle": "กู้คืน Swap",
+  "networkFeatureUnavailable": "ฟีเจอร์นี้ไม่พร้อมใช้งานบนเครือข่ายที่เลือก",
+  "walletSpendAwaitingObservation": "ไม่สามารถใช้จ่ายได้จนกว่ากระเป๋าเงินนี้จะซิงค์และเห็นการชำระเงินก่อนหน้าบนเครือข่าย โปรดรีเฟรชกระเป๋าเงินหรือใช้ สแกนหาธุรกรรมที่หายไป แล้วลองอีกครั้ง",
+  "walletSpendBusy": "กระเป๋าเงินไม่ว่าง โปรดลองอีกครั้งในอีกสักครู่"
 }

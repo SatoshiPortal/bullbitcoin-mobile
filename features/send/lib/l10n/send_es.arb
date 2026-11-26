@@ -328,5 +328,9 @@
   "paymentStepClaimBroadcast": "Reclamación difundida",
   "paymentStepPayoutInProgress": "Pago en curso",
   "paymentPendingMempool": "Pendiente en la mempool",
-  "paymentExchangeDescriptor": "EXCHANGE // ORDEN"
+  "paymentExchangeDescriptor": "EXCHANGE // ORDEN",
+  "sendLnurlLimitsUnavailable": "No se pudieron consultar los límites de pago del destinatario de Lightning. Inténtalo de nuevo.",
+  "sendLnurlNoPayableAmount": "Esta solicitud de Lightning no admite un monto en satoshis enteros.",
+  "sendLnurlAmountRange": "Este destinatario acepta entre {minimumSat} y {maximumSat} sats.",
+  "networkRelaunchRequiredError": "La red cambió desde que abriste la app. Ciérrala, vuelve a abrirla e inténtalo de nuevo."
 }

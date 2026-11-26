@@ -566,5 +566,8 @@
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  }
+  },
+  "sendPayjoinSpendPaused": "Este pagamento Payjoin está pausado porque a carteira não pode continuar com segurança. Suas entradas continuam reservadas. Atualize a carteira ou use \"Buscar transações ausentes\" e tente esta proposta novamente enquanto ela ainda for válida. Se tiver expirado, confira o pagamento em Transações antes de fazer qualquer outra coisa.",
+  "walletSpendAwaitingObservation": "Não é possível gastar até que esta carteira esteja sincronizada e tenha visto seus pagamentos anteriores na rede. Atualize a carteira ou use \"Buscar transações ausentes\" e tente novamente.",
+  "walletSpendBusy": "A carteira está ocupada. Tente novamente em instantes."
 }

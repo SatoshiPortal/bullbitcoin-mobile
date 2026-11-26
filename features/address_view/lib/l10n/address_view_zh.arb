@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Invalid Pay Address or Invoice",
   "exchangeDcaAddressLabelBitcoin": "页: 1",
   "exchangeDcaAddressLabelLiquid": "流动资金",
-  "exchangeDcaAddressLabelLightning": "照明地址"
+  "exchangeDcaAddressLabelLightning": "照明地址",
+  "destinationExpectedType": "请输入或扫描有效的{type}。"
 }

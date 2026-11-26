@@ -316,5 +316,21 @@
   "paymentStepClaimBroadcast": "Récupération diffusée",
   "paymentStepPayoutInProgress": "Versement en cours",
   "paymentPendingMempool": "En attente dans la mempool",
-  "paymentExchangeDescriptor": "ÉCHANGE // ORDRE"
+  "paymentExchangeDescriptor": "ÉCHANGE // ORDRE",
+  "replaceByFeeManipulatedTransaction": "Les signatures de cette transaction sont invalides. Votre serveur Electrum l’a probablement remplacée par une copie modifiée qui redirigerait vos fonds si vous accélériez la transaction. Ne l’accélérez pas et ne faites pas confiance à ce serveur. Signalez le problème à l’assistance.",
+  "replaceByFeeReportToSupport": "Signaler à l’assistance",
+  "replaceByFeeUnverifiableTransaction": "Cette transaction n’a pas encore pu être vérifiée. L’accélération est donc désactivée. Attendez la fin de la synchronisation du portefeuille.",
+  "feePrioritySlow": "Lente",
+  "sendSentWithoutPayjoin": "Envoyé sans Payjoin. Le destinataire n’a pas terminé le Payjoin, donc une transaction classique a été diffusée.",
+  "sendPayjoinFallbackCountdown": "Passage à un paiement classique dans",
+  "walletSpTitle": "Silent Payments",
+  "sendErrorAddressNetworkMismatch": "Cette adresse appartient à un autre réseau que celui de votre portefeuille.",
+  "coinsSweepTitle": "Transférer les fonds des pièces sélectionnées",
+  "sendRemaining": "Solde restant",
+  "sendRecipientNumber": "Destinataire {number}",
+  "sendRecipientAddressNumber": "Adresse du destinataire {number}",
+  "sendToRecipientNumber": "Vers le destinataire {number}",
+  "sendRemoveRecipient": "Supprimer le destinataire",
+  "sendSelectedCoinsLabel": "Pièces sélectionnées",
+  "networkRelaunchRequiredError": "Le réseau a changé depuis l’ouverture de l’application. Fermez-la, rouvrez-la, puis réessayez."
 }

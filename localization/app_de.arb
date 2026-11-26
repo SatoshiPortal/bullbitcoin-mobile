@@ -1647,5 +1647,11 @@
   "walletDetailsPubkeyLabel": "Pubkey",
   "walletDetailsNetworkLabel": "Netzwerk",
   "walletDeletionFailedOkButton": "OK",
-  "walletDeletionConfirmationCancelButton": "Abbrechen"
+  "walletDeletionConfirmationCancelButton": "Abbrechen",
+  "destinationExpectedType": "Geben Sie eine gültige {type} ein oder scannen Sie sie.",
+  "exchangeAccessSignIn": "Anmelden oder Konto erstellen",
+  "networkFeatureUnavailable": "Diese Funktion ist im ausgewählten Netzwerk nicht verfügbar.",
+  "sendPayjoinSpendPaused": "Diese Payjoin-Zahlung ist pausiert, weil die Wallet nicht sicher fortfahren kann. Ihre Inputs bleiben reserviert. Aktualisieren Sie die Wallet oder verwenden Sie „Nach fehlenden Transaktionen suchen“ und wiederholen Sie diesen Vorschlag, solange er noch gültig ist. Falls er abgelaufen ist, prüfen Sie die Zahlung unter Transaktionen, bevor Sie weitere Schritte unternehmen.",
+  "walletSpendAwaitingObservation": "Ausgaben sind nicht möglich, bis diese Wallet synchronisiert ist und ihre früheren Zahlungen im Netzwerk gesehen hat. Aktualisieren Sie die Wallet oder verwenden Sie „Nach fehlenden Transaktionen suchen“ und versuchen Sie es dann erneut.",
+  "walletSpendBusy": "Die Wallet ist beschäftigt. Versuchen Sie es gleich noch einmal."
 }

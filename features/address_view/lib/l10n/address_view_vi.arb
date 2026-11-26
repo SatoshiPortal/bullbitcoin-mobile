@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Địa chỉ thanh toán Bitcoin hoặc hóa đơn không hợp lệ",
   "exchangeDcaAddressLabelBitcoin": "Địa chỉ Bitcoin",
   "exchangeDcaAddressLabelLiquid": "Địa chỉ Liquid",
-  "exchangeDcaAddressLabelLightning": "Địa chỉ Lightning"
+  "exchangeDcaAddressLabelLightning": "Địa chỉ Lightning",
+  "destinationExpectedType": "Nhập hoặc quét {type} hợp lệ."
 }

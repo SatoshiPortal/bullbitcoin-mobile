@@ -56,5 +56,6 @@
   },
   "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
   "exchangeDcaAddressLabelLiquid": "Liquid адрес",
-  "exchangeDcaAddressLabelLightning": "Lightning адрес"
+  "exchangeDcaAddressLabelLightning": "Lightning адрес",
+  "destinationExpectedType": "Въведете или сканирайте валиден {type}."
 }

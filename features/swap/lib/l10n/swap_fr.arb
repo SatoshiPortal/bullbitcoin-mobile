@@ -221,5 +221,20 @@
   "swapsFailureNetwork": "Impossible de joindre un serveur. Vérifiez votre connexion et réessayez.",
   "swapsFailureNotRestorable": "Ce swap n'a pas pu être reconstruit depuis le serveur. Contactez le support avec votre identifiant de swap.",
   "swapsFailureRefundNotFinal": "Le remboursement n'est pas encore dépensable (timelock). Réessayez plus tard.",
-  "swapsFailureUnexpected": "Une erreur est survenue avec le swap. Veuillez réessayer."
+  "swapsFailureUnexpected": "Une erreur est survenue avec le swap. Veuillez réessayer.",
+  "swapSettingsTitle": "Swaps",
+  "swapSettingsExchangeFallbackLabel": "Utiliser la plateforme d’échange Bull Bitcoin en secours",
+  "swapSettingsExchangeFallbackDescription": "Les swaps passent par Boltz. Si Boltz est inaccessible ou n’accepte pas le montant, un ordre est créé sur la plateforme d’échange Bull Bitcoin. Celle-ci conserve les fonds jusqu’à l’exécution de l’ordre.",
+  "swapSettingsRouteOverrideTitle": "Fournisseur de swaps",
+  "swapSettingsRouteOverrideAuto": "Automatique",
+  "swapSettingsRouteOverrideBoltzOnly": "Boltz uniquement",
+  "swapSettingsRouteOverrideExchangeOnly": "Plateforme d’échange uniquement",
+  "swapServerTitle": "Serveur de swaps",
+  "swapServerSubtitle": "Serveur Boltz utilisé pour les swaps sans tiers de confiance sur ce réseau. Laissez ce champ vide pour utiliser le serveur par défaut.",
+  "swapServerDefault": "Par défaut",
+  "swapServerReset": "Rétablir la valeur par défaut",
+  "swapServerInvalid": "Saisissez une adresse de serveur valide (p. ex. api.boltz.exchange/v2)",
+  "swapServerChangedNotice": "Les swaps utilisent désormais ce serveur.",
+  "networkRelaunchRequiredError": "Le réseau a changé depuis l’ouverture de l’application. Fermez-la, rouvrez-la, puis réessayez.",
+  "sendErrorTransactionChanged": "Les détails de la transaction ont changé. Vérifiez le montant, la destination et les frais, puis confirmez à nouveau."
 }
