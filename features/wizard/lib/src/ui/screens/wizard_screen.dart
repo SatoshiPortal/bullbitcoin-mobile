@@ -202,14 +202,17 @@ class _WizardScreenState extends State<WizardScreen> {
                               children: [
                                 WelcomeStep(
                                   logo: widget.branding.welcomeLogo,
-                                  logoWidget: widget.allowDeveloperNetwork
-                                      ? WizardNetworkControl(
-                                          logo: widget.branding.welcomeLogo,
-                                          onChanged: (network) => bloc.add(
-                                            WizardEvent.networkPicked(network),
-                                          ),
-                                        )
-                                      : null,
+                                  logoWidget: WizardNetworkControl(
+                                    logo: widget.branding.welcomeLogo,
+                                    allowDeveloperNetwork:
+                                        widget.allowDeveloperNetwork,
+                                    onPrivacyChanged: (value) => bloc.add(
+                                      WizardEvent.screenPrivacyPicked(value),
+                                    ),
+                                    onChanged: (network) => bloc.add(
+                                      WizardEvent.networkPicked(network),
+                                    ),
+                                  ),
                                 ),
                                 CustomizeStep(
                                   exchangeAccess: widget.exchangeAllowed
