@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bull_pricer/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
-
-import 'fake_price_api.dart';
 
 // Pricer is static and cannot be closed, so this file shares one pricer and
 // one cache across its tests, in order. Each test reads its own currency, so

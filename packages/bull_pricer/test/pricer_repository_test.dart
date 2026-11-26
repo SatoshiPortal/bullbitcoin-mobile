@@ -9,12 +9,11 @@ import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
 import 'package:bull_pricer/src/domain/entities/price_point.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 import 'package:bull_pricer/src/domain/pricer_failure.dart';
+import 'package:bull_pricer/testing.dart';
 import 'package:clock/clock.dart';
 import 'package:drift/native.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
-
-import 'fake_price_api.dart';
 
 void main() {
   const mainnet = BitcoinNetwork.mainnet;

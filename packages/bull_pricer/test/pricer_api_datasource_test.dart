@@ -1,11 +1,10 @@
 import 'package:bull_pricer/src/data/datasources/pricer_api_datasource.dart';
 import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
+import 'package:bull_pricer/testing.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
-
-import 'fake_price_api.dart';
 
 // A real `getRate` answer from api05 (2026-10-22).
 final _getRateAnswer = element({

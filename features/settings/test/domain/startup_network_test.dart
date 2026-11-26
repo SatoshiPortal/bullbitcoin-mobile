@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
 import 'package:settings/setup.dart';
 import 'package:settings/settings.dart';
 
@@ -115,4 +116,30 @@ void main() {
       verifyZeroInteractions(electrum);
     });
   }
+
+  test('does not alter settings when custody checks fail', () async {
+    for (final failingCheck in ['protection', 'wallets', 'secrets']) {
+      final preferences = _Preferences();
+      final electrum = _Electrum();
+      final result = await StartupNetwork.apply(
+        preferences: preferences,
+        electrum: electrum,
+        network: NetworkEnv.testnet,
+        superuserUnlocked: true,
+        developerConsent: true,
+        isProtected: () async => failingCheck == 'protection'
+            ? const Err(KeystoreLockedFailure())
+            : const Ok(false),
+        hasWallets: () async => failingCheck == 'wallets'
+            ? const Err(KeystoreLockedFailure())
+            : const Ok(false),
+        listSecrets: () async => failingCheck == 'secrets'
+            ? const Err(KeystoreLockedFailure())
+            : const Ok([]),
+      );
+      expect(result, isA<Err<void, SettingsFailure>>(), reason: failingCheck);
+      verifyZeroInteractions(preferences);
+      verifyZeroInteractions(electrum);
+    }
+  });
 }
