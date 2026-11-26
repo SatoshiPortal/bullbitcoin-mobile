@@ -154,6 +154,16 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// then work already admitted settles. A write that reaches its commit after
   /// the lock is rolled back; one already committed reports its true result.
   ///
+  /// What survives a lock after its commit: a command that returns no value
+  /// (a PIN change, a background grant, a wallet registration, removal or
+  /// property change, a derivation rename or revocation) reports its true
+  /// result, because the durable effect exists whatever the session did. It
+  /// never publishes a projection of the old view. The one exception is a BIP85
+  /// reservation (`reserveHexDerivation`, `reserveMnemonicDerivation`): it hands
+  /// a value back and may be derived next, so after a lock it is refused even
+  /// when its row committed; the reservation stays recorded and is never
+  /// reused.
+  ///
   /// Returns false if admitted work had not settled within [drain]. It then
   /// stays closed: the lock never reopens on a timeout, and the operation still
   /// running reports [inventorySessionChangedFailure] when it ends.
@@ -316,6 +326,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       guard: _guard,
       prepareProperties: prepareProperties,
     ),
+    preserveCommittedCommand: true,
   );
 
   @useResult
@@ -332,6 +343,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       birthday: birthday,
       isDefault: isDefault,
     ),
+    preserveCommittedCommand: true,
   );
 
   @useResult
@@ -402,6 +414,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       path: derivation.path,
       change: change,
     ),
+    preserveCommittedCommand: true,
   );
 
   Future<Result<T, SecretFailure>> _inSession<T>(
