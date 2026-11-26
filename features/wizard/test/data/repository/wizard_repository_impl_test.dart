@@ -13,6 +13,36 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  test('unknown version does not erase a pending privacy choice', () async {
+    SharedPreferences.setMockInitialValues({
+      'wizard_pending_version': kCurrentWizardVersion + 1,
+      'wizard_pending_screen_privacy': false,
+    });
+    await expectLater(_build().readPending(), throwsFormatException);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('wizard_pending_screen_privacy'), isFalse);
+  });
+
+  test('privacy false survives staging alongside network', () async {
+    final repo = _build();
+    await repo.savePending(
+      const WizardChoices().copyWith(
+        network: Environment.testnet,
+        screenPrivacy: false,
+      ),
+    );
+    final pending = await repo.readPending();
+    expect(pending?.screenPrivacy, isFalse);
+    expect(
+      pending?.touched,
+      containsAll([WizardField.network, WizardField.screenPrivacy]),
+    );
+    await repo.clearPendingNetwork();
+    final after = await repo.readPending();
+    expect(after?.screenPrivacy, isFalse);
+    expect(after?.touched, {WizardField.screenPrivacy});
+  });
+
   test('an explicit network survives staging and clearing', () async {
     final repo = _build();
     await repo.savePending(

@@ -138,6 +138,8 @@ void main() {
     }
     await tester.tap(find.text('Advanced Options'));
     await tester.pumpAndSettle();
+    await tester.tap(find.byType(BullSwitch));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Testnet'));
     await tester.pumpAndSettle();
     final loc = SettingsLocalizations.of(tester.element(find.text('Testnet')));
@@ -176,6 +178,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
+    expect(repository.pending?.screenPrivacy, isFalse);
+    expect(repository.pending?.touched, contains(WizardField.screenPrivacy));
     expect(repository.pending?.network, Environment.testnet);
     expect(repository.pending?.touched, contains(WizardField.network));
     await tester.pump(const Duration(seconds: 4));
