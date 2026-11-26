@@ -22,6 +22,10 @@ enum ArkFailureReason {
   native,
   budgetExhausted,
   closed,
+
+  /// The headless renewal policy refused to read the seed (D92). Not a
+  /// recovery: nothing is wrong with the wallet, the view is protected.
+  renewalNotPermitted,
 }
 
 sealed class ArkWalletFailure extends Failure {

@@ -10,6 +10,7 @@ import '../ark_notification_setup.dart';
 import '../ark_setup.dart';
 import '../ark_wallet_setup.dart';
 import '../bull_ark.dart';
+import 'data/renewal_ark_child_provider.dart';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
@@ -18,7 +19,7 @@ import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show ArkRenewalAuthority;
 import 'package:notifications/payment_store.dart';
 import 'package:notifications/notifications.dart'
     show ScheduledNotificationPort;
@@ -111,9 +112,18 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     budget: budget,
   );
   resources.onClose(exitNotifier.close);
-  final secrets = Secrets(
-    scratchDirectory: () async => (await getTemporaryDirectory()).path,
-  );
+  // D92: the task never builds a `Secrets`. Only a renewal may read a seed,
+  // through one admission that refuses views protected by a PIN. Without the
+  // inventory, renewals are unavailable and saved claims still run.
+  final support = await getApplicationSupportDirectory();
+  final renewalAuthority = switch (await ArkRenewalAuthority.open(
+    file: File('${support.path}/databases/secrets.sqlite'),
+    admission: admission,
+  )) {
+    Ok(:final value) => value,
+    Err() => null,
+  };
+  if (renewalAuthority != null) resources.onClose(renewalAuthority.close);
   // Headless work never provisions or migrates the source authority.
   final sourceAuthority = SqliteArkFundingReservations.open(
     '${documents.path}/ark-funding.sqlite',
@@ -125,7 +135,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
       existingClient?.call(policy, budget) ??
       createArkNativeClient(
         storagePath: '$directory/native',
-        childProvider: SecretsArkChildProvider(secrets, registry),
+        childProvider: RenewalArkChildProvider(renewalAuthority, registry),
         transactionVerifier: const ArkTransactionVerifier(),
         boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
         executionPolicy: policy,
