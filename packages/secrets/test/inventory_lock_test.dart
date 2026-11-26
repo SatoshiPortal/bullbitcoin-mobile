@@ -18,10 +18,12 @@ void main() {
   late Directory directory;
   late RuntimeAdmission admission;
   late SecretsInventory inventory;
+  late SessionAuthority authority;
+  late _BlockingStorage storage;
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('inventory-lock-');
-    FakeSecureStoragePlatform().install();
+    storage = _BlockingStorage()..install();
     final file = File('${directory.path}/secrets.sqlite');
     final gate = NativeFileGate(File('${directory.path}/gate'));
     final exclusive = await gate.acquire(
@@ -41,11 +43,12 @@ void main() {
       exclusive: false,
       timeout: Duration.zero,
     ) as RuntimeAdmission;
+    authority = SessionAuthority();
     inventory = _value(
       await SecretsInventory.open(
         file: file,
         admission: admission,
-        authority: SessionAuthority(),
+        authority: authority,
       ),
     );
   });
@@ -151,6 +154,46 @@ void main() {
     expect(_value(await inventory.findWallet(wallet().id)), isNotNull);
   });
 
+  test(
+    'BIP85 does not reserve or reveal after revocation during seed lookup',
+    () async {
+      final secrets = Secrets(
+        authority: authority,
+        scratchDirectory: () async => directory.path,
+      );
+      final secret = _value(await secrets.generate());
+      final fingerprint = secret.id;
+      _value(
+        await inventory.registerWallet(
+          RegisteredWallet(
+            id: 'bip85-parent',
+            secretFingerprint: fingerprint.hex,
+            masterFingerprint: fingerprint.hex,
+            signer: 'local',
+            network: 'bitcoinTestnet',
+            xpub: 'public-key-marker',
+            externalDescriptor: 'external-marker',
+            internalDescriptor: 'internal-marker',
+            label: null,
+            birthday: null,
+            isDefault: false,
+          ),
+        ),
+      );
+      storage.block = true;
+      final deriving = inventory
+          .bip85(secrets)
+          .deriveNextHex(parent: fingerprint, length: 16);
+      await storage.entered.future.timeout(const Duration(seconds: 5));
+      final locking = inventory.lock();
+      storage.release.complete();
+      expect(await deriving, isA<Err>());
+      expect(await locking, isTrue);
+      _value(await inventory.resumeUnprotected());
+      expect(_value(await inventory.listDerivations()), isEmpty);
+    },
+  );
+
   test('unprotected reopening cannot supersede a later lock', () async {
     final first = inventory.lock();
     expect(inventory.isLocked, isTrue);
@@ -190,6 +233,25 @@ void main() {
       expect(inventory.isLocked, isFalse);
     },
   );
+}
+
+class _BlockingStorage extends FakeSecureStoragePlatform {
+  bool block = false;
+  final entered = Completer<void>();
+  final release = Completer<void>();
+
+  @override
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async {
+    if (block) {
+      block = false;
+      entered.complete();
+      await release.future;
+    }
+    return super.read(key: key, options: options);
+  }
 }
 
 T _value<T, F extends Failure>(Result<T, F> result) {
