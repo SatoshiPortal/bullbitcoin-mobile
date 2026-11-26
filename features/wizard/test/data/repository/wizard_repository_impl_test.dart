@@ -23,6 +23,17 @@ void main() {
     expect(prefs.getBool('wizard_pending_screen_privacy'), isFalse);
   });
 
+  test('missing version refuses and retains advanced choices', () async {
+    SharedPreferences.setMockInitialValues({
+      'wizard_pending_screen_privacy': false,
+      'wizard_pending_network': 'testnet',
+    });
+    await expectLater(_build().readPending(), throwsFormatException);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('wizard_pending_screen_privacy'), isFalse);
+    expect(prefs.getString('wizard_pending_network'), 'testnet');
+  });
+
   test('privacy false survives staging alongside network', () async {
     final repo = _build();
     await repo.savePending(

@@ -63,7 +63,8 @@ void main() {
     await tester.tap(find.text('No'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Get started'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump();
     expect(repository.pending?.screenPrivacy, isFalse);
     expect(repository.pending?.touched, contains(WizardField.screenPrivacy));
     expect(repository.pending?.network, Environment.testnet);
@@ -109,7 +110,8 @@ void main() {
         await tester.tap(find.text('No'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Get started'));
-        await tester.pumpAndSettle();
+        await tester.pump();
+        await tester.pump();
 
         final saved = repository.pending;
         expect(saved, isNotNull);
@@ -187,7 +189,8 @@ void main() {
     await tester.tap(find.text('No'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Get started'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump();
     final saved = repository.pending;
     expect(saved?.touched.contains(WizardField.backgroundTasks), isTrue);
     expect(saved?.backgroundTasks, isFalse);

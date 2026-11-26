@@ -60,7 +60,8 @@ Future<WizardChoices?> _finish(
   await tester.tap(find.text('No'));
   await tester.pumpAndSettle();
   await tester.tap(find.text('Get started'));
-  await tester.pumpAndSettle();
+  await tester.pump();
+  await tester.pump();
   await tester.pump(const Duration(seconds: 4));
   return repository.pending;
 }

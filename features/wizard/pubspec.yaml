@@ -30,6 +30,7 @@ dependencies:
   shared_preferences: ^2.3.0
 
 dev_dependencies:
+  bull_reporting:
   build_runner: ^2.10.4
   flutter_test:
     sdk: flutter

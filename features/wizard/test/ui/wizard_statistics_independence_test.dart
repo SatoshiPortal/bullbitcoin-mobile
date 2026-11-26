@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bull_reporting/statistics.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:wizard/src/ui/screens/wizard_screen.dart';
 import 'package:flutter/services.dart' show MethodChannel;
@@ -24,6 +25,7 @@ void main() {
       (call) async => directory.path,
     );
     addTearDown(() async {
+      await Statistics.instance.setEnabled(false);
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
         channel,
         null,
@@ -64,21 +66,34 @@ void main() {
     await tester.pumpAndSettle();
     // Staged only on completion, never as a side effect of the answer.
     expect(repository.pending?.reportingConsent, isNull);
-    await tester.tap(find.text('Get started'));
-    await tester.pumpAndSettle();
-    expect(repository.pending?.reportingConsent, isFalse);
-
-    // Back to the mission page: the answer did not touch the statistics
+    // Before completion, return to the mission page: the answer did not touch the statistics
     // choice. The finder must resolve, so this can never pass vacuously.
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(statistics, findsOneWidget);
     expect(tester.widget<BullSwitch>(statistics).value, isTrue);
-    expect(repository.pending?.reportingConsent, isFalse);
+    expect(repository.pending?.reportingConsent, isNull);
 
-    // Leave the process-wide singleton off for any later test.
-    await _toggle(tester, statistics, false);
-    expect(tester.widget<BullSwitch>(statistics).value, isFalse);
+    await tester.tap(find.text('No'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Get started'));
+    await tester.pump();
+    await tester.pump();
+    expect(repository.pending?.reportingConsent, isFalse);
+    final marker = File('${directory.path}/statistics_consent.v1');
+    expect(
+      await tester.runAsync(marker.readAsString),
+      'statistics-consent-v1\n',
+    );
+    expect(Statistics.instance.enabled, isTrue);
+
+    // Reset the process-wide capability after checking the completed state.
+    expect(
+      await tester.runAsync(() => Statistics.instance.setEnabled(false)),
+      isTrue,
+    );
+    expect(Statistics.instance.enabled, isFalse);
+    expect(await tester.runAsync(marker.exists), isFalse);
     await tester.pump(const Duration(seconds: 3));
   });
 }
