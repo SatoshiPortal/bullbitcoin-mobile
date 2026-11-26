@@ -79,7 +79,14 @@ final class BarkArkClient implements ArkClient {
     Future<Result<T, ArkWalletFailure>> Function(ArkStore store, String path)
     action, {
     bool create = false,
+    bool forbidBackground = false,
   }) => _track(() async {
+    if (forbidBackground &&
+        executionMode == ArkExecutionMode.backgroundExisting) {
+      return const Err(
+        ArkUnavailableFailure(ArkFailureReason.renewalNotPermitted),
+      );
+    }
     if (!_mayRun(account)) {
       return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
     }
@@ -1268,6 +1275,7 @@ final class BarkArkClient implements ArkClient {
       }
       return Ok(outcome);
     }),
+    forbidBackground: !renew,
   );
   @override
   Future<Result<ArkQuote, ArkWalletFailure>> quote(
