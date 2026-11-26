@@ -114,4 +114,45 @@ void main() {
     await _settle();
     expect(released, isTrue);
   });
+
+  // The lock lands somewhere between the unlock and the launch's own
+  // continuation; which microtask hop that is depends on the runtime, so every
+  // position is tried. No position may start the watchers while locked.
+  for (var hops = 0; hops < 8; hops++) {
+    test(
+      'a lock $hops microtasks after the unlock starts nothing while locked',
+      () async {
+        var startedWhileLocked = 0;
+        var starts = 0;
+        late final SessionEngines engines;
+        engines = SessionEngines([probe.engine()]);
+        final startup = ForegroundWalletStartup(
+          initialize: () async {},
+          startWatchers: () {
+            if (engines.isLocked) startedWhileLocked++;
+            starts++;
+          },
+          engines: engines,
+        );
+        startup.onLockChanged(true);
+        final starting = startup.start();
+        await _settle();
+        unawaited(
+          engines.untilUnlocked().then((_) async {
+            for (var i = 0; i < hops; i++) {
+              await Future<void>.value();
+            }
+            startup.onLockChanged(true);
+          }),
+        );
+        startup.onLockChanged(false);
+        await _settle();
+        expect(startedWhileLocked, 0, reason: 'started while locked');
+
+        startup.onLockChanged(false);
+        await starting;
+        expect(starts, 1);
+      },
+    );
+  }
 }
