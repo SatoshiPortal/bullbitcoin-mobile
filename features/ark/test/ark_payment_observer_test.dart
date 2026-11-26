@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart';
+import 'package:ark/src/data/ark_codec.dart';
+import 'package:ark/src/data/scuttle_mapping.dart';
+import 'package:ark/src/rust/api/payments.dart';
 import 'package:bull_ark/src/data/ark_payment_observer.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
@@ -61,6 +64,7 @@ ArkMovement movement(
   status: status,
   direction: direction,
   amount: Sats.fromInt(1000),
+  positiveEffectiveAmount: true,
 );
 
 ArkPassOutcome pass(
@@ -100,10 +104,9 @@ void main() {
     directory = Directory.systemTemp.createTempSync('ark-payment-');
     gateway = Gateway();
     exits = Exits();
-    store =
-        (openForegroundNotificationStore('${directory.path}/outbox.sqlite')
-                as Ok<NotificationStoreRepository, NotificationsFailure>)
-            .value;
+    store = (openForegroundNotificationStore(
+      '${directory.path}/outbox.sqlite',
+    ) as Ok<NotificationStoreRepository, NotificationsFailure>).value;
     facade = NotificationsFacade(outbox: store, gateway: gateway);
   });
 
@@ -143,14 +146,12 @@ void main() {
 
       // A reopened store and a repeated history announce nothing again.
       await store.close();
-      store =
-          (openForegroundNotificationStore('${directory.path}/outbox.sqlite')
-                  as Ok<NotificationStoreRepository, NotificationsFailure>)
-              .value;
+      store = (openForegroundNotificationStore(
+        '${directory.path}/outbox.sqlite',
+      ) as Ok<NotificationStoreRepository, NotificationsFailure>).value;
       facade = NotificationsFacade(outbox: store, gateway: gateway);
-      await observer(foreground: false).observe(
-        pass([movement('old'), movement('ark'), movement('ln')]),
-      );
+      await observer(foreground: false)
+          .observe(pass([movement('old'), movement('ark'), movement('ln')]));
       expect(gateway.shown, hasLength(1));
     },
   );
@@ -174,14 +175,62 @@ void main() {
   });
 
   test('a restored history first seen in foreground is a baseline', () async {
-    await observer(foreground: true).observe(
-      pass([movement('r1'), movement('r2')]),
-    );
+    await observer(foreground: true)
+        .observe(pass([movement('r1'), movement('r2')]));
+    await observer(foreground: false)
+        .observe(pass([movement('r1'), movement('r2')]));
+    expect(gateway.shown, isEmpty);
+  });
+
+  test('zero-value incoming movements do not announce payments', () async {
+    await observer(foreground: true).observe(pass([]));
     await observer(foreground: false).observe(
-      pass([movement('r1'), movement('r2')]),
+      pass([
+        ArkMovement(
+          id: 'zero',
+          kind: ArkMovementKind.payment,
+          status: ArkMovementStatus.successful,
+          direction: ArkMovementDirection.incoming,
+          amount: Sats.zero,
+        ),
+      ]),
     );
     expect(gateway.shown, isEmpty);
   });
+
+  test(
+    'only positive native receipts are announced after serialization',
+    () async {
+      ArkMovement nativeReceipt(int id, int amount) {
+        final native = ScuttleMovement(
+          id: id,
+          subsystem: 'bark.arkoor',
+          kind: 'receive',
+          status: ScuttleMovementStatus.successful,
+          intendedSats: amount,
+          effectiveSats: amount,
+          feeSats: BigInt.zero,
+          createdAt: 1700000000,
+          updatedAt: 1700000000,
+        );
+        return movementFromJson(movementToJson(projectScuttleMovement(native)));
+      }
+
+      final old = movementToJson(nativeReceipt(4, 1000))
+        ..remove('positiveEffectiveAmount');
+      await observer(foreground: true).observe(pass([]));
+      await observer(foreground: false).observe(
+        pass([
+          nativeReceipt(1, -1000),
+          nativeReceipt(2, 0),
+          nativeReceipt(3, 1000),
+          movementFromJson(old),
+        ]),
+      );
+      expect(gateway.shown, hasLength(1));
+      expect(gateway.shown.single.body, '1');
+    },
+  );
 
   test('a failed delivery is retried after reopening the outbox', () async {
     await observer(foreground: true).observe(pass([]));

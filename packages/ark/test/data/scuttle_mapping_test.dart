@@ -64,6 +64,37 @@ Matcher _reason(ArkFailureReason reason) => throwsA(
 );
 
 void main() {
+  test('signed effective amounts survive projection and persistence', () {
+    for (final (subsystem, amount, expected) in [
+      ('bark.arkoor', 1000, true),
+      ('bark.arkoor', 0, false),
+      ('bark.arkoor', -1000, false),
+      ('bark.lightning_receive', 1000, true),
+      ('bark.lightning_receive', 0, false),
+      ('bark.lightning_receive', -1000, false),
+    ]) {
+      final projected = projectScuttleMovement(
+        _movement(subsystem: subsystem, kind: 'receive', effective: amount),
+      );
+      expect(projected.direction, ArkMovementDirection.incoming);
+      expect(projected.amount?.value, BigInt.from(amount.abs()));
+      final encoded = movementToJson(projected);
+      expect(encoded['positiveEffectiveAmount'], expected);
+      expect(
+        movementToJson(movementFromJson(encoded))['positiveEffectiveAmount'],
+        expected,
+      );
+      encoded.remove('positiveEffectiveAmount');
+      expect(
+        movementToJson(movementFromJson(encoded))['positiveEffectiveAmount'],
+        false,
+      );
+    }
+    final outgoing = projectScuttleMovement(_movement(effective: -1000));
+    expect(outgoing.direction, ArkMovementDirection.outgoing);
+    expect(outgoing.amount?.value, BigInt.from(1000));
+  });
+
   test('movement subsystems map like Bark', () {
     expect(scuttleMovementKind('bark.board'), ArkMovementKind.board);
     expect(scuttleMovementKind('bark.round'), ArkMovementKind.renewal);
