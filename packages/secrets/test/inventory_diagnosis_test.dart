@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/data/access_repository.dart';
+import 'package:secrets/src/data/backup_guard.dart';
 import 'package:secrets/src/data/database_key_repository.dart';
 import 'package:secrets/src/data/encrypted_database.dart'
     show openEncryptedDatabase;
@@ -320,6 +322,64 @@ void main() {
     },
   );
 
+  group('the second opening keeps the cause of each failed read', () {
+    final faults = {
+      'busy': (SqlError.SQLITE_BUSY, DatabaseFileProblem.contended),
+      'corrupt': (SqlError.SQLITE_CORRUPT, DatabaseFileProblem.unreadable),
+      'an I/O error': (SqlError.SQLITE_IOERR, DatabaseFileProblem.inaccessible),
+    };
+
+    Future<(SecretsDatabase, _Fault)> faulty() async {
+      final fault = _Fault();
+      final database = SecretsDatabase(
+        NativeDatabase.memory().interceptWith(fault),
+      );
+      addTearDown(database.close);
+      await database.customSelect('SELECT 1').get();
+      return (database, fault);
+    }
+
+    for (final MapEntry(:key, :value) in faults.entries) {
+      final (code, expected) = value;
+
+      test('reconciling access after $key', () async {
+        final (database, fault) = await faulty();
+        fault.code = code;
+        final result = await reconcileInventoryAccess(database);
+        final failure = (result as Err<void, LegacyImportFailure>).failure;
+        expect(
+          inventoryReadinessFailure(failure),
+          isA<DatabaseFileUnavailable>().having(
+            (f) => f.reason,
+            'reason',
+            expected,
+          ),
+        );
+      });
+
+      test('reading the protection after $key', () async {
+        final (database, fault) = await faulty();
+        fault.code = code;
+        final result = await AccessRepository(
+          database,
+          BackupGuard(null),
+        ).protectionAtOpen();
+        expect(
+          result,
+          isA<Err<bool, DatabaseOpenFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<DatabaseFileUnavailable>().having(
+              (f) => f.reason,
+              'reason',
+              expected,
+            ),
+          ),
+        );
+      });
+    }
+  });
+
   test('contention while reading the receipt is kept', () async {
     final database = SecretsDatabase(
       NativeDatabase.memory().interceptWith(_BusyOnSelect()),
@@ -376,4 +436,37 @@ final class _LegacyFixture extends GeneratedDatabase {
       '(id TEXT PRIMARY KEY NOT NULL)',
     ),
   );
+}
+
+/// Fails every statement with an engine error once a code is set.
+final class _Fault extends QueryInterceptor {
+  int? code;
+
+  T _check<T>(T value) {
+    if (code case final code?) {
+      throw SqliteException(extendedResultCode: code, message: 'injected');
+    }
+    return value;
+  }
+
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) => _check(super.runSelect(executor, statement, args));
+
+  @override
+  Future<void> runCustom(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) => _check(super.runCustom(executor, statement, args));
+
+  @override
+  Future<int> runUpdate(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) => _check(super.runUpdate(executor, statement, args));
 }
