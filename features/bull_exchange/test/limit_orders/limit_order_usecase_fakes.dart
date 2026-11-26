@@ -1,6 +1,9 @@
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/create_limit_order_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/get_limit_order_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/get_limit_receive_address_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/get_recent_limit_orders_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/load_limit_order_context_usecase.dart';
@@ -81,4 +84,27 @@ final class FakeGetRecentLimitOrdersUsecase
 
   @override
   Future<ExchangeRead<List<LimitOrder>>> execute() => answer();
+}
+
+final class FakeGetLimitOrderUsecase implements GetLimitOrderUsecase {
+  final Future<ExchangeRead<LimitOrder>> Function(String orderId) answer;
+
+  FakeGetLimitOrderUsecase(this.answer);
+
+  @override
+  Future<ExchangeRead<LimitOrder>> execute(String orderId) => answer(orderId);
+}
+
+final class FakeCancelLimitOrderUsecase implements CancelLimitOrderUsecase {
+  final Future<LimitCancelAnswer> Function(
+    ExchangeSession session,
+    String orderId,
+  )
+  answer;
+
+  FakeCancelLimitOrderUsecase(this.answer);
+
+  @override
+  Future<LimitCancelAnswer> execute(ExchangeSession session, String orderId) =>
+      answer(session, orderId);
 }
