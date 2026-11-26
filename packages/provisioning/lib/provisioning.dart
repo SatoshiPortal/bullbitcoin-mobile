@@ -9,7 +9,9 @@ import 'src/wallet_provisioning.dart';
 export 'default_wallets.dart';
 export 'src/wallet_provisioning.dart'
     show WalletProvisioning, WalletProvisioningException, WatchOnlyAccount;
+export 'network_wallet_provisioning.dart';
 export 'provisioning_failure.dart';
+export 'src/default_wallet_secret_policy.dart' show DefaultWalletSecretRefusal;
 
 /// Adds the missing half of a legacy default pair using its existing seed.
 final class DefaultWalletRepair {

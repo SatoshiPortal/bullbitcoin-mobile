@@ -1,8 +1,5 @@
-import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:mocktail/mocktail.dart';
@@ -30,6 +27,13 @@ void main() {
     isDevModeEnabled: true,
   );
   final words = [...List.filled(11, 'abandon'), 'about'];
+
+  NetworkWalletProvisioning provisioning() => NetworkWalletProvisioning(
+    settings: settings,
+    inventory: references,
+    defaults: create,
+    secrets: secrets,
+  );
 
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
@@ -67,11 +71,7 @@ void main() {
         );
         when(references.referencedFingerprints)
             .thenAnswer((_) async => Ok([Fingerprint('deadbeef'), secret.id]));
-        final result = await LoadNetworkWalletSetupUsecase(
-          settings,
-          references,
-          secrets,
-        ).execute();
+        final result = await provisioning().load();
         expect(
           result,
           isA<Ok<NetworkWalletSetup, NetworkWalletSetupFailure>>(),
@@ -86,11 +86,7 @@ void main() {
 
   test('secret storage failure keeps setup unavailable', () async {
     storage.locked = true;
-    final result = await LoadNetworkWalletSetupUsecase(
-      settings,
-      references,
-      secrets,
-    ).execute();
+    final result = await provisioning().load();
     expect(result, isA<Err<NetworkWalletSetup, NetworkWalletSetupFailure>>());
     expect(
       (result as Err).failure,
@@ -114,22 +110,16 @@ void main() {
     ) as Ok<Secret, SecretFailure>).value;
     when(() => references.referencedFingerprints())
         .thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));
-    final result = await LoadNetworkWalletSetupUsecase(
-      settings,
-      references,
-      secrets,
-    ).execute();
+    final result = await provisioning().load();
     expect((result as Ok).value.reusable, [
       secret.id,
       french.id,
       passphrase.id,
     ]);
-    final resultReuse = await CreateNetworkWalletUsecase(
-      settings,
-      references,
-      secrets,
-      create,
-    ).execute(network: NetworkEnv.regtest, reuse: passphrase.id);
+    final resultReuse = await provisioning().create(
+      network: NetworkEnv.regtest,
+      reuse: passphrase.id,
+    );
     expect(resultReuse, isA<Ok>());
     final forwarded =
         verify(
@@ -154,11 +144,7 @@ void main() {
           isDevModeEnabled: regtest.isDevModeEnabled,
         )),
       );
-      final result = await LoadNetworkWalletSetupUsecase(
-        settings,
-        references,
-        secrets,
-      ).execute();
+      final result = await provisioning().load();
       expect(
         (result as Ok<NetworkWalletSetup, NetworkWalletSetupFailure>)
             .value
@@ -172,12 +158,8 @@ void main() {
   test(
     'regtest offers catalog references and refuses developer mode off',
     () async {
-      final usecase = LoadNetworkWalletSetupUsecase(
-        settings,
-        references,
-        secrets,
-      );
-      final result = await usecase.execute();
+      final usecase = provisioning();
+      final result = await usecase.load();
       expect(
         (result as Ok<NetworkWalletSetup, NetworkWalletSetupFailure>)
             .value
@@ -192,7 +174,7 @@ void main() {
         )),
       );
       expect(
-        await usecase.execute(),
+        await usecase.load(),
         isA<Err<NetworkWalletSetup, NetworkWalletSetupFailure>>(),
       );
     },
@@ -202,14 +184,9 @@ void main() {
     'reuse passes the existing handle and retains custody after failure',
     () async {
       final before = Map<String, String>.of(storage.entries);
-      final usecase = CreateNetworkWalletUsecase(
-        settings,
-        references,
-        secrets,
-        create,
-      );
+      final usecase = provisioning();
       expect(
-        await usecase.execute(network: NetworkEnv.regtest, reuse: secret.id),
+        await usecase.create(network: NetworkEnv.regtest, reuse: secret.id),
         isA<Ok>(),
       );
       final supplied =
@@ -228,7 +205,7 @@ void main() {
         ),
       ).thenAnswer((_) async => const Err(DefaultWalletCreationFailure()));
       expect(
-        await usecase.execute(network: NetworkEnv.regtest, reuse: secret.id),
+        await usecase.create(network: NetworkEnv.regtest, reuse: secret.id),
         isA<Err>(),
       );
       expect(storage.entries, before);
@@ -239,13 +216,8 @@ void main() {
     'generation delegates without reading a secret or enumerating custody',
     () async {
       final reads = storage.reads;
-      final usecase = CreateNetworkWalletUsecase(
-        settings,
-        references,
-        secrets,
-        create,
-      );
-      expect(await usecase.execute(network: NetworkEnv.regtest), isA<Ok>());
+      final usecase = provisioning();
+      expect(await usecase.create(network: NetworkEnv.regtest), isA<Ok>());
       verify(
         () => create.execute(secret: null, expectedNetwork: NetworkEnv.regtest),
       ).called(1);
@@ -255,14 +227,9 @@ void main() {
   );
 
   test('stale network selection is refused before provision', () async {
-    final usecase = CreateNetworkWalletUsecase(
-      settings,
-      references,
-      secrets,
-      create,
-    );
+    final usecase = provisioning();
     expect(
-      await usecase.execute(network: NetworkEnv.testnet, reuse: secret.id),
+      await usecase.create(network: NetworkEnv.testnet, reuse: secret.id),
       isA<Err>(),
     );
     verifyNever(
