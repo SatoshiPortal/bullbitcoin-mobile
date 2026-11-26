@@ -13,7 +13,9 @@ import 'package:bull_exchange/src/settings/domain/usecases/get_account_info_usec
 import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_preferences_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
+import 'package:bull_exchange/src/settings/domain/usecases/pick_exchange_document_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/update_exchange_preferences_usecase.dart';
+import 'package:bull_exchange/src/settings/domain/entities/exchange_document_to_upload.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -490,64 +492,104 @@ void main() {
     );
   });
 
-  group('UploadExchangeDocumentUsecase', () {
-    UploadExchangeDocumentUsecase build(FileSystem picker, _Upload upload) =>
-        UploadExchangeDocumentUsecase(
-          fileSystem: picker,
-          exchange: exchangeForTesting(uploadKycDocument: upload.execute),
-        );
+  group('PickExchangeDocumentUsecase', () {
+    PickExchangeDocumentUsecase build(FileSystem picker) =>
+        PickExchangeDocumentUsecase(fileSystem: picker);
 
     test('a dismissed picker is a cancellation, not a failure', () async {
-      final result = await build(
-        _StubPicker(const Ok(null)),
-        _MockUploadKycDocument(),
-      ).execute();
+      final result = await build(_StubPicker(const Ok(null))).execute();
 
-      expect((result as Ok).value, isA<ExchangeDocumentPickCancelled>());
+      expect((result as Ok).value, isNull);
     });
 
-    test('an empty file is rejected before upload', () async {
-      final upload = _MockUploadKycDocument();
-
-      final result = await build(
-        _StubPicker(Ok(_Document(bytes: const []))),
-        upload,
-      ).execute();
+    test('an empty file is rejected', () async {
+      final result = await build(_StubPicker(Ok(_Document(bytes: const []))))
+          .execute();
 
       expect(
         (result as Err).failure,
         isA<ExchangeSettingsDocumentEmptyFailure>(),
       );
-      verifyNever(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: any(named: 'fileName'),
-        ),
-      );
     });
 
     test('a file the picker could not read is unreadable, not empty', () async {
-      final upload = _MockUploadKycDocument();
-
-      final result = await build(
-        _StubPicker(Ok(_Document(bytes: null))),
-        upload,
-      ).execute();
+      final result = await build(_StubPicker(Ok(_Document(bytes: null))))
+          .execute();
 
       expect(
         (result as Err).failure,
         isA<ExchangeSettingsDocumentUnreadableFailure>(),
         reason: 'no bytes means unreadable; an empty list means empty',
       );
-      verifyNever(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: any(named: 'fileName'),
-        ),
-      );
     });
 
     test('an uppercase extension is accepted', () async {
+      final result = await build(
+        _StubPicker(Ok(_Document(name: 'ID.PNG', extension: 'PNG'))),
+      ).execute();
+
+      expect(
+        (result as Ok).value,
+        isA<ExchangeDocumentToUpload>(),
+        reason: 'the domain rule must not depend on the adapter lowercasing',
+      );
+    });
+
+    test('an oversized file is rejected', () async {
+      final result = await build(
+        _StubPicker(
+          Ok(_Document(bytes: Uint8List(FileToUpload.maxFileSizeBytes + 1))),
+        ),
+      ).execute();
+
+      expect(
+        (result as Err).failure,
+        isA<ExchangeSettingsDocumentTooLargeFailure>(),
+      );
+    });
+
+    test('a disallowed extension is rejected', () async {
+      final result = await build(
+        _StubPicker(Ok(_Document(name: 'payload.exe', extension: 'exe'))),
+      ).execute();
+
+      expect(
+        (result as Err).failure,
+        isA<ExchangeSettingsDocumentTypeNotAllowedFailure>(),
+      );
+    });
+
+    test('a picker failure is an unexpected failure', () async {
+      final result = await build(
+        _StubPicker(const Err(FileSystemPickFailure('PlatformException'))),
+      ).execute();
+
+      expect((result as Err).failure, isA<ExchangeSettingsUnexpectedFailure>());
+    });
+
+    test('the standardized filename is used when a userId is known', () async {
+      final result = await build(_StubPicker(Ok(_Document())))
+          .execute(userId: 'u-42');
+
+      expect(
+        ((result as Ok).value as ExchangeDocumentToUpload).fileName,
+        'doc-u-42-ID',
+      );
+    });
+  });
+
+  group('UploadExchangeDocumentUsecase', () {
+    const document = ExchangeDocumentToUpload(
+      bytes: [1, 2],
+      fileName: 'doc-u-42-ID',
+    );
+
+    UploadExchangeDocumentUsecase build(_Upload upload) =>
+        UploadExchangeDocumentUsecase(
+          exchange: exchangeForTesting(uploadKycDocument: upload.execute),
+        );
+
+    test('uploads the document under its name', () async {
       final upload = _MockUploadKycDocument();
       when(
         () => upload.execute(
@@ -556,58 +598,11 @@ void main() {
         ),
       ).thenAnswer((_) async => const Ok(null));
 
-      final result = await build(
-        _StubPicker(Ok(_Document(name: 'ID.PNG', extension: 'PNG'))),
-        upload,
-      ).execute();
+      final result = await build(upload).execute(document);
 
-      expect(
-        (result as Ok).value,
-        isA<ExchangeDocumentUploaded>(),
-        reason: 'the domain rule must not depend on the adapter lowercasing',
-      );
-    });
-
-    test('an oversized file is rejected before upload', () async {
-      final upload = _MockUploadKycDocument();
-
-      final result = await build(
-        _StubPicker(
-          Ok(_Document(bytes: Uint8List(FileToUpload.maxFileSizeBytes + 1))),
-        ),
-        upload,
-      ).execute();
-
-      expect(
-        (result as Err).failure,
-        isA<ExchangeSettingsDocumentTooLargeFailure>(),
-      );
-      verifyNever(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: any(named: 'fileName'),
-        ),
-      );
-    });
-
-    test('a disallowed extension is rejected before upload', () async {
-      final upload = _MockUploadKycDocument();
-
-      final result = await build(
-        _StubPicker(Ok(_Document(name: 'payload.exe', extension: 'exe'))),
-        upload,
-      ).execute();
-
-      expect(
-        (result as Err).failure,
-        isA<ExchangeSettingsDocumentTypeNotAllowedFailure>(),
-      );
-      verifyNever(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: any(named: 'fileName'),
-        ),
-      );
+      expect(result, isA<Ok<void, ExchangeSettingsFailure>>());
+      verify(() => upload.execute(fileBytes: [1, 2], fileName: 'doc-u-42-ID'))
+          .called(1);
     });
 
     test('a rejected upload does not retain the API sentence', () async {
@@ -621,10 +616,7 @@ void main() {
         (_) async => const Err(ExchangeDocumentUploadFailure(_rawReason)),
       );
 
-      final result = await build(
-        _StubPicker(Ok(_Document())),
-        upload,
-      ).execute();
+      final result = await build(upload).execute(document);
 
       final failure = (result as Err).failure as ExchangeSettingsFailure;
       expect(failure, isA<ExchangeSettingsDocumentUploadFailure>());
@@ -642,55 +634,12 @@ void main() {
           ),
         ).thenAnswer((_) async => const Err(ExchangeCredentialReadFailure()));
 
-        final result = await build(
-          _StubPicker(Ok(_Document())),
-          upload,
-        ).execute();
+        final result = await build(upload).execute(document);
 
         final failure = (result as Err).failure as ExchangeSettingsFailure;
         expect(failure, isA<ExchangeSettingsDocumentUploadFailure>());
         _expectSanitized(failure);
       },
     );
-
-    test('a picker failure short-circuits without uploading', () async {
-      final upload = _MockUploadKycDocument();
-      final picker = _StubPicker(
-        const Err(FileSystemPickFailure('PlatformException')),
-      );
-
-      final result = await build(picker, upload).execute();
-
-      expect((result as Err).failure, isA<ExchangeSettingsUnexpectedFailure>());
-      verifyNever(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: any(named: 'fileName'),
-        ),
-      );
-    });
-
-    test('the standardized filename is used when a userId is known', () async {
-      final upload = _MockUploadKycDocument();
-      when(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: any(named: 'fileName'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
-
-      final result = await build(
-        _StubPicker(Ok(_Document())),
-        upload,
-      ).execute(userId: 'u-42');
-
-      expect((result as Ok).value, isA<ExchangeDocumentUploaded>());
-      verify(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: 'doc-u-42-ID',
-        ),
-      ).called(1);
-    });
   });
 }

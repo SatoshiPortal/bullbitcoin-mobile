@@ -5,7 +5,7 @@ import 'package:primitives/primitives.dart';
 
 import 'entities/secure_file_upload.dart';
 import 'exchange_settings_failure.dart';
-import 'usecases/upload_exchange_document_usecase.dart';
+import 'entities/exchange_document_to_upload.dart';
 
 /// Status for the secure file upload UI (matches BB-Exchange DocStatus).
 enum SecureUploadStatus {

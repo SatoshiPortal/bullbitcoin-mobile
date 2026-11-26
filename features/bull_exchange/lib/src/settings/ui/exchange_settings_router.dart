@@ -12,6 +12,7 @@ import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/get_exchange_statistics_usecase.dart';
 import '../domain/usecases/get_secure_file_upload_status_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
+import '../domain/usecases/pick_exchange_document_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
 import '../presentation/account_info_cubit.dart';
 import '../presentation/exchange_preferences_bloc.dart';
@@ -151,11 +152,13 @@ class ExchangeSettingsRouter {
       path: ExchangeSettingsRoute.secureFileUpload.path,
       builder: (context, state) => BlocProvider(
         create: (_) => SecureUploadBloc(
-          getUploadStatusUsecase: GetSecureFileUploadStatusUsecase(
+          getUploadStatus: GetSecureFileUploadStatusUsecase(
             exchange: config.exchange(),
           ),
-          uploadDocumentUsecase: UploadExchangeDocumentUsecase(
-            fileSystem: const FileSystem.open(),
+          pickDocument: const PickExchangeDocumentUsecase(
+            fileSystem: FileSystem.open(),
+          ),
+          uploadDocument: UploadExchangeDocumentUsecase(
             exchange: config.exchange(),
           ),
         ),
