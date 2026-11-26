@@ -54,6 +54,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   final BackupGuard _guard;
   final SessionAuthority _authority;
   var _session = 0;
+  Future<void>? _pendingDrain;
 
   SecretsInventory._(
     this._store,
@@ -123,9 +124,10 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
 
   @useResult
   Future<Result<AccessAttempt, SecretFailure>> unlock(String candidate) async {
+    if (_pendingDrain != null) return const Err(inventoryLockedFailure);
     final current = _session;
     final attempt = await _access.unlock(candidate);
-    if (current != _session) {
+    if (current != _session || _pendingDrain != null) {
       return const Err(inventorySessionChangedFailure);
     }
     if (attempt case Ok(value: AccessAttempt(accepted: true))) {
@@ -147,8 +149,15 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   Future<bool> lock({Duration drain = const Duration(seconds: 2)}) async {
     _session++;
     _authority.revoke();
+    final pending = inventoryWritesSettled();
+    _pendingDrain = pending;
+    unawaited(
+      pending.then((_) {
+        if (identical(_pendingDrain, pending)) _pendingDrain = null;
+      }),
+    );
     try {
-      await inventoryWritesSettled().timeout(drain);
+      await pending.timeout(drain);
       return true;
     } on TimeoutException {
       return false;
@@ -156,20 +165,27 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   }
 
   @useResult
-  Future<Result<void, SecretFailure>> resumeUnprotected() =>
-      _inSession(requireUnlocked: false, (session) async {
-        switch (await _access.isProtected()) {
-          case Err(:final failure):
-            return Err(failure);
-          case Ok(value: true):
-            return const Err(inventoryCredentialRequiredFailure);
-          case Ok(value: false):
-            if (session == _session && !_unlocked) {
-              _authority.grant(defaultViewId);
-            }
-            return const Ok(null);
-        }
-      });
+  Future<Result<void, SecretFailure>> resumeUnprotected() {
+    if (_pendingDrain != null) {
+      return Future.value(const Err(inventoryLockedFailure));
+    }
+    return _inSession(requireUnlocked: false, (session) async {
+      switch (await _access.isProtected()) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(value: true):
+          return const Err(inventoryCredentialRequiredFailure);
+        case Ok(value: false):
+          if (_pendingDrain != null) {
+            return const Err(inventoryLockedFailure);
+          }
+          if (session == _session && !_unlocked) {
+            _authority.grant(defaultViewId);
+          }
+          return const Ok(null);
+      }
+    });
+  }
 
   /// The secrets of the active view without a tested backup, by the same rule
   /// that protecting the view applies. Empty means the view can be protected;
