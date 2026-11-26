@@ -64,6 +64,9 @@ class Bull {
   static Future<Result<void, Failure>> init({
     Future<void> Function(LegacyImportFailure)? retryStorage,
     WizardFeature? wizard,
+    // First-run network chosen by the caller. It goes through the same
+    // guarded path as the wizard's pending choice and wins over it.
+    Environment? initialNetwork,
   }) async {
     final startupWizard = wizard ?? WizardFeature.mount();
     final bullDirectory = await getApplicationDocumentsDirectory();
@@ -273,6 +276,7 @@ class Bull {
       final pendingNetwork = await startupWizard.readPendingNetwork();
       if (pendingNetwork case Err(:final failure)) return Err(failure);
       final selectedNetwork =
+          initialNetwork ??
           (pendingNetwork as Ok<Environment?, WizardFailure>).value;
       locator.registerSingleton(payjoin);
       locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
