@@ -3,7 +3,7 @@ import 'package:exchange/steps.dart' show StepNext;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/exchange_support_chat_failure.dart';
+import 'exchange_support_chat_failure.dart';
 
 /// Messages per page the thread asks for. A shorter page is the start of
 /// the thread.

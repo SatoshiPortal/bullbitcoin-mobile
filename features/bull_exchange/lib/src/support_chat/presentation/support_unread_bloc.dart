@@ -4,7 +4,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'support_unread_machine.dart';
+import '../domain/support_unread_machine.dart';
 
 /// Shell of [transitionSupportUnread]: applies events one at a time and
 /// starts the read or the mark of the state it enters. Each answer carries

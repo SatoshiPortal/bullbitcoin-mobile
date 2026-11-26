@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 import '../dashboard/exchange_home_screen.dart';
 import '../recipients/recipients_scope.dart';
 import '../support_chat/presentation/support_unread_bloc.dart';
-import '../support_chat/presentation/support_unread_machine.dart';
+import '../support_chat/domain/support_unread_machine.dart';
 import 'exchange_bloc.dart';
 import 'exchange_event.dart';
 import 'exchange_listener.dart';
