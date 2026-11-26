@@ -86,12 +86,10 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
         }
         final guard = BackupGuard(backupVerification);
         final access = AccessRepository(value.database, guard);
-        switch (await access.isProtected()) {
-          case Err():
+        switch (await access.protectionAtOpen()) {
+          case Err(:final failure):
             await value.close();
-            return const Err(
-              DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
-            );
+            return Err(failure);
           case Ok(value: final protected):
             return Ok(SecretsInventory._(value, access, guard, protected));
         }

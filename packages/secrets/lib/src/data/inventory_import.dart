@@ -152,18 +152,9 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
       _ => const Err(LegacyImportVerificationFailed()),
     };
   } on SqliteException catch (error) {
-    if (!admitted) return const Err(LegacyImportUnavailable());
-    return Err(switch (databaseFileProblemOf(error)) {
-      DatabaseFileProblem.unreadable => const LegacyOwnerFailure(
-        'secrets',
-        LegacyOwnerFailureCause.unreadable,
-      ),
-      DatabaseFileProblem.contended => const LegacyOwnerFailure(
-        'secrets',
-        LegacyOwnerFailureCause.contention,
-      ),
-      _ => const LegacyImportUnavailable(),
-    });
+    return Err(
+      admitted ? _admittedReadFailure(error) : const LegacyImportUnavailable(),
+    );
   }
 }
 
@@ -251,10 +242,24 @@ Future<Result<void, LegacyImportFailure>> reconcileInventoryAccess(
     });
   } on _VerificationRejected {
     return const Err(LegacyImportVerificationFailed());
-  } on SqliteException {
-    return const Err(LegacyImportUnavailable());
+  } on SqliteException catch (error) {
+    // Reconciliation runs on an admitted inventory: keep what the engine said.
+    return Err(_admittedReadFailure(error));
   }
 }
+
+LegacyImportFailure _admittedReadFailure(SqliteException error) =>
+    switch (databaseFileProblemOf(error)) {
+      DatabaseFileProblem.unreadable => const LegacyOwnerFailure(
+        'secrets',
+        LegacyOwnerFailureCause.unreadable,
+      ),
+      DatabaseFileProblem.contended => const LegacyOwnerFailure(
+        'secrets',
+        LegacyOwnerFailureCause.contention,
+      ),
+      _ => const LegacyImportUnavailable(),
+    };
 
 Future<void> _writeInitialCredential(
   SecretsDatabase database,
