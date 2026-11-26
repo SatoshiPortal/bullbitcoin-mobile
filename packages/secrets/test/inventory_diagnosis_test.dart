@@ -566,15 +566,15 @@ final class _LegacyFixture extends GeneratedDatabase {
   );
 }
 
-/// Fails every statement with an engine error once a code is set.
+/// Fails every statement with an engine error once a code is set. The fault
+/// is raised before the statement is delegated, so it never reaches the engine.
 final class _Fault extends QueryInterceptor {
   int? code;
 
-  T _check<T>(T value) {
+  void _throwIfFaulty() {
     if (code case final code?) {
       throw SqliteException(extendedResultCode: code, message: 'injected');
     }
-    return value;
   }
 
   @override
@@ -582,19 +582,28 @@ final class _Fault extends QueryInterceptor {
     QueryExecutor executor,
     String statement,
     List<Object?> args,
-  ) => _check(super.runSelect(executor, statement, args));
+  ) {
+    _throwIfFaulty();
+    return super.runSelect(executor, statement, args);
+  }
 
   @override
   Future<void> runCustom(
     QueryExecutor executor,
     String statement,
     List<Object?> args,
-  ) => _check(super.runCustom(executor, statement, args));
+  ) {
+    _throwIfFaulty();
+    return super.runCustom(executor, statement, args);
+  }
 
   @override
   Future<int> runUpdate(
     QueryExecutor executor,
     String statement,
     List<Object?> args,
-  ) => _check(super.runUpdate(executor, statement, args));
+  ) {
+    _throwIfFaulty();
+    return super.runUpdate(executor, statement, args);
+  }
 }
