@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 
@@ -38,13 +40,31 @@ final class WalletDetailsDeleted extends WalletDetailsState {
 class WalletDetailsCubit extends Cubit<WalletDetailsState> {
   final ReadWalletDetailsUsecase _read;
   final DeleteWalletUsecase _delete;
+  late final StreamSubscription<bool> _lockSubscription;
+  var _revocations = 0;
+  String? _walletId;
 
-  WalletDetailsCubit(this._read, this._delete)
-    : super(const WalletDetailsLoading());
+  /// [lockChanges] is true on every lock and false on every unlock. A lock
+  /// clears the old session's details and drops any result still in flight; the
+  /// next unlock reads the wallet again, which tells whether a deletion
+  /// committed before the lock.
+  WalletDetailsCubit(this._read, this._delete, Stream<bool> lockChanges)
+    : super(const WalletDetailsLoading()) {
+    _lockSubscription = lockChanges.listen((locked) {
+      if (locked) {
+        _revocations++;
+        if (!isClosed) emit(const WalletDetailsLoading());
+      } else if (_walletId case final id? when !isClosed) {
+        unawaited(load(id));
+      }
+    });
+  }
 
   Future<void> load(String walletId) async {
+    _walletId = walletId;
+    final revocations = _revocations;
     final result = await _read.execute(walletId);
-    if (isClosed) return;
+    if (isClosed || revocations != _revocations) return;
     emit(switch (result) {
       Ok(:final value) => WalletDetailsLoaded(value),
       Err(:final failure) => WalletDetailsMissing(failure),
@@ -55,8 +75,9 @@ class WalletDetailsCubit extends Cubit<WalletDetailsState> {
     final current = state;
     if (current is! WalletDetailsLoaded || current.isDeleting) return;
     emit(WalletDetailsLoaded(current.details, isDeleting: true));
+    final revocations = _revocations;
     final result = await _delete.execute(current.details.id);
-    if (isClosed) return;
+    if (isClosed || revocations != _revocations) return;
     emit(switch (result) {
       Ok() => const WalletDetailsDeleted(),
       Err(:final failure) => WalletDetailsLoaded(
@@ -64,5 +85,11 @@ class WalletDetailsCubit extends Cubit<WalletDetailsState> {
         deletionFailure: failure,
       ),
     });
+  }
+
+  @override
+  Future<void> close() async {
+    await _lockSubscription.cancel();
+    await super.close();
   }
 }

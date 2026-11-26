@@ -51,7 +51,9 @@ GoRoute walletDetailsRoute({
       return MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (_) => WalletDetailsCubit(read, delete)..load(walletId),
+            create: (_) =>
+                WalletDetailsCubit(read, delete, inventory.lockedChanges)
+                  ..load(walletId),
           ),
           BlocProvider(create: (_) => WalletDiscoveryCubit(discovery)),
         ],

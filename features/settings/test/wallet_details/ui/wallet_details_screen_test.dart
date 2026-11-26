@@ -177,7 +177,11 @@ void main() {
     final read = _MockReadWalletDetails();
     final gate = Completer<Result<WalletDetails, WalletDetailsFailure>>();
     when(() => read.execute(any())).thenAnswer((_) => gate.future);
-    final cubit = WalletDetailsCubit(read, _MockDeleteWallet());
+    final cubit = WalletDetailsCubit(
+      read,
+      _MockDeleteWallet(),
+      const Stream<bool>.empty(),
+    );
     addTearDown(cubit.close);
     unawaited(cubit.load(_walletId));
 
@@ -344,7 +348,7 @@ Future<({WalletDetailsCubit cubit, _MockDeleteWallet delete})> _pump(
   final delete = _MockDeleteWallet();
   final respond = onDelete ?? () async => const Ok(null);
   when(() => delete.execute(any())).thenAnswer((_) => respond());
-  final cubit = WalletDetailsCubit(reader, delete);
+  final cubit = WalletDetailsCubit(reader, delete, const Stream<bool>.empty());
   addTearDown(cubit.close);
   await cubit.load(_walletId);
   await _mount(
