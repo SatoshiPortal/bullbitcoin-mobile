@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_exchange/src/buy/presentation/buy_accelerate_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_flow.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
