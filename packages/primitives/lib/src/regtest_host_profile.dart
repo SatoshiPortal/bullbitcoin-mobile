@@ -6,12 +6,13 @@ import 'network.dart';
 /// their own origin; `BULL_REGTEST_HOST` selects a local stack instead,
 /// reached through one host on the fixed ports of the local fixtures. The
 /// selected stack is validated here as a whole, so the regtest runtime is
-/// offered only when every service it needs is configured. Services still own their transport policy. This value never
-/// enables a network capability or creates a profile for another environment.
+/// offered only when every service it needs is configured. Services still
+/// own their transport policy. This value never enables a network capability
+/// or creates a profile for another environment.
 sealed class RegtestHostProfile {
   const RegtestHostProfile._();
 
-  /// Only a valid, explicitly configured build may offer the regtest runtime.
+  /// Only a build whose selected stack is valid may offer the regtest runtime.
   static bool get isConfigured {
     try {
       return forNetwork(NetworkEnv.regtest) != null;
