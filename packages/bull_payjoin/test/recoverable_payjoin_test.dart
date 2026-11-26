@@ -191,4 +191,63 @@ void main() {
     expect(attempts, 1);
     verify(() => lifecycle.resume()).called(1);
   });
+
+  test(
+    'suspend closes the open storage, refuses roles and resume until reopened',
+    () async {
+      var opens = 0;
+      final runtime = RecoverablePayjoin(() async {
+        opens++;
+        return Ok(lifecycle);
+      });
+      addTearDown(runtime.dispose);
+      expect(await runtime.payjoin.sessions.reservedOutpoints(), isA<Ok>());
+
+      final stopGate = Completer<void>();
+      when(() => lifecycle.dispose()).thenAnswer((_) => stopGate.future);
+      var confirmed = false;
+      final suspending = runtime.suspend().whenComplete(() => confirmed = true);
+
+      expect(
+        await runtime.payjoin.sessions.reservedOutpoints(),
+        isA<Err>(),
+        reason: 'revoked before the stop is confirmed',
+      );
+      expect(await runtime.resume(), isA<Err>());
+      runtime.reopen();
+      expect(
+        await runtime.resume(),
+        isA<Err>(),
+        reason: 'stop not confirmed yet',
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(confirmed, isFalse);
+      expect(opens, 1, reason: 'no second instance beside the closing one');
+
+      stopGate.complete();
+      await suspending;
+      verify(() => lifecycle.dispose()).called(1);
+
+      runtime.reopen();
+      resumed.complete();
+      expect(await runtime.resume(), isA<Ok>());
+      expect(opens, 2);
+      expect(await runtime.payjoin.sessions.reservedOutpoints(), isA<Ok>());
+    },
+  );
+
+  test(
+    'suspending while the storage opens disposes what it produced',
+    () async {
+      final opening = Completer<Result<PayjoinLifecycle, PayjoinFailure>>();
+      final runtime = RecoverablePayjoin(() => opening.future);
+      addTearDown(runtime.dispose);
+      final call = runtime.payjoin.sessions.reservedOutpoints();
+      final suspending = runtime.suspend();
+      opening.complete(Ok(lifecycle));
+      await suspending;
+      expect(await call, isA<Err>());
+      verify(() => lifecycle.dispose()).called(1);
+    },
+  );
 }
