@@ -2,9 +2,6 @@ import 'dart:io';
 
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart';
-import 'package:ark/src/data/ark_codec.dart';
-import 'package:ark/src/data/scuttle_mapping.dart';
-import 'package:ark/src/rust/api/payments.dart';
 import 'package:bull_ark/src/data/ark_payment_observer.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
@@ -192,6 +189,7 @@ void main() {
           status: ArkMovementStatus.successful,
           direction: ArkMovementDirection.incoming,
           amount: Sats.zero,
+          positiveEffectiveAmount: true,
         ),
       ]),
     );
@@ -199,32 +197,27 @@ void main() {
   });
 
   test(
-    'only positive native receipts are announced after serialization',
+    'only receipts with proof of a positive effective amount are announced',
     () async {
-      ArkMovement nativeReceipt(int id, int amount) {
-        final native = ScuttleMovement(
-          id: id,
-          subsystem: 'bark.arkoor',
-          kind: 'receive',
-          status: ScuttleMovementStatus.successful,
-          intendedSats: amount,
-          effectiveSats: amount,
-          feeSats: BigInt.zero,
-          createdAt: 1700000000,
-          updatedAt: 1700000000,
-        );
-        return movementFromJson(movementToJson(projectScuttleMovement(native)));
-      }
-
-      final old = movementToJson(nativeReceipt(4, 1000))
-        ..remove('positiveEffectiveAmount');
       await observer(foreground: true).observe(pass([]));
       await observer(foreground: false).observe(
         pass([
-          nativeReceipt(1, -1000),
-          nativeReceipt(2, 0),
-          nativeReceipt(3, 1000),
-          movementFromJson(old),
+          movement('positive'),
+          ArkMovement(
+            id: 'unproven',
+            kind: ArkMovementKind.payment,
+            status: ArkMovementStatus.successful,
+            direction: ArkMovementDirection.incoming,
+            amount: Sats.fromInt(1000),
+          ),
+          ArkMovement(
+            id: 'zero',
+            kind: ArkMovementKind.payment,
+            status: ArkMovementStatus.successful,
+            direction: ArkMovementDirection.incoming,
+            amount: Sats.zero,
+            positiveEffectiveAmount: true,
+          ),
         ]),
       );
       expect(gateway.shown, hasLength(1));
