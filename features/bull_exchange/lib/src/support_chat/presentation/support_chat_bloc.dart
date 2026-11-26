@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_support_chat_failure.dart';
-import 'support_chat_machine.dart';
+import '../domain/support_chat_machine.dart';
 
 /// What the chat's effects call.
 typedef SupportChatEffects = ({

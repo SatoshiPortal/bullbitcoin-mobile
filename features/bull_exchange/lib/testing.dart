@@ -50,7 +50,7 @@ export 'src/limit_orders/domain/entities/limit_order_amount_limits.dart';
 export 'src/ui/exchange_route_guard.dart';
 export 'src/support_chat/presentation/support_unread_bloc.dart'
     show SupportUnreadBloc;
-export 'src/support_chat/presentation/support_unread_machine.dart'
+export 'src/support_chat/domain/support_unread_machine.dart'
     show SupportUnreadEvent, SupportUnreadState, UnreadSignedOut;
 
 /// The AutoBuy flow's account load for [session].

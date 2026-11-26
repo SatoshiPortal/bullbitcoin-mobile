@@ -25,7 +25,7 @@ import '../../domain/usecases/pick_image_attachments_usecase.dart';
 import '../../domain/usecases/send_support_chat_message_usecase.dart';
 import '../../presentation/exchange_support_chat_failure_l10n.dart';
 import '../../presentation/support_chat_bloc.dart';
-import '../../presentation/support_chat_machine.dart';
+import '../../domain/support_chat_machine.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({
