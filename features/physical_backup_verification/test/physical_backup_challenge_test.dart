@@ -116,6 +116,40 @@ void main() {
   });
 
   for (final replaceSecret in [false, true]) {
+    testWidgets('drops old word callbacks after '
+        '${replaceSecret ? 'secret replacement' : 'backgrounding'}', (
+      tester,
+    ) async {
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(channel, (_) async => true);
+      addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+      final proofs = <PhysicalBackupProof>[];
+      await render(tester, replacement, proofs);
+      final oldChallenge = tester.widget<MnemonicChallenge>(
+        find.byType(MnemonicChallenge),
+      );
+      oldChallenge.onProgress?.call(3, 12);
+      await tester.pump();
+      expect(find.text('Word 4'), findsOneWidget);
+      if (replaceSecret) {
+        await render(tester, protected, proofs);
+      } else {
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.inactive,
+        );
+        await tester.pump();
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+      }
+      oldChallenge.onProgress?.call(12, 12);
+      oldChallenge.onSolved();
+      await tester.pump();
+      expect(find.text('Word 1'), findsOneWidget);
+      expect(proofs, isEmpty);
+    });
+
     testWidgets('drops a pending passphrase verdict after '
         '${replaceSecret ? 'secret replacement' : 'backgrounding'}', (
       tester,
