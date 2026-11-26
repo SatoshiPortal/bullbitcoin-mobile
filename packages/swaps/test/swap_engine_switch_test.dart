@@ -176,6 +176,61 @@ void main() {
       verifyNever(() => watcher.start());
     });
 
+    for (final script in [false, true]) {
+      test('a claim or refund already admitted (script=$script) keeps its real '
+          'result and holds the session stop', () async {
+        final swap = _swap('claim');
+        final inEngine = Completer<Result<Swap, SwapsFailure>>();
+        when(() => mainnet.boltz.resolve(swap))
+            .thenAnswer((_) => inEngine.future);
+        when(() => mainnet.boltz.resolveScriptPath(swap))
+            .thenAnswer((_) => inEngine.future);
+        when(() => watcher.suspend()).thenReturn(null);
+
+        final effect = script
+            ? repository.resolveScriptPath(swap)
+            : repository.resolve(swap);
+        var confirmed = false;
+        final suspending = switcher.suspendSession().whenComplete(
+          () => confirmed = true,
+        );
+        await pumpEventQueue();
+        expect(confirmed, isFalse, reason: 'the effect is still running');
+
+        switcher.resumeSession();
+        await pumpEventQueue();
+        verifyNever(() => watcher.start());
+
+        inEngine.complete(Ok(swap));
+        expect(await effect, isA<Ok<Swap, SwapsFailure>>());
+        await suspending;
+        expect(confirmed, isTrue);
+
+        switcher.resumeSession();
+        await pumpEventQueue();
+        verify(() => watcher.start()).called(1);
+      });
+
+      test(
+        'a claim or refund after the lock (script=$script) is refused before '
+        'it reaches the engine',
+        () async {
+          final swap = _swap('late');
+          when(() => watcher.suspend()).thenReturn(null);
+          final suspending = switcher.suspendSession();
+
+          final late = script
+              ? repository.resolveScriptPath(swap)
+              : repository.resolve(swap);
+
+          expect(await late, isA<Err<Swap, SwapsFailure>>());
+          await suspending;
+          verifyNever(() => mainnet.boltz.resolve(swap));
+          verifyNever(() => mainnet.boltz.resolveScriptPath(swap));
+        },
+      );
+    }
+
     test('resuming before the stop is confirmed starts nothing', () async {
       final drain = Completer<void>();
       when(() => watcher.drained).thenAnswer((_) => drain.future);
