@@ -150,6 +150,7 @@ void main() {
     '/receive/lightning',
     '/receive/lightning/qr',
     '/receive/lightning/qr/in-progress',
+    '/receive/lightning/qr/received',
     '/receive/bitcoin/payjoin',
   ]) {
     testWidgets('syncs while $path is shown', (tester) async {

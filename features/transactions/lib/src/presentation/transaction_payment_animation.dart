@@ -129,7 +129,10 @@ TransactionPaymentAnimation? _wallet(
   if (network == null) return null;
   final confirmed = transaction.isConfirmed;
   if (transaction.isIncoming) {
-    final steps = [labels.paymentStatusDetected, labels.paymentStatusConfirmed];
+    final steps = [
+      labels.paymentStatusPaymentDetected,
+      labels.paymentStatusReceivedConfirmed,
+    ];
     final progress = receiveOnchainProgress(steps: steps, confirmed: confirmed);
     final phase = receiveOnchainPhase(confirmed: confirmed);
     return TransactionPaymentAnimation(
@@ -213,7 +216,7 @@ TransactionPaymentAnimation _boltzSwap(
             ? labels.paymentStatusPaymentDetected
             : labels.paymentStatusBoltzLockup,
         if (!direct) labels.paymentStatusClaimBroadcast,
-        labels.paymentStatusConfirmed,
+        labels.paymentStatusReceivedConfirmed,
       ];
       final progress = receiveLightningProgress(
         steps: steps,
@@ -313,7 +316,7 @@ TransactionPaymentAnimation _payjoin(
       labels.paymentStatusOriginalReceived,
       labels.paymentStatusProposalSent,
       labels.paymentStatusPaymentDetected,
-      labels.paymentStatusConfirmed,
+      labels.paymentStatusReceivedConfirmed,
     ];
     final progress = receivePayjoinProgress(
       steps: steps,

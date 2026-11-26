@@ -737,6 +737,31 @@ void main() {
     expect(find.text('Complete'), findsNothing);
   });
 
+  testWidgets('the headline takes the broadcast colour with the rail text', (
+    tester,
+  ) async {
+    const palette = PaymentAnimationPalette.standard;
+    Future<Color?> headline(BullPaymentStepState state) async {
+      await tester.pumpWidget(
+        host(
+          transition(
+            network: BullPaymentNetwork.bitcoin,
+            progress: BullPaymentProgress(
+              steps: const ['Signing', 'Broadcasted', 'Confirmed'],
+              completed: 1,
+              currentState: state,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return tester.widget<Text>(find.text('Sending')).style?.color;
+    }
+
+    expect(await headline(BullPaymentStepState.broadcast), palette.broadcast);
+    expect(await headline(BullPaymentStepState.active), palette.foreground);
+  });
+
   testWidgets('the last status turns green only with the success phase', (
     tester,
   ) async {
