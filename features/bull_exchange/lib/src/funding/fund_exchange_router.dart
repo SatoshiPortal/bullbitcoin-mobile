@@ -1,3 +1,8 @@
+import 'package:bull_exchange/src/funding/domain/usecases/get_cop_funding_institutions_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_funding_account_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_funding_consent_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_funding_instructions_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/save_funding_consent_usecase.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_bloc.dart';
 import 'package:bull_exchange/src/funding/ui/fund_flow_shell.dart';
 import 'package:exchange/exchange.dart';
@@ -24,9 +29,13 @@ class FundExchangeRouter {
         create: (_) {
           final exchange = host.exchange();
           return FundFlowBloc(
-            funding: exchange.funding,
             session: exchange.currentSession,
             accessChanges: exchange.watchAccess(),
+            getAccount: GetFundingAccountUsecase(exchange),
+            saveConsent: SaveFundingConsentUsecase(exchange),
+            getConsent: GetFundingConsentUsecase(exchange),
+            getInstitutions: GetCopFundingInstitutionsUsecase(exchange),
+            getInstructions: GetFundingInstructionsUsecase(exchange),
           );
         },
         child: const FundFlowShell(),

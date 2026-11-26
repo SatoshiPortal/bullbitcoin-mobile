@@ -6,6 +6,8 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../funding_usecase_fakes.dart';
+
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 0,
@@ -16,60 +18,57 @@ const _rows = FundingInstructionRows([
   InstructionRow(InstructionField.beneficiaryName, 'Bull Bitcoin'),
 ]);
 
-class _Funding implements ExchangeFunding {
+/// The funding use cases as fakes; the consent and institution calls are
+/// not expected (the account already consented, no COP rail is picked).
+final class _Calls {
   final requests = <FundingRequest>[];
-  final List<ExchangeSession> sessions = [];
+  final sessions = <ExchangeSession>[];
 
-  @override
-  Future<ExchangeRead<FundingAccount>> account(ExchangeSession session) async {
-    sessions.add(session);
-    return ReadGot(
-      FundingAccount(
-        userNumber: 7,
-        firstName: 'Ada',
-        lastName: 'Lovelace',
-        currency: ExchangeCatalog.parse('CAD'),
-        restricted: false,
-        consented: true,
-        confidentialSepa: ConfidentialSepaAvailability.unavailable,
-      ),
-    );
-  }
-
-  @override
-  Future<ExchangeRead<FundingAnswer>> instructions(
-    ExchangeSession session,
-    FundingRequest request,
-  ) async {
-    sessions.add(session);
-    requests.add(request);
-    return const ReadGot(FundingInstructionsGot(_rows));
-  }
-
-  @override
-  Future<ExchangeRead<List<FundingInstitution>>> institutions(
-    ExchangeSession session,
-    Jurisdiction jurisdiction,
-  ) => throw StateError('unexpected institutions');
-
-  @override
-  Future<ExchangeWrite<void>> consent(ExchangeSession session) =>
-      throw StateError('consent is already on the account');
-
-  @override
-  Future<ExchangeRead<bool>> consentOnAccount(ExchangeSession session) =>
-      throw StateError('unexpected consent re-read');
+  FundFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => FundFlowBloc(
+    session: session,
+    accessChanges: accessChanges,
+    getAccount: FakeGetFundingAccountUsecase((session) async {
+      sessions.add(session);
+      return ReadGot(
+        FundingAccount(
+          userNumber: 7,
+          firstName: 'Ada',
+          lastName: 'Lovelace',
+          currency: ExchangeCatalog.parse('CAD'),
+          restricted: false,
+          consented: true,
+          confidentialSepa: ConfidentialSepaAvailability.unavailable,
+        ),
+      );
+    }),
+    saveConsent: FakeSaveFundingConsentUsecase(
+      (_) => throw StateError('consent is already on the account'),
+    ),
+    getConsent: FakeGetFundingConsentUsecase(
+      (_) => throw StateError('unexpected consent re-read'),
+    ),
+    getInstitutions: FakeGetCopFundingInstitutionsUsecase(
+      (_) => throw StateError('unexpected institutions'),
+    ),
+    getInstructions: FakeGetFundingInstructionsUsecase((
+      session,
+      request,
+    ) async {
+      sessions.add(session);
+      requests.add(request);
+      return const ReadGot(FundingInstructionsGot(_rows));
+    }),
+  );
 }
 
 void main() {
   test('runs each state effect with the flow session', () async {
-    final funding = _Funding();
+    final funding = _Calls();
     final access = StreamController<ExchangeAccess>.broadcast();
-    final bloc = FundFlowBloc(
-      funding: funding,
-      session: _session,
-      accessChanges: access.stream,
-    );
+    final bloc = funding.bloc(session: _session, accessChanges: access.stream);
     addTearDown(() async {
       await bloc.close();
       await access.close();
@@ -81,17 +80,13 @@ void main() {
       bloc.stream,
       emitsInOrder([isA<FundFetching>(), isA<FundShowing>()]),
     );
-    expect(funding.sessions, everyElement(_session));
+    expect(funding.sessions, [_session, _session]);
     expect(funding.requests.single.rail, const EmailETransferFundingRail());
   });
 
   test('another session ends the flow', () async {
     final access = StreamController<ExchangeAccess>.broadcast();
-    final bloc = FundFlowBloc(
-      funding: _Funding(),
-      session: _session,
-      accessChanges: access.stream,
-    );
+    final bloc = _Calls().bloc(session: _session, accessChanges: access.stream);
     addTearDown(() async {
       await bloc.close();
       await access.close();
@@ -112,12 +107,11 @@ void main() {
   });
 
   test('without a session nothing is read', () async {
-    final bloc = FundFlowBloc(
-      funding: _Funding(),
-      session: null,
-      accessChanges: const Stream.empty(),
-    );
+    final calls = _Calls();
+    final bloc = calls.bloc(session: null, accessChanges: const Stream.empty());
     addTearDown(bloc.close);
+    await Future<void>.delayed(Duration.zero);
     expect(bloc.state, const FundSessionEnded());
+    expect(calls.sessions, isEmpty);
   });
 }
