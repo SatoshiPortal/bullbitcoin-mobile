@@ -10,6 +10,10 @@ subprojects {
             project.android {
                 compileSdk = rootProject.properties['android.compileSdk'].toInteger()
                 buildToolsVersion rootProject.properties['android.buildToolsVersion']
+                compileOptions {
+                    sourceCompatibility JavaVersion.toVersion(rootProject.properties['android.jvmTarget'])
+                    targetCompatibility JavaVersion.toVersion(rootProject.properties['android.jvmTarget'])
+                }
             }
         }
         if (project.hasProperty('android')) {
@@ -23,18 +27,9 @@ subprojects {
     }
 }
 
-// Force subprojects to compile Java/Kotlin to Java 21:
+// Match the Android Java target set above.
 subprojects {
     afterEvaluate { project ->
-        project.plugins.withId("org.jetbrains.kotlin.android") {
-            project.android {
-                compileOptions {
-                    sourceCompatibility JavaVersion.toVersion(rootProject.properties['android.jvmTarget'])
-                    targetCompatibility JavaVersion.toVersion(rootProject.properties['android.jvmTarget'])
-                }
-            }
-        }
-
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile).configureEach {
             compilerOptions {
                 jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(
