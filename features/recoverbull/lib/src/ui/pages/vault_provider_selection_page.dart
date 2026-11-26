@@ -5,13 +5,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:screen_awake/screen_awake.dart';
 
-import '../../domain/entities/drive_file_metadata.dart';
+import 'package:primitives/primitives.dart';
+
 import '../../domain/entities/recoverbull_flow.dart';
+import '../../domain/entities/encrypted_vault.dart';
 import '../../domain/entities/vault_provider.dart';
 import '../../domain/recoverbull_failure.dart';
 import '../../l10n/context_localizations.dart';
 import '../../presentation/recoverbull_failure_l10n.dart';
 import '../../presentation/vault_flow_cubit.dart';
+import '../../presentation/vault_selection_machine.dart';
 import '../recoverbull_flow_navigator.dart';
 import '../widgets/recoverbull_widgets.dart';
 import 'vault_completed_pages.dart';
@@ -55,7 +58,8 @@ class VaultProviderSelectionPage extends StatefulWidget {
 class _VaultProviderSelectionPageState
     extends State<VaultProviderSelectionPage> {
   VaultProvider? _provider;
-  bool _awaitingLatestDriveVault = false;
+  int _attempt = 0;
+  VaultSelectionState _selection = const VaultSelectionIdle();
 
   /// Set while this page creates the vault, so a key-server probe started
   /// elsewhere is not shown as vault creation.
@@ -85,6 +89,11 @@ class _VaultProviderSelectionPageState
 
   @override
   void dispose() {
+    _attempt++;
+    _selection = transitionVaultSelection(
+      _selection,
+      const VaultSelectionLeft(),
+    );
     _lifecycle.dispose();
     widget.password?.forget();
     super.dispose();
@@ -92,9 +101,9 @@ class _VaultProviderSelectionPageState
 
   Future<void> _select(VaultProvider provider) async {
     final cubit = context.read<VaultFlowCubit>();
-    setState(() => _provider = provider);
     final flow = RecoverBullFlowScope.of(context).flow;
     if (flow == RecoverBullFlow.secureVault) {
+      setState(() => _provider = provider);
       final password = widget.password?.value;
       if (password == null) return;
       setState(() => _creating = true);
@@ -111,31 +120,78 @@ class _VaultProviderSelectionPageState
       if (mounted) setState(() => _creating = false);
       return;
     }
-    switch (provider) {
-      case VaultProvider.customLocation || VaultProvider.iCloud:
-        await cubit.pick();
-      case VaultProvider.googleDrive:
-        // The most recent Drive vault is preselected; the others stay one tap away.
-        _awaitingLatestDriveVault = true;
-        await cubit.list();
-        if (!mounted) return;
-        final files = cubit.state.files;
-        _awaitingLatestDriveVault = false;
-        if (files == null) return;
-        if (files.isEmpty) {
-          BullSnackBar.show(
-            context,
-            message: context.loc.recoverbullGoogleDriveNoBackupsFound,
+    final attempt = ++_attempt;
+    _selection = transitionVaultSelection(
+      _selection,
+      VaultSelectionStarted(attempt, provider),
+    );
+    bool current() =>
+        mounted &&
+        _attempt == attempt &&
+        ModalRoute.of(context)?.isCurrent == true;
+    if (provider == VaultProvider.googleDrive) {
+      final result = await cubit.openDriveList();
+      if (!mounted || !current() || result == null) return;
+      switch (result) {
+        case Err(:final failure):
+          _selection = transitionVaultSelection(
+            _selection,
+            VaultSelectionError(attempt, failure),
           );
-          return;
-        }
-        final latest = files.reduce(_newest);
-        await cubit.select(latest);
+        case Ok(:final value):
+          _selection = transitionVaultSelection(
+            _selection,
+            VaultSelectionListed(attempt, value),
+          );
+      }
+      if (_selection case VaultSelectionReading(:final file)) {
+        final opened = await cubit.openDriveVault(file);
+        if (!mounted || !current() || opened == null) return;
+        _acceptOpening(attempt, opened);
+      }
+    } else {
+      final opened = await cubit.openPickedVault();
+      if (!mounted || !current() || opened == null) return;
+      _acceptOpening(attempt, opened);
+    }
+    if (!mounted || !current()) return;
+    switch (_selection) {
+      case VaultSelectionSelected(:final provider, :final vault):
+        if (!cubit.adoptSelectedVault(vault)) return;
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => VaultSelectedPage(
+                provider: provider,
+                vaultKeyOnly: widget.vaultKeyOnly,
+              ),
+            ),
+          ),
+        );
+      case VaultSelectionEmpty():
+        BullSnackBar.show(
+          context,
+          message: context.loc.recoverbullGoogleDriveNoBackupsFound,
+        );
+      case VaultSelectionFailed(:final failure):
+        BullSnackBar.show(context, message: failure.toTranslated(context));
+      case VaultSelectionIdle() ||
+          VaultSelectionCancelled() ||
+          VaultSelectionOpening() ||
+          VaultSelectionReading():
+        break;
     }
   }
 
-  static DriveFileMetadata _newest(DriveFileMetadata a, DriveFileMetadata b) =>
-      a.createdTime.isAfter(b.createdTime) ? a : b;
+  void _acceptOpening(
+    int attempt,
+    Result<EncryptedVault, RecoverBullFailure> result,
+  ) {
+    _selection = transitionVaultSelection(_selection, switch (result) {
+      Ok(:final value) => VaultSelectionOpened(attempt, value),
+      Err(:final failure) => VaultSelectionError(attempt, failure),
+    });
+  }
 
   void _onState(BuildContext context, VaultFlowState state) {
     if (ModalRoute.of(context)?.isCurrent != true) return;
@@ -149,7 +205,6 @@ class _VaultProviderSelectionPageState
       return;
     }
     final flow = RecoverBullFlowScope.of(context).flow;
-    final provider = _provider;
     if (flow == RecoverBullFlow.secureVault) {
       final completion = state.completion;
       if (completion == null) return;
@@ -166,19 +221,6 @@ class _VaultProviderSelectionPageState
       );
       return;
     }
-    final vault = state.vault;
-    if (vault != null && provider != null && !_awaitingLatestDriveVault) {
-      unawaited(
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => VaultSelectedPage(
-              provider: provider,
-              vaultKeyOnly: widget.vaultKeyOnly,
-            ),
-          ),
-        ),
-      );
-    }
   }
 
   @override
@@ -194,7 +236,9 @@ class _VaultProviderSelectionPageState
             (current.vault != null && previous.vault != current.vault) ||
             (current.completion != null &&
                 previous.completion != current.completion),
-        listener: _onState,
+        listener: (context, state) {
+          if (flow == RecoverBullFlow.secureVault) _onState(context, state);
+        },
         builder: (context, state) {
           final creating =
               flow == RecoverBullFlow.secureVault && _creating && state.busy;
