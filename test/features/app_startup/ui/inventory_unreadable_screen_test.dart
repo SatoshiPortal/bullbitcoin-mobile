@@ -72,6 +72,18 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('retry runs once however often it is pressed', (tester) async {
+    setDisplay(tester, const Locale('en', 'US'));
+    var retried = 0;
+    final loc = await pump(tester, onRetry: () => retried++);
+
+    await tester.tap(find.text(loc.retry));
+    await tester.pump();
+    await tester.tap(find.text(loc.retry));
+    await tester.pump();
+    expect(retried, 1);
+  });
+
   test('is translated beyond English', () {
     final fr = lookupStartupLocalizations(const Locale('fr'));
     expect(fr.inventoryUnreadableQuitButton, 'Quitter');
