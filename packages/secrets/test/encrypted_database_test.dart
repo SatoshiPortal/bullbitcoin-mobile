@@ -5,6 +5,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/src/data/encrypted_database.dart'
+    show databaseFileProblemOf;
 import 'package:secrets/testing.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -92,6 +94,69 @@ void main() {
       ),
     );
     expect(store.writes, 1);
+  });
+
+  test(
+    'a newer schema is reported as a mismatch, never as not ready',
+    () async {
+      await writeSample();
+      final Ok(:value) =
+          (await open()) as Ok<QueryExecutor, DatabaseOpenFailure>;
+      final db = _SampleDatabase(value);
+      await db.customStatement('PRAGMA user_version = 2');
+      await db.close();
+      final original = await file.readAsBytes();
+      expect(
+        await open(background: 1),
+        _hasFileProblem(DatabaseFileProblem.schemaMismatch),
+      );
+      expect(await file.readAsBytes(), original);
+    },
+  );
+
+  test('a truncated database is unreadable and left in place', () async {
+    await writeSample();
+    final bytes = await file.readAsBytes();
+    final truncated = bytes.sublist(0, bytes.length ~/ 2);
+    await file.writeAsBytes(truncated);
+    expect(await open(), _hasFileProblem(DatabaseFileProblem.unreadable));
+    expect(await file.readAsBytes(), truncated);
+    expect(store.writes, 1);
+  });
+
+  test('a refused file permission is inaccessible, not unreadable', () async {
+    await writeSample();
+    final original = await file.readAsBytes();
+    await Process.run('chmod', ['000', file.path]);
+    addTearDown(() => Process.run('chmod', ['600', file.path]));
+    if (File(file.path).statSync().mode & 0x1ff != 0) {
+      markTestSkipped('permissions are not enforced for this user');
+      return;
+    }
+    expect(await open(), _hasFileProblem(DatabaseFileProblem.inaccessible));
+    await Process.run('chmod', ['600', file.path]);
+    expect(await file.readAsBytes(), original);
+    expect(store.writes, 1);
+  });
+
+  test('engine busy and locked errors are contention', () {
+    for (final code in [SqlError.SQLITE_BUSY, SqlError.SQLITE_LOCKED]) {
+      expect(
+        databaseFileProblemOf(
+          SqliteException(extendedResultCode: code, message: 'locked'),
+        ),
+        DatabaseFileProblem.contended,
+      );
+    }
+    expect(
+      databaseFileProblemOf(
+        SqliteException(
+          extendedResultCode: SqlError.SQLITE_CANTOPEN,
+          message: 'x',
+        ),
+      ),
+      DatabaseFileProblem.inaccessible,
+    );
   });
 
   test(
@@ -220,6 +285,13 @@ final class _WorkerFailure extends Failure {
 
   const _WorkerFailure(this.code);
 }
+
+Matcher _hasFileProblem(DatabaseFileProblem reason) =>
+    isA<Err<QueryExecutor, DatabaseOpenFailure>>().having(
+      (r) => r.failure,
+      'failure',
+      isA<DatabaseFileUnavailable>().having((f) => f.reason, 'reason', reason),
+    );
 
 Matcher _hasKeyProblem(DatabaseKeyProblem reason) =>
     isA<Err<QueryExecutor, DatabaseOpenFailure>>().having(
