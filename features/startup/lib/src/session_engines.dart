@@ -45,6 +45,17 @@ final class SessionEngines {
     }
   }
 
+  /// The first launch, as one synchronous admission: the check that the
+  /// session is unlocked, [start] and the marking of the engines as started
+  /// happen with no await between them, so a lock cannot fall in the middle.
+  /// Returns false, having started nothing, if the session is locked.
+  bool admitStart(void Function() start) {
+    if (_locked) return false;
+    start();
+    markStarted();
+    return true;
+  }
+
   /// The engines have been started by the first launch: later locks stop them.
   void markStarted() {
     for (final slot in _slots) {

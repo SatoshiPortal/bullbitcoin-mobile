@@ -26,10 +26,12 @@ final class ForegroundWalletStartup {
 
   Future<void> _start() async {
     await _initialize();
-    // A lock during initialization starts nothing: wait for the unlock.
-    await _engines.untilUnlocked();
-    _startWatchers();
-    _engines.markStarted();
+    // A lock during initialization, or between the unlock and this
+    // continuation, starts nothing: wait for the next unlock and try again.
+    while (true) {
+      await _engines.untilUnlocked();
+      if (_engines.admitStart(_startWatchers)) break;
+    }
     _ready = true;
     resumePayjoins();
   }
