@@ -74,7 +74,7 @@ void main() {
     );
     expect(logicalSize, const Size(320, 1200 / 2.625));
     expect(tester.takeException(), isNull);
-    expect(find.byType(BullPaymentAnimation), findsOneWidget);
+    expect(find.byType(BullPaymentAnimation), findsNothing);
     expect(
       find.byWidgetPredicate(
         (widget) => widget is BullText && widget.text == 'Payment in progress',
