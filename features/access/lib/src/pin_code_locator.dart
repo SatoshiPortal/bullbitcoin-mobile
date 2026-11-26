@@ -7,10 +7,7 @@ import 'package:access/src/domain/usecases/check_pin_backup_usecase.dart';
 import 'package:get_it/get_it.dart';
 
 class PinCodeLocator {
-  static void setup(
-    GetIt locator, {
-    required Future<bool> Function() hasVerifiedBackup,
-  }) {
+  static void setup(GetIt locator) {
     // Use cases
     locator.registerFactory<SetPinCodeUsecase>(
       () => SetPinCodeUsecase(inventory: locator<AccessInventory>()),
@@ -29,7 +26,9 @@ class PinCodeLocator {
         isPinCodeSetUsecase: locator<IsPinCodeSetUsecase>(),
         setPinCodeUsecase: locator<SetPinCodeUsecase>(),
         deletePinCodeUsecase: locator<DeletePinCodeUsecase>(),
-        checkBackupUsecase: CheckPinBackupUsecase(hasVerifiedBackup),
+        checkBackupUsecase: CheckPinBackupUsecase(
+          inventory: locator<AccessInventory>(),
+        ),
       ),
     );
   }

@@ -13,7 +13,7 @@ void main() {
   setUp(() async {
     fixture = await InventoryFixture.open(pin: '1234');
     usecase = AttemptUnlockWithPinCodeUsecase(
-      inventory: AccessInventory(fixture.inventory, fixture.backup),
+      inventory: AccessInventory(fixture.inventory),
     );
   });
   tearDown(() => fixture.close());

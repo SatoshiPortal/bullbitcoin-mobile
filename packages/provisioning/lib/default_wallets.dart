@@ -147,6 +147,8 @@ class DefaultWalletProvisioning {
           )) {
             case Ok(:final value):
               id = value;
+            case Err(failure: WalletProvisioningBackupRequiredFailure()):
+              return const Err(DefaultWalletBackupRequiredFailure());
             case Err(:final failure):
               log.warning(
                 'Default wallet creation failed: ${failure.runtimeType}',

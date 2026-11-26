@@ -177,7 +177,6 @@ void main() {
         final opened = await PreferencesTesting.open(
           file: file,
           admission: runtime,
-          legacyDatabase: db,
           keys: keys,
         );
         expect(opened, isA<Ok>());

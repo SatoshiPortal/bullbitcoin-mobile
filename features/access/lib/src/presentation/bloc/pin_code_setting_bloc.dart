@@ -65,11 +65,8 @@ class PinCodeSettingBloc
           //  wrongly told they already have. The failure belongs to another
           //  feature and is not shown here — it is a routing input, not
           //  something the user can act on from this screen.
-          final hasBackup = await _checkBackupUsecase.execute();
-          final status = hasBackup
-              ? PinCodeSettingStatus.choose
-              : PinCodeSettingStatus.backupRequired;
-          emit(state.copyWith(status: status, isPinCodeSet: false));
+          final backups = await _checkBackupUsecase.execute();
+          emit(_afterBackupCheck(backups).copyWith(isPinCodeSet: false));
         } else {
           emit(
             state.copyWith(
@@ -120,13 +117,26 @@ class PinCodeSettingBloc
     PinCodeCreate event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    // Fails closed, same as _onInitialized: an unreadable backup state must
-    //  route to backupRequired, never to choose.
-    final hasBackup = await _checkBackupUsecase.execute();
-    var status = PinCodeSettingStatus.choose;
-    if (!hasBackup) status = PinCodeSettingStatus.backupRequired;
-    emit(state.copyWith(status: status));
+    // Changing a PIN adds no secret and needs no proof: only creating one is
+    // gated, so a view that predates the rule can still rotate its PIN.
+    if (state.isPinCodeSet) {
+      emit(state.copyWith(status: PinCodeSettingStatus.choose, failure: null));
+      return;
+    }
+    emit(_afterBackupCheck(await _checkBackupUsecase.execute()));
   }
+
+  PinCodeSettingState _afterBackupCheck(Result<void, AccessFailure> backups) =>
+      switch (backups) {
+        Ok() => state.copyWith(
+          status: PinCodeSettingStatus.choose,
+          failure: null,
+        ),
+        Err(:final failure) => state.copyWith(
+          status: PinCodeSettingStatus.backupRequired,
+          failure: failure,
+        ),
+      };
 
   Future<void> _onDeletePin(
     PinCodeDelete event,

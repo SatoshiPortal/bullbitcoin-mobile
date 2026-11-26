@@ -8,6 +8,9 @@ extension AccessFailureL10n on AccessFailure {
     AccessPinCheckFailure() ||
     AccessUnlockKeychainLockedFailure() => context.loc.appUnlockPinCheckError,
     AccessPinVerifyFailure() => context.loc.appUnlockPinVerifyError,
+    AccessBackupRequiredFailure(:final count) =>
+      context.loc.pinCodeBackupRequiredCount(count),
+    AccessBackupUnavailableFailure() => context.loc.pinCodeBackupUnavailable,
     AccessPinSaveFailure() => context.loc.pinCodeSaveError,
     AccessPinDeleteFailure() => context.loc.pinCodeDeleteError,
     AccessPinNotSetFailure() => context.loc.pinCodeNotSetError,

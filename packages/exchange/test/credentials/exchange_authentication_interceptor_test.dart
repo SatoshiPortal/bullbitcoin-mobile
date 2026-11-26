@@ -1,4 +1,5 @@
 import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -14,8 +15,6 @@ import 'package:dio/dio.dart'
     show Headers, HttpClientAdapter, RequestOptions, ResponseBody;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
 
 /// Records the key of each request and answers a valid JSON-RPC result.
 class _Adapter implements HttpClientAdapter {
@@ -78,20 +77,18 @@ Future<bool> _consent(Bbx api) async =>
 
 void main() {
   test('rereads rotation, environment and logout on every request', () async {
-    final storage = FakeSecureStoragePlatform().install();
-    final repository = ExchangeCredentials.open(
-      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
-    );
+    final storage = InMemoryExchangeCredentialStorage();
+    final repository = ExchangeCredentials.open(storage);
     final adapter = _Adapter();
     final mainnet = _client(adapter, repository, isTestnet: false);
     final testnet = _client(adapter, repository, isTestnet: true);
-    storage.entries['exchange_api_key'] = _record('main');
-    storage.entries['exchange_api_key_testnet'] = _record('test');
+    storage.entries['mainnet'] = _record('main');
+    storage.entries['testnet'] = _record('test');
     expect(await _consent(mainnet), isTrue);
     expect(await _consent(testnet), isTrue);
-    storage.entries['exchange_api_key'] = _record('rotated');
+    storage.entries['mainnet'] = _record('rotated');
     expect(await _consent(mainnet), isTrue);
-    storage.entries.remove('exchange_api_key');
+    storage.entries.remove('mainnet');
     expect(
       await mainnet.users.registerResponsibilityConsent(),
       isA<Err>().having(
@@ -107,16 +104,11 @@ void main() {
   test(
     'inactive, corrupt and inaccessible credentials never reach the adapter',
     () async {
-      final storage = FakeSecureStoragePlatform().install();
-      final repository = ExchangeCredentials.open(
-        Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
-      );
+      final storage = InMemoryExchangeCredentialStorage();
+      final repository = ExchangeCredentials.open(storage);
       final adapter = _Adapter();
       final api = _client(adapter, repository, isTestnet: true);
-      storage.entries['exchange_api_key_testnet'] = _record(
-        'inactive',
-        active: false,
-      );
+      storage.entries['testnet'] = _record('inactive', active: false);
       expect(
         await api.users.registerResponsibilityConsent(),
         isA<Err>().having(
@@ -125,8 +117,7 @@ void main() {
           isA<BbxMissingCredentialFailure>(),
         ),
       );
-      storage.entries['exchange_api_key_testnet'] =
-          '{"key":"SYNTHETIC-PRIVATE", broken';
+      storage.entries['testnet'] = '{"key":"SYNTHETIC-PRIVATE", broken';
       expect(
         await api.users.registerResponsibilityConsent(),
         isA<Err>()
@@ -172,10 +163,8 @@ void main() {
   );
 
   test('typed absence and read failure are separate outcomes', () async {
-    final storage = FakeSecureStoragePlatform().install();
-    final repository = ExchangeCredentials.open(
-      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
-    );
+    final storage = InMemoryExchangeCredentialStorage();
+    final repository = ExchangeCredentials.open(storage);
     final adapter = _Adapter();
     final api = _client(adapter, repository, isTestnet: true);
     expect(

@@ -172,20 +172,12 @@ void main() {
   }
 
   Future<void> mountAccess(Secrets secrets) async {
-    expect(
-      await inventoryFixture.inventory.setCredential(
-        '1234',
-        backupVerification: inventoryFixture.backup,
-      ),
-      isA<Ok>(),
-    );
+    expect(await inventoryFixture.inventory.setCredential('1234'), isA<Ok>());
     final services = GetIt.asNewInstance()..registerSingleton(secrets);
     addTearDown(services.reset);
     AccessFeature.mount(
       services: services,
       inventory: inventoryFixture.inventory,
-      backupVerification: inventoryFixture.backup,
-      hasVerifiedBackup: () async => false,
       onUnlocked: (_) {},
       onBackUp: (_) async {},
     );

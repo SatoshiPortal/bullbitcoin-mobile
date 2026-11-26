@@ -76,6 +76,7 @@ custody-check:
 	@fvm dart packages/secrets/tool/key_material_gate.dart
 
 # Native stores have exactly one writer; readers and signers have scoped exceptions.
+# RecoverBull backup preparation is confined to the inventory callback.
 # BDK/LWK stay in packages/sync, plus a shrinking list of legacy files.
 native-write-check:
 	@fvm dart packages/sync/tool/native_write_gate.dart
@@ -530,12 +531,10 @@ bitbox-device-test:
 # Physical-device credential probes use a separately installed debug APK.
 # The SDK driver connects through VM_SERVICE_URL without installing an app.
 .PHONY: exchange-credentials-device-build exchange-credentials-device-test
-EXCHANGE_DEVICE_LIVE ?= false
 exchange-credentials-device-build:
 	@fvm flutter build apk --debug --target-platform android-arm64 --split-per-abi --flavor production \
 		--target integration_test/device/exchange_credentials_test.dart \
-		--dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false \
-		--dart-define=TEST_EXCHANGE_LIVE=$(EXCHANGE_DEVICE_LIVE)
+		--dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false
 
 exchange-credentials-device-test:
 	@test -n "$$VM_SERVICE_URL" || { echo "Set VM_SERVICE_URL to the running test app"; exit 1; }

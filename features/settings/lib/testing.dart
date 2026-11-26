@@ -26,6 +26,7 @@ export 'src/domain/usecases/set_bitcoin_unit_usecase.dart';
 export 'src/domain/usecases/set_currency_usecase.dart';
 export 'src/domain/usecases/set_environment_usecase.dart';
 export 'src/domain/usecases/set_error_reporting_usecase.dart';
+export 'src/domain/usecases/load_exchange_testnet_basic_auth_usecase.dart';
 export 'src/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
 export 'src/domain/usecases/set_hide_amounts_usecase.dart';
 export 'src/domain/usecases/set_is_dev_mode_usecase.dart';

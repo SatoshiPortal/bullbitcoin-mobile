@@ -15,6 +15,7 @@ import 'package:secrets/src/data/data.dart'
         unreadableBip85RecordFailure;
 
 import '../data/access_repository.dart';
+import '../data/backup_guard.dart';
 import '../data/derivation_repository.dart';
 import '../data/inventory_import.dart';
 import '../data/inventory_repository.dart';
@@ -42,19 +43,29 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   final AccessRepository _access;
   final InventoryRepository _wallets;
   final DerivationRepository _derivations;
+  final BackupGuard _guard;
   bool _unlocked;
   var _session = 0;
 
-  SecretsInventory._(this._store, this._access, bool initiallyProtected)
-    : _wallets = InventoryRepository(_store.database),
+  SecretsInventory._(
+    this._store,
+    this._access,
+    this._guard,
+    bool initiallyProtected,
+  ) : _wallets = InventoryRepository(_store.database),
       _derivations = DerivationRepository(_store.database),
       _unlocked = !initiallyProtected;
 
   /// Open an existing, admitted inventory. A missing receipt blocks publication.
+  ///
+  /// [backupVerification] is the composition's one verifier, bound here before
+  /// the capability exists. Without it the inventory refuses every decision that
+  /// needs a backup proof; no operation lets a caller supply its own.
   @useResult
   static Future<Result<SecretsInventory, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
+    InventoryBackupVerification? backupVerification,
   }) async {
     final opened = await _openReady(file, admission);
     switch (opened) {
@@ -71,7 +82,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
                 : const DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
           );
         }
-        final access = AccessRepository(value.database);
+        final guard = BackupGuard(backupVerification);
+        final access = AccessRepository(value.database, guard);
         switch (await access.isProtected()) {
           case Err():
             await value.close();
@@ -79,7 +91,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
               DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
             );
           case Ok(value: final protected):
-            return Ok(SecretsInventory._(value, access, protected));
+            return Ok(SecretsInventory._(value, access, guard, protected));
         }
     }
   }
@@ -121,22 +133,21 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
         }
       });
 
+  /// The secrets of the active view without a tested backup, by the same rule
+  /// that protecting the view applies. Empty means the view can be protected;
+  /// a view holding only watch-only wallets has no seed to prove (D95) and is
+  /// still not backed up. Read only: [setCredential] decides again under the
+  /// write lock.
   @useResult
-  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    InventoryBackupVerification verification,
-  ) => _inSession((_) => _access.hasVerifiedBackups(verification));
+  Future<Result<List<Fingerprint>, SecretFailure>> unbackedSecrets() =>
+      _inSession((_) => _access.unbackedSecrets());
 
-  /// Protect the active view from an authenticated foreground session.
+  /// Protect the active view, or replace its PIN, from an authenticated
+  /// foreground session. Protecting needs a tested backup of every secret the
+  /// view holds, judged by the verifier bound at composition.
   @useResult
-  Future<Result<void, SecretFailure>> setCredential(
-    String candidate, {
-    required InventoryBackupVerification backupVerification,
-  }) => _inSession(
-    (_) => _access.replaceCredential(
-      candidate,
-      backupVerification: backupVerification,
-    ),
-  );
+  Future<Result<void, SecretFailure>> setCredential(String candidate) =>
+      _inSession((_) => _access.replaceCredential(candidate));
 
   /// Remove access protection from an authenticated foreground session.
   @useResult
@@ -201,14 +212,18 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// Reserve the ID before preparing properties owned by other stores. The
   /// callback must not call back into this inventory. If it fails, the wallet
   /// and its membership are not published; a retry prepares its properties.
+  /// When passed true, the callback must preserve backup evidence belonging to
+  /// the existing secret member and refuse a conflicting wallet identity.
   @useResult
   Future<Result<void, SecretFailure>> registerWallet(
     RegisteredWallet wallet, {
-    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+    Future<Result<void, SecretFailure>> Function(bool existingSecretMember)?
+    prepareProperties,
   }) => _inSession(
     (_) => _wallets.register(
       wallet,
       view: defaultViewId,
+      guard: _guard,
       prepareProperties: prepareProperties,
     ),
   );

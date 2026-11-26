@@ -4,6 +4,9 @@ library;
 export 'src/domain/entities/exchange_api_key.dart';
 export 'src/setup/exchange_access_lifecycle.dart' show ExchangeAccessLifecycle;
 export 'src/exchange.dart' show ExchangeWebAuthEndpoints;
+export 'src/data/storage/exchange_credential_storage.dart'
+    show ExchangeCredentialStorage;
+export 'src/domain/exchange_basic_auth.dart' show ExchangeBasicAuthStore;
 export 'src/setup/exchange_credentials.dart';
 export 'src/setup/legacy_session.dart'
     show readLegacyExchangeEnvironment, readLegacyExchangeSession;

@@ -13,10 +13,7 @@ void main() {
     'display preferences emit persisted defaults and subsequent writes',
     () async {
       final database = await createPreferencesDatabase();
-      final repository = PreferencesTesting.fromDatabases(
-        owner: database,
-        legacy: database,
-      );
+      final repository = PreferencesTesting.fromDao(PreferencesDao(database));
       final preferences = StreamIterator(repository.watchDisplayPreferences());
       addTearDown(() async {
         await preferences.cancel();
@@ -53,10 +50,7 @@ void main() {
     'display preferences recover after a missing row or unsupported unit',
     () async {
       final database = await createPreferencesDatabase();
-      final repository = PreferencesTesting.fromDatabases(
-        owner: database,
-        legacy: database,
-      );
+      final repository = PreferencesTesting.fromDao(PreferencesDao(database));
       final preferences = StreamIterator(repository.watchDisplayPreferences());
       addTearDown(() async {
         await preferences.cancel();

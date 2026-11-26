@@ -68,6 +68,19 @@
   "@pinCodeBackupRequiredWarning": {
     "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
+  "pinCodeBackupRequiredCount": "{count, plural, one{{count} recovery phrase has no verified backup yet. Back it up before setting a PIN.} other{{count} recovery phrases have no verified backup yet. Back them up before setting a PIN.}}",
+  "@pinCodeBackupRequiredCount": {
+    "description": "Warning shown when a PIN cannot be set because some recovery phrases of the view have no tested backup",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pinCodeBackupUnavailable": "Your backup status could not be read, so a PIN cannot be set yet. Please try again.",
+  "@pinCodeBackupUnavailable": {
+    "description": "Warning shown when the backup state cannot be read while setting a PIN; it is neither backed up nor missing"
+  },
   "pinCodeSaveError": "Could not save your PIN. Please try again.",
   "@pinCodeSaveError": {
     "description": "Error shown when the PIN code cannot be saved"

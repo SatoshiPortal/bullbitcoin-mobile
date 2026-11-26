@@ -1,10 +1,9 @@
 import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 
 import 'dart:convert';
 
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -13,7 +12,7 @@ class _Logger extends Mock implements Logger {}
 
 void main() {
   setUpAll(() => registerFallbackValue(StackTrace.empty));
-  late FakeSecureStoragePlatform storage;
+  late InMemoryExchangeCredentialStorage storage;
   late _Logger logger;
   late Logger previousLogger;
   late ExchangeCredentials repository;
@@ -27,18 +26,16 @@ void main() {
       };
 
   setUp(() {
-    storage = FakeSecureStoragePlatform().install();
+    storage = InMemoryExchangeCredentialStorage();
     logger = _Logger();
     previousLogger = log;
     log = logger;
-    repository = ExchangeCredentials.open(
-      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
-    );
+    repository = ExchangeCredentials.open(storage);
   });
   tearDown(() => log = previousLogger);
 
   test('authentication does not require unused account metadata', () async {
-    storage.entries['exchange_api_key_testnet'] = jsonEncode({
+    storage.entries['testnet'] = jsonEncode({
       'key': 'synthetic-key',
       'isActive': true,
     });
@@ -46,7 +43,7 @@ void main() {
   });
 
   test('inactive credentials are an expected unauthenticated state', () async {
-    storage.entries['exchange_api_key_testnet'] = jsonEncode({
+    storage.entries['testnet'] = jsonEncode({
       'id': 'id',
       'key': 'synthetic-key',
       'name': 'name',

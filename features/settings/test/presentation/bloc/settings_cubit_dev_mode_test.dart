@@ -63,6 +63,16 @@ class _MockSetErrorReportingUsecase extends Mock
 class _MockSetExchangeTestnetBasicAuthUsecase extends Mock
     implements SetExchangeTestnetBasicAuthUsecase {}
 
+class _MockLoadExchangeTestnetBasicAuthUsecase extends Mock
+    implements LoadExchangeTestnetBasicAuthUsecase {}
+
+LoadExchangeTestnetBasicAuthUsecase _loadBasicAuth() {
+  final usecase = _MockLoadExchangeTestnetBasicAuthUsecase();
+  when(usecase.execute)
+      .thenAnswer((_) async => const Ok((username: null, password: null)));
+  return usecase;
+}
+
 SettingsEntity _settings({bool isDevModeEnabled = true}) => SettingsEntity(
   environment: Environment.mainnet,
   bitcoinUnit: BitcoinUnit.sats,
@@ -118,6 +128,7 @@ void main() {
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setScreenCaptureProtectionUsecase:
           _MockSetScreenCaptureProtectionUsecase(),
+      loadExchangeTestnetBasicAuthUsecase: _loadBasicAuth(),
       setShowPaymentAnimationsUsecase: _MockSetShowPaymentAnimationsUsecase(),
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),

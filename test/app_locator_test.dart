@@ -58,7 +58,7 @@ Future<Result<Preferences, PreferencesFailure>> _openTestPreferences(
 ) async {
   final owner = await createPreferencesDatabase(copySettingsFrom: legacy);
   addTearDown(owner.close);
-  return Ok(PreferencesTesting.fromDatabases(owner: owner, legacy: legacy));
+  return Ok(PreferencesTesting.fromDao(PreferencesDao(owner)));
 }
 
 class _SecureStorage extends FakeSecureStoragePlatform {
@@ -145,7 +145,7 @@ void main() {
             tor: tor,
           ),
         ),
-        openPreferences: _openTestPreferences,
+        openPreferences: () => _openTestPreferences(database),
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
@@ -233,7 +233,7 @@ void main() {
               tor: tor,
             ),
           ),
-          openPreferences: _openTestPreferences,
+          openPreferences: () => _openTestPreferences(database),
           openMempool: (tor, http) async => Ok(
             createMempoolForTesting(
               database: database,
@@ -280,13 +280,7 @@ void main() {
 
     test('PIN protection defers Silent Payments and swap watchers', () async {
       final pin = DateTime.now().microsecondsSinceEpoch.toString();
-      expect(
-        await inventoryFixture.inventory.setCredential(
-          pin,
-          backupVerification: inventoryFixture.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await inventoryFixture.inventory.setCredential(pin), isA<Ok>());
       inventoryFixture.inventory.lock();
       await compose(startWatchers: true);
       final swap = locator<SwapFeature>();
@@ -540,7 +534,7 @@ void main() {
             tor: tor,
           ),
         ),
-        openPreferences: _openTestPreferences,
+        openPreferences: () => _openTestPreferences(database),
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
@@ -576,13 +570,7 @@ void main() {
         isA<Ok>(),
       );
       expect(await catalog.find(key), isA<Ok>());
-      expect(
-        await inventoryFixture.inventory.setCredential(
-          '1234',
-          backupVerification: inventoryFixture.backup,
-        ),
-        isA<Ok>(),
-      );
+      expect(await inventoryFixture.inventory.setCredential('1234'), isA<Ok>());
       inventoryFixture.inventory.lock();
       expect(await catalog.list(), isA<Err>());
       expect(
@@ -649,7 +637,7 @@ void main() {
           tor: tor,
         ),
       ),
-      openPreferences: _openTestPreferences,
+      openPreferences: () => _openTestPreferences(database),
       openMempool: (tor, http) async => Ok(
         createMempoolForTesting(database: database, tor: tor, torHttp: http),
       ),

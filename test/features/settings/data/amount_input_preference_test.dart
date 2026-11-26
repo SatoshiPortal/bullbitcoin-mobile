@@ -65,7 +65,6 @@ void main() {
           final result = await PreferencesTesting.open(
             file: ownerFile,
             admission: admission,
-            legacyDatabase: await source.open(admission),
             keys: keys,
           );
           final reader = (result as Ok<Preferences, PreferencesFailure>).value;

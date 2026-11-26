@@ -68,15 +68,14 @@ void main() {
   });
 
   test('regtest refuses the exchange web settings', () async {
-    when(settings.readExchangeWebPreferences).thenAnswer(
-      (_) async => Ok((
-        environment: Environment.regtest,
-        exchangeTestnetBasicAuthUsername: null,
-        exchangeTestnetBasicAuthPassword: null,
-      )),
-    );
-    final result = await GetExchangeWebSettingsUsecase(preferences: settings)
-        .execute();
+    when(settings.readActiveEnvironment)
+        .thenAnswer((_) async => const Ok(Environment.regtest));
+    final result = await GetExchangeWebSettingsUsecase(
+      environment: settings,
+      basicAuth: ExchangeCredentials.openBasicAuth(
+        InMemoryExchangeCredentialStorage(),
+      ),
+    ).execute();
     expect(_failureOf(result), isA<ExchangeUnsupportedNetworkFailure>());
   });
 

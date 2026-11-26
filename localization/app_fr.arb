@@ -1791,5 +1791,6 @@
   "walletDeletionFailedOkButton": "OK",
   "sendLnurlLimitsUnavailable": "Impossible de lire les limites de paiement du destinataire Lightning. Réessayez.",
   "sendLnurlNoPayableAmount": "Cette demande Lightning n’accepte aucun montant en satoshis entiers.",
-  "sendLnurlAmountRange": "Ce destinataire accepte de {minimumSat} à {maximumSat} sats."
+  "sendLnurlAmountRange": "Ce destinataire accepte de {minimumSat} à {maximumSat} sats.",
+  "networkWalletBackupRequired": "Cette vue est protégée par un code PIN. Supprimez le code PIN, créez le portefeuille, vérifiez la sauvegarde de sa phrase de récupération, puis définissez à nouveau le code PIN."
 }

@@ -37,7 +37,6 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   Future<Result<Preferences, PreferencesFailure>> Function(
     File,
     RuntimeAdmission,
-    SqliteDatabase,
   )?
   openPreferences,
   @visibleForTesting
@@ -51,20 +50,9 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     return () async => const BackgroundTaskExecutionResult.retry();
   }
-  final sqlite = await LegacySourceStore(
-    source: LegacySource(
-      File('${documents.path}/bullbitcoin_sqlite.sqlite'),
-      SqliteDatabase.currentSchemaVersion,
-    ),
-    create: SqliteDatabase.new,
-  ).open(admission);
   final openedPreferences = openPreferences == null
-      ? await Preferences.open(
-          file: preferencesFile,
-          admission: admission,
-          legacyDatabase: sqlite,
-        )
-      : await openPreferences(preferencesFile, admission, sqlite);
+      ? await Preferences.open(file: preferencesFile, admission: admission)
+      : await openPreferences(preferencesFile, admission);
   if (openedPreferences case Err()) {
     return () async => const BackgroundTaskExecutionResult.retry();
   }

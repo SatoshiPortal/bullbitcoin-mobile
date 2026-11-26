@@ -24,6 +24,12 @@ final class DefaultWalletSecretFailure extends DefaultWalletFailure {
   const DefaultWalletSecretFailure();
 }
 
+/// The view is protected by a PIN and the new seed has no tested backup, so it
+/// is not attached. Nothing was created.
+final class DefaultWalletBackupRequiredFailure extends DefaultWalletFailure {
+  const DefaultWalletBackupRequiredFailure();
+}
+
 final class DefaultWalletCreationFailure extends DefaultWalletFailure {
   const DefaultWalletCreationFailure();
 }
@@ -65,6 +71,13 @@ final class WalletProvisioningUnsupportedFailure
 /// The secret could not derive the account's public material.
 final class WalletProvisioningSecretFailure extends WalletProvisioningFailure {
   const WalletProvisioningSecretFailure();
+}
+
+/// The view is protected by a PIN and the account's seed has no tested backup:
+/// no seed without a backup is attached to a protected view (D97).
+final class WalletProvisioningBackupRequiredFailure
+    extends WalletProvisioningFailure {
+  const WalletProvisioningBackupRequiredFailure();
 }
 
 /// The inventory, a property owner or the native store refused the write.

@@ -19,6 +19,9 @@ sealed class SettingsState with _$SettingsState {
     // read through the SP facade. Drives the bitcoin-settings SP setup/settings
     // entry, so the screen reads it here instead of the WalletBloc.
     @Default(false) bool isSpWalletSetup,
+    // Held by Exchange, not by the stored settings; null until the read ends.
+    String? exchangeTestnetBasicAuthUsername,
+    String? exchangeTestnetBasicAuthPassword,
     SettingsFailure? failure,
   }) = _SettingsState;
   const SettingsState._();
@@ -36,10 +39,6 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.screenCaptureProtectionEnabled ?? true;
   bool get showPaymentAnimations =>
       storedSettings?.showPaymentAnimations ?? true;
-  String? get exchangeTestnetBasicAuthUsername =>
-      storedSettings?.exchangeTestnetBasicAuthUsername;
-  String? get exchangeTestnetBasicAuthPassword =>
-      storedSettings?.exchangeTestnetBasicAuthPassword;
 
   /// Off until the policy loads, as the payjoin gates treat a missing policy.
   bool isPayjoinEnabled(PayjoinAction action) =>

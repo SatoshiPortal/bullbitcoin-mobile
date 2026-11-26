@@ -40,7 +40,17 @@ enum OwnerReadiness { pending, imported, initialized }
 final class LegacySource {
   final File file;
   final int schemaVersion;
-  const LegacySource(this.file, this.schemaVersion);
+
+  /// True when the install had no legacy database before its first cutover,
+  /// so the database was created afterwards. It may still hold data the app
+  /// wrote since, which an owner must import rather than discard.
+  final bool initialFresh;
+
+  const LegacySource(
+    this.file,
+    this.schemaVersion, {
+    this.initialFresh = false,
+  });
 }
 
 abstract interface class LegacyImportParticipant {
@@ -66,6 +76,21 @@ abstract interface class PreparedOwner {
   Future<Result<OwnerReadiness, LegacyImportFailure>> receipt();
   @useResult
   Future<Result<void, LegacyImportFailure>> close();
+}
+
+/// An owner whose legacy sources live outside the shared legacy database can
+/// refuse an initial state it cannot reconcile. The coordinator asks before it
+/// publishes the first marker and again before it prepares an owner that the
+/// marker has not admitted, because a marker published before the owner joined
+/// the manifest never ran the first check.
+abstract interface class SourceProvenanceCheck {
+  /// [legacySqlitePresent] is true when the shared legacy database existed
+  /// before this cutover started. A failure leaves every source untouched.
+  @useResult
+  Future<Result<void, LegacyImportFailure>> verifyInitialSource(
+    ExclusiveAdmission admission, {
+    required bool legacySqlitePresent,
+  });
 }
 
 /// Historical migrations are provided as an inert factory by composition.
@@ -231,6 +256,15 @@ final class StorageCutover {
             active.length != participants.length) {
           throw const LifecycleException('manifest');
         }
+        for (final participant in participants) {
+          if (participant case final SourceProvenanceCheck check) {
+            final verified = await check.verifyInitialSource(
+              exclusive,
+              legacySqlitePresent: hasMain,
+            );
+            if (verified case Err(:final failure)) return Err(failure);
+          }
+        }
         marker = _CutoverMarker(
           sourceSchemaVersion: legacy.source.schemaVersion,
           initialFresh: !hasMain,
@@ -265,14 +299,30 @@ final class StorageCutover {
         final ownerId = participant.ownerId;
         // The legacy source no longer contains all writes to an admitted owner.
         if (established.admittedOwners.contains(ownerId)) continue;
+        // The first marker alone fixes an origin; a resume never rewrites it.
         final origin = established.origins[ownerId];
         if (origin == null) throw const LifecycleException('owner');
+        // A marker published before this owner joined the manifest skipped
+        // the first-marker check, so ask again before the owner is prepared.
+        if (participant case final SourceProvenanceCheck check) {
+          final verified = await check.verifyInitialSource(
+            exclusive,
+            legacySqlitePresent: !established.initialFresh,
+          );
+          if (verified case Err(:final failure)) return Err(failure);
+        }
         final prepared = await participant.prepare(exclusive, origin);
         if (prepared case Err(:final failure)) return Err(failure);
         final owner =
             (prepared as Ok<PreparedOwner, LegacyImportFailure>).value;
         final result = origin == OwnerOrigin.legacy
-            ? await owner.importLegacy(legacy.source)
+            ? await owner.importLegacy(
+                LegacySource(
+                  legacy.source.file,
+                  legacy.source.schemaVersion,
+                  initialFresh: established.initialFresh,
+                ),
+              )
             : await owner.initializeFresh();
         if (result case Err(:final failure)) return Err(failure);
         final receipt = await owner.receipt();

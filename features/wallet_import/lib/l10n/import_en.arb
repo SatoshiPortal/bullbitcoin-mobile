@@ -613,6 +613,10 @@
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
   },
+  "importMnemonicBackupRequiredError": "A PIN protects this wallet, so a recovery phrase can only be added once it has a verified backup. Remove the PIN, import the wallet, back it up, then set the PIN again.",
+  "@importMnemonicBackupRequiredError": {
+    "description": "Error shown when importing a recovery phrase into a view protected by a PIN, because the new phrase has no tested backup"
+  },
   "importMnemonicDuplicateError": "This mnemonic already exists",
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
