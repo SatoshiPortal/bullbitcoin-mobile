@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bull_exchange/src/settings/domain/entities/file_upload.dart';
@@ -292,12 +293,79 @@ void main() {
       when(() => facade.savePreferences(any())).thenAnswer((_) async => r);
     }
 
+    const session = ExchangeSession(
+      environment: ExchangeEnvironment.mainnet,
+      epoch: 1,
+      sessionId: 'prefs',
+    );
+
     Future<Result<void, ExchangeSettingsFailure>> save(
       _MockExchangeFacade facade,
       ExchangePreferences edited,
-    ) =>
-        UpdateExchangePreferencesUsecase(save: facade.savePreferences)
-            .execute(loaded: loaded, edited: edited);
+    ) async => switch (await UpdateExchangePreferencesUsecase(
+      save: facade.savePreferences,
+      writeGate: ExchangeWriteGate(),
+    ).execute(session, loaded: loaded, edited: edited)) {
+      GateAdmitted(:final result) => result,
+      GateRefused(:final refusal) => fail('gate refused: $refusal'),
+    };
+
+    test('a save while another financial write runs is never sent', () async {
+      final facade = _MockExchangeFacade();
+      stubSave(facade, const Ok(null));
+      final gate = ExchangeWriteGate();
+      final release = Completer<String>();
+      final running = gate.run(
+        session,
+        FinancialWriteKind.orderConfirm,
+        () => release.future,
+      );
+
+      final write =
+          await UpdateExchangePreferencesUsecase(
+            save: facade.savePreferences,
+            writeGate: gate,
+          ).execute(
+            session,
+            loaded: loaded,
+            edited: loaded.copyWith(language: 'FR'),
+          );
+
+      expect(
+        write,
+        isA<GateRefused<Result<void, ExchangeSettingsFailure>>>().having(
+          (w) => w.refusal,
+          'refusal',
+          isA<WriteGateBusy>(),
+        ),
+      );
+      verifyNever(() => facade.savePreferences(any()));
+      release.complete('done');
+      await running;
+    });
+
+    test('without a session nothing is sent', () async {
+      final facade = _MockExchangeFacade();
+      final write =
+          await UpdateExchangePreferencesUsecase(
+            save: facade.savePreferences,
+            writeGate: ExchangeWriteGate(),
+          ).execute(
+            null,
+            loaded: loaded,
+            edited: loaded.copyWith(language: 'FR'),
+          );
+
+      expect(
+        (write as GateAdmitted<Result<void, ExchangeSettingsFailure>>).result,
+        isA<Err<void, ExchangeSettingsFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSettingsNotAuthenticatedFailure>(),
+        ),
+      );
+      verifyNever(() => facade.savePreferences(any()));
+    });
 
     for (final (name, edited, patch) in [
       ('nothing edited', loaded, const ExchangePreferencesPatch()),

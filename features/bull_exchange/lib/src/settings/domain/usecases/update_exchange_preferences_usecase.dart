@@ -11,13 +11,32 @@ typedef SaveAccountPreferences = Future<Result<void, ExchangeFailure>> Function(
 
 class UpdateExchangePreferencesUsecase {
   final SaveAccountPreferences _save;
+  final ExchangeWriteGate _writeGate;
 
-  const UpdateExchangePreferencesUsecase({required this._save});
+  const UpdateExchangePreferencesUsecase({
+    required this._save,
+    required this._writeGate,
+  });
 
   /// Sends only what the user changed from [loaded]: a field left alone is
-  /// not overwritten, even if the account changed it meanwhile.
+  /// not overwritten, even if the account changed it meanwhile. The save runs
+  /// through the write gate ([FinancialWriteKind.preferenceWrite]) of the
+  /// session the screen opened for; without a session nothing is sent.
   @useResult
-  Future<Result<void, ExchangeSettingsFailure>> execute({
+  Future<GatedWrite<Result<void, ExchangeSettingsFailure>>> execute(
+    ExchangeSession? session, {
+    required ExchangePreferences loaded,
+    required ExchangePreferences edited,
+  }) async => switch (session) {
+    null => const GateAdmitted(Err(ExchangeSettingsNotAuthenticatedFailure())),
+    final session => await _writeGate.run(
+      session,
+      FinancialWriteKind.preferenceWrite,
+      () => _send(loaded: loaded, edited: edited),
+    ),
+  };
+
+  Future<Result<void, ExchangeSettingsFailure>> _send({
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
   }) async {
