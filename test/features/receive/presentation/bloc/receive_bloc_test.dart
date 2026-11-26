@@ -882,6 +882,123 @@ void main() {
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
     });
 
+    test('a second tap while the first fallback broadcast is still in flight '
+        'does not invoke the broadcast use case again', () async {
+      // Two dispatches land before the first attempt resolves: the bloc runs
+      //  event handlers concurrently, so both see the same broadcastable
+      //  session. What this covers is the consumer only: the use case must
+      //  not be invoked a second time while an attempt is pending. The
+      //  engine already serializes and revalidates the broadcast itself.
+      final requestedPayjoin = _receiver(
+        status: PayjoinStatus.requested,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+      );
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => Ok(requestedPayjoin));
+      final completedPayjoin = _receiver(
+        status: PayjoinStatus.aborted,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+      );
+      final inFlight = Completer<Result<PayjoinSession, ReceiveFailure>>();
+      when(() => broadcastOriginalTransaction.execute(requestedPayjoin.id))
+          .thenAnswer((_) => inFlight.future);
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.payjoin, requestedPayjoin);
+
+      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.isBroadcastingOriginalTransaction, isTrue);
+      // Resolve the first attempt only once both dispatches have landed: by
+      //  then a second use-case call would already have been issued.
+      inFlight.complete(Ok(completedPayjoin));
+      await pumpEventQueue();
+
+      verify(() => broadcastOriginalTransaction.execute(requestedPayjoin.id))
+          .called(1);
+      expect(bloc.state.payjoin, completedPayjoin);
+      expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+    });
+
+    test(
+      'clears the broadcasting flag and propagates an unexpected error',
+      () async {
+        final requestedPayjoin = _receiver(
+          status: PayjoinStatus.requested,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+        );
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => Ok(requestedPayjoin));
+        final exception = StateError('unexpected broadcast error');
+        when(() => broadcastOriginalTransaction.execute(requestedPayjoin.id))
+            .thenAnswer((_) async => throw exception);
+        final error = Completer<Object>();
+        late ReceiveBloc bloc;
+        runZonedGuarded(() {
+          bloc = buildBloc();
+          bloc.add(const ReceiveBitcoinStarted(null));
+        }, (caught, stack) => error.complete(caught));
+        addTearDown(bloc.close);
+        await pumpEventQueue();
+        bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+        expect(await error.future, same(exception));
+        expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+      },
+    );
+
+    test('allows another attempt after a broadcast failure', () async {
+      final requestedPayjoin = _receiver(
+        status: PayjoinStatus.requested,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+      );
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => Ok(requestedPayjoin));
+      final completedPayjoin = _receiver(
+        status: PayjoinStatus.aborted,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+      );
+      var attempts = 0;
+      when(() => broadcastOriginalTransaction.execute(requestedPayjoin.id))
+          .thenAnswer(
+            (_) async => ++attempts == 1
+                ? const Err(ReceiveBroadcastOriginalTxFailure())
+                : Ok(completedPayjoin),
+          );
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+      await pumpEventQueue();
+      expect(bloc.state.failure, isA<ReceiveBroadcastOriginalTxFailure>());
+      expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+      await pumpEventQueue();
+      verify(() => broadcastOriginalTransaction.execute(requestedPayjoin.id))
+          .called(2);
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.payjoin, completedPayjoin);
+      expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+    });
+
     test('waits for the sender after a proposal before offering the '
         'fallback', () async {
       final requestedPayjoin = _receiver(
