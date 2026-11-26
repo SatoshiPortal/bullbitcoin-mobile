@@ -1,4 +1,6 @@
-import 'dart:io' show Platform;
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/init.dart';
@@ -8,21 +10,21 @@ import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
-import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:spend/payjoin.dart';
 import 'package:spend/spend.dart';
 import 'package:sync/sync.dart';
-import 'package:sync/write.dart' show WalletNativeRuntime;
 
-import 'developer_network.dart';
-import 'funded_testnet_wallet.dart';
+import 'funded_regtest_wallet.dart';
 import 'initialization_result.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    requireSuccessfulBullInitialization(await Bull.init());
+    requireSuccessfulBullInitialization(
+      await Bull.init(
+        initialNetwork: localRegtest ? Environment.regtest : null,
+      ),
+    );
   }
 
   late final AddressView addresses;
@@ -33,82 +35,38 @@ Future<void> main({bool isInitialized = false}) async {
   late final Spend spend;
 
   late WalletKey receiverKey;
-  late WalletKey senderKey;
   late Wallet receiverWallet;
-  late Wallet senderWallet;
   PayjoinPolicy? previousPayjoinPolicy;
 
-  /// Fee rate for every transaction this fixture broadcasts, in sat/vB.
-  ///
-  /// This used to be 1000. Nothing needed it: none of the assertions below wait
-  /// for a confirmation — the happy path waits for `PayjoinStatus.completed`,
-  /// which is the protocol exchange, not a block. What it did do was burn the
-  /// fixture wallets. A ~250 vB payjoin plus two drain-consolidations cost on
-  /// the order of half a million sats per run, on every run, of every PR in the
-  /// repository. The wallets emptied faster than anyone could refill them, and
-  /// once the balance fell just below what the next transaction needed, this
-  /// test failed and turned every open PR red — the failure that sent us
-  /// looking here in the first place was 341 sats short.
-  ///
-  /// Verified against mempool.space on 2026-08-10: testnet3 and testnet4 both
-  /// report 1 sat/vB across every tier, `fastestFee` included, so there is no
-  /// backlog to outbid. 10 leaves a wide margin anyway, because testnet3 mines
-  /// in bursts — the 20-minute difficulty reset makes block intervals erratic —
-  /// and a transaction left unconfirmed between runs is what would corrupt the
-  /// next run's UTXO set. Ten times the fastest recommendation buys that safety
-  /// for a few hundred sats.
-  const testnetFeeRate = 10.0;
-
-  Future<void> consolidateUtxos(Wallet wallet) async {
-    final utxos = requireValue(wallet.coins.now.latest, 'read fixture coins');
-    if (utxos.length <= 1) return;
-    final walletId = wallet.key.id;
-    final address = requireValue(
-      await addresses.receiveAddress(walletId: walletId, advance: true),
-      'issue a consolidation address',
-    );
-    final prepared = requireValue(
-      await spend.prepareBitcoin(
-        walletId: walletId,
-        recipients: [
-          BitcoinTransactionRecipient.remainder(address: address.address),
-        ],
-        networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
-      ),
-      'prepare the consolidation',
-    );
-    final signed = requireValue(
-      await spend.signBitcoin(prepared: prepared),
-      'sign the consolidation',
-    );
-    requireValue(
-      await spend.broadcastBitcoin(signed),
-      'broadcast the consolidation',
-    );
-    await Future<void>.delayed(const Duration(seconds: 3));
-    await syncFundedTestnetWallet(wallet.key);
+  Future<(Process, Directory)> startPeer(List<String> arguments) async {
+    final peer = Platform.environment['BULL_PAYJOIN_TEST_PEER'];
+    final certificate = Platform.environment['BULL_PAYJOIN_TEST_CERT'];
+    if (peer == null || certificate == null) {
+      throw StateError('The isolated Payjoin peer is not configured');
+    }
+    final directory = await Directory.systemTemp.createTemp('payjoin-peer-');
+    try {
+      final process = await Process.start(peer, [
+        '--rpchost',
+        'http://127.0.0.1:18443/wallet/ci',
+        '--rpcuser',
+        'ci',
+        '--rpcpassword',
+        'ci',
+        '--ohttp-relays',
+        'https://127.0.0.1:8041',
+        '--pj-directories',
+        'https://localhost:8040',
+        '--root-certificate',
+        certificate,
+        ...arguments,
+      ], workingDirectory: directory.path);
+      return (process, directory);
+    } on Exception {
+      await directory.delete(recursive: true);
+      rethrow;
+    }
   }
-
-  const aliceDefine = String.fromEnvironment('TEST_ALICE_MNEMONIC');
-  const bobDefine = String.fromEnvironment('TEST_BOB_MNEMONIC');
-  final receiverMnemonic = aliceDefine.isNotEmpty
-      ? aliceDefine
-      : Platform.environment['TEST_ALICE_MNEMONIC'];
-  final senderMnemonic = bobDefine.isNotEmpty
-      ? bobDefine
-      : Platform.environment['TEST_BOB_MNEMONIC'];
-
-  // The test is aggregated into CI's all_test.dart, where the funded-wallet
-  // fixtures are not available: skip gracefully there instead of failing the
-  // whole integration job, and run for real wherever the mnemonics are set.
-  final hasFixtures =
-      receiverMnemonic != null &&
-      receiverMnemonic.isNotEmpty &&
-      senderMnemonic != null &&
-      senderMnemonic.isNotEmpty &&
-      Platform.environment['RUN_FUNDED_PAYJOIN_TEST'] == 'true';
-  const fixtureSkip =
-      'requires a PR to main or a manually dispatched CI run with funded testnet wallets';
 
   // Belongs to this file's own Bull.init above, not to the fixtures, so it
   // stays at the root scope and runs even when the funded group is skipped.
@@ -141,26 +99,10 @@ Future<void> main({bool isInitialized = false}) async {
   test(
     'supports concurrent Payjoins backed by distinct UTXOs',
     () {},
-    skip:
-        'Requires two UTXOs per wallet; the funded happy-path fixture '
-        'currently consolidates them to avoid the upstream receiver '
-        'selection bug',
+    skip: 'Requires a fixture that coordinates concurrent sessions',
   );
 
-  // The skip has to sit on the group, not on each test: a group whose tests
-  // are individually skipped still runs its setUpAll and tearDownAll, whereas
-  // a skipped group runs neither. Verified against package:test 1.31.
-  //
-  // This also keeps shared funded wallets out of concurrent pull-request jobs.
-  // Every such job otherwise derives the same BIP84 account and broadcasts
-  // consolidation transactions from the same UTXOs, causing RBF conflicts.
-  // The workflow enables this group for delivery PRs to main or manual runs,
-  // not for every branch in a concurrent develop stack.
-  //
-  // Scoping the hooks to the group also stops them leaking into the other
-  // seven aggregated files, which previously inherited this setUp and paid a
-  // full wallet sync before every one of their tests.
-  group('funded testnet Payjoin', () {
+  group('local regtest Payjoin', () {
     setUpAll(() async {
       addresses = locator<AddressView>();
       receiverRole = locator<PayjoinReceiver>();
@@ -169,43 +111,20 @@ Future<void> main({bool isInitialized = false}) async {
       policy = locator<PayjoinPolicyAccess>();
       spend = locator<Spend>();
 
-      // Testnet is a developer network: enable it as a user would.
-      // Restored when the group ends, even if this setup fails.
-      await selectDeveloperNetwork(Environment.testnet);
       final currentPolicy = await policy.load();
       previousPayjoinPolicy = switch (currentPolicy) {
         Ok(:final value) => value,
         Err(:final failure) => throw failure,
       };
-      // A payjoin between two user wallets needs both user switches.
       for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
         final enabled = await policy.setActionEnabled(action, enabled: true);
         if (enabled case Err(:final failure)) throw failure;
       }
 
-      Future<WalletKey> openWallet(String mnemonic) => openFundedTestnetWallet(
-        mnemonic: mnemonic,
-        secrets: locator<Secrets>(),
-        inventory: locator<SecretsInventory>(),
-        native: locator<WalletNativeRuntime>(),
-      );
-
-      receiverKey = await openWallet(
-        receiverMnemonic ?? fail('missing Alice fixture'),
-      );
-      senderKey = await openWallet(
-        senderMnemonic ?? fail('missing Bob fixture'),
-      );
-      expect(
-        senderKey.id,
-        isNot(receiverKey.id),
-        reason:
-            'The funded Payjoin requires distinct sender and receiver accounts',
-      );
+      receiverWallet = await fundedRegtestWallet();
+      receiverKey = receiverWallet.key;
     });
 
-    // The network and developer flags are restored by selectDeveloperNetwork,
-    // independently of this policy restore.
     tearDownAll(() async {
       if (previousPayjoinPolicy case final previous?) {
         for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
@@ -218,25 +137,12 @@ Future<void> main({bool isInitialized = false}) async {
       }
     });
 
-    setUp(() async {
-      receiverWallet = await syncFundedTestnetWallet(receiverKey);
-      senderWallet = await syncFundedTestnetWallet(senderKey);
-    });
-
-    test('funded testnet wallets complete a Payjoin', () async {
+    test('funded regtest wallets complete a Payjoin', () async {
       final receiverBalance = requireValue(
         receiverWallet.balances.now.latest,
         'read the receiver balance',
       );
-      final senderBalance = requireValue(
-        senderWallet.balances.now.latest,
-        'read the sender balance',
-      );
       expect(receiverBalance.totalSat, greaterThan(BigInt.zero));
-      expect(senderBalance.totalSat, greaterThan(BigInt.zero));
-
-      await consolidateUtxos(receiverWallet);
-      await consolidateUtxos(senderWallet);
 
       final addressResult = await addresses.receiveAddress(
         walletId: receiverKey.id,
@@ -249,7 +155,7 @@ Future<void> main({bool isInitialized = false}) async {
       final receiverResult = await receiverRole.start(
         StartPayjoinReceiver(
           walletId: receiverKey.id,
-          network: BitcoinNetwork.testnet,
+          network: BitcoinNetwork.regtest,
           address: address.address,
           amount: Sats.fromInt(10000),
         ),
@@ -263,60 +169,138 @@ Future<void> main({bool isInitialized = false}) async {
       expect(uri.path, address.address);
       expect(uri.queryParameters, contains('pj'));
 
-      const feeRate = testnetFeeRate;
-      final preparationResult = await spend.prepareBitcoin(
-        walletId: senderKey.id,
-        recipients: [
-          BitcoinTransactionRecipient.fixed(
-            address: address.address,
-            amountSat: Sats.fromInt(10000),
-          ),
-        ],
-        networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
-      );
-      final prepared = switch (preparationResult) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail(
-          'Bitcoin preparation failed: ${failure.runtimeType}',
-        ),
-      };
-      final original = requireValue(
-        await preparePayjoinOriginal(
-          spend: spend,
-          prepared: prepared,
-          walletId: senderKey.id,
-          network: BitcoinNetwork.testnet,
-        ),
-        'prepare the guarded Payjoin original',
-      );
-      final senderResult = await senderRole.start(
-        StartPayjoinSender(
-          walletId: senderKey.id,
-          network: BitcoinNetwork.testnet,
-          bip21Uri: receiver.pjUri,
-          unsignedOriginalPsbt: prepared.unsignedPsbt,
-          preparedOriginal: original,
-          amount: Sats.fromInt(10000),
-          feeRate: FeeRate(feeRate),
-        ),
-      );
-      final sender = switch (senderResult) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw failure,
-      };
+      final (process, directory) = await startPeer([
+        'send',
+        '--fee-rate',
+        '10',
+        receiver.pjUri,
+      ]);
+      final stdoutDone = process.stdout.drain<void>();
+      final stderrDone = process.stderr.drain<void>();
+      try {
+        final exitCode = await process.exitCode.timeout(
+          const Duration(seconds: 120),
+        );
+        expect(exitCode, 0, reason: 'The isolated Payjoin peer failed');
+      } finally {
+        process.kill();
+        await stdoutDone;
+        await stderrDone;
+        await directory.delete(recursive: true);
+      }
 
       final completed = await sessions
-          .watch(sessionIds: {sender.id})
+          .watch(sessionIds: {receiver.id})
           .where(
             (result) => switch (result) {
-              Ok(:final value) => value.status == PayjoinStatus.completed,
-              Err() => false,
+              Ok(:final value) =>
+                value.status == PayjoinStatus.completed ||
+                    value.status == PayjoinStatus.aborted ||
+                    value.status == PayjoinStatus.expired,
+              Err() => true,
             },
           )
           .first
           .timeout(const Duration(seconds: 300));
       expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
+      final session = requireValue(completed, 'read the final Payjoin state');
+      expect(session.status, PayjoinStatus.completed);
     }, timeout: const Timeout(Duration(seconds: 330)));
+
+    test(
+      'a regtest sender completes a Payjoin with an independent receiver',
+      () async {
+        final wallet = await fundedRegtestWallet();
+        final (process, directory) = await startPeer(['receive', '10000']);
+        final uriReady = Completer<String>();
+        final output = process.stdout
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .listen(
+              (line) {
+                if (line.startsWith('bitcoin:') && !uriReady.isCompleted) {
+                  uriReady.complete(line);
+                }
+              },
+              onDone: () {
+                if (!uriReady.isCompleted) {
+                  uriReady.completeError(
+                    StateError('Peer did not issue a URI'),
+                  );
+                }
+              },
+            );
+        final stderrDone = process.stderr.drain<void>();
+        try {
+          final bip21 = await uriReady.future.timeout(
+            const Duration(seconds: 60),
+          );
+          final uri = Uri.parse(bip21);
+          expect(uri.scheme, 'bitcoin');
+          expect(uri.queryParameters, contains('pj'));
+          final prepared = requireValue(
+            await spend.prepareBitcoin(
+              walletId: wallet.key.id,
+              recipients: [
+                BitcoinTransactionRecipient.fixed(
+                  address: uri.path,
+                  amountSat: Sats.fromInt(10000),
+                ),
+              ],
+              networkFee: NetworkFee.relativeFromSatPerVbyte(10),
+            ),
+            'prepare the sender transaction',
+          );
+          final original = requireValue(
+            await preparePayjoinOriginal(
+              spend: spend,
+              prepared: prepared,
+              walletId: wallet.key.id,
+              network: BitcoinNetwork.regtest,
+            ),
+            'prepare the guarded Payjoin original',
+          );
+          final sender = requireValue(
+            await senderRole.start(
+              StartPayjoinSender(
+                walletId: wallet.key.id,
+                network: BitcoinNetwork.regtest,
+                bip21Uri: bip21,
+                unsignedOriginalPsbt: prepared.unsignedPsbt,
+                preparedOriginal: original,
+                amount: Sats.fromInt(10000),
+                feeRate: FeeRate(10),
+              ),
+            ),
+            'start the Payjoin sender',
+          );
+          final terminal = await sessions
+              .watch(sessionIds: {sender.id})
+              .where(
+                (result) => switch (result) {
+                  Ok(:final value) =>
+                    value.status == PayjoinStatus.completed ||
+                        value.status == PayjoinStatus.aborted ||
+                        value.status == PayjoinStatus.expired,
+                  Err() => true,
+                },
+              )
+              .first
+              .timeout(const Duration(seconds: 120));
+          expect(
+            requireValue(terminal, 'read the final sender state').status,
+            PayjoinStatus.completed,
+          );
+        } finally {
+          process.kill();
+          await process.exitCode;
+          await output.cancel();
+          await stderrDone;
+          await directory.delete(recursive: true);
+        }
+      },
+      timeout: const Timeout(Duration(seconds: 210)),
+    );
 
     test('a receiver expires when no sender submits a request', () async {
       final addressResult = await addresses.receiveAddress(
@@ -330,7 +314,7 @@ Future<void> main({bool isInitialized = false}) async {
       final receiverResult = await receiverRole.start(
         StartPayjoinReceiver(
           walletId: receiverKey.id,
-          network: BitcoinNetwork.testnet,
+          network: BitcoinNetwork.regtest,
           address: address.address,
           amount: Sats.fromInt(10000),
           expiresAt: DateTime.now().add(
@@ -348,13 +332,16 @@ Future<void> main({bool isInitialized = false}) async {
           .where(
             (result) => switch (result) {
               Ok(:final value) => value.status == PayjoinStatus.expired,
-              Err() => false,
+              Err() => true,
             },
           )
           .first
           .timeout(const Duration(seconds: 240));
 
-      expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
+      expect(
+        requireValue(expired, 'read the final receiver state').status,
+        PayjoinStatus.expired,
+      );
     }, timeout: const Timeout(Duration(seconds: 270)));
-  }, skip: hasFixtures ? null : fixtureSkip);
+  }, skip: localRegtest ? null : 'requires the isolated regtest runner');
 }
