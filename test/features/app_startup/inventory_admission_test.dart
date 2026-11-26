@@ -197,6 +197,77 @@ void main() {
       expect(lease.closed, isTrue);
     },
   );
+
+  test(
+    'a failing release keeps the original exception and ends the attempt',
+    () async {
+      var prepares = 0;
+      var releases = 0;
+      final trace = StackTrace.current;
+      final original = _Boom('original', trace);
+      Object? caught;
+      try {
+        await admitInventory<String, String>(
+          prepare: () async {
+            prepares++;
+            return const Ok('admission');
+          },
+          openInventory: (admission) async => throw original,
+          release: (admission) async {
+            releases++;
+            throw StateError('cleanup failed');
+          },
+          retryStorage: (_) async => fail('no retry after a failed cleanup'),
+          blockedInventory: (_) async =>
+              fail('no screen after a failed cleanup'),
+        );
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught, same(original));
+      expect(prepares, 1);
+      expect(releases, 1);
+    },
+  );
+
+  test(
+    'a failing release after a typed failure ends the attempt with it',
+    () async {
+      var prepares = 0;
+      var releases = 0;
+      const failure = DatabaseFileUnavailable(DatabaseFileProblem.unreadable);
+      final result = await admitInventory<String, String>(
+        prepare: () async {
+          prepares++;
+          return const Ok('admission');
+        },
+        openInventory: (admission) async => const Err(failure),
+        release: (admission) async {
+          releases++;
+          throw StateError('cleanup failed');
+        },
+        retryStorage: (_) async => fail('no retry after a failed cleanup'),
+        blockedInventory: (_) async => fail('no screen after a failed cleanup'),
+      );
+      expect(prepares, 1);
+      expect(releases, 1);
+      expect(
+        result,
+        isA<Err<AdmittedInventory<String, String>, Failure>>().having(
+          (r) => r.failure,
+          'failure',
+          same(failure),
+        ),
+      );
+    },
+  );
+}
+
+final class _Boom implements Exception {
+  final String message;
+  final StackTrace trace;
+
+  _Boom(this.message, this.trace);
 }
 
 final class _Lease {
