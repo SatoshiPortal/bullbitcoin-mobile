@@ -1,72 +1,37 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_order_details_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/get_limit_order_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:primitives/primitives.dart';
-
-/// The exchange calls of the details, bound to one session.
-typedef LimitDetailsCalls = ({
-  Future<ExchangeRead<LimitOrder>> Function(String orderId) read,
-  Future<LimitCancelAnswer> Function(String orderId) cancel,
-});
-
-LimitDetailsCalls limitDetailsCallsOf(
-  Exchange exchange,
-  ExchangeSession session,
-) => (
-  read: (orderId) async => switch (await exchange.limitOrders.get(orderId)) {
-    Ok(:final value) => ReadGot(value),
-    Err(
-      failure: ExchangeLimitOrderFailure(
-        problem: ExchangeLimitOrderProblem.notFound,
-      ),
-    ) =>
-      const ReadMissing(),
-    Err(:final failure) => readOfExchangeFailure(failure),
-  },
-  cancel: (orderId) async {
-    final gated = await exchange.writeGate.run(
-      session,
-      FinancialWriteKind.limitOrderCancel,
-      () async => exchange.currentSession != session
-          ? const Err<LimitOrder, ExchangeFailure>(
-              ExchangeOperationStaleFailure(),
-            )
-          : await exchange.limitOrders.cancel(orderId),
-    );
-    return switch (gated) {
-      GateRefused(:final refusal) => CancelAnsweredGateRefused(refusal),
-      GateAdmitted(result: Ok(:final value)) => CancelAnsweredOrder(value),
-      GateAdmitted(result: Err(failure: ExchangeSessionRejectedFailure())) =>
-        const CancelAnsweredSessionRejected(),
-      // Refused, lost or never sent: the re-read decides.
-      GateAdmitted(result: Err()) => const CancelAnsweredUnsure(),
-    };
-  },
-);
 
 /// Shell of [transitionLimitDetails]: applies events one at a time, emits
-/// the new state and runs its effects, each answer tagged with its attempt.
+/// the new state and runs each effect through its use case with the
+/// details' session, each answer tagged with its attempt.
 class LimitDetailsBloc extends Bloc<LimitDetailsEvent, LimitDetailsState> {
   LimitDetailsBloc({
-    required LimitDetailsCalls Function(ExchangeSession session) calls,
     required ExchangeSession? session,
     required String orderId,
     required Stream<ExchangeAccess> accessChanges,
+    required GetLimitOrderUsecase getOrder,
+    required CancelLimitOrderUsecase cancelOrder,
   }) : this._(
-         session == null ? null : calls(session),
-         accessChanges,
          limitDetailsStart(session, orderId),
+         session,
+         accessChanges,
+         getOrder,
+         cancelOrder,
        );
 
   LimitDetailsBloc._(
-    this._calls,
-    Stream<ExchangeAccess> accessChanges,
     LimitDetailsNext start,
+    this._session,
+    Stream<ExchangeAccess> accessChanges,
+    this._getOrder,
+    this._cancelOrder,
   ) : super(start.state) {
     on<LimitDetailsEvent>(_onEvent, transformer: sequential());
     _access = accessChanges.listen((access) {
@@ -75,7 +40,10 @@ class LimitDetailsBloc extends Bloc<LimitDetailsEvent, LimitDetailsState> {
     _run(start.effects);
   }
 
-  final LimitDetailsCalls? _calls;
+  /// The session the details opened with; null runs nothing.
+  final ExchangeSession? _session;
+  final GetLimitOrderUsecase _getOrder;
+  final CancelLimitOrderUsecase _cancelOrder;
   late final StreamSubscription<ExchangeAccess> _access;
 
   void _onEvent(LimitDetailsEvent event, Emitter<LimitDetailsState> emit) {
@@ -86,26 +54,28 @@ class LimitDetailsBloc extends Bloc<LimitDetailsEvent, LimitDetailsState> {
   }
 
   void _run(List<LimitDetailsEffect> effects) {
-    final calls = _calls;
-    if (calls == null) return;
+    final session = _session;
+    if (session == null) return;
     for (final effect in effects) {
       switch (effect) {
         case DetailsRead(:final orderId, :final attempt):
-          _answer(calls.read(orderId).then((r) => DetailsLoaded(attempt, r)));
+          _answer(
+            _getOrder.execute(orderId).then((r) => DetailsLoaded(attempt, r)),
+          );
         case DetailsCancelEffect(
           effect: CancelSend(:final orderId, :final attempt),
         ):
           _answer(
-            calls
-                .cancel(orderId)
+            _cancelOrder
+                .execute(session, orderId)
                 .then((a) => DetailsCancelChanged(CancelAnswered(attempt, a))),
           );
         case DetailsCancelEffect(
           effect: CancelRead(:final orderId, :final attempt),
         ):
           _answer(
-            calls
-                .read(orderId)
+            _getOrder
+                .execute(orderId)
                 .then((r) => DetailsCancelChanged(CancelChecked(attempt, r))),
           );
       }

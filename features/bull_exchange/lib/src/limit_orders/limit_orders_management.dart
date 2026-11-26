@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import 'domain/usecases/cancel_limit_order_usecase.dart';
+import 'domain/usecases/get_limit_order_usecase.dart';
 import 'limit_orders_navigation.dart';
 import 'presentation/limit_order_details_bloc.dart';
 import 'presentation/limit_orders_list_bloc.dart';
@@ -19,10 +21,11 @@ GoRoute limitOrderDetailsRoute(Exchange Function() exchange) => GoRoute(
       create: (_) {
         final capability = exchange();
         return LimitDetailsBloc(
-          calls: (session) => limitDetailsCallsOf(capability, session),
           session: capability.currentSession,
           orderId: id,
           accessChanges: capability.watchAccess(),
+          getOrder: GetLimitOrderUsecase(capability),
+          cancelOrder: CancelLimitOrderUsecase(capability),
         );
       },
       child: const LimitOrderDetailsScreen(),
