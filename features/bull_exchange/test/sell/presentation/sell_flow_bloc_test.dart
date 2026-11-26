@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
-import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
 import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
 import 'package:bull_exchange/src/sell/presentation/sell_flow_bloc.dart';
 import 'package:exchange/exchange.dart';
@@ -14,48 +13,65 @@ import '../../orders/order_usecase_fakes.dart';
 import '../../payin/payin_usecase_fakes.dart';
 import '../../payout/payout_requirements_fakes.dart';
 import '../sell_fixtures.dart';
+import '../sell_usecase_fakes.dart';
 
-final class _Calls {
+/// The sell use cases as fakes; every call is logged with the session it
+/// got.
+final class _Usecases {
   final log = <String>[];
+  final sessions = <ExchangeSession>{};
 
-  PayoutRequirementsUsecases get requirements => unusedPayoutRequirements();
+  void _called(ExchangeSession session, String call) {
+    sessions.add(session);
+    log.add(call);
+  }
 
-  PayinUsecases get payin => fakePayin(
-    build: FakeBuildPayinUsecase((effect) async {
-      log.add('build ${effect.walletId}');
-      return const PayinBuildFailed(PayinBuildProblem.insufficientFunds);
-    }),
-    getOrder: FakeGetOrderUsecase(
-      (session, orderId) async => ReadGot<Order>(sellOrder()),
-    ),
-  );
-
-  SellFlowCalls of(ExchangeSession session) => (
-    loadContext: () async {
-      log.add('load');
+  SellFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => SellFlowBloc(
+    session: session,
+    accessChanges: accessChanges,
+    loadContext: FakeLoadSellContextUsecase((session) async {
+      _called(session, 'load');
       return ReadGot(sellContext);
-    },
-    rate: (market) async {
+    }),
+    getMarketRate: FakeGetMarketRateUsecase((market) async {
       log.add('rate ${market.currency.code}');
       return const ReadGot(50000.0);
-    },
-    create: (effect) async {
-      log.add('create ${effect.attempt}');
+    }),
+    createOrder: FakeCreateSellOrderUsecase((session, effect) async {
+      _called(session, 'create ${effect.attempt}');
       return OrderCreateAnswered(
         effect.attempt,
         GateAdmitted(WriteDone<Order>(sellOrder())),
       );
-    },
-    findCreated: (request, sentAt) async => const ReadMissing(),
-    refresh: (order) async {
-      log.add('refresh ${order.orderId}');
+    }),
+    findCreatedOrder: FakeFindCreatedOrderUsecase((
+      session,
+      journal,
+      sentAt,
+    ) async {
+      _called(session, 'find');
+      return const ReadMissing();
+    }),
+    refreshOrder: FakeRefreshSellOrderUsecase((session, order) async {
+      _called(session, 'refresh ${order.orderId}');
       return ReadGot<Order>(sellOrder());
-    },
-    requirements: requirements,
-    payin: payin,
-    spend: fakeSpendOptions(
+    }),
+    requirements: unusedPayoutRequirements(),
+    payin: fakePayin(
+      build: FakeBuildPayinUsecase((effect) async {
+        log.add('build ${effect.walletId}');
+        return const PayinBuildFailed(PayinBuildProblem.insufficientFunds);
+      }),
+      getOrder: FakeGetOrderUsecase(
+        (session, orderId) async => ReadGot<Order>(sellOrder()),
+      ),
+    ),
+    spendOptions: fakeSpendOptions(
       getFees: FakeGetFeeOptionsUsecase((session) async {
-        log.add('fees');
+        _called(session, 'fees');
         return sellFees;
       }),
       getCoins: FakeGetWalletCoinsUsecase((walletId) async => const []),
@@ -79,9 +95,8 @@ void main() {
   test(
     'creates once, then Confirm builds the payin from the wallet',
     () => withClock(Clock.fixed(sellNow), () async {
-      final calls = _Calls();
-      final bloc = SellFlowBloc(
-        calls: calls.of,
+      final calls = _Usecases();
+      final bloc = calls.bloc(
         session: sellSession,
         accessChanges: const Stream.empty(),
       );
@@ -106,6 +121,7 @@ void main() {
         ..add(SellConfirmPressed(sellNow));
       await _settle();
       expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
+      expect(calls.sessions, {sellSession});
       expect(
         (bloc.state as SellPaying).payin,
         isA<PayinSendFailed<PayinSpend>>(),
@@ -115,8 +131,7 @@ void main() {
 
   test('a session change ends the flow', () async {
     final access = StreamController<ExchangeAccess>();
-    final bloc = SellFlowBloc(
-      calls: _Calls().of,
+    final bloc = _Usecases().bloc(
       session: sellSession,
       accessChanges: access.stream,
     );
@@ -126,5 +141,14 @@ void main() {
     await _settle();
     expect(bloc.state, isA<SellSessionEnded>());
     await access.close();
+  });
+
+  test('without a session the flow starts ended and calls nothing', () async {
+    final calls = _Usecases();
+    final bloc = calls.bloc(session: null, accessChanges: const Stream.empty());
+    addTearDown(bloc.close);
+    await _settle();
+    expect(bloc.state, isA<SellSessionEnded>());
+    expect(calls.log, isEmpty);
   });
 }
