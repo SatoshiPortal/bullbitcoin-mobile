@@ -51,7 +51,6 @@ void main() {
       payment: () => throw StateError('Unexpected Bitcoin payment setup'),
       openCoins: (_, _) {},
       orderUnderReview: (_) => const SizedBox.shrink(),
-      paymentArrowImage: const AssetImage('unused-arrow'),
       arkAccounts: () => accounts,
     );
     final payment = routes.payment;

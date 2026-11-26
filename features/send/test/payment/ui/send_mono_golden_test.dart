@@ -36,15 +36,12 @@ final _workspace = File('assets/fonts/GolosText.ttf').existsSync()
     ? '.'
     : '../..';
 
-late Uint8List _arrowBytes;
 late Uint8List _successBytes;
 
 class _Cubit extends Mock implements SendCubit {}
 
 void main() {
   setUpAll(() async {
-    _arrowBytes = await File('$_workspace/assets/icons/right-arrow.png')
-        .readAsBytes();
     _successBytes = await File('$_workspace/assets/animations/success_tick.gif')
         .readAsBytes();
     registerFallbackValue(const RelativeFee(500));
@@ -145,7 +142,6 @@ void main() {
             openHome: (_) {},
             openCoins: (_, _) {},
             orderUnderReview: (_) => const SizedBox.shrink(),
-            arrowImage: MemoryImage(_arrowBytes),
             successImage: MemoryImage(_successBytes),
             child: BlocProvider<SendCubit>.value(
               value: cubit,

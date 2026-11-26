@@ -158,7 +158,6 @@ void main() {
                 GoRouter.of(context)
                     .pushReplacementNamed('coins', extra: wallet),
             orderUnderReview: (_) => const SizedBox.shrink(),
-            arrowImage: const AssetImage('unused-arrow'),
             successImage: const AssetImage('unused-success'),
             child: child ?? const SizedBox.shrink(),
           ),
