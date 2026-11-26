@@ -145,7 +145,7 @@ void main() {
             tor: tor,
           ),
         ),
-        openPreferences: _openTestPreferences,
+        openPreferences: () => _openTestPreferences(database),
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
