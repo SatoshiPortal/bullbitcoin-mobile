@@ -77,6 +77,23 @@ final class ArkRenewalAuthority {
     }
   }
 
+  /// Whether [parent] may be renewed now, read afresh under the inventory's
+  /// write lock with the same policy as [withRenewalChild]. It reads no seed
+  /// and derives nothing. The host asks before every batch of a pass, so a PIN
+  /// set between two batches refuses the second one. An unreadable policy is a
+  /// refusal.
+  @useResult
+  Future<bool> mayRenew(Fingerprint parent) async {
+    try {
+      return await inventoryWriteTransaction(_store.database, () async {
+        await serializeInventoryWrites(_store.database);
+        return _permitted(_store.database, parent);
+      });
+    } on Object {
+      return false;
+    }
+  }
+
   Future<Result<({String mnemonic, Fingerprint child}), F>> _admit<
     F extends Failure
   >(Fingerprint parent, F notPermitted, F unavailable) async {
