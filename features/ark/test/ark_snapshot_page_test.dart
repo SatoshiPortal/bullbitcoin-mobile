@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:bull_ark/src/presentation/ark_cubit.dart';
@@ -11,6 +13,36 @@ import 'ark_information_widget_test.dart' show app;
 import 'ark_operations_test.dart' show account;
 
 void main() {
+  testWidgets('page follows subsequent account observations', (tester) async {
+    final changes =
+        StreamController<Result<ArkSnapshot, ArkWalletFailure>>.broadcast();
+    addTearDown(changes.close);
+    ArkSnapshot snapshot(int revision) => ArkSnapshot(
+      account: account(),
+      revision: revision,
+      observedAt: DateTime.utc(2026),
+    );
+    final client = account_test.Client()
+      ..snapshot = Ok(snapshot(1))
+      ..changes = changes.stream;
+    final owner = account_test.controller(client);
+    await tester.pumpWidget(
+      app(
+        ArkSnapshotPage(
+          cubit: owner,
+          builder: (value) => Text('${value.revision}'),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('1'), findsOneWidget);
+    changes.add(Ok(snapshot(2)));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('2'), findsOneWidget);
+  });
+
   testWidgets('a busy Ark never shows an error: the page waits, then loads', (
     tester,
   ) async {
