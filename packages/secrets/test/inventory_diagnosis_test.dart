@@ -6,10 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/data/database_key_repository.dart';
+import 'package:secrets/src/data/encrypted_database.dart'
+    show openEncryptedDatabase;
 import 'package:secrets/src/data/inventory_import.dart';
 import 'package:secrets/src/data/inventory_store.dart';
 import 'package:secrets/src/data/secrets_database.dart';
 import 'package:secrets/src/domain/database_open_failure.dart';
+import 'package:secrets/src/public/secrets_inventory.dart'
+    show SecretsInventory, inventoryReadinessFailure;
 import 'package:secrets/testing.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -157,6 +162,161 @@ void main() {
       expect(released, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
       await (released as Ok<RuntimeAdmission, LegacyImportFailure>).value
           .close();
+    },
+  );
+
+  test(
+    'a receipt this build does not know is not an unreadable file',
+    () async {
+      final gate = NativeFileGate(
+        File('${directory.path}/coordination/lifecycle.lock'),
+      );
+      final admission = await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission;
+      try {
+        final opened = await InventoryStore.open(
+          file,
+          admission,
+          existing: true,
+        );
+        final store = (opened as Ok<InventoryStore, DatabaseOpenFailure>).value;
+        await store.database.customStatement(
+          "UPDATE access_state SET import_receipt = 'recovered-v9/secrets'",
+        );
+        await store.close();
+        final result = await SecretsInventory.open(
+          file: file,
+          admission: admission,
+        );
+        expect(
+          result,
+          isA<Err<SecretsInventory, DatabaseOpenFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<DatabaseFileUnavailable>().having(
+              (f) => f.reason,
+              'reason',
+              isNot(DatabaseFileProblem.unreadable),
+            ),
+          ),
+        );
+      } finally {
+        await admission.close();
+      }
+    },
+  );
+
+  test('every readiness failure keeps its own cause', () {
+    DatabaseOpenFailure map(LegacyImportFailure f) =>
+        inventoryReadinessFailure(f);
+    expect(
+      map(
+        const LegacyOwnerFailure('secrets', LegacyOwnerFailureCause.contention),
+      ),
+      isA<DatabaseFileUnavailable>().having(
+        (f) => f.reason,
+        'reason',
+        DatabaseFileProblem.contended,
+      ),
+    );
+    expect(
+      map(
+        const LegacyOwnerFailure('secrets', LegacyOwnerFailureCause.unreadable),
+      ),
+      isA<DatabaseFileUnavailable>().having(
+        (f) => f.reason,
+        'reason',
+        DatabaseFileProblem.unreadable,
+      ),
+    );
+    expect(
+      map(const LegacyOwnerFailure('secrets', LegacyOwnerFailureCause.keyLost)),
+      isA<DatabaseKeyUnavailable>().having(
+        (f) => f.reason,
+        'reason',
+        DatabaseKeyProblem.missing,
+      ),
+    );
+    expect(
+      map(const LegacyImportDeferred()),
+      isA<DatabaseKeyUnavailable>().having(
+        (f) => f.reason,
+        'reason',
+        DatabaseKeyProblem.locked,
+      ),
+    );
+    expect(
+      map(const LegacyImportUnavailable()),
+      isA<DatabaseFileUnavailable>().having(
+        (f) => f.reason,
+        'reason',
+        DatabaseFileProblem.inaccessible,
+      ),
+    );
+  });
+
+  test(
+    'a first query that fails as corrupt is unreadable and leaves the file',
+    () async {
+      final bytes = await file.readAsBytes();
+      expect(bytes.length, greaterThan(8192));
+      // Keep page 1, which holds sqlite_master, and damage every other page.
+      final damaged = List<int>.of(bytes);
+      for (var i = 4096; i < damaged.length; i++) {
+        damaged[i] = (i * 31 + 7) & 0xff;
+      }
+      await file.writeAsBytes(damaged);
+
+      // The key is accepted and sqlite_master reads: only access_state fails.
+      final executor = await openEncryptedDatabase(
+        DatabaseKeyRepository(),
+        module: inventoryModule,
+        name: 'main',
+        file: file,
+        existingSchemaVersion: 1,
+      );
+      expect(executor, isA<Ok<QueryExecutor, DatabaseOpenFailure>>());
+      await (executor as Ok<QueryExecutor, DatabaseOpenFailure>).value.close();
+
+      final gate = NativeFileGate(
+        File('${directory.path}/coordination/lifecycle.lock'),
+      );
+      final admission = await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission;
+      try {
+        expect(
+          await InventoryStore.open(file, admission, existing: true),
+          isA<Err<InventoryStore, DatabaseOpenFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<DatabaseFileUnavailable>().having(
+              (f) => f.reason,
+              'reason',
+              DatabaseFileProblem.unreadable,
+            ),
+          ),
+        );
+        expect(
+          await SecretsImport(file: file).inspect(admission),
+          isA<Err<OwnerReadiness, LegacyImportFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<LegacyOwnerFailure>().having(
+              (f) => f.cause,
+              'cause',
+              LegacyOwnerFailureCause.unreadable,
+            ),
+          ),
+        );
+      } finally {
+        await admission.close();
+      }
+      expect(await file.readAsBytes(), damaged);
+      expect(File('${file.path}-wal').existsSync(), isFalse);
     },
   );
 
