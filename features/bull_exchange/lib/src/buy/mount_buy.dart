@@ -1,3 +1,5 @@
+import 'package:bull_exchange/src/buy/domain/usecases/accelerate_buy_order_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/load_accelerate_quote_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/buy_listed_wallets.dart';
 import 'package:bull_exchange/src/buy/domain/buy_payjoin_uris.dart';
 import 'package:bull_exchange/src/buy/domain/read_buy_payment_animations_usecase.dart';
@@ -109,12 +111,18 @@ List<RouteBase> mountBuy(ExchangePurchaseHost host) => [
       return BlocProvider(
         create: (_) {
           final exchange = host.exchange();
-          final fees = host.fees();
+          final getOrder = GetOrderUsecase(exchange);
           return AccelerateFlowBloc(
-            calls: (session) => accelerateFlowCallsOf(exchange, session, fees),
             session: exchange.currentSession,
             orderId: orderId,
             accessChanges: exchange.watchAccess(),
+            loadQuote: LoadAccelerateQuoteUsecase(
+              exchange,
+              host.fees(),
+              getOrder,
+            ),
+            accelerateOrder: AccelerateBuyOrderUsecase(exchange),
+            getOrder: getOrder,
           );
         },
         child: AccelerateFlowShell(
