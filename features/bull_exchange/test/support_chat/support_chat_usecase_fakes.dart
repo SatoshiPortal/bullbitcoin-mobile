@@ -1,6 +1,8 @@
 import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_messages_usecase.dart';
+import 'package:bull_exchange/src/support_chat/domain/usecases/get_unread_support_count_usecase.dart';
+import 'package:bull_exchange/src/support_chat/domain/usecases/mark_support_messages_read_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/open_support_chat_attachment_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/send_support_chat_message_usecase.dart';
@@ -84,4 +86,25 @@ final class FakeWatchSupportChatPushesUsecase
 
   @override
   Stream<NotificationMessage> execute() => answer();
+}
+
+final class FakeGetUnreadSupportCountUsecase
+    implements GetUnreadSupportCountUsecase {
+  final Future<ExchangeRead<int>> Function(ExchangeSession session) answer;
+
+  FakeGetUnreadSupportCountUsecase(this.answer);
+
+  @override
+  Future<ExchangeRead<int>> execute(ExchangeSession session) => answer(session);
+}
+
+final class FakeMarkSupportMessagesReadUsecase
+    implements MarkSupportMessagesReadUsecase {
+  final Future<ExchangeWrite<void>> Function(ExchangeSession session) answer;
+
+  FakeMarkSupportMessagesReadUsecase(this.answer);
+
+  @override
+  Future<ExchangeWrite<void>> execute(ExchangeSession session) =>
+      answer(session);
 }

@@ -10,6 +10,8 @@ import '../dashboard/exchange_home_screen.dart';
 import '../recipients/recipients_scope.dart';
 import '../support_chat/presentation/support_unread_bloc.dart';
 import '../support_chat/domain/support_unread_machine.dart';
+import '../support_chat/domain/usecases/get_unread_support_count_usecase.dart';
+import '../support_chat/domain/usecases/mark_support_messages_read_usecase.dart';
 import 'exchange_bloc.dart';
 import 'exchange_event.dart';
 import 'exchange_listener.dart';
@@ -90,8 +92,8 @@ class _ExchangeSessionScopeState extends State<ExchangeSessionScope> {
   );
 
   late final SupportUnreadBloc _unread = SupportUnreadBloc(
-    readCount: _capability.readUnreadSupportCount,
-    markRead: _capability.markSupportMessagesRead,
+    getUnreadCount: GetUnreadSupportCountUsecase(_capability),
+    markRead: MarkSupportMessagesReadUsecase(_capability),
     currentAccess: () => _capability.currentAccess,
     accessChanges: _capability.watchAccess(),
     supportMessages: _capability.watchSupportMessages(),

@@ -5,6 +5,8 @@ import 'package:bull_exchange/src/support_chat/domain/support_unread_machine.dar
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support_chat_usecase_fakes.dart';
+
 const _a = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,
@@ -17,13 +19,17 @@ final class _Server {
   final reads = <Completer<ExchangeRead<int>>>[];
   final marks = <Completer<ExchangeWrite<void>>>[];
 
-  Future<ExchangeRead<int>> read(ExchangeSession _) {
+  final sessions = <String>[];
+
+  Future<ExchangeRead<int>> read(ExchangeSession session) {
+    sessions.add('read ${session.sessionId}');
     final answer = Completer<ExchangeRead<int>>();
     reads.add(answer);
     return answer.future;
   }
 
-  Future<ExchangeWrite<void>> mark(ExchangeSession _) {
+  Future<ExchangeWrite<void>> mark(ExchangeSession session) {
+    sessions.add('mark ${session.sessionId}');
     final answer = Completer<ExchangeWrite<void>>();
     marks.add(answer);
     return answer.future;
@@ -38,8 +44,8 @@ void main() {
 
   SupportUnreadBloc build() {
     final bloc = SupportUnreadBloc(
-      readCount: server.read,
-      markRead: server.mark,
+      getUnreadCount: FakeGetUnreadSupportCountUsecase(server.read),
+      markRead: FakeMarkSupportMessagesReadUsecase(server.mark),
       currentAccess: () => current,
       accessChanges: access.stream,
       supportMessages: messages.stream,
@@ -122,6 +128,7 @@ void main() {
       server.reads.last.complete(const ReadGot(1));
       await pumpEventQueue();
       expect(badge(bloc), 1);
+      expect(server.sessions, ['read a', 'mark a', 'read a']);
     },
   );
 
