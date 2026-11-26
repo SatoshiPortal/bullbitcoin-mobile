@@ -7,5 +7,7 @@ export 'src/domain/recorded_derivation.dart';
 export 'src/domain/registered_wallet.dart';
 export 'src/domain/wallet_property_store.dart';
 export 'src/domain/wallet_registration.dart' show BitcoinRecoveryWallet;
+export 'src/public/ark_renewal_authority.dart'
+    show ArkRenewalAuthority, arkChildBip85Index;
 export 'src/public/secrets_inventory.dart'
     show BackgroundWalletDescriptors, SecretsInventory;
