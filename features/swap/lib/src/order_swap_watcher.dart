@@ -87,6 +87,13 @@ class OrderSwapWatcher {
     _schedule(Duration.zero);
   }
 
+  /// [dispose], then waits for a refresh already running to finish.
+  Future<void> stop() async {
+    dispose();
+    final active = _activeRefresh;
+    if (active != null) await active;
+  }
+
   void dispose() {
     _isStarted = false;
     _timer?.cancel();
