@@ -11,6 +11,8 @@ import '../testing/send_source_fixture.dart';
 import 'package:go_router/go_router.dart';
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_payment_page.dart';
@@ -69,9 +71,15 @@ class _DuplicateFeeLabelsDelegate
 }
 
 void main() {
-  setUpAll(() {
+  late Uint8List arrowBytes;
+  setUpAll(() async {
     registerFallbackValue(const RelativeFee(500));
     registerFallbackValue(FeeSelection.fastest);
+    final workspace = File('assets/icons/right-arrow.png').existsSync()
+        ? '.'
+        : '../..';
+    arrowBytes = await File('$workspace/assets/icons/right-arrow.png')
+        .readAsBytes();
   });
   final wallet = sendSourceFixture(
     id: 'mono',
@@ -164,7 +172,7 @@ void main() {
                 GoRouter.of(context)
                     .pushReplacementNamed('coins', extra: wallet),
             orderUnderReview: (_) => const SizedBox.shrink(),
-            arrowImage: const AssetImage('assets/logos/bitcoin.png'),
+            arrowImage: MemoryImage(arrowBytes),
             successImage: const AssetImage('unused-success'),
             child: child ?? const SizedBox.shrink(),
           ),
