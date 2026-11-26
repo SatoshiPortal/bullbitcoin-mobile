@@ -231,7 +231,6 @@
   "transactionOrderTypeBalanceAdjustment": "Ajustement de solde",
   "transactionListExchangeOrdersUnavailable": "Impossible de charger les ordres de la plateforme d'échange.",
   "paymentStatusViewStatus": "Statut",
-  "paymentStatusViewTransaction": "Transaction",
   "paymentStatusViewDetails": "Détails",
   "paymentStatusViewsLabel": "Vue de la transaction",
   "paymentStatusSigning": "Signature",

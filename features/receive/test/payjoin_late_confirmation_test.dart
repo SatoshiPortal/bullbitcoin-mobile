@@ -86,7 +86,7 @@ void main() {
       skipOffstage: false,
     );
     final instance = tester.state(allTransitions);
-    expect(find.text('Transaction'), findsOneWidget);
+    expect(find.text('Status'), findsOneWidget);
     expect(find.text('Details'), findsOneWidget);
     final scene = tester.getRect(find.byType(BullPaymentTransition));
     final selector = tester.getRect(find.byType(BullPaymentViewSwitch));

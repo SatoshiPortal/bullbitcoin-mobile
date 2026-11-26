@@ -96,6 +96,7 @@ void main() {
     SettlementPoll? pollOverride,
     Size size = const Size(800, 1600),
     double textScale = 1,
+    Locale? locale,
   }) async {
     details = _FakeDetailsCubit(
       detailsState ??
@@ -147,6 +148,7 @@ void main() {
     addTearDown(status.close);
     await tester.pumpWidget(
       MaterialApp.router(
+        locale: locale,
         routerConfig: router,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context)
@@ -157,6 +159,7 @@ void main() {
         localizationsDelegates: const [
           ...TransactionsLocalizations.localizationsDelegates,
           bullUiLocalizationsDelegate,
+          ...GlobalMaterialLocalizations.delegates,
         ],
         supportedLocales: TransactionsLocalizations.supportedLocales,
       ),
@@ -170,6 +173,19 @@ void main() {
   bool selected(WidgetTester tester, String label) =>
       tester.getSemantics(button(label)).flagsCollection.isSelected ==
       Tristate.isTrue;
+
+  for (final (language, label) in [
+    ('en', 'Status'),
+    ('fr', 'Statut'),
+    ('es', 'Estado'),
+  ]) {
+    testWidgets('payment view uses the status label in $language', (
+      tester,
+    ) async {
+      await pump(tester, locale: Locale(language));
+      expect(button(label), findsOneWidget);
+    });
+  }
 
   testWidgets('broadcast keeps its scene and switch across observation', (
     tester,
@@ -238,7 +254,7 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
-    expect(find.widgetWithText(BullToolButton, 'Transaction'), findsOneWidget);
+    expect(find.widgetWithText(BullToolButton, 'Status'), findsOneWidget);
     expect(find.widgetWithText(BullToolButton, 'Details'), findsOneWidget);
     await tester.tap(find.widgetWithText(BullToolButton, 'Details'));
     await tester.pump();
@@ -525,7 +541,7 @@ void main() {
       tester,
     ) async {
       await pump(tester);
-      expect(button('Transaction'), findsOneWidget);
+      expect(button('Status'), findsOneWidget);
       expect(button('Details'), findsOneWidget);
       expect(find.text('Transaction details'), findsNothing);
 
@@ -533,9 +549,9 @@ void main() {
       await tester.pump();
       expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
       expect(find.byType(BullPaymentTransition), findsNothing);
-      expect(button('Transaction'), findsOneWidget);
+      expect(button('Status'), findsOneWidget);
 
-      await tester.tap(button('Transaction'));
+      await tester.tap(button('Status'));
       await tester.pump();
       expect(find.byType(BullPaymentTransition), findsOneWidget);
       expect(find.byType(BullTransactionDetailsPage), findsNothing);
@@ -554,7 +570,7 @@ void main() {
       final onDetails = tester.getRect(find.byType(BullPaymentViewSwitch));
       expect(onDetails, onStatus);
 
-      await tester.tap(button('Transaction'));
+      await tester.tap(button('Status'));
       await tester.pump();
       expect(tester.getRect(find.byType(BullPaymentViewSwitch)), onStatus);
       // Centred on the screen.
@@ -595,17 +611,14 @@ void main() {
 
     testWidgets('the shown view is primary and selected', (tester) async {
       await pump(tester);
-      expect(
-        tester.widget<BullToolButton>(button('Transaction')).primary,
-        isTrue,
-      );
+      expect(tester.widget<BullToolButton>(button('Status')).primary, isTrue);
       expect(tester.widget<BullToolButton>(button('Details')).primary, isFalse);
-      expect(selected(tester, 'Transaction'), isTrue);
+      expect(selected(tester, 'Status'), isTrue);
       expect(selected(tester, 'Details'), isFalse);
 
       await tester.tap(button('Details'));
       await tester.pump();
-      expect(selected(tester, 'Transaction'), isFalse);
+      expect(selected(tester, 'Status'), isFalse);
       expect(selected(tester, 'Details'), isTrue);
       expect(tester.widget<BullToolButton>(button('Details')).primary, isTrue);
     });
@@ -629,7 +642,7 @@ void main() {
 
     testWidgets('the hidden status view does not tick', (tester) async {
       await pump(tester, query: '?view=details');
-      await tester.tap(button('Transaction'));
+      await tester.tap(button('Status'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.binding.transientCallbackCount, greaterThan(0));
@@ -662,11 +675,11 @@ void main() {
     testWidgets('carries the same Status | Details pair', (tester) async {
       await pump(tester, query: '?view=details');
       await tester.scrollUntilVisible(
-        button('Transaction'),
+        button('Status'),
         200,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(button('Transaction'), findsOneWidget);
+      expect(button('Status'), findsOneWidget);
       expect(selected(tester, 'Details'), isTrue);
     });
   });
@@ -755,7 +768,7 @@ void main() {
         ),
       );
       expect(polls, isEmpty);
-      await tester.tap(button('Transaction'));
+      await tester.tap(button('Status'));
       await tester.pump();
       expect(polls, ['wallet']);
     });

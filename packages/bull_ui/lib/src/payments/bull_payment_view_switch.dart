@@ -4,7 +4,6 @@ import '../buttons/bull_tool_button.dart';
 import '../theme/bull_icon.dart';
 import '../theme/bull_theme.dart';
 import '../theme/bull_tokens.dart';
-import '../theme/payment_animation_palette.dart';
 
 /// Status | Details: switches between the two views of a payment. The shown
 /// view's button is primary. Labels are supplied by the owner.
@@ -101,9 +100,6 @@ class BullPaymentViews extends StatelessWidget {
   Widget build(BuildContext context) {
     final switcher = this.switcher;
     if (switcher == null) return views;
-    final palette =
-        Theme.of(context).extension<PaymentAnimationPalette>() ??
-        PaymentAnimationPalette.standard;
     return Column(
       children: [
         Expanded(
@@ -113,9 +109,9 @@ class BullPaymentViews extends StatelessWidget {
             child: views,
           ),
         ),
-        // Blended into the view shown, so it reads as part of it.
+        // Keep the tool buttons on their theme's surface in both views.
         ColoredBox(
-          color: showingStatus ? palette.background : context.bull.background,
+          color: context.bull.background,
           child: SafeArea(
             top: false,
             child: Padding(
