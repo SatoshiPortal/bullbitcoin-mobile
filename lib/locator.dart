@@ -413,6 +413,7 @@ class AppLocator {
         derivations: bip85,
         inventory: inventory,
         preferences: locator<ActiveEnvironmentReader>(),
+        lockChanges: inventory.lockedChanges,
       ),
     );
     registerNativeRuntime(

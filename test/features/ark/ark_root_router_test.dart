@@ -375,6 +375,7 @@ void main() {
           derivations: inventory.bip85(secrets),
           inventory: inventory,
           preferences: preferences,
+          lockChanges: inventory.lockedChanges,
         ),
       );
       locator.registerSingleton(
