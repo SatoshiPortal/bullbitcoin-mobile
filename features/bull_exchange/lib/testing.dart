@@ -3,8 +3,9 @@ library;
 
 import 'package:exchange/exchange.dart';
 
-import 'src/autobuy/presentation/autobuy_bloc.dart';
+import 'src/account/domain/usecases/get_user_summary_usecase.dart';
 import 'src/autobuy/domain/autobuy_flow.dart';
+import 'src/autobuy/domain/usecases/load_autobuy_context_usecase.dart';
 import 'src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'src/default_wallets/presentation/default_wallets_bloc.dart';
 import 'src/default_wallets/presentation/default_wallets_machine.dart';
@@ -52,7 +53,10 @@ export 'src/support_chat/presentation/support_unread_machine.dart'
 Future<ExchangeRead<AutoBuyContext>> autoBuyContextForTesting(
   Exchange exchange,
   ExchangeSession session,
-) => autoBuyCallsOf(exchange, session).loadContext();
+) => LoadAutoBuyContextUsecase(
+  exchange,
+  GetUserSummaryUsecase(exchange),
+).execute(session);
 
 Future<DefaultWalletsEvent> defaultWalletsEffectForTesting(
   DefaultWalletsEffect effect, {
