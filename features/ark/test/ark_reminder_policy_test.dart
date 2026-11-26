@@ -294,6 +294,47 @@ void main() {
     expect(payload(rows().last)['original'], original);
   });
   test(
+    'reapply skips the accounts whose view no longer permits them',
+    () async {
+      final other = ArkAccountId(
+        parent: Fingerprint('44556677'),
+        network: BitcoinNetwork.regtest,
+        serverIdentity: account().serverIdentity,
+      );
+      expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+      expect(
+        await apply(observed(owner: other, vtxos: [vtxo('w', 800)])),
+        isA<Ok>(),
+      );
+      int platformOf(ArkAccountId owner) =>
+          rows().singleWhere(
+                (row) => (row['account'] as String).contains(owner.canonical),
+              )['platform_id']
+              as int;
+      final permitted = platformOf(account());
+      final refused = platformOf(other);
+      expect(permitted, isNot(refused));
+      await store.close();
+      gateway.actions.clear();
+      reopen();
+
+      final asked = <String>[];
+      final result = await store.reapplyStored(
+        permitsParent: (parent) async {
+          asked.add(parent.hex);
+          return parent == account().parent;
+        },
+      );
+
+      expect(result, isA<Ok>());
+      expect(asked.toSet(), {account().parent.hex, other.parent.hex});
+      expect(gateway.actions, ['schedule:$permitted']);
+      expect(gateway.actions, isNot(contains('schedule:$refused')));
+      expect(gateway.actions.where((a) => a.startsWith('cancel:')), isEmpty);
+    },
+  );
+
+  test(
     'transferred VTXO is not recopied after positive linked retirement',
     () async {
       seed({hash('vtxo:old'): oldAt});
