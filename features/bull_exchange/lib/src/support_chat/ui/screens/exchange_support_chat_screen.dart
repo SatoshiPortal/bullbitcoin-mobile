@@ -23,6 +23,7 @@ import '../../domain/usecases/get_support_chat_messages_usecase.dart';
 import '../../domain/usecases/open_support_chat_attachment_usecase.dart';
 import '../../domain/usecases/pick_image_attachments_usecase.dart';
 import '../../domain/usecases/send_support_chat_message_usecase.dart';
+import '../../domain/usecases/watch_support_chat_pushes_usecase.dart';
 import '../../presentation/exchange_support_chat_failure_l10n.dart';
 import '../../presentation/support_chat_bloc.dart';
 import '../../domain/support_chat_machine.dart';
@@ -46,35 +47,22 @@ class ExchangeSupportChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) {
-        final messages = GetSupportChatMessagesUsecase(exchange: exchange);
-        final send = SendSupportChatMessageUsecase(exchange: exchange);
-        final pick = PickImageAttachmentsUsecase(
+      create: (context) => SupportChatBloc(
+        getMessages: GetSupportChatMessagesUsecase(exchange: exchange),
+        sendMessage: SendSupportChatMessageUsecase(exchange: exchange),
+        pickImages: PickImageAttachmentsUsecase(
           repository: AttachmentPickerRepositoryImpl(),
-        );
-        final logs = CreateLogAttachmentUsecase();
-        final open = OpenSupportChatAttachmentUsecase(
+        ),
+        createLogAttachment: CreateLogAttachmentUsecase(),
+        openAttachment: OpenSupportChatAttachmentUsecase(
           getAttachment: GetSupportChatMessageAttachmentUsecase(
             exchange: exchange,
           ),
-        );
-        return SupportChatBloc(
-          effects: (
-            fetchPage: (page) =>
-                messages.execute(page: page, pageSize: supportChatPageSize),
-            send: (text, attachments) => send.execute(
-              text: text,
-              attachments: attachments.isEmpty ? null : attachments,
-            ),
-            pickImages: pick.execute,
-            buildLogs: logs.execute,
-            openAttachment: open.execute,
-            newestShown: onMessagesRead,
-          ),
-          notifications: exchange.notifications,
-          draft: initialMessage,
-        );
-      },
+        ),
+        watchPushes: WatchSupportChatPushesUsecase(exchange),
+        onNewestShown: onMessagesRead,
+        draft: initialMessage,
+      ),
       child: Scaffold(
         appBar: AppBar(
           leading: BackButton(
