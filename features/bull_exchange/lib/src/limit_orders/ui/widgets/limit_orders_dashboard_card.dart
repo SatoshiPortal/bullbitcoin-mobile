@@ -1,6 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/limit_orders/limit_orders_navigation.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_list.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_list_bloc.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';

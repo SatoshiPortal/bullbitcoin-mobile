@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/limit_orders/presentation/limit_order_cancel.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_bloc.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_details_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:exchange/testing.dart';

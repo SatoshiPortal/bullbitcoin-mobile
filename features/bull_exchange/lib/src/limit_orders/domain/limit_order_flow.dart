@@ -2,7 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 
-import '../domain/entities/limit_order_amount_limits.dart';
+import 'entities/limit_order_amount_limits.dart';
 
 /// The limit-order create flow (composition §5, Limit column): session →
 /// account load → intro → target price → destination → amount (limits from

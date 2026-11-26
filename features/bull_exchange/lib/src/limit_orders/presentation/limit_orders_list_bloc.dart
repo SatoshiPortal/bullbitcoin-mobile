@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_list.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
