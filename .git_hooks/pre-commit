@@ -1,70 +1,93 @@
 #!/bin/bash
 echo "Begin pre-commit hook"
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+REPO_ROOT="$(git rev-parse --show-toplevel)" || exit 1
+cd "$REPO_ROOT" || exit 1
 
-# Capture the staged file list BEFORE clearing git env vars below: the unset
-# drops GIT_INDEX_FILE, which `git diff --cached` needs to read the right index
-# (matters during rebase/merge/temp-index commits). Paths are repo-root-relative.
-staged="$(git diff --cached --name-only --diff-filter=ACMR)"
+scratch="$(mktemp -d)" || exit 1
+trap 'rm -f "$scratch"/{paths,blob,analyze,fix}; rmdir "$scratch"' EXIT
 
-# Git sets GIT_DIR/etc. for hook subprocesses; Flutter's bin/flutter
-# uses `git describe` to detect its own SDK version and these vars
-# point it at the wrong repo. Clear them before invoking Flutter.
-unset GIT_DIR GIT_INDEX_FILE GIT_WORK_TREE GIT_PREFIX
+# Read the active index before clearing Git's environment for the Dart SDK.
+git diff --cached --name-only -z --diff-filter=ACMR > "$scratch/paths" || exit 1
+has_dart=false
+has_coins_ui=false
+format_paths=()
+while IFS= read -r -d '' path; do
+  case "$path" in
+    features/coins/lib/src/ui/*) has_coins_ui=true ;;
+  esac
+  [[ "$path" == *.dart ]] || continue
+  has_dart=true
+  # Keep the exclusions in sync with the makefile's format-check target.
+  case "$path" in
+    *.g.dart|*.freezed.dart|*.gr.dart|*.config.dart|*.mocks.dart|*.steps.dart|*/generated/*) continue ;;
+  esac
+  format_paths+=("$path")
+done < "$scratch/paths"
 
-# The Dart toolchain checks (analyze + dart fix) only matter when a Dart source
-# changes. Skip them entirely otherwise (e.g. a YAML/CI/docs-only change) —
-# running a full `flutter analyze` there is wasted.
-if echo "$staged" | grep -q '\.dart$'; then
-  # Prefer FVM Flutter if present; else try `fvm flutter`; else global flutter
+without_git_context() (
+  # Flutter uses git describe to detect its SDK version.
+  unset GIT_DIR GIT_INDEX_FILE GIT_WORK_TREE GIT_PREFIX
+  "$@"
+)
+
+if $has_dart; then
+  # Prefer FVM Flutter if present; else try fvm; else use the SDK on PATH.
   if [[ -x "$REPO_ROOT/.fvm/flutter_sdk/bin/flutter" ]]; then
-    FLUTTER="$REPO_ROOT/.fvm/flutter_sdk/bin/flutter"
-    DART="$REPO_ROOT/.fvm/flutter_sdk/bin/dart"
+    FLUTTER=("$REPO_ROOT/.fvm/flutter_sdk/bin/flutter")
+    DART=("$REPO_ROOT/.fvm/flutter_sdk/bin/dart")
   elif command -v fvm >/dev/null 2>&1; then
-    FLUTTER="fvm flutter"
-    DART="fvm dart"
+    FLUTTER=(fvm flutter)
+    DART=(fvm dart)
   else
-    FLUTTER="flutter"
-    DART="dart"
+    FLUTTER=(flutter)
+    DART=(dart)
   fi
 
-  echo "Using Flutter: $($FLUTTER --version | head -n1)"
+  check_staged_format() {
+    local path
+    local matching_paths=()
+    local format=("${DART[@]}" format --output=none --set-exit-if-changed)
 
-  # Run analyze and dart fix in parallel; they are independent read-only checks.
-  analyzeOut="$(mktemp)"
-  fixOut="$(mktemp)"
-  fmtOut="$(mktemp)"
-  trap 'rm -f "$analyzeOut" "$fixOut" "$fmtOut"' EXIT
+    for path in "${format_paths[@]}"; do
+      git show ":0:$path" > "$scratch/blob" || return 1
+      if [[ -f "$path" ]] && cmp -s -- "$scratch/blob" "$path"; then
+        matching_paths+=("./$path")
+      else
+        # Preserve the destination path so the formatter sees the member's
+        # configuration even if the working file is missing or differs.
+        without_git_context "${format[@]}" --stdin-name "./$path" < "$scratch/blob" || return 1
+      fi
+    done
 
+    if (( ${#matching_paths[@]} )); then
+      without_git_context "${format[@]}" "${matching_paths[@]}"
+    fi
+  }
+
+  if ! check_staged_format; then
+    echo "Staged Dart format check failed. Format and stage the intended changes."
+    exit 1
+  fi
+
+  unset GIT_DIR GIT_INDEX_FILE GIT_WORK_TREE GIT_PREFIX
+  echo "Using Flutter: $("${FLUTTER[@]}" --version | head -n1)"
+
+  # Run analyze and dart fix in parallel after the staged format check.
+  analyzeOut="$scratch/analyze"
+  fixOut="$scratch/fix"
   start=$SECONDS
 
   make analyze >"$analyzeOut" 2>&1 &
   analyzePid=$!
 
-  $DART fix --dry-run >"$fixOut" 2>&1 &
+  "${DART[@]}" fix --dry-run >"$fixOut" 2>&1 &
   fixPid=$!
 
-  # Format check on staged Dart source only (check-only, like analyze/fix
-  # above — never rewrites the working tree). Generated files are excluded so
-  # regenerated output can't fail the commit: by suffix and by /generated/
-  # path segment (drift schema snapshots). `dart format` ignores the analyzer's
-  # `exclude:`, so the filter lives here — keep the regex in sync with the
-  # format-check target in the makefile (which CI invokes). xargs -r no-ops when
-  # the staged set is all-generated. Exits non-zero if any staged file is
-  # unformatted.
-  # $DART is intentionally unquoted: the fallback sets DART="fvm dart" (two
-  # words), and quoting it makes xargs exec a literal binary named "fvm dart"
-  # (exit 127). Word splitting here matches the `$DART fix` call above.
-  echo "$staged" | grep '\.dart$' | grep -vE '\.(g|freezed|gr|config|mocks|steps)\.dart$|/generated/' \
-    | xargs -r $DART format --output=none --set-exit-if-changed >"$fmtOut" 2>&1 &
-  fmtPid=$!
+  wait "$analyzePid"; analyzeExit=$?
+  wait "$fixPid"; fixExit=$?
 
-  wait $analyzePid; analyzeExit=$?
-  wait $fixPid;     fixExit=$?
-  wait $fmtPid;     fmtExit=$?
-
-  echo "analyze + dart fix + format took $((SECONDS - start))s (parallel)"
+  echo "analyze + dart fix took $((SECONDS - start))s (parallel)"
 
   if [ $analyzeExit -ne 0 ]; then
     cat "$analyzeOut"
@@ -72,15 +95,9 @@ if echo "$staged" | grep -q '\.dart$'; then
     exit 1
   fi
 
-  if ! grep -q "Nothing to fix!" "$fixOut"; then
+  if [[ $fixExit -ne 0 ]] || ! grep -q "Nothing to fix!" "$fixOut"; then
     cat "$fixOut"
     echo "dart fix has suggestions, run \`dart fix --apply\` and commit the result."
-    exit 1
-  fi
-
-  if [ $fmtExit -ne 0 ]; then
-    cat "$fmtOut"
-    echo "dart format found unformatted staged files, run \`dart format .\` and commit the result."
     exit 1
   fi
 else
@@ -91,7 +108,7 @@ fi
 # only `package:bull_ui/bull_ui.dart` for widgets — never Flutter UI directly.
 # (Until a first-party analyzer rule lands, this grep is the enforcement.)
 # Only relevant when files under the coins UI are staged.
-if echo "$staged" | grep -q '^features/coins/lib/src/ui/'; then
+if $has_coins_ui; then
   if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" "$REPO_ROOT/features/coins/lib/src/ui" >/dev/null 2>&1; then
     echo "features/coins/lib/src/ui must import only package:bull_ui/bull_ui.dart, not Flutter or standalone Material/Cupertino UI:"
     grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" "$REPO_ROOT/features/coins/lib/src/ui"
