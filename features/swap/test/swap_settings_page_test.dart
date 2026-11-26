@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:swaps/swaps.dart' show SwapServer, SwapServerCredentials;
 import 'package:bull_ui/bull_ui.dart' show BullBorderedTile;
 import 'package:bull_ui/testing.dart' show testBullExtensions;
 
@@ -54,6 +55,42 @@ void main() {
       },
     );
   }
+
+  testWidgets('stored credentials do not follow an edited server address', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      SwapSettingsState(
+        loaded: true,
+        swapServerEnvironment: NetworkEnv.mainnet,
+        swapServer: SwapServer.mainnetDefault.withCredentials(
+          const SwapServerCredentials(username: 'bull', password: 'secret'),
+        ),
+      ),
+    );
+    when(
+      () => cubit.setSwapServer(
+        any(),
+        username: any(named: 'username'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer((_) async => null);
+    await tester.tap(find.byType(BullBorderedTile));
+    await tester.pumpAndSettle();
+    expect(find.text('bull'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).first, 'other.example.com');
+    await tester.pump();
+
+    expect(find.text('bull'), findsNothing);
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    verify(
+      () =>
+          cubit.setSwapServer('other.example.com', username: '', password: ''),
+    ).called(1);
+  });
 
   testWidgets('the provider override is offered only in dev mode', (
     tester,

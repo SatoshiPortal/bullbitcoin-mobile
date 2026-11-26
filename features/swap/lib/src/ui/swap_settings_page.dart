@@ -226,6 +226,7 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
       : widget.initial.host;
   late String _username = widget.initial.credentials?.username ?? '';
   late String _password = widget.initial.credentials?.password ?? '';
+  late bool _credentialsAreStored = widget.initial.credentials != null;
   bool _invalid = false;
 
   Future<void> _save(
@@ -282,6 +283,12 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
           onChanged: (value) => setState(() {
             _input = value;
             _invalid = false;
+            // Credentials stored for one server are not sent to another.
+            if (_credentialsAreStored) {
+              _username = '';
+              _password = '';
+              _credentialsAreStored = false;
+            }
           }),
         ),
         if (_invalid) ...[
@@ -307,6 +314,7 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
           enableSuggestions: false,
           onChanged: (value) => setState(() {
             _username = value;
+            _credentialsAreStored = false;
             _invalid = false;
           }),
         ),
@@ -320,6 +328,7 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
           enableSuggestions: false,
           onChanged: (value) => setState(() {
             _password = value;
+            _credentialsAreStored = false;
             _invalid = false;
           }),
         ),
