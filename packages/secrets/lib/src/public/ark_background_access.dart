@@ -12,15 +12,17 @@ import '../domain/domain.dart';
 /// BIP85 index of the Ark child derived from a wallet seed.
 const arkChildBip85Index = 11811;
 
-/// What the headless Ark task may know about a wallet seed (D92): a yes or a
-/// no, never the seed.
+/// What the headless Ark task may know about whether a view lets Ark show
+/// reminders (D92, D105): a yes or a no, never a seed.
 ///
 /// It reads no seed, derives nothing and hands out no words, handle or
-/// callback. The task asks whether a view still lets Ark show reminders for a
-/// parent while the app is locked. Renewal is not decided here: it needs the
-/// seed, so it does not run headless at all (see `DisabledRenewalChildProvider`
-/// in `bull_ark`); an architecture test keeps this library free of any
-/// operation that delivers words.
+/// callback. The task asks whether a view still lets Ark notify for a parent
+/// while the app is locked: background access enabled and no PIN-protected view
+/// holding the seed. This veto is the reminders' own. The background refresh of
+/// VTXOs is decided elsewhere (D105): it uses only the account's dedicated
+/// BIP85 child, so a PIN does not refuse it. That path is the restricted
+/// `package:secrets/ark_renewal.dart` library, and an architecture test keeps
+/// this one free of any operation that delivers words.
 ///
 /// Opened under the shared runtime lease like [BackgroundWalletDescriptors].
 final class ArkBackgroundAccess {

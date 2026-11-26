@@ -17,12 +17,12 @@ import '../domain/domain.dart';
 import 'ark_background_access.dart' show arkChildBip85Index;
 
 /// The dedicated BIP85 child of one Ark account: its words and its public
-/// identity. It is never the parent seed. It is handed to the trusted Ark
-/// integration for the length of one native open and goes nowhere else: not to
-/// a result, a log, a field or storage.
+/// identity. It is never the parent seed. It reaches one [ArkChildConsumer] for
+/// the length of one native open and goes nowhere else: not to a result, a log,
+/// a field or storage.
 final class ArkChild {
   /// The child's words. Strings cannot be zeroized in Dart; the scope ends when
-  /// the action that received them settles.
+  /// the consumer that received them settles.
   final String mnemonic;
   final Fingerprint fingerprint;
 
@@ -32,17 +32,41 @@ final class ArkChild {
   String toString() => 'ArkChild(<redacted>)';
 }
 
+/// The only thing that ever receives an [ArkChild]. It is implemented once, by
+/// the private adapter of the trusted Ark integration, whose native opener is
+/// fixed when that adapter is built. It returns nothing: whatever the native
+/// pass produces stays inside the adapter.
+abstract interface class ArkChildConsumer {
+  Future<void> consume(ArkChild child);
+}
+
+/// What became of a request for the child of one account.
+enum ArkChildAdmission {
+  /// Admitted: the consumer ran and settled.
+  consumed,
+
+  /// The account has no background access (or no membership). Nothing was read.
+  notPermitted,
+
+  /// The policy could not be read, the seed is missing or the derivation
+  /// failed. Nothing reached the consumer.
+  unavailable,
+}
+
 /// What the trusted Ark integration may ask of `secrets` to refresh VTXOs in
 /// the background (D105).
 ///
-/// The parent mnemonic never leaves this library: it is read inside one
-/// derivation of the account's dedicated BIP85 child (index
-/// [arkChildBip85Index], 12 English words) and nothing else. Only that child
-/// reaches the caller, and only through [withArkChild].
+/// The parent mnemonic never leaves this library. The stored entry is read
+/// twice: once by `describe`, which returns only its public description
+/// (fingerprint, kind) and materializes nothing, and once inside the single
+/// `useMnemonic` call that derives the account's dedicated BIP85 child (index
+/// [arkChildBip85Index], 12 English words). The parent words reach nothing but
+/// that derivation. Only the child reaches a caller, and only through
+/// [consumeChild], to a fixed [ArkChildConsumer].
 ///
 /// This library is not exported by `package:secrets/secrets.dart`. Its single
-/// importer is `packages/ark/lib/src/data/ark_renewal_child_provider.dart`;
-/// an architecture test fails on any other.
+/// importer is `features/ark/lib/src/data/ark_renewal_client.dart`; an
+/// architecture test fails on any other.
 ///
 /// Opened under the shared runtime lease like `BackgroundWalletDescriptors`.
 final class ArkRenewalSecrets {
@@ -79,44 +103,43 @@ final class ArkRenewalSecrets {
     }
   }
 
-  /// Runs [action] on the Ark child of [parent] for one native open.
+  /// Hands the Ark child of [parent] to [consumer] for one native open.
   ///
   /// The policy, the seed read and the derivation happen in one admission under
-  /// the inventory's write lock, which is released before [action] starts: no
+  /// the inventory's write lock, which is released before [consumer] starts: no
   /// SQLite lock is held while it runs, network included. A refusal returns
-  /// [notPermitted]; an unreadable policy, a missing seed or a failed
-  /// derivation return [unavailable]. Neither reads or derives anything.
-  /// An action already admitted is not interrupted by a later change.
+  /// [ArkChildAdmission.notPermitted]; an unreadable policy, a missing seed or a
+  /// failed derivation return [ArkChildAdmission.unavailable]. Neither reads or
+  /// derives anything. A consumer already admitted is not interrupted by a later
+  /// change.
   @useResult
-  Future<Result<T, F>> withArkChild<T, F extends Failure>({
-    required Fingerprint parent,
-    required F notPermitted,
-    required F unavailable,
-    required Future<Result<T, F>> Function(ArkChild child) action,
-  }) async {
-    final admitted = await _admit<F>(parent, notPermitted, unavailable);
-    switch (admitted) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        return action(value);
-    }
+  Future<ArkChildAdmission> consumeChild(
+    Fingerprint parent,
+    ArkChildConsumer consumer,
+  ) async {
+    final admitted = await _admit(parent);
+    final child = admitted.child;
+    if (child == null) return admitted.refusal;
+    await consumer.consume(child);
+    return ArkChildAdmission.consumed;
   }
 
-  Future<Result<ArkChild, F>> _admit<F extends Failure>(
+  Future<({ArkChild? child, ArkChildAdmission refusal})> _admit(
     Fingerprint parent,
-    F notPermitted,
-    F unavailable,
   ) async {
+    const unavailable = (child: null, refusal: ArkChildAdmission.unavailable);
+    const notPermitted = (child: null, refusal: ArkChildAdmission.notPermitted);
     try {
       return await inventoryWriteTransaction(_store.database, () async {
         await serializeInventoryWrites(_store.database);
         if (!await _permitted(_store.database, parent)) {
-          return Err(notPermitted);
+          return notPermitted;
         }
         final info = await _repository.describe(parent);
-        if (info is! Ok<SecretInfo, SecretFailure>) return Err(unavailable);
-        // The parent mnemonic is read here and only here, inside the one
+        if (info is! Ok<SecretInfo, SecretFailure>) {
+          return unavailable;
+        }
+        // The parent mnemonic is exposed here and only here, inside the one
         // derivation of the child. It reaches nothing else.
         final words = await _repository.useMnemonic(
           info.value,
@@ -127,15 +150,22 @@ final class ArkRenewalSecrets {
             index: arkChildBip85Index,
           ),
         );
-        if (words is! Ok<List<String>, SecretFailure>) return Err(unavailable);
+        if (words is! Ok<List<String>, SecretFailure>) {
+          return unavailable;
+        }
         final child = await _repository.previewArkFingerprint(
           words: words.value,
         );
-        if (child is! Ok<Fingerprint, SecretFailure>) return Err(unavailable);
-        return Ok(ArkChild._(words.value.join(' '), child.value));
+        if (child is! Ok<Fingerprint, SecretFailure>) {
+          return unavailable;
+        }
+        return (
+          child: ArkChild._(words.value.join(' '), child.value),
+          refusal: ArkChildAdmission.consumed,
+        );
       });
     } on Object {
-      return Err(unavailable);
+      return unavailable;
     }
   }
 

@@ -151,7 +151,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     client = injected;
     resources.onClose(client.close);
   } else {
-    final renewal = await openArkRenewalClient(
+    final renewal = await ArkBackgroundRenewal.open(
       storagePath: '$directory/native',
       secretsFile: secretsFile,
       admission: admission,
