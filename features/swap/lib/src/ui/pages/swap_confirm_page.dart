@@ -19,7 +19,6 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullBottomSheet,
         BullButton,
-        BullConfirmationHeader,
         BullFadingLinearProgress,
         BullOnchainSendInfoSection,
         BullPaymentNetwork,
@@ -228,20 +227,27 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
                             crossAxisAlignment: .stretch,
                             children: [
                               const Gap(8),
-                              BullConfirmationHeader(
-                                amount: formattedConfirmedAmountBitcoin,
-                                title: sendToExternal
+                              // The review header of the send pages: what
+                              // kind of transfer, then the amount.
+                              Text(
+                                sendToExternal
                                     ? context
                                           .swapCopyForLocale
                                           .coreScreensExternalTransfer
                                     : context
                                           .swapCopyForLocale
                                           .coreScreensInternalTransfer,
-                                icon: Image.asset(
-                                  'assets/icons/swap.png',
-                                  height: 24,
-                                  width: 24,
+                                textAlign: TextAlign.center,
+                                style: context.bullType.body.copyWith(
+                                  color: context.appColors.textMuted,
                                 ),
+                              ),
+                              const Gap(4),
+                              BullText(
+                                formattedConfirmedAmountBitcoin,
+                                textAlign: TextAlign.center,
+                                style: context.bullType.headline,
+                                color: context.appColors.text,
                               ),
                               if (context.select(
                                     (TransferBloc bloc) =>

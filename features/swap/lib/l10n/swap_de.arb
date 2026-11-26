@@ -93,7 +93,6 @@
   "receiveNote": "Notiz",
   "selectAmountTitle": "Betrag auswählen",
   "sendAdvancedOptions": "Erweiterte Optionen",
-  "sendDone": "Fertig",
   "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
   "sendErrorSelectedCoinsInsufficient": "Die ausgewählten Coins reichen nicht aus, um den Betrag und die Gebühren zu decken. Wählen Sie weitere Coins aus oder verringern Sie den Betrag.",
   "sendErrorSelectedCoinsUnavailable": "Ein oder mehrere ausgewählte Coins sind nicht mehr verfügbar. Überprüfen Sie Ihre Coin-Auswahl und versuchen Sie es erneut.",
@@ -166,6 +165,5 @@
   "transactionSwapDescChainExpired": "Dieser Swap ist abgelaufen. Ihr Guthaben wird automatisch an Ihre Wallet zurücküberwiesen.",
   "transactionSwapDescChainFailed": "Es gab ein Problem mit Ihrem Swap. Bitte wenden Sie sich an den Support, falls das Guthaben nicht innerhalb von 24 Stunden zurückerstattet wurde.",
   "transactionSwapOpenWithin24h": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Swap abzuschließen.",
-  "typeLabel": "Typ:",
-  "walletLoadFailed": "Ihre Wallets konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  "typeLabel": "Typ:"
 }

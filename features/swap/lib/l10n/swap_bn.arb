@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "সম্পন্ন",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "এই পেমেন্ট প্রস্তুত করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -437,6 +433,5 @@
   "typeLabel": "ধরন: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  }
 }

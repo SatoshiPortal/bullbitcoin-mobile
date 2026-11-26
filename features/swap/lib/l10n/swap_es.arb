@@ -109,7 +109,6 @@
   "receiveNote": "Nota",
   "selectAmountTitle": "Seleccionar monto",
   "sendAdvancedOptions": "Opciones Avanzadas",
-  "sendDone": "Listo",
   "sendErrorBuildFailed": "No se pudo preparar este pago. Inténtelo de nuevo.",
   "sendErrorSelectedCoinsInsufficient": "Las monedas seleccionadas no cubren el monto y las comisiones. Selecciona más monedas o reduce el monto.",
   "sendErrorSelectedCoinsUnavailable": "Una o varias de las monedas seleccionadas ya no están disponibles. Revisa tu selección de monedas e inténtalo de nuevo.",
@@ -186,7 +185,6 @@
   "transactionSwapDescChainFailed": "Hubo un problema con su intercambio. Por favor contacte con soporte si los fondos no han sido devueltos dentro de 24 horas.",
   "transactionSwapOpenWithin24h": "Abra la aplicación dentro de las próximas 24 horas para completar su intercambio.",
   "typeLabel": "Tipo: ",
-  "walletLoadFailed": "No se pudieron cargar sus billeteras. Compruebe su conexión e inténtelo de nuevo.",
   "walletSpendAwaitingObservation": "Los gastos no están disponibles hasta que esta cartera esté sincronizada y haya visto sus pagos anteriores en la red. Actualiza la cartera o busca transacciones faltantes y vuelve a intentarlo.",
   "walletSpendBusy": "La cartera está ocupada. Vuelve a intentarlo en un momento."
 }

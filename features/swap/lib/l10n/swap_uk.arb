@@ -93,7 +93,6 @@
   "receiveNote": "Зареєструватися",
   "selectAmountTitle": "Оберіть розмір",
   "sendAdvancedOptions": "Додаткові параметри",
-  "sendDone": "Сонце",
   "sendErrorBuildFailed": "Не вдалося підготувати цей платіж. Будь ласка, спробуйте ще раз.",
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
   "sendFastFee": "Швидкий",
@@ -158,6 +157,5 @@
   "transactionSwapDescChainExpired": "Термін дії цього обміну минув. Кошти буде автоматично повернуто на ваш гаманець.",
   "transactionSwapDescChainFailed": "Виникла проблема з вашим обміном. Зверніться до підтримки, якщо кошти не повернуто протягом 24 годин.",
   "transactionSwapOpenWithin24h": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
-  "typeLabel": "Тип: ",
-  "walletLoadFailed": "Не вдалося завантажити ваші гаманці. Перевірте підключення та спробуйте ще раз."
+  "typeLabel": "Тип: "
 }

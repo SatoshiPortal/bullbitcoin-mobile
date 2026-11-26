@@ -93,7 +93,6 @@
   "receiveNote": "Nota",
   "selectAmountTitle": "Selecione o valor",
   "sendAdvancedOptions": "Opções avançadas",
-  "sendDone": "Feito",
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
   "sendFastFee": "Rápido",
@@ -158,6 +157,5 @@
   "transactionSwapDescChainExpired": "Este swap expirou. Seus fundos serão devolvidos automaticamente à sua carteira.",
   "transactionSwapDescChainFailed": "Houve um problema com seu swap. Entre em contato com o suporte se os fundos não forem devolvidos em até 24 horas.",
   "transactionSwapOpenWithin24h": "Abre a aplicação dentro de 24 horas para concluir a tua troca.",
-  "typeLabel": "Tipo: ",
-  "walletLoadFailed": "Não foi possível carregar as suas carteiras. Verifique a sua ligação e tente novamente."
+  "typeLabel": "Tipo: "
 }

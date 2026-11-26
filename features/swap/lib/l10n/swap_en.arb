@@ -332,10 +332,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Done",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "This payment could not be prepared. Please try again.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -642,10 +638,6 @@
   "typeLabel": "Type: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
-  "@walletLoadFailed": {
-    "description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."
   },
   "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
   "@walletSpendAwaitingObservation": {

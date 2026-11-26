@@ -93,7 +93,6 @@
   "receiveNote": "Kuvaus",
   "selectAmountTitle": "Valitse määrä",
   "sendAdvancedOptions": "Lisäasetukset",
-  "sendDone": "Valmis",
   "sendErrorBuildFailed": "Tätä maksua ei voitu valmistella. Yritä uudelleen.",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
   "sendFastFee": "Nopea",
@@ -158,6 +157,5 @@
   "transactionSwapDescChainExpired": "Tämä swap on vanhentunut. Varat palautetaan automaattisesti lompakkoosi.",
   "transactionSwapDescChainFailed": "Swapissa ilmeni ongelma. Ota yhteyttä tukeen, jos varoja ei ole palautettu 24 tunnin kuluessa.",
   "transactionSwapOpenWithin24h": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapisi.",
-  "typeLabel": "Tyyppi: ",
-  "walletLoadFailed": "Lompakoitasi ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "typeLabel": "Tyyppi: "
 }

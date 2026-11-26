@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "हो गया",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "यह भुगतान तैयार नहीं किया जा सका। कृपया फिर कोशिश करें।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -437,6 +433,5 @@
   "typeLabel": "प्रकार: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "आपके वॉलेट लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर से प्रयास करें।"
+  }
 }

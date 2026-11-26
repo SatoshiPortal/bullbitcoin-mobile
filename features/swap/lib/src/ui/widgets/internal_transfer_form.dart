@@ -227,7 +227,7 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                           child: BullText(
                             '${context.swapCopyForLocale.swapAvailableBalance} ${switch (from?.balance) {
                               final balance? => '${_format(balance)} ${context.swapCopyForLocale.settingsPayjoinSatsUnit}',
-                              null => context.swapCopyForLocale.walletLoadFailed,
+                              null => '…',
                             }}',
                             role: BullTextRole.label,
                             color: context.bull.textMuted,

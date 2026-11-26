@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Čeština",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Tuto platbu nebylo možné připravit. Zkuste to prosím znovu.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -434,6 +430,5 @@
   "typeLabel": "Typ: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "Vaše peněženky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  }
 }

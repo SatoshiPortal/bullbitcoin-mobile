@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Feito",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -434,6 +430,5 @@
   "typeLabel": "Tipo: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "Não foi possível carregar suas carteiras. Verifique sua conexão e tente novamente."
+  }
 }

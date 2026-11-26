@@ -65,7 +65,6 @@
   "receiveNote": "Dokezo",
   "selectAmountTitle": "Chagua kiasi",
   "sendAdvancedOptions": "Chaguo za Kina",
-  "sendDone": "Imekamilika",
   "sendErrorBuildFailed": "Malipo haya hayakuweza kutayarishwa. Tafadhali jaribu tena.",
   "sendErrorSwapCreationFailed": "Imeshindwa kuunda swap.",
   "sendFastFee": "Haraka",
@@ -116,6 +115,5 @@
   "transactionSwapDescChainExpired": "Muda wa swap hii umeisha. Fedha zako zitarejeshwa kiotomatiki kwenye pochi yako.",
   "transactionSwapDescChainFailed": "Kulikuwa na tatizo na swap yako. Tafadhali wasiliana na usaidizi ikiwa fedha hazijarejeshwa ndani ya masaa 24.",
   "transactionSwapOpenWithin24h": "Fungua programu ndani ya masaa 24 ili kukamilisha swap yako.",
-  "typeLabel": "Aina: ",
-  "walletLoadFailed": "Pochi zako hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "typeLabel": "Aina: "
 }

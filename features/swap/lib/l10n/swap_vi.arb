@@ -65,7 +65,6 @@
   "receiveNote": "Ghi chú",
   "selectAmountTitle": "Chọn số tiền",
   "sendAdvancedOptions": "Tùy chọn nâng cao",
-  "sendDone": "Xong",
   "sendErrorBuildFailed": "Không thể chuẩn bị khoản thanh toán này. Vui lòng thử lại.",
   "sendErrorSwapCreationFailed": "Không thể tạo swap.",
   "sendFastFee": "Nhanh",
@@ -116,6 +115,5 @@
   "transactionSwapDescChainExpired": "Swap này đã hết hạn. Tiền của bạn sẽ được tự động hoàn trả về ví của bạn.",
   "transactionSwapDescChainFailed": "Đã có vấn đề với swap của bạn. Vui lòng liên hệ hỗ trợ nếu tiền chưa được hoàn trả trong vòng 24 giờ.",
   "transactionSwapOpenWithin24h": "Mở ứng dụng trong vòng 24 giờ để hoàn tất swap của bạn.",
-  "typeLabel": "Loại: ",
-  "walletLoadFailed": "Không thể tải ví của bạn. Hãy kiểm tra kết nối và thử lại."
+  "typeLabel": "Loại: "
 }

@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Έγινε",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Αυτή η πληρωμή δεν μπόρεσε να προετοιμαστεί. Δοκιμάστε ξανά.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -434,6 +430,5 @@
   "typeLabel": "Τύπος: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  }
 }

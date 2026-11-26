@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "한국어",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "이 결제를 준비할 수 없습니다. 다시 시도하세요.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -434,6 +430,5 @@
   "typeLabel": "유형: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "지갑을 불러오지 못했습니다. 연결을 확인한 후 다시 시도하세요."
+  }
 }

@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "انجام کارها",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "این پرداخت آماده نشد. لطفاً دوباره تلاش کنید.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -434,6 +430,5 @@
   "typeLabel": "نوع: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
-  },
-  "walletLoadFailed": "کیف‌پول‌های شما بارگذاری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  }
 }

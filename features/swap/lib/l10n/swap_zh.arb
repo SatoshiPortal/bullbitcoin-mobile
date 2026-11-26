@@ -94,7 +94,6 @@
   "receiveNote": "说明",
   "selectAmountTitle": "选择性数额",
   "sendAdvancedOptions": "A. 先进选择",
-  "sendDone": "Done",
   "sendErrorBuildFailed": "无法准备此支付。请重试。",
   "sendErrorSwapCreationFailed": "未能制造 s.",
   "sendFastFee": "快速",
@@ -159,6 +158,5 @@
   "transactionSwapDescChainExpired": "此 Swap 已过期。您的资金将自动退回到您的钱包。",
   "transactionSwapDescChainFailed": "您的 Swap 出现问题。如果资金在 24 小时内未退回，请联系客服。",
   "transactionSwapOpenWithin24h": "请在 24 小时内打开应用以完成您的 Swap。",
-  "typeLabel": "类型: ",
-  "walletLoadFailed": "无法加载您的钱包。请检查网络连接后重试。"
+  "typeLabel": "类型: "
 }
