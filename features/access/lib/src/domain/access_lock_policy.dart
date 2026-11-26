@@ -38,6 +38,7 @@ final class AccessLockPolicy {
   final _suspensions = <LockSuspension>{};
   Timer? _pending;
   DateTime? _backgroundedAt;
+  bool _lockedInBackground = false;
 
   AccessLockPolicy({
     required Future<void> Function() onLock,
@@ -65,8 +66,11 @@ final class AccessLockPolicy {
         _pending = _timer(delay, _fire);
       case AppLifecycleState.resumed:
         final since = _backgroundedAt;
+        final alreadyLocked = _lockedInBackground;
         _clear();
-        if (since != null && _now().difference(since) >= delay) {
+        if (!alreadyLocked &&
+            since != null &&
+            _now().difference(since) >= delay) {
           _fireNow();
         }
       case AppLifecycleState.inactive || AppLifecycleState.detached:
@@ -80,10 +84,12 @@ final class AccessLockPolicy {
     _pending?.cancel();
     _pending = null;
     _backgroundedAt = null;
+    _lockedInBackground = false;
   }
 
   void _fire() {
     _pending = null;
+    if (!isSuspended) _lockedInBackground = true;
     _fireNow();
   }
 
