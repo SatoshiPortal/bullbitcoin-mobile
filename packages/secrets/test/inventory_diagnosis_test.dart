@@ -380,6 +380,134 @@ void main() {
     }
   });
 
+  group('the second opening of an admitted inventory', () {
+    Future<Result<SecretsInventory, DatabaseOpenFailure>> second() async {
+      final gate = NativeFileGate(
+        File('${directory.path}/coordination/lifecycle.lock'),
+      );
+      final admission = await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission;
+      try {
+        return await SecretsInventory.open(file: file, admission: admission);
+      } finally {
+        await admission.close();
+      }
+    }
+
+    Matcher problem(DatabaseFileProblem reason) =>
+        isA<Err<SecretsInventory, DatabaseOpenFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<DatabaseFileUnavailable>().having(
+            (f) => f.reason,
+            'reason',
+            reason,
+          ),
+        );
+
+    test('a missing file is missing, and is not recreated', () async {
+      await file.delete();
+      expect(await second(), problem(DatabaseFileProblem.missing));
+      expect(file.existsSync(), isFalse);
+    });
+
+    test('a sidecar alone is missing, and nothing is recreated', () async {
+      await file.delete();
+      final sidecar = await File('${file.path}-wal').writeAsBytes([1, 2, 3]);
+      expect(await second(), problem(DatabaseFileProblem.missing));
+      expect(file.existsSync(), isFalse);
+      expect(await sidecar.readAsBytes(), [1, 2, 3]);
+    });
+
+    test(
+      'an empty file without a WAL is unreadable, not to be waited out',
+      () async {
+        await file.writeAsBytes(const []);
+        expect(await second(), problem(DatabaseFileProblem.unreadable));
+        expect(await file.length(), 0);
+        expect(File('${file.path}-wal').existsSync(), isFalse);
+      },
+    );
+
+    test('a file the engine cannot open is an access error', () async {
+      final original = await file.readAsBytes();
+      await Process.run('chmod', ['000', file.path]);
+      addTearDown(() => Process.run('chmod', ['600', file.path]));
+      if (file.statSync().mode & 0x1ff != 0) {
+        markTestSkipped('permissions are not enforced for this user');
+        return;
+      }
+      expect(await second(), problem(DatabaseFileProblem.inaccessible));
+      await Process.run('chmod', ['600', file.path]);
+      expect(await file.readAsBytes(), original);
+    });
+
+    test('a locked file is contention', () async {
+      final gate = NativeFileGate(
+        File('${directory.path}/coordination/lifecycle.lock'),
+      );
+      final holder = await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission;
+      final opened = await InventoryStore.open(file, holder, existing: true);
+      final store = (opened as Ok<InventoryStore, DatabaseOpenFailure>).value;
+      await store.database.customStatement('PRAGMA locking_mode = EXCLUSIVE');
+      await store.database.customSelect('SELECT 1 FROM access_state').get();
+      await store.database.customStatement('BEGIN EXCLUSIVE');
+      try {
+        expect(await second(), problem(DatabaseFileProblem.contended));
+      } finally {
+        await store.database.customStatement('COMMIT');
+        await store.close();
+        await holder.close();
+      }
+    });
+
+    test(
+      'damage to the default view page is unreadable and leaves the file',
+      () async {
+        final gate = NativeFileGate(
+          File('${directory.path}/coordination/lifecycle.lock'),
+        );
+        final admission = await gate.acquire(
+          exclusive: false,
+          timeout: Duration.zero,
+        ) as RuntimeAdmission;
+        late int page;
+        try {
+          final opened = await InventoryStore.open(
+            file,
+            admission,
+            existing: true,
+          );
+          final store =
+              (opened as Ok<InventoryStore, DatabaseOpenFailure>).value;
+          final root = await store.database
+              .customSelect(
+                "SELECT rootpage FROM sqlite_master WHERE name = 'views'",
+              )
+              .getSingle();
+          page = root.read<int>('rootpage');
+          await store.close();
+        } finally {
+          await admission.close();
+        }
+        final bytes = await file.readAsBytes();
+        final damaged = List<int>.of(bytes);
+        for (var i = (page - 1) * 4096; i < page * 4096; i++) {
+          damaged[i] = (i * 31 + 7) & 0xff;
+        }
+        await file.writeAsBytes(damaged);
+        final r = await second();
+        expect(r, problem(DatabaseFileProblem.unreadable));
+        expect(await file.readAsBytes(), damaged);
+      },
+    );
+  });
+
   test('contention while reading the receipt is kept', () async {
     final database = SecretsDatabase(
       NativeDatabase.memory().interceptWith(_BusyOnSelect()),
