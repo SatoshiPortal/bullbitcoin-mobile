@@ -19,7 +19,7 @@ typedef AdmittedInventory<A extends Object, I extends Object> = ({
 /// Nothing here replaces or erases a file.
 ///
 /// [openInventory] receives the admission and registers whatever it opens.
-/// When it fails, [release] runs before any screen is shown, so a retry starts
+/// When it fails or throws, [release] runs once before any screen is shown, so a retry starts
 
 Future<Result<AdmittedInventory<A, I>, Failure>>
 admitInventory<A extends Object, I extends Object>({
@@ -47,7 +47,17 @@ admitInventory<A extends Object, I extends Object>({
       admitted = await prepare();
     }
     final admission = (admitted as Ok<A, LegacyImportFailure>).value;
-    final opened = await openInventory(admission);
+    final Result<I, Failure> opened;
+    try {
+      opened = await openInventory(admission);
+    } catch (_) {
+      // A partial registration must not outlive the failed attempt, and the
+      // original exception is the one that propagates.
+      try {
+        await release(admission);
+      } catch (_) {}
+      rethrow;
+    }
     switch (opened) {
       case Ok(:final value):
         return Ok((admission: admission, inventory: value));
