@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:background_tasks/background_tasks.dart';
+import 'package:background_tasks/src/data/background_wallet_sync_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
 import 'package:sync/inventory.dart';
 import 'package:sync/sync.dart';
+import 'package:sync/write.dart' show ElectrumSync;
 
 import '../../support/inventory_fixture.dart';
 
@@ -13,6 +16,9 @@ import '../../support/inventory_fixture.dart';
 /// from the test, so no real server is involved.
 final class _Transport implements WalletConnectionPort {
   final runs = <Network>[];
+  final bool refuse;
+
+  _Transport({this.refuse = false});
 
   @override
   Future<Result<T, SyncFailure>> run<T>({
@@ -22,6 +28,7 @@ final class _Transport implements WalletConnectionPort {
     required bool Function(SyncFailure) mayRetry,
   }) {
     runs.add(network);
+    if (refuse) return Future.value(const Err(SyncConnectionFailure()));
     return operation(
       WalletConnection(
         url: 'tcp://controlled.invalid:50001',
@@ -51,14 +58,14 @@ void main() {
     expect(
       await fixture.inventory.registerWallet(
         const RegisteredWallet(
-          id: 'wpkh([01234567/84h/1h/0h])',
+          id: 'wpkh([c258d2e4/84h/1h/0h])',
           network: 'bitcoinTestnet',
-          masterFingerprint: '01234567',
+          masterFingerprint: 'c258d2e4',
           secretFingerprint: null,
           signer: 'none',
           xpub: 'public-key-marker',
-          externalDescriptor: 'wpkh(public/test/0)',
-          internalDescriptor: 'wpkh(public/test/1)',
+          externalDescriptor: 'wpkh([c258d2e4/84h/1h/0h]tpubDDYkZojQFQjht8Tm4jsS3iuEmKjTiEGjG6KnuFNKKJb5A6ZUCUZKdvLdSDWofKi4ToRCwb9poe1XdqfUnP4jaJjCB2Zwv11ZLgSbnZSNecE/0/*)',
+          internalDescriptor: 'wpkh([c258d2e4/84h/1h/0h]tpubDDYkZojQFQjht8Tm4jsS3iuEmKjTiEGjG6KnuFNKKJb5A6ZUCUZKdvLdSDWofKi4ToRCwb9poe1XdqfUnP4jaJjCB2Zwv11ZLgSbnZSNecE/1/*)',
           label: '',
           birthday: null,
           isDefault: false,
@@ -88,7 +95,7 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  test('a locked view still syncs its public wallets and reads no seed', () async {
+  test('a locked view lists its public wallets to a simulated pass and reads no seed', () async {
     await prepare(backgroundAccess: true);
     expect(fixture.inventory.isLocked, isTrue);
     // The locked foreground refuses its own catalog: nothing leaks through it.
@@ -103,7 +110,7 @@ void main() {
     final wallets =
         (listed as Ok<List<PublicWalletDescriptor>, SyncFailure>).value;
     expect(wallets.map((wallet) => wallet.key.id), [
-      'wpkh([01234567/84h/1h/0h])',
+      'wpkh([c258d2e4/84h/1h/0h])',
     ]);
 
     // The pass opens its Electrum connection from the public descriptors.
@@ -118,6 +125,49 @@ void main() {
     }
 
     expect(transport.runs, [BitcoinNetwork.testnet]);
+    expect(keystore.reads, baseline, reason: 'no seed was read');
+  });
+
+  test('BackgroundWalletSyncImpl runs the real ElectrumSync for a locked view and reads no seed', () async {
+    await prepare(backgroundAccess: true);
+    expect(fixture.inventory.isLocked, isTrue);
+    final baseline = keystore.reads;
+    final transport = _Transport(refuse: true);
+    var revisionReads = 0;
+    final sync = ElectrumSync(
+      connections: transport,
+      documentsDirectory: () async => directory.path,
+      // A controlled revision: the wallet has none yet.
+      readRevision: (_) async {
+        revisionReads++;
+        return const Err(SyncNotFoundFailure());
+      },
+    );
+    final impl = BackgroundWalletSyncImpl(
+      SecretsWalletCatalog.background(background),
+      sync,
+      collectIncoming: false,
+    );
+    final key = WalletKey(
+      id: 'wpkh([c258d2e4/84h/1h/0h])',
+      network: BitcoinNetwork.testnet,
+    );
+
+    final result = await impl.synchronize(
+      key,
+      allowInitialScan: true,
+      discover: false,
+    );
+
+    // The pass reached its Electrum transport with the public descriptors
+    // and nothing else; the controlled transport refused, so the native
+    // wallet engine never ran in this host test.
+    expect(
+      (result as Err<BackgroundSyncOutcome, BackgroundSyncFailure>).failure,
+      isA<BackgroundSyncConnectionFailure>(),
+    );
+    expect(transport.runs, [BitcoinNetwork.testnet]);
+    expect(revisionReads, greaterThanOrEqualTo(0));
     expect(keystore.reads, baseline, reason: 'no seed was read');
   });
 
