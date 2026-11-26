@@ -231,6 +231,29 @@ class ExtendedPubkey {
     },
   );
 
+  test('the bindings boundary covers rust_bindings, onion and ark', () {
+    final root = Directory.systemTemp.createTempSync('key_material_bindings_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    for (final path in [
+      'packages/rust_bindings/lib/a.dart',
+      'packages/onion/lib/b.dart',
+      'packages/ark/lib/src/rust/frb_generated.dart',
+      'packages/ark/build/generated.dart',
+      'packages/sync/lib/c.dart',
+    ]) {
+      File('${root.path}/$path').createSync(recursive: true);
+    }
+    expect(
+      bindingsDartFiles(root.path)
+          .map((f) => f.substring(root.path.length + 1)),
+      unorderedEquals([
+        'packages/rust_bindings/lib/a.dart',
+        'packages/onion/lib/b.dart',
+        'packages/ark/lib/src/rust/frb_generated.dart',
+      ]),
+    );
+  });
+
   test('only the generated bridge of rust_bindings is left unscanned', () {
     final root = Directory.systemTemp.createTempSync('key_material_roots_');
     addTearDown(() => root.deleteSync(recursive: true));
