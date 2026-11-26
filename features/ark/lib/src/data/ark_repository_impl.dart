@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ark/ark.dart';
 import 'package:primitives/primitives.dart';
 
@@ -25,13 +27,25 @@ final class ArkRepositoryImpl implements ArkRepository {
   Future<Result<ArkSnapshot, ArkFailure>> read(ArkAccountId account) =>
       _run(() => _client.read(account));
   @override
-  Stream<Result<ArkSnapshot, ArkFailure>> watch(ArkAccountId account) async* {
+  Stream<Result<ArkSnapshot, ArkFailure>> watch(ArkAccountId account) {
     try {
-      await for (final result in _client.watch(account)) {
-        yield result.mapErr(_map);
-      }
+      return _client
+          .watch(account)
+          .transform(
+            StreamTransformer.fromHandlers(
+              handleData: (result, sink) => sink.add(result.mapErr(_map)),
+              handleError: (error, stack, sink) {
+                if (error is Exception) {
+                  sink.add(const Err(ArkUnexpectedFailure()));
+                  sink.close();
+                } else {
+                  sink.addError(error, stack);
+                }
+              },
+            ),
+          );
     } on Exception catch (_) {
-      yield const Err(ArkUnexpectedFailure());
+      return Stream.value(const Err(ArkUnexpectedFailure()));
     }
   }
 

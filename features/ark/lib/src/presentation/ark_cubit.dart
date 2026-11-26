@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ark/ark.dart';
 import 'package:bloc/bloc.dart';
 import 'package:primitives/primitives.dart';
@@ -28,6 +30,9 @@ final class ArkCubit extends Cubit<ArkViewState> {
   final ReadArkUsecase _read;
   final SynchronizeArkUsecase _synchronize;
   final ArkAccountId account;
+  StreamSubscription<Result<ArkSnapshot, ArkFailure>>? _watching;
+  int _watchVersion = 0;
+  bool _closing = false;
   bool _refreshing = false;
   bool _again = false, _againRenews = false;
   bool _reading = false;
@@ -36,19 +41,29 @@ final class ArkCubit extends Cubit<ArkViewState> {
     : super(const ArkLoading());
 
   Future<void> load() async {
-    if (isClosed || _reading || _refreshing) return;
+    if (isClosed || _closing || _reading || _refreshing) return;
+    _watching ??= _read.watch(account).listen((result) {
+      if (isClosed || _closing) return;
+      _watchVersion++;
+      _publish(result);
+    });
     _reading = true;
     final epoch = ++_epoch;
+    final watchVersion = _watchVersion;
     try {
       final result = await _read.execute(account);
-      if (epoch == _epoch) _publish(result);
+      if (epoch == _epoch &&
+          (result is Ok<ArkSnapshot, ArkFailure> ||
+              watchVersion == _watchVersion)) {
+        _publish(result);
+      }
     } finally {
       _reading = false;
     }
   }
 
   Future<void> refresh({bool renew = false}) async {
-    if (isClosed) return;
+    if (isClosed || _closing) return;
     if (_refreshing) {
       // A refresh already under way may have read the account before the
       // change this caller expects; run once more after it.
@@ -76,7 +91,7 @@ final class ArkCubit extends Cubit<ArkViewState> {
   }
 
   void _publish(Result<ArkSnapshot, ArkFailure> result) {
-    if (isClosed) return;
+    if (isClosed || _closing) return;
     final previous = switch (state) {
       ArkObserved(:final snapshot) => snapshot,
       ArkViewFailed(:final lastObserved) => lastObserved,
@@ -84,9 +99,20 @@ final class ArkCubit extends Cubit<ArkViewState> {
     };
     switch (result) {
       case Ok(:final value):
+        if (previous != null && value.revision < previous.revision) return;
         emit(ArkObserved(value));
       case Err(:final failure):
         emit(ArkViewFailed(failure, lastObserved: previous));
+    }
+  }
+
+  @override
+  Future<void> close() async {
+    _closing = true;
+    try {
+      await _watching?.cancel();
+    } finally {
+      await super.close();
     }
   }
 }
