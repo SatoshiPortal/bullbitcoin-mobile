@@ -1,4 +1,5 @@
 {
+  "wizardAdvancedOptionsTitle": "고급 옵션",
   "onboardingSplashDescription": "Sovereign 자체 custody Bitcoin 지갑과 Bitcoin 전용 교환 서비스.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"

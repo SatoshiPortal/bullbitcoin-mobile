@@ -27,6 +27,45 @@ void _registerSettings(GetIt locator) {
 }
 
 void main() {
+  if (RegtestHostProfile.isConfigured) {
+    test('first open captures the selected regtest runtime family', () async {
+      final locator = GetIt.asNewInstance();
+      final settings = _Settings();
+      var environment = Environment.regtest;
+      when(settings.fetch).thenAnswer(
+        (_) async => Ok(
+          SettingsEntity(
+            environment: environment,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
+        ),
+      );
+      locator.registerSingleton<Preferences>(settings);
+      locator.registerLazySingleton<RuntimeAdmission>(
+        () => throw StateError('storage unavailable'),
+      );
+      addTearDown(locator.reset);
+      mountPayjoin(locator, startRecovery: false);
+      final lifecycle = locator<PayjoinLifecycle>();
+      expect(await lifecycle.resume(), isA<Err<void, PayjoinFailure>>());
+      environment = Environment.mainnet;
+      final result = await lifecycle.resume();
+      expect(
+        result,
+        isA<Err<void, PayjoinFailure>>().having(
+          (value) => value.failure,
+          'failure',
+          isA<PayjoinUnavailableFailure>().having(
+            (failure) => failure.logMessage,
+            'reason',
+            'Payjoin runtime family changed',
+          ),
+        ),
+      );
+      await lifecycle.dispose();
+    });
+  }
   for (final startRecovery in [false, true]) {
     test(
       'setup registers roles before deferred recovery ($startRecovery)',

@@ -243,7 +243,7 @@
   "paymentStatusSigning": "Firmando",
   "paymentStatusBroadcasted": "Difundida",
   "paymentStatusConfirmed": "Confirmada",
-  "paymentStatusDetected": "Detectado",
+  "paymentStatusReceivedConfirmed": "Confirmado",
   "paymentStatusPendingMempool": "Pendiente en la mempool",
   "paymentStatusSendingPayin": "Enviando pago",
   "paymentStatusPayinBroadcast": "Pago difundido",

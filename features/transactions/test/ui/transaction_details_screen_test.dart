@@ -247,6 +247,36 @@ void main() {
       expect(find.byType(BullTransactionDetailsPage), findsNothing);
     });
 
+    testWidgets('the switch sits at the same place on both views', (
+      tester,
+    ) async {
+      await pump(tester);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      final onStatus = tester.getRect(find.byType(BullPaymentViewSwitch));
+
+      await tester.tap(button('Details'));
+      await tester.pump();
+      expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
+      final onDetails = tester.getRect(find.byType(BullPaymentViewSwitch));
+      expect(onDetails, onStatus);
+
+      await tester.tap(button('Status'));
+      await tester.pump();
+      expect(tester.getRect(find.byType(BullPaymentViewSwitch)), onStatus);
+      // Centred on the screen.
+      expect(onStatus.center.dx, 400);
+    });
+
+    testWidgets('animations off or unknown shows no switch', (tester) async {
+      await pump(tester, animationsEnabled: false);
+      expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
+      expect(find.byType(BullPaymentViewSwitch), findsNothing);
+      expect(find.byType(BullToolButton), findsNothing);
+
+      await pump(tester, animationsEnabled: null);
+      expect(find.byType(BullPaymentViewSwitch), findsNothing);
+    });
+
     testWidgets('the switch is reachable and activated from the keyboard', (
       tester,
     ) async {
@@ -301,7 +331,7 @@ void main() {
     });
 
     testWidgets('the hidden status view does not tick', (tester) async {
-      await pump(tester, animationsEnabled: false);
+      await pump(tester, query: '?view=details');
       await tester.tap(button('Status'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));

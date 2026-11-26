@@ -44,6 +44,16 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     on<_WizardThemePicked>(_onThemePicked);
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
+    on<_WizardNetworkPicked>(
+      (event, emit) => emit(
+        state.copyWith(
+          choices: state.choices.copyWith(
+            network: event.network,
+            clearNetwork: event.network == null,
+          ),
+        ),
+      ),
+    );
     on<_WizardConsentPicked>(_onConsentPicked);
     on<_WizardThemeDetected>(_onThemeDetected);
     on<_WizardExchangePicked>(

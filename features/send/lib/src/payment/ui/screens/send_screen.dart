@@ -390,8 +390,8 @@ class _SendScreenState extends State<SendScreen> {
     if (terminal == BullPaymentPhase.success) {
       return _expectsSwap ? loc.sendSuccessfullySent : loc.paymentStepConfirmed;
     }
-    if (terminal == null && _directBroadcast(state)) {
-      return loc.paymentPendingMempool;
+    if (terminal == null && !_expectsSwap && state.boltzSendSwap == null) {
+      if (progress != null) return _currentStep(progress);
     }
     if (terminal == BullPaymentPhase.failed) {
       if (_isPreBroadcastFailure(state)) {
@@ -414,7 +414,7 @@ class _SendScreenState extends State<SendScreen> {
       OrderSwapLocalStatus.failed ||
       OrderSwapLocalStatus.expired => loc.sendSwapRefundInProgress,
       _ when progress != null && (swap != null || orderStatus != null) =>
-        progress.steps[progress.completed],
+        _currentStep(progress),
       _ => _expectsSwap ? loc.sendPaymentProcessing : loc.sendSending,
     };
   }
@@ -425,9 +425,7 @@ class _SendScreenState extends State<SendScreen> {
     BullPaymentProgress? progress,
   ) {
     final loc = context.loc;
-    final current = progress == null
-        ? null
-        : progress.steps[progress.completed];
+    final current = progress == null ? null : _currentStep(progress);
     final swap = state.boltzSendSwap;
     if (swap != null && state.lightningOrder == null) {
       return switch (swap.status) {
@@ -447,8 +445,19 @@ class _SendScreenState extends State<SendScreen> {
         _ => current,
       };
     }
-    return null;
+    if (_expectsSwap || progress == null) return null;
+    if (_isPreBroadcastFailure(state)) return null;
+    if (_terminalPhase(state) == BullPaymentPhase.success) {
+      return progress.steps.last;
+    }
+    return current;
   }
+
+  /// The step in progress, or the last one once every step is done.
+  static String _currentStep(BullPaymentProgress progress) =>
+      progress.steps[progress.completed < progress.steps.length
+          ? progress.completed
+          : progress.steps.length - 1];
 
   void _dismissTransition() {
     if (mounted) setState(() => _transitionVisible = false);
@@ -556,7 +565,10 @@ class _SendScreenState extends State<SendScreen> {
                 onSkip: _openTransitionDetails,
                 onBackdropTap: _dismissTransition,
                 onDone: () {
-                  if (_terminalPhase(context.read<SendCubit>().state) != null) {
+                  // Success stays on screen until the user leaves it (back or
+                  // View details); only a failure dismisses on its own.
+                  final phase = _terminalPhase(context.read<SendCubit>().state);
+                  if (phase != null && phase != BullPaymentPhase.success) {
                     _dismissTransition();
                   }
                 },

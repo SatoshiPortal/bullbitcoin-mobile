@@ -1,4 +1,5 @@
 {
+  "wizardAdvancedOptionsTitle": "Σύνθετες επιλογές",
   "onboardingSplashDescription": "Κυρίαρχο πορτοφόλι Bitcoin και υπηρεσία ανταλλαγής Bitcoin μόνο.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"

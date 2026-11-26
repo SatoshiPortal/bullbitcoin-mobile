@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -60,5 +61,61 @@ void main() {
     );
     expect(find.bySemanticsLabel('Views'), findsOneWidget);
     handle.dispose();
+  });
+
+  group('BullPaymentViews', () {
+    Widget views({required bool showingStatus, bool withSwitch = true}) =>
+        wrapWithTheme(
+          MediaQuery(
+            data: const MediaQueryData(
+              size: Size(400, 800),
+              padding: EdgeInsets.only(bottom: 30),
+            ),
+            child: BullPaymentViews(
+              showingStatus: showingStatus,
+              switcher: withSwitch
+                  ? BullPaymentViewSwitch(
+                      showingStatus: showingStatus,
+                      statusLabel: 'Status',
+                      detailsLabel: 'Details',
+                      semanticsLabel: 'Views',
+                      onStatus: () {},
+                      onDetails: () {},
+                    )
+                  : null,
+              views: Builder(
+                builder: (context) => Text(
+                  'inset ${MediaQuery.paddingOf(context).bottom}',
+                  key: ValueKey(showingStatus),
+                ),
+              ),
+            ),
+          ),
+        );
+
+    testWidgets('the switch stays in place across views', (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(views(showingStatus: true));
+      final onStatus = tester.getRect(find.byType(BullPaymentViewSwitch));
+      await tester.pumpWidget(views(showingStatus: false));
+      final onDetails = tester.getRect(find.byType(BullPaymentViewSwitch));
+      expect(onDetails, onStatus);
+      // Centred, above the bottom inset.
+      expect(onStatus.center.dx, closeTo(400 / 2, .5));
+      expect(onStatus.bottom, lessThanOrEqualTo(800 - 30));
+    });
+
+    testWidgets('the strip takes the bottom inset, not the views', (
+      tester,
+    ) async {
+      await tester.pumpWidget(views(showingStatus: true));
+      expect(find.text('inset 0.0'), findsOneWidget);
+
+      await tester.pumpWidget(views(showingStatus: true, withSwitch: false));
+      expect(find.text('inset 30.0'), findsOneWidget);
+      expect(find.byType(BullPaymentViewSwitch), findsNothing);
+    });
   });
 }

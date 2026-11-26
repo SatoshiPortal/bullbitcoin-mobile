@@ -1606,33 +1606,37 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
         payjoin.hasOriginalTransaction &&
-        state.canOfferPayjoinFallback) {
+        state.canOfferPayjoinFallback &&
+        !state.isBroadcastingOriginalTransaction) {
       emit(
         state.copyWith(isBroadcastingOriginalTransaction: true, failure: null),
       );
-      final result = await _broadcastOriginalTransactionUsecase.execute(
-        payjoin.id,
-      );
-      switch (result) {
-        // Pattern-matched, not cast: an unchecked `as` here would throw if the
-        //  package ever returned a sender session, crashing the screen instead
-        //  of leaving it on a still-valid payjoin.
-        case Ok(value: final PayjoinReceiverSession session):
-          emit(state.copyWith(payjoin: session));
-        case Ok(:final value):
-          log.warning(
-            'Ignoring a non-receiver session from broadcastOriginal: '
-            '${value.runtimeType}',
-          );
-        case Err(failure: ReceiveBroadcastOriginalTxUnavailableFailure()):
-          // A competing transaction became visible after the button was shown.
-          // Existing Payjoin and wallet watchers will converge the screen, so
-          // there is nothing to tell the user.
-          break;
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
+      try {
+        final result = await _broadcastOriginalTransactionUsecase.execute(
+          payjoin.id,
+        );
+        switch (result) {
+          // Pattern-matched, not cast: an unchecked `as` here would throw if the
+          //  package ever returned a sender session, crashing the screen instead
+          //  of leaving it on a still-valid payjoin.
+          case Ok(value: final PayjoinReceiverSession session):
+            emit(state.copyWith(payjoin: session));
+          case Ok(:final value):
+            log.warning(
+              'Ignoring a non-receiver session from broadcastOriginal: '
+              '${value.runtimeType}',
+            );
+          case Err(failure: ReceiveBroadcastOriginalTxUnavailableFailure()):
+            // A competing transaction became visible after the button was shown.
+            // Existing Payjoin and wallet watchers will converge the screen, so
+            // there is nothing to tell the user.
+            break;
+          case Err(:final failure):
+            emit(state.copyWith(failure: failure));
+        }
+      } finally {
+        emit(state.copyWith(isBroadcastingOriginalTransaction: false));
       }
-      emit(state.copyWith(isBroadcastingOriginalTransaction: false));
     }
   }
 

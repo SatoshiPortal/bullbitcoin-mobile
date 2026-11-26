@@ -13,6 +13,28 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  test('an explicit network survives staging and clearing', () async {
+    final repo = _build();
+    await repo.savePending(
+      const WizardChoices().copyWith(network: Environment.testnet),
+    );
+    final pending = await repo.readPending();
+    expect(pending?.network, Environment.testnet);
+    expect(pending?.touched, contains(WizardField.network));
+    await repo.clearPending();
+    expect(await repo.readPending(), isNull);
+  });
+
+  test('does not discard a staged network from an unknown version', () async {
+    SharedPreferences.setMockInitialValues({
+      'wizard_pending_version': kCurrentWizardVersion + 1,
+      'wizard_pending_network': 'regtest',
+    });
+    await expectLater(_build().readPending(), throwsFormatException);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('wizard_pending_network'), 'regtest');
+  });
+
   test(
     'stages exchange choice in the existing versioned preferences',
     () async {
