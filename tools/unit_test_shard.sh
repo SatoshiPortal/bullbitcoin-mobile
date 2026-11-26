@@ -13,6 +13,11 @@ shift
 total=${TEST_TOTAL_SHARDS:-1}
 index=${TEST_SHARD_INDEX:-0}
 
+# Match the PATH used by prepare-x64 before the outer FVM/Melos invocation.
+if [[ ${MELOS_PACKAGE_NAME:-} == access && -n ${ACCESS_UNIT_TEST_PATH:-} ]]; then
+  export PATH="$ACCESS_UNIT_TEST_PATH"
+fi
+
 if [[ "$total" -le 1 ]]; then
   exec fvm "$runner" test "$@"
 fi
