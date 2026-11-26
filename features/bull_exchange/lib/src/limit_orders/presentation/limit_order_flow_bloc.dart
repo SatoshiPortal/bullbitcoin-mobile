@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:bull_exchange/src/exchange_payout_wallets.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_order_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';

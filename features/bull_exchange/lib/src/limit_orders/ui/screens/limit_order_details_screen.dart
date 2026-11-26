@@ -1,7 +1,7 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_order_cancel.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_bloc.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_details_flow.dart';
 import 'package:bull_exchange/src/limit_orders/ui/widgets/limit_order_detail_row.dart';
 import 'package:bull_exchange/src/limit_orders/ui/widgets/limit_orders_loading_bar.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
