@@ -1,4 +1,5 @@
 {
+  "wizardPreparing": "Պատրաստվում է ձեր դրամապանակը",
   "getStartedButton": "Սկսել",
   "@getStartedButton": {
     "description": "Final call-to-action button that finishes the install/upgrade wizard"

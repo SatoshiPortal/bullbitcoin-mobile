@@ -1,4 +1,5 @@
 {
+  "wizardPreparing": "지갑을 준비하고 있습니다",
   "onboardingSplashDescription": "Sovereign 자체 custody Bitcoin 지갑과 Bitcoin 전용 교환 서비스.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"

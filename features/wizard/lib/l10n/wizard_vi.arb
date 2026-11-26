@@ -1,4 +1,5 @@
 {
+  "wizardPreparing": "Đang chuẩn bị ví của bạn",
   "getStartedButton": "Bắt đầu",
   "@getStartedButton": {
     "description": "Final call-to-action button that finishes the install/upgrade wizard"

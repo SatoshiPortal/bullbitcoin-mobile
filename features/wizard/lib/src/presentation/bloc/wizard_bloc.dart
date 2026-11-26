@@ -1,5 +1,6 @@
 import 'package:preferences/preferences.dart';
 import 'package:wizard/src/domain/entity/wizard_choices.dart';
+import 'package:wizard/src/domain/wizard_failure.dart';
 import 'package:wizard/src/domain/usecase/mark_wizard_complete_usecase.dart';
 import 'package:wizard/src/domain/usecase/notification_permission_usecase.dart';
 import 'package:wizard/src/domain/usecase/read_background_tasks_usecase.dart';
@@ -78,12 +79,26 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
   final MarkWizardCompleteUsecase _markComplete;
   final ReadBackgroundTasksUsecase _readBackgroundTasks;
   final NotificationPermissionUsecase _notificationPermission;
+  WizardChoices? _completionChoices;
+  bool _completionInFlight = false;
+  bool _pendingSaved = false;
+
+  @override
+  void add(WizardEvent event) {
+    if (state.finished ||
+        ((_completionInFlight || _completionChoices != null) &&
+            event is! _WizardCompleted)) {
+      return;
+    }
+    super.add(event);
+  }
 
   Future<void> _onStarted(
     _WizardStarted event,
     Emitter<WizardState> emit,
   ) async {
     final enabled = await _readBackgroundTasks.execute();
+    if (_completionInFlight || state.finished) return;
     // A pick made while reading wins over the stored value.
     if (enabled != null &&
         !state.choices.touched.contains(WizardField.backgroundTasks)) {
@@ -112,15 +127,18 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
   void _emitNotifications(
     Emitter<WizardState> emit,
     ({bool allowed, bool refused}) permission,
-  ) => emit(
-    state.copyWith(
-      notificationsAllowed: permission.allowed,
-      // A later read cannot tell a refusal from a request never made.
-      notificationsRefused:
-          !permission.allowed &&
-          (permission.refused || state.notificationsRefused),
-    ),
-  );
+  ) {
+    if (_completionInFlight || state.finished) return;
+    emit(
+      state.copyWith(
+        notificationsAllowed: permission.allowed,
+        // A later read cannot tell a refusal from a request never made.
+        notificationsRefused:
+            !permission.allowed &&
+            (permission.refused || state.notificationsRefused),
+      ),
+    );
+  }
 
   void _onThemePicked(_WizardThemePicked event, Emitter<WizardState> emit) {
     emit(
@@ -170,8 +188,24 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     _WizardCompleted event,
     Emitter<WizardState> emit,
   ) async {
-    await _savePending.execute(state.choices);
-    await _markComplete.execute();
-    emit(state.copyWith(finished: true));
+    if (_completionInFlight || state.finished) return;
+    if (state.choices.reportingConsent == null && _completionChoices == null) {
+      return;
+    }
+    _completionInFlight = true;
+    final choices = _completionChoices ??= state.choices;
+    emit(state.copyWith(storageFailure: null));
+    try {
+      if (!_pendingSaved) {
+        await _savePending.execute(choices);
+        _pendingSaved = true;
+      }
+      await _markComplete.execute();
+      emit(state.copyWith(choices: choices, finished: true));
+    } on Exception {
+      emit(state.copyWith(storageFailure: const WizardStorageFailure()));
+    } finally {
+      _completionInFlight = false;
+    }
   }
 }

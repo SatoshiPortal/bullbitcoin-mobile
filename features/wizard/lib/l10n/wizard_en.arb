@@ -140,6 +140,10 @@
   "@wizardBackgroundTasksDescription": {
     "description": "Short line under the background tasks switch of the wizard."
   },
+  "wizardPreparing": "Preparing your wallet",
+  "@wizardPreparing": {
+    "description": "Progress shown while finishing setup."
+  },
   "wizardNotificationsDescription": "Know when a payment arrives.",
   "@wizardNotificationsDescription": {
     "description": "Short line under the notifications switch of the wizard."

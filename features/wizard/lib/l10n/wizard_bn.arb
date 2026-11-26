@@ -1,4 +1,5 @@
 {
+  "wizardPreparing": "আপনার ওয়ালেট প্রস্তুত করা হচ্ছে",
   "@@locale": "bn",
   "onboardingSplashDescription": "সার্বভৌম সেলফ-কাস্টডি Bitcoin ওয়ালেট এবং শুধুমাত্র Bitcoin এক্সচেঞ্জ সেবা।",
   "@onboardingSplashDescription": {

@@ -40,6 +40,10 @@ abstract class WizardLocalDatasource {
 }
 
 class WizardLocalDatasourceImpl implements WizardLocalDatasource {
+  Future<void> _requireWrite(Future<bool> result) async {
+    if (!await result) throw Exception('Wizard preferences write failed');
+  }
+
   static const _pendingExchangeKey = 'wizard_pending_exchange_access';
   static const _versionKey = 'wizard_completed_version';
   static const _pendingVersionKey = 'wizard_pending_version';
@@ -94,7 +98,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writeCompletedVersion(int version) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_versionKey, version);
+    await _requireWrite(prefs.setInt(_versionKey, version));
   }
 
   @override
@@ -106,7 +110,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingVersion(int version) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_pendingVersionKey, version);
+    await _requireWrite(prefs.setInt(_pendingVersionKey, version));
   }
 
   @override
@@ -118,7 +122,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingLanguage(String name) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_pendingLanguageKey, name);
+    await _requireWrite(prefs.setString(_pendingLanguageKey, name));
   }
 
   @override
@@ -130,7 +134,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingThemeMode(String name) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_pendingThemeKey, name);
+    await _requireWrite(prefs.setString(_pendingThemeKey, name));
   }
 
   @override
@@ -142,7 +146,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingCurrency(String code) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_pendingCurrencyKey, code);
+    await _requireWrite(prefs.setString(_pendingCurrencyKey, code));
   }
 
   @override
@@ -154,7 +158,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingErrorReporting(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_pendingErrorReportingKey, enabled);
+    await _requireWrite(prefs.setBool(_pendingErrorReportingKey, enabled));
   }
 
   @override
@@ -166,7 +170,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingExchangeAccess(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_pendingExchangeKey, enabled);
+    await _requireWrite(prefs.setBool(_pendingExchangeKey, enabled));
   }
 
   @override
@@ -178,20 +182,20 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writePendingBackgroundTasks(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_pendingBackgroundTasksKey, enabled);
+    await _requireWrite(prefs.setBool(_pendingBackgroundTasksKey, enabled));
   }
 
   @override
   Future<void> clearAllPending() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_pendingBackgroundTasksKey);
-    await prefs.remove(_pendingExchangeKey);
-    await prefs.remove(_pendingVersionKey);
-    await prefs.remove(_pendingLanguageKey);
-    await prefs.remove(_pendingThemeKey);
-    await prefs.remove(_pendingCurrencyKey);
-    await prefs.remove(_pendingErrorReportingKey);
-    await prefs.remove(_pendingNetworkKey);
-    await prefs.remove(_pendingScreenPrivacyKey);
+    await _requireWrite(prefs.remove(_pendingBackgroundTasksKey));
+    await _requireWrite(prefs.remove(_pendingExchangeKey));
+    await _requireWrite(prefs.remove(_pendingLanguageKey));
+    await _requireWrite(prefs.remove(_pendingThemeKey));
+    await _requireWrite(prefs.remove(_pendingCurrencyKey));
+    await _requireWrite(prefs.remove(_pendingErrorReportingKey));
+    await _requireWrite(prefs.remove(_pendingNetworkKey));
+    await _requireWrite(prefs.remove(_pendingScreenPrivacyKey));
+    await _requireWrite(prefs.remove(_pendingVersionKey));
   }
 }

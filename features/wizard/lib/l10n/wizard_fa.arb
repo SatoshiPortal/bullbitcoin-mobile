@@ -1,4 +1,5 @@
 {
+  "wizardPreparing": "در حال آماده‌سازی کیف پول شما",
   "onboardingSplashDescription": "بانک مرکزی خود، کیف پول Bitcoin و سرویس تبادل بیت کوین را در اختیار دارد.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"

@@ -1,4 +1,5 @@
 {
+  "wizardPreparing": "กำลังเตรียมกระเป๋าเงินของคุณ",
   "onboardingSplashDescription": "Sovereign เครื่องช่วยฟัง Bitcoin และ Bitcoin- เท่านั้น.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
