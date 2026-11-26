@@ -339,6 +339,68 @@ void main() {
     },
   );
 
+  SqliteArkReminderRepository openForeground({
+    required Future<bool> Function(Fingerprint parent) permitsParent,
+  }) => value(
+    SqliteArkReminderRepository.open(
+      path: path,
+      notifications: gateway,
+      title: 'Urgent',
+      body: 'Open Ark',
+      foreground: true,
+      permitsParent: permitsParent,
+    ),
+  );
+
+  test('a withdrawn permission keeps a cancelled alarm cancelled in the foreground', () async {
+    expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+    final id = rows().single['platform_id'] as int;
+
+    // The permission is withdrawn: the headless pass cancels the OS alarm.
+    await store.close();
+    gateway.actions.clear();
+    reopen();
+    expect(
+      await store.reapplyStored(permitsParent: (_) async => false),
+      isA<Ok>(),
+    );
+    expect(gateway.actions, ['cancel:$id']);
+
+    // The foreground reopens: the owner's permission still decides.
+    await store.close();
+    gateway.actions.clear();
+    store = openForeground(permitsParent: (_) async => false);
+    expect(await store.reapplyStored(), isA<Ok>());
+    expect(gateway.actions, isNot(contains('schedule:$id')));
+    expect(gateway.actions.where((a) => a.startsWith('schedule:')), isEmpty);
+    expect(rows().map((row) => row['platform_id']), contains(id));
+  });
+
+  test('a refused owner gets no alarm from a new observation either', () async {
+    await store.close();
+    gateway.actions.clear();
+    store = openForeground(permitsParent: (_) async => false);
+
+    expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+
+    expect(gateway.actions.where((a) => a.startsWith('schedule:')), isEmpty);
+  });
+
+  test(
+    'a permitted owner is rescheduled by the foreground as before',
+    () async {
+      expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+      final id = rows().single['platform_id'] as int;
+      await store.close();
+      gateway.actions.clear();
+      store = openForeground(permitsParent: (_) async => true);
+
+      expect(await store.reapplyStored(), isA<Ok>());
+
+      expect(gateway.actions, ['schedule:$id']);
+    },
+  );
+
   test('renewal disabled does not stop a permitted reminder', () async {
     expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
     final platformId = rows().single['platform_id'] as int;

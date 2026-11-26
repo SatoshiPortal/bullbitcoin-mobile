@@ -153,6 +153,20 @@ void main() {
       expect(await authority.mayNotify(parent), isTrue);
     },
   );
+  test('the foreground inventory answers like the background access', () async {
+    expect(
+      await inventory.mayNotifyArk(parent),
+      await authority.mayNotify(parent),
+    );
+    expect(await inventory.mayNotifyArk(parent), isTrue);
+    expect(await inventory.mayNotifyArk(Fingerprint('01234567')), isFalse);
+    await protect('all');
+    expect(await inventory.mayNotifyArk(parent), isFalse);
+    expect(
+      await inventory.mayNotifyArk(parent),
+      await authority.mayNotify(parent),
+    );
+  });
 }
 
 T _value<T, F extends Failure>(Result<T, F> result) {

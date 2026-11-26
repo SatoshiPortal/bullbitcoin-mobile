@@ -166,6 +166,7 @@ void main() {
       client: FakeArkClient(),
       accounts: Registry(),
       initializeNew: false,
+      permitsParent: (_) async => true,
     );
     expect(result, isA<Ok<ArkForegroundMaintenance, ArkFailure>>());
     final maintenance =
