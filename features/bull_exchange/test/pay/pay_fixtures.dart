@@ -1,6 +1,6 @@
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:fees/fees.dart';
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 

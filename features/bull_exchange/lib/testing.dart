@@ -12,7 +12,7 @@ import 'src/default_wallets/presentation/default_wallets_machine.dart';
 export 'src/default_wallets/presentation/default_wallets_bloc.dart'
     show DefaultWalletsBloc;
 export 'src/default_wallets/presentation/default_wallets_machine.dart';
-export 'src/pay/presentation/pay_flow.dart';
+export 'src/pay/domain/pay_flow.dart';
 export 'src/pay/presentation/pay_flow_bloc.dart';
 export 'src/pay/ui/pay_flow_shell.dart' show payPagesFor;
 export 'src/payin/exchange_payin_ui.dart' show ExchangePayinUi;

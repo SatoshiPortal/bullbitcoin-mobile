@@ -1,6 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:fees/fees.dart';
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_flow.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow_bloc.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';

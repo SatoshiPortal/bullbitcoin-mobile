@@ -1,5 +1,5 @@
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_flow.dart';
 import 'package:bull_exchange/src/pay/ui/pay_flow_shell.dart';
 import 'package:bull_exchange/src/pay/ui/screens/pay_amount_page.dart';
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
