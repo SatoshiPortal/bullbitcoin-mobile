@@ -4,3 +4,4 @@ output-localization-file: mnemonic_entry_localizations.dart
 output-class: MnemonicEntryLocalizations
 output-dir: lib/generated/l10n
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

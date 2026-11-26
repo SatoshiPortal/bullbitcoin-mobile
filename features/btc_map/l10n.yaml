@@ -4,3 +4,4 @@ template-arb-file: app_en.arb
 output-localization-file: btc_map_localizations.dart
 output-class: BtcMapLocalizations
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

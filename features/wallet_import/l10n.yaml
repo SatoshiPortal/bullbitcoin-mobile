@@ -4,3 +4,4 @@ template-arb-file: import_en.arb
 output-localization-file: import_localizations.dart
 output-class: ImportLocalizations
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

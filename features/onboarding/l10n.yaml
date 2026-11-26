@@ -4,3 +4,4 @@ output-localization-file: onboarding_localizations.dart
 output-class: OnboardingLocalizations
 output-dir: lib/generated/l10n
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

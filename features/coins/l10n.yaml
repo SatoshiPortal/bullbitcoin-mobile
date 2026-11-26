@@ -4,3 +4,4 @@ output-localization-file: coins_localizations.dart
 output-class: CoinsLocalizations
 output-dir: lib/generated/l10n
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

@@ -4,3 +4,4 @@ template-arb-file: bull_ui_en.arb
 output-localization-file: bull_ui_localizations.dart
 output-class: BullUiLocalizations
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

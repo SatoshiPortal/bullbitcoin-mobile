@@ -4,3 +4,4 @@ template-arb-file: app_en.arb
 output-localization-file: ark_localizations.dart
 output-class: ArkLocalizations
 nullable-getter: true
+untranslated-messages-file: untranslated-messages.txt

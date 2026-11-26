@@ -4,3 +4,4 @@ output-localization-file: bip85_localizations.dart
 output-class: Bip85Localizations
 output-dir: lib/generated/l10n
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt
