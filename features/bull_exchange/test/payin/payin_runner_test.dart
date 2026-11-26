@@ -6,98 +6,64 @@ import 'package:exchange/steps.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _session = ExchangeSession(
-  environment: ExchangeEnvironment.mainnet,
-  epoch: 1,
-  sessionId: 's',
-);
-
-final _order = Order.sell(
-  orderId: 'o-1',
-  orderType: OrderType.sell,
-  message: OrderMessage(code: '', message: ''),
-  orderNumber: 1,
-  payinAmount: 0.001,
-  payinCurrency: 'BTC',
-  payoutAmount: 100,
-  payoutCurrency: 'CAD',
-  payinMethod: OrderPaymentMethod.bitcoin,
-  payoutMethod: OrderPaymentMethod.cadBalance,
-  orderStatus: OrderStatus.inProgress,
-  payinStatus: OrderPayinStatus.awaitingPayment,
-  payoutStatus: OrderPayoutStatus.notStarted,
-  confirmationDeadline: DateTime.now().add(const Duration(hours: 1)),
-  createdAt: DateTime.utc(2026, 11, 24),
-  bitcoinAddress: 'tb1q',
-  isTestnet: true,
-) as SellOrder;
-
-const _target = OnchainDeposit('tb1q');
-const _spend = PayinWalletSpend(
-  'w1',
-  PayinSpendOptions(
-    fee: PayinFeeRate(250),
-    replaceByFee: true,
-    coins: {},
-    payjoin: false,
-  ),
-);
-const _built = PayinBuilt<PayinSpend>(
-  _spend,
-  'tx1',
-  SignedBitcoinPayin<String>('signed'),
-);
+import '../orders/order_usecase_fakes.dart';
+import 'payin_fixtures.dart';
+import 'payin_usecase_fakes.dart';
 
 void main() {
   late List<String> calls;
   late List<PayinEvent<PayinSpend>> events;
   late StreamController<PayjoinProgress> payjoin;
+  late SellOrder order;
   late PayinRunner runner;
 
   setUp(() {
     calls = [];
     events = [];
     payjoin = StreamController<PayjoinProgress>();
+    order = payinOrder();
     runner = PayinRunner(
-      (
-        build: (effect) async {
+      fakePayin(
+        build: FakeBuildPayinUsecase((effect) async {
           calls.add('build ${effect.walletId}');
-          return const PayinBuildOk(_built);
-        },
-        send: (built) async {
-          calls.add('send ${built.txid}');
-          return const PayinBroadcastOutcomeUnknown('tx1');
-        },
-        readOrder: (orderId) async {
-          calls.add('read $orderId');
-          return ReadGot(_order);
-        },
-        txSeen: (txid) async {
+          return const PayinBuildOk(payinBuilt);
+        }),
+        send: FakeSendPayinUsecase((session, effect) async {
+          calls.add('send ${effect.built.txid} ${session.sessionId}');
+          return PayinSendAnswered(
+            effect.attempt,
+            const GateAdmitted(PayinBroadcastOutcomeUnknown('tx1')),
+          );
+        }),
+        getOrder: FakeGetOrderUsecase((session, orderId) async {
+          calls.add('read $orderId ${session.sessionId}');
+          return ReadGot(order);
+        }),
+        transactionSeen: FakeCheckTransactionSeenUsecase((txid) async {
           calls.add('seen $txid');
           return null;
-        },
-        watchPayjoin: (sessionId) {
+        }),
+        watchPayjoin: FakeWatchPayjoinUsecase((sessionId) {
           calls.add('payjoin $sessionId');
           return payjoin.stream;
-        },
-        retryPayjoin: (sessionId) async => calls.add('retry $sessionId'),
-        journalUnknown: (orderId, network, txid) async =>
-            calls.add('journal $orderId $txid'),
+        }),
+        retryPayjoin: FakeRetryPayjoinProposalUsecase(
+          (sessionId) async => calls.add('retry $sessionId'),
+        ),
       ),
-      ExchangeWriteGate(),
-      _session,
+      payinSession,
       events.add,
     );
   });
 
-  test('build, send through the gate and journal an unknown send', () {
+  test('build, then send with the flow session', () {
     fakeAsync((async) {
       runner.run([
-        PayinBuild<PayinSpend>(_order, _target, _spend, 1),
-        PayinSend<PayinSpend>(_order, _target, 2, _built),
+        PayinBuild<PayinSpend>(order, payinTarget, payinWalletSpend, 1),
+        PayinSend<PayinSpend>(order, payinTarget, 2, payinBuilt),
       ]);
       async.flushMicrotasks();
-      expect(calls, ['build w1', 'send tx1', 'journal o-1 tx1']);
+      expect(calls, ['build w1', 'send tx1 s']);
       expect(events, [
         isA<PayinBuildAnswered<PayinSpend>>().having(
           (e) => e.attempt,
@@ -115,9 +81,9 @@ void main() {
 
   test('a look-up reads the order and the transaction together', () {
     fakeAsync((async) {
-      runner.run([PayinVerify<PayinSpend>(_order, _target, 3, 'tx1')]);
+      runner.run([PayinVerify<PayinSpend>(order, payinTarget, 3, 'tx1')]);
       async.flushMicrotasks();
-      expect(calls, ['seen tx1', 'read o-1']);
+      expect(calls, ['seen tx1', 'read o-1 s']);
       expect(
         events.single,
         isA<PayinVerified<PayinSpend>>().having((e) => e.attempt, 'attempt', 3),
@@ -132,10 +98,20 @@ void main() {
       async.flushMicrotasks();
       unawaited(payjoin.close());
       async.flushMicrotasks();
+      expect(calls, ['payjoin pj']);
       expect(events, [
         isA<PayinPayjoinUpdated<PayinSpend>>(),
         isA<PayinPayjoinWatchEnded<PayinSpend>>(),
       ]);
+    });
+  });
+
+  test('a payjoin retry asks the session again', () {
+    fakeAsync((async) {
+      runner.run(const [PayinRetryPayjoin<PayinSpend>('pj')]);
+      async.flushMicrotasks();
+      expect(calls, ['retry pj']);
+      expect(events, isEmpty);
     });
   });
 
@@ -145,7 +121,7 @@ void main() {
         PayinWatchEffect<PayinSpend>(WatchSchedulePoll('o-1', 1)),
       ]);
       async.elapse(const Duration(seconds: 5));
-      expect(calls, ['read o-1']);
+      expect(calls, ['read o-1 s']);
       expect(
         (events.single as PayinWatchEvent<PayinSpend>).event,
         isA<WatchPolled<Order>>().having((e) => e.ticket, 'ticket', 1),
@@ -155,7 +131,7 @@ void main() {
         PayinWatchEffect<PayinSpend>(WatchStop('o-1')),
       ]);
       async.elapse(const Duration(minutes: 1));
-      expect(calls, ['read o-1']);
+      expect(calls, ['read o-1 s']);
     });
   });
 

@@ -25,9 +25,8 @@ typedef SellFlowCalls = ({
   findCreated,
   Future<ExchangeRead<Order>> Function(Order order) refresh,
   PayoutRequirementsUsecases requirements,
-  PayinCalls payin,
+  PayinUsecases payin,
   SpendOptionsCalls spend,
-  ExchangeWriteGate gate,
 });
 
 SellFlowCalls sellFlowCallsOf(
@@ -110,9 +109,8 @@ SellFlowCalls sellFlowCallsOf(
       return readOfResult(await orders.getOrder(order.orderId));
     },
     requirements: PayoutRequirementsUsecases.of(exchange),
-    payin: payinCallsOf(exchange, session, wallets),
+    payin: PayinUsecases.of(exchange, wallets),
     spend: spendOptionsCallsOf(session, wallets),
-    gate: exchange.writeGate,
   );
 }
 
@@ -160,7 +158,7 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
       ) {
         if (!isClosed) add(SellRequirementsChanged(event));
       });
-      _payin = PayinRunner(calls.payin, calls.gate, session, (event) {
+      _payin = PayinRunner(calls.payin, session, (event) {
         if (!isClosed) add(SellPayinChanged(event));
       });
       _spend = SpendOptionsRunner(calls.spend, (event) {

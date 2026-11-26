@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bbx_api/bbx_api_testing.dart';
+import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payin/payin_spend_calls.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -94,7 +95,7 @@ Exchange _exchange(HttpClientAdapter adapter) =>
 
 void main() {
   // Sell and pay read their order after the payin broadcast (recheck,
-  // verify, receipt) through the same PayinCalls.readOrder.
+  // verify, receipt) through the same PayinUsecases.getOrder.
   test('a failed post-broadcast order read keeps foreign text out of disk logs '
       'and the reporter', () async {
     const socket = SocketException("Failed host lookup: '$_host'");
@@ -128,9 +129,9 @@ void main() {
       labels: _Labels(),
       coins: (_) async => null,
     );
-    final calls = payinCallsOf(_exchange(transport), _session, services);
+    final payin = PayinUsecases.of(_exchange(transport), services);
 
-    final read = await calls.readOrder(_orderId);
+    final read = await payin.getOrder.execute(_session, _orderId);
 
     expect(
       read,

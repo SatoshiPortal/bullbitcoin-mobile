@@ -1,6 +1,13 @@
 import 'dart:async';
 
+import 'package:bull_exchange/src/orders/domain/usecases/get_order_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/build_payin_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/check_transaction_seen_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/retry_payjoin_proposal_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/send_payin_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bull_exchange/src/payin/outcome_watch_runner.dart';
+import 'package:bull_exchange/src/payin/payin_spend_calls.dart';
 import 'package:clock/clock.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -43,74 +50,84 @@ final class PayjoinPayin<S> extends PayinSpend {
   });
 }
 
-/// The calls a payin needs, bound to one session and wallet set.
-typedef PayinCalls = ({
-  Future<PayinBuildResult<PayinSpend>> Function(PayinBuild<PayinSpend> effect)
-  build,
-  Future<PayinBroadcastOutcome> Function(PayinBuilt<PayinSpend> built) send,
-  Future<ExchangeRead<Order>> Function(String orderId) readOrder,
+/// The use cases of a payin (sell and pay). Only [PayinRunner] calls
+/// them; a flow's bloc hands them over.
+final class PayinUsecases {
+  final BuildPayinUsecase build;
+  final SendPayinUsecase send;
+  final GetOrderUsecase getOrder;
+  final CheckTransactionSeenUsecase transactionSeen;
+  final WatchPayjoinUsecase watchPayjoin;
+  final RetryPayjoinProposalUsecase retryPayjoin;
 
-  /// Whether the source wallet or its network shows [txid]; null when it
-  /// can't tell.
-  Future<bool?> Function(String txid) txSeen,
-  Stream<PayjoinProgress> Function(String sessionId) watchPayjoin,
-  Future<void> Function(String sessionId) retryPayjoin,
-  Future<void> Function(String orderId, BtcNetwork network, String? txid)
-  journalUnknown,
-});
+  const PayinUsecases({
+    required this.build,
+    required this.send,
+    required this.getOrder,
+    required this.transactionSeen,
+    required this.watchPayjoin,
+    required this.retryPayjoin,
+  });
 
-/// Runs the payin machine's effects (C4 `payin.dart`) for sell and pay:
-/// build, the send through the account's write gate (journaled when its
-/// outcome is unknown or handed to payjoin), the order re-read before any
-/// retry, the look-up after a doubtful send, the payjoin session watch and
-/// the order watch. Every answer carries the attempt, session id or ticket
-/// of its effect.
+  PayinUsecases.of(Exchange exchange, PayinWalletServices wallets)
+    : this(
+        build: BuildPayinUsecase(wallets.spend),
+        send: SendPayinUsecase(
+          exchange,
+          spend: wallets.spend,
+          payjoinSender: wallets.payjoinSender,
+          payjoinSessions: wallets.payjoinSessions,
+          labels: wallets.labels,
+        ),
+        getOrder: GetOrderUsecase(exchange),
+        transactionSeen: CheckTransactionSeenUsecase(wallets.payjoinSessions),
+        watchPayjoin: WatchPayjoinUsecase(wallets.payjoinSessions),
+        retryPayjoin: RetryPayjoinProposalUsecase(wallets.payjoinSender),
+      );
+}
+
+/// Runs the payin machine's effects (C4 `payin.dart`) for sell and pay,
+/// with the flow's session: build, the send through the account's write
+/// gate (journaled when its outcome is unknown or handed to payjoin), the
+/// order re-read before any retry, the look-up after a doubtful send, the
+/// payjoin session watch and the order watch. Every answer carries the
+/// attempt, session id or ticket of its effect.
 final class PayinRunner {
-  final PayinCalls _calls;
-  final ExchangeWriteGate _gate;
+  final PayinUsecases _usecases;
   final ExchangeSession _session;
   final void Function(PayinEvent<PayinSpend> event) _emit;
   late final OutcomeWatchRunner<Order> _watch = OutcomeWatchRunner(
-    _calls.readOrder,
+    (orderId) => _usecases.getOrder.execute(_session, orderId),
     (event) => _send(PayinWatchEvent(event)),
   );
   final Map<String, StreamSubscription<PayjoinProgress>> _payjoins = {};
   bool _closed = false;
 
-  PayinRunner(this._calls, this._gate, this._session, this._emit);
+  PayinRunner(this._usecases, this._session, this._emit);
 
   void run(List<PayinEffect<PayinSpend>> effects) {
     for (final effect in effects) {
       switch (effect) {
         case final PayinBuild<PayinSpend> build:
           _answer(
-            _calls
-                .build(build)
+            _usecases.build
+                .execute(build)
                 .then((r) => PayinBuildAnswered(build.attempt, r, clock.now())),
           );
         case final PayinSend<PayinSpend> send:
-          _answer(
-            runPayinSend(
-              gate: _gate,
-              session: _session,
-              effect: send,
-              now: clock.now,
-              send: _calls.send,
-              journalUnknown: _calls.journalUnknown,
-            ),
-          );
+          _answer(_usecases.send.execute(_session, send));
         case PayinRecheck(:final orderId, :final attempt):
           _answer(
-            _calls
-                .readOrder(orderId)
+            _usecases.getOrder
+                .execute(_session, orderId)
                 .then((read) => PayinRechecked(attempt, read, clock.now())),
           );
         case PayinVerify(:final order, :final attempt, :final txid):
           _answer(_verify(order.orderId, attempt, txid));
         case PayinFollowPayjoin(:final sessionId):
           unawaited(_payjoins.remove(sessionId)?.cancel());
-          _payjoins[sessionId] = _calls
-              .watchPayjoin(sessionId)
+          _payjoins[sessionId] = _usecases.watchPayjoin
+              .execute(sessionId)
               .listen(
                 (progress) => _send(PayinPayjoinUpdated(sessionId, progress)),
                 onError: (Object _) => _send(PayinPayjoinWatchEnded(sessionId)),
@@ -120,7 +137,7 @@ final class PayinRunner {
         case PayinStopPayjoin(:final sessionId):
           unawaited(_payjoins.remove(sessionId)?.cancel());
         case PayinRetryPayjoin(:final sessionId):
-          unawaited(_calls.retryPayjoin(sessionId));
+          unawaited(_usecases.retryPayjoin.execute(sessionId));
         case PayinWatchEffect(:final effect):
           _watch.run(effect);
       }
@@ -132,8 +149,10 @@ final class PayinRunner {
     int attempt,
     String? txid,
   ) async {
-    final seen = txid == null ? Future.value(null) : _calls.txSeen(txid);
-    final order = await _calls.readOrder(orderId);
+    final seen = txid == null
+        ? Future<bool?>.value(null)
+        : _usecases.transactionSeen.execute(txid);
+    final order = await _usecases.getOrder.execute(_session, orderId);
     return PayinVerified(
       attempt,
       payinCheckFrom(txid: txid, txSeen: await seen, order: order),
