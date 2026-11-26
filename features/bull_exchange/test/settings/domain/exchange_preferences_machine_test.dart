@@ -5,7 +5,7 @@ import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart
 import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_preferences_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/update_exchange_preferences_usecase.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_preferences_bloc.dart';
-import 'package:bull_exchange/src/settings/presentation/exchange_preferences_machine.dart';
+import 'package:bull_exchange/src/settings/domain/exchange_preferences_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

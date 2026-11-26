@@ -3,8 +3,8 @@ import 'package:exchange/steps.dart' show StepNext;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/entities/exchange_preferences.dart';
-import '../domain/exchange_settings_failure.dart';
+import 'entities/exchange_preferences.dart';
+import 'exchange_settings_failure.dart';
 
 /// [saved] is what the account has; [draft] what the screen shows.
 @immutable
