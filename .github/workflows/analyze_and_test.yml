@@ -341,7 +341,7 @@ jobs:
     # surfaces a toolchain wart, revert this job to ubuntu-24.04 in one commit
     # (x64 runners have ~86 GB free before setup and need no cleanup).
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -370,7 +370,7 @@ jobs:
             libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
             dbus gnome-keyring \
             xdg-desktop-portal xdg-desktop-portal-gtk \
-            libsqlite3-dev xvfb xauth
+            libsqlite3-dev xvfb xauth xdg-user-dirs
 
       # The tests build and launch the real Linux GTK app, which needs a
       # display to init even though the tests themselves render nothing —
@@ -398,6 +398,11 @@ jobs:
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
             make integration-test
           '
+
+      # Run separately: the aggregated suite initializes Bull only once on
+      # its normal network and cannot select regtest before services start.
+      - name: Coins and prices on isolated local regtest
+        run: bash tools/local_regtest_integration.sh
 
   ci:
     name: CI
