@@ -1,3 +1,4 @@
+export 'src/retirement.dart';
 export 'src/coordinator.dart';
 export 'src/lifecycle.dart'
     show
