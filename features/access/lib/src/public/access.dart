@@ -15,7 +15,8 @@ class Access {
   const Access();
 
   /// Revokes the current session immediately. A protected view requires its
-  /// PIN again; an unprotected view can reopen after admitted writes drain.
+  /// PIN again; an unprotected view can reopen on foreground resume after
+  /// admitted writes drain.
   Future<void> lock() => accessLocator<AccessLockController>().lock();
 
   /// True on every lock, false on every unlock.

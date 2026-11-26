@@ -15,9 +15,17 @@ final class AccessInventory {
         (_) => const AccessPinCheckFailure(),
       );
 
-  /// Revokes immediately. An unprotected view can reopen after drainage,
-  /// provided no newer lock has superseded it.
-  Future<bool> lockIfProtected() => _inventory.lockIfProtected();
+  /// Revokes immediately, irrespective of whether the view has a PIN.
+  Future<bool> lock() => _inventory.lock();
+
+  bool get isLocked => _inventory.isLocked;
+
+  Future<void> waitForDrain() => _inventory.waitForDrain();
+
+  Future<void> resumeUnprotected() async {
+    final result = await _inventory.resumeUnprotected();
+    if (result case Err()) return;
+  }
 
   Stream<bool> get locked => _inventory.lockedChanges;
 
