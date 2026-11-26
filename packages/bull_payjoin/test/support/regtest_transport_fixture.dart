@@ -209,8 +209,10 @@ void _observeFixtureClose(Socket socket) {
   );
 }
 
-RegtestHostProfile fixtureHost(String host) {
+LocalRegtestHost fixtureHost(String host) {
   final profile = RegtestHostProfile.forNetwork(NetworkEnv.regtest, host: host);
-  if (profile == null) throw StateError('Regtest host unavailable');
+  if (profile is! LocalRegtestHost) {
+    throw StateError('Regtest host unavailable');
+  }
   return profile;
 }
