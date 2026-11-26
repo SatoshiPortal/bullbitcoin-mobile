@@ -10,6 +10,35 @@ FILES = [f"test/{name}_test.dart" for name in "abcdefg"] + ["test/nested/h_test.
 
 
 class UnitTestShardTest(unittest.TestCase):
+    def test_access_restores_original_path_without_affecting_other_members(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = root / "original"
+            nested = root / "nested"
+            original.mkdir()
+            nested.mkdir()
+            for folder, marker in ((original, "original"), (nested, "nested")):
+                fvm = folder / "fvm"
+                fvm.write_text(f'#!/bin/sh\nprintf "{marker}\\n"\n')
+                fvm.chmod(0o755)
+            (root / "test").mkdir()
+            (root / "test" / "sample_test.dart").write_text("")
+            env = dict(
+                os.environ,
+                PATH=f"{nested}:{original}:{os.environ['PATH']}",
+                ACCESS_UNIT_TEST_PATH=f"{original}:{os.environ['PATH']}",
+                TEST_TOTAL_SHARDS="1",
+                TEST_SHARD_INDEX="0",
+            )
+            command = ["bash", str(SCRIPT), "flutter"]
+            access = subprocess.run(command, cwd=root, env=dict(env, MELOS_PACKAGE_NAME="access"), text=True, capture_output=True, check=False)
+            other = subprocess.run(command, cwd=root, env=dict(env, MELOS_PACKAGE_NAME="other"), text=True, capture_output=True, check=False)
+            ordinary = subprocess.run(command, cwd=root, env={k: v for k, v in dict(env, MELOS_PACKAGE_NAME="access").items() if k != "ACCESS_UNIT_TEST_PATH"}, text=True, capture_output=True, check=False)
+        self.assertEqual(access.returncode, 0)
+        self.assertEqual(access.stdout.strip(), "original")
+        self.assertEqual(other.stdout.strip(), "nested")
+        self.assertEqual(ordinary.stdout.strip(), "nested")
+
     def run_shard(self, total, index, files=FILES):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

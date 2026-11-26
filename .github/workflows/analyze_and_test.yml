@@ -332,7 +332,9 @@ jobs:
         env:
           TRACE_ACCESS_SHARD: ${{ matrix.shard == 1 && '1' || '0' }}
           TRACE_ACCESS_HOOKS: '1'
-        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
+        # FVM adds its SDK directory to PATH for each nested invocation.
+        # Keep Access aligned with the single FVM invocation in prepare-x64.
+        run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
 
   integration:
     needs: [classification, action-pins, readiness]
