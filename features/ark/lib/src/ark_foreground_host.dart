@@ -126,6 +126,7 @@ final class ArkForegroundHost {
       services: services,
       boardFunding: boardFunding,
       inventory: inventory,
+      dispatcher: dispatcher,
     );
     locator.registerSingleton<ArkForegroundHost>(
       host,

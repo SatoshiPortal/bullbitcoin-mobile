@@ -1225,8 +1225,7 @@ final class BarkArkClient implements ArkClient {
         completedStages: completed,
         failedStageKinds: failedKinds,
       );
-      if (executionMode == ArkExecutionMode.backgroundExisting &&
-          _mayRun(account)) {
+      if (_mayRun(account)) {
         try {
           await exitObserver?.observe(outcome);
         } on Exception {

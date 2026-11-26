@@ -309,7 +309,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           admission: locator<RuntimeAdmission>(),
         );
       } on Exception {
-        log.warning('Ark exit notifications unavailable');
+        log.warning('Ark payment notification store unavailable');
       } catch (failure, stack) {
         try {
           await boardFunding.close();
@@ -336,7 +336,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         executionPolicy: policy,
         executionMode: native.ArkExecutionMode.foreground,
         stageBudget: const native.ArkUnlimitedStageBudget(),
-        exitObserver: exitNotifier?.observer,
+        exitObserver: exitNotifier?.combined,
       );
       createdClient = client;
       if (locator.isRegistered<RuntimeAdmission>()) {
