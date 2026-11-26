@@ -29,6 +29,7 @@ void main() {
   late FakeOpener native;
   late Proofs proofs;
   late BarkArkClient client;
+  final child = FakeChild();
   final account = ArkAccountId(
     parent: Fingerprint('12345678'),
     network: BitcoinNetwork.regtest,
@@ -61,7 +62,7 @@ void main() {
   BarkArkClient build({ArkExecutionMode mode = ArkExecutionMode.foreground}) =>
       BarkArkClient(
         storagePath: temp.path,
-        childProvider: FakeChild(),
+        childProvider: child,
         transactionVerifier: FakeVerifier(),
         executionPolicy: FakePolicy(),
         executionMode: mode,
@@ -369,8 +370,17 @@ void main() {
   test('existing-only background sync accepts the same exact closure proof without new native creation', () async {
     await client.close();
     client = build(mode: ArkExecutionMode.backgroundExisting);
+    // The background lane only opens for a renewal; no lot is admitted, so the
+    // pass observes and proves the closure without spending.
+    child.refuseBatchAt = 0;
     final creates = native.creates;
-    expect((await synchronize()).stale, false);
+    final pass = await client.synchronize(account, renew: true);
+    expect(pass, isA<Ok>(), reason: '$pass');
+    final outcome = (pass as Ok<ArkPassOutcome, ArkWalletFailure>).value;
+    // The refused lot is the only stage that did not run: the closure proof
+    // itself was accepted and the inventory is complete.
+    expect(outcome.failedStages.toSet(), {'deferred'});
+    expect(outcome.snapshot.vtxoInventoryComplete, true);
     expect(native.creates, creates);
     expect(native.executes, 0);
   });

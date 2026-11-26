@@ -31,6 +31,14 @@ final class _ChildSpy implements native.ArkChildProviderPort {
   int calls = 0;
 
   @override
+  Future<Result<void, ArkWalletFailure>> admitBatch(
+    ArkAccountId account,
+  ) async {
+    calls++;
+    return const Err(ArkUnavailableFailure());
+  }
+
+  @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
     Future<Result<T, ArkWalletFailure>> Function(String, Fingerprint) action,

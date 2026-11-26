@@ -13,7 +13,19 @@ import 'package:primitives/primitives.dart';
 
 final class FakeChild implements ArkChildProviderPort {
   int calls = 0;
+  int batchAdmissions = 0;
+  int? refuseBatchAt;
   bool failOnce = false;
+  @override
+  Future<Result<void, ArkWalletFailure>> admitBatch(
+    ArkAccountId account,
+  ) async {
+    final index = batchAdmissions++;
+    return index == refuseBatchAt
+        ? const Err(ArkUnavailableFailure(ArkFailureReason.renewalNotPermitted))
+        : const Ok(null);
+  }
+
   @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
