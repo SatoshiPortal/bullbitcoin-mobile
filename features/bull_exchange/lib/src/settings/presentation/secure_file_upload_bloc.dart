@@ -4,28 +4,36 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/usecases/get_secure_file_upload_status_usecase.dart';
+import '../domain/usecases/pick_exchange_document_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
 import '../domain/secure_file_upload_machine.dart';
 
 /// Shell of [transitionSecureUpload]; results after close are dropped.
 class SecureUploadBloc extends Bloc<SecureUploadEvent, SecureUploadState> {
   SecureUploadBloc({
-    required GetSecureFileUploadStatusUsecase getUploadStatusUsecase,
-    required UploadExchangeDocumentUsecase uploadDocumentUsecase,
+    required GetSecureFileUploadStatusUsecase getUploadStatus,
+    required PickExchangeDocumentUsecase pickDocument,
+    required UploadExchangeDocumentUsecase uploadDocument,
   }) : this._(
          secureUploadStart(),
-         getUploadStatusUsecase,
-         uploadDocumentUsecase,
+         getUploadStatus,
+         pickDocument,
+         uploadDocument,
        );
 
-  SecureUploadBloc._(SecureUploadNext start, this._getStatus, this._upload)
-    : super(start.state) {
+  SecureUploadBloc._(
+    SecureUploadNext start,
+    this._getUploadStatus,
+    this._pickDocument,
+    this._uploadDocument,
+  ) : super(start.state) {
     on<SecureUploadEvent>(_onEvent, transformer: sequential());
     _run(start.effects);
   }
 
-  final GetSecureFileUploadStatusUsecase _getStatus;
-  final UploadExchangeDocumentUsecase _upload;
+  final GetSecureFileUploadStatusUsecase _getUploadStatus;
+  final PickExchangeDocumentUsecase _pickDocument;
+  final UploadExchangeDocumentUsecase _uploadDocument;
 
   void _onEvent(SecureUploadEvent event, Emitter<SecureUploadState> emit) {
     final next = transitionSecureUpload(state, event);
@@ -48,14 +56,14 @@ class SecureUploadBloc extends Bloc<SecureUploadEvent, SecureUploadState> {
       switch (effect) {
         FetchUploadStatus(:final attempt) => UploadStatusLoaded(
           attempt,
-          await _getStatus.execute(),
+          await _getUploadStatus.execute(),
         ),
         PickUploadDocument(:final userId) => UploadPicked(
-          await _upload.pick(userId: userId),
+          await _pickDocument.execute(userId: userId),
         ),
         SendUploadDocument(:final attempt, :final document) => UploadAnswered(
           attempt,
-          await _upload.upload(document),
+          await _uploadDocument.execute(document),
         ),
       };
 }

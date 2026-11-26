@@ -2,8 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
-import 'package:bull_exchange/src/settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
-import 'package:bull_exchange/src/settings/domain/usecases/upload_exchange_document_usecase.dart';
+import 'package:bull_exchange/src/settings/domain/entities/exchange_document_to_upload.dart';
 import 'package:bull_exchange/src/settings/presentation/secure_file_upload_bloc.dart';
 import 'package:bull_exchange/src/settings/domain/secure_file_upload_machine.dart';
 import 'package:bull_exchange/src/settings/ui/screens/secure_file_upload_screen.dart';
@@ -12,8 +11,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../settings_usecase_fakes.dart';
 
 const _rawReason =
     'ExchangeApiException[ERR_KYC_403]: recipient bc1qexamplerecipient rejected';
@@ -23,12 +23,6 @@ const _secureFileUpload = SecureFileUpload(
   status: KycDocumentStatus.notUploaded,
 );
 
-class _MockGetUploadStatus extends Mock
-    implements GetSecureFileUploadStatusUsecase {}
-
-class _MockUploadDocument extends Mock
-    implements UploadExchangeDocumentUsecase {}
-
 const _document = ExchangeDocumentToUpload(bytes: [1], fileName: 'doc-u-42-ID');
 
 Future<SecureUploadBloc> _pump(
@@ -36,19 +30,23 @@ Future<SecureUploadBloc> _pump(
   required Result<SecureFileUpload, ExchangeSettingsFailure> uploadStatus,
   Result<void, ExchangeSettingsFailure>? upload,
 }) async {
-  final getUploadStatus = _MockGetUploadStatus();
-  when(getUploadStatus.execute).thenAnswer((_) async => uploadStatus);
-
-  final uploadUsecase = _MockUploadDocument();
-  if (upload != null) {
-    when(() => uploadUsecase.pick(userId: any(named: 'userId')))
-        .thenAnswer((_) async => const Ok(_document));
-    when(() => uploadUsecase.upload(_document)).thenAnswer((_) async => upload);
-  }
-
   final cubit = SecureUploadBloc(
-    getUploadStatusUsecase: getUploadStatus,
-    uploadDocumentUsecase: uploadUsecase,
+    getUploadStatus: FakeGetSecureFileUploadStatusUsecase(
+      () async => uploadStatus,
+    ),
+    pickDocument: FakePickExchangeDocumentUsecase(({userId}) async {
+      // The account's user id names the document (doc-<userId>-ID).
+      if (upload == null || userId != 'u-42') {
+        throw StateError('pick for $userId was not expected');
+      }
+      return const Ok(_document);
+    }),
+    uploadDocument: FakeUploadExchangeDocumentUsecase((document) async {
+      if (upload == null || document != _document) {
+        throw StateError('upload of $document was not expected');
+      }
+      return upload;
+    }),
   );
   addTearDown(cubit.close);
 
