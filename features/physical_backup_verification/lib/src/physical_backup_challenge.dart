@@ -7,6 +7,8 @@ import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart'
     show MnemonicTile, Secret, SecretExtension;
 
+import 'physical_backup_session.dart';
+
 typedef PhysicalBackupLabels = ({
   String privacyUnavailable,
   String retry,
@@ -57,14 +59,7 @@ enum _PassphraseFailure { incorrect, unavailable }
 class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
     with PrivacyScreen, WidgetsBindingObserver {
   late Future<bool> _protection = enableScreenPrivacy();
-  int _placed = 0;
-  int _total = 0;
-  int _challengeEpoch = 0;
-  int _passphraseEpoch = 0;
-  bool _foreground = true;
-  bool _needsPassphrase = false;
-  bool _verifying = false;
-  bool _reported = false;
+  final _session = PhysicalBackupSession();
   String _candidate = '';
   _PassphraseFailure? _failure;
 
@@ -73,73 +68,70 @@ class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     final lifecycle = WidgetsBinding.instance.lifecycleState;
-    _foreground = lifecycle == null || lifecycle == AppLifecycleState.resumed;
+    _session.foreground =
+        lifecycle == null || lifecycle == AppLifecycleState.resumed;
   }
 
   @override
   void didUpdateWidget(covariant PhysicalBackupChallenge oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.secret, widget.secret)) return;
-    _challengeEpoch++;
-    _placed = 0;
-    _total = 0;
-    _needsPassphrase = false;
-    _reported = false;
-    _clearCandidate();
+    _session.replace();
+    _candidate = '';
+    _failure = null;
   }
 
   void _clearCandidate() {
     _candidate = '';
     _failure = null;
-    _verifying = false;
-    _passphraseEpoch++;
+    _session.clearInput();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final foreground = state == AppLifecycleState.resumed;
-    if (foreground == _foreground) return;
+    if (foreground == _session.foreground) return;
     setState(() {
-      _foreground = foreground;
+      _session.setForeground(foreground);
       if (!foreground) {
-        _clearCandidate();
-        if (!_needsPassphrase) {
-          _challengeEpoch++;
-          _placed = 0;
-          _total = 0;
-        }
+        _candidate = '';
+        _failure = null;
       }
     });
   }
 
   void _wordsVerified(int epoch) {
-    if (!mounted || !_foreground || epoch != _challengeEpoch || _reported) {
-      return;
-    }
-    if (widget.secret.info.hasPassphrase) {
-      setState(() => _needsPassphrase = true);
-    } else {
-      _report(widget.secret);
-    }
+    if (!mounted) return;
+    var report = false;
+    setState(() {
+      report = _session.wordsSolved(
+        epoch,
+        hasPassphrase: widget.secret.info.hasPassphrase,
+      );
+    });
+    if (report) _report(widget.secret);
   }
 
   Future<void> _verifyPassphrase() async {
-    if (!_foreground || _verifying || _reported || !_needsPassphrase) return;
+    if (!_session.beginVerification()) return;
     final secret = widget.secret;
-    final epoch = _passphraseEpoch;
+    final epoch = _session.passphraseEpoch;
     setState(() {
-      _verifying = true;
       _failure = null;
     });
     final result = await secret.verify.passphrase(_candidate);
     if (!mounted ||
-        !_foreground ||
         !identical(secret, widget.secret) ||
-        epoch != _passphraseEpoch) {
+        !_session.acceptsVerification(epoch)) {
       return;
     }
     setState(() {
-      _verifying = false;
+      _session.finishVerification(
+        verified: switch (result) {
+          Ok(value: true) => true,
+          _ => false,
+        },
+      );
       _failure = switch (result) {
         Ok(value: false) => _PassphraseFailure.incorrect,
         Err() => _PassphraseFailure.unavailable,
@@ -153,7 +145,6 @@ class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
   }
 
   void _report(Secret secret) {
-    _reported = true;
     widget.onVerified(PhysicalBackupProof._(secret.id));
   }
 
@@ -192,8 +183,8 @@ class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
       ),
       const Gap(20),
       BullText(
-        _total == 0 || _placed < _total
-            ? labels.wordNumber(_placed + 1)
+        _session.total == 0 || _session.placed < _session.total
+            ? labels.wordNumber(_session.placed + 1)
             : labels.allWordsSelected,
         textAlign: .center,
         style: context.bullType.caption.copyWith(
@@ -203,10 +194,10 @@ class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
         ),
       ),
       const Gap(20),
-      if (_needsPassphrase) ...[
+      if (_session.needsPassphrase) ...[
         BullText(labels.passphrasePrompt, style: context.bullType.body),
         BullSecretTextInput(
-          key: ValueKey(_passphraseEpoch),
+          key: ValueKey(_session.passphraseEpoch),
           label: labels.passphraseLabel,
           showLabel: labels.showPassphrase,
           hideLabel: labels.hidePassphrase,
@@ -227,12 +218,10 @@ class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
         BullButton.primary(
           size: BullButtonSize.small,
           label: labels.continueLabel,
-          onPressed: _foreground && !_verifying && !_reported
-              ? _verifyPassphrase
-              : null,
+          onPressed: _session.canVerify ? _verifyPassphrase : null,
         ),
-      ] else if (_foreground)
-        _wordsChallenge(context, _challengeEpoch),
+      ] else if (_session.foreground)
+        _wordsChallenge(context, _session.challengeEpoch),
     ],
   );
 
@@ -266,10 +255,10 @@ class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
           ],
         ),
         onProgress: (placed, total) {
-          if (!mounted || !_foreground || epoch != _challengeEpoch) return;
+          if (!mounted || !_session.acceptsWords(epoch)) return;
           setState(() {
-            _placed = placed;
-            _total = total;
+            _session.placed = placed;
+            _session.total = total;
           });
         },
         onSolved: () => _wordsVerified(epoch),
