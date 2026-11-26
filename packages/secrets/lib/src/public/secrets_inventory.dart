@@ -227,7 +227,10 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// Permit background sync to read the active view's descriptors while locked.
   @useResult
   Future<Result<void, SecretFailure>> setBackgroundEnabled(bool enabled) =>
-      _inSession((_) => _access.setBackgroundEnabled(enabled));
+      _inSession(
+        (_) => _access.setBackgroundEnabled(enabled),
+        preserveCommittedCommand: true,
+      );
 
   @useResult
   Future<Result<List<RegisteredWallet>, SecretFailure>> listWallets() =>
@@ -322,8 +325,10 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   );
 
   @useResult
-  Future<Result<void, SecretFailure>> removeWallet(String id) =>
-      _inSession((_) => _wallets.remove(view: defaultViewId, id: id));
+  Future<Result<void, SecretFailure>> removeWallet(String id) => _inSession(
+    (_) => _wallets.remove(view: defaultViewId, id: id),
+    preserveCommittedCommand: true,
+  );
 
   /// Operates on historical BIP85 children in the current foreground view.
   Bip85Derivations bip85(Secrets secrets) => Bip85Derivations._(this, secrets);
