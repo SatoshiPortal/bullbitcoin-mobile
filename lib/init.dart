@@ -61,9 +61,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+/// The only startup failure that blocks instead of retrying: the wallet
+/// storage's own data is unreadable. Another owner, a locked keystore,
+/// contention and an unsupported schema are not.
+InventoryRecoveryRequired? inventoryRecoveryFor(LegacyImportFailure failure) =>
+    switch (failure) {
+      LegacyOwnerFailure(
+        ownerId: 'secrets',
+        ownerDataLost: true,
+        :final cause,
+      ) =>
+        InventoryRecoveryRequired(switch (cause) {
+          LegacyOwnerFailureCause.keyLost => InventoryRecoveryCause.keyLost,
+          LegacyOwnerFailureCause.missingAfterAdmission =>
+            InventoryRecoveryCause.missingAfterAdmission,
+          _ => InventoryRecoveryCause.unreadable,
+        }),
+      _ => null,
+    };
+
 class Bull {
   static Future<Result<void, Failure>> init({
     Future<void> Function(LegacyImportFailure)? retryStorage,
+    Future<void> Function(InventoryRecoveryRequired)? blockedInventory,
     WizardFeature? wizard,
   }) async {
     final startupWizard = wizard ?? WizardFeature.mount();
@@ -236,11 +256,21 @@ class Bull {
     );
     var admitted = await cutover.prepare();
     while (admitted is Err<RuntimeAdmission, LegacyImportFailure>) {
+      // Only the wallet storage's own unreadable data blocks. Another owner,
+      // a locked keystore, contention and an unsupported schema keep the plain
+      // retry, and nothing here ever replaces or erases a file.
+      if (inventoryRecoveryFor(admitted.failure) case final blocked?) {
+        if (blockedInventory == null) return Err(blocked);
+        await blockedInventory(blocked);
+        admitted = await cutover.prepare();
+        continue;
+      }
       if (retryStorage == null) return Err(admitted.failure);
       switch (admitted.failure) {
         case final failure
             when failure is LegacyImportUnavailable ||
-                failure is LegacyImportDeferred:
+                failure is LegacyImportDeferred ||
+                failure is LegacyOwnerFailure:
           await retryStorage(failure);
           admitted = await cutover.prepare();
         case final failure:

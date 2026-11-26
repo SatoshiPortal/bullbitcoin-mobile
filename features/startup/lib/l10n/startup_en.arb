@@ -100,5 +100,17 @@
   "appStartupRestoreMismatch": "This recovery phrase belongs to another wallet. Enter the phrase of the wallet on this device.",
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
+  },
+  "inventoryUnreadableTitle": "Your wallets cannot be opened",
+  "@inventoryUnreadableTitle": {
+    "description": "Title of the blocking screen shown when the storage holding the wallets cannot be read"
+  },
+  "inventoryUnreadableMessage": "The storage that holds your wallets cannot be read on this device. Nothing was deleted or replaced. Retry, or contact support before uninstalling the app or changing anything on this device.",
+  "@inventoryUnreadableMessage": {
+    "description": "Body of the blocking screen: the wallet storage is unreadable, nothing was erased or replaced, and the user is told to retry or contact support before touching the app"
+  },
+  "inventoryUnreadableQuitButton": "Quit",
+  "@inventoryUnreadableQuitButton": {
+    "description": "Button that closes the app from the unreadable wallet storage screen"
   }
 }
