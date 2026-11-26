@@ -2,7 +2,7 @@ import 'package:swaps/src/util.dart' show SwapsException;
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/data/models/swap_master_key_model.dart';
-import 'package:bull_sdk/boltz.dart' as native;
+import 'package:rust_bindings/boltz.dart' as native;
 import 'package:test/test.dart';
 
 void main() {

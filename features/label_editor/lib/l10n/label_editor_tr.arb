@@ -1,0 +1,94 @@
+{
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} ithal edilen etiketler",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelExchangeBuy": "Satın Al Satın Al",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "bip329LabelsImportSuccessSingular": "1 etiket ithal edildi",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "systemLabelExchangeSell": "Sat Satış Sat",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "\"{label}'ı silemez. Lütfen tekrar deneyin.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "Buraya girin...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "İthalat Etiketler",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "bip329LabelsExportSuccess": "Etiketler başarıyla ihraç etti",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "Kaydet",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "BIP329 Etiketler",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 Etiketler Import /Export",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsExportButton": "İhracat Etiketler",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "systemLabelSelfSpend": "Kendin Kendi Harcamasını Kendin Kendin Kendin Kendin",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "bip329LabelsDescription": "BIP329 standart biçimini kullanarak ithalat veya ihracat cüzdan etiketleri.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "Bu not, QR kodunuzun veya faturanızın alıcısı tarafından görülebilecektir.",
+  "labelsErrorNoteTooLong": "Not en fazla {max} karakter olmalıdır",
+  "labelsErrorNoteForbiddenCharacter": "Not {character} karakterini içeremez",
+  "labelsErrorFileTooLarge": "Bu dosya çok büyük. Etiket dosyaları {max} boyutundan küçük olmalıdır.",
+  "labelsErrorFileUnreadable": "Bu bir BIP-329 etiket dosyasına benzemiyor. Doğru dosyayı seçtiğinizden emin olun.",
+  "labelsErrorFileEmpty": "Bu dosyada içe aktarılacak etiket yok.",
+  "labelsErrorExportFailed": "Etiketleriniz kaydedilemedi. Lütfen tekrar deneyin.",
+  "labelsErrorFileReservedName": "Bu dosya uygulamanın ayırdığı bir etiket adını kullanıyor. Dosyada adını değiştirip tekrar deneyin.",
+  "labelsErrorNoteForbiddenWhitespace": "Not satır sonu veya sekme içeremez",
+  "labelsErrorFileInvalidEntry": "Bu dosyadaki bazı girdiler okunamadı. Dosyayı kontrol edip tekrar deneyin."
+}

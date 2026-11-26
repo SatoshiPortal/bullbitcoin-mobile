@@ -55,11 +55,10 @@ class _BackupAlarmOverlayState extends State<BackupAlarmOverlay> {
                   bloc: cubit,
                   builder: (context, state) => switch (state) {
                     Ok(:final value) when value.alerts.isNotEmpty =>
-                      BullButton.small(
+                      BullButton.primary(
+                        size: BullButtonSize.small,
                         label: context.loc.recoverbullMonitoringTitle,
                         onPressed: () => widget.onOpen(context),
-                        bgColor: context.bull.primary,
-                        textColor: context.bull.onPrimary,
                       ),
                     _ => const SizedBox.shrink(),
                   },

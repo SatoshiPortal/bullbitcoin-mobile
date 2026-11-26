@@ -10,7 +10,7 @@ void main() {
   group('Security audit #2617 review transport', () {
     test('datasource requires the resolved proxy-aware connection path', () {
       final source = File(
-        'lib/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart',
+        'packages/electrum/lib/src/data/datasources/electrum_remote_datasource.dart',
       ).readAsStringSync();
       expect(source, contains('connection.socks5'));
       expect(source, contains('timeout(timeout)'));

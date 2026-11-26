@@ -1,47 +1,46 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:transactions/transactions.dart';
+
+import 'dart:async';
+
+import 'package:coins/coins.dart';
+import 'package:primitives/primitives.dart';
+
+import 'package:settings/settings.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullDisclosureLink,
         BullPullableBody,
         BullShapesX,
-        BullShimmerBox,
-        BullShimmerLine,
         BullText,
         Gap,
         BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class WalletDetailScreen extends StatelessWidget {
   const WalletDetailScreen({
     super.key,
     required this.walletId,
     required this.onOpenCoins,
+    required this.loadCoinSummary,
+    required this.scopeWalletHistory,
   });
 
   final String walletId;
+  final Widget Function(String walletId, Widget child) scopeWalletHistory;
   final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
+  final Future<Result<CoinSummary, CoinsFailure>> Function(String)
+  loadCoinSummary;
 
   @override
   Widget build(BuildContext context) {
@@ -55,69 +54,50 @@ class WalletDetailScreen extends StatelessWidget {
     final walletName = wallet != null ? wallet.displayLabel(context) : '';
 
     final balanceSat = wallet?.balanceSat;
-    return Scaffold(
-      appBar: AppBar(
-        title: walletName.isEmpty
-            ? const BullShimmerLine(width: 150)
-            : BullText(
-                walletName,
-                style: context.bullType.subtitle.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-        actions: [
-          IconButton(
-            tooltip: context.loc.settingsWalletSettingsTitle,
-            onPressed: () {
-              context.pushNamed(
-                SettingsRoute.walletDetailsSelectedWallet.name,
-                pathParameters: {'walletId': walletId},
-              );
-            },
-            icon: Image.asset(
-              Assets.icons.settingsLine.path,
-              width: 24,
-              height: 24,
-              color: context.appColors.onSurface,
-            ),
-          ),
-        ],
+    return OverviewDetail(
+      walletName: walletName,
+      settings: IconButton(
+        tooltip: context.loc.settingsWalletSettingsTitle,
+        onPressed: () =>
+            SettingsNavigation.openWalletDetails(context, walletId: walletId),
+        icon: Image.asset(
+          Assets.icons.settingsLine.path,
+          width: 24,
+          height: 24,
+          color: context.appColors.onSurface,
+        ),
       ),
-      body: wallet == null
-          ? const BullShimmerBox(height: 100)
-          : balanceSat == null
-          ? Center(child: Text(context.loc.walletLoadFailed))
-          : BlocProvider<TransactionsCubit>(
-              create: (_) =>
-                  locator<TransactionsCubit>(param1: walletId)..loadTxs(),
-              child: Builder(
+      isLoading: wallet == null,
+      unavailableMessage: context.loc.walletLoadFailed,
+      body: wallet == null || balanceSat == null
+          ? null
+          : scopeWalletHistory(
+              walletId,
+              Builder(
                 builder: (context) => BullPullableBody(
                   onRefresh: () async {
-                    context.read<BitcoinPriceBloc>().add(
-                      const BitcoinPriceFetched(),
+                    unawaited(BitcoinPriceFeature.refresh(context));
+                    await WalletHistoryScope.refresh(
+                      context,
+                      context.read<WalletBloc>().refresh,
                     );
-                    final transactions = context.read<TransactionsCubit>();
-                    transactions.deferReloads();
-                    try {
-                      await context.read<WalletBloc>().refresh();
-                    } finally {
-                      await transactions.resumeReloads();
-                    }
                   },
                   slivers: [
                     SliverToBoxAdapter(
                       child: WalletDetailBalanceCard(
+                        background: AssetImage(
+                          wallet.isLiquid
+                              ? Assets.backgrounds.bgInstantWallet.path
+                              : Assets.backgrounds.bgSecureWallet.path,
+                        ),
                         isLiquid: wallet.isLiquid,
                         signer: wallet.signer,
-                        balanceText: CurrencyText(
-                          balanceSat.toInt(),
-                          style: context.bullType.headline.copyWith(
-                            color: context.appColors.onPrimary,
-                          ),
-                          showFiat: false,
+                        balanceText: WalletDetailBalanceAmount(
+                          balanceSat: balanceSat.toInt(),
                         ),
                         eyeToggle: const EyeToggle(),
                         fiatBalance: HomeFiatBalance(
+                          onCurrencyChanged: Settings.changeDisplayCurrency,
                           balanceSat: balanceSat.toInt(),
                         ),
                         syncingIndicator: const TxsSyncingIndicator(),
@@ -125,25 +105,27 @@ class WalletDetailScreen extends StatelessWidget {
                     ),
                     if (wallet.isLiquid)
                       SliverToBoxAdapter(
-                        child: ConsolidationBanner(wallet: wallet),
+                        child: WalletConsolidation.banner(context, wallet),
                       ),
                     const SliverToBoxAdapter(child: Gap(8)),
                     SliverToBoxAdapter(
                       child: _CoinsEntryTile(
                         wallet: wallet,
                         onOpenCoins: onOpenCoins,
+                        loadCoinSummary: loadCoinSummary,
                       ),
                     ),
                     if (wallet.isLiquid)
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                          child: DisclosureLink(
+                          child: BullDisclosureLink(
                             label: context.loc.walletLiquidRiskDisclosureLabel,
                             semanticLabel:
                                 context.loc.liquidRiskDisclosureSemanticLabel,
                             title: context.loc.liquidRiskDisclosureTitle,
                             body: context.loc.liquidRiskDisclosureBody,
+                            closeLabel: context.loc.closeDialogButton,
                           ),
                         ),
                       ),
@@ -153,13 +135,7 @@ class WalletDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
-          child: WalletBottomButtons(wallet: wallet),
-        ),
-      ),
+      bottomActions: WalletBottomButtons(wallet: wallet),
     );
   }
 }
@@ -169,19 +145,25 @@ class WalletDetailScreen extends StatelessWidget {
 /// frozen total as a subtitle. Hidden for Liquid (freeze-exclusion plumbing
 /// exists for Bitcoin only); shown for watch-only Bitcoin wallets.
 class _CoinsEntryTile extends StatefulWidget {
-  const _CoinsEntryTile({required this.wallet, required this.onOpenCoins});
+  const _CoinsEntryTile({
+    required this.wallet,
+    required this.onOpenCoins,
+    required this.loadCoinSummary,
+  });
 
   final Wallet wallet;
   final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
+  final Future<Result<CoinSummary, CoinsFailure>> Function(String)
+  loadCoinSummary;
 
   @override
   State<_CoinsEntryTile> createState() => _CoinsEntryTileState();
 }
 
 class _CoinsEntryTileState extends State<_CoinsEntryTile> {
-  /// Last loaded utxos; null until the first load resolves. Retained across
+  /// Last loaded coin summary; null until the first load resolves. Retained across
   /// reloads so the subtitle never blanks mid-refresh (no flicker).
-  List<WalletUtxo>? _utxos;
+  CoinSummary? _summary;
 
   @override
   void initState() {
@@ -195,28 +177,10 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
   /// sent tx updates the count). Keeps the previous value visible until the
   /// new read resolves.
   Future<void> _reload() async {
-    try {
-      final utxos = await locator<GetWalletUtxosUsecase>().execute(
-        walletId: widget.wallet.id,
-      );
-      if (mounted) setState(() => _utxos = utxos);
-    } catch (_) {
-      // Best-effort: this is a non-critical subtitle. On failure keep the last
-      // known value (or show no subtitle on the first load) rather than
-      // surfacing an unhandled async error.
+    final result = await widget.loadCoinSummary(widget.wallet.id);
+    if (result case Ok(:final value) when mounted) {
+      setState(() => _summary = value);
     }
-  }
-
-  /// `{n} UTXOs · {frozen} frozen`, with the frozen clause omitted when none
-  /// are frozen. (Shown only once [_utxos] has loaded — see [_buildCard].)
-  String _subtitle(BuildContext context, List<WalletUtxo> utxos) {
-    final utxosLabel = context.loc.walletCoinsEntryUtxoCount(utxos.length);
-    final frozenSat = utxos
-        .where((u) => u.isFrozen)
-        .fold<BigInt>(BigInt.zero, (sum, u) => sum + u.amountSat);
-    if (frozenSat <= BigInt.zero) return utxosLabel;
-    final frozen = FormatAmount.btc(ConvertAmount.satsToBtc(frozenSat.toInt()));
-    return '$utxosLabel · ${context.loc.walletCoinsEntryFrozen(frozen)}';
   }
 
   @override
@@ -231,8 +195,7 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
 
   Widget _buildCard(BuildContext context) {
     final radius = BorderRadius.circular(context.bullShapes.card);
-    final utxos = _utxos;
-    final subtitle = utxos == null ? null : _subtitle(context, utxos);
+    final summary = _summary;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: InkWell(
@@ -289,13 +252,11 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
                                       .copyWith(fontWeight: FontWeight.w500)
                                       .copyWith(fontWeight: FontWeight.w600),
                                 ),
-                                if (subtitle != null) ...[
+                                if (summary != null) ...[
                                   const Gap(2),
-                                  BullText(
-                                    subtitle,
-                                    style: context.bullType.caption.copyWith(
-                                      color: context.appColors.textMuted,
-                                    ),
+                                  CoinsEntrySubtitle(
+                                    utxoCount: summary.count,
+                                    frozenSat: summary.frozenSat,
                                   ),
                                 ],
                               ],

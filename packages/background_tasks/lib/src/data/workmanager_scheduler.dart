@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:workmanager/workmanager.dart';
 
+import '../background_rollout.dart';
 import '../domain/background_task.dart';
 import '../domain/ports/background_task_scheduler_port.dart';
 import '../domain/repositories/background_sync_interval_repository.dart';
+import 'shared_preferences_background_sync_interval_repository.dart';
 
 final class WorkmanagerScheduler implements BackgroundTaskSchedulerPort {
   final Workmanager _workmanager;
@@ -47,6 +49,15 @@ final class WorkmanagerScheduler implements BackgroundTaskSchedulerPort {
 Future<void> _pendingSchedule = Future.value();
 int _scheduleGeneration = 0;
 
+/// Applies the app's persisted schedule and rollout policy at startup and
+/// after a settings change.
+Future<void> configureBackgroundTasks(BackgroundTaskDispatcher dispatcher) =>
+    applyBackgroundTaskSchedule(
+      dispatcher: dispatcher,
+      intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+      enabled: backgroundSyncAvailable,
+    );
+
 /// Schedules the periodic background tasks at the interval the user chose,
 /// and removes the obsolete ones. Called at startup and whenever the
 /// interval changes; UPDATE keeps an unchanged schedule's timing.
@@ -65,11 +76,7 @@ Future<void> applyBackgroundTaskSchedule({
   if (scheduler == null && !mobile) return;
   final platform = scheduler ?? WorkmanagerScheduler();
   await platform.initialize(dispatcher);
-  final previous = _pendingSchedule;
-  final finished = Completer<void>();
-  _pendingSchedule = finished.future;
-  try {
-    await previous;
+  await _serializeSchedule(() async {
     if (generation != _scheduleGeneration) return;
     final interval = await intervals.read();
     for (final obsolete in [
@@ -94,10 +101,8 @@ Future<void> applyBackgroundTaskSchedule({
         taskName: BackgroundTask.walletsSync.name,
         requiresNetwork: true,
         frequency: frequency,
-        // iOS ignores the frequency: the delay is its "not before" hint. The
-        // plugin (workmanager_apple 0.9.11) captures the delay when it first
-        // registers its launch handler in a process, so a changed interval is
-        // fully applied from the next app start.
+        // iOS ignores the frequency: the delay is its "not before" hint, saved by the plugin (workmanager_apple 0.9.11) on each submit.
+        // A background run reschedules with the delay registered at launch: the one saved last session, or none on a fresh install.
         initialDelay: Platform.isIOS ? frequency : null,
       );
     }
@@ -110,7 +115,47 @@ Future<void> applyBackgroundTaskSchedule({
       );
     }
     log.config('Background sync interval applied=${interval.name}');
+  });
+}
+
+Future<void> _serializeSchedule(Future<void> Function() action) async {
+  final previous = _pendingSchedule;
+  final finished = Completer<void>();
+  _pendingSchedule = finished.future;
+  try {
+    await previous;
+    await action();
   } finally {
     finished.complete();
   }
+}
+
+int _arkScheduleGeneration = 0;
+
+/// Android Ark safety maintenance has its own admission decision, independent
+/// of the ordinary sync interval and rollout gate. A funded-off account still
+/// requires renewal. Only an authoritative empty/disabled inventory permits
+/// renewalRequired:false. No secrets enter WorkManager inputs.
+Future<void> applyArkRenewalSchedule({
+  required BackgroundTaskDispatcher dispatcher,
+  required bool renewalRequired,
+  BackgroundTaskSchedulerPort? scheduler,
+}) async {
+  final generation = ++_arkScheduleGeneration;
+  if (scheduler == null && !Platform.isAndroid) return;
+  final platform = scheduler ?? WorkmanagerScheduler();
+  await platform.initialize(dispatcher);
+  await _serializeSchedule(() async {
+    if (generation != _arkScheduleGeneration) return;
+    if (!renewalRequired) {
+      await platform.cancelByUniqueName(BackgroundTask.arkRenewal.id);
+      return;
+    }
+    await platform.registerPeriodic(
+      uniqueName: BackgroundTask.arkRenewal.id,
+      taskName: BackgroundTask.arkRenewal.name,
+      frequency: const Duration(hours: 1),
+      requiresNetwork: true,
+    );
+  });
 }

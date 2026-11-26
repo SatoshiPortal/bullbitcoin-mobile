@@ -4,11 +4,8 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:secrets/secrets.dart' as custody;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,7 +18,6 @@ Future<void> main({bool isInitialized = false}) async {
 
   final recoverbull = locator<RecoverBullFacade>();
 
-  final walletRepository = locator<WalletRepository>();
   final secrets = locator<custody.Secrets>();
 
   const oldPathZooMnemonicWithSevenZerosPassword =
@@ -83,24 +79,21 @@ Future<void> main({bool isInitialized = false}) async {
         expect(completion.warning, isNull);
         expect(completion.verifiedContext?.network, BitcoinNetwork.mainnet);
 
-        final walletsResult = await walletRepository.getWallets(
-          onlyDefaults: true,
-          onlyBitcoin: true,
-          environment: Environment.mainnet,
+        final inventory = locator<SecretsInventory>();
+        final selection = requireValue(
+          await inventory.walletsForNetwork(BitcoinNetwork.mainnet),
+          'read the restored Bitcoin wallets',
         );
-
-        expect(walletsResult, isA<Ok<List<Wallet>, WalletFailure>>());
-        final wallets =
-            (walletsResult as Ok<List<Wallet>, WalletFailure>).value;
-        expect(wallets.length, 1);
-        final wallet = wallets.first;
-        expect(wallet.masterFingerprint, isNotEmpty);
-        final secret = switch (await secrets.fetch(
-          Fingerprint(wallet.masterFingerprint),
-        )) {
-          Ok(:final value) => value,
-          Err(:final failure) => fail('fetch failed: ${failure.runtimeType}'),
-        };
+        expect(selection.isComplete, isTrue);
+        expect(selection.defaults, hasLength(1));
+        final fingerprint = selection.defaults.single.masterFingerprint;
+        expect(fingerprint, isNotNull);
+        final secret = requireValue(
+          await secrets.fetch(
+            fingerprint ?? fail('missing wallet fingerprint'),
+          ),
+          'fetch the restored secret',
+        );
         // `verify.mnemonic` compares inside the package and returns only the verdict: the restored words are never read back out to be asserted on.
         expect(switch (await secret.verify.mnemonic(expectedMnemonicWords)) {
           Ok(:final value) => value,

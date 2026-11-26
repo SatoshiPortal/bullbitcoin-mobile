@@ -1,13 +1,14 @@
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import '../../../support/wallet_registrations.dart';
+
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
-final class _Catalog implements WalletMetadataDatasource {
+final class _Catalog implements WalletRegistrations {
   List<WalletMetadataModel> rows = [];
   Object? failure;
 
@@ -50,7 +51,7 @@ void main() {
     'catalog preserves identity, descriptor strings and all legacy networks',
     () async {
       final catalog = _Catalog();
-      final port = WalletCatalogPortImpl(catalog);
+      final port = TestWalletCatalog(catalog);
       const networks = <String, Network>{
         'wpkh([aabbccdd/84h/0h/0h])': BitcoinNetwork.mainnet,
         'sh(wpkh([aabbccdd/49h/1h/0h]))': BitcoinNetwork.testnet,
@@ -119,9 +120,45 @@ void main() {
     },
   );
 
+  test(
+    'key lookup reports storage exceptions and preserves programmer errors',
+    () async {
+      final catalog = _Catalog()..failure = const FormatException('storage');
+      await expectLater(
+        WalletSyncBinding.keyForId(catalog, 'wallet'),
+        throwsA(
+          isA<WalletSnapshotException>().having(
+            (error) => error.failure,
+            'failure',
+            isA<SyncStorageFailure>(),
+          ),
+        ),
+      );
+      catalog.failure = StateError('bug');
+      await expectLater(
+        WalletSyncBinding.keyForId(catalog, 'wallet'),
+        throwsStateError,
+      );
+    },
+  );
+
+  test('invalid descriptor is refused before issuing a native key', () {
+    final invalid = _row('wpkh([aabbccdd/84h/0h/0h])', external: '');
+    expect(
+      () => WalletSyncBinding.keyFromMetadata(invalid),
+      throwsA(
+        isA<WalletSnapshotException>().having(
+          (error) => error.failure,
+          'failure',
+          isA<SyncInvalidCatalogFailure>(),
+        ),
+      ),
+    );
+  });
+
   test('invalid rows do not hide valid catalog entries', () async {
     final catalog = _Catalog();
-    final port = WalletCatalogPortImpl(catalog);
+    final port = TestWalletCatalog(catalog);
     const bitcoin = 'wpkh([aabbccdd/84h/0h/0h])';
     const liquid = 'elwpkh([aabbccdd/84h/1776h/0h])';
     for (final invalid in [

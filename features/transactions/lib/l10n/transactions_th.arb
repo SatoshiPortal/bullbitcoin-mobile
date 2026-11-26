@@ -1,0 +1,731 @@
+{
+  "transactionDetailLabelTransactionFee": "ค่าธรรมเนียม",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionSwapDescLnSendPending": "บันทึกของคุณได้รับการเริ่มต้น เราออกอากาศในการทําธุรกรรมของโซ่เพื่อล็อคเงินของคุณ.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionNoteHint": "หมายเหตุ",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionLabelPreimage": "วัน",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "coreSwapsChainCanCoop": "Swap จะเสร็จสมบูรณ์ในอีกไม่ช้า",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "transactionDetailLabelConfirmationTime": "การยืนยัน",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionSwapDescChainPending": "Swap ของคุณถูกสร้างขึ้นแล้ว แต่ยังไม่ได้เริ่มต้น",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionSwapStatusSwapStatus": "สถานะ",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionStatusTransferFailed": "Swap ล้มเหลว",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionFilterTransfer": "Swap",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionNetworkLightning": "ฟ้าผ่า",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelSwapFees": "ค่าธรรมเนียม",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "globalDefaultBitcoinWalletLabel": "รักษาความปลอดภัย Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionStatusSwapExpired": "วันหมดอายุ",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionFilterBuy": "ซื้อ",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "coreWalletTransactionStatusPending": "สิ้นสุด",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionDetailLabelTransferStatus": "สถานะ Swap",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "coreSwapsLnSendExpired": "วันหมดอายุ",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsChainFailedRefunding": "Swap จะได้รับการคืนเงินในไม่ช้า",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionStatusPaymentRefunded": "การชําระเงิน",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "การชําระเงินในความคืบหน้า",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "transactionSwapDescChainFailed": "เกิดปัญหากับ Swap ของคุณ โปรดติดต่อฝ่ายสนับสนุนหากยังไม่ได้รับเงินคืนภายใน 24 ชั่วโมง",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescLnSendDefault": "บันทึกของคุณอยู่ในความคืบหน้า กระบวนการนี้ใช้โดยอัตโนมัติและอาจใช้เวลา.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "buyTitle": "ซื้อ Bitcoin",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "transactionSwapDescLnSendFailed": "มีปัญหากับรหัสของคุณ เงินทุนของคุณจะได้รับคืนไปยังกระเป๋าสตางค์ของคุณโดยอัตโนมัติ.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "รหัสนี้หมดอายุ เงินทุนของคุณจะถูกส่งคืนโดยอัตโนมัติ.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "รหัสนี้หมดอายุ เงินทุนใด ๆ จะส่งคืนโดยอัตโนมัติ.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionSwapProgressClaim": "การเรียกร้อง",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionDetailLabelTransferId": "ID Swap",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionFilterAll": "ทั้งหมด",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionDetailLabelAmountReceived": "จํานวน",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionLabelReceiveAmount": "จํานวนเงิน",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "coreSwapsLnSendPaid": "ใบแจ้งหนี้จะชําระเงินหลังจากชําระเงิน.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "transactionDetailAccelerate": "เร่ง",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLabelPayjoinExpired": "วันหมดอายุ",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionSwapProgressCompleted": "สมบูรณ์",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapDescLnSendCompleted": "การชําระเงินไร้สายได้รับการส่ง! รหัสของคุณเสร็จสมบูรณ์.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionListNoTransactions": "ไม่มีการทําธุรกรรม.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionStatusTransferInProgress": "Swap กำลังดำเนินการ",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailTransferProgress": "ความคืบหน้าของ Swap",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailLabelPayinAmount": "จํานวนเงิน",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "coreSwapsLnSendPending": "แคชไม่ได้เริ่มต้น.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "transactionSwapProgressInitiated": "การยกเลิก",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "coreSwapsLnReceivePaid": "ส่งใบแจ้งหนี้.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "transactionSwapInfoClaimableTransfer": "Swap จะเสร็จสมบูรณ์โดยอัตโนมัติภายในไม่กี่วินาที หากไม่สำเร็จ คุณสามารถลองเคลมด้วยตนเองได้โดยกดปุ่ม\"ลองเคลม Swap อีกครั้ง\"",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionDetailLabelRefunded": "การคืนเงิน",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionNoteAddTitle": "บันทึก",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionDetailLabelPayjoinCompleted": "สมบูรณ์",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelCreatedAt": "สร้าง",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionLabelSendAmount": "ราคา",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "รับค่าธรรมเนียมเครือข่าย",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionSwapDescChainExpired": "Swap นี้หมดอายุแล้ว เงินของคุณจะถูกคืนเข้ากระเป๋าเงินโดยอัตโนมัติ",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "coreSwapsChainCompletedRefunded": "Swap ได้รับการคืนเงินแล้ว",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "transactionDetailLabelPayjoinStatus": "ชําระเงิน",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionFilterReceive": "ลงทะเบียน",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionSwapProgressInProgress": "ความคืบหน้า",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "coreSwapsLnSendCompletedSuccess": "แปลงเสร็จสมบูรณ์.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "บันทึกของคุณอยู่ในความคืบหน้า กระบวนการนี้ใช้โดยอัตโนมัติและอาจใช้เวลา.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionSwapDoNotUninstall": "อย่าถอนการติดตั้งแอปจนกว่าจะโหลด.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionDetailLabelExchangeRate": "อัตราแลกเปลี่ยน",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "coreSwapsStatusPending": "สิ้นสุด",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "transactionDetailLabelToWallet": "ไปยังกระเป๋าสตางค์",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "coreSwapsChainCompletedSuccess": "Swap เสร็จสมบูรณ์เรียบร้อยแล้ว",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsLnReceiveFailed": "ปฏิทิน.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "transactionDetailLabelPayinStatus": "สถานะการชําระเงิน",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionListOngoingTransfersTitle": "Swap ที่กำลังดำเนินการ",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionSwapDescChainClaimable": "ธุรกรรมล็อกเงินได้รับการยืนยันแล้ว ขณะนี้คุณกำลังเคลมเงินเพื่อให้ Swap ของคุณเสร็จสมบูรณ์",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "Swap จะได้รับการคืนเงิน เงินของคุณจะถูกคืนเข้ากระเป๋าเงินโดยอัตโนมัติ",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "receivePaymentNormally": "รับการชําระเงิน",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "coreSwapsStatusInProgress": "ความคืบหน้า",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "transactionSwapProgressConfirmed": "ยืนยัน",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionTitle": "การทําธุรกรรม",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionSwapDescLnReceivePending": "บันทึกของคุณได้รับการเริ่มต้น เรารอให้การชําระเงินจะได้รับในเครือข่ายไร้สาย.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionDetailLabelFromWallet": "จากกระเป๋าเงิน",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionSwapDescChainCompleted": "Swap ของคุณเสร็จสมบูรณ์เรียบร้อยแล้ว! ตอนนี้เงินควรอยู่ในกระเป๋าเงินของคุณแล้ว",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "coreSwapsLnSendRefundable": "ฝากเงินพร้อมรับเงินคืน.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "transactionPayjoinSendWithout": "ชําระเงิน",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionFilterPayjoin": "ชําระเงิน",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "coreSwapsLnSendCanCoop": "สปินจะเสร็จสมบูรณ์.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "retry": "ลองอีกครั้ง",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionDetailLabelTransactionId": "รหัส",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "coreSwapsLnReceiveClaimable": "โค้ดพร้อมที่จะเรียกร้อง.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "transactionSwapProgressFundsClaimed": "เงินทุน\nการเรียกร้อง",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "coreSwapsLnReceiveCanCoop": "สปินจะเสร็จสมบูรณ์.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "transactionSwapProgressPaymentMade": "การชําระเงิน\nผลิตจาก",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "coreSwapsChainPending": "Swap ยังไม่ได้เริ่มต้น",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "coreSwapsLnSendFailed": "ปฏิทิน.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainRefundable": "Swap พร้อมคืนเงินแล้ว",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "transactionFeesTotalDeducted": "นี่เป็นค่าธรรมเนียมรวมจากจํานวนเงิน",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionStatusPayjoinRequested": "ชําระเงิน",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionSwapInfoRefundableTransfer": "Swap นี้จะได้รับการคืนเงินโดยอัตโนมัติภายในไม่กี่วินาที หากไม่สำเร็จ คุณสามารถลองขอคืนเงินด้วยตนเองได้โดยกดปุ่ม\"ลองคืนเงิน Swap อีกครั้ง\"",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapDescLnReceiveCompleted": "การสแกนของคุณประสบความสําเร็จ! เงินทุนควรอยู่ในกระเป๋าสตางค์ของคุณ.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionDetailLabelPayoutStatus": "สถานะการชําระเงิน",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "coreSwapsLnSendCompletedRefunded": "รับเงินคืน.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "transactionSwapInfoClaimableSwap": "สัญญาณจะเสร็จสมบูรณ์ภายในไม่กี่วินาที หากคุณไม่สามารถพยายามแจ้งคําแนะนําโดยคลิกที่ \"Retry การเรียกร้อง\" ปุ่ม.",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionListLoadingTransactions": "โหลดการทําธุรกรรม ...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionDetailLabelBitcoinTxId": "รหัส Bitcoin",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "coreSwapsChainFailed": "Swap ล้มเหลว",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "บันทึก",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionDetailLabelPayinMethod": "วิธีการชําระเงิน",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionStatusTransferCompleted": "Swap เสร็จสมบูรณ์",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "การทําธุรกรรม",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionLabelServerNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "coreSwapsChainPaid": "กำลังรอการยืนยันการชำระเงินจากผู้ให้บริการ Swap ซึ่งอาจใช้เวลาสักครู่",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "transactionSwapDescLnSendPaid": "การทําธุรกรรมของคุณจะถูกออกอากาศ หลังจากยืนยันการชําระเงินแล้ว.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescChainDefault": "Swap ของคุณกำลังดำเนินการ ขั้นตอนนี้เป็นแบบอัตโนมัติและอาจใช้เวลาสักครู่จึงจะเสร็จสมบูรณ์",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "coreSwapsChainClaimable": "Swap พร้อมให้เคลมแล้ว",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "ค่าธรรมเนียมเครือข่าย",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionStatusInProgress": "ความคืบหน้า",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionOrderLabelOriginName": "ชื่อ",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionHistoryTitle": "ประวัติธุรกรรม",
+  "exportTransactionsDescription": "ส่งออกธุรกรรมทั้งหมดของกระเป๋าเงิน (Bitcoin, Liquid, Lightning และ swaps) เป็นไฟล์ CSV เลือกกรองตามช่วงวันที่ได้",
+  "exportTransactionsStartDate": "วันที่เริ่มต้น",
+  "exportTransactionsEndDate": "วันที่สิ้นสุด",
+  "exportTransactionsAnyDate": "ใดๆ",
+  "exportTransactionsButton": "ส่งออก CSV",
+  "exportTransactionsSuccess": "ส่งออกธุรกรรมสำเร็จ",
+  "exportTransactionsEmpty": "ไม่มีธุรกรรมให้ส่งออกในช่วงที่เลือก",
+  "exportTransactionsError": "ส่งออกธุรกรรมไม่สำเร็จ",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "วันที่เริ่มต้นต้องอยู่ก่อนวันที่สิ้นสุด",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionSwapInfoRefundableSwap": "การโอนเงินนี้จะถูกคืนเงินภายในไม่กี่วินาที หากไม่สามารถพยายามคืนเงินด้วยตนเองโดยคลิกที่ \"บันทึกการคืนเงิน\" ปุ่ม.",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionDetailLabelAddressNotes": "ที่อยู่",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionOrderLabelReferenceNumber": "หมายเลขอ้างอิง",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "สถานะ",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionFeesDeductedFrom": "ค่าธรรมเนียมนี้จะถูกหักจากจํานวนเงิน",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionStatusPending": "สิ้นสุด",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionLabelSendNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "coreSwapsChainExpired": "Swap หมดอายุ",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionListYesterday": "สุดท้าย",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionDetailLabelPayoutMethod": "วิธีการชําระเงิน",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "coreSwapsStatusFailed": "บ้าน",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "transactionFilterSell": "ขาย",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionSwapInfoChainDelay": "Swap ออนเชนอาจใช้เวลาสักครู่จึงจะเสร็จสมบูรณ์ เนื่องจากเวลาในการยืนยันของบล็อกเชน",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "sellTitle": "ขาย Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionListToday": "วันนี้",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionDetailLabelSwapStatus": "สถานะ",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelAmountSent": "จํานวน",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "coreSwapsLnReceiveRefundable": "ฝากเงินพร้อมรับเงินคืน.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFees": "ค่าธรรมเนียม Swap",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionSwapStatusTransferStatus": "สถานะ Swap",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionDetailLabelOrderType": "ประเภทการสั่งซื้อ",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelPayoutAmount": "จํานวนเงิน",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "coreSwapsLnSendFailedRefunding": "เงินคืนจะคืนเงิน.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "transactionSwapProgressBroadcasted": "ออกอากาศ",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionDetailLabelAddress": "ที่อยู่",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "coreSwapsLnReceivePending": "แคชไม่ได้เริ่มต้น.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "ประหยัดเวลา",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "transactionSwapInfoFailedExpired": "หากท่านมีคําถามหรือกังวลเกี่ยวกับการที่เราดําเนินการกับข้อมูลส่วนบุคคลของท่าน.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "coreSwapsStatusExpired": "วันหมดอายุ",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsLnReceiveExpired": "วันหมดอายุ.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "transactionDetailLabelOrderNumber": "ราคา",
+  "transactionDetailLabelPaymentDescription": "รายละเอียดการชำระเงิน",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionListOngoingTransfersDescription": "Swap เหล่านี้กำลังดำเนินการอยู่ เงินของคุณปลอดภัยและจะพร้อมใช้งานเมื่อ Swap เสร็จสมบูรณ์",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionOrderLabelOriginCedula": "สถานที่กําเนิด",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionStatusTransferExpired": "Swap หมดอายุ",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsLnReceiveCompleted": "รหัสเสร็จสิ้น.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFee": "ค่าธรรมเนียม Swap",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionNetworkLiquid": "ของเหลว",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionSwapDescChainPaid": "การทําธุรกรรมของคุณถูกออกอากาศ ตอนนี้เรารอรายการล็อคเพื่อได้รับการยืนยัน.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "coreSwapsStatusCompleted": "สมบูรณ์",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreWalletTransactionStatusConfirmed": "ยืนยัน",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionStatusSwapFailed": "ปฏิทิน",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescLnReceiveFailed": "มีปัญหากับรหัสของคุณ โปรดติดต่อหากเงินจะส่งคืนภายใน 24 ชั่วโมง.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionDetailSwapProgress": "ความคืบหน้า",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailLabelOrderStatus": "ข้อมูล",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionFilterSend": "ส่ง",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "coreSwapsLnSendClaimable": "โค้ดพร้อมที่จะเรียกร้อง.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "transactionDetailTitle": "รายละเอียด",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailLabelCompletedAt": "เสร็จสมบูรณ์",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionSwapProgressInvoicePaid": "พิธีการศุลกากร\nชําระเงิน",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionDetailLabelSwapId": "รหัส",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionSwapDescLnReceivePaid": "ชําระเงิน เราเพิ่งออกอากาศในการทําธุรกรรมไปยังกระเป๋าสตางค์ของคุณ.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "การทําธุรกรรมของโซ่ได้รับการยืนยัน เราอ้างว่าเงินทุนเพื่อเสร็จสมบูรณ์.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionNotesLabel": "บันทึก",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionDetailLabelRecipientAddress": "ที่อยู่",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin เสร็จสิ้นแล้ว",
+  "viewerTapToCopy": "แตะเพื่อคัดลอก",
+  "viewerViewInExplorer": "ดูในเอ็กซ์พลอเรอร์",
+  "transactionViewerTitle": "รหัสธุรกรรม",
+  "viewerCopyLink": "คัดลอกลิงก์",
+  "coreSwapsStatusRefunded": "คืนเงินแล้ว",
+  "payViewReceipt": "ดูใบเสร็จ",
+  "transactionFilterWithdraw": "ถอนเงิน",
+  "transactionFilterPay": "จ่ายเงิน",
+  "transactionFilterFunding": "เติมเงิน",
+  "transactionFilterReward": "รางวัล",
+  "transactionFilterRefund": "คืนเงิน",
+  "transactionListLoadingFailed": "ไม่สามารถโหลดธุรกรรมได้",
+  "transactionLabelNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "transactionSwapOpenWithin24h": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำ Swap ของคุณให้เสร็จสมบูรณ์",
+  "recipientsTypeInteracEmail": "โอนเงินผ่านอีเมล",
+  "transactionStatusPayjoinAborted": "Payjoin ถูกยกเลิก",
+  "transactionDetailLabelPayjoinAborted": "ถูกยกเลิก",
+  "transactionDetailLabelPayjoinFeeContribution": "ค่าธรรมเนียมส่วนร่วม Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin จะเพิ่มเหรียญของคุณหนึ่งเหรียญเป็นอินพุตเพิ่มเติมในการชำระเงินเพื่อเพิ่มความเป็นส่วนตัว ค่าธรรมเนียมการขุดสำหรับอินพุตที่เพิ่มเข้ามานั้นจะถูกหักออกจากจำนวนเงินที่คุณได้รับ (BIP78)",
+  "coreSwapsStatusNotStarted": "ยังไม่เริ่ม",
+  "coreSwapsStatusAwaitingPayment": "รอการชำระเงิน",
+  "coreSwapsStatusAwaitingConfirmation": "รอการยืนยัน",
+  "coreSwapsStatusUnderReview": "อยู่ระหว่างตรวจสอบ",
+  "coreSwapsStatusRejected": "ถูกปฏิเสธ",
+  "coreSwapsStatusCanceled": "ยกเลิกแล้ว",
+  "coreSwapsStatusPaymentDeadlineExpired": "หมดกำหนดชำระเงิน",
+  "coreSwapsStatusScheduled": "กำหนดเวลาแล้ว",
+  "coreSwapsStatusAwaitingClaim": "รอการรับ",
+  "coreSwapsStatusUnknown": "ไม่ทราบ",
+  "transactionDetailLoadError": "ไม่สามารถโหลดรายละเอียดธุรกรรมได้",
+  "transactionPayjoinBroadcastFailed": "ไม่สามารถเผยแพร่ธุรกรรมต้นฉบับได้ โปรดลองอีกครั้ง",
+  "transactionPayjoinOriginalUnavailable": "ธุรกรรมต้นฉบับไม่สามารถเผยแพร่ได้อีกต่อไป",
+  "transactionLabelLimitReached": "คุณสามารถมีป้ายกำกับได้สูงสุด 10 รายการ",
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "transactionListExchangeOrdersUnavailable": "ไม่สามารถโหลดคำสั่งซื้อขายของ Exchange ได้"
+}

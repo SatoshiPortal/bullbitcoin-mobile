@@ -133,6 +133,16 @@ class BullKeyCap extends StatelessWidget {
   /// across the shuffle and defeating it.
   final bool suppressAnimation;
 
+  final String? semanticLabel;
+  final bool? toggled;
+
+  /// An outline around the key, if any.
+  final Color? borderColor;
+
+  /// Fill shown while the key is held, like a phone's passcode keys, with no
+  /// ink splash. Ignored when [suppressAnimation] is set.
+  final Color? pressedColor;
+
   const BullKeyCap({
     super.key,
     required this.enabled,
@@ -141,25 +151,36 @@ class BullKeyCap extends StatelessWidget {
     required this.child,
     this.suppressAnimation = false,
     this.fill,
+    this.semanticLabel,
+    this.toggled,
+    this.borderColor,
+    this.pressedColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final radius = BorderRadius.circular(context.bullShapes.key);
-    return Material(
+    final outline = borderColor;
+    final side = outline == null ? BorderSide.none : BorderSide(color: outline);
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(context.bullShapes.key),
+      side: side,
+    );
+    final key = Material(
       // Zero duration: even in basic mode an enable/disable colour tween is an
       // extra frame of state history for a camera; there is no reason to
       // animate a key cap.
       animationDuration: Duration.zero,
       color: fill ?? (enabled ? context.bullKeypad.key : colors.transparent),
-      borderRadius: radius,
+      shape: shape,
       child: InkWell(
         // A key must never take focus from the field being typed into.
         canRequestFocus: false,
-        borderRadius: radius,
-        splashFactory: suppressAnimation ? NoSplash.splashFactory : null,
-        highlightColor: suppressAnimation ? colors.transparent : null,
+        customBorder: shape,
+        splashFactory: suppressAnimation || pressedColor != null
+            ? NoSplash.splashFactory
+            : null,
+        highlightColor: suppressAnimation ? colors.transparent : pressedColor,
         onTap: enabled ? onTap : null,
         child: SizedBox(
           height: height,
@@ -169,6 +190,18 @@ class BullKeyCap extends StatelessWidget {
           ),
         ),
       ),
+    );
+    final label = semanticLabel;
+    if (label == null) return key;
+    return Semantics(
+      label: label,
+      button: true,
+      enabled: enabled,
+      toggled: toggled,
+      focusable: enabled,
+      onTap: enabled ? onTap : null,
+      excludeSemantics: true,
+      child: key,
     );
   }
 }
@@ -180,21 +213,25 @@ class BullKeyGlyph extends StatelessWidget {
   final String text;
   final double size;
   final Color color;
+  final FontWeight weight;
 
   const BullKeyGlyph(
     this.text, {
     super.key,
     required this.size,
     required this.color,
+    this.weight = FontWeight.w700,
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: context.bullType.subtitle
-          .copyWith(fontWeight: FontWeight.w700)
-          .copyWith(fontSize: size, color: color),
+      style: context.bullType.subtitle.copyWith(
+        fontWeight: weight,
+        fontSize: size,
+        color: color,
+      ),
       textScaler: TextScaler.noScaling,
     );
   }

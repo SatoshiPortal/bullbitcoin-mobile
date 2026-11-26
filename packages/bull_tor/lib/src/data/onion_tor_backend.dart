@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bull_sdk/onion.dart' as onion;
+import 'package:rust_bindings/onion.dart' as onion;
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 

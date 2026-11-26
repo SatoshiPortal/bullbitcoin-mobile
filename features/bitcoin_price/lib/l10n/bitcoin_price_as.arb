@@ -1,0 +1,15 @@
+{
+  "fiatCurrencySettingsLabel": "Fiat মুদ্ৰা",
+  "currencySettingsDefaultFiatCurrencyLabel": "ডিফল্ট fiat মুদ্ৰা",
+  "retry": "পুনৰ চেষ্টা কৰক",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "priceChartFetchingHistory": "মূল্যৰ ইতিহাস আনা হৈছে...",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
+  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।"
+}

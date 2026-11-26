@@ -1,6 +1,9 @@
 import 'dart:convert';
 
-import 'package:bull_sdk/boltz.dart';
+import 'package:secrets/secrets.dart';
+import 'package:primitives/primitives.dart';
+
+import 'package:rust_bindings/boltz.dart';
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/log.dart';
 
@@ -29,33 +32,42 @@ abstract class SwapRowStore {
   Future<void> trash(String swapId);
 }
 
-/// String key-value persistence for swap SECRETS (bull_sdk swap blobs with
-/// key material, the swap master key, the key-index counter). Backed by
-/// platform secure storage; values must never reach logs or any
-/// cloud-synced store.
-abstract class SecretStore {
-  Future<void> write(String key, String value);
-  Future<String?> read(String key);
-  Future<void> delete(String key);
-}
-
-/// All swap persistence behind the two dumb app-provided stores above.
+/// Owns swap persistence, using the closed keychain capability for secrets.
 class SwapStorage {
   final SwapRowStore _rows;
-  final SecretStore _secrets;
+  final SwapKeychain _secrets;
   final Map<String, Lock> _writeLocks = {};
   final Map<String, Lock> _allocationLocks;
+  final Map<String, Lock> _masterKeyLocks;
   final bool _regtest;
 
   SwapStorage({required this._rows, required this._secrets})
     : _allocationLocks = {},
+      _masterKeyLocks = {},
       _regtest = false;
 
   SwapStorage._regtestRows(SwapRowStore rows, SwapStorage canonical)
     : _rows = rows,
       _secrets = canonical._secrets,
       _allocationLocks = canonical._allocationLocks,
+      _masterKeyLocks = canonical._masterKeyLocks,
       _regtest = true;
+
+  // Preserve the engine's exception-based storage contract. Only failure types
+  // leave the custody boundary; a refused read never becomes an absent value.
+  T _value<T>(Result<T, SecretFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw Exception(
+      'Swap keychain: ${failure.runtimeType}',
+    ),
+  };
+
+  Future<String?> _readSecret(String key) async =>
+      _value(await _secrets.read(key));
+  Future<void> _writeSecret(String key, String value) async =>
+      _value(await _secrets.write(key, value));
+  Future<void> _deleteSecret(String key) async =>
+      _value(await _secrets.delete(key));
 
   /// A row/blob namespace with THE SAME allocation lock and fingerprint counter
   /// as its injected canonical owner. It never creates another allocator map.
@@ -113,7 +125,7 @@ class SwapStorage {
 
   Future<void> deleteFromSecureStorage(String swapId) async {
     try {
-      await _secrets.delete(_swapBlobKey(swapId));
+      await _deleteSecret(_swapBlobKey(swapId));
     } catch (e) {
       swapsLog.fine('Error deleting swap from secure storage: $e');
     }
@@ -136,15 +148,17 @@ class SwapStorage {
       swapMasterKey.boltzNetwork,
       walletFingerprint,
     );
-    if (await _secrets.read(key) != null) return;
-    await _secrets.write(key, jsonEncode(swapMasterKey.toJson()));
+    await (_masterKeyLocks[key] ??= Lock()).synchronized(() async {
+      if (await _readSecret(key) != null) return;
+      await _writeSecret(key, jsonEncode(swapMasterKey.toJson()));
+    });
   }
 
   Future<bool> swapMasterKeyExists(
     BoltzNetwork network, {
     required String walletFingerprint,
   }) async {
-    final value = await _secrets.read(
+    final value = await _readSecret(
       _swapMasterKeyStorageKey(network, walletFingerprint),
     );
     return value != null;
@@ -154,7 +168,7 @@ class SwapStorage {
     BoltzNetwork network, {
     required String walletFingerprint,
   }) async {
-    final jsonString = await _secrets.read(
+    final jsonString = await _readSecret(
       _swapMasterKeyStorageKey(network, walletFingerprint),
     );
     if (jsonString == null) {
@@ -163,9 +177,7 @@ class SwapStorage {
         'on ${network.value}',
       );
     }
-    return SwapMasterKeyModel.fromJson(
-      jsonDecode(jsonString) as Map<String, dynamic>,
-    );
+    return _decodeMasterKey(jsonString);
   }
 
   /// Deletes the wallet's network-qualified key blob while retaining the
@@ -173,13 +185,50 @@ class SwapStorage {
   Future<void> deleteSwapMasterKey(
     BoltzNetwork network, {
     required String walletFingerprint,
-  }) => _secrets.delete(_swapMasterKeyStorageKey(network, walletFingerprint));
+  }) {
+    final key = _swapMasterKeyStorageKey(network, walletFingerprint);
+    return (_masterKeyLocks[key] ??= Lock()).synchronized(
+      () => _deleteSecret(key),
+    );
+  }
+
+  /// Refuses deletion if the stored key changed since it was confirmed.
+  Future<bool> deleteSwapMasterKeyIfMatches(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+    required String keyFingerprint,
+  }) {
+    final key = _swapMasterKeyStorageKey(network, walletFingerprint);
+    return (_masterKeyLocks[key] ??= Lock()).synchronized(() async {
+      final stored = await _readSecret(key);
+      if (stored == null) return false;
+      final model = _decodeMasterKey(stored);
+      if (model.fingerprint != keyFingerprint ||
+          model.network != network.value) {
+        return false;
+      }
+      await _deleteSecret(key);
+      return true;
+    });
+  }
+
+  static SwapMasterKeyModel _decodeMasterKey(String record) {
+    try {
+      final decoded = jsonDecode(record);
+      if (decoded is Map<String, dynamic>) {
+        return SwapMasterKeyModel.fromJson(decoded);
+      }
+    } on FormatException {
+      // A decoder exception may carry the original key record.
+    }
+    throw const FormatException('Unreadable swap key record');
+  }
 
   // Keyed by the swap master key's fingerprint, not the network: the swap
   // key material is network-independent, so a per-network counter would
   // reuse child keys.
   Future<int?> getSwapKeyIndex(String swapMasterKeyFingerprint) async {
-    final value = await _secrets.read(
+    final value = await _readSecret(
       '${_Keys.swapKeyIndex}$swapMasterKeyFingerprint',
     );
     if (value == null) return null;
@@ -190,7 +239,7 @@ class SwapStorage {
     String swapMasterKeyFingerprint,
     int index,
   ) async {
-    await _secrets.write(
+    await _writeSecret(
       '${_Keys.swapKeyIndex}$swapMasterKeyFingerprint',
       index.toString(),
     );
@@ -207,19 +256,19 @@ class SwapStorage {
 
   // SECURE STORAGE — BULL_SDK SWAP OBJECTS
   Future<void> storeBtcLnSwap(BtcLnSwap swap) async {
-    await _secrets.write(_swapBlobKey(swap.id), await swap.toJson());
+    await _writeSecret(_swapBlobKey(swap.id), await swap.toJson());
   }
 
   Future<void> storeLbtcLnSwap(LbtcLnSwap swap) async {
-    await _secrets.write(_swapBlobKey(swap.id), await swap.toJson());
+    await _writeSecret(_swapBlobKey(swap.id), await swap.toJson());
   }
 
   Future<void> storeChainSwap(ChainSwap swap) async {
-    await _secrets.write(_swapBlobKey(swap.id), await swap.toJson());
+    await _writeSecret(_swapBlobKey(swap.id), await swap.toJson());
   }
 
   Future<String> _readSwapBlob(String swapId) async {
-    final jsonSwap = await _secrets.read(_swapBlobKey(swapId));
+    final jsonSwap = await _readSecret(_swapBlobKey(swapId));
     if (jsonSwap == null) {
       throw SwapsException(
         'no secure-storage blob for swap $swapId — the row exists but its '

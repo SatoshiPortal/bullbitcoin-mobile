@@ -35,9 +35,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test(
-    'rollout is OFF and cancels persisted work without registering anything',
+    'disabled schedule cancels persisted work without registering anything',
     () async {
-      expect(backgroundSyncEnabled, isFalse);
       final scheduler = Scheduler();
       await applyBackgroundTaskSchedule(
         dispatcher: () {},
@@ -45,9 +44,18 @@ void main() {
         scheduler: scheduler,
       );
       expect(scheduler.registered, isEmpty);
+      // Ark renewal keeps its own schedule, so turning ordinary sync off never cancels it.
       expect(
         scheduler.cancelled,
-        containsAll(BackgroundTask.values.map((task) => task.id)),
+        containsAll(
+          BackgroundTask.values
+              .where((task) => task != BackgroundTask.arkRenewal)
+              .map((task) => task.id),
+        ),
+      );
+      expect(
+        scheduler.cancelled,
+        isNot(contains(BackgroundTask.arkRenewal.id)),
       );
     },
   );

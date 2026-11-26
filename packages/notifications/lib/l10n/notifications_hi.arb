@@ -1,0 +1,7 @@
+{
+  "@@locale": "hi",
+  "receivePaymentReceived": "भुगतान प्राप्त हो गया!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

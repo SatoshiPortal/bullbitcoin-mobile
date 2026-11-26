@@ -1,0 +1,55 @@
+{
+  "status": "REAL_CAPTURED_AND_REVIEWED",
+  "barkCommit": "303682063ed7559b06dcf37c5cb37bb7037b943f",
+  "flow": "dedicated-non-htlc-board",
+  "sourceGrantReference": "ORDER-20261117-DELIVER; dedicated retained wallet resume",
+  "sourceExpectedRecordedAtUtc": "2026-11-17T15:55:47.966364Z",
+  "sourceHandlesClosedAtUtc": "2026-11-17T15:55:47.965640Z",
+  "fixtureBuildStartedAtUtc": "2026-11-17T15:58:33.608561Z",
+  "prebuildExpectedManifestSha256": "3a0213c6f95007843feaac233e7cbdc4372338e827016773d497c86f506c60a0",
+  "secretReviewReference": "ark-real-nonhtlc-exit-material-20261117",
+  "fixtureSha256": "0f3f2d15527eda2c0f3d50b46431c3d07beeb7fc11c1f3919e0745b6420ee928",
+  "movementIdSanitizedToNull": true,
+  "sourceMovementIdWasNull": false,
+  "otherSummaryColumnsPolicy": "Only id/raw_bare/raw_genesis inserted; expiry_height/amount_sat/exit_depth/exit_tx_weight NULL; registered=0; created_at=local DDL default; public properties mailbox=NULL",
+  "publicIdentity": {
+    "testNamespaceFingerprint": "00000001",
+    "testNamespaceIsParentAuthentication": false,
+    "serverIdentity": "regtest-saved-exit-fixture",
+    "nativeFingerprint": "4a8c54ae",
+    "serverPubkey": "03b851a8f5e52d27424d6289962747b13a56c572395ba0318f6c704d61dcd72326"
+  },
+  "sourceExpected": {
+    "vtxoId": "d56bcedb793514ed66b09b464d57d37e0cbdbc95e3ed9ee1412e426066a664c0:0",
+    "parentTxid": "d56bcedb793514ed66b09b464d57d37e0cbdbc95e3ed9ee1412e426066a664c0",
+    "recordedChildTxid": "1e2976f77424908c96638369e375b5ae2604d9d7a7e62e6abb01def0ba77f995",
+    "transactionPhase": "awaitingConfirmation",
+    "childOrigin": "wallet",
+    "confirmedHeight": null,
+    "confirmedHash": null,
+    "rawBare": {
+      "byteLength": 156,
+      "sha256": "8644f78b96a06def930b78222a094626a9f7c84d8a90af8695425644b9738b6a"
+    },
+    "rawGenesis": {
+      "byteLength": 143,
+      "sha256": "3d72cb4215c36635b59cf26fac141cefa4600fccd0ce844dac7076fd9174542a"
+    },
+    "childTransaction": {
+      "byteLength": 204,
+      "sha256": "ad61c485fd4cd3c725de438a8bfb6ed29a16ac726b79b48b00b4866a456e4dbe"
+    },
+    "stateUtf8": {
+      "byteLength": 300,
+      "sha256": "f3810c36980ac2f36f7f7564320e60a318d980f3bb4ec6c08b9da3dbfcf0086a"
+    },
+    "historyUtf8": {
+      "byteLength": 377,
+      "sha256": "0eb1f09994fad26617b0c722bfeb2bf7e6c44c2f7b26b9d0ab93ff40ae0d50bd"
+    },
+    "originUtf8": {
+      "byteLength": 37,
+      "sha256": "ec542afc3c18d7749240c70fe321bcdc93ce952c8429eddabebd2227a2be78f2"
+    }
+  }
+}

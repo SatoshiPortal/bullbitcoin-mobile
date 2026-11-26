@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
-import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
-import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:material_ui/material_ui.dart';
-import 'package:go_router/go_router.dart';
+import 'package:receive/receive.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:receive/routes.dart';
+import 'package:send/send.dart' show SendNavigation;
+import 'package:bull_ui/bull_ui.dart'
+    show BullReceiveSendButtons, BuildContext, StatelessWidget, Widget;
+import 'package:sync/sync.dart' show WalletKey;
 
 class WalletBottomButtons extends StatelessWidget {
   const WalletBottomButtons({super.key, this.wallet});
@@ -15,21 +15,37 @@ class WalletBottomButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReceiveSendButtons(
+    return BullReceiveSendButtons(
       receiveLabel: context.loc.walletButtonReceive,
       sendLabel: context.loc.walletButtonSend,
       onReceive: () {
-        final type =
-            wallet?.defaultReceiveNetwork ?? ReceiveNetworkType.bitcoin;
-        final routeName = switch (type) {
-          ReceiveNetworkType.bitcoin => ReceiveRoute.receiveBitcoin.name,
-          ReceiveNetworkType.lightning => ReceiveRoute.receiveLightning.name,
-          ReceiveNetworkType.liquid => ReceiveRoute.receiveLiquid.name,
-        };
-        context.pushNamed(routeName, extra: wallet);
+        final selected = wallet;
+        ReceiveNavigation.open<void>(
+          context,
+          wallet: selected == null
+              ? null
+              : ReceiveWallet(
+                  id: selected.id,
+                  network: selected.network.shared,
+                  signsLocally: selected.signsLocally,
+                  scriptType: selected.scriptType,
+                ),
+        );
       },
-      onSend: () => context.pushNamed(SendRoute.send.name, extra: wallet),
-      sendDisabled: wallet?.isWatchOnly ?? false,
+      onSend: wallet?.isWatchOnly == true
+          ? null
+          : () {
+              final selected = wallet;
+              SendNavigation.open(
+                context,
+                wallet: selected == null
+                    ? null
+                    : WalletKey(
+                        id: selected.id,
+                        network: selected.network.shared,
+                      ),
+              );
+            },
     );
   }
 }

@@ -22,6 +22,30 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 
 ```text
 Secrets
+|-- accessKeychain
+|   |-- isPinSet() -> bool
+|   |-- verifyPin(candidate) -> bool?
+|   |-- setPin(pin) -> void
+|   |-- deletePin() -> void
+|   |-- readAttempts() -> String?
+|   |-- writeAttempts(value) -> void
+|   |-- readLockedUntil() -> String?
+|   |-- writeLockedUntil(value) -> void
+|   `-- deleteLockedUntil() -> void
+|-- exchangeKeychain
+|   |-- read(isTestnet:) -> String?
+|   |-- write(value, isTestnet:) -> void
+|   `-- delete(isTestnet:) -> void
+|-- silentPaymentKeychain
+|   |-- readBackend() -> String?
+|   |-- writeBackend(value) -> void
+|   |-- deleteBackend() -> void
+|   |-- readAutoScan() -> String?
+|   `-- writeAutoScan(value) -> void
+|-- swapKeychain
+|   |-- read(key) -> String?
+|   |-- write(key, value) -> void
+|   `-- delete(key) -> void
 |-- generate([wordCount: MnemonicLength.words12]) -> Secret
 |-- import(words:, language:, [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
@@ -31,12 +55,14 @@ Secrets
 |-- contains(words:, language:, [passphrase:]) -> bool
 |-- find(words:, language:, [passphrase:]) -> Secret?
 |-- preview
+|   |-- arkFingerprint(words:) -> Fingerprint
 |   |-- bitcoinDescriptors(words:, language:, [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |   `-- matchesBitcoinDescriptors(words:, language:, [passphrase:], network:, scriptType:, expected:) -> bool
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:], [allowUnverified: false]) -> RestoredVault
 |   `-- fingerprint(vault:, key:, [passphrase:]) -> Fingerprint
 `-- databaseKeys(module:)
+    |-- open(name:, file:, [existingSchemaVersion:]) -> Future<Result<QueryExecutor, DatabaseOpenFailure>>
     |-- getOrCreate(name:) -> DatabaseKey
     |-- get(name:) -> DatabaseKey
     `-- reset(name:) -> void
@@ -120,12 +146,15 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 
 `generate` and `import` return a `Secret`. Importing an existing secret returns a dedicated duplicate failure; it never overwrites the existing entry. `contains(words:, language:, passphrase:)` and `exists(id)` are preliminary checks, not proof that a later import or read will succeed. `preview.bitcoinDescriptors(words:, language:, passphrase:, network:, scriptTypes:)` derives the public account-0 descriptors of words that are not stored, one pair per requested script type from a single seed derivation, for a chain scan before import: it reads and writes nothing, keeps nothing, and only descriptor strings leave the isolate that derives and wipes the seed. The words are read in the `language` the caller states, so every mnemonic previews its own seed and the descriptors match those an import of the same words in the same language derives. `trash(id)` deletes the secret; checking whether a wallet still needs it belongs to the application.
 
+`preview.arkFingerprint(words:)` returns the public Bark m/350h consistency identity of an already scoped English child, with the empty passphrase required by existing Ark accounts. It never reads or writes the keystore and returns only a validated `Fingerprint`. The host must pair it with the same child supplied to Bark; the four-byte identity is not cryptographic authentication. Temporary seed bytes are wiped, but library-internal copies cannot be guaranteed erased.
+
 `list()` returns `List<SecretEntry>`. The sealed family contains usable `Secret` handles and `UnreadableSecret` entries carrying their failure and, when recoverable, their fingerprint. A failure to read the store as a whole remains an `Err`; it must not be interpreted as an empty store or a lost seed. On Android, the platform's `readAll` may fail because of an entry in any namespace. Fetching an individual secret avoids that global read.
 
 ## Outputs and custody
 
 | Operation | Output | Sensitivity |
 |---|---|---|
+| `preview.arkFingerprint` (on `Secrets`) | public Bark child fingerprint | 32-bit consistency discriminator, no spending authority |
 | `derive.xpub` | account xpub | reveals addresses |
 | `preview.bitcoinDescriptors` (on `Secrets`) | receive/change public descriptors of unstored words | reveals addresses |
 | `derive.descriptors.bitcoin` | receive/change public descriptors | reveals addresses |
@@ -172,6 +201,8 @@ Sealed display and challenge widgets obtain language in the same read as the wor
 
 `secrets.databaseKeys(module:)` scopes `getOrCreate(name:)`, `get(name:)` and `reset(name:)` to one module. Inject that handle instead of all of `Secrets`. Creation is serialized within the isolate and occurs only on a clean miss; corrupt entries are never replaced automatically. `get` never creates, and `reset` deletes without regeneration. The module owner must also discard the database encrypted by a reset key.
 
+For Drift workers, capture `Secrets.databaseOpener` on the root isolate. It binds the database name, module, file and expected schema without transferring keys or a live connection. The worker initializes the keystore bridge and returns only a keyed executor or a caller-supplied failure. The owner still controls admission and verifies its readiness receipt before exposing the database.
+
 ## Sealed widgets and failures
 
 The host styles the sealed word widgets with `wordBuilder` or `tileBuilder` and arranges them with `layoutBuilder`. `failureBuilder(context, failure, retry)` renders an error and can offer a new read after the keystore unlocks. The challenge reports `onSolved`, `onMistake` and `onProgress`; completing the selection is distinct from successful verification. A keystore failure is never reported as a wrong answer. The host supplies localized messages and owns authentication and capture protection around the screen.
@@ -189,3 +220,28 @@ RecoverBull creation, restoration and backup inspection use the package. Decrypt
 ## Read next
 
 [doc/design.md](doc/design.md): contracts, passphrase behavior, storage ownership, module layout, custody checks and contributor rules.
+
+## Legacy owner keychains
+
+`Secrets.accessKeychain`, `exchangeKeychain`, `silentPaymentKeychain` and `swapKeychain` expose closed handles. Access compares the PIN without returning it; a missing PIN is distinct from a mismatch and a failed read. All operations return `Result<…, SecretFailure>`. Exchange selects only mainnet or testnet; Silent Payments owns only its backend and auto-scan settings. Swaps accepts only full legacy `swap_` keys, including `swap_regtest_`, and rejects other namespaces before storage access. No capability lists the keychain or accepts a caller-selected prefix.
+
+The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys are `failedUnlockAttemptsKey`, `unlockLockedUntilKey`, `exchange_api_key`, `exchange_api_key_testnet`, `sp_backend_config` and `sp_auto_scan_enabled`. The handles access these entries in place with Android `resetOnError: false` and `migrateOnAlgorithmChange: false`, and iOS `first_unlock_this_device`. Moving SP configuration to another store would require a separate migration. Exchange owns its diagnostics without duplicate keychain reporting. Access operations retain sanitized boundary diagnostics.
+
+## Encrypted wallet inventory
+
+The Secrets schema owns wallet definitions, BIP85 derivation records and access views. `package:secrets/migration.dart` supplies the foreground participant for split-v1. It copies the inventory from a read-only schema-16 snapshot and verifies every destination value before committing its receipt in `access_state`. A wallet marked local keeps its expected seed fingerprint even when the seed cannot be read. Descriptor spelling, nullable labels and unknown legacy enum text survive the copy.
+
+When the source contains wallets, an existing PIN becomes a salted Argon2id verifier and the failed-attempt count and lockout are copied in the same transaction. An inventory initialized without wallets starts unprotected, including after an iOS reinstall where the keychain can survive the app container. The importer skips malformed seed keys and leaves the receipt pending when the keystore listing is unavailable. It retains the legacy file and keychain entries for coordinated retirement after all owners verify their data.
+
+On the first foreground open of an inventory admitted by an older build, Secrets reconciles access before publishing a session. A legacy PIN takes precedence for an older imported inventory until the access receipt records the handover. A fresh receipt never imported a credential, so a PIN already registered in that inventory takes precedence. If the legacy PIN is absent, an existing inventory credential stays in force. Reconciliation preserves the greater failed-attempt count and deadline when importing legacy protection. A failed read blocks startup and leaves the receipt retryable. The receipt records the handover without deleting the legacy keys, so a PIN removed after the handover stays removed on restart.
+
+The storage library opens an existing admitted inventory. Its foreground capability checks the session before reading or mutating wallet registrations and rechecks the session before returning data. Locking withdraws inventory access. Credential checks and attempt updates share one transaction. PIN retries honor both the persisted deadline and a monotonic delay of 30 seconds per failure beyond the third. After reopening, the full delay for the persisted attempt count starts at the first access check. To set or change a PIN, the app verifies a backup for a default wallet in the active environment using the inventory's current default wallets. The active view's background grant controls a separate descriptor-only capability for sync.
+
+The host gives features the read-only `WalletInventory` from `package:secrets/secrets.dart`, implemented by the admitted `SecretsInventory`. A targeted lookup distinguishes a wallet not visible to this view, unreadable metadata and a storage read failure. The concrete chain and network come from storage, not from the derivation path or the app's current environment. Network selection returns readable wallets in wallet ID order and their explicit defaults; it neither chooses a fallback nor resolves competing defaults. These reads never expose descriptors. The descriptor catalog for native Sync remains a separate projection, not a metadata lookup for features.
+
+Reserve BIP85 indices per parent and application before deriving the child. Keep every reservation, including revoked entries, so a retry cannot return the same child. Historical paths retain their original spelling.
+
+
+### Recorded BIP85 derivations
+
+The authorized inventory opens a `Bip85Derivations` capability via `inventory.bip85(secrets)`. Its `list()` returns metadata for all recorded children in the active view, including revoked entries. Deriving a new child reserves a distinct index in the encrypted inventory before deriving it. `reveal(parent)` checks stored paths and returns only the derived children of that parent. The BIP85 root stays in Secrets and an inventory lock invalidates in-flight results.

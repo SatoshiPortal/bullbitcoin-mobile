@@ -1,0 +1,11 @@
+{
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "announcementDismissConfirmAction": "Ausblenden",
+  "announcementDismissConfirmBody": "Lesen Sie die Ankündigung, um mehr zu erfahren, oder blenden Sie sie aus. Ausgeblendete Ankündigungen werden nicht erneut angezeigt.",
+  "announcementDismissConfirmRead": "Lesen",
+  "announcementDismissConfirmTitle": "Diese Ankündigung ausblenden?",
+  "announcementPayjoinDescription": "Aktivieren Sie Payjoin, um Ihre Bitcoin-Zahlungen privater zu gestalten.",
+  "announcementPayjoinTitle": "Mehr Privatsphäre",
+  "announcementAppUpdateRequiredTitle": "BULL aktualisieren",
+  "announcementAppUpdateRequiredDescription": "Um Lightning-Zahlungen und den Swap-Dienst zu nutzen, aktualisieren Sie die BULL-App bitte auf die neue Version."
+}

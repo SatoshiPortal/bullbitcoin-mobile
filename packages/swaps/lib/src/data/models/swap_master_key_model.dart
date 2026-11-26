@@ -2,7 +2,7 @@ import 'package:swaps/src/util.dart' show SwapsException;
 import 'package:primitives/primitives.dart';
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 
 /// The dedicated swap master key (the "swap mnemonic"), derived by the app's
 /// secrets layer and persisted per network. Boltz swap constructors derive
@@ -71,13 +71,22 @@ class SwapMasterKeyModel {
   }
 
   factory SwapMasterKeyModel.fromJson(Map<String, dynamic> json) {
-    return SwapMasterKeyModel(
-      xprv: json['xprv'] as String,
-      xpub: json['xpub'] as String,
-      network: json['network'] as String,
-      mnemonic: json['mnemonic'] as String,
-      fingerprint: json['fingerprint'] as String,
-    );
+    if (json case {
+      'xprv': final String privateKey,
+      'xpub': final String publicKey,
+      'network': final String network,
+      'mnemonic': final String mnemonic,
+      'fingerprint': final String fingerprint,
+    }) {
+      return SwapMasterKeyModel(
+        xprv: privateKey,
+        xpub: publicKey,
+        network: network,
+        mnemonic: mnemonic,
+        fingerprint: fingerprint,
+      );
+    }
+    throw const FormatException('Unreadable swap key record');
   }
 
   Map<String, dynamic> toJson() => {

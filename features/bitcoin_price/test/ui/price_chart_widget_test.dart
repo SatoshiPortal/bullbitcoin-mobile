@@ -1,0 +1,160 @@
+import 'package:bitcoin_price/src/domain/bitcoin_price_failure.dart';
+import 'package:bitcoin_price/src/domain/usecases/watch_price_currency_usecase.dart';
+import 'package:bitcoin_price/src/domain/usecases/read_price_currency_usecase.dart';
+
+import 'dart:async';
+import 'dart:ui' show SemanticsAction;
+
+import 'package:bull_ui/testing.dart';
+import 'package:bitcoin_price/src/domain/usecases/get_bitcoin_price_usecase.dart';
+import 'package:bitcoin_price/src/domain/usecases/get_price_history_usecase.dart';
+import 'package:bitcoin_price/src/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/src/presentation/cubit/price_chart_cubit.dart';
+import 'package:bitcoin_price/src/ui/price_chart_widget.dart';
+import 'package:bitcoin_price/bitcoin_price.dart'
+    show BitcoinPriceLocalizations;
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Result;
+
+class _MockGetBitcoinPriceUsecase extends Mock
+    implements GetBitcoinPriceUsecase {}
+
+class _MockGetPriceHistoryUsecase extends Mock
+    implements GetPriceHistoryUsecase {}
+
+class _MockReadPriceCurrencyUsecase extends Mock
+    implements ReadPriceCurrencyUsecase {}
+
+class _MockWatchPriceCurrencyUsecase extends Mock
+    implements WatchPriceCurrencyUsecase {}
+
+PricePoint _point(double price, int day) => PricePoint(
+  currency: SupportedCurrency.cad,
+  fiatAmount: price,
+  time: DateTime.utc(2026, 1, day),
+);
+
+void main() {
+  Future<PriceChartCubit> pumpChart(
+    WidgetTester tester,
+    List<PricePoint> prices, {
+    int? selectedDataPointIndex,
+  }) async {
+    final watchCurrencyChanges = _MockWatchPriceCurrencyUsecase();
+    when(() => watchCurrencyChanges.execute()).thenAnswer(
+      (_) => const Stream<Result<String, BitcoinPriceFailure>>.empty(),
+    );
+
+    final bitcoinPriceBloc = BitcoinPriceBloc(
+      readPriceCurrencyUsecase: _MockReadPriceCurrencyUsecase(),
+      getBitcoinPriceUsecase: _MockGetBitcoinPriceUsecase(),
+      watchPriceCurrencyUsecase: watchCurrencyChanges,
+    );
+    final priceChartCubit =
+        PriceChartCubit(
+          getPriceHistoryUsecase: _MockGetPriceHistoryUsecase(),
+          readPriceCurrencyUsecase: _MockReadPriceCurrencyUsecase(),
+        )..emit(
+          PriceChartState(
+            prices: prices,
+            currency: 'CAD',
+            selectedDataPointIndex: selectedDataPointIndex,
+          ),
+        );
+    addTearDown(bitcoinPriceBloc.close);
+    addTearDown(priceChartCubit.close);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: testBullExtensions),
+        localizationsDelegates:
+            BitcoinPriceLocalizations.localizationsDelegates,
+        supportedLocales: BitcoinPriceLocalizations.supportedLocales,
+        home: Scaffold(
+          body: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: bitcoinPriceBloc),
+              BlocProvider.value(value: priceChartCubit),
+            ],
+            child: const PriceChartWidget(),
+          ),
+        ),
+      ),
+    );
+    return priceChartCubit;
+  }
+
+  // A single point used to divide the chart width by zero and paint NaN
+  // offsets on every frame.
+  testWidgets('a single point paints without error', (tester) async {
+    await pumpChart(tester, [_point(100, 1)]);
+    await tester.pump(const Duration(seconds: 2));
+
+    expect(tester.takeException(), isNull);
+  });
+
+  // Equal prices used to divide by a zero price range.
+  testWidgets('a flat line paints without error', (tester) async {
+    await pumpChart(tester, [_point(100, 1), _point(100, 2), _point(100, 3)]);
+    await tester.pump(const Duration(seconds: 2));
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('semantics selects the previous and next points', (tester) async {
+    final cubit = await pumpChart(tester, [
+      _point(100, 1),
+      _point(120, 2),
+      _point(110, 3),
+    ]);
+    final chart = find.bySemanticsLabel('Price history');
+    final node = tester.getSemantics(chart);
+    final owner = node.owner;
+    if (owner == null) fail('Chart semantics has no owner');
+
+    owner.performAction(node.id, SemanticsAction.decrease);
+    await tester.pump();
+    expect(cubit.state.selectedDataPointIndex, 1);
+
+    owner.performAction(node.id, SemanticsAction.increase);
+    await tester.pump();
+    expect(cubit.state.selectedDataPointIndex, 2);
+  });
+
+  testWidgets('settles after the chart animations finish', (tester) async {
+    final priceChartCubit = await pumpChart(tester, [
+      _point(100, 1),
+      _point(120, 2),
+      _point(110, 3),
+    ], selectedDataPointIndex: 1);
+
+    expect(find.byType(CustomPaint), findsWidgets);
+    expect(tester.binding.transientCallbackCount, greaterThan(0));
+
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 2),
+    );
+    expect(tester.binding.hasScheduledFrame, isFalse);
+    expect(tester.binding.transientCallbackCount, 0);
+
+    final chart = find.byType(CustomPaint).last;
+    final chartRect = tester.getRect(chart);
+    await tester.tapAt(Offset(chartRect.right - 1, chartRect.center.dy));
+    await tester.pump();
+
+    expect(priceChartCubit.state.selectedDataPointIndex, 2);
+    expect(tester.binding.transientCallbackCount, 0);
+
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(tester.binding.hasScheduledFrame, isFalse);
+    expect(tester.binding.transientCallbackCount, 0);
+  });
+}

@@ -1,15 +1,21 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/localizations.dart' show appLocalizationsDelegates;
+import 'package:bitcoin_price/bitcoin_price.dart'
+    show BitcoinPriceLocalizations;
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
+import 'package:bull_ui/app_theme.dart';
+import 'package:bitcoin_price/testing.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQuickActionBar, bullUiLocalizationsDelegate;
+    show
+        BullAmountScope,
+        BullAmountSnapshot,
+        BullQuickActionBar,
+        bullUiLocalizationsDelegate;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,27 +26,28 @@ class _Wallet extends MockBloc<WalletEvent, WalletState>
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
-class _Price extends MockBloc<BitcoinPriceEvent, BitcoinPriceState>
-    implements BitcoinPriceBloc {}
-
-class _Chart extends MockCubit<PriceChartState> implements PriceChartCubit {}
-
 const _actionKey = ValueKey('actions');
 
 Future<void> _pumpTopSection(
   WidgetTester tester, {
   required double textScale,
-  required double actionsHeight,
+  bool hideAmounts = true,
+  double? actionsHeight,
   required int unconfirmedIncomingBalance,
 }) async {
   final wallet = _Wallet();
   final settings = _Settings();
-  final price = _Price();
-  final chart = _Chart();
+
+  final amountDisplay = (
+    bitcoinUnit: BitcoinUnit.btc,
+    currencyCode: 'CAD',
+    hideAmounts: hideAmounts,
+  );
   whenListen(
     wallet,
     const Stream<WalletState>.empty(),
     initialState: WalletState(
+      amountDisplay: amountDisplay,
       status: WalletStatus.success,
       unconfirmedIncomingBalance: unconfirmedIncomingBalance,
     ),
@@ -48,33 +55,23 @@ Future<void> _pumpTopSection(
   whenListen(
     settings,
     const Stream<SettingsState>.empty(),
-    initialState: const SettingsState(
+    initialState: SettingsState(
       storedSettings: SettingsEntity(
         environment: Environment.mainnet,
         bitcoinUnit: BitcoinUnit.btc,
         currencyCode: 'CAD',
-        hideAmounts: true,
+        hideAmounts: hideAmounts,
       ),
     ),
   );
-  whenListen(
-    price,
-    const Stream<BitcoinPriceState>.empty(),
-    initialState: const BitcoinPriceState(
-      currency: 'CAD',
-      bitcoinPrice: 100000,
-    ),
-  );
-  whenListen(
-    chart,
-    const Stream<PriceChartState>.empty(),
-    initialState: const PriceChartState(),
-  );
+
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: [
-        ...AppLocalizations.localizationsDelegates,
+        ...appLocalizationsDelegates,
+        BitcoinPriceLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
         bullUiLocalizationsDelegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
@@ -88,14 +85,33 @@ Future<void> _pumpTopSection(
             providers: [
               BlocProvider<WalletBloc>.value(value: wallet),
               BlocProvider<SettingsCubit>.value(value: settings),
-              BlocProvider<BitcoinPriceBloc>.value(value: price),
-              BlocProvider<PriceChartCubit>.value(value: chart),
+              BitcoinPriceFixture.prices(
+                amountDisplay: amountDisplay,
+                currency: 'CAD',
+                bitcoinPrice: 100000,
+              ),
+              BitcoinPriceFixture.chart(),
             ],
-            child: SingleChildScrollView(
-              child: SizedBox(
-                width: 360,
-                child: WalletHomeTopSection(
-                  actions: SizedBox(key: _actionKey, height: actionsHeight),
+            child: BullAmountScope(
+              snapshot: BullAmountSnapshot(
+                unit: BitcoinUnit.btc,
+                hideAmounts: hideAmounts,
+                isReady: true,
+              ),
+              writeUnit: (_) async => true,
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  width: 360,
+                  child: WalletHomeTopSection(
+                    actions: Builder(
+                      builder: (context) => SizedBox(
+                        key: _actionKey,
+                        height:
+                            actionsHeight ??
+                            BullQuickActionBar.heightOf(context),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -108,29 +124,17 @@ Future<void> _pumpTopSection(
 }
 
 void main() {
-  testWidgets('keeps 16 between the balance and the eye badge', (tester) async {
+  testWidgets('home balance has no eye toggle', (tester) async {
     await _pumpTopSection(
       tester,
       textScale: 1,
       actionsHeight: 100,
       unconfirmedIncomingBalance: 0,
     );
-    final row = find.ancestor(
-      of: find.byType(EyeToggle),
-      matching: find.byType(Row),
-    );
-    final balance = tester.getRect(
-      find.descendant(of: row.first, matching: find.byType(Flexible)).first,
-    );
-    final badge = tester.getRect(
-      find
-          .descendant(
-            of: find.byType(EyeToggle),
-            matching: find.byType(Container),
-          )
-          .first,
-    );
-    expect(badge.left - balance.right, 16);
+    expect(find.byType(EyeToggle), findsNothing);
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.byTooltip(l10n.walletShowAmountsTooltip), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(
@@ -172,13 +176,14 @@ void main() {
       await _pumpTopSection(
         tester,
         textScale: 1,
-        actionsHeight: BullQuickActionBar.height,
         unconfirmedIncomingBalance: 0,
       );
       expect(tester.takeException(), isNull);
       expect(
         tester.getSize(find.byType(Image)).height,
-        WalletHomeTopSection.minBackgroundHeight,
+        WalletHomeTopSection.minBackgroundHeight(
+          tester.element(find.byType(WalletHomeTopSection)),
+        ),
       );
     },
   );

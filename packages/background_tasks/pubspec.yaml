@@ -9,6 +9,15 @@ environment:
   flutter: "3.50.0"
 
 dependencies:
+  legacy_storage:
+  bull_tor:
+  electrum:
+  get_it: ^9.1.1
+  notifications:
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  preferences:
+  secrets:
   flutter:
     sdk: flutter
   workmanager: ^0.10.10

@@ -1,0 +1,756 @@
+{
+  "@@locale": "hi_Latn",
+  "coreSwapsStatusPending": "Baaki Hai",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "coreSwapsStatusInProgress": "Chal Raha Hai",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "Poora Ho Gaya",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusExpired": "Khatam Hua",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsStatusFailed": "Fail Ho Gaya",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "coreSwapsLnReceivePending": "Swap abhi shuru nahi hua.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "coreSwapsLnReceivePaid": "Bhejne wale ne invoice pay kar diya.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "coreSwapsLnReceiveClaimable": "Swap claim karne ke liye taiyar hai.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveRefundable": "Swap refund karne ke liye taiyar hai.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "Swap thodi der mein poora ho jaayega.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsLnReceiveCompleted": "Swap poora ho gaya.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "coreSwapsLnReceiveExpired": "Swap Khatam Ho Gaya.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "coreSwapsLnReceiveFailed": "Swap Fail Ho Gaya.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "coreSwapsLnSendPending": "Swap abhi shuru nahi hua.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnSendPaid": "Invoice confirm hone ke baad pay ki jaayegi.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "coreSwapsLnSendClaimable": "Swap claim karne ke liye taiyar hai.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "coreSwapsLnSendRefundable": "Swap refund karne ke liye taiyar hai.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "coreSwapsLnSendCanCoop": "Swap thodi der mein poora ho jaayega.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "coreSwapsLnSendCompletedRefunded": "Swap refund ho gaya.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Swap safaltapurvak poora ho gaya.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "coreSwapsLnSendExpired": "Swap Khatam Ho Gaya",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsLnSendFailedRefunding": "Swap jaldi refund ho jaayega.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "coreSwapsLnSendFailed": "Swap Fail Ho Gaya.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainPending": "Swap abhi shuru nahi hua.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "coreSwapsChainPaid": "Swap provider ke payment ka confirmation ka intezaar hai. Isme thoda waqt lag sakta hai.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "Swap claim karne ke liye taiyar hai.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "coreSwapsChainRefundable": "Swap refund karne ke liye taiyar hai.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "coreSwapsChainCanCoop": "Swap thodi der mein poora ho jaayega.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "coreSwapsChainCompletedRefunded": "Swap refund ho gaya.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "coreSwapsChainCompletedSuccess": "Swap safaltapurvak poora ho gaya.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsChainExpired": "Swap Khatam Ho Gaya",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "coreSwapsChainFailedRefunding": "Swap jaldi refund ho jaayega.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "coreSwapsChainFailed": "Swap Fail Ho Gaya.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "coreWalletTransactionStatusPending": "Pending",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "coreWalletTransactionStatusConfirmed": "Confirmed",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "retry": "Dobara Try Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "receivePaymentNormally": "Aam taur par payment prapt karo",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "buyTitle": "Bitcoin Kharido",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "sellTitle": "Bitcoin Becho",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionTitle": "Transactions",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionDetailTitle": "Transaction ki jaankari",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailTransferProgress": "Swap ki pragati",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailSwapProgress": "Swap ki pragati",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailAddNote": "Note jodo",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionFilterAll": "Sab",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionFilterSend": "Bhejo",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "transactionFilterReceive": "Prapt karo",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionFilterTransfer": "Swap",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionFilterPayjoin": "Payjoin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "transactionFilterSell": "Becho",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionFilterBuy": "Kharido",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "transactionFilterWithdraw": "Nikalo",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "Pay karo",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "Funding",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "Inam",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "Wapasi",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLiquid": "Liquid",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "transactionStatusInProgress": "Chal Raha Hai",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionStatusPending": "Baaki Hai",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionStatusTransferCompleted": "Swap Poora Hua",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionStatusTransferInProgress": "Swap Chal Raha Hai",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionStatusPaymentInProgress": "Payment Chal Rahi Hai",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "transactionStatusPaymentRefunded": "Payment Wapas Hui",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusTransferFailed": "Swap Fail Ho Gaya",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionStatusSwapFailed": "Swap Fail Ho Gaya",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionStatusTransferExpired": "Swap Khatam Ho Gaya",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "transactionStatusSwapExpired": "Swap Khatam Ho Gaya",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusPayjoinRequested": "Payjoin maanga gaya",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionNotesLabel": "Transaction ke notes",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionNoteAddTitle": "Note jodo",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionNoteHint": "Note",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionPayjoinSendWithout": "Payjoin ke bina bhejo",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionSwapProgressInitiated": "Shuru Hua",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionSwapProgressPaymentMade": "Payment\nHo Gayi",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "transactionSwapProgressFundsClaimed": "Paise\nLiye Gaye",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "transactionSwapProgressBroadcasted": "Broadcast Hua",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionSwapProgressInvoicePaid": "Invoice\nPay Hua",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionSwapProgressConfirmed": "Confirm Hua",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionSwapProgressClaim": "Claim",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "Poora Hua",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInProgress": "Chal Raha Hai",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapStatusTransferStatus": "Swap ki Sthiti",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionSwapStatusSwapStatus": "Swap ki Sthiti",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionSwapDescLnReceivePending": "Aapka swap shuru ho gaya hai. Hum Lightning Network par payment aane ka intezaar kar rahe hain.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionSwapDescLnReceivePaid": "Payment aa gayi! Ab hum on-chain transaction aapke wallet mein bhej rahe hain.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "On-chain transaction confirm ho gayi. Ab hum aapka swap poora karne ke liye paise claim kar rahe hain.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveCompleted": "Aapka swap kamyabi se poora ho gaya! Paise ab aapke wallet mein milne chahiye.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveFailed": "Aapke swap mein kuch problem aayi. Agar 24 ghante mein paise wapas nahi aaye toh support se sampark karo.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "Yeh swap khatam ho gaya. Bheje gaye koi bhi paise bhejne wale ko apne aap wapas ho jayenge.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "Aapka swap chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionSwapDescLnSendPending": "Aapka swap shuru ho gaya hai. Hum aapke paise lock karne ke liye on-chain transaction broadcast kar rahe hain.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionSwapDescLnSendPaid": "Aapki on-chain transaction broadcast ho gayi. 1 confirmation ke baad Lightning payment bheja jayega.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescLnSendCompleted": "Lightning payment kamyabi se bheja gaya! Aapka swap ab poora ho gaya.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionSwapDescLnSendFailed": "Aapke swap mein kuch problem aayi. Aapke paise apne aap wallet mein wapas aa jayenge.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "Yeh swap khatam ho gaya. Aapke paise apne aap wallet mein wapas aa jayenge.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnSendDefault": "Aapka swap chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "transactionSwapDescChainPending": "Aapka swap bana diya gaya hai lekin abhi shuru nahi hua.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionSwapDescChainPaid": "Aapki transaction broadcast ho gayi. Ab hum lockup transaction confirm hone ka intezaar kar rahe hain.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "transactionSwapDescChainClaimable": "Lockup transaction confirm ho gayi. Ab aap swap poora karne ke liye paise claim kar rahe ho.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "Swap refund kiya jayega. Aapke paise apne aap wallet mein wapas aa jayenge.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "transactionSwapDescChainCompleted": "Aapka swap kamyabi se poora ho gaya! Paise ab aapke wallet mein milne chahiye.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "transactionSwapDescChainFailed": "Aapke swap mein kuch problem aayi. Agar 24 ghante mein paise wapas nahi aaye toh support se sampark karo.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescChainExpired": "Yeh swap khatam ho gaya. Aapke paise apne aap wallet mein wapas aa jayenge.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainDefault": "Aapka swap chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "transactionSwapInfoFailedExpired": "Agar koi sawaal ya chinta hai toh madad ke liye support se sampark karo.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "transactionSwapInfoChainDelay": "On-chain swaps mein blockchain confirmation times ki wajah se thoda waqt lag sakta hai.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "transactionSwapInfoClaimableTransfer": "Swap kuch seconds mein apne aap poora ho jayega. Agar nahi hua toh \"Retry Swap Claim\" button dabake manually claim karne ki koshish karo.",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionSwapInfoClaimableSwap": "Swap kuch seconds mein apne aap poora ho jayega. Agar nahi hua toh \"Retry Swap Claim\" button dabake manually claim karne ki koshish karo.",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionSwapInfoRefundableTransfer": "Yeh swap kuch seconds mein apne aap wapas ho jayega. Agar nahi hua toh \"Retry Swap Refund\" button dabake manually refund karne ki koshish karo.",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapInfoRefundableSwap": "Yeh swap kuch seconds mein apne aap wapas ho jayega. Agar nahi hua toh \"Retry Swap Refund\" button dabake manually refund karne ki koshish karo.",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionListOngoingTransfersTitle": "Chal Rahe Swaps",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionListOngoingTransfersDescription": "Yeh swaps abhi chal rahe hain. Aapke paise surakshit hain aur swap poora hone par milenge.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionListLoadingTransactions": "Transactions load ho rahe hain...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionListNoTransactions": "Abhi koi transaction nahi hai.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionListToday": "Aaj",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionListYesterday": "Kal",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionSwapDoNotUninstall": "Swap poora hone tak app uninstall mat karo.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionFeesDeductedFrom": "Yeh fee bheji gayi raashi se kati jayegi",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionFeesTotalDeducted": "Yeh bheji gayi raashi se kati gayi kul fee hai",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionLabelSendAmount": "Bhejne ki Raashi",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveAmount": "Prapt Raashi",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionLabelSendNetworkFees": "Bhejne ki Network fees",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "Prapt Network Fee",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionLabelServerNetworkFees": "Server Network Fees",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "transactionLabelPreimage": "Preimage",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "transactionOrderLabelReferenceNumber": "Reference Number",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionOrderLabelOriginName": "Bhejne wale ka naam",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "transactionOrderLabelOriginCedula": "Bhejne wali ki Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionDetailAccelerate": "Tez Karo",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLabelTransactionId": "Transaction ID",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "transactionDetailLabelToWallet": "Wallet ko",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "transactionDetailLabelFromWallet": "Wallet se",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionDetailLabelRecipientAddress": "Praaptakarta ka pata",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionDetailLabelAddress": "Pata",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "transactionDetailLabelAddressNotes": "Pate ke notes",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionDetailLabelAmountReceived": "Prapt raashi",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionDetailLabelAmountSent": "Bheji gayi raashi",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "transactionDetailLabelTransactionFee": "Transaction Fee",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionDetailLabelStatus": "Sthiti",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionDetailLabelConfirmationTime": "Confirmation samay",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionDetailLabelOrderType": "Order ka prakar",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelOrderNumber": "Order number",
+  "transactionDetailLabelPaymentDescription": "Bhugtan vivaran",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionDetailLabelPayinAmount": "Payin raashi",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "transactionDetailLabelPayoutAmount": "Payout raashi",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "transactionDetailLabelExchangeRate": "Vinimay dar",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionDetailLabelPayinMethod": "Payin ka tarika",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionDetailLabelPayoutMethod": "Payout ka tarika",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "transactionDetailLabelPayinStatus": "Payin ki sthiti",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionDetailLabelOrderStatus": "Order ki sthiti",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionDetailLabelPayoutStatus": "Payout ki sthiti",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "transactionDetailLabelCreatedAt": "Kab banaya",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionDetailLabelCompletedAt": "Kab poora hua",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionDetailLabelTransferId": "Swap ID",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionDetailLabelSwapId": "Swap ID",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionDetailLabelTransferStatus": "Swap ki sthiti",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "transactionDetailLabelSwapStatus": "Swap ki sthiti",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelRefunded": "Wapas Hua",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionDetailLabelLiquidTxId": "Liquid transaction ID",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionDetailLabelBitcoinTxId": "Bitcoin transaction ID",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "transactionDetailLabelTransferFees": "Swap fees",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionDetailLabelSwapFees": "Swap fees",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "transactionDetailLabelSendNetworkFee": "Bhejne ki Network Fee",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionDetailLabelTransferFee": "Swap Fee",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionDetailLabelPayjoinStatus": "Payjoin ki sthiti",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Poora Hua",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelPayjoinExpired": "Khatam Ho Gaya",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin banane ka samay",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "globalDefaultBitcoinWalletLabel": "Surakshit Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "transactionHistoryTitle": "Lenden Itihaas",
+  "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur swaps) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
+  "exportTransactionsStartDate": "Shuru ki taarikh",
+  "exportTransactionsEndDate": "Antim taarikh",
+  "exportTransactionsAnyDate": "Koi bhi",
+  "exportTransactionsButton": "CSV export karein",
+  "exportTransactionsSuccess": "Lenden safaltaapoorvak export ho gaye",
+  "exportTransactionsEmpty": "Chayanit avadhi ke liye koi lenden nahi hai",
+  "exportTransactionsError": "Lenden export nahi ho saka.",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Shuru ki taareekh khatam ki taareekh se pehle honi chahiye",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "payViewReceipt": "Receipt dekhein",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "transactionListLoadingFailed": "Transactions load nahi ho sake.",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin poora hua",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Jab Payjoin transaction successfully complete ho jati hai tab dikhaya jata hai."
+  },
+  "coreSwapsStatusRefunded": "Refund Hua",
+  "transactionLabelNetworkFees": "Network fees",
+  "viewerTapToCopy": "Copy karne ke liye tap karo",
+  "viewerViewInExplorer": "Explorer mein dekho",
+  "viewerCopyLink": "Link copy karo",
+  "transactionViewerTitle": "Transaction ID",
+  "transactionSwapOpenWithin24h": "Apna swap poora karne ke liye 24 ghante ke andar app kholo.",
+  "recipientsTypeInteracEmail": "Email Money Transfer",
+  "transactionStatusPayjoinAborted": "Payjoin Radd Kiya Gaya",
+  "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
+  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78).",
+  "coreSwapsStatusNotStarted": "Shuru nahi hua",
+  "coreSwapsStatusAwaitingPayment": "Bhugtan ka intezaar",
+  "coreSwapsStatusAwaitingConfirmation": "Pushti ka intezaar",
+  "coreSwapsStatusUnderReview": "Samiksha mein",
+  "coreSwapsStatusRejected": "Asvikrit",
+  "coreSwapsStatusCanceled": "Radd",
+  "coreSwapsStatusPaymentDeadlineExpired": "Bhugtan ki samay-seema samapt",
+  "coreSwapsStatusScheduled": "Nirdharit",
+  "coreSwapsStatusAwaitingClaim": "Dawe ka intezaar",
+  "coreSwapsStatusUnknown": "Agyaat",
+  "transactionDetailLoadError": "Transaction ki details load nahin ho sakin.",
+  "transactionPayjoinBroadcastFailed": "Original transaction broadcast nahin ho saka. Kripya dobara koshish karein.",
+  "transactionPayjoinOriginalUnavailable": "Original transaction ab broadcast ke liye available nahin hai.",
+  "transactionLabelLimitReached": "Aap zyada se zyada 10 labels rakh sakte hain.",
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "transactionListExchangeOrdersUnavailable": "Exchange orders load nahi ho sake."
+}

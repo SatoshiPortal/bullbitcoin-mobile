@@ -35,7 +35,9 @@ Result<BitcoinNetwork?, RecoverBullFailure> _network(BuildContext context) {
 /// Shows where a finished verification or recovery leads.
 Future<void> _showCompletion(BuildContext context, VaultCompletion completion) {
   final scope = RecoverBullFlowScope.of(context);
-  if (completion.recovery is VaultRecovered && scope.onRecovered != null) {
+  if (completion.recovery is VaultRecovered &&
+      completion.warning == null &&
+      scope.onRecovered != null) {
     scope.onRecovered?.call();
     return Future.value();
   }
@@ -374,23 +376,21 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                 if (state.busy)
                   RecoverBullProgress(title: context.loc.recoverbullPleaseWait)
                 else ...[
-                  BullButton.big(
-                    label: context.loc.recoverbullPassphraseVerify,
-                    textStyle: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w700,
+                  if (recovering && _confirmWithout)
+                    BullButton.secondary(
+                      label: context.loc.recoverbullPassphraseVerify,
+                      onPressed: _submit,
+                    )
+                  else
+                    BullButton.primary(
+                      label: context.loc.recoverbullPassphraseVerify,
+                      onPressed: _submit,
                     ),
-                    bgColor: context.bull.onSurface,
-                    textColor: context.bull.surface,
-                    onPressed: _submit,
-                  ),
                   if (recovering) ...[
                     const Gap(12),
                     if (!_confirmWithout)
-                      BullButton.big(
+                      BullButton.secondary(
                         label: context.loc.recoverbullContinueWithoutPassphrase,
-                        bgColor: context.bull.transparent,
-                        textColor: context.bull.info,
-                        textStyle: context.bullType.caption,
                         onPressed: () => setState(() => _confirmWithout = true),
                       )
                     else ...[
@@ -405,22 +405,16 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                       Row(
                         children: [
                           Expanded(
-                            child: BullButton.big(
+                            child: BullButton.secondary(
                               label: context.loc.recoverbullSettingsCancel,
-                              bgColor: context.bull.surface,
-                              textColor: context.bull.onSurface,
-                              outlined: true,
-                              borderColor: context.bull.onSurface,
                               onPressed: () =>
                                   setState(() => _confirmWithout = false),
                             ),
                           ),
                           const Gap(8),
                           Expanded(
-                            child: BullButton.big(
+                            child: BullButton.primary(
                               label: context.loc.recoverbullConfirm,
-                              bgColor: context.bull.onSurface,
-                              textColor: context.bull.surface,
                               onPressed: () => _submit(without: true),
                             ),
                           ),

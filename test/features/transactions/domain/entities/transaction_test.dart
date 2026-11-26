@@ -1,7 +1,6 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:primitives/primitives.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
@@ -13,7 +12,7 @@ WalletTransaction _walletTx({
   int feeSat = 500,
 }) => WalletTransaction(
   walletId: 'w1',
-  network: Network.bitcoinMainnet,
+  network: BitcoinNetwork.mainnet,
   direction: direction,
   status: WalletTransactionStatus.pending,
   txId: txId,
@@ -269,7 +268,7 @@ void main() {
     WalletTransaction buildWalletTransaction(int amountSat) =>
         WalletTransaction(
           walletId: 'w1',
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'a' * 64,

@@ -21,9 +21,19 @@ wallet.history.watch().listen(render);
 
 Values are mapped from the native wallet once per revision, built into one immutable frame, then published by a single pointer assignment before any notification: several `now` reads without an `await` between them see the same revision. Who republishes after a commit made elsewhere: the revision reader emits a change whenever a read finds a new state, and the foreground reads after every worker outcome (`WalletNativeRuntime.refresh`); a change for a wallet that has values or subscribers schedules a reload.
 
+Address lists can read wallet.addresses.usage() after loading. The result combines the published history and coin balances, counts each transaction once per paying address, and uses confidential addresses on Liquid. The app adds labels. WalletValue.latest returns the published data or its typed failure. Inspect status and revision when freshness matters.
+
 ⚠️ A protocol decision never reads `now`. `wallet.ownership()` (scripts the index derives, revealed plus lookahead, and every output held, spent ones included) and `wallet.unspent()` load the exact committed revision and return `SyncBusyFailure` when the reader can only serve an older one, for instance while the writer holds the store. Payjoin's ownership checks and spendable coins and the Liquid build's coin filter use them. Liquid has no ownership index: LWK does not expose it.
 
+## Native runtime
+
+`package:sync/write.dart` publishes `WalletNativeRuntime.open` for composition. It owns provisioning, recovery and native lifecycle operations on `WalletKey`, returning `Result` values. The catalog remains external through `WalletCatalogPort`; its owner supplies the deletion callback, invoked only after native deletion succeeds. A failed global provisioning pass does not prevent a known wallet from attempting its own read or receive operation.
+
+Every `WalletCatalogPort` read must complete, with either a value or a failure. Catalog reads must never call `Sync.close()` because closing waits for in-flight reads to finish.
+
 ## Transactions
+
+`transactions.dart` publishes wallet-independent Bitcoin and Liquid transaction values used by signed-transaction review. These provide review projections, while the history types in `sync.dart` describe a wallet’s view of its activity. Import the library for the view you need; neither exposes native handles.
 
 `wallet.tx` holds the native spends, as commands of the single writer: `build(SpendRequest)` (a `BitcoinSpendRequest` or a `LiquidSpendRequest`), `bump(BumpFeeRequest)` and `consolidate(ConsolidationRequest)` return an `UnsignedSpend` (or a list of them) carrying the wallet's revision and generation, the encoded PSBT or PSET and its effective inputs. Each command runs one order: guard and generation admission, writer lock, durable intent, a native wallet opened fresh from its store, freezes and reservations read, one build, a check of the effective inputs, outputs, network and owner, persistence of the native changes, a refused build included, native close, release, hand-out. No native wallet outlives its command, so abandoned previews and bumps reveal no new change index; a persistence failure never hands a transaction out. Failures are `SyncSpendFailure`s (`SyncSpendBlockedFailure`, `SyncProtectedInputsFailure`, `SyncInsufficientFundsFailure`, …), `SyncBusyFailure` or `SyncStorageFailure`.
 
@@ -108,12 +118,15 @@ Wallet
 |-- addresses
 |   |-- book -> Observed<WalletValue<AddressBook>>
 |   |-- at(index, [keychain: Keychain.external]) -> Observed<WalletValue<DerivedAddress>>
+|   |-- usage() -> Result<Map<String, ({BigInt balanceSat, int transactionCount})>, SyncFailure>
 |   `-- owns
 |       |-- script(script) -> Observed<WalletValue<Ownership>>
 |       `-- outpoint(outpoint) -> Observed<WalletValue<Ownership>>
 |-- load() -> WalletRevision
 |-- ownership() -> OwnershipIndex
-`-- unspent() -> CoinList
+|-- unspent() -> CoinList
+|-- readExactOwnership() -> OwnershipIndex
+`-- readExactUnspent() -> CoinList
 ```
 
 ```text
@@ -151,22 +164,28 @@ Shared code never imports `data/write`, and `data/read` never does. `make native
 
 `<docs>/<hexId>_bdk_dart` and `<docs>/<hexId>` are the published native stores; their paths and content are unchanged (`nativeWalletStoragePath`, UTF-16 hex id). The package's own stores live in `<docs>/transaction_sync/`: `revisions.sqlite` (a `.recovery` marker while quarantined metadata awaits adoption), `spend_gate.sqlite` (a `.provisioned` marker so a lost gate is never recreated empty) and `locks/`, one lock per native store, named after its path, so two keys resolving to one store share one lock. Each SQLite store is created by one complete `CREATE` with `user_version`; an existing store at another version is refused, not migrated. Unreadable or foreign revision metadata is quarantined by `Sync.foreground`: only existing native stores are adopted, and no Bitcoin spend is admitted until `sync.recovery.complete()` has invalidated every retained obligation and removed the marker.
 
+Bitcoin broadcast acceptance records the exact spent outpoints decoded from the transaction actually sent, for both raw transactions and PSBTs. The obligation and inputs share one SQLite write; a failed write retains an immutable copy for retry in the same process. A non-durable receipt does not promise survival of process death. The journal contains no PSBT, signatures or transaction bytes. An existing row only acquires inputs if its stored inputs are SQL NULL; replay does not overwrite known evidence, generation or observation state.
+
+An accepted transaction missing from the canonical wallet is settled only by a canonical **confirmed** transaction spending one of its known outpoints. An unconfirmed replacement, including a tracked RBF broadcast by Bull, does not settle the absent original: ordinary wallet spends and a second fee bump remain blocked until confirmation (or positive observation of the original). Every later pass must prove the conflict again, so a reorganization restores the barrier. Legacy rows and current txid-only Payjoin handoffs may have unknown inputs; they remain blocked when the original is absent. A positive observation of the original can recover those inputs. Server omission, elapsed time and recovery never mean cancellation.
+
 ## Writer
 
 `WriterSession` (`data/write/writer_session.dart`) holds the one safety sequence: lock, generation and descriptor hash, resume of an interrupted intent, durable intent, native mutation, spend evidence, revision, release. The lock is held through actual native completion, never released by a timer, and no mutation is retried. The app enters through `NativeWalletWriterRepository`, which resolves descriptors from the catalog and checks address reservations; the sync worker enters with the descriptor it received, adopts an existing store in the foreground under the same lock acquisition as the sync that follows, and resumes interrupted intents there only. The lock is a SQLite `BEGIN IMMEDIATE` with `busy_timeout = 0`; writers retry for up to one second, readers never wait and serve a stale snapshot instead.
 
 ## Electrum sync
 
-`ElectrumSync.execute` opens existing stores only, in a compute worker. Every Bitcoin pass first queries the revealed scripts; at checkpoint height zero or on explicit discovery it then full-scans. The pass applies both updates and persists once; spend evidence is reported only after that persist. The parents cache prefills the client and is best effort. The pinned bdk_chain full scan counts the stop gap from index 0, so it never replaces revealed-script coverage. Only connection establishment, before a store is opened, may fall back to another server. Requests for the same wallet share one pass, a queued discovery still runs, and anything other than an `Exception` thrown during a pass reaches every waiting caller. Incoming payment ids are collected only with `collectIncoming`.
+`ElectrumSync.execute` opens existing stores only, in a compute worker. Every non-targeted Bitcoin pass first queries the revealed scripts; at checkpoint height zero or on explicit discovery it then full-scans. The pass applies both updates and persists once; spend evidence is reported only after that persist. The parents cache prefills the client and is best effort. The pinned bdk_chain full scan counts the stop gap from index 0, so it never replaces revealed-script coverage. Only connection establishment, before a store is opened, may fall back to another server. A routine request for the same wallet joins a routine pass already running, a queued discovery and any request the active pass cannot answer run after it, and anything other than an `Exception` thrown during a pass reaches every waiting caller. Incoming payment ids are collected only with `collectIncoming`.
+
+A targeted pass (`ElectrumSync.execute` with `targets`, `ForegroundWalletSynchronization.executeTargeted`) queries only the revealed wallet indices its targets pay or spend, applies and persists once, and skips the routine revealed-script and full-scan queries. Its completion reports conclusive answers only: a queried target with ambiguous evidence still stays unknown. A targeted pass never initializes or scans a wallet, so a wallet without an initial scan fails `SyncInitialScanRequiredFailure`, and a non-Bitcoin wallet rejects targets with `SyncUnsupportedNetworkFailure` instead of running a routine sync. Targeted requests merge into a targeted pass that has not started, a later one gets its own pass, and a routine refresh is never satisfied by a targeted pass.
 
 ⚠️ Liquid never goes through Tor: the pinned LWK has no SOCKS option, so the connection policy drops the proxy for Liquid and both the probe and the LWK sync connect directly.
 
 ## Native test suites
 
-`native_test/lwk_worker_test.dart` is a separate native integration suite because bull_sdk's Rust shared library is not built by the BDK asset hook used by ordinary Flutter unit tests. Supply the host library built from the pinned SDK (its own locked Cargo build and pinned toolchain), then run on Linux:
+`native_test/lwk_worker_test.dart` is a separate native integration suite because rust_bindings' Rust shared library is not built by the BDK asset hook used by ordinary Flutter unit tests. Supply the host library built from the pinned SDK (its own locked Cargo build and pinned toolchain), then run on Linux:
 
 ```sh
-LD_LIBRARY_PATH="$BULL_SDK_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" fvm flutter test packages/sync/native_test/lwk_worker_test.dart
+LD_LIBRARY_PATH="$RUST_BINDINGS_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" fvm flutter test packages/sync/native_test/lwk_worker_test.dart
 ```
 
 This test has no skip and uses only the published BIP39 vector plus loopback traffic. It verifies real LWK initialization in the worker, fallback before opening, and no retry after opening when a Bitcoin-only fixture rejects Liquid synchronization. It does not establish successful live Liquid synchronization or device lock safety. The compute worker calling BullSdk.init() has not been validated on a phone; that device gate remains open. Normal `make checks` covers `test/`; run this additional suite when changing the native Liquid path.
@@ -181,6 +200,16 @@ fvm flutter test --no-pub native_test/native_regtest_nigiri_test.dart
 
 The defaults are the local development Electrum port 50000 and faucet port 3000. Override with `--dart-define=NIGIRI_ELECTRUM=...` and `--dart-define=NIGIRI_FAUCET=...`. Ordinary unit checks do not require this service. This native test does not validate app navigation, wallet import or mobile lifecycle behavior.
 
-`validateAddress(address, network)` serves payment consumers. It validates against captured concrete network context (Liquid mainnet, testnet and regtest each accept only their own addresses), rejects signet, and limits Bitcoin regtest destinations to the distinct bcrt1 witness encoding. Bitcoin testnet Base58 remains accepted; address bytes cannot distinguish its provenance from regtest. This is destination authorization, not URI parsing or an Electrum genesis check. Liquid validation goes through LWK, so its cases are in the native suite: `LD_LIBRARY_PATH="$BULL_SDK_LIB_DIR" fvm flutter test native_test/validate_liquid_address_test.dart`.
+`validateAddress(address, network)` serves payment consumers. It validates against captured concrete network context (Liquid mainnet, testnet and regtest each accept only their own addresses), rejects signet, and limits Bitcoin regtest destinations to the distinct bcrt1 witness encoding. Bitcoin testnet Base58 remains accepted; address bytes cannot distinguish its provenance from regtest. This is destination authorization, not URI parsing or an Electrum genesis check. Liquid validation goes through LWK, so its cases are in the native suite: `LD_LIBRARY_PATH="$RUST_BINDINGS_LIB_DIR" fvm flutter test native_test/validate_liquid_address_test.dart`.
 
 The Liquid codecs' refusals of hostile input through the real LWK parser are in `native_test/liquid_codec_test.dart`, run the same way; the unit suite covers their mapping with a fake binding.
+
+Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
+
+## Persisted wallet sync times
+
+The storage library imports the historical sync time for each wallet id into Sync's encrypted metadata store. It preserves the original nullable value through the migration. The native revision and writer lease stores continue to coordinate wallet operations.
+
+## Dependencies
+
+- `secrets` supplies authorized wallet descriptors to the foreground inventory projection; Sync turns them into native catalog entries.

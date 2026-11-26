@@ -8,65 +8,47 @@ import 'package:path/path.dart' as p;
 
 // Source-edge baseline generated once from 4c3385e6c (2026-11-07).
 // These edges include legacy violations, not architectural permission.
-// Networks owner moves and captured-network consumers: see the per-edge review
-// in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
+// This baseline includes the reviewed network-owner moves and captured-network
+// consumers (2026-11-07); do not regenerate it blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
-// In particular, sp/swap -> wallet predates foreground sync: repository
-// compatibility exports and swap's wallet navigation remain out of scope.
+// Silent receives a fingerprint reader through composition, not a wallet import.
+// Ark integration reviewed on 2026-11-19: send and swap use its public facade;
+// settings and wallet use its published UI and foreground setup capabilities.
+// See the dependency notes in the consuming members' READMEs. Ark also uses
+// the published camera scanner.
+// QR and NFC consumers use the scanning feature's public capabilities; its
+// implementation has no dependencies on those consumers.
+// Label Editor publishes the existing note, label and import/export UI. Its
+// consumers use that surface while data-only consumers depend on the package.
+// Wallet reader ownership (2026-11-22): see ARCHITECTURE.md, "Wallet readers".
+// Exchange workspace UI consumers use the published routes. Bull Exchange
+// builds its destination fields with Address View and opens order details
+// through Transactions; the app keeps only the wallet-card payin binding.
+// Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
+// Settings consumes Receive's disclaimer and typed Wallet Import navigation.
+// Wallet details read device associations through Signers' public storage API.
+// Wallet Import owns mnemonic input and scanning.
 const _allowedTargets = <String, String>{
-  'address_view': 'settings wallet',
-  'all_seed_view': 'app_unlock wallet',
-  'announcements': 'settings swap',
-  'app_startup': 'app_unlock import_mnemonic logs onboarding pin_code recoverbull settings wallet',
-  'app_unlock': 'pin_code wallet',
-  'autobuy': 'default_wallets exchange wallet',
-  'autoswap': 'labels send swap wallet',
-  'backup_settings': 'recoverbull settings test_wallet_backup wallet',
-  'bip85_entropy': 'wallet',
-  'bitbox': 'import_watch_only_wallet wallet',
-  'bitcoin_price': 'settings',
-  'broadcast_signed_tx': 'send wallet',
-  'buy': 'exchange fees fund_exchange labels settings transactions wallet',
-  'coins': 'bitcoin_price labels settings wallet',
-  'consolidation': 'send wallet',
-  'dca': 'exchange fund_exchange settings wallet',
-  'default_wallets': 'exchange wallet',
-  'electrum_settings': 'tor_settings wallet',
-  'exchange': 'autobuy bitcoin_price dca exchange_support_chat fund_exchange settings transactions withdraw',
-  'exchange_settings': 'exchange',
-  'exchange_support_chat': 'exchange',
-  'fees': 'electrum_settings wallet',
-  'fund_exchange': 'exchange recipients',
-  'import_coldcard': 'import_watch_only_wallet',
-  'import_mnemonic': 'electrum_settings wallet',
-  'import_qr_device': 'import_watch_only_wallet',
-  'import_wallet': 'bitbox import_coldcard import_mnemonic import_qr_device import_watch_only_wallet ledger settings',
-  'import_watch_only_wallet': 'wallet',
-  'labels': 'wallet',
-  'ledger': 'import_watch_only_wallet wallet',
-  'limit_orders': 'default_wallets exchange fund_exchange wallet',
-  'mempool_settings': 'settings',
-  'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
-  'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
-  'pin_code': 'app_unlock settings test_wallet_backup wallet',
-  'psbt_flow': 'broadcast_signed_tx wallet',
-  'receive': 'bitbox labels ledger settings swap transactions wallet',
-  'recipients': 'exchange settings',
-  'replace_by_fee': 'fees send wallet',
-  'sell': 'bitcoin_price exchange fees labels recipients send settings transactions wallet',
-  'send': 'bitbox consolidation fees labels ledger psbt_flow settings sp swap transactions wallet',
-  'settings': 'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code quick_actions recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
-  'sp': 'wallet',
-  'status_check': 'electrum_settings recoverbull wallet',
-  'support': 'exchange_support_chat',
-  'swap':
-      'autoswap consolidation fees labels send settings transactions wallet',
-  'test_wallet_backup': 'app_unlock onboarding recoverbull wallet',
-  'transactions':
-      'buy electrum_settings exchange labels pay replace_by_fee swap wallet',
-  'wallet': 'announcements backup_settings bitcoin_price consolidation electrum_settings import_watch_only_wallet labels onboarding quick_actions receive recoverbull send settings sp swap tor_settings transactions',
-  'withdraw': 'exchange recipients transactions',
-  'wizard': 'exchange settings',
+  'address_view': 'label_editor scanning silent',
+  'ark': 'scanning',
+  'all_seed_view': 'access',
+  'backups': 'access label_editor physical_backup_verification recoverbull',
+  'bull_exchange': 'address_view bitcoin_price coins fees transactions',
+  'coins': 'address_view bitcoin_price',
+  'exchange': 'bull_exchange wallet',
+  'network': 'recoverbull silent',
+  'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
+  'overview': 'bitcoin_price quick_actions silent swap',
+  'receive': 'address_view label_editor signers transactions',
+  'scanning': 'signers',
+  'send': 'address_view ark coins fees label_editor receive scanning signers silent transactions',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange fees label_editor logs network quick_actions receive recoverbull send signers silent swap transactions wallet wallet_import',
+  'startup': 'access logs mnemonic_entry recoverbull',
+  'swap': 'address_view ark coins fees receive send signers transactions',
+  'transactions': 'bitcoin_price label_editor',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions',
+  'wallet_import': 'mnemonic_entry scanning signers',
+  'wizard': 'bull_exchange settings',
 };
 
 String? _owner(String path) {
@@ -147,6 +129,29 @@ Map<String, String> _edges(
 }
 
 void main() {
+  test('the retired core exchange has no compatibility library', () {
+    expect(Directory('lib/core/exchange').existsSync(), isFalse);
+    expect(File('lib/core/errors/exchange_errors.dart').existsSync(), isFalse);
+  });
+
+  test(
+    'preferences are consumed through feature use cases in presentation',
+    () {
+      final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
+      for (final path in [
+        'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
+        'features/settings/lib/src/presentation/bloc/settings_cubit.dart',
+        'features/swap/lib/src/presentation/transfer_bloc.dart',
+      ]) {
+        expect(
+          File(path).readAsStringSync(),
+          isNot(matches(preferenceField)),
+          reason: path,
+        );
+      }
+    },
+  );
+
   test('resolves owners through relative, public and conditional exports', () {
     final edges = _edges(
       {

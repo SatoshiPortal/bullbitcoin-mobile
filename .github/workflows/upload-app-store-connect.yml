@@ -100,7 +100,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}
 
       # Install the pinned native FVM binary without executing the mutable
       # fvm.app installer script on a runner that later receives signing keys.
@@ -117,6 +117,35 @@ jobs:
           chmod +x "$HOME/fvm/bin/fvm"
           test -x "$HOME/fvm/bin/fvm"
           echo "$HOME/fvm/bin" >> "$GITHUB_PATH"
+
+      - name: Install pinned protobuf compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$(uname -m)" in
+            x86_64)
+              protoc_arch=x86_64
+              protoc_sha=e20b5f930e886da85e7402776a4959efb1ed60c57e72794bcade765e67abaa82
+              ;;
+            aarch64|arm64)
+              protoc_arch=aarch_64
+              protoc_sha=db7e66ff7f9080614d0f5505a6b0ac488cf89a15621b6a361672d1332ec2e14e
+              ;;
+            *) echo "Unsupported protoc host architecture: $(uname -m)" >&2; exit 1 ;;
+          esac
+          # https://github.com/protocolbuffers/protobuf/releases/expanded_assets/v33.1
+          protoc_archive="$RUNNER_TEMP/protoc-33.1-osx-${protoc_arch}.zip"
+          protoc_dir="$RUNNER_TEMP/protoc-33.1"
+          curl --retry 5 --retry-all-errors -fL \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v33.1/protoc-33.1-osx-${protoc_arch}.zip" \
+            -o "$protoc_archive"
+          echo "$protoc_sha  $protoc_archive" | shasum -a 256 -c -
+          mkdir -p "$protoc_dir"
+          unzip -q -o "$protoc_archive" -d "$protoc_dir"
+          test "$("$protoc_dir/bin/protoc" --version)" = 'libprotoc 33.1'
+          test -f "$protoc_dir/include/google/protobuf/descriptor.proto"
+          echo "$protoc_dir/bin" >> "$GITHUB_PATH"
+          echo "PROTOC=$protoc_dir/bin/protoc" >> "$GITHUB_ENV"
 
       - name: Install pinned Rust toolchains
         run: |
@@ -137,6 +166,11 @@ jobs:
           rustup component add --toolchain "$PAYJOIN_RUST_VERSION" clippy rustfmt
           rustup target add --toolchain "$PAYJOIN_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
           rustup run "$PAYJOIN_RUST_VERSION" rustc --version | grep -F "rustc $PAYJOIN_RUST_VERSION"
+
+          rustup toolchain install "$BARK_RUST_VERSION" --profile minimal
+          rustup component add --toolchain "$BARK_RUST_VERSION" clippy rustfmt
+          rustup target add --toolchain "$BARK_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+          rustup run "$BARK_RUST_VERSION" rustc --version | grep -F "rustc $BARK_RUST_VERSION"
 
           rustup run "$RUST_VERSION" rustc --version | grep -F "rustc $RUST_VERSION"
           rustup run "$BDK_RUST_VERSION" rustc --version | grep -F "rustc $BDK_RUST_VERSION"

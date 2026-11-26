@@ -1,0 +1,559 @@
+{
+  "importQrDeviceSpecterStep2": "Zadejte PIN kód",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "Klikněte na XPUB - QR kód",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "Čeština",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep7": "V případě potřeby vyberte možnost \"Volby\" pro změnu typu adresy",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterName": "Čeština",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterStep7": "Zakázat \"Použít SLIP-132\"",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceJadeStep5": "Vyberte \"Wallet\" z seznamu možností",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceSeedsignerName": "Čeština",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "emptyMnemonicWordsError": "Zadejte všechny slova svého mnemonic",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importQrDeviceKruxStep4": "Klikněte na tlačítko \"open camera\"",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceKeystoneStep3": "Klepněte na *** (tři tečky) v pravém horním rohu",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceJadeStep6": "Zvolte \"Export Xpub\" z nabídky peněženky",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeName": "Blokstream Jade",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceSeedsignerStep5": "Zvolte \"Single Sig\", poté vyberte preferovaný typ skriptu (choose Native Segwit, pokud si nejste jisti).",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceJadeFirmwareWarning": "Ujistěte se, že vaše zařízení je aktualizována na nejnovější firmware",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "Postupujte podle pokynů zařízení k odemknutí Jade",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep10": "Zadejte štítek pro peněženky Specter a klepněte na Import",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSpecterStep1": "Moc na zařízení Specter",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceKeystoneStep10": "Váš Keystone je nyní připojen a připraven k použití s BULL Peněženka.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceSeedsignerStep9": "Zadejte štítek pro peněženky SeedSigner a klepněte na Import",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceKeystoneStep5": "Vyberte \"BULL\" ze seznamu peněženek",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceJadeStep9": "Skenujte QR kód, který vidíte na vašem zařízení.",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceKeystoneStep6": "Na mobilu klikněte na \"open camera\"",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceSpecterStep3": "Zadejte své semeno / klíč (s výjimkou, která vám vyhovuje)",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDevicePassportStep2": "Zadejte svůj PIN",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDeviceSpecterStep8": "Na mobilním zařízení klepněte na položku Otevřít kameru",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceJadeStep2": "Zvolte režim \"QR\" z hlavního menu",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceScanPrompt": "Skenujte QR kód z vašeho {deviceName}",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceSpecterStep9": "Skenujte QR kód zobrazený na Specteru",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importWatchOnlySelectDerivation": "Vyberte derivaci",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importQrDevicePassportStep4": "Zvolte \"Connect App\"",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "requiredHint": "Vyžadováno",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "importQrDevicePassportStep7": "V aplikaci BULL wallet vyberte \"Segwit (BIP84)\" jako možnost derivace",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "V peněžence BULL vyberte preferovaný typ derivace. Pokud si nejste jisti, vyberte \"Segwit (BIP84)\"",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceSeedsignerStep6": "Jako možnost exportu vyberte „Animated“. U staršího firmwaru SeedSigner vyberte „Sparrow“.",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep3": "Skenujte se SeedQR nebo zadejte své 12- nebo 24word seed fráze",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceKruxStep1": "Zapněte zařízení Krux",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceSpecterStep4": "Postupujte podle pokynů podle zvolené metody",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDevicePassportStep1": "Zapněte zařízení Passport",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceKeystoneStep7": "Skenujte QR kód zobrazený na klíče",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceButtonOpenCamera": "Otevřete kameru",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "importQrDevicePassportName": "Nadace pas",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "passphraseLabel": "Čeština",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "Ruční pokyny",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDevicePassportStep9": "Nastavení je dokončeno.",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep10": "Nastavení kompletní",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDeviceKeystoneStep9": "Zadejte štítek pro peněženky Keystone a klepněte na \"Import\"",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDevicePassportStep6": "Naskenujte QR kód zobrazený na zařízení Passport",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep4": "Zvolte \"Export Xpub\"",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSpecterStep5": "Vyberte \"Master veřejné klíče\"",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKruxInstructionsTitle": "Krux instrukce",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "Keystone Pokyny",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "importQrDevicePassportInstructionsTitle": "Pokyny pro cestovní pas",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "submitButton": "Odeslat",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "importQrDeviceKeystoneName": "Čeština",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceSeedsignerStep1": "Moc na zařízení SeedSigner",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceJadeStep1": "Zapněte zařízení Jade",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep2": "Otevřete nabídku \"Seeds\"",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceJadeStep8": "Klikněte na tlačítko \"open camera\"",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "Nastavení je kompletní",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDevicePassportStep5": "Zvolte \"Bull\"",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "Zvolte \"Wallet\"",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep8": "Skenujte QR kód zobrazený na vašem SeedSigneru",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceSpecterStep6": "Zvolte \"Jednolůžkový klíč\"",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "To je to!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "importQrDevicePassportStep8": "Zadejte název pro peněženku Passport a klepněte na \"Importovat\"",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "importQrDeviceKeystoneStep4": "Klepněte na \"Připojit software Peněženka\"",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDeviceKeystoneStep2": "Odemkněte jej zadáním PINu",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep7": "Na mobilním zařízení klepněte na položku Otevřít kameru",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceKruxStep5": "Skenujte QR kód, který vidíte na vašem zařízení.",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep2": "Klepněte na tlačítko Rozšířený veřejný klíč",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner pokyny",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceKruxStep6": "To je to!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "optionalPassphraseHint": "Volitelné Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "importQrDeviceTitle": "Připojení {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceButtonInstructions": "Čeština",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeStep4": "Vyberte \"Možnosti\" z hlavní nabídky",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeInstructionsTitle": "Blokstream Jade instrukce",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "Moc na klíče",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "recipientsInfoLabel": "Štítek",
+  "importColdcardQInstructionsTitle": "Coldcard Q Pokyny",
+  "importColdcardQStep1": "Přihlášení do zařízení Coldcard Q",
+  "importColdcardQStep2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "importColdcardQStep3": "Vyberte nabídku \"Advanced/Settings\"",
+  "importColdcardQStep4": "Klikněte na \"export wallet\"",
+  "importColdcardQStep5": "Jako typ exportu vyberte \"descriptor\"",
+  "importColdcardQStep6": "Na první obrazovce stiskněte \"Enter\"",
+  "importColdcardQStep7": "Na druhé obrazovce stiskněte \"Enter\"",
+  "importColdcardQStep8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
+  "importColdcardQStep9": "Pro QR klepněte na zařízení na tlačítko QR kódu. Na zařízení se poté zobrazí QR kód",
+  "importColdcardQStep10": "Pro NFC klepněte na zařízení na tlačítko NFC",
+  "importColdcardQStep11": "Klepněte na tlačítko \"Open the camera\" / \"Scan NFC\"",
+  "importColdcardQStep12": "Naskenujte QR kód zobrazený na vašem zařízení, nebo přiložte NFC telefonu na NFC Coldcard",
+  "importColdcardQStep13": "To je vše!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Pokyny",
+  "importColdcardMk4Step1": "Přihlášení do zařízení Coldcard Mk4",
+  "importColdcardMk4Step2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "importColdcardMk4Step3": "Vyberte nabídku \"Advanced/Settings\"",
+  "importColdcardMk4Step4": "Klikněte na \"export wallet\"",
+  "importColdcardMk4Step5": "Jako typ exportu vyberte \"descriptor\"",
+  "importColdcardMk4Step6": "Na první obrazovce stiskněte \"Enter\"",
+  "importColdcardMk4Step7": "Na druhé obrazovce stiskněte \"Enter\"",
+  "importColdcardMk4Step8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
+  "importColdcardMk4Step9": "Klikněte na číslo 3 pro spuštění NFC na Coldcard",
+  "importColdcardMk4Step10": "Klikněte na tlačítko \"Scan NFC\"",
+  "importColdcardMk4Step11": "Přiložte NFC telefonu na NFC Coldcard",
+  "importColdcardMk4Step12": "To je vše!",
+  "bitboxScreenDefaultWalletLabel": "BitBox Peněženka",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "Čeština",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "Otevřete kameru",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "Importujte deskriptor peněženky z vašeho {deviceName}",
+  "importColdcardConnectTitle": "Připojení {deviceName}",
+  "importColdcardInvalidWalletData": "Neplatná data peněženky Coldcard",
+  "importColdcardScanNfcSheetTitle": "Přiložte {deviceName} pro import deskriptoru peněženky přes NFC",
+  "importMnemonicBalanceLabel": "Zůstatek: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Pokračovat",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
+  "importMnemonicEmptyLabelError": "Pro import mnemoniky je nutný štítek",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Čeština",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Čeština",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "Import Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "Všechny tři typy peněženek jsou synchronizovány a jejich zůstatek a transakce se objeví brzy. Počkejte, až se synchronizujte dokončuje nebo pokračujte v importu, pokud si nejste jisti, jaký typ peněženky chcete importovat.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "Import Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "Transakce: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Studená karta Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "Import Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "Importovat hodinky pouze",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blokstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Čeština",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Čeština",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Čeština",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "Nadace pas",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "Generické peněženky",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "Hardware peněženky",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "Čeština",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Čeština",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "Přidat novou peněženku",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "Připojil se do schránky",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "Čeština",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "Ujistěte se, že derivační cesta, kterou si vyberete, odpovídá ten, který produkoval daný xpub ověřením první adresy odvozenou z peněženky před použitím. Použití špatné cesty může vést ke ztrátě prostředků",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "Derivation Path Varování",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "Tato peněženka již byla importována.",
+  "importWatchOnlyErrorImportFailed": "Tuto peněženku pouze pro sledování se nepodařilo importovat. Zkontrolujte údaje a zkuste to znovu.",
+  "importWatchOnlyErrorInvalidFormat": "Tohle nevypadá jako platný veřejný klíč nebo deskriptor. Zkontrolujte, co jste vložili.",
+  "importWatchOnlyErrorLabelRequired": "Před importem pojmenujte svou peněženku.",
+  "importWatchOnlyErrorNetworkMismatch": "Tato peněženka právě používá jinou síť Bitcoin. Přepněte mezi Mainnetem a Testnetem a zkuste to znovu.",
+  "importWatchOnlyErrorNoWalletSelected": "Nejprve vložte nebo naskenujte veřejný klíč nebo deskriptor.",
+  "importWatchOnlyExtendedPublicKey": "Rozšířená veřejnost Čeština",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "Čeština",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "Čeština",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Síť: hlavní síť Bitcoinu",
+  "importWatchOnlyNetworkBitcoinTestnet": "Síť: testovací síť Bitcoinu",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub nebo popisor",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "Vyžadováno",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "Skenování QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "Signing zařízení",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "Importovat hodinky pouze",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "Typ",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "Čeština",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger Peněženka",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "Hledat",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Čeština",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
+}

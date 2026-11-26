@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
-import 'package:bull_sdk/src/rust/frb_generated.dart';
+import 'package:satoshifier/payment_request.dart';
+import 'package:rust_bindings/lwk.dart' as lwk;
+import 'package:rust_bindings/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

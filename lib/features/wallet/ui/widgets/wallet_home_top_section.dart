@@ -1,19 +1,14 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:settings/settings.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
-import 'package:go_router/go_router.dart';
+    show BullAmount, BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
 import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
@@ -33,12 +28,13 @@ class WalletHomeTopSection extends StatelessWidget {
 
   /// How far the quick actions card hangs below the background: half of it
   /// straddles the bottom edge, while the balance above is never covered.
-  static const double _actionsOverhang = BullQuickActionBar.height / 2;
+  static double _actionsOverhang(BuildContext context) =>
+      BullQuickActionBar.heightOf(context) / 2;
 
   /// Minimum height of the background image; anything painted behind this
   /// section must stay within it.
-  static const double minBackgroundHeight =
-      _balanceAreaHeight + _actionsTopSpacing + _actionsOverhang;
+  static double minBackgroundHeight(BuildContext context) =>
+      _balanceAreaHeight + _actionsTopSpacing + _actionsOverhang(context);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +44,7 @@ class WalletHomeTopSection extends StatelessWidget {
           top: 0,
           left: 0,
           right: 0,
-          bottom: _actionsOverhang,
+          bottom: _actionsOverhang(context),
           child: Image.asset(
             Assets.backgrounds.bgRed.path,
             fit: BoxFit.cover,
@@ -80,9 +76,7 @@ class _UI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showChart = context.select(
-      (PriceChartCubit cubit) => cubit.state.showChart,
-    );
+    final showChart = BitcoinPriceFeature.watchChartVisible(context);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
@@ -118,15 +112,7 @@ class _Amounts extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Gap(WalletHomeTopSection._balanceTopSpacing),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Flexible(child: _BtcTotalAmt()),
-            // The toggle's 48 dp target already pads its badge by 9.
-            Gap(7),
-            EyeToggle(),
-          ],
-        ),
+        _BtcTotalAmt(),
         Gap(12),
         _FiatAmt(),
         Gap(8),
@@ -142,9 +128,7 @@ class _BtcTotalAmt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletState = context.select((WalletBloc bloc) => bloc.state);
-    final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
-    );
+    final bitcoinUnit = walletState.amountDisplay?.bitcoinUnit;
 
     final showSkeleton =
         walletState.status == WalletStatus.initial ||
@@ -158,9 +142,8 @@ class _BtcTotalAmt extends StatelessWidget {
     final btcTotal = walletState.totalBalance();
     if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
-    return CurrencyText(
+    return BullAmount.signedSats(
       btcTotal,
-      showFiat: false,
       interactive: true,
       style: context.bullType.headline,
       color: context.appColors.onPrimary,
@@ -181,6 +164,7 @@ class _FiatAmt extends StatelessWidget {
     final total = walletState.totalBalance();
     if (total == null) return Text(context.loc.walletLoadFailed);
     return HomeFiatBalance(
+      onCurrencyChanged: Settings.changeDisplayCurrency,
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
     );
@@ -223,7 +207,7 @@ class _ChartView extends StatelessWidget {
           child: IconButton(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: Icon(Icons.arrow_back, color: context.appColors.onPrimary),
-            onPressed: () => context.read<PriceChartCubit>().hideChart(),
+            onPressed: () => BitcoinPriceFeature.hideChart(context),
           ),
         ),
       ],
@@ -243,7 +227,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
     final color = context.appColors.onPrimary;
     return GestureDetector(
       onTap: () {
-        context.pushNamed(TransactionsRoute.transactions.name);
+        TransactionsNavigation.openHistory(context);
       },
       child: Center(
         child: Column(
@@ -253,9 +237,8 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.arrow_downward, color: color, size: 20),
-                CurrencyText(
+                BullAmount.signedSats(
                   unconfirmed,
-                  showFiat: false,
                   interactive: true,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,

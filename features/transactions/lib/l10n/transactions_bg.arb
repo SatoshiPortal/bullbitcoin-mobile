@@ -1,0 +1,677 @@
+{
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "coreSwapsStatusPending": "В очакване",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "coreSwapsStatusInProgress": "В процес",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "Завършено",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusExpired": "Изтекъл",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsStatusFailed": "Неуспешно",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "coreSwapsLnReceivePending": "Обмена все още не е инициализиран.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "coreSwapsLnReceivePaid": "Изпращачът е платил фактурата.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "coreSwapsLnReceiveClaimable": "Обменът е готов за получаване.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveRefundable": "Обмена е готов за възстановяване.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "Обмена ще завърши всеки момент.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsLnReceiveFailed": "Обмена се провали.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "coreSwapsLnSendPending": "Обмена все още не е инициализиран.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnSendPaid": "Фактурата ще бъде платена, след като вашето плащане получи потвърждение.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "coreSwapsLnSendClaimable": "Обменът е готов за получаване.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "coreSwapsLnSendRefundable": "Обмена е готов за възстановяване.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "coreSwapsLnSendCanCoop": "Обмена ще завърши всеки момент.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "coreSwapsLnSendCompletedRefunded": "Обмена е възстановен.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "coreSwapsLnSendFailed": "Обмена се провали.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainPending": "Обменът все още не е инициализиран.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "coreSwapsChainPaid": "Изчакване на плащането от доставчика на обмена за получаване на потвърждение. Това може да отнеме известно време.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "Обменът е готов за получаване.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "coreSwapsChainRefundable": "Обменът е готов за възстановяване.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "coreSwapsChainCanCoop": "Обменът ще завърши всеки момент.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "coreSwapsChainCompletedRefunded": "Сумата от обмена е възстановена.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "coreWalletTransactionStatusPending": "В очакване",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionStatusInProgress": "В процес",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionStatusPending": "В очакване",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionStatusSwapFailed": "Обмена се провали.",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapProgressClaim": "Вземи",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "Завършено",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInProgress": "В процес",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionDetailLabelCompletedAt": "Завършено",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Завършено",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelPayjoinExpired": "Изтекъл",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionDetailLabelTransactionFee": "Такса за транзакцията",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionNoteHint": "Бележка",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionLabelPreimage": "Предобраз",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "transactionDetailLabelConfirmationTime": "Време за потвърждаване",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionSwapDescChainPending": "Вашият обмен е създаден, но все още не е иницииран.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionStatusTransferFailed": "Обменът се провали",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionFilterTransfer": "Обмен",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionNetworkLightning": "Лайтнинг мрежа",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelSwapFees": "Такси за размяна",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "globalDefaultBitcoinWalletLabel": "Безопасен Биткойн",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionStatusSwapExpired": "Обмяната е изтекла.",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionFilterBuy": "Купи",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "transactionDetailLabelTransferStatus": "Статус на обмена",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "coreSwapsLnSendExpired": "Обмяната е изтекла.",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsChainFailedRefunding": "Обменът ще бъде възстановен скоро.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionStatusPaymentRefunded": "Плащането е възстановено",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "Плащането е в процес",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "transactionSwapDescChainFailed": "Възникна проблем с вашия обмен. Моля, свържете се с поддръжката, ако средствата не са върнати в рамките на 24 часа.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescLnSendDefault": "Вашият обмен е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "buyTitle": "Купи Биткойн",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "transactionSwapDescLnSendFailed": "Възникна проблем с вашия обмен. Вашите средства ще бъдат върнати автоматично във вашия портфейл.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "Този обмен е изтекъл. Вашите средства ще бъдат автоматично върнати във вашия портфейл.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionDetailLabelTransferId": "ID на обмена",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionFilterAll": "Всички",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionDetailLabelAmountReceived": "Получена сума",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionLabelReceiveAmount": "Сума за получаване",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionDetailAccelerate": "Ускоряване",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionSwapDescLnSendCompleted": "Плащането по Lightning е успешно изпратено! Вашият обмен вече е завършен.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionListNoTransactions": "Все още няма транзакции.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionStatusTransferInProgress": "Обменът е в процес",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailTransferProgress": "Напредък на обмена",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailLabelPayinAmount": "Входяща сума",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "transactionSwapInfoClaimableTransfer": "Обменът ще бъде завършен автоматично за няколко секунди. Ако не стане, можете да опитате ръчно получаване, като натиснете бутона „Повторен опит за получаване на обмена“.",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionDetailLabelRefunded": "Възстановено",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionNoteAddTitle": "Добави бележка",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionDetailLabelCreatedAt": "Създадено на",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionLabelSendAmount": "Сума за изпращане",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "Такса за мрежата при получаване.",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionSwapDescChainExpired": "Този обмен е изтекъл. Вашите средства ще бъдат автоматично върнати във вашия портфейл.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionDetailLabelPayjoinStatus": "Статус Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionFilterReceive": "Получаване",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Обмяната е успешно завършена.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "transactionSwapDoNotUninstall": "Не деинсталирайте приложението, докато размяната не завърши.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionDetailLabelExchangeRate": "Курс на обмен",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "transactionDetailLabelToWallet": "Към портфейла",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "coreSwapsChainCompletedSuccess": "Обменът е успешно завършен.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "transactionDetailLabelPayinStatus": "Статус на плащането",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionListOngoingTransfersTitle": "Текущи обмени",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionSwapDescChainClaimable": "Транзакцията за заключване е потвърдена. Сега получавате средствата, за да завършите обмена си.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "Обменът ще бъде възстановен. Вашите средства ще бъдат върнати автоматично във вашия портфейл.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "receivePaymentNormally": "Приемайте плащания по обичайния начин",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "transactionTitle": "Транзакции",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionDetailLabelFromWallet": "От портфейла",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionSwapDescChainCompleted": "Вашият обмен е успешно завършен! Средствата вече трябва да са налични във вашия портфейл.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "transactionFilterPayjoin": "Payjoin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionDetailLabelTransactionId": "ID на транзакцията",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "transactionNetworkBitcoin": "Биткойн",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionFeesTotalDeducted": "Това е общата такса, удържана от изпратената сума.",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionStatusPayjoinRequested": "Заявено е Payjoin",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionSwapInfoRefundableTransfer": "Този обмен ще бъде автоматично възстановен за няколко секунди. Ако не стане, можете да опитате ръчно възстановяване, като натиснете бутона „Повторен опит за възстановяване на обмена“.",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionDetailLabelPayoutStatus": "Статус на изплащането",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "transactionSwapInfoClaimableSwap": "Размяната ще бъде завършена автоматично за няколко секунди. Ако не стане, можете да опитате ръчно искане на претенция за размяна, като щракнете върху бутона „Повторно искане за претенция за размяна“.",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionListLoadingTransactions": "Зареждане на транзакции...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionDetailLabelBitcoinTxId": "ID на биткойн транзакцията",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "coreSwapsChainFailed": "Обменът не успя.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "Добави бележка",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionDetailLabelPayinMethod": "Метод на плащане",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionStatusTransferCompleted": "Обменът е завършен",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "ID на Liquid транзакцията",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionLabelServerNetworkFees": "Сървърни такси за мрежата",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "transactionSwapDescLnSendPaid": "Вашата транзакция в блокчейна е излъчена. След едно потвърждение плащането по Lightning ще бъде изпратено.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescChainDefault": "Вашият обмен е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време за завършване.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "Такса за мрежата при изпращане",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionOrderLabelOriginName": "Име на произход",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "globalDefaultLiquidWalletLabel": "Моментални плащания",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionHistoryTitle": "История на транзакциите",
+  "exportTransactionsDescription": "Експортирайте всички транзакции на вашия портфейл (Bitcoin, Liquid, Lightning и суапове) като CSV файл. По избор филтрирайте по период.",
+  "exportTransactionsStartDate": "Начална дата",
+  "exportTransactionsEndDate": "Крайна дата",
+  "exportTransactionsAnyDate": "Всяка",
+  "exportTransactionsButton": "Експортирай CSV",
+  "exportTransactionsSuccess": "Транзакциите са експортирани успешно",
+  "exportTransactionsEmpty": "Няма транзакции за експорт в избрания период",
+  "exportTransactionsError": "Неуспешно експортиране на транзакциите",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Началната дата трябва да е преди крайната дата",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionSwapInfoRefundableSwap": "Размяната ще бъде автоматично възстановена за няколко секунди. Ако не стане, можете да опитате ръчно възстановяване, като щракнете върху бутона „Повторно искане за възстановяване на размяната“.",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionDetailLabelAddressNotes": "Бележки към адреса",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionOrderLabelReferenceNumber": "Номер на справка",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "Статус",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionFeesDeductedFrom": "Тези такси ще бъдат удържани от изпратената сума.",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionLabelSendNetworkFees": "Такси за мрежата при изпращане.",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "coreSwapsChainExpired": "Обменът е изтекъл",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionListYesterday": "Вчера",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionDetailLabelPayoutMethod": "Метод за изплащане",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "transactionFilterSell": "Продай",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionSwapInfoChainDelay": "Обмените по веригата може да отнемат известно време за завършване поради времето за потвърждение в блокчейна.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "sellTitle": "Продайте биткойн",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionListToday": "Днес",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionDetailLabelSwapStatus": "Статус на размяната",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelAmountSent": "Изпратена сума",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "transactionDetailLabelTransferFees": "Такси за обмен",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionDetailLabelOrderType": "Тип на поръчката",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelPayoutAmount": "Сума за изплащане",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "coreSwapsLnSendFailedRefunding": "Обмяната ще бъде възстановена скоро.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "transactionDetailLabelAddress": "Адрес",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Време на създаване на Payjoin",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "transactionSwapInfoFailedExpired": "Ако имате въпроси или притеснения, моля свържете се с поддръжката за помощ.\n==WEBLATE_PART==",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "coreSwapsLnReceiveExpired": "Обмяната е изтекла.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "transactionDetailLabelOrderNumber": "Номер на поръчката",
+  "transactionDetailLabelPaymentDescription": "Описание на плащането",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionListOngoingTransfersDescription": "Тези обмени в момента са в ход. Вашите средства са защитени и ще бъдат налични, когато обменът завърши.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionOrderLabelOriginCedula": "Произходна лична карта",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionStatusTransferExpired": "Обменът е изтекъл",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsLnReceiveCompleted": "Обмяната е завършена.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFee": "Такса за обмен",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionNetworkLiquid": "Liquid",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionSwapDescChainPaid": "Вашата транзакция е излъчена. Сега очакваме потвърждението на транзакцията за заключване.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "coreWalletTransactionStatusConfirmed": "Потвърдено",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionDetailSwapProgress": "Напредък на обмяната",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailLabelOrderStatus": "Статус на поръчката",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionFilterSend": "Изпрати",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "transactionDetailTitle": "Детайли на транзакцията",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailLabelSwapId": "ID за размяна",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionNotesLabel": "Бележки към транзакцията",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionDetailLabelRecipientAddress": "Адрес на получателя",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "viewerTapToCopy": "Натиснете за копиране",
+  "viewerViewInExplorer": "Виж в експлорър",
+  "transactionViewerTitle": "ID на транзакция",
+  "viewerCopyLink": "Копиране на връзка",
+  "recipientsTypeInteracEmail": "Паричен превод по имейл",
+  "transactionStatusPayjoinCompleted": "Payjoin завършен",
+  "coreSwapsStatusRefunded": "Възстановено",
+  "payViewReceipt": "Виж разписката",
+  "transactionFilterWithdraw": "Тегления",
+  "transactionFilterPay": "Плащане",
+  "transactionFilterFunding": "Захранване",
+  "transactionFilterReward": "Награда",
+  "transactionFilterRefund": "Възстановяване",
+  "transactionPayjoinSendWithout": "Изпрати без payjoin",
+  "transactionSwapProgressInitiated": "Инициирано",
+  "transactionSwapProgressPaymentMade": "Плащането\nизвършено",
+  "transactionSwapProgressFundsClaimed": "Средствата\nполучени",
+  "transactionSwapProgressBroadcasted": "Излъчено",
+  "transactionSwapProgressInvoicePaid": "Фактурата\nплатена",
+  "transactionSwapProgressConfirmed": "Потвърдено",
+  "transactionSwapStatusTransferStatus": "Статус на обмена",
+  "transactionSwapStatusSwapStatus": "Статус на обмена",
+  "transactionSwapDescLnReceivePending": "Обменът ви е инициран. Изчакваме получаване на плащане в мрежата Lightning.",
+  "transactionSwapDescLnReceivePaid": "Плащането е получено! В момента излъчваме верижната транзакция към вашия портфейл.",
+  "transactionSwapDescLnReceiveClaimable": "Верижната транзакция е потвърдена. В момента получаваме средствата, за да завършим вашия обмен.",
+  "transactionSwapDescLnReceiveCompleted": "Обменът ви беше завършен успешно! Средствата вече трябва да са налични във вашия портфейл.",
+  "transactionSwapDescLnReceiveFailed": "Възникна проблем с вашия обмен. Моля, свържете се с поддръжката, ако средствата не са върнати в рамките на 24 часа.",
+  "transactionSwapDescLnReceiveExpired": "Този обмен е изтекъл. Всички изпратени средства ще бъдат автоматично върнати на изпращача.",
+  "transactionSwapDescLnReceiveDefault": "Обменът ви е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време.",
+  "transactionSwapDescLnSendPending": "Обменът ви е инициран. Излъчваме верижната транзакция, за да заключим средствата ви.",
+  "transactionListLoadingFailed": "Транзакциите не можаха да бъдат заредени.",
+  "transactionLabelNetworkFees": "Мрежови такси",
+  "transactionSwapOpenWithin24h": "Отворете приложението в рамките на 24 часа, за да завършите обмена си.",
+  "transactionStatusPayjoinAborted": "Payjoin отменен",
+  "transactionDetailLabelPayjoinAborted": "Отменен",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
+  "coreSwapsStatusNotStarted": "Не е започнало",
+  "coreSwapsStatusAwaitingPayment": "Очаква плащане",
+  "coreSwapsStatusAwaitingConfirmation": "Очаква потвърждение",
+  "coreSwapsStatusUnderReview": "В процес на преглед",
+  "coreSwapsStatusRejected": "Отхвърлено",
+  "coreSwapsStatusCanceled": "Отменено",
+  "coreSwapsStatusPaymentDeadlineExpired": "Срокът за плащане изтече",
+  "coreSwapsStatusScheduled": "Планирано",
+  "coreSwapsStatusAwaitingClaim": "Очаква получаване",
+  "coreSwapsStatusUnknown": "Неизвестно",
+  "transactionDetailLoadError": "Данните за транзакцията не можаха да бъдат заредени.",
+  "transactionPayjoinBroadcastFailed": "Оригиналната транзакция не можа да бъде излъчена. Моля, опитайте отново.",
+  "transactionPayjoinOriginalUnavailable": "Оригиналната транзакция вече не е достъпна за излъчване.",
+  "transactionLabelLimitReached": "Можете да имате най-много 10 етикета.",
+  "copiedToClipboard": "Копирано в клипборда",
+  "transactionListExchangeOrdersUnavailable": "Поръчките от борсата не можаха да бъдат заредени."
+}

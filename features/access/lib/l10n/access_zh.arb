@@ -1,0 +1,44 @@
+{
+  "@@locale": "zh",
+  "appUnlockButton": "Unlock",
+  "appUnlockPinCheckError": "无法加载安全设置。请重启应用。",
+  "appUnlockPinVerifyError": "无法验证您的 PIN。请重试。",
+  "pinCodeSecurityPinTitle": "安保部",
+  "pinCodeCreateButton": "设立PIN",
+  "pinCodeManageTitle": "管理你们的安全",
+  "pinCodeProcessing": "处理",
+  "pinCodeCreateTitle": "创建新的支柱",
+  "pinCodeContinue": "继续",
+  "appUnlockAttemptSingular": "失败",
+  "pinCodeCreateDescription": "你的私人网络保护进出你的围墙和场所。 不要忘记.",
+  "pinCodeConfirmTitle": "1. 确认新的支柱",
+  "pinCodeRemoveButton": "移除安全局",
+  "appUnlockAttemptPlural": "失败",
+  "pinCodeMismatchError": "PIN不匹配",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "pinCodeChangeButton": "更改PIN",
+  "pinCodeCheckingStatus": "D. 检查个人信息网络的状况",
+  "pinCodeAuthentication": "认证",
+  "pinCodeSettingUp": "1. 制定您的《个人资料》",
+  "pinCodeBackupRequiredWarning": "请在设置PIN之前完成钱包备份",
+  "appUnlockScreenTitle": "认证",
+  "appUnlockIncorrectPinError": "Incorrect PIN. 请再次审判。 ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Enter  Enter",
+  "backupSettingsStartBackup": "启动",
+  "pinCodeConfirm": "执 行",
+  "pinCodeLoading": "抢劫",
+  "pinCodeSaveError": "无法保存您的PIN码，请重试。",
+  "pinCodeDeleteError": "无法删除您的PIN码，请重试。",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "请输入 {min} 到 {max} 位数字"
+}

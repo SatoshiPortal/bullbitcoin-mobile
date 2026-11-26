@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:bull_sdk/boltz.dart' as frb;
+import 'package:rust_bindings/boltz.dart' as frb;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:swaps/src/data/boltz_api.dart';
@@ -87,6 +87,7 @@ void main() {
   final stores = <SwapModel>[];
   late _MockSwapStorage storage;
   final walletTxs = <String, SwapWalletTx>{};
+  var refreshedHistoryUnavailable = false;
 
   SwapModel chainModel({
     String status = 'refundable',
@@ -121,15 +122,16 @@ void main() {
     int fastest = 50,
     bool customElectrum = false,
     List<SwapWalletInfo> wallets = const [],
+    NewAddressFor? newAddressFor,
   }) => BoltzSwapRepository(
     boltz: boltz,
     environment: NetworkEnv.mainnet,
     electrum: _PassthroughElectrum(custom: customElectrum),
     lockupChain: lockupChain,
-    newAddressFor: (walletId) async => 'addr-of-$walletId',
+    newAddressFor: newAddressFor ?? (walletId) async => Ok('addr-of-$walletId'),
     walletTx: (txid, {required walletId}) async => walletTxs[txid],
     walletTxs: (walletId, {bool sync = false}) async =>
-        walletTxs.values.toList(),
+        sync && refreshedHistoryUnavailable ? null : walletTxs.values.toList(),
     fastestFee: ({
       required int txSize,
       required bool isLiquid,
@@ -170,6 +172,7 @@ void main() {
     when(() => storage.isRegtestStore).thenReturn(false);
     when(() => boltz.environment).thenReturn(NetworkEnv.mainnet);
     walletTxs.clear();
+    refreshedHistoryUnavailable = false;
     when(() => boltz.storage).thenReturn(storage);
     when(() => storage.fetch(any())).thenAnswer((_) async => chainModel());
     stores.clear();
@@ -191,6 +194,7 @@ void main() {
         swapId: any(named: 'swapId'),
         refundAddress: any(named: 'refundAddress'),
         isCooperative: any(named: 'isCooperative'),
+        counterpartyElectrum: any(named: 'counterpartyElectrum'),
         electrum: any(named: 'electrum'),
       ),
     ).thenAnswer((_) async => 200);
@@ -568,6 +572,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'claim-hex');
@@ -588,6 +593,7 @@ void main() {
                 claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
                 absoluteFees: captureAny(named: 'absoluteFees'),
                 tryCooperate: any(named: 'tryCooperate'),
+                counterpartyElectrum: any(named: 'counterpartyElectrum'),
                 electrum: any(named: 'electrum'),
               ),
             ).captured.single
@@ -599,6 +605,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -607,7 +614,14 @@ void main() {
       final txid = await repo(fastest: 900)
           .claim(chainSwap(status: 'claimable', claimFees: 300));
 
-      expect(txid, 'claim-txid');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'claim-txid',
+        ),
+      );
       expect(claimedFee(), 900);
     });
 
@@ -617,6 +631,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: true,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -625,6 +640,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 300);
@@ -634,6 +650,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: true,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('coop refused'));
@@ -643,6 +660,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'claim-hex');
@@ -663,6 +681,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: 300,
           tryCooperate: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).called(1);
@@ -680,6 +699,7 @@ void main() {
               swapId: any(named: 'swapId'),
               claimAddress: any(named: 'claimAddress'),
               isCooperative: any(named: 'isCooperative'),
+              counterpartyElectrum: any(named: 'counterpartyElectrum'),
               electrum: any(named: 'electrum'),
             ),
           ).thenAnswer((_) async => 200);
@@ -689,6 +709,7 @@ void main() {
               claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
               absoluteFees: any(named: 'absoluteFees'),
               tryCooperate: any(named: 'tryCooperate'),
+              counterpartyElectrum: any(named: 'counterpartyElectrum'),
               electrum: any(named: 'electrum'),
             ),
           ).thenThrow(Exception(message));
@@ -713,6 +734,7 @@ void main() {
               claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
               absoluteFees: any(named: 'absoluteFees'),
               tryCooperate: false,
+              counterpartyElectrum: any(named: 'counterpartyElectrum'),
               electrum: any(named: 'electrum'),
             ),
           );
@@ -728,6 +750,7 @@ void main() {
             swapId: any(named: 'swapId'),
             claimAddress: any(named: 'claimAddress'),
             isCooperative: any(named: 'isCooperative'),
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
             electrum: any(named: 'electrum'),
           ),
         ).thenThrow(Exception('sizing failed'));
@@ -746,6 +769,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -755,6 +779,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -771,6 +796,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: _PassthroughElectrum.connection,
         ),
       ).called(1);
@@ -778,6 +804,46 @@ void main() {
   });
 
   group('refund', () {
+    test(
+      'an unavailable destination never persists or broadcasts a refund',
+      () async {
+        when(() => storage.fetch(any()))
+            .thenAnswer((_) async => chainModel(refundAddress: null));
+        const failure = SwapsUnexpectedFailure('Receive address unavailable');
+        final requested = <String>[];
+        final repository = repo(
+          newAddressFor: (walletId) async {
+            requested.add(walletId);
+            return const Err(failure);
+          },
+        );
+
+        final result = await repository.resolveScriptPath(
+          chainSwap(refundAddress: null),
+        );
+
+        expect(
+          result,
+          isA<Err<Swap, SwapsFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            same(failure),
+          ),
+        );
+        expect(requested, ['w-liquid']);
+        verifyNever(() => storage.store(any()));
+        verifyNever(
+          () => boltz.getChainRefundTxSize(
+            swapId: any(named: 'swapId'),
+            refundAddress: any(named: 'refundAddress'),
+            isCooperative: any(named: 'isCooperative'),
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
+            electrum: any(named: 'electrum'),
+          ),
+        );
+      },
+    );
+
     test('broadcasts and settles with fee floored and capped', () async {
       when(
         () => boltz.refundLbtcToBtcChainSwap(
@@ -785,6 +851,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'signed-hex');
@@ -799,7 +866,14 @@ void main() {
 
       final txid = await repo().refund(chainSwap());
 
-      expect(txid, 'refund-txid');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'refund-txid',
+        ),
+      );
       final stored =
           verify(() => storage.store(captureAny())).captured.last as SwapModel;
       expect(stored.status, SwapStatus.refunded.name);
@@ -813,6 +887,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -846,6 +921,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('non-BIP68-final'));
@@ -872,6 +948,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -897,7 +974,14 @@ void main() {
 
       final txid = await repo().refund(chainSwap(refundTxid: 'already-done'));
 
-      expect(txid, 'already-done');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'already-done',
+        ),
+      );
       verifyNever(() => storage.store(any()));
     });
 
@@ -907,7 +991,14 @@ void main() {
 
       final txid = await repo().refund(chainSwap());
 
-      expect(txid, 'already-done');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'already-done',
+        ),
+      );
       verifyNever(() => storage.store(any()));
     });
   });
@@ -924,6 +1015,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -933,6 +1025,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('No Bitcoin UTXO detected for this script'));
@@ -951,6 +1044,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'signed-hex');
@@ -975,6 +1069,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).called(1);
@@ -988,6 +1083,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'signed-hex');
@@ -1017,6 +1113,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: captureAny(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).captured;
@@ -1044,6 +1141,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -1073,7 +1171,7 @@ void main() {
           environment: NetworkEnv.mainnet,
           electrum: _PassthroughElectrum(),
           lockupChain: lockupChain,
-          newAddressFor: (w) async => 'a',
+          newAddressFor: (w) async => Ok('a'),
           walletTx: (t, {required walletId}) async => null,
           walletTxs: (walletId, {bool sync = false}) async {
             if (sync) syncRequested = true;
@@ -1134,6 +1232,31 @@ void main() {
                 as SwapModel;
         expect(stored.status, SwapStatus.claimable.name);
         expect(stored.toEntity().nextAction, SwapAction.claim);
+      },
+    );
+
+    test(
+      'keeps the recorded claim when wallet history cannot refresh',
+      () async {
+        when(
+          () => storage.fetchAll(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+          ),
+        ).thenAnswer(
+          (_) async => [
+            chainModel(status: 'completed', receiveTxid: 'claim-txid'),
+          ],
+        );
+        walletTxs['unrelated'] = const SwapWalletTx(
+          txId: 'unrelated',
+          isIncoming: true,
+        );
+        refreshedHistoryUnavailable = true;
+
+        await repo().verifyCompletions();
+
+        verifyNever(() => storage.store(any()));
       },
     );
 
@@ -1222,6 +1345,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -1308,7 +1432,14 @@ void main() {
 
         final txid = await repo().refund(chainSwap());
 
-        expect(txid, 'true-refund');
+        expect(
+          txid,
+          isA<Ok<String, SwapsFailure>>().having(
+            (result) => result.value,
+            'txid',
+            'true-refund',
+          ),
+        );
         final stored =
             verify(() => storage.store(captureAny())).captured.last
                 as SwapModel;

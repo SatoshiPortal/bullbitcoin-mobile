@@ -1,0 +1,50 @@
+{
+  "wizardAdvancedOptionsTitle": "გაფართოებული პარამეტრები",
+  "getStartedButton": "დაწყება",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "wizardSkipButton": "გამოტოვება",
+  "wizardPageIndicator": "გვერდი {current} / {total}",
+  "wizardNextButton": "შემდეგი",
+  "wizardCustomizeTitle": "მოარგეთ თქვენი გამოცდილება",
+  "wizardCustomizeBody": "გამოიყენეთ BULL თქვენი სურვილისამებრ ამ პარამეტრებით.",
+  "wizardCustomizeDefaultCurrency": "ნაგულისხმევი ვალუტა",
+  "wizardMissionTitle": "მხარი დაუჭირეთ Bull-ის მისიას",
+  "wizardMissionBody1": "იმისათვის, რომ დაგვეხმაროთ ჩვენი პროგრამული უზრუნველყოფის გაუმჯობესებაში და უმაღლესი დონის უსაფრთხოების, კონფიდენციალურობისა და გამოყენებადობის უზრუნველყოფაში, თქვენს აპლიკაციას შეუძლია გამოგვიგზავნოს შეცდომების ჟურნალები, რომლებიც საშუალებას გვაძლევს სწრაფად აღმოვაჩინოთ პრობლემები და გავასწოროთ ისინი შემდეგ განახლებებში.",
+  "wizardMissionBody2": "ეს ჟურნალები ანონიმურია, არ არის დაკავშირებული თქვენს IP მისამართთან და არასოდეს იზიარებს ინფორმაციას თქვენი ტრანზაქციების ან ვინაობის შესახებ. ისინი წმინდად ტექნიკურია და არ გაყენებთ რისკის ქვეშ. ეს ჩვენთვის ძალიან სასარგებლოა და თქვენ არაფერი დაგიჯდებათ.",
+  "wizardMissionQuestion": "ეთანხმებით ავტომატური პრობლემების მოხსენების ჩვენს პროგრამაში მონაწილეობას?",
+  "wizardMissionYes": "დიახ",
+  "wizardMissionNo": "არა",
+  "wizardMissionRequired": "გაგრძელებამდე გთხოვთ აირჩიოთ დიახ ან არა.",
+  "wizardJourneyTitle": "გააგრძელეთ თქვენი მოგზაურობა",
+  "wizardJourneyBody": "თუ ახალი ხართ BULL საფულეში, აქ არის რამდენიმე ფუნქცია, რომელიც შეგიძლიათ გამოიყენოთ თქვენი კონფიდენციალურობის, უსაფრთხოებისა და მომხმარებლის გამოცდილების გასაუმჯობესებლად.",
+  "wizardJourneyTip1": "დაამატეთ უსაფრთხოების PIN თქვენი საფულის განსაბლოკად",
+  "wizardJourneyTip2": "სცადეთ დაშიფრული საცავის სარეზერვო ასლი",
+  "wizardJourneyTip3": "დაუკავშირდით თქვენს საკუთარ Bitcoin კვანძს",
+  "wizardJourneyTip4": "დაუკავშირდით თქვენს საკუთარ Mempool მკვლევარს",
+  "wizardJourneyTip5": "გააკეთეთ სვაპი Bitcoin-სა და Liquid-ს შორის KYC-ის გარეშე",
+  "wizardJourneyTip6": "მოარგეთ თქვენი autoswap პარამეტრები",
+  "wizardJourneyTip7": "გადართეთ Bitcoin (BTC) და Satoshis (sats) შორის",
+  "wizardJourneyTip8": "შექმენით air-gap ტრანზაქციები თქვენი აპარატული საფულისთვის",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsLanguageTitle": "ენა",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "ფლობდეთ საკუთარ ფულს",
+  "onboardingSplashDescription": "სუვერენული თვითდაცვის Bitcoin საფულე და Bitcoin-ზე ორიენტირებული გაცვლის სერვისი.",
+  "settingsDarkModeTitle": "მუქი რეჟიმი",
+  "backgroundTasksTitle": "ფონური ამოცანები",
+  "blockedInSystemSettings": "დაბლოკილია სისტემის პარამეტრებში",
+  "notificationsTitle": "შეტყობინებები",
+  "wizardBackgroundTasksDescription": "ამოწმებს გადახდებს, როცა აპი დახურულია.",
+  "wizardNotificationsDescription": "გაიგეთ, როცა გადახდა შემოვა."
+}

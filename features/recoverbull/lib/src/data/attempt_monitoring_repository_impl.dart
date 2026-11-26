@@ -11,6 +11,7 @@ import '../domain/entities/backup_monitoring.dart';
 import '../domain/entities/backup_settings.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/recoverbull_failure.dart';
+import '../domain/recoverbull_server_url.dart';
 import '../domain/repositories/attempt_monitoring_repository.dart';
 import 'database/recoverbull_database.dart';
 import 'recoverbull_storage_failure.dart';
@@ -22,11 +23,14 @@ final class AttemptMonitoringRepositoryImpl
   final RecoverBullDatabase _database;
   final bool _durable;
   final RecoverBullFailure? _unavailableFailure;
+  final Future<Result<BackupSettings, RecoverBullFailure>> Function()?
+  _readLiveSettings;
 
   AttemptMonitoringRepositoryImpl(
     this._database, {
     required this._durable,
     this._unavailableFailure,
+    this._readLiveSettings,
   });
 
   Uint8List _digest(EncryptedVault vault) =>
@@ -34,10 +38,27 @@ final class AttemptMonitoringRepositoryImpl
   Future<RecoverbullStateData> _state() =>
       _database.select(_database.recoverbullState).getSingle();
 
-  bool _current(RecoverbullStateData state, BackupSettings settings) =>
-      state.server == settings.server.toString() &&
-      state.generation == settings.generation &&
-      state.permissionGranted;
+  Future<Result<BackupSettings, RecoverBullFailure>> _settings(
+    RecoverbullStateData state,
+  ) async {
+    final readLive = _readLiveSettings;
+    if (readLive != null) return readLive();
+    final server = Uri.tryParse(state.server);
+    if (server == null || !isValidRecoverBullServerUrl(server)) {
+      return const Err(VaultStorageFailure());
+    }
+    return Ok(
+      BackupSettings(
+        server: server,
+        permissionGranted: state.permissionGranted,
+        monitoringEnabled: state.monitoringEnabled,
+        generation: state.generation,
+      ),
+    );
+  }
+
+  bool _current(BackupSettings current, BackupSettings expected) =>
+      current.server == expected.server && current.sameGeneration(expected);
 
   Future<void> _revision() => _database.customStatement(
     'UPDATE recoverbull_state SET monitoring_revision = monitoring_revision + 1',
@@ -63,9 +84,9 @@ final class AttemptMonitoringRepositoryImpl
     if (!_durable) {
       return Err(_unavailableFailure ?? const RecoverBullJournalFailure());
     }
-    final state = await _state();
-    if (state.server != settings.server.toString() ||
-        state.generation != settings.generation) {
+    final current = await _settings(await _state());
+    if (current case Err(:final failure)) return Err(failure);
+    if (current case Ok(:final value) when !_current(value, settings)) {
       return const Err(VaultContextChangedFailure());
     }
     await _enroll(settings.server.toString(), _digest(vault));
@@ -83,7 +104,10 @@ final class AttemptMonitoringRepositoryImpl
     if (!_durable) {
       return Err(_unavailableFailure ?? const RecoverBullJournalFailure());
     }
-    if (!_current(await _state(), settings)) {
+    final current = await _settings(await _state());
+    if (current case Err(:final failure)) return Err(failure);
+    if (current case Ok(:final value)
+        when !value.permissionGranted || !_current(value, settings)) {
       return const Err(VaultContextChangedFailure());
     }
     final server = settings.server.toString();
@@ -126,8 +150,13 @@ final class AttemptMonitoringRepositoryImpl
     )..where((row) => row.id.equals(operation.id))).getSingleOrNull();
     if (pending == null) return const Ok(null);
     final state = await _state();
+    final current = await _settings(state);
+    if (current case Err(:final failure)) return Err(failure);
     // Revocation invalidates completion but preserves the sent-operation marker.
-    if (!_current(state, operation.settings)) return const Ok(null);
+    if (current case Ok(:final value)
+        when !value.permissionGranted || !_current(value, operation.settings)) {
+      return const Ok(null);
+    }
     final row =
         await (_database.select(_database.recoverbullMonitoredVaults)..where(
               (row) =>
@@ -181,21 +210,22 @@ final class AttemptMonitoringRepositoryImpl
   Future<Result<MonitoringCheck?, RecoverBullFailure>> prepare() =>
       _guard(() async {
         final state = await _state();
-        if (!_durable || !state.permissionGranted || !state.monitoringEnabled) {
+        final current = await _settings(state);
+        if (current case Err(:final failure)) return Err(failure);
+        final settings =
+            (current as Ok<BackupSettings, RecoverBullFailure>).value;
+        if (!_durable ||
+            !settings.permissionGranted ||
+            !settings.monitoringEnabled) {
           return const Ok(null);
         }
         final rows = await (_database.select(
           _database.recoverbullMonitoredVaults,
-        )..where((row) => row.server.equals(state.server))).get();
+        )..where((row) => row.server.equals(settings.server.toString()))).get();
         if (rows.isEmpty) return const Ok(null);
         return Ok(
           MonitoringCheck(
-            BackupSettings(
-              server: Uri.parse(state.server),
-              permissionGranted: true,
-              monitoringEnabled: true,
-              generation: state.generation,
-            ),
+            settings,
             state.monitoringRevision,
             rows.map((row) => hex.encode(row.digest)).toSet(),
           ),
@@ -208,14 +238,18 @@ final class AttemptMonitoringRepositoryImpl
     AttemptSnapshot? snapshot,
   ) => _guard(() async {
     final state = await _state();
-    if (!_current(state, check.settings) ||
-        !state.monitoringEnabled ||
+    final current = await _settings(state);
+    if (current case Err(:final failure)) return Err(failure);
+    final settings = (current as Ok<BackupSettings, RecoverBullFailure>).value;
+    if (!_current(settings, check.settings) ||
+        !settings.permissionGranted ||
+        !settings.monitoringEnabled ||
         state.monitoringRevision != check.revision) {
       return const Ok(null);
     }
     final rows = await (_database.select(
       _database.recoverbullMonitoredVaults,
-    )..where((row) => row.server.equals(state.server))).get();
+    )..where((row) => row.server.equals(settings.server.toString()))).get();
     for (final row in rows) {
       final sample = snapshot?.entries[hex.encode(row.digest)];
       if (snapshot != null && sample == null && row.anchorRequests == null) {
@@ -392,22 +426,26 @@ final class AttemptMonitoringRepositoryImpl
   Future<Result<BackupMonitoring, RecoverBullFailure>> status() => _guard(
     () async {
       final state = await _state();
+      final current = await _settings(state);
+      if (current case Err(:final failure)) return Err(failure);
+      final settings =
+          (current as Ok<BackupSettings, RecoverBullFailure>).value;
+      final server = settings.server.toString();
       final rows = await (_database.select(
         _database.recoverbullMonitoredVaults,
-      )..where((row) => row.server.equals(state.server))).get();
+      )..where((row) => row.server.equals(server))).get();
       final alerts =
           await (_database.select(_database.recoverbullAlerts)..where(
                 (row) =>
-                    row.server.equals(state.server) &
-                    row.acknowledged.equals(false),
+                    row.server.equals(server) & row.acknowledged.equals(false),
               ))
               .get();
       return Ok(
         BackupMonitoring(
           unknown:
               !_durable ||
-              !state.permissionGranted ||
-              !state.monitoringEnabled ||
+              !settings.permissionGranted ||
+              !settings.monitoringEnabled ||
               rows.isEmpty ||
               rows.any((row) => row.unknown),
           alerts: [
@@ -422,10 +460,13 @@ final class AttemptMonitoringRepositoryImpl
   @override
   Future<Result<void, RecoverBullFailure>> acknowledge(int acknowledgement) =>
       _guard(() async {
-        final state = await _state();
+        final current = await _settings(await _state());
+        if (current case Err(:final failure)) return Err(failure);
+        final settings =
+            (current as Ok<BackupSettings, RecoverBullFailure>).value;
         await (_database.update(_database.recoverbullAlerts)..where(
               (row) =>
-                  row.server.equals(state.server) &
+                  row.server.equals(settings.server.toString()) &
                   row.id.equals(acknowledgement),
             ))
             .write(const RecoverbullAlertsCompanion(acknowledged: Value(true)));

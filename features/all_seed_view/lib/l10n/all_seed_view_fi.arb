@@ -1,0 +1,46 @@
+{
+  "allSeedViewSecurityWarningMessage": "Siemenlauseiden näyttäminen on turvallisuusriski. Kuka tahansa, joka näkee siemenlauseesi, voi käyttää varojasi. Varmista, että olet yksityisessä tilassa eikä kukaan näe näyttöäsi.",
+  "cancel": "Peruuta",
+  "allSeedViewLoadingMessage": "Tämä voi kestää hetken, jos käytössä on paljon siemenlauseita.",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "allSeedViewNoSeedsFound": "Siemenlauseita ei löytynyt.",
+  "allSeedViewSecurityWarningTitle": "Turvavaroitus",
+  "allSeedViewPassphraseLabel": "Salafraasi:",
+  "allSeedViewOldWallets": "Vanhat lompakot ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Ymmärrän",
+  "allSeedViewDeleteWarningTitle": "VAROITUS!",
+  "allSeedViewDeleteWarningMessage": "Siemenen poistaminen on peruuttamaton toimenpide. Tee tämä vain, jos sinulla on tämän siemenen turvalliset varmuuskopiot tai siihen liittyvät lompakot on tyhjennetty kokonaan.",
+  "delete": "Poista",
+  "allSeedViewErrorDelete": "Siemenen poistaminen epäonnistui. Yritä uudelleen.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Siementen lataaminen epäonnistui. Yritä uudelleen.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Näytä siemenlauseet",
+  "allSeedViewTitle": "Näytä siemenlauseet",
+  "allSeedViewExistingWallets": "Nykyiset lompakot ({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "@@locale": "fi"
+}

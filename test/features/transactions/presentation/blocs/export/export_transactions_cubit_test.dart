@@ -1,23 +1,19 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/transactions/application/ports/transaction_export_saver.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_state.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockExportTransactionsCsvUsecase extends Mock
     implements ExportTransactionsCsvUsecase {}
 
-class _MockTransactionExportSaver extends Mock
-    implements TransactionExportSaver {}
+class _MockSaveTransactionsCsvUsecase extends Mock
+    implements SaveTransactionsCsvUsecase {}
 
 void main() {
   late _MockExportTransactionsCsvUsecase exportCsvUsecase;
-  late _MockTransactionExportSaver saver;
+  late _MockSaveTransactionsCsvUsecase saver;
 
   ExportTransactionsCubit buildCubit() => ExportTransactionsCubit(
     exportTransactionsCsvUsecase: exportCsvUsecase,
@@ -26,7 +22,7 @@ void main() {
 
   setUp(() {
     exportCsvUsecase = _MockExportTransactionsCsvUsecase();
-    saver = _MockTransactionExportSaver();
+    saver = _MockSaveTransactionsCsvUsecase();
   });
 
   test('carries the failure so the screen never sticks on loading', () async {
@@ -62,7 +58,7 @@ void main() {
         end: any(named: 'end'),
       ),
     ).thenAnswer((_) async => const Ok<String, TransactionFailure>('csv'));
-    when(() => saver.save(any()))
+    when(() => saver.execute(any()))
         .thenAnswer((_) async => const Ok<bool, TransactionFailure>(false));
 
     final cubit = buildCubit();
@@ -84,7 +80,7 @@ void main() {
     ).thenAnswer((_) async => const Ok<String, TransactionFailure>('csv'));
 
     final picker = Completer<Result<bool, TransactionFailure>>();
-    when(() => saver.save(any())).thenAnswer((_) => picker.future);
+    when(() => saver.execute(any())).thenAnswer((_) => picker.future);
 
     final cubit = buildCubit();
     final exporting = cubit.exportCsv();

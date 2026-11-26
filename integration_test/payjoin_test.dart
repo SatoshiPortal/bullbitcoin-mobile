@@ -1,29 +1,23 @@
-import 'initialization_result.dart';
-
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/init.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide Network, ScriptType;
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:spend/payjoin.dart';
+import 'package:spend/spend.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 
 import 'developer_network.dart';
+import 'funded_testnet_wallet.dart';
+import 'initialization_result.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -31,18 +25,15 @@ Future<void> main({bool isInitialized = false}) async {
     requireSuccessfulBullInitialization(await Bull.init());
   }
 
-  final walletRepository = locator<WalletRepository>();
-  final secrets = locator<Secrets>();
-  final addressRepository = locator<WalletAddressRepository>();
-  final utxoRepository = locator<WalletUtxoRepository>();
-  final receiverRole = locator<PayjoinReceiver>();
-  final senderRole = locator<PayjoinSender>();
-  final sessions = locator<PayjoinSessions>();
-  final policy = locator<PayjoinPolicyAccess>();
-  final prepareBitcoinSend = locator<PrepareBitcoinSendUsecase>();
-  final signBitcoinTx = locator<SignBitcoinTxUsecase>();
-  final broadcastBitcoinTx = locator<BroadcastBitcoinTransactionUsecase>();
+  late final AddressView addresses;
+  late final PayjoinReceiver receiverRole;
+  late final PayjoinSender senderRole;
+  late final PayjoinSessions sessions;
+  late final PayjoinPolicyAccess policy;
+  late final Spend spend;
 
+  late WalletKey receiverKey;
+  late WalletKey senderKey;
   late Wallet receiverWallet;
   late Wallet senderWallet;
   PayjoinPolicy? previousPayjoinPolicy;
@@ -68,41 +59,34 @@ Future<void> main({bool isInitialized = false}) async {
   /// for a few hundred sats.
   const testnetFeeRate = 10.0;
 
-  Future<void> consolidateUtxos(String walletId) async {
-    final utxos = await utxoRepository.getWalletUtxos(walletId: walletId);
+  Future<void> consolidateUtxos(Wallet wallet) async {
+    final utxos = requireValue(wallet.coins.now.latest, 'read fixture coins');
     if (utxos.length <= 1) return;
-    final address = await addressRepository.generateNewReceiveAddress(
-      walletId: walletId,
+    final walletId = wallet.key.id;
+    final address = requireValue(
+      await addresses.receiveAddress(walletId: walletId, advance: true),
+      'issue a consolidation address',
     );
-    final preparationResult = await prepareBitcoinSend.execute(
-      walletId: walletId,
-      recipients: [
-        BitcoinTransactionRecipient.remainder(address: address.address),
-      ],
-      networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
-    );
-    final prepared = switch (preparationResult) {
-      Ok(:final value) => value,
-      Err(:final failure) => fail(
-        'Bitcoin preparation failed: ${failure.runtimeType}',
+    final prepared = requireValue(
+      await spend.prepareBitcoin(
+        walletId: walletId,
+        recipients: [
+          BitcoinTransactionRecipient.remainder(address: address.address),
+        ],
+        networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
       ),
-    };
-    final signed = await signBitcoinTx.execute(
-      psbt: prepared.unsignedPsbt,
-      walletId: walletId,
+      'prepare the consolidation',
     );
-    await broadcastBitcoinTx.execute(
-      signed.signedPsbt,
-      isPsbt: true,
-      network: Network.bitcoinTestnet,
+    final signed = requireValue(
+      await spend.signBitcoin(prepared: prepared),
+      'sign the consolidation',
+    );
+    requireValue(
+      await spend.broadcastBitcoin(signed),
+      'broadcast the consolidation',
     );
     await Future<void>.delayed(const Duration(seconds: 3));
-    // Fail fast: a funding sync that failed would otherwise surface as a
-    // confusing balance assertion further down.
-    expect(
-      await walletRepository.getWallets(sync: true),
-      isA<Ok<List<Wallet>, WalletFailure>>(),
-    );
+    await syncFundedTestnetWallet(wallet.key);
   }
 
   const aliceDefine = String.fromEnvironment('TEST_ALICE_MNEMONIC');
@@ -178,6 +162,13 @@ Future<void> main({bool isInitialized = false}) async {
   // full wallet sync before every one of their tests.
   group('funded testnet Payjoin', () {
     setUpAll(() async {
+      addresses = locator<AddressView>();
+      receiverRole = locator<PayjoinReceiver>();
+      senderRole = locator<PayjoinSender>();
+      sessions = locator<PayjoinSessions>();
+      policy = locator<PayjoinPolicyAccess>();
+      spend = locator<Spend>();
+
       // Testnet is a developer network: enable it as a user would.
       // Restored when the group ends, even if this setup fails.
       await selectDeveloperNetwork(Environment.testnet);
@@ -192,29 +183,24 @@ Future<void> main({bool isInitialized = false}) async {
         if (enabled case Err(:final failure)) throw failure;
       }
 
-      final receiverSecret = switch (await secrets.import(
-        words: receiverMnemonic!.split(' '),
-        language: bip39.Language.english,
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      final senderSecret = switch (await secrets.import(
-        words: senderMnemonic!.split(' '),
-        language: bip39.Language.english,
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      receiverWallet = await walletRepository.createWallet(
-        secret: receiverSecret,
-        network: Network.bitcoinTestnet,
-        scriptType: ScriptType.bip84,
+      Future<WalletKey> openWallet(String mnemonic) => openFundedTestnetWallet(
+        mnemonic: mnemonic,
+        secrets: locator<Secrets>(),
+        inventory: locator<SecretsInventory>(),
+        native: locator<WalletNativeRuntime>(),
       );
-      senderWallet = await walletRepository.createWallet(
-        secret: senderSecret,
-        network: Network.bitcoinTestnet,
-        scriptType: ScriptType.bip84,
+
+      receiverKey = await openWallet(
+        receiverMnemonic ?? fail('missing Alice fixture'),
+      );
+      senderKey = await openWallet(
+        senderMnemonic ?? fail('missing Bob fixture'),
+      );
+      expect(
+        senderKey.id,
+        isNot(receiverKey.id),
+        reason:
+            'The funded Payjoin requires distinct sender and receiver accounts',
       );
     });
 
@@ -233,31 +219,36 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     setUp(() async {
-      // Fail fast: a funding sync that failed would otherwise surface as a
-      // confusing balance assertion further down.
-      expect(
-        await walletRepository.getWallets(sync: true),
-        isA<Ok<List<Wallet>, WalletFailure>>(),
-      );
+      receiverWallet = await syncFundedTestnetWallet(receiverKey);
+      senderWallet = await syncFundedTestnetWallet(senderKey);
     });
 
     test('funded testnet wallets complete a Payjoin', () async {
-      receiverWallet = _wallet(
-        await walletRepository.getWallet(receiverWallet.id),
+      final receiverBalance = requireValue(
+        receiverWallet.balances.now.latest,
+        'read the receiver balance',
       );
-      senderWallet = _wallet(await walletRepository.getWallet(senderWallet.id));
-      expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
-      expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
-
-      await consolidateUtxos(receiverWallet.id);
-      await consolidateUtxos(senderWallet.id);
-
-      final address = await addressRepository.generateNewReceiveAddress(
-        walletId: receiverWallet.id,
+      final senderBalance = requireValue(
+        senderWallet.balances.now.latest,
+        'read the sender balance',
       );
+      expect(receiverBalance.totalSat, greaterThan(BigInt.zero));
+      expect(senderBalance.totalSat, greaterThan(BigInt.zero));
+
+      await consolidateUtxos(receiverWallet);
+      await consolidateUtxos(senderWallet);
+
+      final addressResult = await addresses.receiveAddress(
+        walletId: receiverKey.id,
+        advance: true,
+      );
+      final address = switch (addressResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail(failure.runtimeType.toString()),
+      };
       final receiverResult = await receiverRole.start(
         StartPayjoinReceiver(
-          walletId: receiverWallet.id,
+          walletId: receiverKey.id,
           network: BitcoinNetwork.testnet,
           address: address.address,
           amount: Sats.fromInt(10000),
@@ -273,8 +264,8 @@ Future<void> main({bool isInitialized = false}) async {
       expect(uri.queryParameters, contains('pj'));
 
       const feeRate = testnetFeeRate;
-      final preparationResult = await prepareBitcoinSend.execute(
-        walletId: senderWallet.id,
+      final preparationResult = await spend.prepareBitcoin(
+        walletId: senderKey.id,
         recipients: [
           BitcoinTransactionRecipient.fixed(
             address: address.address,
@@ -289,12 +280,22 @@ Future<void> main({bool isInitialized = false}) async {
           'Bitcoin preparation failed: ${failure.runtimeType}',
         ),
       };
+      final original = requireValue(
+        await preparePayjoinOriginal(
+          spend: spend,
+          prepared: prepared,
+          walletId: senderKey.id,
+          network: BitcoinNetwork.testnet,
+        ),
+        'prepare the guarded Payjoin original',
+      );
       final senderResult = await senderRole.start(
         StartPayjoinSender(
-          walletId: senderWallet.id,
+          walletId: senderKey.id,
           network: BitcoinNetwork.testnet,
           bip21Uri: receiver.pjUri,
           unsignedOriginalPsbt: prepared.unsignedPsbt,
+          preparedOriginal: original,
           amount: Sats.fromInt(10000),
           feeRate: FeeRate(feeRate),
         ),
@@ -318,12 +319,17 @@ Future<void> main({bool isInitialized = false}) async {
     }, timeout: const Timeout(Duration(seconds: 330)));
 
     test('a receiver expires when no sender submits a request', () async {
-      final address = await addressRepository.generateNewReceiveAddress(
-        walletId: receiverWallet.id,
+      final addressResult = await addresses.receiveAddress(
+        walletId: receiverKey.id,
+        advance: true,
       );
+      final address = switch (addressResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail(failure.runtimeType.toString()),
+      };
       final receiverResult = await receiverRole.start(
         StartPayjoinReceiver(
-          walletId: receiverWallet.id,
+          walletId: receiverKey.id,
           network: BitcoinNetwork.testnet,
           address: address.address,
           amount: Sats.fromInt(10000),
@@ -352,10 +358,3 @@ Future<void> main({bool isInitialized = false}) async {
     }, timeout: const Timeout(Duration(seconds: 270)));
   }, skip: hasFixtures ? null : fixtureSkip);
 }
-
-/// The repository returns a `Result` now; a wallet that cannot be read back
-/// mid-test is a broken fixture, not a case under test.
-Wallet _wallet(Result<Wallet, WalletFailure> result) => switch (result) {
-  Ok(:final value) => value,
-  Err(:final failure) => fail('expected a wallet, got $failure'),
-};

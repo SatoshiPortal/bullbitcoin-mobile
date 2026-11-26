@@ -382,7 +382,9 @@ void main() {
     expect(find.byKey(const ValueKey('log-severity-severe')), findsNothing);
     expect(
       tester.getTopLeft(find.byKey(const ValueKey('logs-search'))).dy,
-      greaterThan(tester.getTopLeft(find.byIcon(Icons.date_range)).dy),
+      greaterThan(
+        tester.getTopLeft(find.widgetWithText(BullButton, 'Filter by Date')).dy,
+      ),
     );
 
     await tester.tap(find.byKey(const ValueKey('log-severity-warning')));

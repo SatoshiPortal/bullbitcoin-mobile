@@ -1,0 +1,9 @@
+{
+  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
+  "bitcoinPriceExchangeRateUnavailable": "Tỷ giá hối đoái không khả dụng. Vui lòng thử lại sau.",
+  "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.",
+  "fiatCurrencySettingsLabel": "Tiền tệ pháp định",
+  "currencySettingsDefaultFiatCurrencyLabel": "Tiền tệ pháp định mặc định",
+  "retry": "Thử lại",
+  "priceChartFetchingHistory": "Đang lấy lịch sử giá..."
+}

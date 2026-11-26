@@ -85,12 +85,7 @@ class RecoverBullStatusScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.bull.surface,
       body: BullStackedPage(
-        bottomChild: BullButton.big(
-          label: buttonText,
-          onPressed: onTap,
-          textColor: context.bull.onSecondary,
-          bgColor: context.bull.secondary,
-        ),
+        bottomChild: BullButton.secondary(label: buttonText, onPressed: onTap),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -173,10 +168,8 @@ class RecoverBullSuccessScreen extends StatelessWidget {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).size.height * 0.05,
               ),
-              child: BullButton.big(
+              child: BullButton.secondary(
                 label: buttonLabel,
-                bgColor: context.bull.secondary,
-                textColor: context.bull.onSecondary,
                 onPressed: onPressed,
               ),
             ),
@@ -615,27 +608,22 @@ class ViewVaultKeyWarningSheet extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: BullButton.big(
+                        child: BullButton.secondary(
                           label: context.loc.recoverbullSettingsCancel,
                           onPressed: () => Navigator.of(context).pop(false),
-                          bgColor: context.bull.transparent,
-                          outlined: true,
                           textStyle: context.bullType.subtitle.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
-                          textColor: context.bull.secondary,
                         ),
                       ),
                       const Gap(16),
                       Expanded(
-                        child: BullButton.big(
+                        child: BullButton.primary(
                           label: context.loc.recoverbullContinue,
                           onPressed: () => Navigator.of(context).pop(true),
-                          bgColor: context.bull.secondary,
                           textStyle: context.bullType.subtitle.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
-                          textColor: context.bull.onSecondary,
                         ),
                       ),
                     ],

@@ -6,9 +6,9 @@ name: Cache Warmer
 # outputs) on each develop push so every fresh PR restores warm caches instead
 # of paying the full ~10min prefix. Matrix over both arches because the
 # analyze_and_test jobs run on x64 (checks) and arm64 (integration), and the
-# FVM + build_runner caches are arch-keyed. The Cargo cache is NOT warmed here:
-# it only fills during an actual Rust build, which this workflow deliberately
-# avoids.
+# FVM + build_runner caches are arch-keyed. It is also the only writer of the
+# pub and Cargo source caches: build_runner runs the Native Assets hooks, which
+# compile the in-repo Rust crates and fetch their sources.
 on:
   push:
     branches:
@@ -26,10 +26,10 @@ on:
 permissions:
   contents: read
 
-# Only the newest develop push matters for cache freshness.
+# Let a started warm finish: a cold warm can outlast the interval between develop merges, and cancelling it discards the work before its save steps. GitHub keeps at most one pending run per group and replaces it with the newest push, so the queue stays bounded.
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   warm:
@@ -40,28 +40,13 @@ jobs:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
     runs-on: ${{ matrix.runner }}
-    # A cold warm compiles every Rust crate for the host (~17 min on x64).
-    timeout-minutes: 45
+    # A cold warm compiles every Rust crate for the host and runs every member's build_runner (40-55 min on 2026-11-24). With 45 minutes, the x64 leg timed out during setup and skipped its save steps in every sampled run since 2026-11-23.
+    timeout-minutes: 90
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # x64 stock images are tight on disk once the SDK + pub + build_runner
-      # output land (see the checks job in analyze_and_test.yml); the arm64
-      # partner image is leaner and the action is x64-oriented, so clean up
-      # inline there instead.
-      - name: Free disk space (x64)
-        if: ${{ runner.arch == 'X64' }}
-        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action.
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
-
+      # The arm64 partner image keeps a few large preinstalled toolchains; removing them inline takes seconds. x64 runners have ~86 GB free before setup, which uses at most ~14 GB.
       - name: Free disk space (arm64, inline)
         if: ${{ runner.arch == 'ARM64' }}
         run: |
@@ -70,6 +55,32 @@ jobs:
 
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
+        with:
+          cargo-cache: 'true'
+
+      # The composite only restores pub and Cargo; this workflow is their single writer, on develop where every PR can read them. Keep paths and keys in sync with the restore steps in .github/actions/flutter-setup/action.yml. An existing key only logs a warning.
+      - name: Save pub cache
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+
+      # Cargo fetches sources only when a Native Assets hook compiles Rust; a warm hook cache can skip that, leaving nothing to save.
+      - name: Check Cargo sources
+        id: cargo
+        run: |
+          if [ -d "$HOME/.cargo/registry" ] || [ -d "$HOME/.cargo/git" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save Cargo cache
+        if: ${{ steps.cargo.outputs.present == 'true' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}
 
       # The composite only RESTORES the build_runner cache (PR jobs must never
       # save — quota); this workflow is the single writer. Keep path + key in
@@ -81,6 +92,7 @@ jobs:
             .dart_tool/build
             **/*.g.dart
             **/*.freezed.dart
+            **/*.drift.dart
             **/*.mocks.dart
             **/*.gen.dart
             **/*.gr.dart
@@ -98,4 +110,4 @@ jobs:
             .dart_tool/hooks_runner/*/*/hook.dill.d
             .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
             .dart_tool/hooks_runner/shared/*/build/download-*/*.so
-          key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+          key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}-${{ github.sha }}

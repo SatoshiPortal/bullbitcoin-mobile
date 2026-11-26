@@ -2,10 +2,12 @@ import 'package:primitives/primitives.dart';
 
 import 'data/flutter_local_notification_gateway.dart';
 import 'data/flutter_notification_permission_gateway.dart';
+import 'data/flutter_scheduled_notification_gateway.dart';
 import 'data/sqlite_notification_store_repository.dart';
 import 'domain/notifications_failure.dart';
 import 'domain/ports/local_notification_port.dart';
 import 'domain/ports/notification_permission_port.dart';
+import 'domain/ports/scheduled_notification_port.dart';
 import 'domain/repositories/notification_store_repository.dart';
 
 /// Opens the notification store at [path], creating it on first use. Only
@@ -38,3 +40,15 @@ LocalNotificationPort localNotifications({
 NotificationPermissionPort notificationPermissions({
   required String channelId,
 }) => FlutterNotificationPermissionGateway(channelId: channelId);
+
+/// Shares the initialized notification plugin; initialize [localNotifications]
+/// first. Channel identity must differ from ordinary payment notifications.
+ScheduledNotificationPort scheduledNotifications({
+  required String channelId,
+  required String channelName,
+  String? channelDescription,
+}) => FlutterScheduledNotificationGateway(
+  channelId: channelId,
+  channelName: channelName,
+  channelDescription: channelDescription,
+);

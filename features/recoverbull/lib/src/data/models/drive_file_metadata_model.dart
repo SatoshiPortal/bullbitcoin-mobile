@@ -1,4 +1,4 @@
-import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:backup_storage/backup_storage.dart';
 
 import '../../domain/entities/drive_file_metadata.dart';
 
@@ -15,18 +15,16 @@ final class DriveFileMetadataModel {
     this.modifiedTime,
   });
 
-  factory DriveFileMetadataModel.fromDriveFile(drive.File file) {
-    final id = file.id;
-    final name = file.name;
-    final created = file.createdTime;
-    if (id == null || name == null || created == null) {
+  factory DriveFileMetadataModel.fromStoredObject(StoredObject file) {
+    final created = file.createdAt;
+    if (created == null) {
       throw const FormatException('Invalid Drive metadata');
     }
     return DriveFileMetadataModel(
-      id: id,
-      name: name,
+      id: file.id,
+      name: file.name,
       createdTime: created,
-      modifiedTime: file.modifiedTime,
+      modifiedTime: file.modifiedAt,
     );
   }
 

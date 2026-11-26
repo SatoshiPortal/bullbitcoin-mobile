@@ -11,3 +11,11 @@ export 'src/data/native_store_paths.dart' show nativeWalletStoragePath;
 export 'src/data/write/bitcoin_spend_gate.dart';
 export 'src/data/write/sync/electrum_sync.dart' show ElectrumSync;
 export 'src/public/sync.dart' show SyncForegroundStores;
+
+export 'src/data/runtime/wallet_native_runtime.dart'
+    show WalletNativeRuntime, WalletNativeLifecycle;
+export 'src/data/runtime/broadcast_observation_follow_up.dart'
+    show BroadcastObservationFollowUp, BroadcastSpend;
+
+export 'src/data/runtime/foreground_wallet_synchronization.dart'
+    show ForegroundWalletSynchronization;

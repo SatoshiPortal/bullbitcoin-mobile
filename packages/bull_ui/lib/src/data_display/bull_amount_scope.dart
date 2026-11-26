@@ -14,21 +14,28 @@ class BullAmountSnapshot {
     required this.unit,
     required this.hideAmounts,
     required this.isReady,
+    this.startInFiat = false,
+    this.defaultCurrencyCode,
   });
 
   final BitcoinUnit unit;
   final bool hideAmounts;
   final bool isReady;
+  final bool startInFiat;
+  final String? defaultCurrencyCode;
 
   @override
   bool operator ==(Object other) =>
       other is BullAmountSnapshot &&
       unit == other.unit &&
       hideAmounts == other.hideAmounts &&
-      isReady == other.isReady;
+      isReady == other.isReady &&
+      startInFiat == other.startInFiat &&
+      defaultCurrencyCode == other.defaultCurrencyCode;
 
   @override
-  int get hashCode => Object.hash(unit, hideAmounts, isReady);
+  int get hashCode =>
+      Object.hash(unit, hideAmounts, isReady, startInFiat, defaultCurrencyCode);
 }
 
 /// Stable capabilities and immutable values published to individual amounts.
@@ -38,11 +45,21 @@ class BullAmountScopeData {
     required this.snapshot,
     required this.generation,
     required this.changeDefaultUnit,
+    required this.changeDefaultInputMode,
+    required this.canWriteInputMode,
   });
 
   final BullAmountSnapshot snapshot;
   final int generation;
   final Future<void> Function(BitcoinUnit displayedUnit) changeDefaultUnit;
+  final bool canWriteInputMode;
+  final Future<void> Function(
+    bool fiat, {
+    required String bitcoinMessage,
+    required String fiatMessage,
+    required String failureMessage,
+  })
+  changeDefaultInputMode;
 }
 
 /// Owns global commands and feedback independently of the initiating amount.
@@ -51,12 +68,14 @@ class BullAmountScope extends StatefulWidget {
     super.key,
     required this.snapshot,
     required this.writeUnit,
+    this.writeInputMode,
     required this.child,
     this.overlayResolver,
   });
 
   final BullAmountSnapshot snapshot;
   final Future<bool> Function(BitcoinUnit) writeUnit;
+  final Future<bool> Function(bool fiat)? writeInputMode;
   final OverlayState? Function()? overlayResolver;
   final Widget child;
 
@@ -69,6 +88,7 @@ class BullAmountScope extends StatefulWidget {
 
 class _BullAmountScopeState extends State<BullAmountScope> {
   int _generation = 0;
+  int _modeRevision = 0;
   int _command = 0;
   Future<void> _pending = Future<void>.value();
   VoidCallback? _dismissFeedback;
@@ -85,6 +105,9 @@ class _BullAmountScopeState extends State<BullAmountScope> {
   void didUpdateWidget(BullAmountScope oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.snapshot.unit != oldWidget.snapshot.unit) _generation++;
+    if (widget.snapshot.startInFiat != oldWidget.snapshot.startInFiat) {
+      _modeRevision++;
+    }
   }
 
   Future<void> _changeDefaultUnit(BitcoinUnit displayedUnit) {
@@ -160,6 +183,70 @@ class _BullAmountScopeState extends State<BullAmountScope> {
     _pending = operation.catchError((Object error, StackTrace stack) {});
   }
 
+  Future<bool> _writeInputMode(bool fiat) async {
+    try {
+      return await widget.writeInputMode?.call(fiat) ?? false;
+    } on Object {
+      return false;
+    }
+  }
+
+  Future<void> _changeDefaultInputMode(
+    bool fiat, {
+    required String bitcoinMessage,
+    required String fiatMessage,
+    required String failureMessage,
+  }) {
+    if (!widget.snapshot.isReady || widget.writeInputMode == null) {
+      return Future<void>.value();
+    }
+    final command = ++_command;
+    _dismissFeedback?.call();
+    _dismissFeedback = null;
+    final operation = _pending.then((_) async {
+      if (!mounted) return;
+      final previous = widget.snapshot.startInFiat;
+      final success = await _writeInputMode(fiat);
+      if (!mounted) return;
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || command != _command) return;
+      if (!success) {
+        _show(failureMessage);
+        return;
+      }
+      final committedRevision = _modeRevision;
+      _show(
+        fiat ? fiatMessage : bitcoinMessage,
+        actionLabel: BullUiLocalizations.of(context).amountUndo,
+        onAction: () {
+          if (!mounted ||
+              command != _command ||
+              committedRevision != _modeRevision) {
+            return;
+          }
+          final undoCommand = ++_command;
+          final undo = _pending.then((_) async {
+            if (!mounted ||
+                undoCommand != _command ||
+                committedRevision != _modeRevision) {
+              return;
+            }
+            final restored = await _writeInputMode(previous);
+            if (!mounted || undoCommand != _command) return;
+            if (restored) {
+              _announce(previous ? fiatMessage : bitcoinMessage);
+            } else {
+              _show(failureMessage);
+            }
+          });
+          _pending = undo.catchError((Object error, StackTrace stack) {});
+        },
+      );
+    });
+    _pending = operation.catchError((Object error, StackTrace stack) {});
+    return operation;
+  }
+
   void _showFailure() =>
       _show(BullUiLocalizations.of(context).amountChangeFailed);
 
@@ -193,6 +280,8 @@ class _BullAmountScopeState extends State<BullAmountScope> {
       snapshot: widget.snapshot,
       generation: _generation,
       changeDefaultUnit: _change,
+      changeDefaultInputMode: _changeDefaultInputMode,
+      canWriteInputMode: widget.writeInputMode != null,
     ),
     child: widget.child,
   );

@@ -6,6 +6,7 @@ import '../../../domain/ports/wallet_connection_port.dart';
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/sync_completion.dart';
 import '../../../domain/sync_failure.dart';
+import '../../../domain/sync_transaction_target.dart';
 import '../../writer_diagnostics.dart';
 
 /// What the foreground hands the compute worker for one pass.
@@ -21,6 +22,10 @@ final class SyncParams {
   final bool collectIncoming;
   final int runId;
 
+  /// The transactions this pass must judge, empty for an ordinary pass. A
+  /// targeted pass covers only the wallet indices these resolve to.
+  final List<SyncTransactionTarget> targets;
+
   const SyncParams(
     this.descriptor,
     this.root,
@@ -31,8 +36,9 @@ final class SyncParams {
     this.headless,
     this.allowInitialScan,
     this.collectIncoming,
-    this.runId,
-  );
+    this.runId, {
+    this.targets = const <SyncTransactionTarget>[],
+  });
 
   void observationWarning(String message) =>
       diagnostics.send((WriterLogLevel.warning, message));

@@ -1,18 +1,14 @@
+import 'package:transactions/testing.dart';
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 
 class Read extends Mock implements GetTransactionsUsecase {}
 
@@ -47,8 +43,14 @@ void main() {
       ),
     );
     var localTransactions = [pending];
-    when(() => read.execute(walletId: null))
-        .thenAnswer((_) async => Ok(localTransactions));
+    when(() => read.execute(walletId: null)).thenAnswer(
+      (_) async => Ok(
+        TransactionHistory(
+          transactions: localTransactions,
+          exchangeOrders: const ExchangeOrdersMerged(),
+        ),
+      ),
+    );
     when(() => started.execute(walletId: null))
         .thenAnswer((_) => const Stream.empty());
     when(() => finished.execute(walletId: null))
@@ -59,10 +61,12 @@ void main() {
     final cubit = TransactionsCubit(
       getTransactionsUsecase: read,
       refreshTransactionLabelsUsecase: labels,
-      watchStartedWalletSyncsUsecase: started,
-      watchFinishedWalletSyncsUsecase: finished,
+      watchStartedWalletSyncsUsecase: started.execute(walletId: null),
+      watchFinishedWalletSyncsUsecase: finished
+          .execute(walletId: null)
+          .map((wallet) => wallet.id),
       watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(
-        WalletFacade(
+        walletHistoryEvents(
           const Stream.empty(),
           syncFinished: finishes.stream.map((_) {}),
         ),

@@ -9,7 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2654 stripped PSBT', () {
     test('BitcoinTx.fromPsbt finalizes through the stripped-metadata path', () {
-      final source = File('lib/core/utils/bitcoin_tx.dart').readAsStringSync();
+      final source = File('packages/sync/lib/src/data/bitcoin_tx.dart')
+          .readAsStringSync();
       expect(source, contains('final psbt = Psbt.fromBase64(psbtBase64);'));
       expect(source, contains('finalizeAll().toBytes()'));
     });

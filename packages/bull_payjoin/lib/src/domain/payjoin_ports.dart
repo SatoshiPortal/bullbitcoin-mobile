@@ -2,6 +2,18 @@ import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart';
 
+import 'payjoin_failure.dart';
+
+/// Holds native spend admission while the protocol commits its local row.
+/// The callback must not perform network operations or re-enter the wallet.
+typedef PayjoinInputAdmission = Future<Result<void, PayjoinFailure>> Function({
+  required String walletId,
+  required BitcoinNetwork network,
+  required Set<Outpoint> inputs,
+  required String sessionId,
+  required Future<void> Function() persist,
+});
+
 abstract interface class PayjoinWalletPort {
   /// Signs this wallet's inputs of [psbt]. Serves the sender's original PSBT and the receiver's contribution to a proposal alike: the engine computes the PSBT the PDK will ask for, signs it here, and hands the result back — no signing capability outlives the call.
   Future<String> signPsbt({
@@ -70,6 +82,13 @@ final class PayjoinTransaction {
     required List<PayjoinTransactionOutput> outputs,
   }) : inputs = List.unmodifiable(inputs),
        outputs = List.unmodifiable(outputs);
+
+  /// The id alone, for callers that hold no body of this transaction: a local
+  /// read answers it, a refreshed pass covers no script of it and so answers
+  /// null rather than absence.
+  PayjoinTransaction.idOnly(this.txid)
+    : inputs = const <Outpoint>[],
+      outputs = const <PayjoinTransactionOutput>[];
 }
 
 final class PayjoinTransactionOutput {
@@ -116,9 +135,20 @@ abstract interface class PayjoinTransactionPort {
 
   Stream<void> watchWallet(String walletId);
 
-  Future<bool> isTransactionVisible({
+  /// Presence of every candidate in [transactions], keyed by txid.
+  ///
+  /// A non-refreshed call reads local state only and settles each id against
+  /// what the wallet already holds. A refreshed call covers every candidate
+  /// that carries its outputs and inputs, in one bounded pass, and answers
+  /// true only where that pass saw the transaction, false where the pass
+  /// covered the wallet's own scripts and did not. Any id the call cannot
+  /// settle — an unavailable wallet, a failed pass, or a candidate sent as its
+  /// id alone — is null, never false: only a pass that covered the scripts may
+  /// claim absence, and a stale local copy proves nothing about a replacement
+  /// or an eviction.
+  Future<Map<String, bool?>> transactionsPresence({
     required String walletId,
-    required String transactionId,
+    required List<PayjoinTransaction> transactions,
     bool refresh = false,
   });
 

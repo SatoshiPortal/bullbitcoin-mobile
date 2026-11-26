@@ -1,0 +1,27 @@
+{
+  "@@locale": "ka",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "save": "შენახვა",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "viewerTapToCopy": "კოპირებისთვის შეეხეთ ღილაკს",
+  "viewerViewInExplorer": "Დათვალიერება ექსპლორერში",
+  "transactionViewerTitle": "ტრანსაქციის ID ",
+  "viewerCopyLink": "ბმულის კოპირება",
+  "coinsTitle": "მონეტები",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "retry": "ხელახლა ცდა",
+  "transactionStatusPending": "მოლოდინში",
+  "transactionListLoadingTransactions": "ტრანზაქციები იტვირთება...",
+  "transactionListToday": "დღეს",
+  "transactionListYesterday": "გუშინ",
+  "copyDialogButton": "კოპირება",
+  "amountLabel": "თანხა",
+  "receiveQRCode": "QR კოდი",
+  "cancel": "გაუქმება",
+  "delete": "წაშლა",
+  "copiedToClipboard": "დაკოპირდა ბუფერში"
+}

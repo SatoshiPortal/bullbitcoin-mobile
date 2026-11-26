@@ -1,17 +1,15 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:backups/backups.dart';
+import 'package:network/network.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCarousel, BullInfoCard, Gap;
-import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullCarousel, BullInfoCard, BullSizes, Gap;
 
 class HomeWarnings extends StatelessWidget {
   const HomeWarnings({super.key});
@@ -41,12 +39,14 @@ class HomeWarnings extends StatelessWidget {
               description: homeWarningDescription(context, warning),
               tagColor: context.appColors.error,
               bgColor: context.appColors.errorContainer,
-              onTap: () => context.pushNamed(switch (warning.action) {
-                WalletWarningAction.electrumSettings =>
-                  locator<ElectrumSettingsFacade>().settingsRouteName,
-                WalletWarningAction.torSettings =>
-                  const TorSettingsFacade().settingsRouteName,
-              }),
+              onTap: () => NetworkNavigation.open(
+                context,
+                section: switch (warning.action) {
+                  WalletWarningAction.electrumSettings =>
+                    NetworkSection.electrum,
+                  WalletWarningAction.torSettings => NetworkSection.tor,
+                },
+              ),
             ),
           // A failed load used to be silent: the skeleton simply vanished
           // and the home screen showed 0 sats and no wallets, which reads
@@ -73,13 +73,23 @@ class HomeWarnings extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (errorCards.isNotEmpty) BullCarousel(children: errorCards),
+              if (errorCards.isNotEmpty)
+                BullCarousel(
+                  children: [
+                    for (final card in errorCards)
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: BullSizes.homeCard,
+                        ),
+                        child: card,
+                      ),
+                  ],
+                ),
               if (showBackupWarning) ...[
                 if (errorCards.isNotEmpty) const Gap(5),
                 BackupCard(
-                  onTap: () => context.pushNamed(
-                    BackupSettingsSubroute.backupOptions.name,
-                  ),
+                  icon: AssetImage(Assets.misc.passwordbook.path),
+                  onTap: () => BackupsNavigation.start(context),
                 ),
               ],
             ],

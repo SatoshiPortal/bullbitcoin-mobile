@@ -1,5 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:secrets/secrets.dart';
+import 'package:legacy_storage/coordination.dart';
+import 'package:preferences/preferences.dart';
+
+import '../data/database/recoverbull_cutover.dart';
+
 import 'package:bull_tor/tor.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,7 +12,7 @@ import '../../generated/l10n/recoverbull_localizations.dart';
 import '../domain/entities/encrypted_vault.dart' as domain;
 import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
-import '../domain/recoverbull_legacy_settings_port.dart';
+import '../domain/recoverbull_permission_port.dart';
 import '../domain/recoverbull_route_port.dart';
 import '../ui/recoverbull_flow_navigator.dart';
 import '../ui/widgets/backup_alarm_overlay.dart';
@@ -19,6 +24,8 @@ import '../domain/recoverbull_wallet_port.dart';
 import '../domain/usecases/create_vault_usecase.dart';
 import '../domain/usecases/restore_vault_usecase.dart';
 import '../domain/usecases/test_vault_usecase.dart';
+import '../domain/usecases/backup_warning_needed_usecase.dart';
+import '../data/database/recoverbull_wallet_backups.dart';
 import 'recoverbull_facade.dart';
 
 /// Composition stays separate from the feature's business interface.
@@ -34,22 +41,30 @@ final class RecoverBullFeature {
   ];
 
   static Future<RecoverBullFeature> mount({
-    required String databasePath,
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
-    required RecoverBullLegacySettingsPort legacy,
+    required Uri server,
+    required RecoverBullPermissionPort permission,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
+    required RecoverBullCutover cutover,
+    required RuntimeAdmission admission,
+    required WalletInventory inventory,
+    required ActiveEnvironmentReader activeEnvironment,
+    required RecoverBullWalletBackups normalBackups,
+    required RecoverBullWalletBackups regtestBackups,
   }) async {
     final runtime = await RecoverBullRuntime.open(
-      databasePath: databasePath,
       secrets: secrets,
       wallets: wallets,
       environment: environment,
-      legacy: legacy,
+      server: server,
+      permission: permission,
       routes: routes,
       clients: clients,
+      cutover: cutover,
+      admission: admission,
     );
     final vaults = SecretsVaultRepository(secrets);
     return RecoverBullFeature._(
@@ -63,6 +78,15 @@ final class RecoverBullFeature {
         runtime.parseVault,
         runtime.settings,
         runtime.recoverServerVault,
+        runtime.backupProjection,
+        BackupWarningNeededUsecase(
+          inventory: inventory,
+          environment: activeEnvironment,
+          certificateRegtest: cutover.regtest,
+          readBackup: (id, {required regtest}) =>
+              (regtest ? regtestBackups : normalBackups).read(id),
+          status: runtime.readStatus.execute,
+        ).execute,
       ),
       runtime,
     );

@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -9,15 +11,15 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:electrum/electrum.dart';
+import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
@@ -35,6 +37,7 @@ part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
+    WatchWalletAmountDisplayUsecase? watchAmountDisplayUsecase,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._retrySwapsOnRefreshUsecase,
     required this._getWalletsUsecase,
@@ -43,7 +46,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._watchWalletSyncEventsUsecase,
     required this._syncWalletsUsecase,
     required this._getUnconfirmedIncomingBalanceUsecase,
-    required this._deleteWalletUsecase,
     required this._checkBackupNeededUsecase,
     required this._getExternalTorProxyStatusUsecase,
     required this._checkSpWalletSetupForWalletUsecase,
@@ -52,6 +54,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._watchSpWalletUsecase,
     required this._checkSpFeatureGateForWalletUsecase,
   }) : super(const WalletState()) {
+    on<_WalletAmountDisplayChanged>((event, emit) {
+      emit(state.copyWith(amountDisplay: event.preferences));
+    });
+    _amountDisplaySubscription = watchAmountDisplayUsecase?.execute().listen((
+      preferences,
+    ) {
+      if (!isClosed) add(_WalletAmountDisplayChanged(preferences));
+    });
     _revisionsSubscription = watchWalletRevisionsUsecase?.execute().listen((
       walletId,
     ) {
@@ -63,13 +73,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
-    on<WalletDeleted>(_onDeleted);
     on<RefreshSpWallet>(_onRefreshSpWallet, transformer: restartable());
     on<SetSpWalletBalance>(_onSetSpWalletBalance);
     on<DismissBackupWarning>(_onDismissBackupWarning);
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
   }
 
+  late final StreamSubscription<AmountDisplayPreferences?>?
+  _amountDisplaySubscription;
   final GetWalletsUsecase _getWalletsUsecase;
   final ReadWalletUsecase _readWalletUsecase;
   final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
@@ -78,7 +89,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final RetrySwapsOnRefreshUsecase? _retrySwapsOnRefreshUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
-  final DeleteWalletUsecase _deleteWalletUsecase;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
   final CheckSpWalletSetupForWalletUsecase _checkSpWalletSetupForWalletUsecase;
@@ -101,11 +111,24 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   bool? _lastBitcoinSyncSuccess;
   bool? _lastLiquidSyncSuccess;
   int _electrumWarningGeneration = 0;
-  int _spBalanceUpdateVersion = 0;
+  int _spRefreshGeneration = 0;
+  int? _spPendingCatalogGeneration;
   int _backupStatusGeneration = 0;
 
+  // A different bucket may publish a new catalogue while Started is awaiting
+  // its read. Only its own generation can keep SP admission suspended.
+  bool get _spCatalogPending =>
+      _spPendingCatalogGeneration == _catalogGeneration;
+
+  void _releaseSpCatalog(int generation) {
+    if (_spPendingCatalogGeneration == generation) {
+      _spPendingCatalogGeneration = null;
+    }
+  }
+
   @override
-  Future<void> close() {
+  Future<void> close() async {
+    await _amountDisplaySubscription?.cancel();
     _revisionsSubscription?.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
@@ -172,19 +195,30 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     final catalog = ++_catalogGeneration;
+    _spPendingCatalogGeneration = catalog;
     final updates = Map<String, int>.of(_walletUpdateVersions);
-    add(const RefreshSpWallet());
+    _spRefreshGeneration++;
+    emit(
+      state.copyWith(
+        isSpFeatureEnabled: false,
+        spBalanceSat: 0,
+        isSpWalletLoading: false,
+      ),
+    );
     await _spUpdatesSubscription?.cancel();
-    _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((update) {
-      switch (update) {
-        case SpBalanceChanged(:final totalUnified):
+    if (emit.isDone || catalog != _catalogGeneration) return;
+    _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((result) {
+      switch (result) {
+        case Ok(value: SilentBalanceChanged(:final totalUnified)):
           add(SetSpWalletBalance(totalUnified.value.toInt()));
-        case SpSetupChanged():
+        case Ok(value: SilentSetupChanged()):
           add(const RefreshSpWallet());
-        case SpChainTipChanged():
+        case Ok(value: SilentChainTipChanged()):
           // Only the SP scan policy cares about the tip; the wallet card
-          // shows a balance, which SpBalanceChanged already covers.
+          // shows a balance, which SilentBalanceChanged already covers.
           break;
+        case Err():
+          log.warning('Silent update unavailable');
       }
     });
 
@@ -195,6 +229,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       case Ok(:final value):
         wallets = value;
       case Err(:final failure):
+        _releaseSpCatalog(catalog);
         emit(state.copyWith(status: WalletStatus.failure, failure: failure));
         return;
     }
@@ -207,13 +242,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     };
 
     _catalogGeneration++;
+    _releaseSpCatalog(catalog);
     _walletReadVersions.clear();
-    // copyWith, not a fresh WalletState: the Silent Payments fields are owned
-    // by their own events and must survive a reload.
+    // Invalidate every SP read tied to the previous catalogue before exposing
+    // wallets from the new environment.
+    _spRefreshGeneration++;
     _backupStatusGeneration++;
     emit(
       state.copyWith(
         status: WalletStatus.success,
+        isSpFeatureEnabled: false,
+        spBalanceSat: 0,
+        isSpWalletLoading: false,
         wallets: _mergeWalletUpdates(wallets, updates),
         backupNeeded: null,
         failure: null,
@@ -362,7 +402,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (previousKeys.length != loadedKeys.length ||
         !previousKeys.containsAll(loadedKeys)) {
       _catalogGeneration++;
+      _spRefreshGeneration++;
       _walletReadVersions.clear();
+      emit(
+        state.copyWith(
+          isSpFeatureEnabled: false,
+          spBalanceSat: 0,
+          isSpWalletLoading: false,
+        ),
+      );
     }
 
     add(const RefreshSpWallet());
@@ -469,40 +517,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
   }
 
-  Future<void> _onDeleted(
-    WalletDeleted event,
-    Emitter<WalletState> emit,
-  ) async {
-    final walletId = event.walletId;
-    emit(state.copyWith(isDeletingWallet: true, walletDeletionFailure: null));
-
-    switch (await _deleteWalletUsecase.execute(walletId: walletId)) {
-      case Ok():
-        log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
-        _catalogGeneration++;
-        // Remove the wallet from the state to directly update the UI
-        // without needing to refresh the wallets again
-        emit(
-          state.copyWith(
-            wallets: state.wallets.where((w) => w.id != walletId).toList(),
-            isDeletingWallet: false,
-          ),
-        );
-        // Refresh the wallets to ensure everything is up to date
-        // and also trigger other things.
-        add(const WalletRefreshed());
-      case Err(:final failure):
-        // Every refusal reaches the sheet as a type, so each one keeps its own
-        // wording instead of collapsing into a generic message.
-        emit(
-          state.copyWith(
-            walletDeletionFailure: failure,
-            isDeletingWallet: false,
-          ),
-        );
-    }
-  }
-
   // Refreshes the SP card only; it never starts a scan. A scan reaches the
   // Rust side through ScanSpWalletUsecase alone, either from the user tapping
   // Scan or from a sync tick that SpScanPolicy allowed.
@@ -510,69 +524,83 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     RefreshSpWallet event,
     Emitter<WalletState> emit,
   ) async {
-    // Refresh the SP feature gate (superuser + dev mode) so the wallet card
-    // shows exactly when SP is enabled.
-    final bool enabled;
-    try {
-      enabled = await _checkSpFeatureGateForWalletUsecase.execute();
-      emit(state.copyWith(isSpFeatureEnabled: enabled));
-    } catch (_) {
-      log.warning('SP feature gate refresh failed category=feature_gate');
-      emit(state.copyWith(isSpFeatureEnabled: false, isSpWalletLoading: false));
-      return;
-    }
+    if (_spCatalogPending) return;
+    final generation = ++_spRefreshGeneration;
+    final catalog = _catalogGeneration;
+    bool stale() =>
+        emit.isDone ||
+        generation != _spRefreshGeneration ||
+        catalog != _catalogGeneration ||
+        _spCatalogPending;
+    void hide() => emit(
+      state.copyWith(
+        isSpFeatureEnabled: false,
+        spBalanceSat: 0,
+        isSpWalletLoading: false,
+      ),
+    );
 
-    final bool isSpWalletSetup;
-    switch (await _checkSpWalletSetupForWalletUsecase.execute()) {
+    emit(state.copyWith(isSpWalletLoading: true));
+    final gate = await _checkSpFeatureGateForWalletUsecase.execute();
+    if (stale()) return;
+    final bool enabled;
+    switch (gate) {
       case Ok(:final value):
-        isSpWalletSetup = value;
-      case Err(:final failure):
-        // Settle the SP card (clear loading) rather than leaving it stuck; a
-        // failed read is not "not set up", so the flag itself is left alone.
-        log.warning(
-          '[WalletBloc] SP setup check failed: ${failure.logMessage}',
-        );
-        emit(state.copyWith(isSpWalletLoading: false));
+        enabled = value;
+      case Err():
+        log.warning('SP feature gate refresh failed category=feature_gate');
+        hide();
         return;
     }
-    emit(state.copyWith(isSpWalletSetup: isSpWalletSetup));
-    if (!enabled) {
-      // Preserve local setup knowledge without opening or refreshing a session.
-      emit(state.copyWith(isSpWalletLoading: false, spBalanceSat: 0));
-      return;
-    }
 
-    // While a scan runs the live session holds the inner lock; refreshing now
-    // would block on a snapshot read or time out in dispose() and tear the
-    // session down. Skip and keep the current snapshot; the scan's
-    // ScanCompleted refresh updates it.
-    if (_checkSpScanningForWalletUsecase.execute()) {
-      return;
-    }
-
-    final balanceUpdateVersion = _spBalanceUpdateVersion;
-    emit(state.copyWith(isSpWalletLoading: true));
-
-    // `execute()` (via SpFacade) reads a fresh snapshot from the live session
-    // WITHOUT disposing it: the scanner updates the stores in place, so the
-    // snapshot is already current. Ok(null) when SP is not set up (gated /
-    // `.revoked` sentinel).
-    switch (await _refreshSpWalletForWalletUsecase.execute()) {
+    final setup = await _checkSpWalletSetupForWalletUsecase.execute();
+    if (stale()) return;
+    final bool isSetUp;
+    switch (setup) {
       case Ok(:final value):
+        isSetUp = value;
+      case Err():
+        hide();
+        return;
+    }
+    emit(state.copyWith(isSpWalletSetup: isSetUp));
+    if (!enabled || !isSetUp) {
+      hide();
+      return;
+    }
+    // Only a previously admitted snapshot in this same catalogue may remain
+    // visible while scanning. A catalogue transition already invalidated it.
+    if (_checkSpScanningForWalletUsecase.execute()) {
+      emit(state.copyWith(isSpWalletLoading: false));
+      return;
+    }
+    emit(state.copyWith(isSpWalletLoading: true));
+    final result = await _refreshSpWalletForWalletUsecase.execute();
+    if (stale()) return;
+    switch (result) {
+      case Ok(value: final wallet?):
+        final network = wallet.network;
+        if (network == null ||
+            !NetworkCapabilities.supports(
+              network,
+              NetworkCapability.silentPayments,
+            ) ||
+            state.wallets.any((w) => w.network.environment != network.env)) {
+          hide();
+          return;
+        }
         emit(
           state.copyWith(
-            spBalanceSat: balanceUpdateVersion == _spBalanceUpdateVersion
-                ? value?.balance.totalUnifiedSat.value.toInt() ?? 0
-                : state.spBalanceSat,
+            isSpFeatureEnabled: true,
+            isSpWalletSetup: true,
+            spBalanceSat: wallet.balance.totalUnifiedSat.value.toInt(),
             isSpWalletLoading: false,
           ),
         );
-      case Err(:final failure):
-        // A failed refresh (e.g. a long-running lock-holder still owns the
-        // inner mutex) leaves the existing snapshot intact; the next
-        // user-triggered refresh retries once the operation completes.
-        log.warning('[WalletBloc] SP refresh deferred: ${failure.logMessage}');
-        emit(state.copyWith(isSpWalletLoading: false));
+      case Ok():
+        hide();
+      case Err():
+        hide();
     }
   }
 
@@ -580,12 +608,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     SetSpWalletBalance event,
     Emitter<WalletState> emit,
   ) {
-    // Kept up to date even while the SP card is hidden: a live session keeps
-    // pushing after the gate is switched off, and both readers (the card and
-    // totalBalance) gate on showSpWallet, so a fresh value never leaks. It is
-    // also already right when the gate comes back on.
-    _spBalanceUpdateVersion++;
-    emit(state.copyWith(spBalanceSat: event.amount));
+    // This legacy event has no network provenance. Its amount cannot authorize
+    // a cached balance; read a snapshot through the network gate instead.
+    add(const RefreshSpWallet());
   }
 
   void _onDismissBackupWarning(

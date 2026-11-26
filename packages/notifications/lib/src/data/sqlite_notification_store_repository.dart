@@ -124,6 +124,10 @@ final class SqliteNotificationStoreRepository
   }
 
   @override
+  Future<Result<int, NotificationsFailure>> reservePlatformId() async =>
+      _transaction(_allocatePlatformId);
+
+  @override
   Future<Result<void, NotificationsFailure>> recordForeground(
     Observation observation,
   ) async => _transaction(() {

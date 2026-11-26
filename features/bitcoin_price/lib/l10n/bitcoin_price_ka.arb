@@ -1,0 +1,9 @@
+{
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "bitcoinPriceExchangeRateUnavailable": "გაცვლითი კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
+  "priceChartLoadFailed": "ფასის სქემის მონაცემები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.",
+  "fiatCurrencySettingsLabel": "ფიატ ვალუტა",
+  "currencySettingsDefaultFiatCurrencyLabel": "ნაგულისხმევი ფიატ ვალუტა",
+  "retry": "ხელახლა ცდა",
+  "priceChartFetchingHistory": "ფასის ისტორიის ჩატვირთვა..."
+}

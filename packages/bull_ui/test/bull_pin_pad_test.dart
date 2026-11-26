@@ -1,7 +1,9 @@
+import 'dart:ui' show SemanticsAction, Tristate;
 import 'dart:math';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/src/inputs/bull_keypad.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -55,6 +57,59 @@ List<int> layoutOf(WidgetTester tester) {
 
 void main() {
   group('BullPinPad', () {
+    testWidgets('names every key and exposes enabled and scramble states', (
+      tester,
+    ) async {
+      tester.view
+        ..devicePixelRatio = 1
+        ..physicalSize = const Size(320, 568);
+      addTearDown(tester.view.reset);
+      final semantics = tester.ensureSemantics();
+      try {
+        await pumpPad(tester);
+        final padContext = tester.element(find.byType(BullPinPad));
+        final deleteLabel = MaterialLocalizations.of(padContext)
+            .deleteButtonTooltip;
+        final labels = [
+          'scramble',
+          deleteLabel,
+          for (var i = 0; i < 10; i++) '$i',
+        ];
+        void expectKeys({required bool enabled}) {
+          for (final label in labels) {
+            final keys = find.semantics.byPredicate(
+              (node) => node.label == label && node.flagsCollection.isButton,
+            );
+            expect(keys, findsOne, reason: label);
+            final key = keys.evaluate().single;
+            expect(
+              key.flagsCollection.isEnabled,
+              enabled ? Tristate.isTrue : Tristate.isFalse,
+            );
+            expect(
+              key.getSemanticsData().hasAction(SemanticsAction.tap),
+              enabled,
+            );
+            expect(key.rect.width, greaterThanOrEqualTo(48));
+            expect(key.rect.height, greaterThanOrEqualTo(48));
+          }
+        }
+
+        expectKeys(enabled: true);
+        await tester.tap(scrambleKey);
+        await tester.pump();
+        expect(
+          tester.getSemantics(scrambleKey).flagsCollection.isToggled,
+          Tristate.isTrue,
+        );
+
+        await pumpPad(tester, enabled: false);
+        expectKeys(enabled: false);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
     testWidgets('starts in the plain layout and reports taps', (tester) async {
       final digits = <int>[];
       var backspaces = 0;
@@ -128,11 +183,40 @@ void main() {
 
       expect(layoutOf(tester), BullPinPad.digits);
       final icon = tester.widget<Icon>(find.byIcon(Icons.shuffle));
-      expect(icon.color, keypad.onKey);
+      expect(icon.color, testBullTheme.text);
     });
 
     // The unlock screen locks the pad during a failed-attempt timeout; a tap
     // must not enter a digit then.
+    testWidgets('every tap vibrates, a disabled key does not', (tester) async {
+      final clicks = <String?>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'HapticFeedback.vibrate') {
+            clicks.add(call.arguments as String?);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      await pumpPad(tester);
+      await tester.tap(find.text('7'));
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.tap(scrambleKey);
+      expect(clicks, List.filled(3, 'HapticFeedbackType.selectionClick'));
+
+      clicks.clear();
+      await pumpPad(tester, enabled: false);
+      await tester.tap(find.text('7'));
+      expect(clicks, isEmpty);
+    });
+
     testWidgets('ignores and dims every key while disabled', (tester) async {
       final digits = <int>[];
       var backspaces = 0;
@@ -159,7 +243,7 @@ void main() {
         tester.widget<Icon>(find.byIcon(Icons.backspace_outlined)).color,
         keypad.disabledGlyph,
       );
-      // A disabled key has no fill and sinks into the panel.
+      // A disabled key has no fill.
       expect(keyFill(tester, find.text('7')), testBullTheme.transparent);
       expect(
         keyFill(tester, find.byIcon(Icons.shuffle)),
@@ -167,34 +251,62 @@ void main() {
       );
     });
 
-    testWidgets('keys sit on the keypad panel, filled with the key colour', (
+    testWidgets('digits sit in outlined keys, the icons are bare', (
       tester,
     ) async {
       await pumpPad(tester);
-      final panel = find.ancestor(
+      final sevenKey = find.ancestor(
         of: find.text('7'),
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is DecoratedBox &&
-              widget.decoration is BoxDecoration &&
-              (widget.decoration as BoxDecoration).color == keypad.panel,
-        ),
+        matching: find.byType(BullKeyCap),
       );
-      expect(panel, findsOneWidget);
       expect(
-        tester.getRect(panel).contains(tester.getCenter(scrambleKey)),
-        isTrue,
+        tester.widget<BullKeyCap>(sevenKey).borderColor,
+        testBullTheme.text,
       );
-      expect(keyFill(tester, find.text('7')), keypad.key);
-      expect(
-        keyFill(tester, find.byIcon(Icons.backspace_outlined)),
-        keypad.key,
-      );
-      expect(tester.widget<Text>(find.text('7')).style?.color, keypad.onKey);
+      for (final glyph in [
+        find.text('7'),
+        find.byIcon(Icons.backspace_outlined),
+        find.byIcon(Icons.shuffle),
+      ]) {
+        expect(keyFill(tester, glyph), testBullTheme.transparent);
+      }
+      final seven = tester.widget<Text>(find.text('7')).style;
+      expect(seven?.color, testBullTheme.text);
+      expect(seven?.fontWeight, FontWeight.w500);
       expect(
         tester.widget<Icon>(find.byIcon(Icons.backspace_outlined)).color,
-        keypad.onKey,
+        testBullTheme.text,
       );
+    });
+
+    testWidgets('a held digit fills, and a reshuffle clears it at once', (
+      tester,
+    ) async {
+      InkWell ink() => tester.widget<InkWell>(
+        find.ancestor(of: find.text('5'), matching: find.byType(InkWell)).first,
+      );
+      Material fillOf(Finder glyph) => tester.widget<Material>(
+        find.ancestor(of: glyph, matching: find.byType(Material)).first,
+      );
+      await pumpPad(tester);
+      expect(ink().highlightColor, testBullTheme.surfaceContainerHighest);
+      expect(ink().splashFactory, NoSplash.splashFactory);
+      await tester.tap(scrambleKey);
+      await tester.pump();
+      expect(ink().highlightColor, testBullTheme.surfaceContainerHighest);
+
+      // Tapping a scrambled key rebuilds every key, so no InkWell keeps the
+      // fill of the slot just pressed.
+      final before = tester.element(
+        find.ancestor(of: find.text('5'), matching: find.byType(InkWell)).first,
+      );
+      await tester.tap(find.text('5'));
+      await tester.pump();
+      final after = tester.element(
+        find.ancestor(of: find.text('5'), matching: find.byType(InkWell)).first,
+      );
+      expect(identical(before, after), isFalse);
+      expect(fillOf(find.text('5')).color, testBullTheme.transparent);
     });
 
     testWidgets('digits ignore the system text size, the key already scales', (

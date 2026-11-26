@@ -13,4 +13,5 @@ export 'src/domain/pricer_failure.dart'
         PricerRateLimitedFailure,
         PricerUnexpectedFailure;
 export 'src/pricer.dart' show Pricer;
-export 'src/pricer_readers.dart' show IndexPriceReader, PriceHistoryReader;
+export 'src/pricer_readers.dart'
+    show IndexPriceReader, IndexPricesReader, PriceHistoryReader;

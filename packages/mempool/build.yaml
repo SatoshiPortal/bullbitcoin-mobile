@@ -1,0 +1,16 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        enabled: false
+      drift_dev:analyzer:
+        enabled: true
+        options: &drift_options
+          store_date_time_values_as_text: true
+          databases:
+            mempool_database: lib/src/data/mempool_database.dart
+          schema_dir: lib/src/data/schemas/
+          test_dir: test/migrations_test/
+      drift_dev:modular:
+        enabled: true
+        options: *drift_options

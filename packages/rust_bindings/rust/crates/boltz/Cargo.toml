@@ -1,0 +1,57 @@
+[package]
+name = "boltz"
+authors = [
+    "i5hi <ishi@satoshiportal.com>, mocodesmo <morteza@satoshiportal.com>",
+]
+version = "0.6.0"
+edition = "2021"
+
+[lib]
+name = "boltz"
+doctest = false
+crate-type = ["lib", "staticlib", "cdylib"]
+
+[dependencies]
+boltz-client = { git = "https://github.com/SatoshiPortal/boltz-rust", rev = "8efe99d91defd294fd6cd5526154432c647b5b3b", features = ["lnurl", "electrum"] }
+# Pin the rustls crypto provider to ring and install it explicitly before any
+# electrum TLS connection. Both ring + aws-lc-rs can be linked transitively
+# (notably in the bull_sdk aggregate), which makes rustls 0.23 abort when it
+# tries to auto-pick a default provider.
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
+flutter_rust_bridge = "=2.13.0"
+anyhow = "1.0.68"
+serde = { version = "1.0.0", features = ["derive"] }
+serde_json = "1.0.0"
+openssl = { version = "0.10.64", features = ["vendored"] }
+hex = "0.4"
+# BIP85 swap-mnemonic derivation from a seed (`SwapMasterKey::create_from_seed`); same version boltz-client uses.
+bip85_extended = "1.1.0"
+zeroize = "1"
+reqwest = { version = "0.12", features = ["json"] }
+lnurl-rs = { version = "0.9.0", default-features = false }
+
+[features]
+bull_sdk = []
+
+[build-dependencies]
+flutter_rust_bridge_codegen = "=2.13.0"
+
+[dev-dependencies]
+bip39 = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[build]
+profiler = true
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[target.'cfg(target_os = "macos")']
+rustflags = [
+    "-C", "link-arg=-undefined",
+    "-C", "link-arg=dynamic_lookup",
+]

@@ -1,0 +1,43 @@
+{
+  "@@locale": "bg",
+  "scanningProgressLabel": "Сканиране: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "Прогрес UR: {parts} части",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Сканирането завърши",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "Декодирането на UR не успя.",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "Обработката на UR не успя.",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "==WEBLATE_PART==\nСканирай NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "Връзката с NFC е изгубена. Задръжте устройството си близо до NFC тага и опитайте отново.",
+  "nfcWriteFailed": "Прехвърлянето през NFC не бе успешно. Моля, опитайте отново.",
+  "nfcDisabled": "NFC е изключен. Активирайте го в настройките.",
+  "nfcNotAvailable": "NFC не се поддържа на това устройство",
+  "nfcFailed": "Опа! Нещо се обърка",
+  "nfcInvalidData": "Не бяха намерени поддържани NFC данни"
+}

@@ -1,0 +1,731 @@
+{
+  "transactionDetailLabelTransactionFee": "Taxa de transação",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionLabelPreimage": "Preimagem",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "coreSwapsChainCanCoop": "O swap será concluído em instantes.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "transactionDetailLabelConfirmationTime": "Tempo de confirmação",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionDetailLabelSwapFees": "Taxas de swap",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "transactionSwapDescLnSendPending": "A tua troca foi iniciada. Estamos a transmitir a transação em cadeia para bloquear os seus fundos.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionStatusTransferFailed": "Falha no swap",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionSwapDescChainPending": "Seu swap foi criado, mas ainda não foi iniciado.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionFilterTransfer": "Swap",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionStatusSwapExpired": "Swap Expirou",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "coreWalletTransactionStatusPending": "Pendente",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionNetworkLightning": "Luz",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelTransferStatus": "Status do swap",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "transactionFilterBuy": "Comprar",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "coreSwapsLnSendExpired": "Swap Expirou",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "transactionStatusPaymentRefunded": "Pagamento Reembolsado",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "Pagamento em Progresso",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "buyTitle": "Comprar Bitcoin",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "coreSwapsChainFailedRefunding": "O swap será reembolsado em breve.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionSwapDescLnSendFailed": "Houve um problema com a tua troca. Os seus fundos serão devolvidos automaticamente à sua carteira.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendDefault": "A tua troca está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "transactionSwapDescChainFailed": "Ocorreu um problema com seu swap. Entre em contato com o suporte se os fundos não forem devolvidos em até 24 horas.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescLnSendExpired": "Esta troca expirou. Os seus fundos serão automaticamente devolvidos à sua carteira.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "Esta troca expirou. Quaisquer fundos enviados serão automaticamente devolvidos ao remetente.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionFilterAll": "Todos",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionDetailLabelAmountReceived": "Montante recebido",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionLabelReceiveAmount": "Receber valor",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionDetailLabelTransferId": "ID do swap",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionDetailAccelerate": "Acelerar",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionListNoTransactions": "Ainda não há transações.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "coreSwapsLnSendPaid": "A fatura será paga após o pagamento receber a confirmação.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "transactionDetailLabelPayjoinExpired": "Expirou",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionStatusTransferInProgress": "Swap em andamento",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailLabelPayinAmount": "Quantidade de pagamento",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "transactionSwapDescLnSendCompleted": "O pagamento Lightning foi enviado com sucesso! A tua troca já está completa.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionDetailTransferProgress": "Progresso do swap",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "coreSwapsLnSendPending": "Swap ainda não é inicializado.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnReceivePaid": "O remetente pagou a fatura.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "transactionDetailLabelRefunded": "Reembolsos",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionSwapInfoClaimableTransfer": "O swap será concluído automaticamente em alguns segundos. Se não for, você pode tentar uma reivindicação manual clicando no botão \"Retry Swap Claim\".",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionDetailLabelCreatedAt": "Criado em",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionDetailLabelPayjoinStatus": "Estado de Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Completada",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "coreSwapsChainCompletedRefunded": "O swap foi reembolsado.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "transactionLabelSendAmount": "Enviar valor",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionFilterReceive": "Receber",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionLabelReceiveNetworkFee": "Receber Taxas de Rede",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Swap é concluído com sucesso.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "transactionSwapDescChainExpired": "Este swap expirou. Seus fundos serão devolvidos automaticamente à sua carteira.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "A tua troca está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionDetailLabelExchangeRate": "Taxa de câmbio",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "coreSwapsLnReceiveFailed": "Engole Falhado.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "transactionDetailLabelPayinStatus": "Estado de Payin",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "coreSwapsStatusPending": "Pendente",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "transactionSwapDoNotUninstall": "Não desinstale o aplicativo até que o swap seja concluído.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionListOngoingTransfersTitle": "Swaps em andamento",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionDetailLabelToWallet": "Para a carteira",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "transactionSwapDescChainRefundable": "O swap será reembolsado. Seus fundos serão devolvidos automaticamente à sua carteira.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "coreSwapsChainCompletedSuccess": "O swap foi concluído com sucesso.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "transactionSwapDescChainClaimable": "A transação de bloqueio foi confirmada. Agora você está reivindicando os fundos para concluir seu swap.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "receivePaymentNormally": "Receber pagamento normalmente",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "transactionTitle": "Transações",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionSwapDescChainCompleted": "Seu swap foi concluído com sucesso! Os fundos já devem estar disponíveis na sua carteira.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "coreSwapsStatusInProgress": "Em progresso",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "transactionDetailLabelTransactionId": "ID de transação",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "transactionDetailLabelFromWallet": "Da carteira",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "coreSwapsLnSendFailed": "Engole Falhado.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "Swap vai completar momentaneamente.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsLnSendRefundable": "Swap está pronto para ser reembolsado.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "transactionFilterPayjoin": "Payjoin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "coreSwapsLnSendCanCoop": "Swap vai completar momentaneamente.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "retry": "Tentar novamente",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionStatusPayjoinRequested": "Pedir desculpa",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "coreSwapsLnReceiveClaimable": "Swap está pronto para ser reivindicado.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "transactionDetailLabelPayoutStatus": "Status de pagamento",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "coreSwapsLnSendCompletedRefunded": "O Swap foi reembolsado.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "coreSwapsChainPending": "O swap ainda não foi inicializado.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "coreSwapsChainRefundable": "O swap está pronto para ser reembolsado.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "coreSwapsChainFailed": "Falha no swap.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "Adicionar nota",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionFeesTotalDeducted": "Esta é a taxa total deduzida do montante enviado",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionDetailLabelPayinMethod": "Método de pagamento",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionSwapInfoClaimableSwap": "A troca será concluída automaticamente dentro de alguns segundos. Se não, você pode tentar uma reivindicação manual clicando no botão \"Retentar Swap Claim\".",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionStatusTransferCompleted": "Swap concluído",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "ID de transação líquida",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionLabelServerNetworkFees": "Taxas de rede do servidor",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "transactionListLoadingTransactions": "Carregando transações...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionDetailLabelBitcoinTxId": "ID de transação de Bitcoin",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "transactionSwapInfoRefundableTransfer": "Este swap será reembolsado automaticamente em alguns segundos. Se não for, você pode tentar um reembolso manual clicando no botão \"Retry Swap Refund\".",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapDescLnReceiveCompleted": "Sua troca foi concluída com sucesso! Os fundos devem agora estar disponíveis na sua carteira.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionOrderLabelOriginName": "Nome de origem",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "coreSwapsChainPaid": "Aguardando a confirmação do pagamento do provedor de swap. Isso pode levar algum tempo.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "transactionOrderLabelReferenceNumber": "Número de referência",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "Estado",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionStatusPending": "Pendente",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "coreSwapsChainClaimable": "O swap está pronto para ser reivindicado.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "coreSwapsChainExpired": "Swap expirado",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionLabelSendNetworkFees": "Enviar taxas de rede",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "transactionStatusInProgress": "Em progresso",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionDetailLabelSendNetworkFee": "Enviar Taxa de rede",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionSwapInfoRefundableSwap": "Esta troca será reembolsada automaticamente dentro de alguns segundos. Se não, você pode tentar um reembolso manual clicando no botão \"Restaurar Swap Refund\".",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionDetailLabelPayoutMethod": "Método de pagamento",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "transactionSwapDescChainDefault": "Seu swap está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "globalDefaultLiquidWalletLabel": "Pagamentos imediatos",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionFilterSell": "Venda",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionSwapDescLnSendPaid": "A sua transação em cadeia foi transmitida. Após 1 confirmação, o pagamento Lightning será enviado.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "sellTitle": "Venda de Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionDetailLabelAddressNotes": "Notas de endereço",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionSwapInfoChainDelay": "Swaps on-chain podem levar algum tempo para serem concluídos devido aos tempos de confirmação da blockchain.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "transactionListYesterday": "Ontem",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionDetailLabelTransferFees": "Taxas do swap",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionFeesDeductedFrom": "Essas taxas serão deduzidas do montante enviado",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "coreSwapsStatusFailed": "Falhado",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "transactionListToday": "Hoje",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionDetailLabelSwapStatus": "Status do balanço",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelAmountSent": "Montante enviado",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "transactionDetailLabelAddress": "Endereço",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "coreSwapsLnReceiveRefundable": "Swap está pronto para ser reembolsado.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveExpired": "Expirou.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "transactionDetailLabelOrderNumber": "Número de ordem",
+  "transactionDetailLabelPaymentDescription": "Descrição do pagamento",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionNetworkLiquid": "Líquido",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreWalletTransactionStatusConfirmed": "Confirmado",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionStatusTransferExpired": "Swap expirado",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsStatusCompleted": "Completada",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "transactionDetailLabelOrderStatus": "Status da ordem",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionStatusSwapFailed": "Swap Failed",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionDetailLabelOrderType": "Tipo de ordem",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionSwapDescLnReceiveFailed": "Houve um problema com a tua troca. Por favor, contacte o suporte se os fundos não tiverem sido devolvidos dentro de 24 horas.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionDetailLabelCompletedAt": "Completa em",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionDetailLabelPayoutAmount": "Quantidade de pagamento",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "transactionDetailLabelSwapId": "ID do balanço",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "coreSwapsLnSendFailedRefunding": "Swap será reembolsado em breve.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "coreSwapsLnReceivePending": "Swap ainda não é inicializado.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Tempo de criação Payjoin",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "transactionNotesLabel": "Notas de transação",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "coreSwapsStatusExpired": "Expirou",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "transactionSwapDescLnReceiveClaimable": "A transação em cadeia foi confirmada. Estamos agora a reivindicar os fundos para completar a sua troca.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionSwapInfoFailedExpired": "Se você tiver alguma dúvida ou preocupação, entre em contato com o suporte para assistência.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "transactionOrderLabelOriginCedula": "Origem Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionDetailLabelTransferFee": "Taxa de swap",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "coreSwapsLnReceiveCompleted": "O balanço está concluído.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailSwapProgress": "Progresso de balanço",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionListOngoingTransfersDescription": "Estes swaps estão em andamento. Seus fundos estão seguros e estarão disponíveis quando o swap for concluído.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionFilterSend": "Enviar",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "transactionDetailTitle": "Detalhes da transação",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "coreSwapsLnSendClaimable": "Swap está pronto para ser reivindicado.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "transactionSwapDescChainPaid": "A sua transação foi transmitida. Estamos agora à espera que a transação de bloqueio seja confirmada.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionNoteHint": "Nota",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionSwapStatusSwapStatus": "Estado do balanço",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionSwapProgressClaim": "Reivindicação",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "Completada",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInitiated": "Iniciado",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionNoteAddTitle": "Adicionar nota",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionSwapProgressInProgress": "Em progresso",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapProgressConfirmed": "Confirmado",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionSwapDescLnReceivePending": "A tua troca foi iniciada. Estamos à espera de um pagamento a ser recebido na Rede Lightning.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionPayjoinSendWithout": "Enviar sem pagamento",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionSwapProgressFundsClaimed": "Fundos\nCláusula",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "transactionSwapProgressPaymentMade": "Pagamento\nFeito",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "transactionHistoryTitle": "Histórico de transações",
+  "exportTransactionsDescription": "Exporte todas as transações da sua carteira (Bitcoin, Liquid, Lightning e swaps) como arquivo CSV. Filtre opcionalmente por intervalo de datas.",
+  "exportTransactionsStartDate": "Data inicial",
+  "exportTransactionsEndDate": "Data final",
+  "exportTransactionsAnyDate": "Qualquer",
+  "exportTransactionsButton": "Exportar CSV",
+  "exportTransactionsSuccess": "Transações exportadas com sucesso",
+  "exportTransactionsEmpty": "Nenhuma transação para exportar no período selecionado",
+  "exportTransactionsError": "Falha ao exportar as transações.",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "A data de início deve ser anterior à data de término",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionSwapStatusTransferStatus": "Status do swap",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "transactionSwapProgressBroadcasted": "Transmitido",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionSwapProgressInvoicePaid": "Fatura\nPago",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionSwapDescLnReceivePaid": "O pagamento foi recebido! Estamos agora a transmitir a transação em cadeia para a sua carteira.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "viewerTapToCopy": "Toque para copiar",
+  "viewerViewInExplorer": "Ver no explorador",
+  "transactionViewerTitle": "ID da transação",
+  "viewerCopyLink": "Copiar link",
+  "recipientsTypeInteracEmail": "Transferência de dinheiro por e-mail",
+  "transactionStatusPayjoinCompleted": "Payjoin concluído",
+  "coreSwapsStatusRefunded": "Reembolsado",
+  "payViewReceipt": "Ver recibo",
+  "transactionFilterWithdraw": "Retirada",
+  "transactionFilterPay": "Pagamento",
+  "transactionFilterFunding": "Financiamento",
+  "transactionFilterReward": "Recompensa",
+  "transactionFilterRefund": "Reembolso",
+  "transactionListLoadingFailed": "Não foi possível carregar as transações.",
+  "transactionLabelNetworkFees": "Taxas de rede",
+  "transactionSwapOpenWithin24h": "Abra o aplicativo em até 24 horas para concluir o seu swap.",
+  "transactionStatusPayjoinAborted": "Payjoin cancelado",
+  "transactionDetailLabelPayjoinAborted": "Cancelado",
+  "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
+  "coreSwapsStatusNotStarted": "Não iniciado",
+  "coreSwapsStatusAwaitingPayment": "Aguardando pagamento",
+  "coreSwapsStatusAwaitingConfirmation": "Aguardando confirmação",
+  "coreSwapsStatusUnderReview": "Em análise",
+  "coreSwapsStatusRejected": "Rejeitado",
+  "coreSwapsStatusCanceled": "Cancelado",
+  "coreSwapsStatusPaymentDeadlineExpired": "Prazo de pagamento expirado",
+  "coreSwapsStatusScheduled": "Agendado",
+  "coreSwapsStatusAwaitingClaim": "Aguardando resgate",
+  "coreSwapsStatusUnknown": "Desconhecido",
+  "transactionDetailLoadError": "Não foi possível carregar os detalhes da transação.",
+  "transactionPayjoinBroadcastFailed": "Não foi possível transmitir a transação original. Por favor, tente novamente.",
+  "transactionPayjoinOriginalUnavailable": "A transação original não está mais disponível para transmissão.",
+  "transactionLabelLimitReached": "Você pode ter no máximo 10 etiquetas.",
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "transactionListExchangeOrdersUnavailable": "Não foi possível carregar as ordens da exchange."
+}

@@ -9,12 +9,18 @@ final class RegtestHostProfile {
 
   const RegtestHostProfile._(this.host);
 
+  /// Only a valid, explicitly configured build may offer the regtest runtime.
+  static bool get isConfigured {
+    try {
+      return forNetwork(NetworkEnv.regtest) != null;
+    } on ArgumentError {
+      return false;
+    }
+  }
+
   static RegtestHostProfile? forNetwork(
     NetworkEnv environment, {
-    String host = const String.fromEnvironment(
-      'BULL_REGTEST_HOST',
-      defaultValue: '127.0.0.1',
-    ),
+    String host = const String.fromEnvironment('BULL_REGTEST_HOST'),
   }) {
     if (environment != NetworkEnv.regtest) {
       return null;

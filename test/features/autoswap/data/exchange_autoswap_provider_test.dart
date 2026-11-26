@@ -1,51 +1,42 @@
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:secrets/testing.dart';
+import 'package:secrets/secrets.dart' show WalletSigner;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, LiquidNetwork, NetworkEnv;
+import 'package:swaps/order_swaps.dart';
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
+import 'package:primitives/primitives.dart' show LiquidNetwork, Sats;
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
+import 'package:swaps/swaps.dart' hide Environment;
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/testing.dart';
+import 'package:address_view/address_view.dart';
+import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockSpend extends Mock implements Spend {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockWalletRepository extends Mock implements LoadSwapWalletsUsecase {}
 
-class _MockLiquidWalletRepository extends Mock
-    implements LiquidWalletRepository {}
+class _MockPreferences extends Mock implements Preferences {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddress extends Mock implements AddressView {}
 
-class _MockBroadcastLiquid extends Mock
-    implements BroadcastLiquidTransactionUsecase {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockLabels extends Mock implements Labels {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
-
-Wallet _wallet({required bool liquid}) => Wallet(
-  origin: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
-  network: liquid ? Network.liquidTestnet : Network.bitcoinTestnet,
-  isDefault: true,
-  xpubFingerprint: 'fingerprint',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'external',
-  internalPublicDescriptor: 'internal',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.from(liquid ? 3000000 : 0),
+SwapWallet _wallet({required bool liquid}) => SwapWallet(
+  walletRegistrationForTesting(
+    id: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
+    network: liquid ? LiquidNetwork.testnet : BitcoinNetwork.testnet,
+    isDefault: true,
+    signer: WalletSigner.local,
+  ),
+  BigInt.from(liquid ? 3000000 : 0),
+  false,
 );
 
 OrderSwapRecord _record({
@@ -96,12 +87,11 @@ OrderSwapRecord _record({
 
 void main() {
   late _MockWalletRepository walletRepository;
-  late _MockSettingsRepository settingsRepository;
-  late _MockLiquidWalletRepository liquidWalletRepository;
+  late _MockPreferences settingsRepository;
+  late _MockSpend spend;
   late _MockGetReceiveAddress getReceiveAddress;
-  late _MockBroadcastLiquid broadcastLiquid;
-  late _MockSwapFacade swapFacade;
-  late _MockLabelsFacade labelsFacade;
+  late _MockOrderSwaps swapFacade;
+  late _MockLabels labelsFacade;
   late ExchangeAutoswapProvider provider;
   late List<Duration> delays;
 
@@ -114,7 +104,27 @@ void main() {
     recipientWalletId: 'bitcoin-wallet',
   );
 
+  final preparedPset = SpendFixtures.preparedLiquid(
+    unsignedPset: 'pset',
+    fee: Sats.fromInt(500),
+    amountSent: Sats.fromInt(2499500),
+  );
+  final signedPset = SpendFixtures.signedLiquid('signed-pset');
+
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> resume() =>
+      spend.resumeLiquidPayin(
+        signedPset: 'signed-pset',
+        walletId: 'liquid-wallet',
+        network: LiquidNetwork.testnet,
+        address: _record().order!.payinAddress,
+        amount: Sats.fromInt(2499500),
+      );
+
   setUpAll(() {
+    registerFallbackValue(preparedPset);
+    registerFallbackValue(signedPset);
+    registerFallbackValue(Sats.zero);
+
     registerFallbackValue(const RelativeFee(25));
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(OrderSwapEnvironment.testnet);
@@ -126,56 +136,58 @@ void main() {
 
   setUp(() {
     walletRepository = _MockWalletRepository();
-    settingsRepository = _MockSettingsRepository();
-    liquidWalletRepository = _MockLiquidWalletRepository();
+    settingsRepository = _MockPreferences();
+    spend = _MockSpend();
     getReceiveAddress = _MockGetReceiveAddress();
-    broadcastLiquid = _MockBroadcastLiquid();
-    swapFacade = _MockSwapFacade();
-    labelsFacade = _MockLabelsFacade();
+    swapFacade = _MockOrderSwaps();
+    labelsFacade = _MockLabels();
     delays = [];
     provider = ExchangeAutoswapProvider(
       walletRepository,
       settingsRepository,
-      liquidWalletRepository,
+      spend,
       getReceiveAddress,
-      broadcastLiquid,
       swapFacade,
       labelsFacade,
       delay: (duration) async => delays.add(duration),
     );
 
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
-    when(() => walletRepository.getWallets(environment: Environment.testnet))
-        .thenAnswer(
-          (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
-        );
+    when(() => walletRepository.execute(NetworkEnv.testnet)).thenAnswer(
+      (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
+    );
     when(() => swapFacade.getPendingOrders())
         .thenAnswer((_) async => const Ok([]));
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((invocation) async {
-          final walletId = invocation.namedArguments[#walletId] as String;
-          return WalletAddress(
-            walletId: walletId,
-            address: walletId == 'bitcoin-wallet'
-                ? 'tb1qdestination000000000000000000000000000000'
-                : 'tlq1fallback000000000000000000000000000000000',
-            index: 0,
-            createdAt: DateTime.utc(2026),
-            updatedAt: DateTime.utc(2026),
-          );
-        });
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer((invocation) async {
+      final walletId = invocation.namedArguments[#walletId] as String;
+      return Ok(
+        WalletAddress(
+          walletId: walletId,
+          address: walletId == 'bitcoin-wallet'
+              ? 'tb1qdestination000000000000000000000000000000'
+              : 'tlq1fallback000000000000000000000000000000000',
+          index: 0,
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+        ),
+      );
+    });
   });
 
   test('stops before signing when Liquid build 1 returns Err', () async {
     var builds = 0;
     when(
-      () => liquidWalletRepository.buildPset(
+      () => spend.prepareLiquid(
         walletId: 'liquid-wallet',
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
@@ -183,19 +195,14 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => builds++ == 0
-          ? const Err(WalletNoSpendableInputsFailure())
-          : const Ok('pset'),
+          ? const Err(SpendNoSpendableInputsFailure())
+          : Ok(preparedPset),
     );
     final result = await provider.execute(settings);
     expect(result, isA<Err<String, AutoswapFailure>>());
     expect(builds, 1);
-    verifyNever(
-      () => liquidWalletRepository.signPset(
-        walletId: any(named: 'walletId'),
-        pset: any(named: 'pset'),
-      ),
-    );
-    verifyZeroInteractions(broadcastLiquid);
+    verifyNever(() => spend.signLiquid(prepared: any(named: 'prepared')));
+    verifyNever(() => spend.broadcastLiquid(any()));
   });
 
   test(
@@ -204,33 +211,28 @@ void main() {
       when(() => swapFacade.getPendingOrders())
           .thenAnswer((_) async => Ok([_record()]));
       when(
-        () => liquidWalletRepository.buildPset(
+        () => spend.prepareLiquid(
           walletId: 'liquid-wallet',
           address: any(named: 'address'),
           amountSat: any(named: 'amountSat'),
           feeRate: any(named: 'feeRate'),
         ),
-      ).thenAnswer((_) async => const Err(WalletTransactionBuildFailure()));
+      ).thenAnswer((_) async => const Err(SpendBuildRefusedFailure()));
       final result = await provider.execute(settings);
       expect(
         (result as Err<String, AutoswapFailure>).failure,
         isA<AutoswapExecutionFailure>(),
       );
       verify(
-        () => liquidWalletRepository.buildPset(
+        () => spend.prepareLiquid(
           walletId: 'liquid-wallet',
           address: any(named: 'address'),
           amountSat: any(named: 'amountSat'),
           feeRate: any(named: 'feeRate'),
         ),
       ).called(1);
-      verifyNever(
-        () => liquidWalletRepository.signPset(
-          walletId: any(named: 'walletId'),
-          pset: any(named: 'pset'),
-        ),
-      );
-      verifyZeroInteractions(broadcastLiquid);
+      verifyNever(() => spend.signLiquid(prepared: any(named: 'prepared')));
+      verifyNever(() => spend.broadcastLiquid(any()));
     },
   );
 
@@ -245,15 +247,13 @@ void main() {
       signedTransaction: 'signed-pset',
     );
     when(
-      () => liquidWalletRepository.buildPset(
+      () => spend.prepareLiquid(
         walletId: 'liquid-wallet',
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
         feeRate: any(named: 'feeRate'),
       ),
-    ).thenAnswer((_) async => const Ok('pset'));
-    when(() => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'))
-        .thenAnswer((_) async => (200, 500));
+    ).thenAnswer((_) async => Ok(preparedPset));
     when(
       () => swapFacade.getQuote(
         environment: OrderSwapEnvironment.testnet,
@@ -292,19 +292,8 @@ void main() {
         quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
       ),
     ).thenAnswer((_) async => Ok(record));
-    when(
-      () => liquidWalletRepository.getAmountSentToAddress(
-        pset: 'pset',
-        address: record.order!.payinAddress,
-        walletId: 'liquid-wallet',
-      ),
-    ).thenAnswer((_) async => 2499500);
-    when(
-      () => liquidWalletRepository.signPset(
-        walletId: 'liquid-wallet',
-        pset: 'pset',
-      ),
-    ).thenAnswer((_) async => 'signed-pset');
+    when(() => spend.signLiquid(prepared: any(named: 'prepared')))
+        .thenAnswer((_) async => Ok(signedPset));
     when(
       () => swapFacade.savePreparedPayin(
         localId: 'local-id',
@@ -314,8 +303,9 @@ void main() {
     ).thenAnswer((_) async => Ok(prepared));
     when(() => swapFacade.markBroadcastUnknown('local-id'))
         .thenAnswer((_) async => Ok(broadcasting));
-    when(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
-        .thenAnswer((_) async => 'txid');
+    when(() => spend.broadcastLiquid(signedPset)).thenAnswer(
+      (_) async => const Ok((txid: 'txid', durable: false, guarded: false)),
+    );
     when(
       () => swapFacade.markPayinBroadcast(
         localId: 'local-id',
@@ -343,7 +333,7 @@ void main() {
         isPsbt: false,
       ),
       () => swapFacade.markBroadcastUnknown('local-id'),
-      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
+      () => spend.broadcastLiquid(signedPset),
       () => swapFacade.markPayinBroadcast(
         localId: 'local-id',
         transactionId: 'txid',
@@ -364,8 +354,9 @@ void main() {
         .thenAnswer((_) async => Ok([prepared]));
     when(() => swapFacade.markBroadcastUnknown('local-id'))
         .thenAnswer((_) async => Ok(broadcasting));
-    when(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
-        .thenAnswer((_) async => 'txid');
+    when(() => resume()).thenAnswer(
+      (_) async => const Ok((txid: 'txid', durable: false, guarded: false)),
+    );
     when(
       () => swapFacade.markPayinBroadcast(
         localId: 'local-id',
@@ -433,7 +424,13 @@ void main() {
     expect(result, isA<Ok<String, AutoswapFailure>>());
     verify(() => swapFacade.refreshOrder('local-id')).called(1);
     verifyNever(
-      () => broadcastLiquid.execute(any(), isTestnet: any(named: 'isTestnet')),
+      () => spend.resumeLiquidPayin(
+        signedPset: any(named: 'signedPset'),
+        walletId: any(named: 'walletId'),
+        network: LiquidNetwork.testnet,
+        address: any(named: 'address'),
+        amount: any(named: 'amount'),
+      ),
     );
   });
 
@@ -449,8 +446,9 @@ void main() {
         .thenAnswer((_) async => Ok(uncertain));
     when(() => swapFacade.markBroadcastUnknown('local-id'))
         .thenAnswer((_) async => Ok(uncertain));
-    when(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
-        .thenAnswer((_) async => 'txid');
+    when(() => resume()).thenAnswer(
+      (_) async => const Ok((txid: 'txid', durable: false, guarded: false)),
+    );
     when(
       () => swapFacade.markPayinBroadcast(
         localId: 'local-id',
@@ -480,8 +478,7 @@ void main() {
     expect(result, isA<Ok<String, AutoswapFailure>>());
     expect((result as Ok<String, AutoswapFailure>).value, 'local-id');
     verify(() => swapFacade.refreshOrder('local-id')).called(1);
-    verify(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
-        .called(1);
+    verify(() => resume()).called(1);
     verify(
       () => swapFacade.markPayinBroadcast(
         localId: 'local-id',
@@ -509,7 +506,45 @@ void main() {
     expect(result, isA<Ok<String, AutoswapFailure>>());
     verify(() => swapFacade.refreshOrder('local-id')).called(1);
     verifyNever(
-      () => broadcastLiquid.execute(any(), isTestnet: any(named: 'isTestnet')),
+      () => spend.resumeLiquidPayin(
+        signedPset: any(named: 'signedPset'),
+        walletId: any(named: 'walletId'),
+        network: LiquidNetwork.testnet,
+        address: any(named: 'address'),
+        amount: any(named: 'amount'),
+      ),
+    );
+  });
+
+  test('uncertain submission keeps the signed order pending', () async {
+    final stored = _record(
+      status: OrderSwapLocalStatus.readyToBroadcast,
+      signedTransaction: 'signed-pset',
+    );
+    final pending = _record(
+      status: OrderSwapLocalStatus.broadcastUnknown,
+      signedTransaction: 'signed-pset',
+    );
+    when(() => swapFacade.getPendingOrders())
+        .thenAnswer((_) async => Ok([stored]));
+    when(() => swapFacade.markBroadcastUnknown('local-id'))
+        .thenAnswer((_) async => Ok(pending));
+    when(
+      resume,
+    ).thenAnswer((_) async => const Err(SpendBroadcastOutcomeUnknownFailure()));
+
+    final result = await provider.execute(settings);
+
+    expect(
+      (result as Err<String, AutoswapFailure>).failure,
+      isA<AutoswapPendingFailure>(),
+    );
+    verify(resume).called(1);
+    verifyNever(
+      () => swapFacade.markPayinBroadcast(
+        localId: any(named: 'localId'),
+        transactionId: any(named: 'transactionId'),
+      ),
     );
   });
 
@@ -526,8 +561,11 @@ void main() {
           .thenAnswer((_) async => Ok(uncertain));
       when(() => swapFacade.markBroadcastUnknown('local-id'))
           .thenAnswer((_) async => Ok(uncertain));
-      when(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
-          .thenThrow(Exception('rejected: transaction is not final'));
+      when(() => resume()).thenAnswer(
+        (_) async => const Err(
+          SpendBroadcastRejectedFailure(SpendBroadcastRejection.nodeRejected),
+        ),
+      );
 
       final result = await provider.execute(settings);
 
@@ -550,16 +588,13 @@ void main() {
     /// that call returns, in order.
     void stubUpToCreate(List<Result<OrderSwapRecord, SwapFailure>> creates) {
       when(
-        () => liquidWalletRepository.buildPset(
+        () => spend.prepareLiquid(
           walletId: 'liquid-wallet',
           address: any(named: 'address'),
           amountSat: any(named: 'amountSat'),
           feeRate: any(named: 'feeRate'),
         ),
-      ).thenAnswer((_) async => const Ok('pset'));
-      when(
-        () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
-      ).thenAnswer((_) async => (200, 500));
+      ).thenAnswer((_) async => Ok(preparedPset));
       when(
         () => swapFacade.getQuote(
           environment: OrderSwapEnvironment.testnet,

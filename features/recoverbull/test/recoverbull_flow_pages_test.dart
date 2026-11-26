@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
-import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart';
+import 'package:bull_recoverbull/src/domain/repositories/backup_metadata_repository.dart';
+import 'package:bull_recoverbull/src/domain/repositories/attempt_monitoring_repository.dart';
+import 'package:file_system/file_system.dart';
 import 'package:bull_recoverbull/src/domain/repositories/vault_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/manage_backup_settings_usecase.dart';
@@ -68,6 +70,8 @@ Widget secure(VaultFlowPresentation presentation) => app(
 VaultFlowPresentation flow({
   VaultRepository? vaults,
   RecoverBullWalletPort? wallets,
+  BackupMetadataRepository? metadata,
+  AttemptMonitoringRepository? monitoring,
 }) => VaultFlowPresentation(
   VaultFlowCubit(
     const ManageBackupSettingsUsecase(null, RecoverBullStorageFullFailure()),
@@ -82,8 +86,8 @@ VaultFlowPresentation flow({
     CompleteVaultUsecase(
       TestVaultUsecase(vaults ?? _Vaults(), wallets ?? _Wallets()),
       RestoreVaultUsecase(vaults ?? _Vaults(), wallets ?? _Wallets()),
-      null,
-      null,
+      metadata,
+      monitoring,
     ),
     unavailable: const RecoverBullStorageFullFailure(),
     vault: EncryptedVault(
@@ -103,6 +107,74 @@ void main() {
     () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, null),
   );
+
+  for (final warning in [true, false]) {
+    testWidgets('recovery callback acknowledges accounting warning: $warning', (
+      tester,
+    ) async {
+      usePhoneScreen(tester);
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        _channel,
+        (_) async => true,
+      );
+      final vaults = _PassphraseVaults();
+      final wallets = _RecoveryWallets();
+      final presentation = flow(
+        vaults: vaults,
+        wallets: wallets,
+        metadata: warning ? null : _Metadata(),
+        monitoring: warning ? null : _Monitoring(),
+      );
+      var recovered = 0;
+      await tester.pumpWidget(
+        app(
+          RecoverBullFlowHost(
+            flow: RecoverBullFlow.recoverVault,
+            presentation: presentation,
+            page: const PasswordInputPage(),
+            copiedMessage: 'Copied',
+            onTestVault: () {},
+            onFinished: () {},
+            onRecovered: () => recovered++,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.widgetWithText(BullButton, 'Enter a vault key instead'),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '33' * 32);
+      await tester.ensureVisible(find.text('Continue'));
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'correct');
+      await tester.ensureVisible(find.text('Verify'));
+      await tester.tap(find.text('Verify'));
+      await tester.pumpAndSettle();
+      expect(vaults.imported, 1);
+      expect(wallets.restores, 1);
+      expect(
+        presentation.cubit.state.completion?.recovery,
+        isA<VaultRecovered>(),
+      );
+      final l10n = await RecoverBullLocalizations.delegate.load(
+        const Locale('en'),
+      );
+      if (warning) {
+        expect(recovered, 0);
+        expect(find.text(l10n.recoverbullJournalUnavailable), findsOneWidget);
+        await tester.ensureVisible(find.text(l10n.recoverbullGotIt));
+        await tester.tap(find.text(l10n.recoverbullGotIt));
+        await tester.pumpAndSettle();
+      } else {
+        expect(find.text(l10n.recoverbullGotIt), findsNothing);
+      }
+      expect(recovered, 1);
+      await tester.pumpWidget(app(const SizedBox.shrink()));
+      await presentation.close();
+    });
+  }
 
   for (final mode in ['pending', 'refused', 'throws']) {
     testWidgets(
@@ -314,7 +386,7 @@ void main() {
   }
 }
 
-final class _Files extends Fake implements VaultFileRepository {}
+final class _Files extends Fake implements FileSystem {}
 
 final class _Drive extends Fake implements GoogleDriveRepository {}
 
@@ -351,4 +423,30 @@ final class _RecoveryWallets extends Fake implements RecoverBullWalletPort {
     restores++;
     return Ok(requested);
   }
+}
+
+final class _Metadata extends Fake implements BackupMetadataRepository {
+  @override
+  Future<Result<BackupSettings, RecoverBullFailure>> settings() async => Ok(
+    BackupSettings(
+      server: Uri.parse('http://backup.onion'),
+      permissionGranted: true,
+      monitoringEnabled: true,
+      generation: 0,
+    ),
+  );
+
+  @override
+  Future<Result<void, RecoverBullFailure>> markVerified(
+    VaultContext context,
+    EncryptedVault vault,
+  ) async => const Ok(null);
+}
+
+final class _Monitoring extends Fake implements AttemptMonitoringRepository {
+  @override
+  Future<Result<void, RecoverBullFailure>> register(
+    BackupSettings settings,
+    EncryptedVault vault,
+  ) async => const Ok(null);
 }

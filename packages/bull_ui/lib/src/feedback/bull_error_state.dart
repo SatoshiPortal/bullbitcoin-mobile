@@ -36,13 +36,11 @@ class BullErrorState extends StatelessWidget {
           color: colors.error,
         ),
         const Gap(8),
-        BullButton.small(
+        BullButton.secondary(
+          size: BullButtonSize.small,
           label: retryLabel,
           compact: true,
-          disabled: onRetry == null,
-          onPressed: () => onRetry?.call(),
-          bgColor: colors.secondary,
-          textColor: colors.onSecondary,
+          onPressed: (onRetry == null) ? null : () => onRetry?.call(),
         ),
       ],
     );

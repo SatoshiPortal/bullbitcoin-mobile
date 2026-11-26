@@ -1,23 +1,29 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
+
+import '../data/datasources/google_drive_datasource.dart';
+
+import 'package:file_system/file_system.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 
 import '../data/attempt_monitoring_repository_impl.dart';
 import '../data/backup_metadata_repository_impl.dart';
 import '../data/database/recoverbull_storage.dart';
-import '../data/datasources/google_drive_datasource.dart';
+import '../data/database/recoverbull_cutover.dart';
+import '../data/database/wallet_backup_import.dart';
 import '../data/google_drive_repository.dart';
 import '../data/key_server_session_repository_impl.dart';
 import '../data/secrets_vault_repository.dart';
-import '../data/vault_file_repository_impl.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
 import '../domain/recoverbull_failure.dart';
-import '../domain/recoverbull_legacy_settings_port.dart';
+import '../domain/recoverbull_permission_port.dart';
 import '../domain/recoverbull_route_port.dart';
 import '../domain/recoverbull_wallet_port.dart';
+import '../domain/wallet_backup_usage.dart';
 import '../domain/usecases/acknowledge_backup_alerts_usecase.dart';
 import '../domain/usecases/check_backup_monitoring_usecase.dart';
 import '../domain/usecases/check_backup_server_usecase.dart';
@@ -26,7 +32,6 @@ import '../domain/usecases/create_and_store_vault_usecase.dart';
 import '../domain/usecases/create_vault_usecase.dart';
 import '../domain/usecases/discover_drive_backups_usecase.dart';
 import '../domain/usecases/fetch_vault_key_usecase.dart';
-import '../domain/usecases/import_backup_settings_usecase.dart';
 import '../domain/usecases/manage_backup_settings_usecase.dart';
 import '../domain/usecases/pick_vault_usecase.dart';
 import '../domain/usecases/list_drive_vaults_usecase.dart';
@@ -55,7 +60,7 @@ final class RecoverBullRuntime {
   final RecoverBullWalletPort _wallets;
   final StartVaultFlowUsecase _startFlow;
   final GoogleDriveRepositoryImpl _drive;
-  final VaultFileRepositoryImpl _files;
+  final FileSystem _files;
   final KeyServerSessionRepositoryImpl _sessions;
   final RecoverBullRoutePort _routes;
   final BackupMetadataRepositoryImpl? _metadata;
@@ -78,39 +83,75 @@ final class RecoverBullRuntime {
     this.coldStart,
   );
 
+  Future<Result<SecretBackupProjection, RecoverBullFailure>> backupProjection(
+    Fingerprint fingerprint,
+  ) async {
+    try {
+      final database = await _storage.open();
+      return Ok(await readSecretBackupProjection(database, fingerprint.hex));
+    } on Exception {
+      return const Err(VaultStorageFailure());
+    }
+  }
+
   static Future<RecoverBullRuntime> open({
-    required String databasePath,
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
-    required RecoverBullLegacySettingsPort legacy,
+    required Uri server,
+    required RecoverBullPermissionPort permission,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
+    required RecoverBullCutover cutover,
+    required RuntimeAdmission admission,
+  }) => openWithStorage(
+    storage: RecoverBullStorage(cutover: cutover, admission: admission),
+    secrets: secrets,
+    wallets: wallets,
+    environment: environment,
+    routes: routes,
+    clients: clients,
+    server: server,
+    permission: permission,
+  );
+
+  static Future<RecoverBullRuntime> openWithStorage({
+    required RecoverBullStorage storage,
+    required Secrets secrets,
+    required RecoverBullWalletPort wallets,
+    required RecoverBullEnvironmentPort environment,
+    required RecoverBullRoutePort routes,
+    required TorHttpClientFactory clients,
+    required Uri server,
+    required RecoverBullPermissionPort permission,
   }) async {
-    final storage = RecoverBullStorage(databasePath);
     final vaults = SecretsVaultRepository(secrets);
     final drive = GoogleDriveRepositoryImpl(
       datasource: GoogleDriveAppDatasource(),
     );
-    final files = VaultFileRepositoryImpl();
+    const files = FileSystem.open();
     final sessions = KeyServerSessionRepositoryImpl(routes, clients);
     BackupMetadataRepositoryImpl? metadata;
     AttemptMonitoringRepositoryImpl? monitoring;
     RecoverBullFailure unavailable = const RecoverBullJournalFailure();
     try {
       final database = await storage.open();
-      metadata = BackupMetadataRepositoryImpl(database);
-      monitoring = AttemptMonitoringRepositoryImpl(database, durable: true);
+      metadata = BackupMetadataRepositoryImpl.configured(
+        database,
+        server: server,
+        permission: permission,
+      );
+      monitoring = AttemptMonitoringRepositoryImpl(
+        database,
+        durable: true,
+        readLiveSettings: metadata.settings,
+      );
     } on Exception {
       unavailable = storage.unavailableFailure ?? unavailable;
       log.warning('recoverbull.storage.unavailable');
     }
     StartBackupMonitoringUsecase? coldStart;
     if (metadata != null && monitoring != null) {
-      if (await ImportBackupSettingsUsecase(metadata, legacy).execute()
-          case Err()) {
-        log.warning('recoverbull.settings.import.unavailable');
-      }
       coldStart = StartBackupMonitoringUsecase(
         DiscoverDriveBackupsUsecase(drive, vaults, metadata, monitoring),
         CheckBackupMonitoringUsecase(

@@ -1,0 +1,849 @@
+{
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "ledgerHelpTitle": "Отстраняване на неизправности",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "bitboxErrorMultipleDevicesFound": "Намерени са множество BitBox устройства. Моля, уверете се, че е свързано само едно устройство.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxScreenNeedHelpButton": "Нужна помощ?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "jadeStep13": "- Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Jade. Сканирайте го.",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "psbtFlowClickScan": "Сканирайте",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "passportStep1": "==WEBLATE_PART==\nВлезте в устройството Passport",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "kruxStep3": "Натисни PSBT",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep2": "Уверете се, че телефонът ви има разрешения за USB.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "kruxStep7": "   - Увеличете яркостта на екрана на вашето устройство",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "- Jade ще ви покаже своя собствен QR код.",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceProcessing": "Сдвояване на устройството",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "bitboxActionPairDeviceButton": "Започнете сдвояване.",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "jadeStep8": "   - Опитайте да преместите устройството си по-близо или по-далеч",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "seedsignerStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на SeedSigner. Сканирайте го.",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "keystoneStep14": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "bitboxScreenSegwitBip84": "Сегвит (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenConnectingSubtext": "Установяване на сигурна връзка...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "jadeStep7": "   - Дръжте QR кода стабилен и в центъра",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "Вашият BitBox портфейл е успешно импортиран",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "psbtFlowPartProgress": "Част {current} от {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep1": "Включете устройството SeedSigner.\n==WEBLATE_PART==",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "jadeStep6": "   - Увеличете яркостта на екрана на вашето устройство",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "kruxStep14": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Krux. Сканирайте го.",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "passportStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Passport. Сканирайте го.",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "bitboxScreenEnterPasswordSubtext": "Моля, въведете паролата си на BitBox устройството, за да продължите.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportStep11": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "psbtFlowScanDeviceQr": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на {device}. Сканирайте го.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep13": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "psbtFlowReadyToBroadcast": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "seedsignerStep5": "   - Увеличете яркостта на екрана на вашето устройство",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportInstructionsTitle": "Foundation Passport Инструкции",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "bitboxErrorOperationCancelled": "Операцията беше прекъсната. Моля, опитайте отново.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "jadeInstructionsTitle": "Blockstream Jade PSBT Инструкции",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "psbtFlowReviewTransaction": "След като транзакцията бъде импортирана във вашия {device}, прегледайте адреса на получателя и сумата.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowIncreaseBrightness": "Увеличи яркостта на екрана на устройството си.",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "bitboxActionSignTransactionProcessing": "Подписване на транзакция",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "kruxStep8": "   - Преместете червения лазер нагоре и надолу върху QR кода",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "kruxStep15": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "jadeStep15": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "bitboxErrorDeviceNotPaired": "Устройството не е сдвоено. Моля, завършете процеса на сдвояване първо.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "bitboxActionImportWalletTitle": "Импортирайте BitBox портфейл.",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "psbtFlowInstructions": "Инструкции",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxScreenTroubleshootingStep1": "Уверете се, че на BitBox02 е инсталиран най-новият фърмуер.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionUnlockDeviceTitle": "Отключете BitBox устройството.",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "kruxStep16": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "bitboxScreenVerifyAddressSubtext": "Сравнете този адрес с екрана на BitBox02",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "jadeStep1": "Влезте във вашето устройство Jade.",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "psbtFlowTroubleScanningTitle": "Ако имате затруднения със сканирането:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "seedsignerInstructionsTitle": "SeedSigner Инструкции",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "Потвърдете кода за сдвояване на BitBox устройството...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxScreenTroubleshootingTitle": "Отстраняване на проблеми с BitBox02",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep2": "Натисни Подпиши",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "kruxStep5": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "seedsignerStep11": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "bitboxErrorConnectionFailed": "Неуспешно свързване към BitBox устройство. Моля, проверете връзката си.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "Настройване на вашия портфейл за наблюдение...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "psbtFlowDone": "Готов съм",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "bitboxActionImportWalletProcessing": "Импортиране на портфейла",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "seedsignerStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "passportStep6": "   - Преместете червения лазер нагоре и надолу върху QR кода",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "keystoneStep4": "Ако имате затруднения със сканирането:",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "psbtFlowMoveBack": "Опитай да преместиш устройството си малко по-далеч.",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "keystoneStep2": "Сканирайте",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "keystoneStep6": "   - Преместете червения лазер нагоре и надолу върху QR кода",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "passportStep14": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "psbtFlowSelectSeed": "След като транзакцията бъде импортирана във вашия {device}, трябва да изберете seed фразата, с която желаете да подпишете.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "kruxStep10": "Когато транзакцията бъде импортирана в Krux, прегледайте адреса на получателя и сумата.",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "bitboxErrorHandshakeFailed": "Не успях да установя защитена връзка. Моля, опитайте отново.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep8": "Когато транзакцията бъде импортирана във вашия Keystone, прегледайте адреса на получателя и сумата.",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "psbtFlowSpecterTitle": "Specter Инструкции",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorDeviceNotFound": "BitBox устройство не е намерено.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "bitboxScreenNestedSegwitBip49": "Вложен SegWit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "keystoneStep5": "   - Увеличете яркостта на екрана на вашето устройство",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "kruxStep9": "   - Опитайте да преместите устройството си малко по-далече.",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "kruxStep11": "Натиснете бутоните, за да подпишете транзакцията на Krux.",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "seedsignerStep9": "Прегледайте адреса на получателя и сумата и потвърдете подписването на вашия SeedSigner.",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "keystoneStep13": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "passportStep2": "Натисни Подпиши с QR код",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "keystoneStep9": "Натиснете бутоните, за да подпишете транзакцията във вашия Keystone.",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "bitboxActionVerifyAddressTitle": "Проверете адреса на BitBox.",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionImportWalletSuccess": "Портфейлът е успешно импортиран",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "jadeStep14": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "kruxStep13": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "psbtFlowSignTransaction": "Подпишете транзакцията",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "receiveQRCode": "QR код",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "jadeStep10": "- Кликнете върху бутоните, за да подпишете транзакцията на вашия Jade.",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "bitboxScreenUnknownError": "Възникна непозната грешка.",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "psbtFlowTransactionImported": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "kruxStep4": "Натисни Зареди от камерата",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "bitboxScreenVerifyOnDevice": "Моля, потвърдете този адрес на BitBox устройството.",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "bitboxScreenConnecting": "Свързване към BitBox",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "Въведете паролата си на BitBox устройството...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "Адресът е потвърден на вашето BitBox устройство",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "seedsignerStep6": "   - Преместете червения лазер нагоре и надолу върху QR кода",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "psbtFlowScanQrShown": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "Моля, потвърдете адреса на вашето BitBox устройство.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "keystoneInstructionsTitle": "Keystone Инструкции",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "bitboxActionVerifyAddressProcessing": "Показване на адреса на BitBox...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionSignTransactionSuccess": "Транзакцията е успешно подписана",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "bitboxActionUnlockDeviceButton": "Разблокирайте BitBox устройството.",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "bitboxScreenTryAgainButton": "Опитайте отново",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "psbtFlowClickDone": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "bitboxActionUnlockDeviceSuccess": "Устройството е успешно отключено",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxErrorOperationTimeout": "Операцията изтече. Моля, опитайте отново.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "psbtFlowTurnOnDevice": "Включете вашето {device} устройство",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep2": "Сканирайте",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "psbtFlowSignTransactionOnDevice": "Натисни бутоните, за да подпишеш транзакцията на вашия {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "keystoneStep7": "   - Опитайте да преместите устройството си малко по-далече.",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "passportStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep5": "Ако имате затруднения със сканирането:",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "bitboxScreenTroubleshootingStep3": "Рестартирайте BitBox02, като го разкачите и отново свържете.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "keystoneStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Keystone. Сканирайте го.",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "passportStep10": "Passport ще ви покаже своя собствен QR код.",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "seedsignerStep10": "SeedSigner ще ви покаже своя собствен QR код.",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "seedsignerStep7": "   - Опитайте да преместите устройството си малко по-далече.",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "seedsignerStep8": "След като транзакцията бъде импортирана във вашия SeedSigner, трябва да изберете seed фразата, с която искате да подпишете.",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Препоръчително",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenWaitingConfirmation": "Изчакване на потвърждение от BitBox02...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxActionPairDeviceSuccess": "Устройството е успешно сдвоено",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxErrorNoDevicesFound": "Не са намерени BitBox устройства. Уверете се, че устройството е включено и свързано чрез USB.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "kruxStep6": "Ако имате затруднения със сканирането:",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "jadeStep2": "Добавете защитна парола, ако имате такава (по избор)",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "keystoneStep1": "Влезте в устройството Keystone.",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "Подпишете транзакция.",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "jadeStep3": "Изберете опцията \"Сканирай QR\"",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "bitboxScreenScanning": "Сканиране на устройства",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "bitboxActionImportWalletButton": "Започнете импортиране.",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "jadeStep4": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "kruxInstructionsTitle": "Krux Инструкции",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "bitboxScreenActionFailed": "{action} Неуспешно",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep4": "Ако имате затруднения със сканирането:",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxActionVerifyAddressButton": "Потвърдете адреса",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "Първо се уверете, че устройството BitBox02 е свързано към USB порта на телефона ви. Ако устройството все още не се свързва с приложението, опитайте следното:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenAddressToVerify": "Адрес за потвърждение:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxErrorPermissionDenied": "USB разрешения са необходими за свързване към BitBox устройства.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "Потвърдете транзакцията на BitBox устройството...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "Вашето BitBox устройство вече е сдвоено и готово за използване",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxScreenScanningSubtext": "Търсене на вашето BitBox устройство...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "seedsignerStep14": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "Типът на връзката не е инициализиран.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "jadeStep9": "- След като транзакцията бъде импортирана във вашия Jade, прегледайте адреса на получателя и сумата.",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "Вашата транзакция е успешно подписана",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "passportStep5": "   - Увеличете яркостта на екрана на вашето устройство",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "Уверете се, че BitBox02 е отключено и свързано чрез USB.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "Невалиден отговор от BitBox устройство. Моля, опитайте отново.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "jadeStep12": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxScreenWalletTypeLabel": "Тип на портфейла:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "passportStep8": "След като транзакцията бъде импортирана във вашето устройство Passport, прегледайте адреса на получателя и сумата.",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "keystoneStep11": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "bitboxActionSignTransactionButton": "Започнете подписване.",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "passportStep9": "Щракнете върху бутоните, за да подпишете транзакцията на вашето устройство Passport.",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "kruxStep12": "Krux ще ви покаже своя собствен QR код.",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "Вашето BitBox устройство вече е отключено и готово за използване",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxScreenEnterPassword": "Въведете парола",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "keystoneStep10": "Keystone ще ви покаже своя собствен QR код.",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceTitle": "Сдвоете BitBox устройство.",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "passportStep7": "   - Опитайте да преместите устройството си малко по-далече.",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "bitboxScreenPairingCodeSubtext": "Потвърдете, че този код съвпада с екрана на BitBox02, след което потвърдете на устройството.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "kruxStep1": "Влезте в устройството Krux",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "bitboxActionVerifyAddressSuccess": "Адресът е успешно проверен",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxScreenSelectWalletType": "Изберете тип портфейла",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenManagePermissionsButton": "Управление на разрешенията за приложението",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "psbtFlowMoveLaser": "Премести червената лазерна лента нагоре и надолу над QR кода.",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowDeviceShowsQr": "{device} ще ви покаже собствен QR код.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenPairingCode": "Код за сдвояване",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "bitboxActionUnlockDeviceProcessing": "Разблокиране на устройството",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "Ако имате затруднения със сканирането:",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-вложен-в-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenVerifyAddress": "Потвърдете адреса",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenConnectDevice": "Свържете вашето BitBox устройство.",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "psbtFlowSignViaNfc": "Подпиши през NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Докоснете {deviceName}, за да изпратите PSBT през NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Инструкции за Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Инструкции за Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Влезте в устройството си Coldcard Q",
+  "psbtFlowColdcardQStep2": "Добавете passphrase, ако имате такава (по избор)",
+  "psbtFlowColdcardQStep3": "Изберете предпочитания от вас метод за подписване:",
+  "psbtFlowColdcardQStep4": "За QR код:",
+  "psbtFlowColdcardQStep5": "   - Изберете „Сканирай произволен QR код“ на вашия Coldcard Q",
+  "psbtFlowColdcardQStep6": "   - Сканирайте QR кода, показан в портфейла Bull",
+  "psbtFlowColdcardQStep7": "   - Ако имате проблем със сканирането:",
+  "psbtFlowColdcardQStep8": "     - Увеличете яркостта на екрана на устройството си",
+  "psbtFlowColdcardQStep9": "     - Движете червения лазер нагоре-надолу над QR кода",
+  "psbtFlowColdcardQStep10": "     - Опитайте да отдалечите леко устройството си назад",
+  "psbtFlowColdcardQStep11": "За NFC:",
+  "psbtFlowColdcardQStep12": "   - Изберете „Готов за подписване“ на вашия Coldcard Q, след което натиснете бутона NFC",
+  "psbtFlowColdcardQStep13": "   - Докоснете телефона си до Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Изчакайте PSBT да се прехвърли",
+  "psbtFlowColdcardQStep15": "Веднага щом транзакцията бъде импортирана в Coldcard Q, прегледайте адреса на получателя и сумата.",
+  "psbtFlowColdcardQStep16": "Натиснете бутоните, за да подпишете транзакцията на вашия Coldcard Q.",
+  "psbtFlowColdcardQStep17": "Coldcard Q след това ще покаже QR код на подписаната транзакция или ще подготви NFC прехвърляне.",
+  "psbtFlowColdcardQStep18": "Ако сте подписали с QR, натиснете „Готово съм“ в портфейла Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на подписаната транзакция или да използвате NFC, за да я получите.",
+  "psbtFlowColdcardQStep20": "   - За QR: сканирайте QR кода на Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - За NFC: докоснете телефона си до Coldcard Q",
+  "psbtFlowColdcardQStep22": "Подписаната транзакция ще бъде импортирана в портфейла Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Сега е готово за излъчване! Веднага щом кликнете върху „Излъчване“, транзакцията ще бъде публикувана в мрежата на Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Влезте в устройството си Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Добавете passphrase, ако имате такава (по избор)",
+  "psbtFlowColdcardMk4Step3": "Изберете „Готов за подписване“ на вашия Coldcard Mk4, след което натиснете бутон номер 3",
+  "psbtFlowColdcardMk4Step4": "Докоснете телефона си до Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Изчакайте PSBT да се прехвърли",
+  "psbtFlowColdcardMk4Step6": "Веднага щом транзакцията бъде импортирана в Coldcard Mk4, прегледайте адреса на получателя и сумата.",
+  "psbtFlowColdcardMk4Step7": "Натиснете бутоните, за да подпишете транзакцията на вашия Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 след това ще подготви подписаната транзакция за NFC прехвърляне.",
+  "psbtFlowColdcardMk4Step9": "В портфейла Bull Bitcoin натиснете NFC на екрана за излъчване.",
+  "psbtFlowColdcardMk4Step10": "Докоснете телефона си до Coldcard Mk4, за да получите подписаната транзакция.",
+  "psbtFlowColdcardMk4Step11": "Подписаната транзакция ще бъде импортирана в портфейла Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Прегледайте детайлите на транзакцията в портфейла Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Сега е готово за излъчване! Веднага щом кликнете върху „Излъчване“, транзакцията ще бъде публикувана в мрежата на Bitcoin.",
+  "ledgerImportTitle": "Импортирай Ledger портфейл",
+  "ledgerSignTitle": "Подпиши транзакция",
+  "ledgerVerifyTitle": "Потвърди адрес на Ledger",
+  "ledgerImportButton": "Започни импортиране",
+  "ledgerSignButton": "Започни подписване",
+  "ledgerVerifyButton": "Потвърди адрес",
+  "ledgerProcessingImport": "Импортиране на портфейл",
+  "ledgerProcessingSign": "Подписване на транзакция",
+  "ledgerProcessingVerify": "Показване на адреса на Ledger...",
+  "ledgerSuccessImportTitle": "Портфейлът е импортиран успешно",
+  "ledgerSuccessSignTitle": "Транзакцията е подписана успешно",
+  "ledgerSuccessVerifyTitle": "Потвърждаване на адреса на Ledger...",
+  "ledgerSuccessImportDescription": "Вашият Ledger портфейл беше импортиран успешно.",
+  "ledgerSuccessSignDescription": "Вашата транзакция беше подписана успешно.",
+  "ledgerSuccessVerifyDescription": "Адресът беше потвърден на вашето устройство Ledger.",
+  "ledgerProcessingImportSubtext": "Настройване на портфейл само за наблюдение (watch-only)...",
+  "ledgerProcessingSignSubtext": "Моля, потвърдете транзакцията на устройството си Ledger...",
+  "ledgerProcessingVerifySubtext": "Моля, потвърдете адреса на устройството си Ledger.",
+  "ledgerConnectTitle": "Свържете вашето устройство Ledger",
+  "ledgerScanningTitle": "Търсене на устройства",
+  "ledgerConnectingMessage": "Свързване с {deviceName}",
+  "ledgerActionFailedMessage": "{action} се провали",
+  "ledgerInstructionsIos": "Уверете се, че вашият Ledger е отключен, приложението Bitcoin е отворено и Bluetooth е активиран.",
+  "ledgerInstructionsAndroidUsb": "Уверете се, че вашият Ledger е отключен с отворено приложение Bitcoin, и го свържете чрез USB.",
+  "ledgerInstructionsAndroidDual": "Уверете се, че вашият Ledger е отключен, приложението Bitcoin е отворено и Bluetooth е активиран.",
+  "ledgerScanningMessage": "Търсене на близки Ledger устройства...",
+  "ledgerConnectingSubtext": "Установяване на защитена връзка...",
+  "ledgerErrorPermissionDenied": "За свързване с устройства Ledger са необходими разрешения за Bluetooth.",
+  "ledgerErrorNoDevicesFound": "Не са намерени устройства Ledger. Уверете се, че устройството ви е включено и Bluetooth е активиран.",
+  "ledgerErrorMultipleDevicesFound": "Намерени са няколко устройства Ledger. Моля, уверете се, че наблизо има само едно устройство.",
+  "ledgerErrorDeviceNotFound": "Устройството Ledger не е намерено.",
+  "ledgerErrorDeviceMismatch": "Открито е несъответствие на устройството.",
+  "ledgerErrorInvalidPsbt": "Открит е невалиден PSBT формат.",
+  "ledgerErrorMissingDerivationPath": "Изисква се път на деривация",
+  "ledgerErrorMissingScriptType": "Изисква се тип на скрипта",
+  "ledgerErrorDeviceBusy": "Друга програма използва вашия Ledger. Моля, затворете я (например Ledger Live) и опитайте отново.",
+  "ledgerErrorNoConnection": "Няма налична връзка с Ledger",
+  "ledgerErrorRejectedByUser": "Транзакцията беше отхвърлена от потребителя на устройството Ledger.",
+  "ledgerErrorDeviceLocked": "Устройството Ledger е заключено. Моля, отключете устройството си и опитайте отново.",
+  "ledgerErrorBitcoinAppNotOpen": "Моля, отворете приложението Bitcoin на устройството си Ledger и опитайте отново.",
+  "ledgerErrorMissingPsbt": "Изисква се PSBT за подписване",
+  "ledgerErrorMissingAddress": "Изисква се адрес за потвърждение",
+  "ledgerButtonTryAgain": "Опитай отново",
+  "ledgerButtonManagePermissions": "Управление на разрешенията на приложението",
+  "ledgerButtonNeedHelp": "Нуждаете се от помощ?",
+  "ledgerVerifyAddressLabel": "Адрес за потвърждение:",
+  "ledgerWalletTypeLabel": "Тип портфейл:",
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - Препоръчително",
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "ledgerWalletTypeLegacyDescription": "P2PKH - По-стар формат",
+  "ledgerWalletTypeSelectTitle": "Избери тип портфейл",
+  "ledgerSuccessAddressVerified": "Адресът е потвърден успешно!",
+  "ledgerHelpSubtitle": "Първо се уверете, че устройството ви Ledger е отключено и приложението Bitcoin е отворено. Ако устройството ви все още не се свързва с приложението, опитайте следното:",
+  "ledgerHelpStep1": "Рестартирайте устройството си Ledger.",
+  "ledgerHelpStep2": "Уверете се, че Bluetooth на телефона ви е включен и разрешен.",
+  "ledgerHelpStep3": "Уверете се, че Bluetooth на вашия Ledger е включен.",
+  "ledgerHelpStep4": "Уверете се, че имате инсталирана най-новата версия на приложението Bitcoin от Ledger Live.",
+  "ledgerHelpStep5": "Уверете се, че устройството ви Ledger използва най-новия фърмуер — можете да актуализирате фърмуера чрез настолното приложение Ledger Live.",
+  "bitboxErrorBluetoothPermissionDenied": "Необходимо е разрешение за Bluetooth, за да се свържете с вашия BitBox02 Nova.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth не е достъпен. Включете Bluetooth и опитайте отново.",
+  "bitboxErrorNoBleDevicesFound": "Не е намерен BitBox02 Nova наблизо. Проверете Bluetooth и опитайте отново.",
+  "bitboxErrorMultipleBleDevicesFound": "Намерени са няколко устройства BitBox02 Nova. Дръжте само едно наблизо и опитайте отново.",
+  "bitboxErrorOperationFailed": "Операцията с BitBox не бе успешна. Моля, опитайте отново.",
+  "bitboxScreenConnectSubtextBluetooth": "Уверете се, че вашият BitBox02 Nova е отключен и Bluetooth е активиран.",
+  "bitboxScreenScanningSubtextBluetooth": "Търсене на вашия BitBox02 Nova наблизо...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Отстраняване на неизправности с BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Ако устройството ви все още не се свързва с приложението, опитайте следното:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Уверете се, че Bluetooth е включен и разрешен за това приложение.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Уверете се, че Bluetooth е активиран на вашия BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Рестартирайте вашия BitBox02 Nova и опитайте да се свържете отново.",
+  "psbtFlowInvalidPsbtError": "Тази транзакция не можа да бъде прочетена. Върнете се и я създайте отново.",
+  "psbtFlowQrEncodingError": "Тази транзакция не може да бъде преобразувана в QR код."
+}

@@ -1,13 +1,10 @@
-import 'initialization_result.dart';
-
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart';
+
+import 'initialization_result.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -15,63 +12,67 @@ Future<void> main({bool isInitialized = false}) async {
     requireSuccessfulBullInitialization(await Bull.init());
   }
 
-  final sqlite = locator<SqliteDatabase>();
-
-  group('WalletMetadata Sqlite Integration Tests', () {
-    test('can store and fetch a wallet metadata', () async {
-      const fingerprint = 'master';
-      const scriptType = ScriptType.bip84;
-
-      final metadata = WalletMetadataModel(
-        networkCode: 'bitcoinMainnet',
-        masterFingerprint: fingerprint,
-        id: WalletMetadataService.encodeOrigin(
-          fingerprint: fingerprint,
-          network: Network.bitcoinMainnet,
-          scriptType: scriptType,
-        ),
-        xpubFingerprint: 'abc12345',
-        xpub: 'xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKp5i1Lsfk...',
-        externalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../0/*)',
-        internalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../1/*)',
-        signer: Signer.local,
-        latestEncryptedBackup: 1680000000,
-        latestPhysicalBackup: 1681000000,
-        isEncryptedVaultTested: true,
-        isPhysicalBackupTested: true,
-        isDefault: true,
-        label: 'My Main Wallet',
-        syncedAt: DateTime.now(),
+  test(
+    'registers, renames and removes a public wallet in the live inventory',
+    () async {
+      final inventory = locator<SecretsInventory>();
+      final index = DateTime.now().microsecondsSinceEpoch % 0x80000000;
+      final origin = '[abcd1234/84h/0h/${index}h]';
+      final id = 'wpkh($origin)';
+      final wallet = RegisteredWallet(
+        id: id,
+        secretFingerprint: null,
+        masterFingerprint: 'abcd1234',
+        signer: 'none',
+        network: 'bitcoinMainnet',
+        xpub: 'xpub',
+        externalDescriptor: 'wpkh(${origin}xpub/0/*)',
+        internalDescriptor: 'wpkh(${origin}xpub/1/*)',
+        label: 'Watch only',
+        birthday: null,
+        isDefault: false,
       );
-
-      // Clear any leftover row with the same id from a crashed prior run so the
-      // insert below never trips the unique constraint.
-      await sqlite.managers.walletMetadatas
-          .filter((e) => e.id(metadata.id))
-          .delete();
-
-      // Store a metadata
-      await sqlite.into(sqlite.walletMetadatas).insert(metadata.toSqlite());
-
-      // Fetch one
-      final fetchedMetadata = await sqlite.managers.walletMetadatas
-          .filter((e) => e.id(metadata.id))
-          .getSingleOrNull();
-      expect(fetchedMetadata, isNotNull);
-      expect(fetchedMetadata!.id, metadata.id);
-
-      // Delete the one we inserted
-      await sqlite.managers.walletMetadatas
-          .filter((f) => f.id(metadata.id))
-          .delete();
-
-      // Ensure the row we inserted is gone. Scoped to our own id so the test is
-      // isolated from any other wallet metadata already present in the database
-      // (asserting the whole table is empty made this test order-dependent).
-      final afterDelete = await sqlite.managers.walletMetadatas
-          .filter((e) => e.id(metadata.id))
-          .getSingleOrNull();
-      expect(afterDelete, isNull);
-    });
-  });
+      expect(await inventory.registerWallet(wallet), isA<Ok>());
+      addTearDown(() async {
+        if (await inventory.findWallet(id) case Ok(value: final value?)
+            when value.id == id) {
+          expect(await inventory.removeWallet(id), isA<Ok>());
+        }
+      });
+      expect(
+        await inventory.findWallet(id),
+        isA<Ok<RegisteredWallet?, Failure>>().having(
+          (result) => result.value?.label,
+          'label',
+          'Watch only',
+        ),
+      );
+      expect(
+        await inventory.setWalletProperties(
+          id: id,
+          label: 'Renamed',
+          birthday: DateTime.utc(2023, 1, 1),
+          isDefault: false,
+        ),
+        isA<Ok>(),
+      );
+      expect(
+        await inventory.findWallet(id),
+        isA<Ok<RegisteredWallet?, Failure>>().having(
+          (result) => result.value?.label,
+          'label',
+          'Renamed',
+        ),
+      );
+      expect(await inventory.removeWallet(id), isA<Ok>());
+      expect(
+        await inventory.findWallet(id),
+        isA<Ok<RegisteredWallet?, Failure>>().having(
+          (result) => result.value,
+          'removed wallet',
+          isNull,
+        ),
+      );
+    },
+  );
 }

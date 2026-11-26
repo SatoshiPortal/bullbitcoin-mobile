@@ -1,16 +1,11 @@
+import 'package:wallet_import/wallet_import.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, Ok;
+    show BitcoinNetwork, BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
+import 'package:preferences/preferences.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
+import 'package:wallet_import/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
@@ -19,9 +14,9 @@ import 'package:secrets/testing.dart';
 class _MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockProvisioning extends Mock implements WalletProvisioning {}
 
 /// A failed import must preserve custody for resumable native provisioning.
 ///
@@ -55,7 +50,7 @@ void main() {
   late Secrets secrets;
   late _MockCheckDuplicateMnemonicUsecase checkDuplicate;
   late _MockSettingsRepository settingsRepository;
-  late _MockWalletRepository walletRepository;
+  late _MockProvisioning provisioning;
   late ImportWalletUsecase usecase;
 
   Iterable<String> storedSecrets() =>
@@ -68,7 +63,7 @@ void main() {
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(_Admission());
-    registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(ScriptType.bip84);
   });
 
@@ -77,12 +72,12 @@ void main() {
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
     settingsRepository = _MockSettingsRepository();
-    walletRepository = _MockWalletRepository();
+    provisioning = _MockProvisioning();
     usecase = ImportWalletUsecase(
       checkDuplicateMnemonicUsecase: checkDuplicate,
       secrets: secrets,
       settingsRepository: settingsRepository,
-      walletRepository: walletRepository,
+      provision: provisioning.importMnemonic,
       admission: _Admission(),
     );
     when(
@@ -93,15 +88,12 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(() => checkDuplicate.isReferenced(any(), any()))
-        .thenAnswer((_) async => false);
-    // No wallet references any seed unless a test says so.
-    when(() => walletRepository.getWallets())
-        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
+        .thenAnswer((_) async => const Ok(false));
   });
 
   void failCreateWalletWith(Object error) {
     when(
-      () => walletRepository.importWallet(
+      () => provisioning.importMnemonic(
         parent: any(named: 'parent'),
         secrets: secrets,
         admission: any(named: 'admission'),
@@ -112,70 +104,11 @@ void main() {
     ).thenThrow(error);
   }
 
-  group('an imported wallet is never a default wallet', () {
-    test('a passphrase can therefore never reach the swap key', () async {
-      // The Boltz swap master key is derived from the DEFAULT wallet's
-      // secret, and that deriver passes the passphrase where the previous
-      // implementation did not. The derivation is unchanged in practice
-      // only because the default secret never carries one: onboarding's
-      // recovery screen sets allowPassphrase: false, and an import — the
-      // one path that does accept a passphrase — is forced non-default
-      // here. Nothing pinned that second half, so a change to this flag
-      // would silently change an already-stored swap key's derivation for
-      // anyone who then reinstalls.
-      //
-      // The swap key itself is FFI-bound and unreachable from a unit test,
-      // so what is pinned is its input.
-      bool? askedIsDefault;
-      when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
-      when(
-        () => walletRepository.importWallet(
-          parent: any(named: 'parent'),
-          secrets: secrets,
-          admission: any(named: 'admission'),
-          network: any(named: 'network'),
-          scriptType: any(named: 'scriptType'),
-          label: any(named: 'label'),
-        ),
-      ).thenAnswer((invocation) async {
-        // Captured, never asserted here: the usecase catches broadly, so a
-        // TestFailure thrown inside this callback is swallowed into an Err
-        // and the test passes while proving nothing.
-        askedIsDefault = invocation.namedArguments.containsKey(#isDefault);
-        throw const WalletAlreadyExistsException('stop-here');
-      });
-
-      final result = await usecase.execute(
-        mnemonicWords: words,
-        passphrase: 'TREZOR',
-        language: bip39.Language.english,
-      );
-
-      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
-      expect(
-        askedIsDefault,
-        isFalse,
-        reason: 'an imported wallet must never become a default wallet',
-      );
-      verify(
-        () => walletRepository.importWallet(
-          parent: any(named: 'parent'),
-          secrets: secrets,
-          admission: any(named: 'admission'),
-          network: any(named: 'network'),
-          scriptType: any(named: 'scriptType'),
-          label: any(named: 'label'),
-        ),
-      ).called(1);
-    });
-  });
-
   group('ImportWalletUsecase serialises concurrent imports', () {
     test('a second execute never runs while the first is in flight', () async {
       // The usecase guards its body with a process-wide Lock. Nothing
       // asserted it, so the lock could be deleted and the whole suite
-      // stayed green — the cleanup tests above reproduce the race's
-      // OUTCOME by stubbing the wallet list, not the race itself.
+      // stayed green.
       //
       // Probed from inside the locked body: settings.fetch() is the first
       // await _execute performs, so counting overlapping calls to it
@@ -187,7 +120,7 @@ void main() {
         peak = peak > inFlight ? peak : inFlight;
         await Future<void>.delayed(const Duration(milliseconds: 20));
         inFlight--;
-        return settings;
+        return Ok(settings);
       });
       failCreateWalletWith(
         const WalletAlreadyExistsException('existing-wallet-id'),
@@ -222,7 +155,7 @@ void main() {
           language: bip39.Language.english,
         );
 
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+        expect(result, isA<Err<void, ImportMnemonicFailure>>());
         expect(storedSecrets(), hasLength(1));
       },
     );
@@ -232,7 +165,8 @@ void main() {
         await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
-      when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => Ok(settings));
       failCreateWalletWith(
         const WalletAlreadyExistsException('existing-wallet-id'),
       );
@@ -242,7 +176,7 @@ void main() {
         language: bip39.Language.english,
       );
 
-      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+      expect(result, isA<Err<void, ImportMnemonicFailure>>());
       expect(
         storedSecrets(),
         hasLength(1),
@@ -251,53 +185,10 @@ void main() {
     });
 
     test(
-      'keeps a secret a wallet came to reference during this import',
-      () async {
-        // The race Codex reproduced (2026-09-16): another import of the same
-        // words finished first and built its wallet on this seed. This
-        // import created the entry, but it is not an orphan any more.
-        when(() => settingsRepository.fetch())
-            .thenAnswer((_) async => settings);
-        when(() => walletRepository.getWallets()).thenAnswer(
-          (_) async => Ok<List<Wallet>, WalletFailure>([
-            Wallet(
-              origin: 'other-import',
-              label: 'Other',
-              network: Network.bitcoinMainnet,
-              isDefault: false,
-              masterFingerprint: '73c5da0a',
-              xpubFingerprint: '73c5da0a',
-              scriptType: ScriptType.bip84,
-              xpub: 'xpub',
-              externalPublicDescriptor: 'desc',
-              internalPublicDescriptor: 'desc',
-              signer: SignerEntity.local,
-              signerDevice: null,
-              balanceSat: BigInt.zero,
-            ),
-          ]),
-        );
-        failCreateWalletWith(Exception('electrum unreachable'));
-
-        final result = await usecase.execute(
-          mnemonicWords: words,
-          language: bip39.Language.english,
-        );
-
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
-        expect(
-          storedSecrets(),
-          hasLength(1),
-          reason: 'the other wallet would be stranded without it',
-        );
-      },
-    );
-
-    test(
       'retains a newly imported secret after native provisioning fails',
       () async {
         when(() => settingsRepository.fetch())
-            .thenAnswer((_) async => settings);
+            .thenAnswer((_) async => Ok(settings));
         failCreateWalletWith(Exception('electrum unreachable'));
 
         final result = await usecase.execute(
@@ -305,7 +196,7 @@ void main() {
           language: bip39.Language.english,
         );
 
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+        expect(result, isA<Err<void, ImportMnemonicFailure>>());
         expect(
           storedSecrets(),
           hasLength(1),

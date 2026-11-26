@@ -1,0 +1,29 @@
+{
+  "@@locale": "zh",
+  "scanningProgressLabel": "扫描: {percent}%",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts}部分",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "已完成的扫描",
+  "urDecodingFailedMessage": "UR 编码故障",
+  "urProcessingFailedMessage": "UR处理失败",
+  "scanNfcButton": "页: 1",
+  "nfcConnectionLost": "NFC 连接已断开。请将设备靠近 NFC 标签后重试。",
+  "nfcWriteFailed": "NFC 传输失败，请重试。",
+  "nfcDisabled": "NFC 已禁用，请在设置中启用。",
+  "nfcNotAvailable": "此设备不支持 NFC",
+  "nfcFailed": "Oops! 某些错误",
+  "nfcInvalidData": "未找到受支持的 NFC 数据"
+}

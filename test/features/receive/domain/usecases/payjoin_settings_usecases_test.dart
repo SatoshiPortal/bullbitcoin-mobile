@@ -1,25 +1,25 @@
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:receive/receive.dart';
+import 'package:receive/testing.dart';
+import 'package:settings/settings.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockSettingsFacade extends Mock implements SettingsFacade {}
+class _MockSettingsFacade extends Mock implements Settings {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockPolicy extends Mock implements PayjoinPolicyAccess {}
 
 const _rawReason = 'Bad state: No element (settings stream closed)';
 
 void main() {
   group('GetReceivePayjoinPolicyUsecase', () {
     test('returns the policy on success', () async {
-      final settings = _MockSettingsFacade();
-      when(() => settings.watchPayjoinReceivePolicy()).thenAnswer(
-        (_) => Stream.value((receiveEnabled: true, minimumAmountSat: 10000)),
+      final settings = _MockPolicy();
+      when(() => settings.watch()).thenAnswer(
+        (_) => Stream.value(
+          Ok(PayjoinPolicy.defaults().copyWith(receiveEnabled: true)),
+        ),
       );
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
@@ -33,9 +33,8 @@ void main() {
 
     test('an empty stream throws on .first — that must become a failure, '
         'never escape into the bloc', () async {
-      final settings = _MockSettingsFacade();
-      when(() => settings.watchPayjoinReceivePolicy())
-          .thenAnswer((_) => const Stream.empty());
+      final settings = _MockPolicy();
+      when(() => settings.watch()).thenAnswer((_) => const Stream.empty());
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
 
@@ -51,10 +50,10 @@ void main() {
       }
     });
 
-    test('an errored stream becomes a failure carrying the raw reason in '
+    test('an errored stream becomes a sanitized failure with no raw reason in '
         'logMessage only', () async {
-      final settings = _MockSettingsFacade();
-      when(() => settings.watchPayjoinReceivePolicy())
+      final settings = _MockPolicy();
+      when(() => settings.watch())
           .thenAnswer((_) => Stream.error(StateError(_rawReason)));
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
@@ -64,7 +63,7 @@ void main() {
           fail('an errored policy stream must not be reported as a policy');
         case Err(:final failure):
           expect(failure, isA<ReceivePayjoinPolicyUnavailableFailure>());
-          expect(failure.logMessage, contains('settings stream closed'));
+          expect(failure.logMessage, isNot(contains('settings stream closed')));
       }
     });
   });
@@ -85,7 +84,7 @@ void main() {
       );
 
       final result = await SetReceivePayjoinEnabledUsecase(
-        settingsFacade: settings,
+        settings.setPayjoinReceiveEnabled,
       ).execute(true, requestConsent: () async => true);
 
       switch (result) {
@@ -107,41 +106,10 @@ void main() {
       ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(true));
 
       final result = await SetReceivePayjoinEnabledUsecase(
-        settingsFacade: settings,
+        settings.setPayjoinReceiveEnabled,
       ).execute(true, requestConsent: () async => true);
 
       expect((result as Ok<bool, ReceiveFailure>).value, isTrue);
-    });
-  });
-
-  group('FetchReceiveNoteSuggestionsUsecase', () {
-    test('converts a throw into a sanitized failure', () async {
-      final labels = _MockLabelsFacade();
-      when(() => labels.fetchDistinctLabels(type: any(named: 'type')))
-          .thenThrow(Exception('drift: no such table labels'));
-
-      final result = await FetchReceiveNoteSuggestionsUsecase(labels).execute();
-
-      switch (result) {
-        case Ok():
-          fail('a throw must not be reported as suggestions');
-        case Err(:final failure):
-          expect(failure, isA<ReceiveUnexpectedFailure>());
-          expect(failure.logMessage, contains('no such table'));
-      }
-    });
-
-    test('scopes suggestions to address labels — a transaction label is '
-        'private and must never become a BIP21 message=', () async {
-      final labels = _MockLabelsFacade();
-      when(() => labels.fetchDistinctLabels(type: any(named: 'type')))
-          .thenAnswer((_) async => {'lunch'});
-
-      final result = await FetchReceiveNoteSuggestionsUsecase(labels).execute();
-      expect(result, isA<Ok<Set<String>, ReceiveFailure>>());
-
-      verify(() => labels.fetchDistinctLabels(type: LabelType.address))
-          .called(1);
     });
   });
 }

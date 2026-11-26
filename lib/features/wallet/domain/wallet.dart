@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:signers/signers.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:material_ui/material_ui.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkEnv, ScriptType, UnsupportedNetworkException;
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -56,41 +57,6 @@ enum Network {
   };
 }
 
-final class UnsupportedNetworkException implements Exception {
-  const UnsupportedNetworkException();
-}
-
-final class InvalidWalletAddressException implements Exception {
-  const InvalidWalletAddressException();
-}
-
-enum ScriptType {
-  bip84(purpose: 84),
-  bip49(purpose: 49),
-  bip44(purpose: 44);
-
-  final int purpose;
-
-  const ScriptType({required this.purpose});
-
-  factory ScriptType.fromName(String name) {
-    return ScriptType.values.firstWhere((script) => script.name == name);
-  }
-
-  factory ScriptType.fromExtendedPublicKey(String extendedPublicKey) {
-    switch (extendedPublicKey.substring(0, 4)) {
-      case 'xpub':
-        return ScriptType.bip44;
-      case 'ypub':
-        return ScriptType.bip49;
-      case 'zpub':
-        return ScriptType.bip84;
-      default:
-        throw Exception('Invalid extended public key');
-    }
-  }
-}
-
 @freezed
 abstract class Wallet with _$Wallet {
   const factory Wallet({
@@ -106,7 +72,7 @@ abstract class Wallet with _$Wallet {
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
     required SignerEntity signer,
-    required SignerDeviceEntity? signerDevice,
+    required SignerDevice? signerDevice,
     required BigInt? balanceSat,
     // Confirmed-only component of balanceSat (excludes trusted/untrusted
     // pending and immature funds). Nullable/optional so every existing

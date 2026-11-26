@@ -1,11 +1,10 @@
-import 'package:bull_payjoin/src/data/payjoin_database.dart';
-import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
-import 'package:bull_payjoin/src/data/payjoin_model.dart';
-
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
+import 'package:bull_payjoin/src/data/payjoin_model.dart';
+import 'package:bull_payjoin/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
@@ -64,11 +63,14 @@ final class _TransactionPort implements PayjoinTransactionPort {
   }) async => true;
 
   @override
-  Future<bool> isTransactionVisible({
+  Future<Map<String, bool?>> transactionsPresence({
     required String walletId,
-    required String transactionId,
+    required List<PayjoinTransaction> transactions,
     bool refresh = false,
-  }) async => offline ? throw StateError('offline') : false;
+  }) async => {
+    for (final transaction in transactions)
+      transaction.txid: offline ? throw StateError('offline') : false,
+  };
 
   @override
   Future<void> refreshWallet(String walletId) async {}
@@ -155,7 +157,7 @@ void main() {
     PayjoinLegacyDataPort? legacy,
     Future<bool> Function()? isCurrent,
   }) {
-    return openPayjoin(
+    return openPayjoinForTesting(
       regtestProfile: profile,
       regtestHostProfile: host,
       isCurrent: isCurrent,
@@ -205,7 +207,7 @@ void main() {
       Err(:final failure) => throw failure,
     };
     await initial.dispose();
-    final database = PayjoinDatabase.open(
+    final database = openPayjoinDatabaseForTesting(
       '${directory.path}/payjoin-regtest.sqlite',
     );
     final model = PayjoinSenderModel(
@@ -289,7 +291,7 @@ void main() {
     await runtime.dispose();
     expect(legacy.reads, 0);
     expect(await production.exists(), isFalse);
-    final database = PayjoinDatabase.open(
+    final database = openPayjoinDatabaseForTesting(
       '${directory.path}/payjoin-regtest.sqlite',
     );
     // Existing public synthetic PSBT: one input whose txid is 0x11 repeated.
@@ -499,7 +501,9 @@ void main() {
         Err(:final failure) => throw failure,
       };
       await initial.dispose();
-      final database = PayjoinDatabase.open('${directory.path}/payjoin.sqlite');
+      final database = openPayjoinDatabaseForTesting(
+        '${directory.path}/payjoin.sqlite',
+      );
       final model = PayjoinSenderModel(
         uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
         isTestnet: true,

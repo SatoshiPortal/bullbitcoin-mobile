@@ -1,0 +1,27 @@
+{
+  "@@locale": "pt",
+  "save": "Salvar",
+  "copyDialogButton": "Entendido",
+  "delete": "Excluir",
+  "transactionListLoadingTransactions": "Carregando transações...",
+  "receiveQRCode": "Código QR",
+  "cancel": "Cancelar",
+  "transactionStatusPending": "Pendente",
+  "transactionListYesterday": "Ontem",
+  "transactionListToday": "Hoje",
+  "amountLabel": "Montante",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "Toque para copiar",
+  "viewerViewInExplorer": "Ver no explorador",
+  "transactionViewerTitle": "ID da transação",
+  "viewerCopyLink": "Copiar link",
+  "coinsTitle": "Moedas",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Copiado para a área de transferência"
+}

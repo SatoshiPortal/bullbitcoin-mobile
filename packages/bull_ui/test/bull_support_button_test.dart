@@ -33,6 +33,27 @@ void main() {
   };
 
   group('BullSupportButton', () {
+    testWidgets('.icon shows the unread count and hides it at zero', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        scoped(const BullSupportButton.icon(label: 'Support', unreadCount: 3)),
+      );
+      expect(find.text('3'), findsOneWidget);
+
+      await tester.pumpWidget(
+        scoped(
+          const BullSupportButton.icon(label: 'Support', unreadCount: 120),
+        ),
+      );
+      expect(find.text('99+'), findsOneWidget);
+
+      await tester.pumpWidget(
+        scoped(const BullSupportButton.icon(label: 'Support')),
+      );
+      expect(tester.widget<Badge>(find.byType(Badge)).isLabelVisible, isFalse);
+    });
+
     for (final MapEntry(key: name, value: build) in variants.entries) {
       testWidgets('.$name forwards its message to the scope', (tester) async {
         await tester.pumpWidget(scoped(build(message: 'Order 42')));
@@ -117,14 +138,55 @@ void main() {
       expect(find.byType(Tooltip), findsOneWidget);
     });
 
+    testWidgets('.big preserves explicit primary colours', (tester) async {
+      await tester.pumpWidget(
+        scoped(
+          BullSupportButton.big(
+            label: 'Contact support',
+            bgColor: testBullTheme.primary,
+            textColor: testBullTheme.onPrimary,
+          ),
+        ),
+      );
+      final scope = find.byType(BullButton);
+      final fill =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(of: scope, matching: find.byType(Container))
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      final text = tester.widget<BullText>(
+        find.descendant(of: scope, matching: find.byType(BullText)),
+      );
+      expect(fill.color, testBullTheme.primary);
+      expect(text.color, testBullTheme.onPrimary);
+      await tester.tap(find.text('Contact support'));
+      expect(calls, hasLength(1));
+    });
+
     testWidgets('.big defaults to the secondary colours', (tester) async {
       await tester.pumpWidget(
         scoped(const BullSupportButton.big(label: 'Contact support')),
       );
 
-      final button = tester.widget<BullButton>(find.byType(BullButton));
-      expect(button.bgColor, testBullTheme.secondary);
-      expect(button.textColor, testBullTheme.onSecondary);
+      final scope = find.byType(BullButton);
+      final fill =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(of: scope, matching: find.byType(Container))
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      final text = tester.widget<BullText>(
+        find.descendant(of: scope, matching: find.byType(BullText)),
+      );
+      expect(fill.color, testBullTheme.secondary);
+      expect(text.color, testBullTheme.onSecondary);
     });
   });
 }

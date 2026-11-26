@@ -1,26 +1,28 @@
-import 'package:swaps/swaps.dart';
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
-import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:all_seed_view/testing.dart';
+
+import 'dart:async';
+import 'dart:io';
+
+import '../../support/inventory_fixture.dart';
+
+import 'package:access/access.dart';
+import 'package:access/setup.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:swaps/swaps.dart';
 
 class _MockGetAllSecretsUsecase extends Mock implements GetAllSecretsUsecase {}
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 class _MockDeleteSecretUsecase extends Mock implements DeleteSecretUsecase {}
-
-class _MockGetSwapMnemonicUsecase extends Mock
-    implements GetSwapMnemonicUsecase {}
 
 class _MockGetSwapMasterKeyUsecase extends Mock
     implements GetSwapMasterKeyUsecase {}
@@ -50,34 +52,57 @@ void main() {
   late _MockGetAllSecretsUsecase getAllSecretsUsecase;
   late _MockGetWalletsUsecase getWalletsUsecase;
   late _MockGetSwapMasterKeyUsecase getSwapMasterKeyUsecase;
-  late _MockGetSwapMnemonicUsecase getSwapMnemonicUsecase;
   late AllSeedViewCubit cubit;
   late Secret aSecret;
+  late GetIt accessServices;
+  late Directory inventoryDirectory;
+  late InventoryFixture inventoryFixture;
 
-  AppUnlockGrant issueGrant() {
+  Future<AppUnlockGrant> authenticate(WidgetTester tester) async {
     AppUnlockGrant? grant;
-    final gate = const AppUnlockFacade().buildReauthenticationGate(
-      onSuccess: (value) => grant = value,
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Access().buildReauthenticationGate(
+          onSuccess: (value) => grant = value,
+        ),
+      ),
     );
-    (gate as PinCodeUnlockScreen).onSuccess!();
-    return grant!;
+    await pumpUntilInventoryReady(tester, () => grant != null);
+    return grant ?? (throw StateError('Unlock did not issue a grant'));
   }
 
   late _MockDeleteSwapMasterKeyUsecase deleteSwapMasterKeyUsecase;
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
-    final stored = await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words, language: Language.english);
+    inventoryDirectory = await Directory.systemTemp.createTemp('seed-access-');
+    inventoryFixture = await InventoryFixture.open(inventoryDirectory);
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    accessServices = GetIt.asNewInstance()..registerSingleton(secrets);
+    AccessFeature.mount(
+      services: accessServices,
+      inventory: inventoryFixture.inventory,
+      backupVerification: inventoryFixture.backup,
+      hasVerifiedBackup: () async => false,
+      onUnlocked: (_) {},
+      onBackUp: (_) async {},
+    );
+    final stored = await secrets.import(
+      words: words,
+      language: Language.english,
+    );
     aSecret = (stored as Ok<Secret, SecretFailure>).value;
 
     getAllSecretsUsecase = _MockGetAllSecretsUsecase();
     getWalletsUsecase = _MockGetWalletsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
-    getSwapMnemonicUsecase = _MockGetSwapMnemonicUsecase();
     when(() => getAllSecretsUsecase.execute())
         .thenAnswer((_) async => Ok([aSecret]));
-    when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
+    when(() => getWalletsUsecase.execute())
+        .thenAnswer((_) async => const Ok(<String>{}));
     when(() => getSwapMasterKeyUsecase.execute())
         .thenAnswer((_) async => const Ok(null));
 
@@ -88,18 +113,22 @@ void main() {
       // Pure and total: the real one, so the split this screen shows is the one the code computes.
       separateSecretsUsecase: const SeparateSecretsUsecase(),
       getSwapMasterKeyUsecase: getSwapMasterKeyUsecase,
-      getSwapMnemonicUsecase: getSwapMnemonicUsecase,
       deleteSwapMasterKeyUsecase: deleteSwapMasterKeyUsecase =
           _MockDeleteSwapMasterKeyUsecase(),
     );
   });
 
-  tearDown(() => cubit.close());
+  tearDown(() async {
+    await cubit.close();
+    await accessServices.reset();
+    await inventoryFixture.close();
+    await inventoryDirectory.delete(recursive: true);
+  });
 
   group('AllSeedViewCubit — re-authentication gate (audit)', () {
-    test(
+    testWidgets(
       'an all-unreadable keystore reaches state as a count, not as empty',
-      () async {
+      (tester) async {
         // The fss9 cohort in the seed viewer: zero readable secrets, N entries
         // the package could not parse. The screen shows the count in the
         // empty branch; this holds the state it reads.
@@ -109,7 +138,7 @@ void main() {
             UnreadableSecret(failure: FetchSecretFailure()),
           ]),
         );
-        await cubit.unlock(issueGrant());
+        await cubit.unlock(await authenticate(tester));
 
         expect(cubit.state.allSeeds, isEmpty);
         expect(cubit.state.unreadableEntries, 2);
@@ -117,7 +146,9 @@ void main() {
       },
     );
 
-    test('readable and unreadable entries remain visible together', () async {
+    testWidgets('readable and unreadable entries remain visible together', (
+      tester,
+    ) async {
       when(() => getAllSecretsUsecase.execute()).thenAnswer(
         (_) async => Ok([
           aSecret,
@@ -125,7 +156,7 @@ void main() {
         ]),
       );
 
-      await cubit.unlock(issueGrant());
+      await cubit.unlock(await authenticate(tester));
 
       expect(cubit.state.allSeeds, [aSecret]);
       expect(cubit.state.unreadableEntries, 1);
@@ -143,16 +174,18 @@ void main() {
       },
     );
 
-    test('unlock() marks the state unlocked and lists the secrets', () async {
-      await cubit.unlock(issueGrant());
+    testWidgets('unlock() marks the state unlocked and lists the secrets', (
+      tester,
+    ) async {
+      await cubit.unlock(await authenticate(tester));
 
       expect(cubit.state.isUnlocked, isTrue);
       verify(() => getAllSecretsUsecase.execute()).called(1);
       expect(cubit.state.allSeeds, [aSecret]);
     });
 
-    test('unlock() is idempotent', () async {
-      final grant = issueGrant();
+    testWidgets('unlock() is idempotent', (tester) async {
+      final grant = await authenticate(tester);
 
       await cubit.unlock(grant);
       await cubit.unlock(grant);
@@ -160,21 +193,58 @@ void main() {
       verify(() => getAllSecretsUsecase.execute()).called(1);
     });
 
-    test('a secret no wallet uses is listed as old, not hidden', () async {
+    testWidgets('a matching wallet keeps the secret in the existing section', (
+      tester,
+    ) async {
+      when(() => getWalletsUsecase.execute())
+          .thenAnswer((_) async => Ok({aSecret.id.hex}));
+
+      await cubit.unlock(await authenticate(tester));
+
+      expect(cubit.state.existingWallets, [aSecret]);
+      expect(cubit.state.oldWallets, isEmpty);
+    });
+
+    testWidgets('a secret no wallet uses is listed as old, not hidden', (
+      tester,
+    ) async {
       // The old usecase deduplicated by comparing raw words; this one does not, so nothing a user stored can vanish from the only screen that lists it.
-      await cubit.unlock(issueGrant());
+      await cubit.unlock(await authenticate(tester));
 
       expect(cubit.state.oldWallets, [aSecret]);
       expect(cubit.state.existingWallets, isEmpty);
     });
   });
 
-  test('a swap key the keychain failed to delete is reported', () async {
-    when(() => deleteSwapMasterKeyUsecase.execute()).thenAnswer(
-      (_) async => const Err(SwapsUnexpectedFailure('keychain write failed')),
-    );
+  test(
+    'a completed swap deletion does not emit after the viewer closes',
+    () async {
+      const key = SwapMasterKeyInfo(
+        fingerprint: 'key',
+        walletFingerprint: 'wallet',
+        network: 'mainnet',
+      );
+      final completion = Completer<Result<void, AllSeedViewFailure>>();
+      when(() => deleteSwapMasterKeyUsecase.execute(key))
+          .thenAnswer((_) => completion.future);
+      final deletion = cubit.deleteSwapMnemonic(key);
+      await cubit.close();
+      completion.complete(const Ok(null));
+      await deletion;
+      expect(cubit.isClosed, isTrue);
+    },
+  );
 
-    await cubit.deleteSwapMnemonic();
+  test('a swap key the keychain failed to delete is reported', () async {
+    const key = SwapMasterKeyInfo(
+      fingerprint: 'key',
+      walletFingerprint: 'wallet',
+      network: 'mainnet',
+    );
+    when(() => deleteSwapMasterKeyUsecase.execute(key))
+        .thenAnswer((_) async => const Err(AllSeedViewDeleteFailure()));
+
+    await cubit.deleteSwapMnemonic(key);
 
     expect(cubit.state.failure, isA<AllSeedViewDeleteFailure>());
   });

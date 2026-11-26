@@ -31,12 +31,6 @@ class WalletSyncFinished extends WalletEvent {
   const WalletSyncFinished(this.wallet);
 }
 
-class WalletDeleted extends WalletEvent {
-  final String walletId;
-
-  const WalletDeleted(this.walletId);
-}
-
 class BlockAutoSwapUntilNextExecution extends WalletEvent {
   const BlockAutoSwapUntilNextExecution();
 }
@@ -75,4 +69,10 @@ class WalletRevisionChanged extends WalletEvent {
   final String walletId;
 
   const WalletRevisionChanged(this.walletId);
+}
+
+final class _WalletAmountDisplayChanged extends WalletEvent {
+  final AmountDisplayPreferences? preferences;
+
+  const _WalletAmountDisplayChanged(this.preferences);
 }

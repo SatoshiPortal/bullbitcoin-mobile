@@ -1,7 +1,10 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
-import 'package:sync/sync.dart' show SyncBusyFailure;
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:sync/sync.dart' show SyncBusyFailure, SyncConnectionFailure;
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,21 +14,21 @@ import 'package:sync/sync.dart' show SyncReason;
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
@@ -33,7 +36,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
@@ -55,8 +57,6 @@ class _MockSyncWalletsUsecase extends Mock implements SyncWalletsUsecase {}
 
 class _MockGetUnconfirmedIncomingBalanceUsecase extends Mock
     implements GetUnconfirmedIncomingBalanceUsecase {}
-
-class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
 class _MockCheckBackupNeededUsecase extends Mock
     implements CheckBackupNeededUsecase {
@@ -99,7 +99,6 @@ WalletBloc createBloc(
     syncWalletsUsecase: refreshSync ?? _stubbedSync(),
     getUnconfirmedIncomingBalanceUsecase:
         getUnconfirmed ?? _MockGetUnconfirmedIncomingBalanceUsecase(),
-    deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
@@ -110,7 +109,7 @@ WalletBloc createBloc(
   );
 }
 
-class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
+class _MockSyncWalletUsecase extends Mock implements WalletRepository {}
 
 class _ViewWalletBloc extends Mock implements WalletBloc {}
 
@@ -438,25 +437,32 @@ void main() {
             .thenAnswer((_) async => const Ok(<Wallet>[]));
         final single = _MockSyncWalletUsecase();
         when(
-          () => single.execute(
+          () => single.sync(
             _syncedWallet,
             discover: any(named: 'discover'),
             reason: any(named: 'reason'),
           ),
         ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
-        final coordinator = SyncCoordinator(
-          getWalletsUsecase: getWallets,
-          syncWalletUsecase: single,
+        final coordinator = SyncCoordinator<Wallet, WalletFailure>(
+          walletKey: (wallet) =>
+              WalletKey(id: wallet.id, network: wallet.network.shared),
+          classifyFailure: (failure) =>
+              (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+          getWallets: ({onlyBitcoin, onlyLiquid}) async =>
+              (await getWallets.execute(
+                onlyBitcoin: onlyBitcoin,
+                onlyLiquid: onlyLiquid,
+              )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
+          syncWallet: single.sync,
         );
         final bloc = WalletBloc(
           readWalletUsecase: _stubbedReadWallet(),
           getWalletsUsecase: getWallets,
           checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
           watchWalletSyncEventsUsecase: _stubbedWatchers(),
-          syncWalletsUsecase: SyncWalletsUsecase(coordinator),
+          syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
           getUnconfirmedIncomingBalanceUsecase:
               _MockGetUnconfirmedIncomingBalanceUsecase(),
-          deleteWalletUsecase: _MockDeleteWalletUsecase(),
           checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
           checkSpScanningForWalletUsecase: _stubbedSpScanning(),
           refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -541,7 +547,7 @@ void main() {
       var nativePasses = 0;
       final syncGate = Completer<void>();
       when(
-        () => single.execute(
+        () => single.sync(
           _syncedWallet,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
@@ -549,21 +555,28 @@ void main() {
       ).thenAnswer((_) async {
         nativePasses++;
         await syncGate.future;
-        throw SyncWalletException('connection');
+        throw const WalletSnapshotException(SyncConnectionFailure());
       });
-      final coordinator = SyncCoordinator(
-        getWalletsUsecase: getWallets,
-        syncWalletUsecase: single,
+      final coordinator = SyncCoordinator<Wallet, WalletFailure>(
+        walletKey: (wallet) =>
+            WalletKey(id: wallet.id, network: wallet.network.shared),
+        classifyFailure: (failure) =>
+            (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+        getWallets: ({onlyBitcoin, onlyLiquid}) async =>
+            (await getWallets.execute(
+              onlyBitcoin: onlyBitcoin,
+              onlyLiquid: onlyLiquid,
+            )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
+        syncWallet: single.sync,
       );
       final bloc = WalletBloc(
         readWalletUsecase: _stubbedReadWallet(),
         getWalletsUsecase: getWallets,
         checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
         watchWalletSyncEventsUsecase: _stubbedWatchers(),
-        syncWalletsUsecase: SyncWalletsUsecase(coordinator),
+        syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
         getUnconfirmedIncomingBalanceUsecase:
             _MockGetUnconfirmedIncomingBalanceUsecase(),
-        deleteWalletUsecase: _MockDeleteWalletUsecase(),
         checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
         checkSpScanningForWalletUsecase: _stubbedSpScanning(),
         refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -798,7 +811,6 @@ WalletBloc _blocWithFailingLoad(
     syncWalletsUsecase: sync ?? _stubbedSync(),
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
-    deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -832,7 +844,7 @@ SyncWalletsUsecase _stubbedSync() {
 /// settles immediately and the watcher stays silent.
 CheckSpFeatureGateForWalletUsecase _stubbedSpGate() {
   final gate = _MockCheckSpFeatureGateForWalletUsecase();
-  when(gate.execute).thenAnswer((_) async => false);
+  when(gate.execute).thenAnswer((_) async => const Ok(false));
   return gate;
 }
 
@@ -906,7 +918,6 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     syncWalletsUsecase: sync,
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
-    deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),

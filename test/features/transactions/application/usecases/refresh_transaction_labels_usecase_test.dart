@@ -1,13 +1,10 @@
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:primitives/primitives.dart';
+import 'package:transactions/testing.dart';
+import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 WalletTransaction _walletTransaction({
   required String txId,
@@ -15,7 +12,7 @@ WalletTransaction _walletTransaction({
 }) {
   return WalletTransaction(
     walletId: 'wallet-1',
-    network: Network.bitcoinMainnet,
+    network: BitcoinNetwork.mainnet,
     direction: WalletTransactionDirection.incoming,
     status: WalletTransactionStatus.confirmed,
     txId: txId,
@@ -30,16 +27,16 @@ WalletTransaction _walletTransaction({
 }
 
 void main() {
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late RefreshTransactionLabelsUsecase usecase;
 
   setUp(() {
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     usecase = RefreshTransactionLabelsUsecase(labelsFacade: labelsFacade);
   });
 
   void stubLabels(List<Label> labels) {
-    when(labelsFacade.fetchAllOrFailure).thenAnswer((_) async => Ok(labels));
+    when(() => labelsFacade.fetch()).thenAnswer((_) async => Ok(labels));
   }
 
   test('picks up a label added after the transactions were loaded', () async {
@@ -95,7 +92,7 @@ void main() {
   test('keeps the labels it has when the read fails, instead of blanking '
       'every row', () async {
     final existing = Label.tx(id: 1, transactionId: 'txid-1', label: 'rent');
-    when(labelsFacade.fetchAllOrFailure).thenAnswer(
+    when(() => labelsFacade.fetch()).thenAnswer(
       (_) async => const Err(LabelUnexpectedFailure('database is locked')),
     );
 
@@ -142,12 +139,12 @@ void main() {
       identical(await usecase.execute(transactions), transactions),
       isTrue,
     );
-    verifyNever(labelsFacade.fetchAllOrFailure);
+    verifyNever(() => labelsFacade.fetch());
   });
 
   test('does not read storage when there is nothing loaded yet', () async {
     expect(await usecase.execute(const []), isEmpty);
 
-    verifyNever(labelsFacade.fetchAllOrFailure);
+    verifyNever(() => labelsFacade.fetch());
   });
 }

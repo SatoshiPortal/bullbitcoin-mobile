@@ -1,0 +1,731 @@
+{
+  "coreSwapsStatusInProgress": "Zpracovávám",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "Hotovo",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusExpired": "Vypršelo",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsStatusFailed": "Selhalo",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "coreSwapsLnReceivePaid": "Odesílatel zaplatil fakturu.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "coreSwapsLnReceiveExpired": "Swap vypršel.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "coreSwapsLnReceiveFailed": "Swap selhal.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "coreSwapsLnSendPaid": "Faktura bude zaplacena po potvrzení Tvé platby.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "coreSwapsLnSendExpired": "Swap vypršel",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Swap proběhnul úspěšně.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "coreSwapsLnSendFailedRefunding": "Swap bude brzy refundován.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "coreSwapsLnSendFailed": "Swap selhal.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreWalletTransactionStatusConfirmed": "Potvrzení",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionDetailLabelTransactionFee": "Transakční poplatek",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionSwapDescLnSendPending": "Vaše výměna byla zahájena. Vysíláme transakci on-chain, aby zamknout vaše prostředky.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionNoteHint": "Poznámka",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionLabelPreimage": "Čeština",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "coreSwapsChainCanCoop": "Swap bude brzy dokončen.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "transactionDetailLabelConfirmationTime": "Doba potvrzení",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionSwapDescChainPending": "Váš swap byl vytvořen, ale ještě nebyl zahájen.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionSwapStatusSwapStatus": "Stav Swapu",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionStatusTransferFailed": "Swap selhal",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionFilterTransfer": "Swap",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionNetworkLightning": "Blesk",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelSwapFees": "Výměnné poplatky",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bezpečné Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionFilterBuy": "Koupit",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "coreWalletTransactionStatusPending": "Čeština",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionDetailLabelTransferStatus": "Stav swapu",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "coreSwapsChainFailedRefunding": "Swap bude brzy vrácen.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionStatusPaymentRefunded": "Platba vracení peněz",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "Platba v průběhu",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "transactionSwapDescChainFailed": "U vašeho swapu došlo k problému. Pokud vám prostředky nebudou vráceny do 24 hodin, kontaktujte podporu.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescLnSendDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "buyTitle": "Koupit Bitcoin",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "transactionSwapDescLnSendFailed": "Byl problém s vaším swapem. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "Tento swap skončil. Vaše prostředky budou automaticky vráceny do Vaší peněženky.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "Tento swap skončil. Jakékoliv finanční prostředky budou automaticky vráceny odesílateli.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionSwapProgressClaim": "Čeština",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionDetailLabelTransferId": "ID swapu",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionFilterAll": "Vše",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionDetailLabelAmountReceived": "Množství přijaté",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionLabelReceiveAmount": "Přijmout částku",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionDetailAccelerate": "Čeština",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionSwapDescLnSendCompleted": "Splatek blesku byla úspěšně odeslána! Vaše výměna je nyní kompletní.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionListNoTransactions": "Žádné transakce.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionStatusTransferInProgress": "Swap probíhá",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailTransferProgress": "Průběh swapu",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailLabelPayinAmount": "Payin částka",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "coreSwapsLnSendPending": "Swap není dosud iniciován.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "transactionSwapProgressInitiated": "Hledat",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionSwapInfoClaimableTransfer": "Swap bude automaticky dokončen během několika sekund. Pokud ne, můžete zkusit ruční uplatnění kliknutím na tlačítko „Zkusit uplatnění swapu znovu“.",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionDetailLabelRefunded": "Vracení peněz",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionNoteAddTitle": "Přidat poznámku",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionDetailLabelCreatedAt": "Vytvořeno na",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionLabelSendAmount": "Odeslat částku",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "Obdržet Síťový poplatek",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionSwapDescChainExpired": "Platnost tohoto swapu vypršela. Vaše prostředky budou automaticky vráceny do vaší peněženky.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "coreSwapsChainCompletedRefunded": "Swap byl vrácen.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "transactionDetailLabelPayjoinStatus": "Stav Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionFilterReceive": "Čeština",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionSwapDescLnReceiveDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionSwapDoNotUninstall": "Odinstalujte aplikaci, dokud se nevymění.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionDetailLabelExchangeRate": "Směnný kurz",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "coreSwapsStatusPending": "Čeká na zpracování",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "transactionDetailLabelToWallet": "Peněženka",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "coreSwapsChainCompletedSuccess": "Swap byl úspěšně dokončen.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "transactionDetailLabelPayinStatus": "Stav Payin",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionListOngoingTransfersTitle": "Probíhající swapy",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionSwapDescChainClaimable": "Uzamykací transakce byla potvrzena. Nyní uplatňujete prostředky k dokončení swapu.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "Swap bude vrácen. Vaše prostředky budou automaticky vráceny do vaší peněženky.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "receivePaymentNormally": "Přijímejte platbu normálně",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "transactionTitle": "Transakce",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionSwapDescLnReceivePending": "Vaše výměna byla zahájena. Na bleskové síti čekáme platby.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionDetailLabelFromWallet": "Od peněženky",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionSwapDescChainCompleted": "Váš swap byl úspěšně dokončen! Prostředky by nyní měly být dostupné ve vaší peněžence.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "coreSwapsLnSendRefundable": "Swap je připraven na vrácení peněz.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "transactionPayjoinSendWithout": "Odeslat bez payjoin",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionFilterPayjoin": "Čeština",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "coreSwapsLnSendCanCoop": "Swap bude dokončit momentálně.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "retry": "Zkusit znovu",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionDetailLabelTransactionId": "ID transakce",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "coreSwapsLnReceiveClaimable": "Swap je připraven k uplatnění.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "transactionSwapProgressFundsClaimed": "Fondy\nReklamace",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "coreSwapsLnReceiveCanCoop": "Swap bude dokončit momentálně.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "transactionSwapProgressPaymentMade": "Platba\nČeština",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "coreSwapsChainPending": "Swap zatím nebyl zahájen.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "transactionNetworkBitcoin": "Čeština",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "coreSwapsChainRefundable": "Swap je připraven k vrácení prostředků.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "transactionFeesTotalDeducted": "To je celkový poplatek odečtený z výše uvedené částky",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionStatusPayjoinRequested": "Poptávka Payjoin",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionSwapInfoRefundableTransfer": "Tento swap bude automaticky vrácen během několika sekund. Pokud ne, můžete zkusit ruční vrácení kliknutím na tlačítko „Zkusit vrácení swapu znovu“.",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapDescLnReceiveCompleted": "Vaše výměna byla úspěšně dokončena! Finanční prostředky by měly být k dispozici ve vaší peněžence.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionDetailLabelPayoutStatus": "Stav výplaty",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "coreSwapsLnSendCompletedRefunded": "Swap byl vrácen.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "transactionSwapInfoClaimableSwap": "Výměna bude automaticky dokončena během několika sekund. Pokud ne, můžete zkusit ruční reklamaci kliknutím na tlačítko \"Retry Swap Claim\".",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionListLoadingTransactions": "Vkládání transakcí...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionDetailLabelBitcoinTxId": "ID transakce Bitcoin",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "coreSwapsChainFailed": "Swap selhal.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "Přidat poznámku",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionDetailLabelPayinMethod": "Payin metoda",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionStatusTransferCompleted": "Swap dokončen",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "ID Tekuté transakce",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionLabelServerNetworkFees": "Server Síťové poplatky",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "coreSwapsChainPaid": "Čekáme na potvrzení platby od poskytovatele swapu. Dokončení může chvíli trvat.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "transactionSwapDescLnSendPaid": "Vaše on-chain transakce byla vysílána. Po 1 potvrzení bude platba blesku odeslána.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescChainDefault": "Váš swap probíhá. Tento proces je automatický a jeho dokončení může chvíli trvat.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "coreSwapsChainClaimable": "Swap je připraven k uplatnění.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "Odeslat Síťový poplatek",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionOrderLabelOriginName": "Název původu",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "globalDefaultLiquidWalletLabel": "Okamžité platby",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionHistoryTitle": "Historie transakcí",
+  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
+  "exportTransactionsStartDate": "Datum od",
+  "exportTransactionsEndDate": "Datum do",
+  "exportTransactionsAnyDate": "Jakékoli",
+  "exportTransactionsButton": "Exportovat CSV",
+  "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
+  "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
+  "exportTransactionsError": "Nepodařilo se exportovat transakce.",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Datum zahájení musí být před datem ukončení",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionSwapInfoRefundableSwap": "Tento swap se automaticky vrátí během několika sekund. Pokud ne, můžete zkusit manuální vrácení kliknutím na tlačítko \"Retry Swap vracení peněz\".",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionDetailLabelAddressNotes": "Poznámky k adresám",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionOrderLabelReferenceNumber": "Referenční číslo",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "Stav",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionFeesDeductedFrom": "Tyto poplatky budou odečteny z výše uvedené částky",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionStatusPending": "Čeština",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionLabelSendNetworkFees": "Odeslat poplatky",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "coreSwapsChainExpired": "Swap vypršel",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionListYesterday": "Včera",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionDetailLabelPayoutMethod": "Metoda výplaty",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "transactionFilterSell": "Prodej",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionSwapInfoChainDelay": "Swapy on-chain mohou kvůli době potvrzení blockchainu chvíli trvat.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "sellTitle": "Prodej Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionListToday": "Dnes",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionDetailLabelSwapStatus": "Stav Swapu",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelAmountSent": "Částka odeslána",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "coreSwapsLnReceiveRefundable": "Swap je připraven na vrácení peněz.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFees": "Poplatky za swap",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionSwapStatusTransferStatus": "Stav swapu",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionDetailLabelOrderType": "Typ objednávky",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelPayoutAmount": "Výplatní částka",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "transactionSwapProgressBroadcasted": "Vysílání",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionDetailLabelAddress": "Čeština",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "coreSwapsLnReceivePending": "Swap zatím nebyl iniciován.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin vytváření času",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "transactionSwapInfoFailedExpired": "Máte-li jakékoli dotazy nebo připomínky, kontaktujte prosím zákaznický servis.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "transactionDetailLabelOrderNumber": "Číslo objednávky",
+  "transactionDetailLabelPaymentDescription": "Popis platby",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionListOngoingTransfersDescription": "Tyto swapy právě probíhají. Vaše prostředky jsou v bezpečí a budou k dispozici po dokončení swapu.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionOrderLabelOriginCedula": "Původ Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionStatusTransferExpired": "Swap vypršel",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsLnReceiveCompleted": "Swap je dokončen.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFee": "Poplatek za swap",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionNetworkLiquid": "Čeština",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionSwapDescChainPaid": "Vaše transakce byla vysílána. Nyní čekáme na uzavření transakce.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "transactionSwapDescLnReceiveFailed": "Byl problém s vaším swapem. Máte-li finanční prostředky vráceny do 24 hodin.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionDetailSwapProgress": "Výměny",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailLabelOrderStatus": "Stav zakázky",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionFilterSend": "Odeslat",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "coreSwapsLnSendClaimable": "Swap je připraven k uplatnění.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "transactionDetailTitle": "Detaily transakce",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailLabelCompletedAt": "Kompletní",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionSwapProgressInvoicePaid": "Čeština\nZaplaceno",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionDetailLabelSwapId": "Změna ID",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionSwapDescLnReceivePaid": "Platba byla přijata! Nyní vysíláme transakci on-chain na peněženku.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "Byla potvrzena transakce na řetězci. Nyní prohlašujeme, že finanční prostředky dokončí váš swap.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionNotesLabel": "Transakce",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionDetailLabelRecipientAddress": "Adresa příjemce",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionStatusSwapExpired": "Swap vypršel",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionDetailLabelPayjoinExpired": "Vypršelo",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionSwapProgressCompleted": "Hotovo",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Hotovo",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionSwapProgressInProgress": "Zpracovávám",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapProgressConfirmed": "Potvrzeno",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionStatusInProgress": "Zpracovávám",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionStatusSwapFailed": "Swap selhal.",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "viewerViewInExplorer": "Zobrazit v prohlížeči",
+  "transactionViewerTitle": "ID transakce",
+  "viewerCopyLink": "Kopírovat odkaz",
+  "recipientsTypeInteracEmail": "Převod peněz e-mailem",
+  "transactionStatusPayjoinCompleted": "Payjoin dokončen",
+  "coreSwapsStatusRefunded": "Vráceno",
+  "payViewReceipt": "Zobrazit účtenku",
+  "transactionFilterWithdraw": "Výběr",
+  "transactionFilterPay": "Platba",
+  "transactionFilterFunding": "Financování",
+  "transactionFilterReward": "Odměna",
+  "transactionFilterRefund": "Vrácení",
+  "transactionListLoadingFailed": "Transakce se nepodařilo načíst.",
+  "transactionLabelNetworkFees": "Síťové poplatky",
+  "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
+  "transactionStatusPayjoinAborted": "Payjoin přerušen",
+  "transactionDetailLabelPayjoinAborted": "Přerušeno",
+  "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78).",
+  "coreSwapsStatusNotStarted": "Nezahájeno",
+  "coreSwapsStatusAwaitingPayment": "Čeká na platbu",
+  "coreSwapsStatusAwaitingConfirmation": "Čeká na potvrzení",
+  "coreSwapsStatusUnderReview": "Probíhá kontrola",
+  "coreSwapsStatusRejected": "Zamítnuto",
+  "coreSwapsStatusCanceled": "Zrušeno",
+  "coreSwapsStatusPaymentDeadlineExpired": "Platební lhůta vypršela",
+  "coreSwapsStatusScheduled": "Naplánováno",
+  "coreSwapsStatusAwaitingClaim": "Čeká na vyzvednutí",
+  "coreSwapsStatusUnknown": "Neznámé",
+  "transactionDetailLoadError": "Podrobnosti transakce se nepodařilo načíst.",
+  "transactionPayjoinBroadcastFailed": "Původní transakci se nepodařilo odeslat. Zkuste to prosím znovu.",
+  "transactionPayjoinOriginalUnavailable": "Původní transakce již není k dispozici k odeslání.",
+  "transactionLabelLimitReached": "Můžete mít nejvýše 10 štítků.",
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "transactionListExchangeOrdersUnavailable": "Objednávky ze směnárny se nepodařilo načíst."
+}

@@ -1,12 +1,11 @@
-# Shared Flutter toolchain setup for the analyze_and_test jobs. Both jobs pay
-# this prefix (checks needs generated code for analyze/tests; integration needs
-# it to build the app), so it lives here to keep the two copies from drifting.
+# Shared Flutter toolchain setup for tests and the cache warmer. The x64
+# checks and shards use generated code from their workflow's preparation job.
 #
 # Cache notes: keys derive from lockfiles, so they self-invalidate when deps
-# change. When both parallel jobs miss the same key (lockfile just changed),
-# both build and both try to save — the first save wins, the second logs a
+# change. When parallel jobs miss the same key (lockfile just changed),
+# they all try to save — the first save wins, the others log a
 # benign "cache already exists" warning. No restore-keys on the pub cache on
-# purpose: it holds the bull_sdk git clone, and a fuzzy fallback can restore a
+# purpose: it holds git dependency clones, and a fuzzy fallback can restore a
 # checkout from an OLDER lock whose pinned commit differs; pub then resolves
 # against that stale clone and `pub get --enforce-lockfile` fails wanting to
 # drop deps. The exact key already pins the commit via pubspec.lock.
@@ -15,13 +14,48 @@ description: FVM + pub caches, FVM install, deps, build_runner, translations
 
 inputs:
   cargo-cache:
-    description: Also restore the Cargo cache (only the integration job compiles the FRB native crates)
+    description: Also restore Cargo registry sources and git checkouts
     required: false
     default: 'false'
+  codegen-artifact:
+    description: Artifact ID from the x64 preparation job, if code has already been generated for this revision
+    required: false
+    default: ''
 
 runs:
   using: composite
   steps:
+    # Bark's prost-build needs protoc even when a native cache is cold in a
+    # unit-test shard. Install for the host before any dependency/codegen hook.
+    - name: Install pinned protobuf compiler
+      shell: bash
+      run: |
+        case "$(uname -m)" in
+          x86_64)
+            protoc_arch=x86_64
+            protoc_sha=f3340e28a83d1c637d8bafdeed92b9f7db6a384c26bca880a6e5217b40a4328b
+            ;;
+          aarch64|arm64)
+            protoc_arch=aarch_64
+            protoc_sha=6018147740548e0e0f764408c87f4cd040e6e1c1203e13aeacaf811892b604f3
+            ;;
+          *) echo "Unsupported protoc host architecture: $(uname -m)" >&2; exit 1 ;;
+        esac
+        # Official release asset digests:
+        # https://github.com/protocolbuffers/protobuf/releases/expanded_assets/v33.1
+        protoc_archive="$RUNNER_TEMP/protoc-33.1-linux-${protoc_arch}.zip"
+        protoc_dir="$RUNNER_TEMP/protoc-33.1"
+        curl --retry 5 --retry-all-errors -fL \
+          "https://github.com/protocolbuffers/protobuf/releases/download/v33.1/protoc-33.1-linux-${protoc_arch}.zip" \
+          -o "$protoc_archive"
+        echo "$protoc_sha  $protoc_archive" | sha256sum --check --strict
+        mkdir -p "$protoc_dir"
+        unzip -q -o "$protoc_archive" -d "$protoc_dir"
+        test "$("$protoc_dir/bin/protoc" --version)" = 'libprotoc 33.1'
+        test -f "$protoc_dir/include/google/protobuf/descriptor.proto"
+        echo "$protoc_dir/bin" >> "$GITHUB_PATH"
+        echo "PROTOC=$protoc_dir/bin/protoc" >> "$GITHUB_ENV"
+
     # Native Assets hooks compile the Rust crates with these pinned compilers.
     # Every caller, the cache warmer included, installs them here so that the
     # compilers, PATH and RUSTUP_* variables match across jobs. The arm64
@@ -42,6 +76,10 @@ runs:
         # Official hosted Payjoin explicitly selects its own compiler.
         rustup toolchain install "$PAYJOIN_RUST_VERSION" --profile minimal
         rustup component add --toolchain "$PAYJOIN_RUST_VERSION" clippy rustfmt
+        # Bark selects its own compiler; host std matches the runner architecture.
+        rustup toolchain install "$BARK_RUST_VERSION" --profile minimal
+        rustup component add --toolchain "$BARK_RUST_VERSION" clippy rustfmt
+        rustup run "$BARK_RUST_VERSION" rustc --version | grep -F "rustc $BARK_RUST_VERSION"
         rustup run "$RUST_VERSION" rustc --version | grep -F "rustc $RUST_VERSION"
         rustup run "$PAYJOIN_RUST_VERSION" rustc --version | grep -F "rustc $PAYJOIN_RUST_VERSION"
         echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
@@ -57,20 +95,21 @@ runs:
         path: ~/fvm/versions
         key: fvm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.fvmrc') }}
 
-    - name: Cache pub (hosted + git deps)
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+    # Pub and Cargo are RESTORE ONLY, like build_runner below: a cache saved by a PR is scoped to that PR, so per-PR saves (about 200 MB pub + 380 MB Cargo each) only filled the 10 GB quota. cache-warmer.yml saves both on develop, where every PR can read them; keep paths and keys in sync with its save steps.
+    - name: Restore pub cache (hosted + git deps)
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/.pub-cache
         key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
 
-    - name: Cache Cargo (FRB native crates)
+    - name: Restore Cargo cache (FRB native crates)
       if: ${{ inputs.cargo-cache == 'true' }}
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-        key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+        key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}
         restore-keys: cargo-${{ runner.os }}-
 
     - name: Install FVM
@@ -116,12 +155,14 @@ runs:
     # The key embeds hashFiles of this action and the warmer workflow, so any edit to either file self-busts the cache instead of restoring a stale pre-edit snapshot — no manual version token to bump (this replaced the short-lived -v2- token).
     # Keep path + key in sync with the save step in cache-warmer.yml.
     - name: Restore build_runner cache
+      if: ${{ inputs.codegen-artifact == '' }}
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           .dart_tool/build
           **/*.g.dart
           **/*.freezed.dart
+          **/*.drift.dart
           **/*.mocks.dart
           **/*.gen.dart
           **/*.gr.dart
@@ -139,6 +180,7 @@ runs:
     # A stale entry is harmless: the hooks detect it and rebuild. Saved by
     # cache-warmer.yml on develop; the paths must stay identical there.
     - name: Restore Native Assets hook outputs
+      if: ${{ inputs.codegen-artifact == '' }}
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
@@ -147,12 +189,13 @@ runs:
           .dart_tool/hooks_runner/*/*/hook.dill.d
           .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
           .dart_tool/hooks_runner/shared/*/build/download-*/*.so
-        key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+        key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}-${{ github.sha }}
         restore-keys: |
-          hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
+          hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}-
           hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-
 
     - name: Generate code (build_runner)
+      if: ${{ inputs.codegen-artifact == '' }}
       shell: bash
       run: |
         if ! make build-runner; then
@@ -160,6 +203,18 @@ runs:
           rm -rf .dart_tool/build
           make build-runner
         fi
+
+    - name: Download generated code and Native Assets
+      if: ${{ inputs.codegen-artifact != '' }}
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      with:
+        artifact-ids: ${{ inputs.codegen-artifact }}
+        path: ${{ runner.temp }}/flutter-codegen
+
+    - name: Unpack generated code and Native Assets
+      if: ${{ inputs.codegen-artifact != '' }}
+      shell: bash
+      run: tar -xzf "$RUNNER_TEMP/flutter-codegen/flutter-codegen.tar.gz"
 
     - name: Generate translations
       shell: bash

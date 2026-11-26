@@ -1,0 +1,22 @@
+{
+  "retry": "Retry",
+  "doneButton": "تم",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "رسوم مطلقة",
+  "sendBelowMinFeeRateError": "يجب ألا يقل معدل الرسوم عن 0.1 ساتوشي/بايت افتراضي.",
+  "sendCustomFee": "الرسوم الجمركية",
+  "sendEconomyFee": "الاقتصاد",
+  "sendEnterAbsoluteFee": "إدخال رسوم مطلقة في الجلسات",
+  "sendEnterRelativeFee": "رسوم نسبية للدخول في الجلسات/التدبير",
+  "sendEstimatedDelivery": "تقديرات الإنجاز ",
+  "sendEstimatedDelivery10Minutes": "10 دقائق",
+  "sendEstimatedDelivery10to30Minutes": "10-30 دقيقة",
+  "sendEstimatedDeliveryHours": "ساعات",
+  "sendEstimatedDeliveryHoursToDays": "ساعات إلى أيام",
+  "sendFastFee": "بسرعة",
+  "sendRelativeFees": "الرسوم النسبية",
+  "sendSats": "الجلسات",
+  "sendSatsPerVB": "الجلستان/المكتب",
+  "sendSelectNetworkFee": "رسوم الشبكة المختارة",
+  "sendSubSatVbyteWarning": "قد تستغرق المعاملات بمعدل أقل من 1 ساتوشي/بايت افتراضي وقتًا أطول للتأكيد وقد لا تنتشر إلى جميع العُقد."
+}

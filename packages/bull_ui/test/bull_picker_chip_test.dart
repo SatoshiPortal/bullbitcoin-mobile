@@ -47,7 +47,7 @@ void main() {
       );
       final label = tester.widget<Text>(find.text('Apple'));
       expect(label.style?.color, testBullTheme.primary);
-      expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
+      expect(find.byIcon(Icons.expand_more), findsOneWidget);
     });
   });
 

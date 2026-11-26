@@ -1,13 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
-import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
-import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
-import 'package:bb_mobile/features/autoswap/ui/widgets/autoswap_settings.dart';
+import 'package:swaps/swaps.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,17 +38,17 @@ void main() {
     );
   });
 
-  tearDown(() async {
-    await locator.reset();
-  });
-
   testWidgets('renders a shared failure on the settings screen', (
     tester,
   ) async {
-    final cubit = buildCubit();
-    locator.registerFactory<AutoSwapSettingsCubit>(() => cubit);
-
-    await tester.pumpWidget(app(const AutoSwapSettingsScreen()));
+    await tester.pumpWidget(
+      app(
+        BlocProvider(
+          create: (_) => buildCubit()..loadSettings(),
+          child: const AutoSwapSettingsScreen(),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Failed to load auto swap settings'), findsOneWidget);

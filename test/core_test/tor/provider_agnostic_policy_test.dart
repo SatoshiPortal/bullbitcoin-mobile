@@ -7,6 +7,7 @@ void main() {
     final productRoots = [
       Directory('lib'),
       Directory('packages'),
+      Directory('features/network/lib'),
       Directory('android/app/src'),
     ];
     const sourceExtensions = {
@@ -43,8 +44,9 @@ void main() {
 
     expect(Directory('packages/bull_tor/android').existsSync(), isFalse);
     expect(
-      File('lib/features/tor_settings/ui/widgets/tor_proxy_widget.dart')
-          .readAsStringSync(),
+      File(
+        'features/network/lib/src/tor_settings/ui/widgets/tor_proxy_widget.dart',
+      ).readAsStringSync(),
       isNot(contains('canLaunchUrl')),
     );
   });

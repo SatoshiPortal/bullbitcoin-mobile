@@ -1,0 +1,46 @@
+{
+  "@@locale": "tr",
+  "scanningProgressLabel": "Tarama: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} parçaları",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Scanning tamamlandı",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR decoding başarısız oldu",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR işleme başarısız oldu",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "NFC bağlantısı kesildi. Cihazınızı NFC etiketine yakın tutun ve tekrar deneyin.",
+  "nfcWriteFailed": "NFC aktarımı başarısız oldu. Lütfen tekrar deneyin.",
+  "nfcDisabled": "NFC devre dışı. Ayarlardan etkinleştirin.",
+  "nfcNotAvailable": "Bu cihazda NFC desteklenmiyor",
+  "nfcFailed": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "Desteklenen bir NFC verisi bulunamadı"
+}

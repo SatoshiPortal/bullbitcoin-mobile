@@ -11,16 +11,32 @@ void main() {
       'broadcast continuation emits and performs bookkeeping after await',
       () {
         final source = File(
-          'lib/features/send/presentation/bloc/send_cubit.dart',
+          'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
         ).readAsStringSync();
         final broadcast = source.substring(
           source.indexOf('Future<void> broadcastTransaction'),
-          source.indexOf('Future<void> onConfirmTransactionClicked'),
+          source.indexOf('Future<bool> _validateSelectedInputsForBroadcast'),
         );
-        expect(broadcast, contains('await _broadcastBitcoinTxUsecase.execute'));
-        expect(broadcast, contains('await _labelsFacade.store'));
-        expect(broadcast, contains('step: SendStep.success'));
-        expect(broadcast, contains('if (!isClosed)'));
+        expect(broadcast, contains('await _spend.broadcastBitcoin('));
+        expect(broadcast, contains('await _spend.resumeBitcoinPayin('));
+        expect(broadcast, contains('txId = receipt.txid;'));
+        expect(
+          broadcast,
+          matches(
+            RegExp(
+              r'await _storeSendTransactionLabel\.execute\(\s*transactionId: txId,',
+            ),
+          ),
+        );
+        expect(
+          broadcast,
+          matches(
+            RegExp(
+              r'if \(!isClosed\) \{\s*emit\(\s*state\.copyWith\(\s*'
+              r'broadcastingTransaction: false,\s*step: SendStep\.success,',
+            ),
+          ),
+        );
         expect(source, contains('return super.close();'));
       },
     );

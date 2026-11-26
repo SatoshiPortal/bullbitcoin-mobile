@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 // Regression test for a send-to-self recorded with the whole value of the
@@ -8,7 +10,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 //
 // Every test drives the real `getTransactions` against an offline, in-process
 // bdk wallet, so they cover `listOutput()` -> keychain -> `isChange` -> the
-// amount. Setup mirrors bdk_wallet_datasource_test.dart: a fixed BIP84 testnet
+// amount. Setup mirrors bitcoin_spend_test.dart: a fixed BIP84 testnet
 // wallet seeded with hand-crafted raw transactions, path_provider mocked to a
 // temp directory. `setUp` funds the wallet; each test then applies its own
 // spend of that funding so the scenarios don't double-spend each other.
@@ -17,9 +19,10 @@ import 'dart:typed_data';
 
 import 'support/bdk_test_store.dart';
 
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'support/wallet_model.dart';
+
+import 'package:transactions/testing.dart';
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -98,6 +101,76 @@ bdk.Transaction _rawTx({
   }
   bytes.add(_leUint32(0)); // locktime
   return bdk.Transaction(transactionBytes: bytes.toBytes());
+}
+
+/// A spend of wallet-owned outpoints signed with the test wallet's key. bdk
+/// drops an unconfirmed transaction whose owned inputs fail script
+/// verification, so only the funding (which spends a foreign outpoint) may
+/// stay hand-built. The inputs must cover the outputs plus [_feeSat] exactly,
+/// so the builder adds no change of its own.
+bdk.Transaction _signedSpend(
+  bdk.Wallet wallet, {
+  required List<({String txId, int vout})> inputs,
+  required List<({bdk.Script script, int amountSat})> outputs,
+}) {
+  final mnemonic = bdk.Mnemonic.fromString(mnemonic: _testMnemonic);
+  final secretKey = bdk.DescriptorSecretKey(
+    networkKind: bdk.NetworkKind.test,
+    mnemonic: mnemonic,
+    password: null,
+  );
+  final signers = [
+    for (final keychain in [
+      bdk.KeychainKind.external_,
+      bdk.KeychainKind.internal,
+    ])
+      bdk.SignersContainer.fromDescriptor(
+        descriptor: bdk.Descriptor.newBip84(
+          secretKey: secretKey,
+          keychainKind: keychain,
+          networkKind: bdk.NetworkKind.test,
+        ),
+      ),
+  ];
+  try {
+    final psbt = bdk.TxBuilder()
+        .addUtxos(
+          outpoints: [
+            for (final input in inputs)
+              bdk.OutPoint(
+                txid: bdk.Txid.fromString(hex: input.txId),
+                vout: input.vout,
+              ),
+          ],
+        )
+        .manuallySelectedOnly()
+        .setRecipients(
+          recipients: [
+            for (final output in outputs)
+              bdk.ScriptAmount(
+                script: output.script,
+                amount: bdk.Amount.fromSat(satoshi: output.amountSat),
+              ),
+          ],
+        )
+        .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: _feeSat))
+        .finish(wallet: wallet);
+    try {
+      expect(
+        wallet.signWithSigners(psbt: psbt, signers: signers, signOptions: null),
+        isTrue,
+      );
+      return psbt.extractTx();
+    } finally {
+      psbt.dispose();
+    }
+  } finally {
+    for (final signer in signers) {
+      signer.dispose();
+    }
+    secretKey.dispose();
+    mnemonic.dispose();
+  }
 }
 
 void main() {
@@ -217,23 +290,26 @@ void main() {
   test(
     'address filter matches the second output and rejects absent addresses',
     () async {
-      final datasource = BdkTestStore.values(walletModel);
+      final datasource = BdkTestStore.history(walletModel);
       final wallet = await BdkTestStore.createWallet(walletModel);
       final second = wallet
           .peekAddress(keychain: bdk.KeychainKind.external_, index: 1)
           .address
           .toString();
       wallet.dispose();
-      final matches = await datasource.getTransactions(
-        wallet: walletModel,
+      final matches = (await datasource.getTransactions(
+        key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
         toAddress: second,
-      );
+      )).fold((value) => value, (failure) => fail(failure.logCode));
       expect(matches.map((tx) => tx.txId), contains(fundingTxId));
       expect(
-        await datasource.getTransactions(
-          wallet: walletModel,
+        (await datasource.getTransactions(
+          key: WalletKey(
+            id: walletModel.id,
+            network: walletModel.network.shared,
+          ),
           toAddress: _externalTestnetAddress,
-        ),
+        )).fold((value) => value, (failure) => fail(failure.logCode)),
         isEmpty,
       );
     },
@@ -252,7 +328,8 @@ void main() {
     List<int> spendingVouts = const [0],
   }) async {
     final wallet = await BdkTestStore.createWallet(walletModel);
-    final tx = _rawTx(
+    final tx = _signedSpend(
+      wallet,
       inputs: [
         for (final vout in spendingVouts) (txId: fundingTxId, vout: vout),
       ],
@@ -268,8 +345,13 @@ void main() {
     );
     await BdkTestStore.saveWallet(wallet, walletModel.hexId);
 
-    final transactions = await BdkTestStore.values(walletModel)
-        .getTransactions(wallet: walletModel);
+    final transactions =
+        (await BdkTestStore.history(walletModel).getTransactions(
+          key: WalletKey(
+            id: walletModel.id,
+            network: walletModel.network.shared,
+          ),
+        )).fold((value) => value, (failure) => fail(failure.logCode));
     return transactions.firstWhere(
       (transaction) => transaction.txId == tx.computeTxid().toString(),
     );
@@ -356,8 +438,13 @@ void main() {
   });
 
   test('an incoming transaction is unaffected', () async {
-    final transactions = await BdkTestStore.values(walletModel)
-        .getTransactions(wallet: walletModel);
+    final transactions =
+        (await BdkTestStore.history(walletModel).getTransactions(
+          key: WalletKey(
+            id: walletModel.id,
+            network: walletModel.network.shared,
+          ),
+        )).fold((value) => value, (failure) => fail(failure.logCode));
     final funding = transactions.firstWhere((tx) => tx.txId == fundingTxId);
 
     expect(funding.isToSelf, isFalse);

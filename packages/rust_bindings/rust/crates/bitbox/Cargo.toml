@@ -1,0 +1,28 @@
+[package]
+name = "bitbox"
+version = "0.2.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[dependencies]
+flutter_rust_bridge = "=2.13.0"
+anyhow = "1.0"
+tokio = { version = "1.40", features = ["rt", "sync"] }
+lazy_static = "1.5"
+bitcoin = { version = "0.32", features = ["base64"] }
+miniscript = "12.0.0"
+bitbox-api = { git = "https://github.com/ben-kaufman/bitbox-api-rs", rev = "9f20d81686fa8321c11586cbdc967cc11f3ab26a", default-features = false, features = ["tokio", "multithreaded"] }
+async-trait = "0.1"
+
+[features]
+bull_sdk = []
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
+
+[profile.release]
+lto = true
+opt-level = "z"
+strip = true

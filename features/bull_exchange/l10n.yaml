@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: exchange_en.arb
+output-localization-file: exchange_localizations.dart
+output-class: ExchangeLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false

@@ -1,0 +1,559 @@
+{
+  "importQrDeviceKruxStep3": "Click XPUB – QR Code",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "Krux",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep7": "در صورت نیاز، گزینه “اختیاری” را انتخاب کنید تا نوع آدرس را تغییر دهید",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterStep7": "دانلود فیلم Use SLIP-132",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceJadeStep5": "گزینه “Wallet” را از لیست گزینه ها انتخاب کنید",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "emptyMnemonicWordsError": "تمام کلمات mnemonic خود را وارد کنید",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importQrDeviceKruxStep4": "روی دکمه “Open Camera” کلیک کنید",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceJadeStep6": "گزینه “Export Xpub” را از منوی کیف پول انتخاب کنید",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeName": "Blockstream Jade",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceJadeFirmwareWarning": "اطمینان حاصل کنید که دستگاه شما به آخرین سیستم عامل به روز شده است",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "دستورالعمل های دستگاه را برای باز کردن جلیقه دنبال کنید",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep10": "یک برچسب برای کیف پول خود وارد کنید و واردات را لمس کنید",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceJadeStep9": "کد QR را که در دستگاه خود می بینید، اسکن کنید.",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceSpecterStep8": "در دستگاه تلفن همراه خود، دوربین Open را بزنید",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceJadeStep2": "گزینه “QR Mode” را از منوی اصلی انتخاب کنید",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceScanPrompt": "کد QR را از {deviceName} خود اسکن کنید",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceSpecterStep9": "کد QR را که بر روی Specter شما نمایش داده شده است، اسکن کنید",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importWatchOnlySelectDerivation": "گزینه derivation",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "requiredHint": "نیاز",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "importQrDeviceKruxStep1": "روی دستگاه Krux خود کلیک کنید",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceButtonOpenCamera": "دوربین را باز کنید",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDeviceSpecterStep5": "گزینه “Master Public key” را انتخاب کنید",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKruxInstructionsTitle": "دستورالعمل های Krux",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "دستورالعمل های Keystone",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "submitButton": "ارسال",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "importQrDeviceKeystoneName": "Keystone",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceJadeStep1": "بر روی دستگاه شما قرار دهید",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceJadeStep8": "روی دکمه “Open Camera” کلیک کنید",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "راه اندازی کامل",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDeviceSpecterStep6": "گزینه “Single key” را انتخاب کنید",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "این است!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "importQrDeviceKeystoneStep2": "باز کردن آن با وارد کردن PIN",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceKruxStep5": "کد QR را که در دستگاه خود می بینید، اسکن کنید.",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep2": "گزینه Extended Public Key",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceKruxStep6": "این است!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "optionalPassphraseHint": "Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "importQrDeviceTitle": "Connect {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceButtonInstructions": "دستورالعمل ها",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeStep4": "گزینه “اختیاری” را از منوی اصلی انتخاب کنید",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeInstructionsTitle": "دستورالعمل های Blockstream Jade",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "قدرت در Keystone",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importQrDeviceSpecterStep2": "وارد کردن PIN",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceSpecterName": "Specter",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSeedsignerName": "Seedsigner",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "importQrDeviceKeystoneStep3": "۳) در گوشه سمت راست بالا",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep5": "گزینه “Single Sig” را انتخاب کنید، سپس نوع اسکریپت ترجیحی خود را انتخاب کنید (در صورت عدم اطمینان، بومی Segwit را انتخاب کنید).",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceSpecterStep1": "قدرت در دستگاه Specter",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceKeystoneStep5": "گزینه “BULL” را از لیست کیف پول ها انتخاب کنید",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceKeystoneStep6": "در تلفن همراه خود، روی “دوربین باز” کلیک کنید",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep9": "یک برچسب برای کیف پول SeedSigner خود وارد کنید و وارد واردات شوید",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDevicePassportStep2": "PIN خود را وارد کنید",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDeviceKeystoneStep10": "Keystone شما در حال حاضر متصل و آماده برای استفاده با BU Wallet است.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceSpecterStep3": "وارد شوید و وارد شوید",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDevicePassportStep4": "گزینه “Connect App” را انتخاب کنید",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "importQrDevicePassportStep7": "در برنامه کیف پول BULL، \"Segwit (BIP84)\" را به عنوان گزینه استخراج انتخاب کنید",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceSeedsignerStep6": "گزینه «Animated» را برای خروجی انتخاب کنید. در نسخه‌های قدیمی‌تر میان‌افزار SeedSigner، «Sparrow» را انتخاب کنید.",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDevicePassportStep1": "دستگاه Passport خود را روشن کنید",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep3": "چک کردن a SeedQR یا وارد عبارت بذر 12 یا 24 کلمه ای",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceSpecterStep4": "دنبال کردن راهنمایی با توجه به روش انتخاب شده خود",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDeviceKeystoneStep7": "کد QR را که در Keystone شما نمایش داده شده است، اسکن کنید",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "در کیف پول BULL، نوع جذب ترجیحی خود را انتخاب کنید. اگر مطمئن نیستید، “Segwit” (BIP84) را انتخاب کنید",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDevicePassportName": "پایه گذرنامه",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "دستورالعمل های Specter",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDeviceSeedsignerStep10": "راه اندازی کامل",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDevicePassportStep9": "راه‌اندازی کامل شد.",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDevicePassportStep6": "کد QR نمایش‌داده‌شده روی Passport خود را اسکن کنید",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep4": "گزینه “Export Xpub” را انتخاب کنید",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDevicePassportInstructionsTitle": "دستورالعمل های پایه پاسپورت",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "importQrDeviceKeystoneStep9": "یک برچسب برای کیف پول Keystone خود وارد کنید و روی “Import” ضربه بزنید",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep2": "منوی “Seeds” را باز کنید",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep1": "قدرت در دستگاه SeedSigner",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDevicePassportStep5": "گزینه “Bull” را انتخاب کنید",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "گزینه “Wallet” را انتخاب کنید",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep8": "کد QR نمایش داده شده در SeedSigner",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDevicePassportStep8": "یک برچسب برای کیف پول Passport خود وارد کنید و روی \"واردات\" ضربه بزنید",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "importQrDeviceKeystoneStep4": "گزینه “Connect Software Wallet” را بزنید",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDeviceSeedsignerStep7": "در دستگاه تلفن همراه خود، دوربین Open را بزنید",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "دستورالعمل های ناظر",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importColdcardQInstructionsTitle": "دستورالعمل‌های Coldcard Q",
+  "importColdcardQStep1": "به دستگاه Coldcard Q خود وارد شوید",
+  "importColdcardQStep2": "در صورت داشتن passphrase، آن را اضافه کنید (اختیاری)",
+  "importColdcardQStep3": "منوی advanced/settings را انتخاب کنید",
+  "importColdcardQStep4": "روی «export wallet» کلیک کنید",
+  "importColdcardQStep5": "«descriptor» را به‌عنوان نوع خروجی انتخاب کنید",
+  "importColdcardQStep6": "در صفحه‌ی اول «Enter» را فشار دهید",
+  "importColdcardQStep7": "در صفحه‌ی دوم «Enter» را فشار دهید",
+  "importColdcardQStep8": "نوع آدرس خود را انتخاب کنید (در صورت تردید از Segwit استفاده کنید)",
+  "importColdcardQStep9": "برای کد QR، دکمه‌ی کد QR روی دستگاه را بزنید. کد QR روی دستگاه نمایش داده می‌شود",
+  "importColdcardQStep10": "برای NFC، دکمه‌ی NFC روی دستگاه را بزنید",
+  "importColdcardQStep11": "روی دکمه‌ی «Open the camera» / «Scan NFC» کلیک کنید",
+  "importColdcardQStep12": "کد QR را که روی دستگاه خود می‌بینید اسکن کنید یا تلفن خود را روی NFC کارت سرد قرار دهید",
+  "importColdcardQStep13": "همین!",
+  "importColdcardMk4InstructionsTitle": "دستورالعمل‌های Coldcard Mk4",
+  "importColdcardMk4Step1": "به دستگاه Coldcard Mk4 خود وارد شوید",
+  "importColdcardMk4Step2": "در صورت داشتن passphrase، آن را اضافه کنید (اختیاری)",
+  "importColdcardMk4Step3": "منوی advanced/settings را انتخاب کنید",
+  "importColdcardMk4Step4": "روی «export wallet» کلیک کنید",
+  "importColdcardMk4Step5": "«descriptor» را به‌عنوان نوع خروجی انتخاب کنید",
+  "importColdcardMk4Step6": "در صفحه‌ی اول «Enter» را فشار دهید",
+  "importColdcardMk4Step7": "در صفحه‌ی دوم «Enter» را فشار دهید",
+  "importColdcardMk4Step8": "نوع آدرس خود را انتخاب کنید (در صورت تردید از Segwit استفاده کنید)",
+  "importColdcardMk4Step9": "برای شروع NFC روی Coldcard، عدد ۳ را بزنید",
+  "importColdcardMk4Step10": "روی دکمه‌ی «Scan NFC» کلیک کنید",
+  "importColdcardMk4Step11": "تلفن خود را روی NFC کارت سرد قرار دهید",
+  "importColdcardMk4Step12": "همین!",
+  "recipientsInfoLabel": "برچسب",
+  "bitboxScreenDefaultWalletLabel": "کیف پول BitBox",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "دستورالعمل ها",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "دوربین را باز کنید",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "توصیف‌گر کیف پول را از {deviceName} خود وارد کنید",
+  "importColdcardConnectTitle": "اتصال {deviceName}",
+  "importColdcardInvalidWalletData": "داده‌ی کیف پول Coldcard نامعتبر است",
+  "importColdcardScanNfcSheetTitle": "برای وارد کردن توصیف‌گر کیف پول از طریق NFC، {deviceName} خود را لمس کنید",
+  "importMnemonicBalanceLabel": "تعادل: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "ادامه",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
+  "importMnemonicEmptyLabelError": "برای وارد کردن عبارت بازیابی، برچسب الزامی است",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "میراث",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "دانلود بازی نستله",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "واردات Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "هر سه نوع کیف پول همگام سازی می شوند و تعادل و معاملات آنها به زودی ظاهر می شود. شما می توانید صبر کنید تا همگام سازی کامل شود یا اگر مطمئن هستید که کدام نوع کیف پول را می خواهید وارد کنید.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "واردات Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "معاملات: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "کارت سرد Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "واردات Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "واردات تنها",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "پایه گذرنامه",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "کیف پول های Generic",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "کیف های سخت افزاری",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "Seedsigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "اضافه کردن کیف پول جدید",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "نصب شده برای Clipboard",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "Descriptor",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "اطمینان حاصل کنید که مسیر محرکی که انتخاب می کنید، با تأیید اولین آدرس از کیف پول قبل از استفاده مطابقت دارد. استفاده از مسیر اشتباه می تواند منجر به از دست دادن وجوه شود",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "هشدار مسیر",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "این کیف پول قبلاً وارد شده است.",
+  "importWatchOnlyErrorImportFailed": "نتوانستیم این کیف پول فقط‌مشاهده را وارد کنیم. لطفاً جزئیات را بررسی کرده و دوباره تلاش کنید.",
+  "importWatchOnlyErrorInvalidFormat": "این به نظر یک کلید عمومی یا توصیف‌گر معتبر نمی‌رسد. آنچه را چسبانده‌اید دوباره بررسی کنید.",
+  "importWatchOnlyErrorLabelRequired": "پیش از وارد کردن، برای کیف پول خود نامی انتخاب کنید.",
+  "importWatchOnlyErrorNetworkMismatch": "این کیف پول در حال استفاده از شبکه بیت‌کوین دیگری است. بین Mainnet و Testnet جابه‌جا شوید و دوباره تلاش کنید.",
+  "importWatchOnlyErrorNoWalletSelected": "ابتدا یک کلید عمومی یا توصیف‌گر را بچسبانید یا اسکن کنید.",
+  "importWatchOnlyExtendedPublicKey": "گسترش عمومی کلید کلیدی",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "واردات",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "برچسب",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "شبکه: شبکه اصلی بیت‌کوین",
+  "importWatchOnlyNetworkBitcoinTestnet": "شبکه: شبکه آزمایشی بیت‌کوین",
+  "importWatchOnlyPasteHint": "×pub، ypub، zpub یا descriptor",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "نیاز",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "اسکن QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "امضای دستگاه",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "واردات تنها",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "نوع",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "ناشناخته",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "کیف پول Ledger",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
+}

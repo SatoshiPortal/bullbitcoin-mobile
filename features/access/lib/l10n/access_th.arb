@@ -1,0 +1,117 @@
+{
+  "@@locale": "th",
+  "appUnlockButton": "ปลดล็อค",
+  "appUnlockPinCheckError": "ไม่สามารถโหลดการตั้งค่าความปลอดภัยได้ กรุณาเปิดแอปใหม่",
+  "appUnlockPinVerifyError": "ไม่สามารถยืนยัน PIN ของคุณได้ กรุณาลองอีกครั้ง",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "pinCodeSecurityPinTitle": "ความปลอดภัย",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeCreateButton": "สร้าง PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeManageTitle": "การจัดการลายนิ้วมือของคุณ",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeProcessing": "การประมวลผลการประมวลผล",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeCreateTitle": "สร้างเข็มใหม่",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeContinue": "อ่านต่อ",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "appUnlockAttemptSingular": "พยายามที่จะล้มเหลว",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "pinCodeCreateDescription": "ช่วยให้คุณสามารถเข้าถึงกระเป๋าสตางค์และการตั้งค่าของคุณ ลืม.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "ยืนยันเข็มใหม่",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeRemoveButton": "ลบรหัสผ่าน",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "appUnlockAttemptPlural": "พยายามที่จะล้มเหลว",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "pinCodeMismatchError": "PINs ไม่จับคู่",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "pinCodeChangeButton": "เปลี่ยน PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCheckingStatus": "ตรวจสอบสถานะ PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeAuthentication": "ข้อควรระวัง",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeSettingUp": "การตั้งค่ารหัส PIN ของคุณ",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "pinCodeBackupRequiredWarning": "กรุณาสำรองข้อมูลกระเป๋าเงินก่อนตั้ง PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "appUnlockScreenTitle": "ข้อควรระวัง",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockIncorrectPinError": "PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "ใส่รหัสรหัสของคุณเพื่อปลดล็อค",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "backupSettingsStartBackup": "เริ่มต้นการสํารองข้อมูล",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeConfirm": "ยืนยัน",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "โหลด",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeSaveError": "ไม่สามารถบันทึก PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "ป้อนตัวเลข {min} ถึง {max} หลัก"
+}

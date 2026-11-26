@@ -1,0 +1,322 @@
+import 'package:material_ui/material_ui.dart';
+
+import '../data_display/bull_text.dart';
+import '../layout/gap.dart';
+import '../theme/bull_shapes.dart';
+import '../theme/bull_theme.dart';
+import '../theme/bull_typography.dart';
+import 'bull_bottom_sheet.dart';
+
+/// A named action that opens a disclosure supplied by its caller.
+class BullDisclosureLink extends StatelessWidget {
+  const BullDisclosureLink({
+    super.key,
+    required this.label,
+    required this.semanticLabel,
+    required this.title,
+    required this.body,
+    required this.closeLabel,
+  });
+
+  final String label;
+  final String semanticLabel;
+  final String title;
+  final String body;
+  final String closeLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.bull.onSurfaceVariant;
+
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: () => BullDisclosureSheet.show(
+            context,
+            title: title,
+            body: body,
+            closeLabel: closeLabel,
+          ),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline, size: 16, color: color),
+                const Gap(6),
+                Flexible(
+                  child: BullText(
+                    label,
+                    style: context.bullType.caption,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Presents headings, paragraphs, warning callouts and lists in a Bull sheet.
+class BullDisclosureSheet extends StatelessWidget {
+  const BullDisclosureSheet({
+    super.key,
+    required this.title,
+    required this.body,
+    required this.closeLabel,
+  });
+
+  final String title;
+  final String body;
+  final String closeLabel;
+
+  static Future<void> show(
+    BuildContext context, {
+    required String title,
+    required String body,
+    required String closeLabel,
+  }) {
+    return BullBottomSheet.show(
+      context: context,
+      child: BullDisclosureSheet(
+        title: title,
+        body: body,
+        closeLabel: closeLabel,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.82,
+      ),
+      decoration: BoxDecoration(
+        color: context.bull.surface,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 16, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    child: BullText(
+                      title,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: closeLabel,
+                  constraints: const BoxConstraints(
+                    minWidth: 48,
+                    minHeight: 48,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: _DisclosureBody(body),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DisclosureBody extends StatelessWidget {
+  const _DisclosureBody(this.body);
+
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    final blocks = body.trim().split(RegExp(r'\n\s*\n'));
+    final children = <Widget>[];
+
+    for (final block in blocks) {
+      if (block.trim().isEmpty) continue;
+      if (children.isNotEmpty) {
+        children.add(Gap(_spacingBefore(block)));
+      }
+      children.add(_buildBlock(context, block.trim()));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
+    );
+  }
+
+  double _spacingBefore(String block) {
+    if (block.startsWith('## ')) return 24;
+    if (block.startsWith('### ') || block.startsWith('> ')) return 16;
+    return 12;
+  }
+
+  Widget _buildBlock(BuildContext context, String block) {
+    if (block.startsWith('## ')) {
+      return Semantics(
+        header: true,
+        child: BullText(
+          block.substring(3),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(fontWeight: .w600),
+          color: context.bull.text,
+        ),
+      );
+    }
+
+    if (block.startsWith('### ')) {
+      return Semantics(
+        header: true,
+        child: BullText(
+          block.substring(4),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(fontWeight: .w600),
+          color: context.bull.text,
+        ),
+      );
+    }
+
+    final lines = block.split('\n');
+    if (lines.every((line) => line.startsWith('> '))) {
+      return _buildCallout(
+        context,
+        title: lines.first.substring(2),
+        body: lines.skip(1).map((line) => line.substring(2)).join('\n'),
+      );
+    }
+
+    if (lines.every((line) => line.startsWith('- '))) {
+      return _buildBulletList(
+        context,
+        lines.map((line) => line.substring(2)).toList(),
+      );
+    }
+
+    return BullText(
+      block,
+      style: context.bullType.body,
+      color: context.bull.text,
+    );
+  }
+
+  Widget _buildCallout(
+    BuildContext context, {
+    required String title,
+    required String body,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.bull.warningContainer,
+        border: Border.all(color: context.bull.warning),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            size: 22,
+            color: context.bull.warning,
+          ),
+          const Gap(12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BullText(
+                  title,
+                  style: context.bullType.body
+                      .copyWith(fontWeight: FontWeight.w500)
+                      .copyWith(fontWeight: .w600),
+                  color: context.bull.text,
+                ),
+                const Gap(6),
+                BullText(
+                  body,
+                  style: context.bullType.body,
+                  color: context.bull.text,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBulletList(BuildContext context, List<String> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var index = 0; index < items.length; index++) ...[
+          if (index > 0) const Gap(8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 18,
+                child: BullText(
+                  '•',
+                  style: context.bullType.body,
+                  color: context.bull.text,
+                ),
+              ),
+              Expanded(child: _buildBulletText(context, items[index])),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildBulletText(BuildContext context, String item) {
+    final style = context.bullType.body.copyWith(color: context.bull.text);
+    final match = RegExp(r'^\*\*(.+?)\*\*(.*)$').firstMatch(item);
+
+    if (match == null) return Text(item, style: style);
+
+    return Text.rich(
+      TextSpan(
+        style: style,
+        children: [
+          TextSpan(
+            text: match.group(1),
+            style: style.copyWith(fontWeight: .w600),
+          ),
+          TextSpan(text: match.group(2)),
+        ],
+      ),
+    );
+  }
+}

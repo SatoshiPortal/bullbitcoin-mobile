@@ -1,14 +1,33 @@
+import 'package:bip85/bip85.dart';
 // Regression coverage for security audit #2644: copied derivations must
 // expire even after their screen closes. Entropy derivation/controller
 // lifetime is outside this clipboard mitigation.
 
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bip85_entropy/ui/bip85_derivation_widget.dart';
+import 'package:secrets/bip85.dart';
+import 'package:bip85/testing.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+
+class _Derivation extends Fake implements Bip85Derivation {
+  @override
+  final String path;
+  @override
+  final String? alias;
+  @override
+  final Bip85Status status;
+  @override
+  final Bip85Application application;
+
+  _Derivation({
+    required this.path,
+    required this.alias,
+    required this.status,
+    required this.application,
+  });
+}
 
 void main() {
   testWidgets('leaving the derivation screen still clears its copied value', (
@@ -28,17 +47,18 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: [
+          Bip85Localizations.delegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: const [Locale('en')],
         home: Scaffold(
           body: Bip85DerivationWidget(
-            derivation: Bip85DerivationEntity(
+            derivation: _Derivation(
               path: 'test-path',
-              xprvFingerprint: 'public-test-id',
               alias: 'test',
               status: Bip85Status.active,
               application: Bip85Application.hex,
-              index: 0,
             ),
             entropy: 'test-only-value',
           ),

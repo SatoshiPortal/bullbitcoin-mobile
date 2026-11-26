@@ -1,0 +1,181 @@
+import 'package:exchange/exchange.dart' show RecipientField;
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_error.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
+import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_document_type_label.dart';
+import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/cop_holder_fields.dart';
+import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
+import 'package:bull_exchange/src/recipients/presentation/models/cop_document_type.dart';
+import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, Gap, BullTypographyX;
+
+class NequiCopForm extends StatefulWidget {
+  const NequiCopForm({super.key, this.hookError});
+
+  final String? hookError;
+
+  @override
+  NequiCopFormState createState() => NequiCopFormState();
+}
+
+class NequiCopFormState extends State<NequiCopForm> {
+  final _formKey = GlobalKey<FormState>();
+  final FocusNode _labelFocusNode = FocusNode();
+  String _phoneNumber = '';
+  CopDocumentType _documentType = CopDocumentType.cc;
+  String _documentId = '';
+  CopHolderFormData _holder = const CopIndividualFormData(
+    firstName: '',
+    lastName: '',
+  );
+  String _email = '';
+  String _label = '';
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _labelFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState?.validate() ?? false) {
+      final formData = NequiColombiaFormDataModel(
+        phoneNumber: _phoneNumber,
+        documentType: _documentType.value,
+        documentId: _documentId,
+        holder: _holder,
+        email: _email,
+        label: _label.isEmpty ? null : _label,
+      );
+
+      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.disabled,
+      child: Column(
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
+        children: [
+          // Phone Number
+          BBTextFormField(
+            labelText: context.loc.recipientsFieldPhoneNumber,
+            errorText: context.recipientServerFieldError(
+              RecipientField.bankAccount,
+            ),
+            hintText: context.loc.recipientsFieldPhoneNumberHint,
+            autofocus: true,
+            prefixText: '+57',
+            textInputAction: .next,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? context.loc.recipientsValidationFieldRequired
+                : null,
+            onChanged: (value) {
+              setState(() {
+                _phoneNumber = value;
+              });
+            },
+          ),
+          const Gap(12.0), // Account Type Dropdown
+          Text(
+            context.loc.recipientsFieldDocumentType,
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  color: context.appColors.secondary,
+                  fontWeight: .w500,
+                ),
+            textAlign: .left,
+          ),
+          const Gap(8.0),
+          BullDropdown<CopDocumentType>(
+            value: _documentType,
+            onChanged: (value) {
+              setState(() {
+                _documentType = value;
+              });
+            },
+            items: [
+              for (final type in CopDocumentType.values)
+                BullPickerItem(
+                  value: type,
+                  label: copDocumentTypeLabel(context, type),
+                ),
+            ],
+          ),
+          const Gap(12.0),
+          BBTextFormField(
+            labelText: copDocumentTypeRecipientNumberLabel(
+              context,
+              _documentType,
+            ),
+            hintText: context.loc.recipientsFieldDocumentNumberHint,
+            errorText: context.recipientServerFieldError(
+              RecipientField.documentId,
+            ),
+            textInputAction: .next,
+            onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? context.loc.recipientsValidationFieldRequired
+                : null,
+            onChanged: (value) {
+              setState(() {
+                _documentId = value;
+              });
+            },
+          ),
+          const Gap(12.0),
+          CopHolderFields(
+            onChanged: (holder, email) {
+              _holder = holder;
+              _email = email;
+            },
+            onDone: _labelFocusNode.requestFocus,
+          ),
+          const Gap(12.0),
+          BBTextFormField(
+            labelText: context.loc.recipientsLabelOptional,
+            errorText: context.recipientServerFieldError(RecipientField.label),
+            hintText: context.loc.recipientsLabelHint,
+            focusNode: _labelFocusNode,
+            textInputAction: .done,
+            onFieldSubmitted: (_) => _submitForm(),
+            validator: null,
+            onChanged: (value) {
+              setState(() {
+                _label = value;
+              });
+            },
+          ),
+          const Gap(24.0),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+            shownFields: const {
+              RecipientField.bankAccount,
+              RecipientField.documentId,
+              RecipientField.label,
+              RecipientField.name,
+              RecipientField.lastname,
+              RecipientField.corporateName,
+              RecipientField.email,
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

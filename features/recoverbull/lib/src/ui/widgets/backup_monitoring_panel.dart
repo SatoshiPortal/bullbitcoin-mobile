@@ -69,11 +69,10 @@ class BackupMonitoringPanel extends StatelessWidget {
                   ),
                 ),
               if (value.alerts.isNotEmpty)
-                BullButton.small(
+                BullButton.primary(
+                  size: BullButtonSize.small,
                   label: context.loc.recoverbullDismissAlerts,
                   onPressed: cubit.acknowledge,
-                  bgColor: context.bull.primary,
-                  textColor: context.bull.onPrimary,
                 ),
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart' show Builder;
+import 'package:material_ui/material_ui.dart'
+    show Builder, Container, BoxDecoration, Size;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -9,6 +10,7 @@ void main() {
     Future<Future<bool>> open(
       WidgetTester tester, {
       bool destructive = false,
+      String message = 'The server will be removed.',
     }) async {
       late BuildContext ctx;
       await tester.pumpWidget(
@@ -24,7 +26,7 @@ void main() {
       final result = BullConfirmDialog.show(
         ctx,
         title: 'Delete server?',
-        message: 'The server will be removed.',
+        message: message,
         confirmLabel: 'Delete',
         cancelLabel: 'Cancel',
         destructive: destructive,
@@ -47,6 +49,34 @@ void main() {
 
       expect(await result, isTrue);
       expect(find.text('Delete server?'), findsNothing);
+    });
+
+    testWidgets('scrolls the entire confirmation on a short viewport', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 320);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final result = await open(
+        tester,
+        message: List.filled(20, 'The server will be removed.').join('\n'),
+      );
+      expect(tester.takeException(), isNull);
+
+      final title = find.text('Delete server?').hitTestable();
+      final confirm = find.text('Delete').hitTestable();
+      expect(title, findsOneWidget);
+      expect(confirm, findsNothing);
+      await tester.dragUntilVisible(
+        confirm,
+        find.byType(SingleChildScrollView),
+        const Offset(0, -160),
+      );
+      await tester.pumpAndSettle();
+      expect(title, findsNothing);
+      await tester.tap(confirm);
+      await tester.pumpAndSettle();
+      expect(await result, isTrue);
     });
 
     testWidgets('announces itself as a route named by its title', (
@@ -90,15 +120,41 @@ void main() {
       expect(await result, isFalse);
     });
 
-    testWidgets('paints a destructive confirmation with the theme error', (
-      tester,
-    ) async {
-      await open(tester, destructive: true);
+    testWidgets(
+      'paints a destructive confirmation with primary and cancel with secondary',
+      (tester) async {
+        await open(tester, destructive: true);
 
-      final confirm = button(tester, 'Delete');
-      expect(confirm.bgColor, testBullTheme.error);
-      expect(confirm.textColor, testBullTheme.onError);
-    });
+        final confirm = button(tester, 'Delete');
+        final fill =
+            tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: find.widgetWithText(BullButton, 'Delete'),
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration;
+        expect(fill.color, testBullTheme.primary);
+        expect(confirm.outlined, isFalse);
+        final cancelFill =
+            tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: find.widgetWithText(BullButton, 'Cancel'),
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration;
+        expect(cancelFill.color, testBullTheme.secondary);
+      },
+    );
 
     testWidgets('paints a plain confirmation with the theme primary', (
       tester,
@@ -106,8 +162,20 @@ void main() {
       await open(tester);
 
       final confirm = button(tester, 'Delete');
-      expect(confirm.bgColor, testBullTheme.primary);
-      expect(confirm.textColor, testBullTheme.onPrimary);
+      final fill =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(
+                          of: find.widgetWithText(BullButton, 'Delete'),
+                          matching: find.byType(Container),
+                        )
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(fill.color, testBullTheme.primary);
+      expect(confirm.disabled, isFalse);
     });
   });
 }

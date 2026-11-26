@@ -1,79 +1,71 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
-import 'package:primitives/primitives.dart' show Err, Failure, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:sync/sync.dart';
+import 'package:transactions/testing.dart';
 
-/// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
-F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
-  Ok() => fail('expected an Err, got Ok'),
-  Err(:final failure) => failure,
-};
-
-/// The value an [Ok] carries; an [Err] fails the test, naming the failure.
-T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
-  Ok(:final value) => value,
-  Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
-};
-
-class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
-
-Wallet _wallet() => Wallet(
-  origin: 'w1',
-  network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
-  scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
-);
+class _Inventory extends Mock implements WalletInventory {}
 
 void main() {
-  late _MockGetWalletUsecase getWallet;
+  final wallet = walletRegistrationForTesting(
+    id: 'w1',
+    network: BitcoinNetwork.mainnet,
+  );
+  late _Inventory inventory;
+  late List<WalletKey> synchronized;
+  late Result<void, SyncFailure> syncResult;
   late GetTransactionWalletUsecase usecase;
 
   setUp(() {
-    getWallet = _MockGetWalletUsecase();
-    usecase = GetTransactionWalletUsecase(getWallet);
+    inventory = _Inventory();
+    synchronized = [];
+    syncResult = const Ok(null);
+    usecase = GetTransactionWalletUsecase(inventory, (key) async {
+      synchronized.add(key);
+      return syncResult;
+    });
   });
 
-  test('forwards the wallet on success', () async {
-    final wallet = _wallet();
-    when(() => getWallet.execute('w1', sync: false))
-        .thenAnswer((_) async => wallet);
-
-    final result = await usecase.execute('w1');
-
-    expect(_valueOf(result), wallet);
+  test('reads visible metadata without synchronizing by default', () async {
+    when(() => inventory.readWallet('w1')).thenAnswer((_) async => Ok(wallet));
+    expect(
+      (await usecase.execute('w1')).fold((value) => value, (_) => null),
+      wallet,
+    );
+    expect(synchronized, isEmpty);
   });
 
-  test('catches the thrown core exception and returns a failure', () async {
-    when(() => getWallet.execute('w1', sync: false))
-        .thenThrow(GetWalletException('descriptor xprv9s21ZrQH... is corrupt'));
-
-    final result = await usecase.execute('w1');
-
-    final failure = _failureOf(result);
-    expect(failure, isA<TransactionUnexpectedFailure>());
-    // A descriptor is key material: it must not survive into the failure the
-    // presentation layer holds, only into the log at the boundary.
-    expect(failure.logMessage, isNot(contains('xprv')));
+  test('keeps a missing registration distinct from storage failure', () async {
+    when(
+      () => inventory.readWallet('w1'),
+    ).thenAnswer((_) async => const Err(WalletRegistrationNotFoundFailure()));
+    expect(
+      await usecase.execute('w1'),
+      isA<Ok<WalletRegistration?, TransactionFailure>>(),
+    );
+    when(() => inventory.readWallet('w1'))
+        .thenAnswer((_) async => const Err(UnreadableWalletFailure()));
+    expect(
+      await usecase.execute('w1'),
+      isA<Err<WalletRegistration?, TransactionFailure>>(),
+    );
   });
 
-  test('does not leak a bare runtime error either', () async {
-    when(() => getWallet.execute('w1', sync: true))
-        .thenThrow(StateError('wallet database is locked'));
-
-    final result = await usecase.execute('w1', sync: true);
-
-    final failure = _failureOf(result);
-    expect(failure, isA<TransactionUnexpectedFailure>());
-    expect(failure.logMessage, isNot(contains('locked')));
-  });
+  test(
+    'synchronizes the registered network and preserves sync failure',
+    () async {
+      when(() => inventory.readWallet('w1'))
+          .thenAnswer((_) async => Ok(wallet));
+      syncResult = const Err(SyncStorageFailure());
+      expect(
+        await usecase.execute('w1', sync: true),
+        isA<Err<WalletRegistration?, TransactionFailure>>(),
+      );
+      expect(synchronized, [
+        WalletKey(id: 'w1', network: BitcoinNetwork.mainnet),
+      ]);
+    },
+  );
 }

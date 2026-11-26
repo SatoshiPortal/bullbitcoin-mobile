@@ -1,0 +1,464 @@
+{
+  "retry": "ลองอีกครั้ง",
+  "@@locale": "th",
+  "save": "บันทึก",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressLabel": "ที่อยู่: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "ปริมาณ: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "เมื่อปิดใช้งาน คุณจะได้รับตัวเลือกให้อนุญาต Auto Swap ที่ถูกบล็อกเนื่องจากค่าธรรมเนียมสูง",
+  "@autoswapAlwaysBlockInfoDisabled": {
+    "description": "Help text when always block is disabled"
+  },
+  "autoswapAlwaysBlockInfoEnabled": "เมื่อเปิดใช้งาน Auto Swap ที่มีค่าธรรมเนียมสูงกว่าขีดจำกัดที่ตั้งไว้จะถูกบล็อกเสมอ",
+  "@autoswapAlwaysBlockInfoEnabled": {
+    "description": "Help text when always block is enabled"
+  },
+  "autoswapAlwaysBlockLabel": "รายงานค่าใช้จ่ายสูง",
+  "@autoswapAlwaysBlockLabel": {
+    "description": "Label for toggle to always block high fee transfers"
+  },
+  "autoswapBaseBalanceInfoText": "ยอดเงินการชําระเงินทันทีของคุณจะได้รับผลตอบแทนในเป้าหมายนี้หลังจากค่าอัตโนมัติ.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapEnableToggleLabel": "เปิดใช้งาน Auto Swap",
+  "@autoswapEnableToggleLabel": {
+    "description": "Label for the main toggle switch to enable/disable auto transfer feature"
+  },
+  "autoswapLoadSettingsError": "เก็บโหลดอัตโนมัติ",
+  "@autoswapLoadSettingsError": {
+    "description": "Error message when loading settings fails"
+  },
+  "autoswapMaxBalanceLabel": "แม็กซ์ ยอดคงเหลือทันที",
+  "@autoswapMaxBalanceLabel": {
+    "description": "Label for amount threshold input field"
+  },
+  "autoswapMaxFeeInfoText": "หากค่าธรรมเนียม Swap รวมสูงกว่าเปอร์เซ็นต์ที่ตั้งไว้ Auto Swap จะถูกบล็อก",
+  "@autoswapMaxFeeInfoText": {
+    "description": "Help text explaining how the max fee threshold works"
+  },
+  "autoswapMaxFeeLabel": "ค่าธรรมเนียม Swap สูงสุด",
+  "@autoswapMaxFeeLabel": {
+    "description": "Label for fee threshold percentage input field"
+  },
+  "autoswapMaximumBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีสูงสุด",
+  "autoswapMaximumFeeError": "เกณฑ์ค่าธรรมเนียมสูงสุดคือ {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "description": "Validation error shown when fee threshold exceeds maximum",
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "เกณฑ์ขั้นต่ําคือ {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "เกณฑ์ขั้นต่ําคือ {amount} เบาะ",
+  "@autoswapMinimumThresholdErrorSats": {
+    "description": "Validation error shown when amount threshold is below minimum (sats display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "เลือกกระเป๋าสตางค์ Bitcoin จะโอนเงิน (ต้องการ)",
+  "@autoswapRecipientWalletInfoText": {
+    "description": "Help text explaining wallet selection"
+  },
+  "autoswapRecipientWalletLabel": "สั่งขั้นต่ํา",
+  "@autoswapRecipientWalletLabel": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "autoswapRecipientWalletPlaceholder": "เลือกกระเป๋าสตางค์ Bitcoin",
+  "@autoswapRecipientWalletPlaceholder": {
+    "description": "Dropdown placeholder text when no wallet is selected"
+  },
+  "autoswapRecipientWalletPlaceholderRequired": "เลือกกระเป๋าสตางค์ Bitcoin *",
+  "@autoswapRecipientWalletPlaceholderRequired": {
+    "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+  },
+  "autoswapRecipientWalletRequired": "*",
+  "@autoswapRecipientWalletRequired": {
+    "description": "Required field indicator asterisk"
+  },
+  "autoswapSaveButton": "บันทึก",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "autoswapSelectWalletError": "เลือกกล่องจดหมาย Bitcoin",
+  "@autoswapSelectWalletError": {
+    "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+  },
+  "autoswapSettingsTitle": "การตั้งค่า Auto Swap",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "autoswapTargetBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีเป้าหมาย",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap จะกระตุ้นเมื่อสมดุลของคุณข้างต้น.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
+  "autoswapTriggerBalanceError": "สมดุลสูงสุดไม่เกิน 2x ยอดคงเหลือ",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
+  },
+  "autoswapUpdateSettingsError": "ตรวจสอบการตั้งค่าอัตโนมัติ",
+  "@autoswapUpdateSettingsError": {
+    "description": "Error message when updating settings fails"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
+  "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
+  "closeDialogButton": "ปิด",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "coinsKeychainChange": "เงินทอน",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "รับ",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "รวมกระเป๋าเงิน",
+  "coreScreensAmountLabel": "จํานวน",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensConfirmButton": "ยืนยัน",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "coreScreensExternalTransfer": "Swap ภายนอก",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensFeeDeductionExplanation": "นี่เป็นค่าธรรมเนียมรวมจากจํานวนเงิน",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensFeePriorityLabel": "ค่าธรรมเนียม",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensFromLabel": "จาก",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensInternalTransfer": "Swap ภายใน",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensNetworkFeesLabel": "ค่าธรรมเนียมเครือข่าย",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensReceiveAmountLabel": "จํานวนเงิน",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "รับค่าธรรมเนียมเครือข่าย",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensSendAmountLabel": "ราคา",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "ค่าธรรมเนียมเครือข่าย",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "ค่าธรรมเนียมเครือข่าย",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensToLabel": "ไปที่",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensTransferFeeLabel": "ค่าธรรมเนียม Swap",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensTransferIdLabel": "ID Swap",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "doneButton": "อย่าลืม",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "globalDefaultBitcoinWalletLabel": "รักษาความปลอดภัย Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "payNetworkError": "สัญญาณเครือข่าย กรุณาลองอีกครั้ง",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveNote": "หมายเหตุ",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "เลือกจํานวน",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "sendAdvancedOptions": "ตัวเลือกขั้นสูง",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendDone": "อย่าลืม",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorBuildFailed": "ไม่สามารถเตรียมการชำระเงินนี้ได้ โปรดลองอีกครั้ง",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorSwapCreationFailed": "จัดเรียงเพื่อสร้างการเชื่อมต่อ.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendFastFee": "ได้อย่างรวดเร็ว",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "แทนที่การเปิดใช้งาน",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "เลือกเหรียญด้วยตนเอง",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "เลือก utxos ไม่ได้ครอบคลุมจํานวน",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendSelfTransfer": "โอนให้ตัวเอง",
+  "swapAmountLabel": "จํานวน",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapAmountPlaceholder": "0",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapAvailableBalance": "สมดุล",
+  "@swapAvailableBalance": {
+    "description": "Available balance label"
+  },
+  "swapConfirmTransferTitle": "ยืนยัน Swap",
+  "@swapConfirmTransferTitle": {
+    "description": "AppBar title on the confirmation page"
+  },
+  "swapContinueButton": "อ่านต่อ",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapDoNotUninstallWarning": "อย่าถอนการติดตั้งแอปจนกว่า Swap จะเสร็จสมบูรณ์!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
+  "swapErrorAmountAboveMaximum": "จํานวนจํานวนเงินสูงสุด: {max} นั่ง",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "ปริมาณขั้นต่ําขั้นต่ํา: {min} นอน",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "ใส่ข้อความภายนอก",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapExternalTransferLabel": "Swap ภายนอก",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "จาก",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapGoHomeButton": "กลับบ้าน",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapInfoDescription": "Swap Bitcoin ระหว่างกระเป๋าเงินของคุณได้อย่างราบรื่น เก็บเงินไว้ในกระเป๋าเงินชำระเงินทันทีเฉพาะสำหรับการใช้จ่ายประจำวันเท่านั้น",
+  "@swapInfoDescription": {
+    "description": "Information banner text on amount page"
+  },
+  "swapInsufficientFunds": "เงินทุนไม่เพียงพอ",
+  "swapInternalTransferTitle": "Swap ภายใน",
+  "@swapInternalTransferTitle": {
+    "description": "AppBar title on the amount entry page"
+  },
+  "swapMaxButton": "แม็กซ์",
+  "@swapMaxButton": {
+    "description": "Button to use maximum available balance"
+  },
+  "swapReceiveExactAmountLabel": "รับจํานวนเงิน",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "ค่าธรรมเนียม",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapToLabel": "ไปที่",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapTotalFees": "ค่าธรรมเนียม ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapTransferCompletedMessage": "ว้าว คุณรอจนเสร็จ! Swap เสร็จสมบูรณ์เรียบร้อยแล้ว",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferCompletedTitle": "Swap เสร็จสมบูรณ์",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferPendingMessage": "Swap กำลังดำเนินการ ธุรกรรม Bitcoin อาจใช้เวลายืนยันสักครู่ คุณสามารถกลับไปหน้าหลักแล้วรอได้",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferPendingTitle": "Swap รอดำเนินการ",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferRefundInProgressMessage": "เกิดข้อผิดพลาดกับ Swap กำลังดำเนินการคืนเงินให้คุณ",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundInProgressTitle": "กำลังคืนเงิน Swap",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundedMessage": "คืนเงิน Swap เรียบร้อยแล้ว",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapTransferRefundedTitle": "คืนเงิน Swap แล้ว",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferTitle": "Swap",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapUnderReviewDescription": "Swap นี้ต้องได้รับการตรวจสอบด้วยตนเอง โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือ หากคุณยังไม่มีบัญชีฝ่ายสนับสนุน เพียงสร้างบัญชีขึ้นมา โดยไม่จำเป็นต้องทำ KYC",
+  "swapUnderReviewSupportMessage": "Swap อยู่ระหว่างการตรวจสอบ\nOrder ID: {orderId}\nRequest ID: {requestId}\nหมายเลขคำสั่งซื้อ: {orderNumber}",
+  "swapUnderReviewTitle": "Swap อยู่ระหว่างการตรวจสอบ",
+  "swapValidationSelectFromWallet": "โปรดเลือกกระเป๋าเงินต้นทางที่จะSwap จาก",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "โปรดเลือกกระเป๋าเงินปลายทางที่จะSwap ไป",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLightning": "ฟ้าผ่า",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkLiquid": "ของเหลว",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionStatusSwapExpired": "วันหมดอายุ",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusSwapFailed": "ปฏิทิน",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescChainExpired": "Swap นี้หมดอายุแล้ว เงินของคุณจะถูกคืนเข้ากระเป๋าเงินโดยอัตโนมัติ",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainFailed": "เกิดปัญหากับ Swap ของคุณ โปรดติดต่อฝ่ายสนับสนุนหากยังไม่ได้รับเงินคืนภายใน 24 ชั่วโมง",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapOpenWithin24h": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำ Swap ของคุณให้เสร็จสมบูรณ์",
+  "typeLabel": "ประเภท: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง",
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "coreSwapsStatusCompleted": "สมบูรณ์",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "สิ้นสุด",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "จำนวน",
+  "swapRescueButton": "กู้คืน",
+  "swapRescueCreatedLabel": "สร้างเมื่อ",
+  "swapRescueIdLabel": "รหัส Swap",
+  "swapRescueRouteLabel": "เส้นทาง",
+  "swapRescueStatusLabel": "สถานะ",
+  "swapRescueSuccess": "กู้คืน Swap สำเร็จแล้ว — ระบบจะดำเนินการต่อ",
+  "swapRescueTitle": "กู้ Swap",
+  "swapRescueTypeLabel": "ประเภท",
+  "swapRescueWalletHint": "เลือกกระเป๋าสตางค์",
+  "swapRescueWalletLabel": "กู้คืนไปยังกระเป๋าสตางค์",
+  "swapRestoreActionable": "{count, plural, =0{ไม่มี Swap ที่สามารถกู้คืนได้} =1{คุณสามารถลองกู้คืน Swap ได้ 1 รายการ ซึ่งอาจอยู่ในสถานะสุดท้ายแล้วก็ได้} other{คุณสามารถลองกู้คืน Swap ได้ {count} รายการ โปรดทราบว่าบางรายการอาจอยู่ในสถานะสุดท้ายแล้ว}}",
+  "swapRestoreAllSection": "Swap ทั้งหมด",
+  "swapRestoreFailed": "ไม่สามารถกู้คืน Swap ได้",
+  "swapRestoreKindCrossChain": "ข้ามเชน (Cross Chain)",
+  "swapRestoreKindLightningReceive": "รับผ่าน Lightning",
+  "swapRestoreKindLightningSend": "ส่งผ่าน Lightning",
+  "swapRestoreNoSwaps": "ไม่พบ Swap ที่สามารถกู้คืนได้",
+  "swapRestoreRecoverableSection": "กู้คืนได้",
+  "swapRestoreTitle": "กู้คืน Swap"
+}

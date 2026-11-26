@@ -1,0 +1,29 @@
+{
+  "@@locale": "th",
+  "bip85NextMnemonic": "ถัดไป Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85ExperimentalWarning": "การทดลอง\nสํารองข้อมูลเส้นทางของคุณ",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bip85Title": "BIP85 การกําหนดข้อมูล",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85NextHex": "ถัดไป",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "bip85NoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
+}

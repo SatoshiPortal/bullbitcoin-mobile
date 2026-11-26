@@ -1,0 +1,19 @@
+{
+  "@@locale": "de",
+  "mnemonicWordCountLabel": "Wörter",
+  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt",
+  "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "Optionale Passphrase",
+  "passphraseShow": "Passphrase anzeigen",
+  "passphraseHide": "Passphrase verbergen",
+  "recipientsInfoLabel": "Bezeichnung",
+  "requiredHint": "Erforderlich",
+  "submitButton": "Absenden",
+  "mnemonicShuffleKeyboardHint": "Tasten und Wortvorschläge bei jedem Tippen neu anordnen",
+  "mnemonicPossibleLastWords": "Mögliche letzte Wörter: {count}",
+  "emptyMnemonicWordsError": "Bitte geben Sie alle Wörter Ihrer Mnemonik ein.",
+  "mnemonicInvalidChecksumError": "Diese Wiederherstellungsphrase ist ungültig. Ein Wort wurde entweder falsch eingegeben oder befindet sich an der falschen Stelle.",
+  "mnemonicUnknownWordError": "Einige Wörter befinden sich nicht in der Liste der Wiederherstellungswörter – die roten Zahlen zeigen, welche Wörter betroffen sind.",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen"
+}

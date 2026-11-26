@@ -1,0 +1,15 @@
+{
+  "@@locale": "vi",
+  "scanningProgressLabel": "Đang quét: {percent}%",
+  "urProgressLabel": "Tiến trình UR: {parts} phần",
+  "scanningCompletedMessage": "Đã hoàn tất quét",
+  "urDecodingFailedMessage": "Giải mã UR thất bại",
+  "urProcessingFailedMessage": "Xử lý UR thất bại",
+  "scanNfcButton": "Quét NFC",
+  "nfcConnectionLost": "Mất kết nối NFC. Giữ thiết bị của bạn gần thẻ NFC và thử lại.",
+  "nfcWriteFailed": "Truyền dữ liệu NFC thất bại. Vui lòng thử lại.",
+  "nfcDisabled": "NFC đang bị tắt. Hãy bật trong cài đặt.",
+  "nfcNotAvailable": "Thiết bị này không hỗ trợ NFC",
+  "nfcFailed": "Rất tiếc! Đã xảy ra lỗi",
+  "nfcInvalidData": "Không tìm thấy dữ liệu NFC được hỗ trợ"
+}

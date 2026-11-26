@@ -1,0 +1,15 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        enabled: false
+      drift_dev:analyzer:
+        enabled: true
+        options: &drift_options
+          databases:
+            exchange_database: lib/src/data/storage/exchange_database.dart
+          schema_dir: lib/src/data/storage/schemas/
+          test_dir: test/migrations_test/
+      drift_dev:modular:
+        enabled: true
+        options: *drift_options

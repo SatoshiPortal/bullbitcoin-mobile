@@ -1,0 +1,60 @@
+{
+  "@@locale": "tr",
+  "save": "Kaydet",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "Kopya kopya",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "Yükleniyor işlemleri...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "QR Kodu",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "Pending",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "Dün",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "Bugün",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "$",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "Kopyalamak için dokunun",
+  "viewerViewInExplorer": "Gezginde görüntüle",
+  "transactionViewerTitle": "İşlem kimliği",
+  "viewerCopyLink": "Bağlantıyı kopyala",
+  "coinsTitle": "Coin'ler",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Panoya kopyalandı"
+}

@@ -1,0 +1,510 @@
+{
+  "broadcastSignedTxBroadcastError": "Не успяхме да излъчим вашата транзакция. Проверете интернет връзката си и опитайте отново.",
+  "broadcastSignedTxErrorInvalidTransaction": "Това не изглежда като валидна подписана транзакция. Уверете се, че сте поставили целия PSBT или цялата транзакция.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не успяхме да прочетем транзакция от този етикет. Моля, опитайте да сканирате отново.",
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "replaceByFeeErrorNoFeeRateSelected": "Моля, изберете скорост на таксата.",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeScreenTitle": "Замени с такса.",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "Разпрати",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeFastestTitle": "Най-бързият",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "Оригинална транзакция.",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeFastestDescription": "Очаквано време за потвърждение ~ 10 минути.",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "doneButton": "Готово",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Трябва да увеличите таксата с поне 1 сат/байт спрямо оригиналната транзакция.",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "Продължи",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "replaceByFeeFeeRateDisplay": "Скорост на таксата: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "Разрешаване на входовете на транзакцията...",
+  "coreScreensFeeRateLabel": "Размер на таксата",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Изходът за ресто е неизвестен — всички изходи са показани еднакво",
+  "coreScreensUnknown": "Неизвестно",
+  "coreScreensFetchFailed": "Неуспешно извличане на транзакция {txid} от Electrum.",
+  "coreScreensInputResolutionFailed": "Входът не е намерен: изход {vout} на {parentTxId} не съществува.",
+  "coreScreensNoServersAvailable": "Няма налични Electrum сървъри.",
+  "mempoolServerStatusUnknown": "Неизвестен",
+  "broadcastSignedTxBroadcast": "Излъчи",
+  "broadcastSignedTxPageTitle": "Излъчи подписана транзакция",
+  "broadcastSignedTxPasteHint": "Постави PSBT или HEX на транзакция",
+  "broadcastSignedTxCameraButton": "Камера",
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Докоснете вашия Coldcard, за да получите подписаната транзакция през NFC",
+  "broadcastSignedTxDoneButton": "Готово",
+  "broadcastSignedTxNfcTitle": "NFC",
+  "coreScreensFromLabel": "От",
+  "coreScreensToLabel": "До",
+  "coreScreensAmountLabel": "Сума",
+  "coreScreensNetworkFeesLabel": "Мрежови такси",
+  "consolidationDone": "Готово",
+  "consolidationFailedBody": "Възникна неочаквана грешка. Средствата ви са в безопасност: не беше излъчена транзакция. Моля, опитайте отново.",
+  "consolidationFailedTitle": "Консолидацията е неуспешна",
+  "consolidationInProgress": "Консолидиране…",
+  "consolidationRequiredTitle": "Консолидиране на портфейла",
+  "consolidationRequiredTitleNamed": "Консолидиране на портфейла {walletName}",
+  "consolidationRowAmount": "Сума",
+  "consolidationRowNetworkFees": "Мрежови такси",
+  "consolidationRowOutputs": "Изходи",
+  "consolidationRowTransactions": "Транзакции",
+  "consolidationScreenDescription": "Твърде многото изходи могат да направят портфейла нестабилен. Консолидирането ги обединява в по-малко, за да работи портфейлът правилно.",
+  "consolidationScreenTitle": "Консолидиране",
+  "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
+  "consolidationSuccessTitle": "Консолидацията започна",
+  "walletLoadFailed": "Портфейлите ви не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "broadcastSignedTxErrorPsbtFinalization": "Подписаната транзакция не можа да бъде финализирана. Уверете се, че съдържа всички необходими подписи, и опитайте отново.",
+  "coreScreensOutputsExceedInputs": "Изходите надвишават входовете: тази транзакция е невалидна и мрежата ще я отхвърли.",
+  "broadcastSignedTxErrorAlreadyInChain": "Тази транзакция вече е в блокчейна. Няма какво повече да се излъчва.",
+  "broadcastSignedTxErrorRejected": "Мрежата отхвърли тази транзакция. Възможно е да не е напълно подписана, да е невалидна или да е в конфликт с друго плащане.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки.",
+  "sendSendNetworkFee": "Такса за мрежата при изпращане",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "transactionNoteHint": "Бележка",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNetworkLightning": "Лайтнинг мрежа",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "sendBroadcastingTransaction": "Излъчване на транзакцията.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "globalDefaultBitcoinWalletLabel": "Безопасен Биткойн",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "sendAddress": "Адрес: ",
+  "@sendAddress": {
+    "description": "Label prefix for address field"
+  },
+  "sendAmountRequested": "Изисквана сума: ",
+  "@sendAmountRequested": {
+    "description": "Label for the requested amount in a payment request"
+  },
+  "sendTransferFeeDescription": "Това е общата такса, удържана от изпратената сума.",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendShowPsbt": "Покажи PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSelectAmount": "Изберете сума",
+  "@sendSelectAmount": {
+    "description": "Label for selecting the amount to send"
+  },
+  "sendSendAmount": "Сума за изпращане",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendSelectedUtxosInsufficient": "Избраните UTXO не покриват необходимата сума",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendErrorInsufficientFundsForFees": "Нямате достатъчно средства, за да покриете сумата и таксите",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendChange": "Промяна",
+  "@sendChange": {
+    "description": "Label for change output in a transaction"
+  },
+  "sendSwapWillTakeTime": "Ще отнеме известно време за потвърждение",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendOpenTheCamera": "Отвори камерата",
+  "@sendOpenTheCamera": {
+    "description": "Button label for opening the camera to scan QR codes"
+  },
+  "sendSwapId": "ID за размяна",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "receiveNote": "Бележка",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "sendFrom": "От",
+  "@sendFrom": {
+    "description": "Label for the sender/source in a transaction"
+  },
+  "sendErrorAmountBelowMinimum": "Сумата под минималния лимит за обмен: {minLimit} сатоши",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "Адрес на получателя",
+  "@sendRecipientAddress": {
+    "description": "Label for the recipient address field"
+  },
+  "sendServerNetworkFees": "Сървърни такси за мрежата",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Невалиден адрес за плащане на Биткойн или фактура",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "Неподдържан формат на QR код",
+  "sendSignWithBitBox": "Подпиши с BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendSwapRefundInProgress": "Възстановяването на сумата от размяната е в ход.",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendInsufficientBalance": "Недостатъчен баланс",
+  "@sendInsufficientBalance": {
+    "description": "Error message when the wallet has insufficient balance to send"
+  },
+  "sendNetworkFees": "Такси за мрежата",
+  "@sendNetworkFees": {
+    "description": "Label for network transaction fees"
+  },
+  "sendSwapInitiated": "Размяната е стартирана",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "transactionNoteAddTitle": "Добави бележка",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "sendHighFeeWarning": "Предупреждение за висока такса",
+  "@sendHighFeeWarning": {
+    "description": "Warning title for high transaction fees"
+  },
+  "receiveEnterHere": "Въведете тук...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "sendDone": "Готово",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorAmountAboveMaximum": "Сумата над максималния лимит за обмен: {maxLimit} сатоши",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "Вашето възстановяване е обработено.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendUnconfirmed": "Непотвърдено",
+  "@sendUnconfirmed": {
+    "description": "Status for 0-conf UTXO"
+  },
+  "sendTransferFee": "Такса за обмен",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendContinue": "Продължи",
+  "@sendContinue": {
+    "description": "Button label for continuing in the send flow"
+  },
+  "sendErrorSwapCreationFailed": "Не успях да създам размяна",
+  "sendErrorInvoiceMustContainAmount": "Фактурата трябва да съдържа сума",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorHardwareWalletCannotSwap": "Хардуерните портфейли не могат да се използват за суапове.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
+  "sendReplaceByFeeActivated": "Replace-by-fee е активирана",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendType": "Тип: ",
+  "@sendType": {
+    "description": "Label prefix for transaction type field"
+  },
+  "settingsCurrencyTitle": "Валута",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "sendSats": "сатоши",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "sendPaymentWillTakeTime": "Плащането ще отнеме време",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendPasteAddressOrInvoice": "Поставете адрес за плащане или фактура",
+  "@sendPasteAddressOrInvoice": {
+    "description": "Placeholder text for the payment address or invoice input field"
+  },
+  "sendHighFeeWarningDescription": "Общата такса е {feePercent}% от сумата, която изпращате",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count} потвърждения",
+  "@sendCoinConfirmations": {
+    "description": "Label for UTXO confirmation count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "До",
+  "@sendTo": {
+    "description": "Label for the recipient/destination in a transaction"
+  },
+  "sendSelectCoinsManually": "Изберете монетите ръчно",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendReceiveNetworkFee": "Такса за мрежата при получаване.",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionNetworkBitcoin": "Биткойн",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "sendBroadcastTransaction": "Изпрати транзакцията",
+  "@sendBroadcastTransaction": {
+    "description": "Button label for broadcasting a transaction to the network"
+  },
+  "sendSwapInProgressBitcoin": "Обменът е в ход. Биткойн транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете у дома и да изчакате.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendTransactionSignedLedger": "Транзакцията е успешно подписана с Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendEconomyFee": "Икономичен",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 минути",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendReceive": "Получаване",
+  "@sendReceive": {
+    "description": "Label for receive transaction type"
+  },
+  "sendSatsPerVB": "сатоши/vB",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "sendTitle": "Изпрати",
+  "@sendTitle": {
+    "description": "Title for the send screen"
+  },
+  "sendSlowPaymentWarningDescription": "Обменът на биткойни ще отнеме време за потвърждение.",
+  "@sendSlowPaymentWarningDescription": {
+    "description": "Description for slow payment warning"
+  },
+  "globalDefaultLiquidWalletLabel": "Моментални плащания",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "sendFastFee": "Бързо",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendAdvancedSettings": "Разширени настройки",
+  "@sendAdvancedSettings": {
+    "description": "Title for advanced settings in the send flow"
+  },
+  "sendPaymentProcessing": "Плащането се обработва. Може да отнеме до минута",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendErrorBroadcastFailed": "Не успя да се излъчи транзакцията. Проверете връзката си с мрежата и опитайте отново",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendCustomFee": "Персонализирана такса",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "sendAmount": "Сума",
+  "@sendAmount": {
+    "description": "Label for the transaction amount"
+  },
+  "sendSwapRefundCompleted": "Възстановяването на размяната завърши.",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendSending": "Изпращане",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendErrorConfirmationFailed": "Потвърждението се провали",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendInvoicePaid": "Фактурата е платена.",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendSignWithLedger": "Подпиши с Ledger",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSlowPaymentWarning": "Предупреждение за бавно плащане",
+  "@sendSlowPaymentWarning": {
+    "description": "Warning title for slow payment confirmation"
+  },
+  "sendErrorAmountBelowSwapLimits": "Сумата е под лимитите за обмен",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendCoinControl": "Контрол на монетите",
+  "@sendCoinControl": {
+    "description": "Feature to manually select UTXOs"
+  },
+  "sendAdvancedOptions": "Разширени настройки",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendViewDetails": "Виж подробности",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "transactionNetworkLiquid": "Liquid",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreWalletTransactionStatusConfirmed": "Потвърдено",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "sendErrorBuildFailed": "Това плащане не можа да бъде подготвено. Моля, опитайте отново.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendConfirmSend": "Потвърди изпращане\n==WEBLATE_PART==",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSwapInProgressInvoice": "Обменът е в ход. Инвойсът ще бъде платен след няколко секунди.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendScanBitcoinQRCode": "Сканирайте QR код за Bitcoin или Lightning, за да платите с биткойн.",
+  "@sendScanBitcoinQRCode": {
+    "description": "Instructions for scanning a QR code to make a Bitcoin payment"
+  },
+  "sendConfirm": "Потвърди",
+  "@sendConfirm": {
+    "description": "Button label for confirming a send transaction"
+  },
+  "sendSuccessfullySent": "Успешно изпратено",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendSwapFailed": "Размяната не успя. Вашето възстановяване ще бъде обработено скоро.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Нямате достатъчно средства за покриване на това плащане",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendReceiveAmount": "Сума за получаване",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "appStartupErrorMessage": "Приложението не успя да стартира. Опитайте да го затворите напълно и да го рестартирате. Ако грешката продължи, свържете се с поддръжка и споделете логовете си.",
+  "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
+  "sendEstimatedDeliveryHours": "часове",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coinsSelectedCount": "{count, plural, one{1 избрана} other{{count} избрани}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSelfTransfer": "Прехвърляне към себе си",
+  "sendCoordinatingPayjoinTransaction": "Координиране на Payjoin транзакция.",
+  "sendErrorInvoiceExpired": "Тази фактура е изтекла. Помолете получателя за нова фактура.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Помислете за захранване на Instant Payments за по-малки плащания.",
+  "addressViewBalance": "Баланс",
+  "swapMax": "МАКС",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "exchangeDcaAddressLabelLightning": "Lightning адрес",
+  "exchangeDcaAddressLabelLiquid": "Liquid адрес",
+  "cancel": "Отказ",
+  "coreScreensFeePriorityLabel": "Приоритет на таксата",
+  "sendErrorInsufficientBalanceFrozenHint": "Няма достатъчно наличен баланс — {amount} е замразен. Размразете монетите в „Управление на монетите“, за да го използвате.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "Поръчката изтече",
+  "sendSwapExpiredMessage": "Тази поръчка изтече, преди да бъдат изпратени средства. От портфейла ви не е изпратено нищо.",
+  "sendErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
+  "sendErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
+  "sendErrorInvoiceExpiryTooShort": "Валидността на тази фактура изтича твърде скоро. Поискайте нова фактура от получателя.",
+  "closeDialogButton": "Затвори",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  }
+}

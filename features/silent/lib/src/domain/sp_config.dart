@@ -1,0 +1,76 @@
+import 'package:silent/src/domain/entities/sp_backend_defaults.dart';
+import 'package:silent/src/domain/entities/sp_header_checkpoint.dart';
+import 'package:primitives/primitives.dart';
+
+/// Static configuration for the Silent Payments feature.
+///
+/// Pure constants only. No business logic, no external dependencies beyond
+/// the domain network enum.
+abstract class SpConfig {
+  static const int legacyMinScanAmountSat = 600;
+  static const int defaultMinScanAmountSat = 1000;
+  static const int maxMinScanAmountSat = 2100000000000000;
+
+  /// A change below it goes to the fee. About twice the P2TR dust limit.
+  static const int changeDustThresholdSat = 600;
+
+  static const int defaultFetchConcurrencyFactor = 12;
+  static const int defaultMatchConcurrencyFactor = 1;
+  static const int maxFetchConcurrencyFactor = 32;
+  static const int maxMatchConcurrencyFactor = 4;
+
+  /// Rough blocks-per-day used to map a "months/weeks ago" scan start to a
+  /// block height. Mainnet pace; test networks mine on demand, so on those the
+  /// time-to-height mapping is only indicative.
+  static const int blocksPerDay = 144;
+
+  /// Rough minutes-per-block, used to estimate the age of a scanned height from
+  /// how far behind the chain tip it is. Mainnet pace; only indicative on test
+  /// networks that mine on demand.
+  static const int minutesPerBlock = 10;
+
+  /// How long to wait for the broadcast notification. Long enough for a slow
+  /// electrum round trip, short enough that the send screen is not stuck for
+  /// good when the notification never arrives.
+  static const Duration broadcastTimeout = Duration(seconds: 30);
+
+  /// Backend URLs baked in for a network, or null when they have to be fetched
+  /// at runtime instead.
+  ///
+  /// A switch rather than a pair of maps: every network is named, so adding one
+  /// to [BitcoinNetwork] is a compile error here instead of a silently missing
+  /// URL, and the two URLs of a network cannot drift apart.
+  static SpBackendDefaults? staticDefaults(BitcoinNetwork network) =>
+      switch (network) {
+        BitcoinNetwork.mainnet => const SpBackendDefaults(
+          blindbitUrl: 'https://blindbit.bullbitcoin.com',
+          electrumUrl: 'ssl://electrum.bullbitcoin.com:50002',
+        ),
+        BitcoinNetwork.signet => const SpBackendDefaults(
+          blindbitUrl: 'https://blindbit-signet.bullbitcoin.com',
+          electrumUrl: 'ssl://electrum-signet.bullbitcoin.com:50002',
+        ),
+        BitcoinNetwork.testnet => const SpBackendDefaults(
+          blindbitUrl: 'https://blindbit-testnet.bullbitcoin.com',
+          electrumUrl: 'ssl://electrum-testnet.bullbitcoin.com:50002',
+        ),
+        // Regtest URLs come from the running infra at runtime, not from here.
+        BitcoinNetwork.regtest => null,
+      };
+
+  /// The block the header chain is pinned to. bwk refuses to open a mainnet
+  /// header store without one. On null, bwk anchors one retarget interval
+  /// below the server tip on proof of work alone.
+  static SpHeaderCheckpoint? headerCheckpoint(
+    BitcoinNetwork network,
+  ) => switch (network) {
+    // A retarget boundary (2016 * 481).
+    BitcoinNetwork.mainnet => SpHeaderCheckpoint(
+      height: 969696,
+      hash: '000000000000000000001e39df127cbab82a824ac43cfcdbf62e59f6a08b9f0b',
+    ),
+    BitcoinNetwork.signet ||
+    BitcoinNetwork.testnet ||
+    BitcoinNetwork.regtest => null,
+  };
+}

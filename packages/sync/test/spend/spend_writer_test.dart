@@ -393,6 +393,97 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
+  test(
+    'sender and receiver cannot reserve the same input concurrently',
+    () async {
+      final entering = Completer<void>();
+      final release = Completer<void>();
+      final current = generation(bitcoin.key);
+      var receiverWrites = 0;
+      final sender = stores.spend.reservePayjoinInputs(
+        bitcoin.key,
+        current,
+        {_a},
+        owner.session,
+        () async {
+          entering.complete();
+          await release.future;
+          reservations.held = [reservation(_a, owner)];
+        },
+      );
+      await entering.future;
+      final receiver = stores.spend.reservePayjoinInputs(
+        bitcoin.key,
+        current,
+        {_a},
+        other.session,
+        () async {
+          receiverWrites++;
+        },
+      );
+      try {
+        expect(
+          WriterLock.acquire(dir.path, bitcoin.key),
+          isA<Err<WriterLock, SyncFailure>>(),
+        );
+        expect(receiverWrites, 0);
+      } finally {
+        release.complete();
+      }
+      ok(await sender);
+      expect(err(await receiver), isA<SyncProtectedInputsFailure>());
+      expect(receiverWrites, 0);
+      expect(transport.sent, isEmpty);
+    },
+  );
+
+  test('stale and frozen Payjoin inputs never reach session storage', () async {
+    final current = generation(bitcoin.key);
+    Future<void> unexpected() async => fail('Reservation must not be stored');
+    expect(
+      err(
+        await stores.spend.reservePayjoinInputs(
+          bitcoin.key,
+          current + 1,
+          {_a},
+          owner.session,
+          unexpected,
+        ),
+      ),
+      isA<SyncNotFoundFailure>(),
+    );
+    ok(await stores.freezes.freeze([FrozenOutpoint(_a, origin: 'user')]));
+    expect(
+      err(
+        await stores.spend.reservePayjoinInputs(
+          bitcoin.key,
+          current,
+          {_a},
+          owner.session,
+          unexpected,
+        ),
+      ),
+      isA<SyncProtectedInputsFailure>(),
+    );
+  });
+
+  test(
+    'an acknowledged write must expose the expected owner and outpoints',
+    () async {
+      final current = generation(bitcoin.key);
+      final result = await stores.spend.reservePayjoinInputs(
+        bitcoin.key,
+        current,
+        {_a, _b},
+        owner.session,
+        () async {
+          reservations.held = [reservation(_a, owner), reservation(_b, other)];
+        },
+      );
+      expect(err(result), isA<SyncProtectedInputsFailure>());
+    },
+  );
+
   group('prepareFunding', () {
     final arkOwner = SpendOwner(protocol: 'ark', session: 'board-1');
     const context = '{"output":0,"expiryHeight":1008}';
@@ -1235,6 +1326,80 @@ void main() {
   });
 
   group('broadcast', () {
+    for (final asPsbt in [false, true]) {
+      test('acceptance persists the actual broadcast inputs before observation '
+          '(PSBT=$asPsbt)', () async {
+        // Saved/signed bytes may contain inputs that differ from an earlier
+        // build. The obligation must describe the bytes actually sent.
+        final transaction = asPsbt
+            ? SignedPsbt(_fundingPsbt([_b, _c], finalised: true))
+            : SignedBitcoinTransaction(_transaction([_b, _c]));
+        final receipt = ok(
+          await stores.spend.broadcast(
+            signedForGeneration(
+              key: bitcoin.key,
+              generation: generation(bitcoin.key),
+              transaction: transaction,
+            ),
+          ),
+        );
+        expect(receipt.durable, isTrue);
+        final gate = SpendGateStoreDatasource.openExisting(
+          spendGateStorePath(dir.path),
+        );
+        try {
+          expect(gate.trackedInputs(bitcoin)[receipt.txid], {
+            '${_b.txId}:${_b.vout}',
+            '${_c.txId}:${_c.vout}',
+          });
+          expect(gate.isObserved(bitcoin.key, receipt.txid), isFalse);
+        } finally {
+          gate.close();
+        }
+      });
+    }
+
+    test(
+      'storage retry retains the actual accepted broadcast inputs',
+      () async {
+        final db = sqlite3.open(spendGateStorePath(dir.path));
+        addTearDown(db.close);
+        db.execute(
+          "CREATE TRIGGER fail_record BEFORE INSERT ON broadcasts BEGIN SELECT RAISE(FAIL, 'storage unavailable'); END",
+        );
+        final receipt = ok(
+          await stores.spend.broadcast(
+            signedForGeneration(
+              key: bitcoin.key,
+              generation: generation(bitcoin.key),
+              transaction: SignedBitcoinTransaction(_transaction([_b, _c])),
+            ),
+          ),
+        );
+        expect(receipt.durable, isFalse);
+        expect(
+          await stores.spendGate.check(bitcoin.key),
+          BitcoinSpendStatus.unavailable,
+        );
+        db.execute('DROP TRIGGER fail_record');
+        expect(
+          await stores.spendGate.check(bitcoin.key),
+          BitcoinSpendStatus.pending,
+        );
+        final gate = SpendGateStoreDatasource.openExisting(
+          spendGateStorePath(dir.path),
+        );
+        try {
+          expect(gate.trackedInputs(bitcoin)[receipt.txid], {
+            '${_b.txId}:${_b.vout}',
+            '${_c.txId}:${_c.vout}',
+          });
+        } finally {
+          gate.close();
+        }
+      },
+    );
+
     Future<UnsignedSpend> built({
       SpendOwner? by,
       List<Outpoint>? selected,

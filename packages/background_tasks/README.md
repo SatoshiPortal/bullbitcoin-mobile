@@ -4,7 +4,7 @@ Headless wallet sync on WorkManager, behind the maintainer gate `backgroundSyncE
 
 ## Runs
 
-`workmanager_runner.dart` receives the task WorkManager resolved, builds only that task (`BackgroundTaskRunner.forTask`), runs it and closes its resources in reverse order, even after a partial startup. Unknown and obsolete tasks are acknowledged without building anything. The published names and ids (`wallets-sync`, `bitcoin-sync`, `liquid-sync`, `swaps-sync`, `logs-prune`) and `lib/core/background_tasks/handler.dart` are fixed.
+`workmanager_runner.dart` receives the task WorkManager resolved, builds only that task (`BackgroundTaskRunner.forTask`), runs it and closes its resources in reverse order, even after a partial startup. Unknown and obsolete tasks are acknowledged without building anything. The published names and ids (`wallets-sync`, `bitcoin-sync`, `liquid-sync`, `swaps-sync`, `logs-prune`) and the app's entry point `backgroundTasksHandler` in `lib/background_entrypoint.dart` are fixed.
 
 `RunWalletSyncJobsUsecase` runs the wallets, chain by chain:
 
@@ -20,4 +20,4 @@ After the chain, `deliverPending` shows the announcements. A refused permission 
 
 ## Composition
 
-The package depends on `sync` for its domain types only, never on `notifications`. The wallet feature implements both ports and builds the use case in `lib/features/wallet/background_setup.dart`. The foreground creates the queue (`openForegroundWalletSyncJobQueue`) behind `backgroundSyncAvailable`; the background opens it with `openExistingWalletSyncJobQueue` and defers the task when it is missing, older or newer.
+The package implements background wallet synchronization using `sync` and publishes its native construction through `background_tasks/native_sync.dart`. The package composes the wallet task and its payment observer through `background_tasks/wallet_jobs.dart`. The app supplies the notification copy and gateway. The foreground creates the queue (`openForegroundWalletSyncJobQueue`) behind `backgroundSyncAvailable`; the background opens it with `openExistingWalletSyncJobQueue` and defers the task when it is missing, older or newer.

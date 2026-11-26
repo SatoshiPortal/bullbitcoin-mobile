@@ -1,0 +1,194 @@
+{
+  "retry": "Riprova",
+  "@@locale": "it",
+  "save": "Salva",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "addressLabel": "Indirizzo: ",
+  "amountRequestedLabel": "Quantità richiesta: {amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Se disattivato, potrai scegliere di consentire uno swap automatico bloccato a causa di commissioni elevate",
+  "autoswapAlwaysBlockInfoEnabled": "Quando abilitato, gli swap automatici con commissioni superiori al limite impostato saranno sempre bloccati",
+  "autoswapAlwaysBlockLabel": "Blocca sempre le commissioni elevate",
+  "autoswapBaseBalanceInfoText": "Dopo un trasferimento automatico, il saldo del tuo portafoglio Pagamenti istantanei tornerà a questo saldo obiettivo.",
+  "autoswapEnableToggleLabel": "Attiva Auto Swap",
+  "autoswapLoadSettingsError": "Impossibile caricare le impostazioni del trasferimento automatico",
+  "autoswapMaxBalanceLabel": "Saldo massimo del portafoglio istantaneo",
+  "autoswapMaxFeeInfoText": "Se la commissione di swap totale è superiore alla percentuale impostata, lo swap automatico sarà bloccato",
+  "autoswapMaxFeeLabel": "Commissione massima di swap",
+  "autoswapMaximumBalanceLabel": "Saldo massimo del portafoglio istantaneo",
+  "autoswapMaximumFeeError": "La soglia massima della commissione è {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Il saldo minimo è {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Il saldo minimo è {amount} sats",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Scegliere quale portafoglio Bitcoin riceverà i fondi trasferiti (richiesto)",
+  "autoswapRecipientWalletLabel": "Portafoglio Bitcoin di destinazione",
+  "autoswapRecipientWalletPlaceholder": "Seleziona un portafoglio Bitcoin",
+  "autoswapRecipientWalletPlaceholderRequired": "Seleziona un portafoglio Bitcoin *",
+  "autoswapRecipientWalletRequired": "#",
+  "autoswapSaveButton": "Salva",
+  "autoswapSelectWalletError": "Seleziona un portafoglio Bitcoin destinatario",
+  "autoswapSettingsTitle": "Impostazioni Auto Swap",
+  "autoswapTargetBalanceLabel": "Saldo obiettivo del portafoglio istantaneo",
+  "autoswapTriggerAtBalanceInfoText": "Il trasferimento automatico si attiva quando il tuo saldo supera questo saldo massimo.",
+  "autoswapTriggerBalanceError": "Il saldo massimo deve essere almeno il doppio del saldo obiettivo",
+  "autoswapUpdateSettingsError": "Impossibile aggiornare le impostazioni di swap automatico",
+  "bitcoinPriceExchangeRateUnavailable": "Tasso di cambio non disponibile. Riprova più tardi.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Non è stato possibile confermare che la transazione sia stata trasmessa. Controlla un block explorer prima di riprovare.",
+  "closeDialogButton": "Chiudi",
+  "coinsKeychainChange": "Resto",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Ricezione",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Consolida il portafoglio",
+  "coreScreensAmountLabel": "Importo",
+  "coreScreensConfirmButton": "Conferma",
+  "coreScreensExternalTransfer": "Swap esterno",
+  "coreScreensFeeDeductionExplanation": "Questa è la commissione totale detratta dall'importo inviato",
+  "coreScreensFeePriorityLabel": "Priorità",
+  "coreScreensFromLabel": "Da",
+  "coreScreensInternalTransfer": "Swap interno",
+  "coreScreensNetworkFeesLabel": "Commissioni di rete",
+  "coreScreensReceiveAmountLabel": "Ricevi l'importo",
+  "coreScreensReceiveNetworkFeeLabel": "Commissione di rete per la ricezione",
+  "coreScreensSendAmountLabel": "Inviare Importo",
+  "coreScreensSendNetworkFeeLabel": "Commissione di rete per l'invio",
+  "coreScreensServerNetworkFeesLabel": "Commissioni di rete del server",
+  "coreScreensToLabel": "A",
+  "coreScreensTransferFeeLabel": "Commissione di swap",
+  "coreScreensTransferIdLabel": "ID swap",
+  "doneButton": "Fatto",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sicuri",
+  "globalDefaultLiquidWalletLabel": "Pagamenti istantanei",
+  "payNetworkError": "Errore di rete. Riprova",
+  "receiveNote": "Nota",
+  "selectAmountTitle": "Seleziona l'importo",
+  "sendAdvancedOptions": "Opzioni avanzate",
+  "sendDone": "Fatto",
+  "sendErrorBuildFailed": "Impossibile preparare questo pagamento. Riprova.",
+  "sendErrorSelectedCoinsInsufficient": "Le monete selezionate non coprono l'importo e le commissioni. Seleziona altre monete o riduci l'importo.",
+  "sendErrorSelectedCoinsUnavailable": "Una o più monete selezionate non sono più disponibili. Controlla la selezione e riprova.",
+  "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
+  "sendErrorTransactionChanged": "I dettagli della transazione sono cambiati. Controlla importo, destinazione e commissioni, poi conferma di nuovo.",
+  "sendFastFee": "Veloce",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Replace-By-Fee (RBF) attivato",
+  "sendSelectCoinsManually": "Seleziona le monete manualmente",
+  "sendSelectedUtxosInsufficient": "Gli UTXO selezionate non coprono l'importo richiesto",
+  "sendSelfTransfer": "Trasferimento a sé",
+  "settingsPayjoinSatsUnit": "sats",
+  "swapAmountLabel": "Importo",
+  "swapAmountPlaceholder": "0",
+  "swapAvailableBalance": "Saldo disponibile",
+  "swapConfirmTransferTitle": "Conferma lo swap",
+  "swapContinueButton": "Continua",
+  "swapDoNotUninstallWarning": "Non disinstallare l'app finché lo swap non sarà completato!",
+  "swapErrorAmountAboveMaximum": "Importo superiore al massimo importo swap: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "L'importo di swap è inferiore: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorRateLimited": "Troppe richieste. Attendi {seconds} secondi e riprova.",
+  "swapErrorRouteUnavailable": "Lo swap da {fromNetwork} a {toNetwork} non è disponibile.",
+  "swapErrorRouteUnavailableGeneric": "Questo swap non è disponibile.",
+  "swapExternalAddressHint": "Inserisci l'indirizzo del portafoglio esterno",
+  "swapExternalTransferLabel": "Swap esterno",
+  "swapFromLabel": "Da",
+  "swapGoHomeButton": "Torna alla home",
+  "swapInfoDescription": "Esegui swap di Bitcoin tra i tuoi portafogli in modo semplice. Tieni nel portafoglio Pagamenti istantanei solo i fondi per le spese di tutti i giorni.",
+  "swapInsufficientFunds": "Fondi insufficienti",
+  "swapInternalTransferTitle": "Swap interno",
+  "swapMaxButton": "MAX",
+  "swapReceiveExactAmountLabel": "Ricevi la quantità esatta",
+  "swapSubtractFeesLabel": "Sottrarre commissioni da importo",
+  "swapToLabel": "A",
+  "swapTotalFees": "Commissioni totali",
+  "swapTransferCompletedMessage": "Wow, hai aspettato! Lo swap è stato completato con successo.",
+  "swapTransferCompletedTitle": "Swap completato",
+  "swapTransferPendingMessage": "Lo swap è in corso. Le transazioni Bitcoin possono richiedere un po' di tempo per confermare. Puoi tornare alla home e aspettare.",
+  "swapTransferPendingTitle": "Swap in attesa",
+  "swapTransferRefundInProgressMessage": "Si è verificato un errore nello swap. Il rimborso è in corso.",
+  "swapTransferRefundInProgressTitle": "Rimborso dello swap in corso",
+  "swapTransferRefundedMessage": "Lo swap è stato rimborsato con successo.",
+  "swapTransferRefundedTitle": "Swap rimborsato",
+  "swapTransferTitle": "Swap",
+  "swapUnderReviewContactSupport": "Contatta l'assistenza",
+  "swapUnderReviewDescription": "Questo swap richiede una revisione manuale. Contatta l'assistenza. Se non hai un account di assistenza, ti basta crearne uno: non è richiesto il KYC.",
+  "swapUnderReviewSupportMessage": "Swap in revisione\nID ordine: {orderId}\nID richiesta: {requestId}\nNumero d'ordine: {orderNumber}",
+  "swapUnderReviewTitle": "Swap in revisione",
+  "swapValidationSelectFromWallet": "Seleziona il portafoglio da cui eseguire lo swap",
+  "swapValidationSelectToWallet": "Seleziona il portafoglio verso cui eseguire lo swap",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLightning": "Lightning",
+  "transactionNetworkLiquid": "Liquid",
+  "transactionStatusSwapExpired": "Swap scaduto",
+  "transactionStatusSwapFailed": "Scambio non riuscito",
+  "transactionSwapDescChainExpired": "Questo swap è scaduto. I tuoi fondi saranno automaticamente restituiti al tuo portafoglio.",
+  "transactionSwapDescChainFailed": "Si è verificato un problema con il tuo swap. Contatta il supporto se i fondi non sono stati restituiti entro 24 ore.",
+  "transactionSwapOpenWithin24h": "Apri l'app entro 24 ore per completare il tuo swap.",
+  "typeLabel": "Tipo: ",
+  "walletLoadFailed": "Non è stato possibile caricare i tuoi portafogli. Controlla la connessione e riprova.",
+  "copiedToClipboard": "Copiato negli appunti",
+  "coreSwapsStatusCompleted": "Completato",
+  "coreSwapsStatusPending": "In attesa",
+  "swapRescueAmountLabel": "Importo",
+  "swapRescueButton": "Ripristina",
+  "swapRescueCreatedLabel": "Creato",
+  "swapRescueIdLabel": "ID Swap",
+  "swapRescueRouteLabel": "Percorso",
+  "swapRescueStatusLabel": "Stato",
+  "swapRescueSuccess": "Swap ripristinato — ora riprenderà",
+  "swapRescueTitle": "Salvataggio swap",
+  "swapRescueTypeLabel": "Tipo",
+  "swapRescueWalletHint": "Seleziona un portafoglio",
+  "swapRescueWalletLabel": "Ripristina nel portafoglio",
+  "swapRestoreActionable": "{count, plural, =0{Nessuno swap da recuperare} =1{Puoi provare a recuperare 1 swap. Potrebbe già trovarsi in uno stato finale.} other{Puoi provare a recuperare {count} swap. Nota, alcuni potrebbero già trovarsi in uno stato finale.}}",
+  "swapRestoreAllSection": "Tutti gli swap",
+  "swapRestoreFailed": "Impossibile ripristinare gli swap",
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "swapRestoreKindLightningReceive": "Ricezione Lightning",
+  "swapRestoreKindLightningSend": "Invio Lightning",
+  "swapRestoreNoSwaps": "Nessuno swap trovato da ripristinare",
+  "swapRestoreRecoverableSection": "Recuperabili",
+  "swapRestoreTitle": "Ripristino swap"
+}

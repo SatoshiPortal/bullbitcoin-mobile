@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:secrets/secrets.dart';
@@ -15,13 +15,13 @@ final class NetworkWalletSetup {
 }
 
 final class LoadNetworkWalletSetupUsecase {
-  final SettingsRepository _settings;
-  final WalletSecretReferencesRepository _references;
+  final DeveloperEnvironmentReader _settings;
+  final WalletInventory _inventory;
   final Secrets? _secrets;
 
   LoadNetworkWalletSetupUsecase(
     this._settings,
-    this._references, [
+    this._inventory, [
     this._secrets,
   ]);
 
@@ -29,7 +29,10 @@ final class LoadNetworkWalletSetupUsecase {
   Future<Result<NetworkWalletSetup, NetworkWalletSetupFailure>>
   execute() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.readDeveloperEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final network = settings.environment.networkEnv;
       if (network == NetworkEnv.mainnet) {
         return const Ok(NetworkWalletSetup(NetworkEnv.mainnet, []));
@@ -42,9 +45,9 @@ final class LoadNetworkWalletSetupUsecase {
       // Without custody capability, setup can still generate or import, but
       // cannot offer an unchecked reference for reuse.
       if (secrets == null) return Ok(NetworkWalletSetup(network, const []));
-      final references = await _references.list();
-      if (references case Err(:final failure)) {
-        return Err(NetworkWalletSetupReadFailure(failure));
+      final references = await _inventory.referencedFingerprints();
+      if (references case Err()) {
+        return const Err(NetworkWalletSetupReadFailure(WalletStorageFailure()));
       }
       final reusable = <Fingerprint>[];
       if (references case Ok(:final value)) {

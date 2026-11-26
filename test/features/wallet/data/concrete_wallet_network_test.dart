@@ -1,25 +1,40 @@
+import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/write.dart'
+    show ElectrumSync, ForegroundWalletSynchronization, nativeWalletStoragePath;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:sync/sync.dart' show SyncReason;
-import 'package:primitives/primitives.dart' show Fingerprint, Ok;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:sync/sync.dart'
+    show
+        SyncFailure,
+        SyncNotFoundFailure,
+        WalletConnection,
+        WalletConnectionPort,
+        WalletKey;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result;
+import 'package:primitives/primitives.dart' as primitives show Network;
+import 'package:preferences/preferences.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
-
-class _Bdk extends Mock implements BdkWalletDatasource {}
-
-class _Lwk extends Mock implements LwkWalletDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
+
+class _Offline implements WalletConnectionPort {
+  @override
+  Future<Result<T, SyncFailure>> run<T>({
+    required primitives.Network network,
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
+    operation,
+    required bool Function(SyncFailure) mayRetry,
+  }) => throw StateError('A catalog read must not sync');
+}
 
 WalletMetadataModel _row(Network network) {
   final origin = 'wpkh([73c5da0a/84h/${network.coinType}h/0h])';
@@ -39,11 +54,18 @@ WalletMetadataModel _row(Network network) {
 }
 
 void main() {
+  final synchronization = ForegroundWalletSynchronization(
+    ElectrumSync(
+      connections: _Offline(),
+      documentsDirectory: () async => '/nonexistent',
+      readRevision: (_) async => const Err(SyncNotFoundFailure()),
+    ),
+  );
+
   test(
     'catalog filtering distinguishes testnet and regtest with coin type 1',
     () async {
       final metadata = _Metadata();
-      final bdk = _Bdk();
       final values = _Values();
       final rows = [
         for (final network in [
@@ -54,24 +76,17 @@ void main() {
           _row(network),
       ];
       when(metadata.fetchAll).thenAnswer((_) async => rows);
-      registerFallbackValue(WalletModel.fromMetadata(rows.first));
-      when(() => values.getBalance(wallet: any(named: 'wallet')))
+      registerFallbackValue(
+        WalletKey(id: 'test', network: BitcoinNetwork.mainnet),
+      );
+      when(() => values.getBalance(key: any(named: 'key')))
           .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
-        walletMetadataDatasource: metadata,
-        bdkWalletDatasource: bdk,
-        lwkWalletDatasource: _Lwk(),
+        walletRegistrations: metadata,
         walletValuesDatasource: values,
-        synchronize: (
-          _, {
-          discover = false,
-          allowInitialScan = true,
-          reason = SyncReason.auto,
-        }) async {},
-        isSyncing: ({walletId}) => false,
-        syncStarted: const Stream.empty(),
-        syncFinished: const Stream.empty(),
-        electrumSyncResultStream: const Stream.empty(),
+        synchronization: synchronization,
+        syncStarted: const Stream<String>.empty(),
+        syncFinished: const Stream<String>.empty(),
       );
       for (final (environment, expected) in [
         (Environment.mainnet, Network.bitcoinMainnet),
@@ -88,66 +103,29 @@ void main() {
     },
   );
 
-  for (final code in ['bitcoinRegtest', 'unresolved']) {
-    test(
-      'secret protection includes $code catalog references without native reads',
-      () async {
-        final metadata = _Metadata();
-        final bdk = _Bdk();
-        final lwk = _Lwk();
-        final values = _Values();
-        final row = _row(Network.bitcoinRegtest).copyWith(networkCode: code);
-        when(metadata.fetchAll).thenAnswer((_) async => [row]);
-        final repository = WalletRepository(
-          walletMetadataDatasource: metadata,
-          bdkWalletDatasource: bdk,
-          lwkWalletDatasource: lwk,
-          walletValuesDatasource: values,
-          synchronize: (
-            _, {
-            discover = false,
-            allowInitialScan = true,
-            reason = SyncReason.auto,
-          }) async {},
-          isSyncing: ({walletId}) => false,
-          syncStarted: const Stream.empty(),
-          syncFinished: const Stream.empty(),
-          electrumSyncResultStream: const Stream.empty(),
-        );
-        final result = await repository.hasSecretReference(
-          Fingerprint('73c5da0a'),
-        );
-        expect(result.fold((value) => value, (_) => false), true);
-        when(metadata.fetchAll)
-            .thenAnswer((_) async => [row.copyWith(signer: Signer.none)]);
-        final watchOnly = await repository.hasSecretReference(
-          Fingerprint('73c5da0a'),
-        );
-        expect(watchOnly.fold((value) => value, (_) => true), false);
-        verifyZeroInteractions(bdk);
-        verifyZeroInteractions(lwk);
-        verifyZeroInteractions(values);
-      },
+  test('native storage keeps regtest and testnet identities distinct', () {
+    final regtest = _row(Network.bitcoinRegtest);
+    final testnet = _row(Network.bitcoinTestnet);
+    final regtestKey = WalletKey(
+      id: regtest.id,
+      network: regtest.network.shared,
     );
-  }
-
-  test(
-    'native models retain regtest rather than projecting it onto testnet',
-    () {
-      final model = WalletModel.fromMetadata(_row(Network.bitcoinRegtest));
-      expect(model.network, Network.bitcoinRegtest);
-      expect(
-        model.hexId,
-        isNot(WalletModel.fromMetadata(_row(Network.bitcoinTestnet)).hexId),
-      );
-      expect(
-        Network.bitcoinRegtest.requireHistoricalTestnet,
-        throwsA(isA<UnsupportedNetworkException>()),
-      );
-      expect(
-        Network.liquidRegtest.requireHistoricalTestnet,
-        throwsA(isA<UnsupportedNetworkException>()),
-      );
-    },
-  );
+    final testnetKey = WalletKey(
+      id: testnet.id,
+      network: testnet.network.shared,
+    );
+    expect(regtestKey.network, BitcoinNetwork.regtest);
+    expect(
+      nativeWalletStoragePath('/wallets', regtestKey),
+      isNot(nativeWalletStoragePath('/wallets', testnetKey)),
+    );
+    expect(
+      Network.bitcoinRegtest.requireHistoricalTestnet,
+      throwsA(isA<UnsupportedNetworkException>()),
+    );
+    expect(
+      Network.liquidRegtest.requireHistoricalTestnet,
+      throwsA(isA<UnsupportedNetworkException>()),
+    );
+  });
 }

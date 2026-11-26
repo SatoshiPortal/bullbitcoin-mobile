@@ -1,0 +1,1472 @@
+{
+  "@@locale": "ar",
+  "exchangeAccountInfoEmailLabel": "Email",
+  "exchangeAccountInfoFirstNameLabel": "الاسم الأول",
+  "exchangeAccountInfoLastNameLabel": "الاسم الأخير",
+  "exchangeAccountInfoLoadErrorMessage": "عدم القدرة على تحميل المعلومات",
+  "exchangeAccountInfoTitle": "معلومات حسابية",
+  "exchangeAccountInfoUserNumberCopiedMessage": "مستعمل رقم مستنسخ",
+  "exchangeAccountInfoUserNumberLabel": "رقم المستعمل",
+  "exchangeAccountInfoVerificationIdentityVerified": "التحقق من الهوية",
+  "exchangeAccountInfoVerificationLevelLabel": "مستوى التحقق",
+  "exchangeAccountInfoVerificationLightVerification": "التحقق الخفيف",
+  "exchangeAccountInfoVerificationLimitedVerification": "التحقق المحدود",
+  "exchangeAccountInfoVerificationNotVerified": "لم يتم التحقق منها",
+  "exchangeAppSettingsDefaultCurrencyLabel": "العملة الافتراضية",
+  "exchangeAppSettingsEmailNotificationsDescription": "تلقي الإخطارات بالبريد الإلكتروني للأوامر وتحديث الحسابات",
+  "exchangeAppSettingsEmailNotificationsLabel": "الإخطارات بالبريد الإلكتروني",
+  "exchangeAppSettingsPreferredLanguageLabel": "اللغة المفضلة",
+  "exchangeAppSettingsSaveButton": "أنقذ",
+  "exchangeAppSettingsSaveSuccessMessage": "تم إنقاذ (ستينغز) بنجاح",
+  "exchangeAppSettingsValidationWarning": "يرجى وضع الأفضليات اللغوية والعملة قبل الادخار.",
+  "exchangeAuthErrorMessage": "وقع خطأ، من فضلك حاول الدخول مرة أخرى.",
+  "exchangeBitcoinWalletsTitle": "Default Bitcoin Wallets",
+  "exchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "exchangeErrorSavingPreferences": "تعذر حفظ تفضيلاتك. يرجى المحاولة مرة أخرى.",
+  "exchangeFileUploadButton": "تحميل",
+  "exchangeFileUploadDocumentTitle": "تحميل أي وثيقة",
+  "exchangeFileUploadInstructions": "إذا كنت بحاجة إلى إرسال أي وثائق أخرى، تحميلها هنا.",
+  "exchangeFileUploadStatusAccepted": "مقبولة",
+  "exchangeFileUploadStatusInReview": "قيد الاستعراض",
+  "exchangeFileUploadStatusRejectedBadge": "مرفوض",
+  "exchangeFileUploadSuccess": "تم تحميل الملف بنجاح",
+  "exchangeFileUploadTapToReupload": "اضغط لإعادة الرفع",
+  "exchangeFileUploadTitle": "الشحن الآمن",
+  "exchangeReferralsApplyToJoinMessage": "تطبيق للانضمام إلى البرنامج هنا",
+  "exchangeReferralsContactSupportMessage": "دعم الاتصال للتعلم عن برنامج الإحالة",
+  "exchangeReferralsJoinMissionTitle": "انضم إلى البعثة",
+  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
+  "exchangeReferralsTitle": "مدونات الإحالة",
+  "exchangeSecurityAccessSettingsButton": "الدخول",
+  "exchangeSecurityManage2FAPasswordLabel": "2FA and password",
+  "exchangeSettingsAccountInformationTitle": "الحساب",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "تم إرسال مستند بالفعل.",
+  "exchangeSettingsErrorDocumentEmpty": "هذا الملف فارغ. اختر ملفًا آخر.",
+  "exchangeSettingsErrorDocumentTooLarge": "هذا الملف كبير جدًا. اختر ملفًا أصغر.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "نوع الملف هذا غير مقبول. اختر ملفًا آخر.",
+  "exchangeSettingsErrorDocumentUnreadable": "تعذرت قراءة هذا الملف. اختر ملفًا آخر.",
+  "exchangeSettingsErrorLoadingAccount": "تعذر تحميل تفاصيل حسابك. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorLoadingStatistics": "تعذر تحميل إحصاءات التداول الخاصة بك. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorLoadingUploadStatus": "تعذر تحميل حالة الرفع الخاصة بك. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorUploadingDocument": "تعذر رفع المستند. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsLogInTitle": "Log In",
+  "exchangeSettingsRecipientsTitle": "المتلقين",
+  "exchangeSettingsReferralsTitle": "الإحالة",
+  "exchangeSettingsSecuritySettingsTitle": "إعدادات الأمان",
+  "exchangeSettingsTransactionsTitle": "المعاملات",
+  "exchangeStatisticsAsOf": "في {date}",
+  "exchangeStatisticsAveragePrice": "متوسط السعر",
+  "exchangeStatisticsBillerStats": "إحصاءات المراسلين",
+  "exchangeStatisticsBuyAvgPriceDesc": "متوسط السعر المدفوع لكل بيتكوين عند الشراء",
+  "exchangeStatisticsBuySellRatio": "نسبة الشراء/البيع",
+  "exchangeStatisticsBuySellRatioDesc": "نسبة إجمالي الحجم بين الشراء والبيع",
+  "exchangeStatisticsBuyStats": "إحصاءات الشراء",
+  "exchangeStatisticsBuyTradeCountDesc": "عدد معاملات شراء البيتكوين",
+  "exchangeStatisticsBuyVolumeDesc": "المبلغ الإجمالي المُنفَق في شراء البيتكوين",
+  "exchangeStatisticsCurrency": "العملة: {currency}",
+  "exchangeStatisticsNoData": "لا توجد إحصاءات متاحة",
+  "exchangeStatisticsOrderStats": "النظام الإحصائي",
+  "exchangeStatisticsSellAvgPriceDesc": "متوسط السعر المستلَم لكل بيتكوين عند البيع",
+  "exchangeStatisticsSellStats": "إحصاءات البيع",
+  "exchangeStatisticsSellTradeCountDesc": "عدد معاملات بيع البيتكوين",
+  "exchangeStatisticsSellVolumeDesc": "المبلغ الإجمالي المُستلَم من بيع البيتكوين",
+  "exchangeStatisticsTitle": "الإحصاءات",
+  "exchangeStatisticsTotalAmount": "المجموع",
+  "exchangeStatisticsTotalVolume": "Total Trading Volume",
+  "exchangeStatisticsTotalVolumeDesc": "مجموع أحجام الشراء والبيع بالعملات التقليدية",
+  "exchangeStatisticsTradeCount": "الكونت التجاري",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{صفقة واحدة ({currency})} other{{count} صفقات ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{صفقة واحدة} other{{count} صفقات}}",
+  "exchangeStatisticsVolume": "Volume",
+  "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatAttachmentImage": "صورة",
+  "exchangeSupportChatAttachmentUnknownFile": "ملف غير معروف",
+  "exchangeSupportChatEmptyState": "لا رسائل بعد ابدأ المحادثة!",
+  "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
+  "exchangeSupportChatInputHint": "اكتب رسالة.",
+  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatMessageEmptyError": "الرسالة لا يمكن أن تكون فارغة",
+  "exchangeSupportChatMessageRequired": "الرسالة مطلوبة",
+  "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatTitle": "الدعم",
+  "exchangeSupportChatYesterday": "أمس",
+  "exchangeSupportLoginChatRequired": "للحصول على دعم بشري، يجب عليك أولاً تسجيل الدخول إلى حساب Bull Bitcoin الخاص بك. الخدمة مجانية 100% ولا يتطلب الأمر أي KYC، فقط عنوان بريد إلكتروني.",
+  "loginButton": "LOGIN",
+  "notLoggedInTitle": "أنتِ لستِ محبوسة",
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "retry": "Retry",
+  "settingsAppSettingsTitle": "App Settings",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "تعذر حفظ هذا الإعداد. يرجى المحاولة مرة أخرى.",
+  "fundExchangeSepaDescriptionExactly": "بالضبط.",
+  "fundExchangeInstantSepaInfo": "Only use for transactions below 20,000. أما بالنسبة للمعاملات الأكبر، فيستخدم الخيار العادي لنظام المحاسبة البيئية - الاقتصادية.",
+  "fundExchangeLabelBicCode": "رمز BIC",
+  "fundExchangeMethodRegularSepa": "SEPA",
+  "fundExchangeSinpeLabelPhone": "أرسل هذا الرقم",
+  "fundExchangeCrIbanCrcTransferCodeWarning": "يجب أن تضيف رمز التحويل كـ\"ممارسة\" أو \"سبب\" أو \"الوصف\" عند الدفع إذا نسيت أن تُضمّن هذا الرمز، قد يُرفض دفعك.",
+  "fundExchangeSinpeTitle": "SINPE Transfer",
+  "fundExchangeInfoPaymentDescription": "في وصف الدفع أضف رمز التحويل.",
+  "fundExchangeCrIbanCrcDescriptionBold": "بالضبط",
+  "fundExchangeLabelRecipientAddress": "عنوان المستقبل",
+  "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - only for transactions below 30,000",
+  "fundExchangeSepaDescription": "أرسل تحويل من حسابك المصرفي باستخدام التفاصيل التالية ",
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "رمز نقلك.",
+  "fundExchangeLabelBankAccountCountry": "بلد الحساب المصرفي",
+  "fundExchangeLabelTransitNumber": "رقم المرور العابر",
+  "fundExchangeLabelMemo": "Memo",
+  "fundExchangeBankTransferWireTitle": "تحويلات مصرفية (الأسعار)",
+  "fundExchangeWarningTactic5": "يطلبون إرسال (بيتكوين) على منصة أخرى",
+  "fundExchangeAccountTitle": "صندوق حسابك",
+  "fundExchangeWarningTactic1": "وهي عائدات واعدة للاستثمار",
+  "fundExchangeMethodBankTransferWire": "التحويل المصرفي (Wire or EFT)",
+  "fundExchangeJurisdictionCostaRica": "? كوستاريكا كوستاريكا",
+  "fundExchangeContinueButton": "استمر",
+  "fundExchangeCrIbanUsdRecipientNameHelp": "استخدم اسم شركتنا الرسمي لا تستخدم \"بول بيتكين\".",
+  "fundExchangeArsBankTransferTitle": "التحويل المصرفي",
+  "fundExchangeJurisdictionCanada": "كندا",
+  "fundExchangeCrIbanUsdLabelIban": "IBAN account Number (US dollars only)",
+  "fundExchangeInfoTransferCode": "يجب أن تضيف رمز التحويل كـ\"العرض\" أو \"السجن\" عند الدفع.",
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "الوصف",
+  "fundExchangeTitle": "التمويل",
+  "fundExchangeCrIbanCrcDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
+  "fundExchangeHelpBeneficiaryName": "استخدم اسم شركتنا الرسمي لا تستخدم \"بول بيتكين\".",
+  "fundExchangeWarningTactic7": "يقولون لك لا تقلق بشأن هذا التحذير",
+  "fundExchangeMethodCanadaPost": "النقدية أو الديون الشخصية في كندا",
+  "fundExchangeSepaTitle": "نقل النظام",
+  "fundExchangeLabelBeneficiaryAddress": "عنوان المستفيدين",
+  "fundExchangeJurisdictionArgentina": "الأرجنتين",
+  "fundExchangeWarningTactic6": "يريدونك أن تشاركي شاشتك",
+  "fundExchangeCrIbanUsdDescriptionBold": "بالضبط",
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Colones using SINPE",
+  "fundExchangeArsBankTransferDescription": "أرسل تحويلاً مصرفياً من حسابك المصرفي باستخدام التفاصيل المصرفية الأرجنتينية.",
+  "fundExchangeCrIbanUsdDescription": "أرسل تحويل مصرفي من حسابك المصرفي باستخدام التفاصيل أدناه ",
+  "fundExchangeLabelBankCountry": "المصرف",
+  "fundExchangeBankTransferSubtitle": "أرسل تحويل مصرفي من حسابك المصرفي",
+  "fundExchangeMethodOnlineBillPayment": "دفع مشروع القانون على الإنترنت",
+  "fundExchangeWarningConfirmation": "أُؤكّدُ بأنّني لَنْ يُطلبَ مِنْ أَنْ أَشتري بيتكوين مِن قِبل شخص آخر.",
+  "fundExchangeLabelCvu": "CVU",
+  "fundExchangeLabelRecipientName": "الاسم المستقبِل",
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "صناديق التحويل في دولار الولايات المتحدة",
+  "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 30 يورو",
+  "fundExchangeLabelTransferCode": "رمز التحويل (إضافة هذا كوصف للدفع)",
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeSpeiTitle": "SPEI transfer",
+  "fundExchangeRegularSepaInfo": "الاستخدام الوحيد للمعاملات التي تتجاوز 000 20 يورو. وفيما يتعلق بالمعاملات الأصغر، استخدم خيار نظام المحاسبة البيئية - الاقتصادية الثابت.",
+  "fundExchangeDoneButton": "تم",
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "أبطأ خيار، ولكن يمكن القيام به عن طريق المصارف الإلكترونية (3-4 أيام عمل)",
+  "fundExchangeLabelBankAccountDetails": "تفاصيل حساب مصرفي",
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "رمز نقلك.",
+  "fundExchangeLabelRecipientNameArs": "الاسم المستقبِل",
+  "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
+  "fundExchangeWarningDescription": "إذا طلب منك شخص أن تشتري (بيتكوين) أو (مساعدتك) كن حذراً، ربما يحاولون خداعك!",
+  "fundExchangeJurisdictionEurope": "أوروبا",
+  "fundExchangeBankTransferWireDescription": "أرسل تحويلاً سلكياً من حسابك المصرفي باستخدام تفاصيل مصرف (بول بيتكين) أدناه بنكك قد يتطلب فقط بعض التفاصيل.",
+  "fundExchangeWarningTactic4": "يطلبون إرسال (بيتكوين) إلى عنوانهم",
+  "fundExchangeSinpeDescription": "Colones using SINPE",
+  "fundExchangeMethodCanadaPostSubtitle": "أفضل لمن يفضلون الدفع شخصيا",
+  "fundExchangeSinpeDescriptionBold": "سيتم رفضه.",
+  "fundExchangeMethodBankTransferWireSubtitle": "الخيار الأفضل والأكثر موثوقية للمبالغ الأكبر (اليوم نفسه أو اليوم التالي)",
+  "fundExchangeCrIbanCrcLabelIban": "IBAN account Number (Colones only)",
+  "fundExchangeLabelClabe": "CLABE",
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "إيبان كوستاريكا",
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR code",
+  "fundExchangeSinpeLabelRecipientName": "الاسم المستقبِل",
+  "fundExchangeMethodInstantSepa": "تحويل SEPA الفوري والعادي",
+  "fundExchangeCrIbanUsdTransferCodeWarning": "يجب أن تضيف رمز التحويل كـ\"ممارسة\" أو \"سبب\" أو \"الوصف\" عند الدفع إذا نسيت أن تُضمّن هذا الرمز، قد يُرفض دفعك.",
+  "fundExchangeSpeiInfo": "(أ) أن يقدم إيداعاً باستخدام تحويلات شركة SPEI (الضريبة).",
+  "fundExchangeMethodEmailETransferSubtitle": "أسهل وأسرع طريقة (أساسية)",
+  "fundExchangeErrorLoadingDetails": "ولا يمكن تحميل تفاصيل الدفع في هذه اللحظة. الرجاء العودة ومحاولة مرة أخرى، اختيار طريقة أخرى للدفع أو العودة في وقت لاحق.",
+  "fundExchangeErrorTitleOrdPo404": "خيار الدفع غير متاح",
+  "fundExchangeErrorTitleRcpPo404": "خيار الدفع غير متوفر",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE غير متاح",
+  "fundExchangeErrorTitleOrdKyc400": "متطلبات KYC مفقودة",
+  "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء",
+  "fundExchangeErrorOrdCsrcp400": "يرجى تفعيل خيار الدفع الافتراضي لمستلم SEPA هذا",
+  "fundExchangeErrorOpeningPaymentLink": "تعذر فتح رابط الدفع. يرجى المحاولة مرة أخرى.",
+  "fundExchangeErrorTitleOrdCop400": "بيانات تمويل COP غير صالحة",
+  "fundExchangeErrorOrdCop400": "بيانات الطلب غير صالحة لتمويل COP",
+  "fundExchangeErrorTitleOrdCsrcp400": "الدفع الافتراضي غير مُفعّل",
+  "fundExchangeErrorTitleRcp400": "طلب غير صالح",
+  "fundExchangeErrorRcp400": "طلب غير صالح",
+  "fundExchangeErrorOrdPo404": "لا يوجد خيار دفع متاح",
+  "fundExchangeErrorRcpPo404": "ليس لديك الأذونات المطلوبة للوصول إلى خيار التمويل هذا. إما أن KYC الخاص بك غير كافٍ أو أن هذا الخيار غير متاح لحسابك",
+  "fundExchangeErrorRcpPosinpe404": "للوصول إلى خيار التمويل هذا، يجب تسجيل رقم هاتفك في شبكة SINPE في Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "حدث خطأ أثناء جلب رموز البنوك. يرجى المحاولة مرة أخرى لاحقًا.",
+  "fundExchangeSpeiTransfer": "SPEI transfer",
+  "fundExchangeCrIbanCrcRecipientNameHelp": "استخدم اسم شركتنا الرسمي لا تستخدم \"بول بيتكين\".",
+  "fundExchangeSinpeAddedToBalance": "بمجرد أن يتم الدفع سيضاف إلى رصيد حسابك.",
+  "fundExchangeSpeiSubtitle": "تحويل الأموال باستخدام الـ \" سي بي \"",
+  "fundExchangeAccountSubtitle": "اختيار بلدكم وطريقة الدفع",
+  "fundExchangeJurisdictionMexico": "المكسيك",
+  "fundExchangeLabelSwiftCode": "SWIFT code",
+  "fundExchangeCrIbanCrcDescription": "أرسل تحويل مصرفي من حسابك المصرفي باستخدام التفاصيل أدناه ",
+  "fundExchangeLabelRoutingNumber": "رقم المغادرة",
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "الوصف",
+  "fundExchangeInfoBeneficiaryNameLeonod": "The name of the beneficiary should be LEONOD. إذا وضعت أي شيء آخر، سيتم رفض دفعك.",
+  "doneButton": "تم",
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "صناديق التحويل في كولون كوستاريكا",
+  "fundExchangeLabelIban": "IBAN account number",
+  "fundExchangeMethodEmailETransfer": "Email E-Transfer",
+  "fundExchangeLabelBankName": "اسم مصرفي",
+  "fundExchangeInfoBankCountryUk": "بلدنا المصرفي هو المملكة المتحدة.",
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "إيبان كوستاريكا",
+  "fundExchangeLabelBeneficiaryName": "الاسم المستفيد",
+  "fundExchangeWarningTactic2": "انهم يعرضون عليك قرض",
+  "fundExchangeHelpTransferCode": "يضاف هذا كسبب للنقل",
+  "fundExchangeCrIbanUsdDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
+  "fundExchangeRestrictedTitle": "التمويل غير متاح",
+  "fundExchangeRestrictedMessage": "التمويل غير متاح على حسابك. يرجى التواصل مع الدعم لمزيد من المعلومات.",
+  "fundExchangeWarningTitle": "احترس من المسامير",
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeCrIbanCrcLabelRecipientName": "الاسم المستقبِل",
+  "fundExchangeCanadaPostStep7": "7. ستضاف الأموال إلى رصيد حساب (بول بيتكوين) خلال 30 دقيقة",
+  "fundExchangeWarningTactic8": "إنهم يضغطون عليك لتتصرف بسرعة",
+  "fundExchangeBankTransfer": "التحويل المصرفي",
+  "fundExchangeWarningTactic3": "يقولون أنهم يعملون من أجل الدين أو تحصيل الضرائب",
+  "fundExchangeWarningTacticsTitle": "أساليب السخرة المشتركة",
+  "fundExchangeHelpBeneficiaryAddress": "عنواننا الرسمي، في حالة هذا مطلوب من مصرفك",
+  "fundExchangeBankTransferWireTimeframe": "أي أموال تُرسلُ سَتُضافُ إلى بول بيتكوين في غضون 1-2 أيام عملِ.",
+  "fundExchangeLabelInstitutionNumber": "رقم المؤسسة",
+  "fundExchangeSpeiDescription": "تحويل الأموال باستخدام الـ \" سي بي \"",
+  "fundExchangeCrIbanUsdLabelRecipientName": "الاسم المستقبِل",
+  "fundExchangeETransferLabelSecretAnswer": "الجواب السري",
+  "fundExchangeCanadaPostStep6": "6. الصراف سيسلمك إيصالاً ويبقيه كدليل على الدفع",
+  "fundExchangeCanadaPostStep5": "5 دفع نقدا أو بطاقة خصم",
+  "fundExchangeETransferLabelEmail": "أرسل الرسالة الإلكترونية إلى هذا البريد الإلكتروني",
+  "fundExchangeOnlineBillPaymentHelpBillerName": "أضف هذه الشركة كمدفع إنها مجهزة الدفع",
+  "fundExchangeETransferTitle": "E-Transfer details",
+  "fundExchangeETransferLabelSecretQuestion": "السؤال السري",
+  "fundExchangeCanadaPostStep1": "1 الذهاب إلى أي موقع بريد كندا",
+  "fundExchangeLabelBankAddress": "عنوان مصرفنا",
+  "fundExchangeCanadaPostStep2": "2. أطلب من الصراف أن يفحص رمز \"لوادهوب\"",
+  "fundExchangeETransferLabelBeneficiaryName": "Use this as the E-transfer beneficiary name",
+  "fundExchangeCanadaPostStep4": "4 سيطلب الصراف رؤية بطاقة هوية صادرة عن الحكومة ويتحقق من أن الاسم على هويتك يطابق حسابك",
+  "fundExchangeOnlineBillPaymentDescription": "أيّ مبلغ ترسله من خلال مواصفة دفع فاتورة مصرفك عبر الإنترنت باستخدام المعلومات الواردة أدناه سيقيد لحساب (بول بيتكوين) خلال 3-4 أيام عمل.",
+  "fundExchangeETransferDescription": "أي مبلغ ترسله من بنككك عن طريق البريد الإلكتروني (E-Transfer) باستخدام المعلومات الواردة أدناه سيقيد لحساب (بول بيتكوين) خلال دقائق قليلة.",
+  "fundExchangeCanadaPostStep3": "3 أخبر الصراف بالمبلغ الذي تريد تحميله",
+  "fundExchangeOnlineBillPaymentLabelBillerName": "فتش قائمة البنك الخاص بك فواتير لهذا الاسم",
+  "fundExchangeCanadaPostTitle": "النقدية أو الديون الشخصية في كندا",
+  "fundExchangeOnlineBillPaymentTitle": "دفع مشروع القانون على الإنترنت",
+  "fundExchangeScamConsentError": "فشل تسجيل موافقتك. يرجى المحاولة مرة أخرى.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 كولومبيا",
+  "fundExchangeCopDailyLimitWarning": "إذا تجاوزت حد المعاملات اليومي، ستفشل المعاملة. سيتعيّن عليك الاتصال بدعم العملاء.",
+  "fundExchangeCopSenderName": "اسم المرسل",
+  "fundExchangeCopIssuingBank": "البنك المُصدِر",
+  "fundExchangeCopSelectBankError": "يرجى اختيار البنك المُصدِر",
+  "fundExchangeCopAmount": "المبلغ",
+  "fundExchangeCopEnterAmountError": "يرجى إدخال مبلغ",
+  "fundExchangeCopValidAmountError": "يرجى إدخال مبلغ صالح",
+  "fundExchangeCopGeneratePaymentLink": "إنشاء رابط الدفع",
+  "fundExchangeCopRedirectMessage": "سيتم تحويلك إلى صفحة خارجية لإجراء الدفع.",
+  "fundExchangeCopOpenPaymentLink": "فتح رابط الدفع",
+  "fundExchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "fundExchangeMethodConfidentialSepa": "SEPA السري",
+  "fundExchangeMethodConfidentialSepaSubtitle": "رقم IBAN افتراضي شخصي لإيداع الأموال بخصوصية",
+  "fundExchangeSinpeWarningNoBitcoin": "لا",
+  "fundExchangeSinpeWarningNoBitcoinDescription": " كلمة \"بيتكوين\" أو \"كريبتو\" في وصف الدفع هذا سيمنع دفعك.",
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "رقم الحساب الفريد هذا خلق فقط من أجلك",
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "يضاف هذا كرقم الحساب",
+  "exchangeCurrencyDropdownTitle": "العملة المختارة",
+  "exchangeAmountInputValidationInvalid": "المبلغ غير المسدد",
+  "exchangeAmountInputValidationInsufficient": "الرصيد غير الكافي",
+  "exchangeAmountInputValidationEmpty": "رجاءً إدخلْ كميةَ",
+  "exchangeCurrencyDropdownValidation": "يرجى اختيار العملة",
+  "exchangeAmountInputTitle": "المبلغ",
+  "exchangeAmountInputValidationZero": "يجب أن يكون المبلغ أكبر من الصفر",
+  "save": "أنقذ",
+  "exchangeBitcoinWalletsDescription": "وضع عناوين المحفظة الافتراضية لسحبات (بيتكوين) التلقائية.",
+  "exchangeBitcoinWalletsEnterAddressHint": "عنوان الدخول",
+  "exchangeDcaAddressLabelLiquid": "العنوان السائل",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
+  "delete": "تحذف",
+  "exchangeDcaAddressLabelBitcoin": "عنوان بيتكوين",
+  "cancel": "إلغاء",
+  "exchangeBitcoinWalletsSaveSuccess": "تم إنقاذ عنوان الجدار بنجاح",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "العنوان السائل",
+  "exchangeBitcoinWalletsLightningAddressLabel": "البرق (عنوان LN)",
+  "exchangeDcaAddressLabelLightning": "عنوان البرق",
+  "settingsTermsOfServiceTitle": "مدة الخدمة",
+  "continueButton": "استمر",
+  "autoBuyTitle": "الشراء التلقائي",
+  "autoBuyDescription": "اشترِ Bitcoin تلقائيًا في كل مرة تودع فيها أموالًا في حسابك",
+  "autoBuyActivate": "تفعيل الشراء التلقائي",
+  "autoBuyDeactivate": "إيقاف الشراء التلقائي",
+  "autoBuyCancelTitle": "إلغاء الشراء التلقائي؟",
+  "autoBuyCancelMessage": "لن تشتري Bitcoin تلقائيًا في المرة القادمة التي تموّل فيها حسابك.",
+  "autoBuyDeactivateConfirm": "نعم، أوقِف التفعيل",
+  "autoBuyHowItWorks": "كيف يعمل",
+  "autoBuyConnectWallet": "اربط محفظة Bitcoin أو Lightning أو Liquid الخاصة بك",
+  "autoBuyPurchaseCreated": "يتم إنشاء عملية شراء Bitcoin تلقائيًا في كل مرة تموّل فيها حسابك في Bull Bitcoin.",
+  "autoBuyBitcoinSent": "يُرسَل Bitcoin مباشرة إلى محفظتك الخاصة.",
+  "autoBuyRiskDisclaimer": "لا يمكن ضمان تنفيذ الأمر. قد تؤدي التأخيرات أو تغيّرات السعر بين الإيداع والشراء إلى تغيير السعر الفعلي.",
+  "autoBuyGetStarted": "ابدأ مع الشراء التلقائي",
+  "autoBuyConfirmTitle": "تأكيد الشراء التلقائي",
+  "autoBuyInfoMessage": "سيتم تحويل أي مبلغ يُضاف إلى حسابك إلى Bitcoin بسعر الصرف الحالي وإرساله إلى محفظتك.",
+  "autoBuyUpdateError": "تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.",
+  "exchangeAuthLoginFailedMessage": "وقع خطأ، من فضلك حاول الدخول مرة أخرى.",
+  "exchangeAuthLoginFailedOkButton": "حسنا",
+  "exchangeAuthLoginFailedTitle": "Login Failed",
+  "exchangeDcaUnableToGetConfig": "غير قادر على الحصول على تشكيلة DCA",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "exchangeDcaNetworkLiquid": "شبكة السائل",
+  "exchangeDcaNetworkBitcoin": "شبكة بيتكوين",
+  "exchangeDcaCancelDialogCancelButton": "إلغاء",
+  "exchangeDcaActivateTitle": "تفعيل الشراء المتكرر",
+  "exchangeDcaCancelDialogConfirmButton": "نعم، إبطال مفعوله",
+  "exchangeDcaCancelDialogMessage": "خطّة شراء (بيتكوين) المتكررة ستتوقّف، والمشتريات المقرّرة ستنتهي للراحة، عليك أن تضع خطة جديدة.",
+  "exchangeDcaFrequencyDay": "اليوم",
+  "exchangeHomeDepositButton": "الإيداع",
+  "exchangeKycCardSubtitle": "إزالة القيود المفروضة على المعاملات",
+  "exchangeDcaFrequencyWeek": "الأسبوع",
+  "exchangeDcaNetworkLightning": "شبكة البرق",
+  "exchangeHomeWithdrawButton": "الانسحاب",
+  "exchangeKycLevelLimited": "Limited",
+  "exchangeKycLevelLight": "الضوء",
+  "exchangeDcaFrequencyHour": "ساعة",
+  "exchangeKycCardTitle": "أكمل KYC",
+  "exchangeDcaCancelDialogTitle": "(ألغى (بيتكوين) المُتكرر؟?",
+  "transactionHistoryTitle": "سجل المعاملات",
+  "exchangeDcaDeactivateTitle": "Deactivate Recurring Buy",
+  "exchangeDcaSummaryMessage": "أنت تشتري {amount} كل {frequency} عبر {network} طالما هناك أموال في حسابك.",
+  "exchangeDcaFrequencyMonth": "الشهر",
+  "settingsScreenTitle": "الترتيبات",
+  "exchangeDcaHideSettings": "أماكن الاختباء",
+  "exchangeDcaViewSettings": "بيئات اليقظة",
+  "homeActionBuy": "شراء",
+  "homeActionSell": "بيع",
+  "homeActionPay": "دفع",
+  "homeActionTransfer": "مبادلة",
+  "recipientsSearchHint": "متلقي البحث بالاسم أو الوسم",
+  "recipientsFieldSinpePhoneNumberHint": "8 أرقام بدون رمز الدولة",
+  "recipientsCopDocCcRecipientNumber": "رقم cédula المستلم",
+  "recipientsCopDocCeRecipientNumber": "رقم cédula de extranjería للمستلم",
+  "recipientsCopDocNitRecipientNumber": "الرقم الضريبي للمستلم",
+  "recipientsCopDocPassportRecipientNumber": "رقم جواز سفر المستلم",
+  "recipientsCopDocTiRecipientNumber": "رقم بطاقة هوية المستلم",
+  "recipientsCopDocRegistroCivilRecipientNumber": "رقم السجل المدني للمستلم",
+  "recipientsValidationSinpePhoneCountryCode": "احذف رمز الدولة (506+). أدخل الأرقام الثمانية فقط",
+  "recipientsValidationSinpePhoneInvalidChars": "استخدم الأرقام فقط (بدون حروف أو رموز)",
+  "recipientsValidationSinpePhoneTooShort": "أدخل جميع الأرقام الثمانية لرقم الهاتف",
+  "recipientsFieldDocumentType": "نوع هوية المستلم",
+  "recipientsFieldDocumentNumberHint": "أدخل رقم هوية المستلم",
+  "recipientsScreenTitle": "اختر المستلم",
+  "recipientsScreenSubtitle": "لمن تدفع؟",
+  "recipientsTabNew": "مستلم جديد",
+  "recipientsTabList": "مستلمو عملتي الورقية",
+  "recipientsPayoutMethod": "طريقة الدفع",
+  "recipientsFilterByJurisdiction": "تصفية حسب الدولة:",
+  "recipientsListEmpty": "لم يُعثر على مستلمين.",
+  "recipientsContinue": "متابعة",
+  "recipientsJurisdictionAll": "جميع الدول",
+  "recipientsJurisdictionCanada": "🇨🇦 كندا",
+  "recipientsJurisdictionEurope": "🇪🇺 أوروبا (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 المكسيك",
+  "recipientsJurisdictionCostaRica": "🇨🇷 كوستاريكا",
+  "recipientsJurisdictionArgentina": "🇦🇷 الأرجنتين",
+  "recipientsJurisdictionColombia": "🇨🇴 كولومبيا",
+  "recipientsTypeInteracEmail": "تحويل مالي عبر البريد الإلكتروني",
+  "recipientsTypeBillPayment": "دفع فاتورة",
+  "recipientsTypeBankTransfer": "تحويل مصرفي",
+  "recipientsTypeSepa": "تحويل SEPA",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI عبر SMS",
+  "recipientsTypeSpeiCard": "بطاقة SPEI",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (بالدولار)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (بالكولون)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU الأرجنتين",
+  "recipientsTypeBankAccountCo": "حساب مصرفي (بيزو كولومبي)",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "البريد الإلكتروني",
+  "recipientsInfoPayee": "المستفيد",
+  "recipientsInfoAccount": "الحساب",
+  "recipientsInfoPhone": "الهاتف",
+  "recipientsInfoCard": "البطاقة",
+  "recipientsInfoLabel": "التسمية",
+  "recipientsValidationFieldRequired": "لا يمكن ترك هذا الحقل فارغًا",
+  "recipientsLabelOptional": "تسمية (اختياري)",
+  "recipientsLabelHint": "أدخل تسمية لهذا المستلم",
+  "recipientsFieldName": "الاسم",
+  "recipientsFieldNameHint": "أدخل اسم المستلم",
+  "recipientsFieldRecipientNameLabel": "اسم المستلم",
+  "recipientsFieldPhoneNumber": "رقم الهاتف",
+  "recipientsFieldPhoneNumberHint": "أدخل رقم الهاتف",
+  "recipientsFieldOwnerName": "اسم صاحب الحساب",
+  "recipientsFieldOwnerNameHint": "أدخل اسم صاحب الحساب",
+  "recipientsAccountOwnerQuestion": "لمن يعود هذا الحساب؟",
+  "recipientsAccountOwnerMine": "هذا حسابي",
+  "recipientsAccountOwnerSomeoneElse": "هذا حساب شخص آخر",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "أدخل رقم IBAN",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "أدخل رقم CLABE",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "أدخل رقم CVU/CBU",
+  "recipientsFieldBankInstitution": "المؤسسة المصرفية",
+  "recipientsFieldBankInstitutionPlaceholder": "اختر المؤسسة المصرفية",
+  "recipientsValidationBankInstitution": "يرجى اختيار مؤسسة مصرفية",
+  "recipientsFieldAccountType": "نوع الحساب",
+  "recipientsAccountTypeSavings": "توفير",
+  "recipientsAccountTypeChecking": "جاري",
+  "recipientsFieldBankAccountNumber": "رقم الحساب المصرفي",
+  "recipientsFieldBankAccountNumberHint": "أدخل رقم الحساب المصرفي",
+  "recipientsCopDocCc": "بطاقة المواطنة (Cédula de Ciudadanía)",
+  "recipientsCopDocCe": "بطاقة الإقامة الأجنبية (Cédula de Extranjería)",
+  "recipientsCopDocNit": "رقم التعريف الضريبي (NIT)",
+  "recipientsCopDocPassport": "جواز السفر",
+  "recipientsCopDocTi": "بطاقة الهوية للقاصرين (Tarjeta de Identidad)",
+  "recipientsCopDocRegistroCivil": "السجل المدني (Registro Civil)",
+  "recipientsFieldDebitCard": "رقم بطاقة الخصم",
+  "recipientsFieldDebitCardHint": "أدخل رقم بطاقة الخصم",
+  "recipientsFieldOwnerNameSinpeHint": "سيظهر اسم صاحب الحساب هنا",
+  "recipientsValidationSinpeOwner": "يرجى التحقق من رقم الهاتف",
+  "recipientsFieldEmailAddress": "البريد الإلكتروني",
+  "recipientsFieldEmailAddressHint": "أدخل عنوان البريد الإلكتروني",
+  "recipientsFieldSecurityQuestion": "سؤال الأمان",
+  "recipientsFieldSecurityQuestionHint": "أدخل سؤال الأمان (10-40 حرفًا)",
+  "recipientsFieldSecurityAnswer": "إجابة الأمان",
+  "recipientsFieldSecurityAnswerHint": "أدخل إجابة الأمان",
+  "recipientsCharCounter": "{count}/40 حرفًا",
+  "recipientsFieldInstitutionCode": "رمز المؤسسة",
+  "recipientsFieldInstitutionCodeHint": "أدخل رمز المؤسسة",
+  "recipientsFieldInstitutionNumber": "رقم المؤسسة",
+  "recipientsFieldInstitutionNumberHint": "أدخل رقم المؤسسة",
+  "recipientsFieldTransitNumber": "رقم الفرع المصرفي",
+  "recipientsFieldTransitNumberHint": "أدخل رقم الفرع المصرفي",
+  "recipientsFieldAccountNumber": "رقم الحساب",
+  "recipientsFieldAccountNumberHint": "أدخل رقم الحساب",
+  "recipientsFieldDefaultComment": "تعليق افتراضي (اختياري)",
+  "recipientsFieldDefaultCommentHint": "أدخل تعليقًا افتراضيًا",
+  "recipientsFieldCorporateAccount": "حساب تجاري",
+  "recipientsFieldFirstName": "الاسم الأول",
+  "recipientsFieldFirstNameHint": "أدخل الاسم الأول",
+  "recipientsFieldLastName": "اسم العائلة",
+  "recipientsFieldLastNameHint": "أدخل اسم العائلة",
+  "recipientsFieldCorporateName": "اسم الشركة",
+  "recipientsFieldCorporateNameHint": "أدخل اسم الشركة",
+  "recipientsFieldBillerName": "اسم جهة الفوترة",
+  "recipientsFieldBillerNameHint": "ابحث عن جهة الفوترة واخترها",
+  "recipientsValidationBillerSearchMin": "أدخل 3 أحرف أو أكثر للبحث",
+  "recipientsValidationBillerSelect": "يرجى اختيار جهة فوترة من القائمة",
+  "recipientsFieldPayeeAccountNumber": "رقم حساب المستفيد",
+  "recipientsErrorLoadFailed": "تعذّر تحميل المستفيدين لديك. حاول مرة أخرى.",
+  "recipientsErrorSaveFailed": "تعذّر حفظ هذا المستفيد. تحقق من البيانات وحاول مرة أخرى.",
+  "recipientsErrorSinpeLookupFailed": "لم نتمكن من التحقق من رقم الهاتف هذا. تحقق منه وحاول مرة أخرى.",
+  "recipientsErrorBillerSearchFailed": "تعذّر البحث عن جهات الفوترة. حاول مرة أخرى.",
+  "recipientsErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "recipientsListPullToRetry": "اسحب للأسفل لإعادة المحاولة.",
+  "recipientsErrorSavedButNotSelected": "تم حفظ هذا المستفيد، لكن لم نتمكن من المتابعة. ابحث عنه في قائمتك للمتابعة.",
+  "recipientsTypeConfidentialSepa": "SEPA السري",
+  "recipientsErrorVirtualIbanNotAvailable": "ليس لديك الأذونات المطلوبة للوصول إلى خيار التمويل هذا. إما أن KYC الخاص بك غير كافٍ أو أن هذا الخيار غير متاح لحسابك",
+  "recipientsErrorEuResidencyRequired": "يجب أن تكون مقيماً في الاتحاد الأوروبي لتفعيل SEPA السري.",
+  "recipientsConfidentialSepaActivatingTitle": "جارٍ تفعيل المستلم",
+  "recipientsConfidentialSepaActivatingDescription": "جارٍ تفعيل المستلم الخاص بك لخدمة SEPA السري. قد يستغرق ذلك بضع دقائق.",
+  "recipientsConfidentialSepaNotActivatedTitle": "المستلم غير مُفعَّل لخدمة SEPA السري",
+  "recipientsConfidentialSepaNotActivatedDescription": "لم يتم بعد تفعيل هذا المستلم لخدمة SEPA السري. نقوم بتفعيله الآن. قد يستغرق ذلك بضع دقائق. يمكنك استخدام SEPA الفوري والعادي بدلاً من ذلك.",
+  "recipientsConfidentialSepaActivatedTitle": "تم تفعيل المستلم",
+  "recipientsConfidentialSepaActivatedDescription": "أصبح المستلم الخاص بك الآن مُفعَّلاً لخدمة SEPA السري.",
+  "recipientsConfidentialSepaUseRegularSepa": "استخدم SEPA الفوري والعادي بدلاً من ذلك",
+  "recipientsVirtualIbanIntroTitle": "تفعيل SEPA السري؟",
+  "recipientsVirtualIbanNewBadge": "جديد",
+  "recipientsVirtualIbanIntroDescription": "موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. الخدمة مجانية.",
+  "recipientsVirtualIbanIntroSelfTransfer": "عند إرسال الأموال من مصرفك إلى Bull Bitcoin، تظهر كتحويل إلى نفسك.",
+  "recipientsVirtualIbanIntroNoTransferCode": "لا حاجة إلى رمز تحويل.",
+  "recipientsVirtualIbanNameWarningTitle": "مهم: يجب أن يتطابق الاسم",
+  "recipientsVirtualIbanNameWarningDescription": "يجب أن يطابق اسم الحساب المصرفي اسم رقم IBAN الافتراضي لدى Bull Bitcoin تمامًا، وإلا فسيُعاد التحويل تلقائيًا. الأسماء غير متطابقة؟ تواصل مع الدعم.",
+  "recipientsVirtualIbanAccountOwnerName": "اسم صاحب الحساب",
+  "recipientsVirtualIbanNameConfirmation": "أؤكد أن الاسم يطابق حسابي/حساباتي المصرفية",
+  "recipientsVirtualIbanActivate": "تفعيل SEPA السري",
+  "recipientsVirtualIbanActivatingTitle": "جارٍ تفعيل SEPA السري...",
+  "recipientsVirtualIbanActivatingDescription": "جارٍ إنشاء رقم IBAN الافتراضي الخاص بك. قد يستغرق ذلك بضع دقائق.",
+  "recipientsVirtualIbanActivatedTitle": "تم تفعيل SEPA السري",
+  "recipientsVirtualIbanActivatedDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لسحب الأموال بخصوصية.",
+  "recipientsVirtualIbanCopied": "مركب على لوح مشبك",
+  "recipientsVirtualIbanDone": "تم",
+  "recipientsVirtualIbanRecipientName": "الاسم المستقبِل",
+  "recipientsVirtualIbanIbanLabel": "رقم حساب IBAN الافتراضي",
+  "recipientsVirtualIbanCountry": "بلد الحساب المصرفي",
+  "recipientsVirtualIbanBic": "رمز BIC",
+  "recipientsVirtualIbanActivatedFundingDescription": "يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لإيداع الأموال بخصوصية.",
+  "recipientsVirtualIbanShowDetails": "عرض تفاصيل رقم IBAN الافتراضي",
+  "recipientsVirtualIbanDetailsDescription": "موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. سيظهر الإيداع كدفعة إلى نفسك، دون الحاجة إلى رمز تحويل.",
+  "recipientsVirtualIbanBankAddress": "عنوان المصرف",
+  "recipientsVirtualIbanBankAddressHelp": "العنوان الرسمي للمصرف، إذا طلبه مصرفك.",
+  "recipientsConfidentialSepaNameMustMatchHint": "يجب أن تتطابق الأسماء بين حسابك المصرفي وحساب IBAN الافتراضي، وإلا فستُعاد التحويلات تلقائيًا.",
+  "recipientsFieldBankAccountIban": "رقم الحساب المصرفي (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك",
+  "withdrawAmountContinue": "استمر",
+  "withdrawConfirmTitle": "الانسحاب القسري",
+  "withdrawConfirmAmount": "المبلغ",
+  "withdrawConfirmButton": "الانسحاب القسري",
+  "withdrawAmountTitle": "ازدراء",
+  "withdrawConfirmRecipientName": "الاسم المستقبِل",
+  "withdrawSuccessOrderDetails": "تفاصيل النظام",
+  "withdrawSuccessTitle": "بدء الانسحاب",
+  "withdrawConfirmBankAccount": "حساب مصرفي",
+  "withdrawInteracSecurityDetailsTitle": "تفاصيل أمان التحويل",
+  "withdrawInteracSaveAsDefault": "حفظ هذه التفاصيل كإعداد افتراضي",
+  "withdrawInteracSecurityQuestionLengthError": "يجب أن يتكون سؤال الأمان من 3 إلى 40 حرفًا",
+  "withdrawInteracSecurityAnswerLengthError": "يجب أن تتكون إجابة الأمان من 3 إلى 40 حرفًا",
+  "withdrawInteracSecurityAnswerFormatError": "استخدم أحرفًا أو أرقامًا أو شرطات من دون مسافات",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "الحالة",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Logout",
+  "logoutConfirmationTitle": "الموافقة",
+  "logoutConfirmationCancel": "إلغاء",
+  "logoutConfirmationDescription": "هل أنت متأكد من أنك تريد أن تخرج من حسابك؟ عليك أن تدخل مرة أخرى إلى ملامح التبادل.",
+  "exchangeSettingsLogOutTitle": "Log Out",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "راتبك سيرسل ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "Choose Bitcoin Wallet",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExternalWallet": "محفظة بيتكوين الخارجية",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "السحب الصريح",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "محفظة متوافقة",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "تستقبل",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyConfirmPayoutWallet": "محفظة الدفع",
+  "buyPayoutMethodLiquid": "L-BTC على Liquid",
+  "buyPayoutMethodBitcoin": "BTC على سلسلة بيتكوين",
+  "buyConfirmPayoutMethod": "طريقة الدفع",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "سائل",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "الحد الأدنى 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "استمر",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSetupInsufficientBalance": "الرصيد غير الكافي",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "ستشتري {amount} كل ساعة",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmPaymentMethod": "طريقة الدفع",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "سعر الصرف",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "القيمة التقديرية للرسوم",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "المبلغ المستخدم",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "يرجى اختيار شبكة",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "buyInputContinue": "استمر",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaWalletTypeBitcoin": "بيتكوين",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "وقت التصديق",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "إشتريت {amount} مقابل {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "التعجيل بالمعاملات",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "ماكس",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "شراء بيتكوين",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "محفظة مختارة",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "قيد التحقق",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "يجب أن تكمل التحقق من الهوية أولا",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "رسوم الشبكة",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "ستشتري {amount} كل شهر",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "البرق",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "الترددات المختارة",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "Enter Lightning Address",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} الرصيد",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "وستوضع عمليات شراء البتروجين تلقائياً وفقاً لهذا الجدول الزمني.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "Complete KYC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "التردد",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "نوع النظام",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaSuccessMessageDaily": "سوف تشتري {amount} كل يوم",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "انتظار الانسحاب المجاني",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "محفظة متوافقة، بحد أقصى 0.25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "صندوق حسابك",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "10دقائق",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "في انتظار تأكيد ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSuccessTitle": "الشراء المتكرر هو نشط!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSetupFrequencyError": "يرجى اختيار التردد",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "شراء بيتكوين",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "كان ذلك سريعاً، أليس كذلك؟?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "كل يوم",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyNetworkFeeRate": "معدل رسوم الشبكة",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "العودة إلى المنزل",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "الشبكة",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "إعادة تأكيد اشتري",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaSetupContinue": "استمر",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "buyConfirmYouPay": "تدفع",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "نوع بيتكوين",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "الرصيد غير الكافي",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "dcaSuccessMessageWeekly": "ستشتري {amount} كل أسبوع",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "المبلغ",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "كل أسبوع",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "صندوق حسابك",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "العنوان المرير",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSetupInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "وستوضع أوامر الشراء تلقائياً في هذه الأماكن. يمكنك تعطيلها في أي وقت.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "شبكة البرق",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "ستخصم رسوم شبكة (بيتكوين) من المبلغ الذي تتلقاه وتجمعه من عمال المناجم في (بيتكوين)",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "وستوضع عمليات شراء البتروجين تلقائياً وفقاً لهذا الجدول الزمني.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmContinue": "استمر",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "تفاصيل الرؤية",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "كل ساعة",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "عنوان البرق",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "طريقة الدفع",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "كل شهر",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "(بيتكوين) أرسل!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "dcaUseDefaultLightningAddress": "استخدم عنوان البرق.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "تأكد بسرعة",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "تأكيد",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "الشراء المتكرر",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "Liquid (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "شراء متكررة",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "sellAdvancedOptions": "الخيارات المتقدمة",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySinpeBeneficiario": "المستفيد",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "payInstantPayments": "المدفوعات الثابتة",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellReplaceByFeeActivated": "الاستبدال بالتفريغ",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payNetworkFees": "رسوم الشبكة",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "sellCompleteKYC": "Complete KYC",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payPayFromWallet": "الدفع من المحفظة",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellEurBalance": "EUR الرصيد",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "paySinpeMonto": "المبلغ",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeEnviado": "سنبي إنفيدو!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "sellShowQrCode": "اظهروا الرمز QR",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellSecureBitcoinWallet": "محفظة بيتكين آمنة",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payShowQrCode": "اظهروا الرمز QR",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellViewDetailsButton": "تفاصيل الرؤية",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "paySinpeOrigen": "Origin",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payRecipientType": "النوع المتلقي",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellCadBalance": "CAD الرصيد",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "sellPriceWillRefreshIn": "ستنعش الأسعار ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "الرصيد",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellPayFromWallet": "الدفع من المحفظة",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellBitcoinAmount": "مبلغ البتروين",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellBalanceWillBeCredited": "رصيد حسابك سيقيد بعد أن تتلقى صفقتك تأكيداً واحداً.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "copyDialogButton": "نسخ",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payQrCode": "QR Code",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellLightningNetwork": "شبكة البرق",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "المدفوعات الثابتة",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellDone": "تم",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellBitcoinOnChain": "بيتكوين على شاين",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellFromAnotherWallet": "بيع من محفظة بيتكوين أخرى",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payFeePriority": "الأولوية",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "payTitle": "الأجر",
+  "payPaymentDescription": "وصف الدفعة",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellQrCode": "QR Code",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "payContinue": "استمر",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "الاستبدال بالتفريغ",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellCopyInvoice": "فاتورة النسخ",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "sellFeePriority": "الأولوية",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "المبلغ المدفوع",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "closeDialogButton": "اقترب",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellMxnBalance": "MXN الرصيد",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellCopBalance": "مؤتمر الأطراف الرصيد",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellKycPendingDescription": "يجب أن تكمل التحقق من الهوية أولا",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellPayoutAmount": "المبلغ المدفوع",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellWhichWalletQuestion": "أي محفظة تريدين بيعها؟?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "sellFastest": "أسرع",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payCopyInvoice": "فاتورة النسخ",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellCrcBalance": "CRC الرصيد",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "paySelectCoinsManually": "بيع العملات اليدوية",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payPriceRefreshIn": "ستنعش الأسعار ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "sellExchangeRate": "سعر الصرف",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "Sell Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUsdBalance": "USD الرصيد",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellKycPendingTitle": "قيد التحقق",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "payOrderNumber": "رقم النظام",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "رقم النظام",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "sellPayoutRecipient": "مستفيد من مدفوعات",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "paySinpeNumeroComprobante": "رقم المرجع",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "محفظة بيتكين آمنة",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payRecipientName": "الاسم المستقبِل",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "sellConfirmPayment": "دفع تأكيد",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellSelectCoinsManually": "بيع العملات اليدوية",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "أسرع",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payOrderDetails": "التفاصيل",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "sellLiquidNetwork": "شبكة السائل",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payAdvancedOptions": "الخيارات المتقدمة",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellOrderNumber": "رقم النظام",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payDone": "تم",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "payAdvancedSettings": "المراحل المتقدمة",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellSendPaymentNetworkFees": "رسوم الشبكة",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "sellAdvancedSettings": "المراحل المتقدمة",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payViewDetails": "تفاصيل الرؤية",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "viewerTapToCopy": "انقر للنسخ",
+  "invoiceViewerTitle": "فاتورة",
+  "paySinpeReceipt": "إيصال SINPE",
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "sellPayoutBalance": "إضافة إلى رصيد حسابي",
+  "sellPayoutTitle": "اختر المستلم",
+  "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
+  "sendSelectedUtxosInsufficient": "لا يغطي المبلغ المطلوب",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "الكمية المختارة",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "النوع: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "العنوان: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "المبلغ المطلوب: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "الاستلام",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "الفكة",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrdersInsufficientBalance": "الرصيد غير الكافي",
+  "limitOrdersInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
+  "limitOrdersFundAccount": "صندوق حسابك",
+  "exchangeLandingDisclaimerNotAvailable": "ولا تتوافر خدمات تبادل العملات في تطبيقات بول بيتكوين المتنقلة.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLandingDisclaimerLegal": "وسيقتصر الوصول إلى خدمات الصرف على البلدان التي يمكن أن يعمل فيها بول بيتكوين بصورة قانونية وقد يتطلب ذلك من الشركة.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLoginButton": "لوجين أو وقع",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "الذهاب إلى موقع تبادل بول بيتكين",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureCustomerSupport": "• مطاردة مع دعم العملاء",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureSelfCustody": "• Buy Bitcoin straight to self-custody",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeLandingConnectAccount": "إجمعي حسابك في البول بيتكوين",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeFeatureSellBitcoin": "• Sell Bitcoin, get paid with Bitcoin",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeBrandName": "BUL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeFeatureBankTransfers": "• إرسال التحويلات المصرفية ودفع الفواتير",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limit orders and Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureUnifiedHistory": "● تاريخ المعاملات الموحد",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeErrorSigningOut": "تعذر تسجيل خروجك بالكامل. يرجى المحاولة مرة أخرى.",
+  "exchangeErrorLoadingAnnouncements": "تعذر تحميل الإعلانات.",
+  "exchangeErrorRequestingAccountDeletion": "تعذر إرسال طلب حذف حسابك. يرجى المحاولة مرة أخرى.",
+  "exchangeFileUploadStatusUnknown": "الحالة غير معروفة",
+  "exchangeSupportChatAttachFileTooltip": "إرفاق ملف",
+  "exchangeSupportChatAttachLogsTooltip": "إرفاق السجلات",
+  "exchangeSupportChatSendTooltip": "إرسال الرسالة",
+  "exchangeSupportChatLogDraft": "إليكم سجلاتي",
+  "exchangeSupportChatLoadOlder": "تحميل الرسائل السابقة",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "ميزات منصة التداول",
+  "exchangeAccessSettingsOffHint": "فعّلها لتسجيل الدخول أو إنشاء حساب Bull Bitcoin.",
+  "exchangeAccessSettingsOnHint": "ميزات منصة التداول مفعّلة.",
+  "exchangeAccessSignIn": "سجّل الدخول أو أنشئ حسابًا",
+  "exchangeAccessDisableTitle": "تعطيل ميزات منصة التداول؟",
+  "exchangeAccessDisableBody": "سيؤدي هذا إلى تسجيل خروجك على هذا الجهاز. لن تُلغى الطلبات الحالية ولا AutoBuy ولا عمليات الشراء المتكررة.",
+  "exchangeAccessDisableConfirm": "تسجيل الخروج والتعطيل",
+  "exchangeTradingRetry": "إعادة المحاولة",
+  "exchangeAccessUnreadable": "تعذّرت قراءة إعدادات الوصول إلى المنصة. أعد المحاولة أو أعد ضبطها.",
+  "exchangeAccessReset": "إعادة ضبط الوصول إلى المنصة",
+  "exchangeAccessLogoutIncomplete": "لم يكتمل تسجيل الخروج. أكمل تسجيل الخروج قبل تفعيل منصة التداول.",
+  "exchangeAccessRetryLogout": "إكمال تسجيل الخروج",
+  "exchangeAccessExpiring": "انتهت صلاحية جلستك. جارٍ تسجيل خروجك على هذا الجهاز.",
+  "exchangeLogoutDidNotFinish": "لم يكتمل تسجيل الخروج على هذا الجهاز.",
+  "networkFeatureUnavailable": "هذه الميزة غير متاحة على الشبكة المحددة.",
+  "exchangeBitcoinWalletsLoadFailed": "تعذّر تحميل المحافظ الافتراضية",
+  "exchangeBitcoinWalletsAddressEmpty": "لا يمكن أن يكون العنوان فارغًا",
+  "exchangeBitcoinWalletsSaveFailed": "تعذّر حفظ عنوان المحفظة",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "لم نتمكن من معرفة ما إذا كان هذا العنوان قد حُفظ. تحقّق منه أدناه قبل الحفظ مرة أخرى.",
+  "exchangeBitcoinWalletsDeleteFailed": "تعذّر حذف عنوان المحفظة",
+  "exchangeSettingsWriteBusy": "لا يزال طلب آخر إلى المنصة قيد التنفيذ. حاول مرة أخرى بعد قليل.",
+  "exchangeSettingsSignedOut": "لم تعد مسجّلًا الدخول إلى المنصة. سجّل الدخول مرة أخرى لتغيير هذه الإعدادات.",
+  "exchangeBitcoinWalletsBusy": "لا يزال طلب آخر إلى المنصة قيد التنفيذ. حاول مرة أخرى بعد قليل.",
+  "exchangeBitcoinWalletsUnsetSuccess": "تمت إزالة عنوان المحفظة",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "لم نتمكن من معرفة ما إذا كان هذا العنوان قد أُزيل. تحقّق مرة أخرى قبل تغييره.",
+  "exchangeBitcoinWalletsCheckAgain": "تحقّق مرة أخرى",
+  "exchangeBitcoinWalletsSessionEnded": "لم تعد مسجّلًا الدخول إلى المنصة. سجّل الدخول مرة أخرى لتعديل محافظك الافتراضية.",
+  "destinationExpectedType": "أدخل أو امسح {type} صالحًا.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "اشترِ وبِع وادفع باستخدام Bull Bitcoin مباشرةً من محفظتك.",
+  "exchangeTradingUnavailable": "التداول غير متاح.",
+  "priceChartShowTooltip": "عرض مخطط السعر",
+  "recipientsErrorSaveOutcomeUnknown": "لم نتمكن من معرفة ما إذا كان هذا المستلم قد حُفظ. تحقّق من قائمة المستلمين قبل إضافته مرة أخرى.",
+  "recipientsConfidentialSepaStatusUnknownTitle": "حالة التفعيل غير معروفة",
+  "recipientsConfidentialSepaStatusUnknownDescription": "تعذّرت قراءة حالة تفعيل هذا المستلم. يُرجى التواصل مع الدعم قبل استخدامه مع SEPA السري.",
+  "recipientsReturnHome": "العودة إلى الرئيسية",
+  "withdrawConfirmOutcomeUnknownError": "لم نتمكن من التأكد مما إذا كانت عملية السحب قد تمت. تحقّق مرة أخرى قبل بدء عملية سحب جديدة.",
+  "withdrawConfirmCheckAgainButton": "تحقّق مرة أخرى",
+  "limitOrderStatusUnknown": "الحالة غير معروفة",
+  "dcaUseDefaultBitcoinWallet": "استخدام محفظة Bitcoin الافتراضية",
+  "dcaUseDefaultLiquidWallet": "استخدام محفظة Liquid الافتراضية",
+  "dcaNoDefaultBitcoinWallet": "ليس لديك محفظة Bitcoin افتراضية في حسابك على Bull Bitcoin. عيّن واحدة، أو أدخل عنوان Bitcoin أدناه.",
+  "dcaNoDefaultLiquidWallet": "ليس لديك محفظة Liquid افتراضية في حسابك على Bull Bitcoin. عيّن واحدة، أو أدخل عنوان Liquid أدناه.",
+  "dcaManageDefaultWallets": "تعيين المحافظ الافتراضية",
+  "dcaEnterBitcoinAddressLabel": "أدخل عنوان Bitcoin",
+  "dcaEnterLiquidAddressLabel": "أدخل عنوان Liquid",
+  "dcaConfirmPayoutAddress": "عنوان الاستلام",
+  "exchangePaymentOutcomeUnknownChecking": "جارٍ التحقق مما إذا كانت دفعتك قد أُرسلت…",
+  "walletSpendAwaitingObservation": "الإنفاق غير متاح حتى تتم مزامنة هذه المحفظة وترى دفعاتها السابقة على الشبكة. حدّث المحفظة أو استخدم «البحث عن المعاملات المفقودة»، ثم حاول مرة أخرى.",
+  "sendPayjoinSpendPaused": "دفعة Payjoin هذه متوقفة مؤقتًا لأن المحفظة لا تستطيع المتابعة بأمان. تظل مدخلاتها محجوزة. حدّث المحفظة أو استخدم «البحث عن المعاملات المفقودة»، ثم أعد محاولة هذا العرض ما دام صالحًا. إذا انتهت صلاحيته، فتحقّق من الدفعة في المعاملات قبل اتخاذ أي إجراء آخر.",
+  "walletSpendBusy": "المحفظة مشغولة. حاول مرة أخرى بعد قليل.",
+  "fundExchangeJurisdictionHint": "اختر المكان الذي ترسل منه الأموال",
+  "fundExchangeScamConsentUnverified": "لم نتمكن من التأكد من تسجيل موافقتك. تحقّق من اتصالك وحاول مرة أخرى.",
+  "fundExchangeSessionEnded": "انتهت جلستك على المنصة. سجّل الدخول مرة أخرى لتمويل حسابك.",
+  "exchangePlatformNotAllowedError": "لا يمكن تفعيل منصة التداول على هذا الجهاز.",
+  "exchangeStepReadFailed": "تعذّر تحميل هذه البيانات من المنصة الآن. حاول مرة أخرى.",
+  "exchangeStepNotSent": "لم يُرسَل أي شيء إلى المنصة. تحقّق من اتصالك وحاول مرة أخرى.",
+  "exchangeStepNotApplied": "لم تنفّذ المنصة هذا الطلب. يمكنك المحاولة مرة أخرى.",
+  "exchangeStepWriteRefused": "رفضت المنصة هذا الطلب.",
+  "exchangeOrderBelowMinimum": "الحد الأدنى للمبلغ هو {amount} {currency}",
+  "exchangeOrderAboveMaximum": "الحد الأقصى للمبلغ هو {amount} {currency}",
+  "exchangePayeeInactive": "هذا المستلم غير مفعّل لـ SEPA السري بعد.",
+  "exchangeWriteGateBusy": "لا يزال طلب آخر إلى المنصة قيد التنفيذ. انتظر حتى ينتهي، ثم حاول مرة أخرى.",
+  "exchangeWriteGateUnsettled": "لا يزال طلب سابق إلى المنصة قيد التحقق. حاول مرة أخرى بعد حسمه.",
+  "exchangeWriteGateJournalUnreadable": "تعذّر التحقق من طلباتك السابقة إلى المنصة. حاول مرة أخرى.",
+  "exchangeStepUnverified": "تعذّر التحقق مما إذا كانت المنصة قد استلمت هذا. تحقّق مرة أخرى قبل بدء عملية جديدة.",
+  "exchangeStepTimedOut": "يستغرق هذا وقتًا أطول من المتوقع. يمكنك التحقق مرة أخرى أو المغادرة والعودة لاحقًا.",
+  "exchangeAmountNoRate": "سعر البيتكوين غير متاح الآن. حاول مرة أخرى.",
+  "exchangeAmountKycNeeded": "أكمل التحقق من هويتك لاستخدام هذا المبلغ.",
+  "exchangeStepVerifying": "جارٍ التحقق مع المنصة…",
+  "exchangeFlowSessionEnded": "انتهت جلستك على المنصة. سجّل الدخول مرة أخرى للمتابعة.",
+  "withdrawNoFundedBalance": "ليس لديك رصيد لسحبه.",
+  "exchangePayinNoFunds": "لا تحتوي هذه المحفظة على أموال كافية لهذه الدفعة ورسوم الشبكة الخاصة بها.",
+  "exchangePayinFeeTooLow": "رسوم الشبكة أقل من الحد الأدنى للشبكة. حاول مرة أخرى.",
+  "exchangePayinWalletBusy": "المحفظة مشغولة بالمزامنة. حاول مرة أخرى بعد قليل.",
+  "exchangePayinConsolidationRequired": "يجب على هذه المحفظة دمج عملاتها قبل أن تتمكن من دفع هذا المبلغ.",
+  "exchangePayinSigningRefused": "تعذّر على المحفظة توقيع الدفعة.",
+  "exchangePayinNotAuthorized": "هذه المحفظة غير مصرّح لها بإرسال الدفعات.",
+  "exchangePayinBuildFailed": "تعذّر تجهيز الدفعة. لم يُرسَل أي شيء.",
+  "exchangePayinNodeRejected": "رفضت الشبكة المعاملة. لم يُرسَل أي شيء.",
+  "exchangePayinPayjoinNotStarted": "تعذّر بدء دفعة Payjoin. لم يُرسَل أي شيء.",
+  "exchangePayinDeadlinePassed": "انتهت مهلة الدفع للطلب قبل إرسال الدفعة. لم يُرسَل أي شيء.",
+  "exchangePayinSending": "جارٍ إرسال دفعتك…",
+  "exchangePayinNotSent": "لم تُرسَل الدفعة",
+  "exchangePayinPayjoinNegotiating": "جارٍ التفاوض على Payjoin مع المنصة…",
+  "exchangePayinPayjoinPaused": "تم إيقاف Payjoin مؤقتًا لأن المحفظة مشغولة. حاول مرة أخرى.",
+  "exchangePayinUnseen": "لا تظهر هذه الدفعة بعد على الشبكة ولا لدى المنصة. يمكنك إرسال المعاملة نفسها مرة أخرى.",
+  "exchangePayinResend": "إرسال المعاملة نفسها مرة أخرى",
+  "exchangeStepCheckAgain": "تحقّق مرة أخرى",
+  "exchangePayinLeaveTitle": "مغادرة هذه الدفعة؟",
+  "exchangePayinLeaveMessage": "إذا كنت قد دفعت بالفعل، فستستلمها المنصة. وإن لم تدفع، تنتهي صلاحية الطلب عند موعده النهائي.",
+  "exchangePayinStay": "البقاء",
+  "exchangePayinExternalTitle": "أرسل هذا المبلغ بالضبط إلى العنوان أدناه",
+  "exchangePayinExternalWaiting": "في انتظار دفعتك…",
+  "exchangePayinRefusedByExchange": "لم تقبل المنصة هذه الدفعة. تواصل مع الدعم وأرسل رقم الطلب.",
+  "exchangePayinOrderEnded": "انتهى هذا الطلب قبل إرسال دفعتك. لم يُرسَل أي شيء.",
+  "exchangePayinDepositRefused": "لا يمكن دفع هذا الطلب من هذه المحفظة. لم يُرسَل أي شيء.",
+  "exchangePayinReceived": "استلمت المنصة دفعتك",
+  "exchangePayinCoinsUnavailable": "تعذّر تحميل عملات محفظتك. حاول مرة أخرى.",
+  "buyPayoutAddressUnavailable": "تعذّر الحصول على عنوان استلام من هذه المحفظة. اخترها مرة أخرى أو اختر محفظة أخرى.",
+  "buyPayoutFailed": "لم تتمكن المنصة من إتمام هذا الدفع. افتح تفاصيل الطلب أو تواصل مع الدعم.",
+  "buyPayoutStillPending": "دفعتك لا تزال في الطريق. يمكنك متابعتها في تفاصيل الطلب.",
+  "limitOrdersOverBalanceWarning": "هذا أكثر من رصيدك المتاح. عند تنفيذ الطلب، سيتم الشراء بما يكون في رصيدك حينها.",
+  "autoBuyAlreadyActive": "الشراء التلقائي مفعّل بالفعل في حسابك.",
+  "recipientsValidationEmailInvalid": "أدخل عنوان بريد إلكتروني صالحًا",
+  "recipientsValidationClabeLength": "يتكون رقم CLABE من 18 رقمًا",
+  "recipientsValidationClabeCheckDigit": "رقم CLABE هذا غير صالح. تحقق من الرقم",
+  "recipientsValidationSpeiPhone": "أدخل رقم الهاتف المكوّن من 10 أرقام، بدون رمز الدولة",
+  "recipientsValidationDebitCard": "يتكون رقم بطاقة الخصم من 16 رقمًا",
+  "recipientsErrorFieldRefused": "لم تقبل المنصة هذه القيمة",
+  "recipientsErrorCheckFields": "لم تُقبل بعض البيانات. تحقق من الحقول المحددة أعلاه.",
+  "recipientsErrorFieldsRefused": "لم تُقبل بعض البيانات: {fields}"
+}

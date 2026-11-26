@@ -68,7 +68,11 @@ class BullDetailsTableItem extends StatefulWidget {
     this.initiallyExpanded = false,
     this.copiedMessage = 'Copied to clipboard',
     this.onCopied,
-  });
+    this.onValueTap,
+  }) : assert(
+         onValueTap == null || (displayValue != null && displayWidget == null),
+         'onValueTap requires a text value. Custom widgets own their actions.',
+       );
 
   /// Left-hand row label.
   final String label;
@@ -99,6 +103,10 @@ class BullDetailsTableItem extends StatefulWidget {
   /// screens that confirm the copy their own way.
   final VoidCallback? onCopied;
 
+  /// Opens an action from [displayValue] and adds a trailing chevron.
+  /// A custom [displayWidget] owns its own interactions.
+  final VoidCallback? onValueTap;
+
   @override
   State<BullDetailsTableItem> createState() => _BullDetailsTableItemState();
 }
@@ -109,6 +117,51 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final value = widget.displayValue;
+    final onValueTap = widget.onValueTap;
+    final display =
+        widget.displayWidget ??
+        switch ((value, onValueTap)) {
+          (null, _) => const BullShimmerLine(),
+          (final value?, null) => Text(
+            value,
+            textAlign: TextAlign.end,
+            overflow: TextOverflow.clip,
+            style: context.bullType.body.copyWith(
+              fontWeight: FontWeight.w500,
+              color: colors.onSurface,
+              decoration: widget.isUnderline
+                  ? TextDecoration.underline
+                  : TextDecoration.none,
+            ),
+          ),
+          (final value?, final onTap?) => Semantics(
+            button: true,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        value,
+                        textAlign: TextAlign.end,
+                        style: context.bullType.body.copyWith(
+                          color: colors.primary,
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, size: 20, color: colors.primary),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        };
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -134,25 +187,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Flexible(
-                      child:
-                          widget.displayWidget ??
-                          (widget.displayValue != null
-                              ? Text(
-                                  widget.displayValue!,
-                                  textAlign: TextAlign.end,
-                                  overflow: TextOverflow.clip,
-                                  style: context.bullType.body
-                                      .copyWith(fontWeight: FontWeight.w500)
-                                      .copyWith(
-                                        color: colors.onSurface,
-                                        decoration: widget.isUnderline
-                                            ? TextDecoration.underline
-                                            : TextDecoration.none,
-                                      ),
-                                )
-                              : const BullShimmerLine()),
-                    ),
+                    Flexible(child: display),
                     const Gap(8),
                     if (widget.copyValue != null &&
                         widget.copyValue!.isNotEmpty)

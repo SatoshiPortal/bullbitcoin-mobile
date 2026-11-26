@@ -1,4 +1,8 @@
-import 'package:bull_sdk/boltz.dart' as native;
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
+import 'support/real_swap_backends.dart';
+
+import 'package:rust_bindings/boltz.dart' as native;
 import 'package:mocktail/mocktail.dart';
 
 import 'dart:async';
@@ -19,16 +23,18 @@ class _LiquidSwap extends Mock implements native.LbtcLnSwap {}
 
 class _ChainSwap extends Mock implements native.ChainSwap {}
 
-class _Keychain implements SecretStore {
-  final values = <String, String>{};
-  final reads = <String>[];
+class _Keychain extends ReproKeychainBackend {
+  final keysRead = <String>[];
   final firstCounterRead = Completer<void>();
   final releaseCounterRead = Completer<void>();
   bool holdFirstCounterRead = false;
 
   @override
-  Future<String?> read(String key) async {
-    reads.add(key);
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async {
+    keysRead.add(key);
     final snapshot = values[key];
     if (holdFirstCounterRead &&
         key.startsWith('swap_master_key_index_') &&
@@ -38,11 +44,6 @@ class _Keychain implements SecretStore {
     }
     return snapshot;
   }
-
-  @override
-  Future<void> write(String key, String value) async => values[key] = value;
-  @override
-  Future<void> delete(String key) async => values.remove(key);
 }
 
 SwapStorage _regtest(
@@ -50,7 +51,7 @@ SwapStorage _regtest(
   SwapRowStore rows,
   _Keychain keychain,
 ) {
-  if (_legacy) return SwapStorage(rows: rows, secrets: keychain);
+  if (_legacy) return SwapStorage(rows: rows, secrets: keychain.capability);
   // Dynamic invocation keeps the original750 test compilable. Only the old
   // constructor selection changes; allocator code/counter/assertions are real.
   final dynamic owner = canonical;
@@ -58,6 +59,7 @@ SwapStorage _regtest(
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test(
     'testnet and regtest stores share one allocation authority per fingerprint',
     () async {
@@ -76,7 +78,7 @@ void main() {
       final keychain = _Keychain();
       final testnet = SwapStorage(
         rows: DriftSwapRowStore(productionDb),
-        secrets: keychain,
+        secrets: keychain.capability,
       );
       final regtest = _regtest(testnet, DriftSwapRowStore(regtestDb), keychain);
       expect(identical(testnet, regtest), isFalse);
@@ -116,7 +118,7 @@ void main() {
       final keychain = _Keychain();
       final production = SwapStorage(
         rows: DriftSwapRowStore(productionDb),
-        secrets: keychain,
+        secrets: keychain.capability,
       );
       final regtest = _regtest(
         production,
@@ -127,7 +129,7 @@ void main() {
         regtest.fetchBtcLnSwap('public-id'),
         throwsA(isA<SwapsException>()),
       );
-      expect(keychain.reads.last, 'swap_regtest_public-id');
+      expect(keychain.keysRead.last, 'swap_regtest_public-id');
       keychain.values['swap_public-id'] = 'public-production-placeholder';
       keychain.values['swap_regtest_public-id'] = 'public-regtest-placeholder';
       await regtest.deleteFromSecureStorage('public-id');
@@ -148,7 +150,7 @@ void main() {
       final keychain = _Keychain();
       final canonical = SwapStorage(
         rows: DriftSwapRowStore(productionDb),
-        secrets: keychain,
+        secrets: keychain.capability,
       );
       final regtest = _regtest(
         canonical,

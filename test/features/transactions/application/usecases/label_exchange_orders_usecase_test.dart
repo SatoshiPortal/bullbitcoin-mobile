@@ -1,27 +1,20 @@
+import 'package:primitives/primitives.dart';
+
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:primitives/primitives.dart' show Ok, Result;
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
+import 'package:exchange/exchange.dart';
+import 'package:transactions/testing.dart';
+import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
-
-class _MockListAllOrdersUsecase extends Mock implements ListAllOrdersUsecase {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
 void main() {
-  late _MockLabelsFacade labelsFacade;
-  late _MockListAllOrdersUsecase listAllOrdersUsecase;
+  late _MockLabels labelsFacade;
   late _MockWalletTransactionRepository walletTransactionRepository;
   late LabelExchangeOrdersUsecase usecase;
 
@@ -32,12 +25,10 @@ void main() {
   });
 
   setUp(() {
-    labelsFacade = _MockLabelsFacade();
-    listAllOrdersUsecase = _MockListAllOrdersUsecase();
+    labelsFacade = _MockLabels();
     walletTransactionRepository = _MockWalletTransactionRepository();
     usecase = LabelExchangeOrdersUsecase(
       labelsFacade: labelsFacade,
-      listAllOrdersUsecase: listAllOrdersUsecase,
       walletTransactionRepository: walletTransactionRepository,
     );
 
@@ -52,10 +43,10 @@ void main() {
         sync: any(named: 'sync'),
       ),
     ).thenAnswer(
-      (_) async => [
+      (_) async => Ok([
         WalletTransaction(
           walletId: 'wallet-1',
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'buy-txid',
@@ -74,7 +65,7 @@ void main() {
           ],
           isRbf: false,
         ),
-      ],
+      ]),
     );
   });
 
@@ -115,14 +106,14 @@ void main() {
   test(
     'existing sell label does not prevent buy labels from being stored',
     () async {
-      when(() => labelsFacade.fetchAll()).thenAnswer(
-        (_) async => [
+      when(() => labelsFacade.fetch()).thenAnswer(
+        (_) async => Ok([
           Label.tx(
             id: 1,
             transactionId: 'sell-txid',
             label: LabelSystem.exchangeSell.label,
           ),
-        ],
+        ]),
       );
       when(() => labelsFacade.store(any())).thenAnswer(storeLabel);
 
@@ -149,19 +140,18 @@ void main() {
               .having((label) => label.reference, 'reference', 'buy-txid'),
         ),
       );
-      verifyNever(() => listAllOrdersUsecase.execute());
     },
   );
 
   test('does not store an exchange label that already exists', () async {
-    when(() => labelsFacade.fetchAll()).thenAnswer(
-      (_) async => [
+    when(() => labelsFacade.fetch()).thenAnswer(
+      (_) async => Ok([
         Label.addr(
           id: 1,
           address: 'bc1qbuy',
           label: LabelSystem.exchangeBuy.label,
         ),
-      ],
+      ]),
     );
     when(() => labelsFacade.store(any())).thenAnswer(storeLabel);
 

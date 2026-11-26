@@ -1,9 +1,10 @@
+import '../support/transaction_ui_actions.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:transactions/testing.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -15,6 +16,9 @@ import 'package:mocktail/mocktail.dart';
 class _MockTransactionDetailsCubit extends Mock
     implements TransactionDetailsCubit {}
 
+class _MockTransactionStatusCubit extends Mock
+    implements TransactionStatusCubit {}
+
 /// Shaped like the real router for the routes that matter here: the details
 /// screen is a top-level route, so a flow that `go`es to it on completion
 /// leaves it alone on the stack with nothing to pop.
@@ -23,6 +27,12 @@ GoRouter _router({required String initialLocation}) {
   when(() => cubit.state).thenReturn(const TransactionDetailsState());
   when(() => cubit.stream).thenAnswer(
     (_) => StreamController<TransactionDetailsState>.broadcast().stream,
+  );
+
+  final status = _MockTransactionStatusCubit();
+  when(() => status.state).thenReturn(const TransactionStatusState());
+  when(() => status.stream).thenAnswer(
+    (_) => StreamController<TransactionStatusState>.broadcast().stream,
   );
 
   return GoRouter(
@@ -36,11 +46,16 @@ GoRouter _router({required String initialLocation}) {
       GoRoute(
         name: TransactionsRoute.orderSwapTransactionDetails.name,
         path: TransactionsRoute.orderSwapTransactionDetails.path,
-        builder: (context, state) =>
-            BlocProvider<TransactionDetailsCubit>.value(
-              value: cubit,
-              child: const TransactionDetailsScreen(),
-            ),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider<TransactionDetailsCubit>.value(value: cubit),
+            BlocProvider<TransactionStatusCubit>.value(value: status),
+          ],
+          child: TransactionDetailsScreen(
+            actions: transactionUiActions,
+            pollSettlement: (_, {required isActive}) async {},
+          ),
+        ),
       ),
     ],
   );
@@ -67,6 +82,36 @@ Future<void> _pump(WidgetTester tester, GoRouter router) async {
 }
 
 void main() {
+  testWidgets('exchange history opens the exchange-only route', (tester) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, _) => TextButton(
+            onPressed: () =>
+                TransactionsNavigation.openHistory(context, exchangeOnly: true),
+            child: const Text('History'),
+          ),
+        ),
+        for (final route in [
+          TransactionsRoute.transactions,
+          TransactionsRoute.exchangeTransactions,
+        ])
+          GoRoute(
+            name: route.name,
+            path: route.path,
+            builder: (_, state) => Text(state.uri.path),
+          ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('/transactions/exchange'), findsOneWidget);
+  });
+
   testWidgets('system back on a returnHome details screen goes home, not out', (
     tester,
   ) async {

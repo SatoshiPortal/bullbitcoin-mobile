@@ -1,0 +1,9 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Machine-written FFI glue.
+    - lib/src/rust/
+    - build/**
+    - android/**
+    - ios/**

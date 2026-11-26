@@ -1,0 +1,1472 @@
+{
+  "@@locale": "ko",
+  "exchangeAccountInfoEmailLabel": "이름 *",
+  "exchangeAccountInfoFirstNameLabel": "이름 *",
+  "exchangeAccountInfoLastNameLabel": "이름 *",
+  "exchangeAccountInfoLoadErrorMessage": "계정 정보를로드 할 수 없음",
+  "exchangeAccountInfoTitle": "계정 정보",
+  "exchangeAccountInfoUserNumberCopiedMessage": "사용자 번호 clipboard에 복사",
+  "exchangeAccountInfoUserNumberLabel": "사용자 번호",
+  "exchangeAccountInfoVerificationIdentityVerified": "Identity 인증",
+  "exchangeAccountInfoVerificationLevelLabel": "검증 수준",
+  "exchangeAccountInfoVerificationLightVerification": "빛 검증",
+  "exchangeAccountInfoVerificationLimitedVerification": "제한 검증",
+  "exchangeAccountInfoVerificationNotVerified": "견적 요청",
+  "exchangeAppSettingsDefaultCurrencyLabel": "기본 통화",
+  "exchangeAppSettingsEmailNotificationsDescription": "주문 및 계정 업데이트에 대한 이메일 알림 수신",
+  "exchangeAppSettingsEmailNotificationsLabel": "이메일 알림",
+  "exchangeAppSettingsPreferredLanguageLabel": "계정 만들기",
+  "exchangeAppSettingsSaveButton": "제품 정보",
+  "exchangeAppSettingsSaveSuccessMessage": "성공적으로 저장된 설정",
+  "exchangeAppSettingsValidationWarning": "저장하기 전에 언어 및 통화 환경 설정 모두 설정하십시오.",
+  "exchangeAuthErrorMessage": "오류가 발생했습니다. 다시 로그인하십시오.",
+  "exchangeBitcoinWalletsTitle": "기본 Bitcoin 지갑",
+  "exchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
+  "exchangeErrorSavingPreferences": "설정을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "exchangeFileUploadButton": "기타 제품",
+  "exchangeFileUploadDocumentTitle": "모든 문서",
+  "exchangeFileUploadInstructions": "다른 문서를 보낼 필요가 있다면, 여기에 업로드.",
+  "exchangeFileUploadStatusAccepted": "이름 *",
+  "exchangeFileUploadStatusInReview": "관련 기사",
+  "exchangeFileUploadStatusRejectedBadge": "거부됨",
+  "exchangeFileUploadSuccess": "File 성공적으로 업로드",
+  "exchangeFileUploadTapToReupload": "탭하여 다시 업로드",
+  "exchangeFileUploadTitle": "보안 파일 업로드",
+  "exchangeReferralsApplyToJoinMessage": "여기에 프로그램에 가입",
+  "exchangeReferralsContactSupportMessage": "우리의 추천 프로그램에 대해 자세히 알아보기",
+  "exchangeReferralsJoinMissionTitle": "본문 바로가기",
+  "exchangeReferralsMissionLink": "bullbitcoin.com/출금",
+  "exchangeReferralsTitle": "Referral 부호",
+  "exchangeSecurityAccessSettingsButton": "액세스 설정",
+  "exchangeSecurityManage2FAPasswordLabel": "2FA 및 암호 관리",
+  "exchangeSettingsAccountInformationTitle": "계정 정보",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "이미 서류가 제출되었습니다.",
+  "exchangeSettingsErrorDocumentEmpty": "해당 파일이 비어 있습니다. 다른 파일을 선택하세요.",
+  "exchangeSettingsErrorDocumentTooLarge": "파일이 너무 큽니다. 더 작은 파일을 선택하세요.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "해당 파일 형식은 지원되지 않습니다. 다른 파일을 선택하세요.",
+  "exchangeSettingsErrorDocumentUnreadable": "해당 파일을 읽을 수 없습니다. 다른 파일을 선택하세요.",
+  "exchangeSettingsErrorLoadingAccount": "계정 정보를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "exchangeSettingsErrorLoadingStatistics": "거래 통계를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "exchangeSettingsErrorLoadingUploadStatus": "업로드 상태를 불러올 수 없습니다. 다시 시도해 주세요.",
+  "exchangeSettingsErrorUploadingDocument": "서류를 업로드할 수 없습니다. 다시 시도해 주세요.",
+  "exchangeSettingsLogInTitle": "로그인",
+  "exchangeSettingsRecipientsTitle": "관련 기사",
+  "exchangeSettingsReferralsTitle": "관련 기사",
+  "exchangeSettingsSecuritySettingsTitle": "보안 설정",
+  "exchangeSettingsTransactionsTitle": "계정 관리",
+  "exchangeStatisticsAsOf": "{date}의",
+  "exchangeStatisticsAveragePrice": "평균 가격",
+  "exchangeStatisticsBillerStats": "Biller 통계",
+  "exchangeStatisticsBuyAvgPriceDesc": "매수 시 Bitcoin 1개당 평균 지불 가격",
+  "exchangeStatisticsBuySellRatio": "구매/판매 비율",
+  "exchangeStatisticsBuySellRatioDesc": "매수 대비 매도 비율(전체 거래량 대비 백분율)",
+  "exchangeStatisticsBuyStats": "구매 통계",
+  "exchangeStatisticsBuyTradeCountDesc": "Bitcoin 매수 거래 건수",
+  "exchangeStatisticsBuyVolumeDesc": "Bitcoin 매수에 사용한 총 금액",
+  "exchangeStatisticsCurrency": "통화: {currency}",
+  "exchangeStatisticsNoData": "통계 없음",
+  "exchangeStatisticsOrderStats": "주문 통계",
+  "exchangeStatisticsSellAvgPriceDesc": "매도 시 Bitcoin 1개당 평균 수령 가격",
+  "exchangeStatisticsSellStats": "판매 통계",
+  "exchangeStatisticsSellTradeCountDesc": "Bitcoin 매도 거래 건수",
+  "exchangeStatisticsSellVolumeDesc": "Bitcoin 매도로 받은 총 금액",
+  "exchangeStatisticsTitle": "관련 기사",
+  "exchangeStatisticsTotalAmount": "총 금액",
+  "exchangeStatisticsTotalVolume": "총 거래량",
+  "exchangeStatisticsTotalVolumeDesc": "법정화폐 기준 매수 및 매도 거래량 합계",
+  "exchangeStatisticsTradeCount": "회사연혁",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{거래 1건 ({currency})} other{거래 {count}건 ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{거래 1건} other{거래 {count}건}}",
+  "exchangeStatisticsVolume": "제품정보",
+  "exchangeSupportChatAttachLogsFailed": "로그 첨부에 실패했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatAttachmentImage": "이미지",
+  "exchangeSupportChatAttachmentUnknownFile": "알 수 없는 파일",
+  "exchangeSupportChatEmptyState": "아직 메시지가 없습니다. 대화 시작!",
+  "exchangeSupportChatFetchFileDataFailed": "파일 데이터를 가져오지 못했습니다",
+  "exchangeSupportChatInputHint": "이름 *.",
+  "exchangeSupportChatLoadAttachmentError": "첨부 파일을 열지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatLoadMessagesError": "메시지를 불러오지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatMessageEmptyError": "메시지가 비어있을 수 없습니다",
+  "exchangeSupportChatMessageRequired": "자주 묻는 질문",
+  "exchangeSupportChatPickFilesFailed": "파일을 선택하지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatSendMessageError": "메시지를 보내지 못했습니다. 다시 시도해 주세요.",
+  "exchangeSupportChatTitle": "지원 채팅",
+  "exchangeSupportChatYesterday": "1 년 전",
+  "exchangeSupportLoginChatRequired": "실시간 지원을 받으려면 먼저 Bull Bitcoin 계정에 로그인해야 합니다. 완전 무료이며 KYC가 필요하지 않고, 이메일 주소만 있으면 됩니다.",
+  "loginButton": "로그인",
+  "notLoggedInTitle": "로그인하지 않습니다",
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "retry": "이름 *",
+  "settingsAppSettingsTitle": "앱 설정",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "해당 설정을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "fundExchangeSepaDescriptionExactly": "견적 요청.",
+  "fundExchangeInstantSepaInfo": "만 € 20,000 미만의 거래에 사용됩니다. 더 큰 거래를 위해서는 일반 SEPA 옵션을 사용하십시오.",
+  "fundExchangeETransferLabelSecretAnswer": "비밀 답변",
+  "fundExchangeLabelBicCode": "BIC 코드",
+  "fundExchangeCanadaPostStep6": "6. 명세 cashier는 당신에게 영수증을, 지불의 당신의 증거로 지킵니다",
+  "fundExchangeMethodRegularSepa": "일반 SEPA",
+  "fundExchangeSinpeLabelPhone": "휴대폰 번호",
+  "fundExchangeCrIbanCrcTransferCodeWarning": "지불을 할 때 \"message\"또는 \"reason\"또는 \"description\"으로 전송 코드를 추가해야합니다. 이 코드를 포함 하는 것을 잊지 면, 당신의 지불 거부 될 수 있습니다.",
+  "fundExchangeSinpeTitle": "SINPE 전송",
+  "fundExchangeCanadaPostStep5": "5. 명세 현금 또는 직불 카드로 지불",
+  "fundExchangeInfoPaymentDescription": "결제 설명에서 전송 코드를 추가합니다.",
+  "fundExchangeCrIbanCrcDescriptionBold": "견적 요청",
+  "fundExchangeLabelRecipientAddress": "자주 묻는 질문",
+  "fundExchangeCrIbanCrcTitle": "은행 송금 (CRC)",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - € 30,000 미만의 거래 만",
+  "fundExchangeSepaDescription": "아래의 세부 정보를 사용하여 은행 계좌에서 SEPA 송금을 보내십시오 ",
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "전송 코드.",
+  "fundExchangeLabelBankAccountCountry": "은행 계좌",
+  "fundExchangeLabelTransitNumber": "교통번호",
+  "fundExchangeLabelMemo": "뚱 베어",
+  "fundExchangeBankTransferWireTitle": "은행 송금 (wire)",
+  "fundExchangeWarningTactic5": "그들은 다른 플랫폼에 Bitcoin을 보낼 것을 요청",
+  "fundExchangeETransferLabelEmail": "이 이메일에 E-transfer 보내기",
+  "fundExchangeOnlineBillPaymentHelpBillerName": "이 회사를 payee로 추가하십시오 - Bull Bitcoin의 지불 프로세서입니다",
+  "fundExchangeAccountTitle": "계정 생성",
+  "fundExchangeWarningTactic1": "그들은 투자에 대한 유망한 반환",
+  "fundExchangeETransferTitle": "E-Transfer 세부사항",
+  "fundExchangeMethodBankTransferWire": "은행 송금 (전선 또는 EFT)",
+  "fundExchangeJurisdictionCostaRica": "· 한국어 리카",
+  "fundExchangeContinueButton": "계속하기",
+  "fundExchangeCrIbanUsdRecipientNameHelp": "공식 법인 이름을 사용하십시오. \"Bull Bitcoin\"을 사용하지 마십시오.",
+  "fundExchangeArsBankTransferTitle": "은행 송금",
+  "fundExchangeJurisdictionCanada": "🇰🇷 한국어",
+  "fundExchangeCrIbanUsdLabelIban": "IBAN 계정 번호 (미국 달러 만)",
+  "fundExchangeInfoTransferCode": "지불을 할 때 \"message\"또는 \"reason\"으로 전송 코드를 추가해야합니다.",
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "지불 묘사",
+  "fundExchangeTitle": "투자정보",
+  "fundExchangeCrIbanCrcDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
+  "fundExchangeETransferLabelSecretQuestion": "비밀 질문",
+  "fundExchangeHelpBeneficiaryName": "공식 법인 이름을 사용하십시오. \"Bull Bitcoin\"을 사용하지 마십시오.",
+  "fundExchangeWarningTactic7": "그들은이 경고에 대해 걱정하지 말",
+  "fundExchangeMethodCanadaPost": "캐나다 포스트에서 개인 현금 또는 직불",
+  "fundExchangeSepaTitle": "SEPA 전송",
+  "fundExchangeCanadaPostStep1": "1. 명세 캐나다 포스트 위치 이동",
+  "fundExchangeLabelBeneficiaryAddress": "혜택",
+  "fundExchangeJurisdictionArgentina": "아르헨티나",
+  "fundExchangeWarningTactic6": "화면을 공유하고 싶습니다",
+  "fundExchangeCrIbanUsdDescriptionBold": "견적 요청",
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE를 사용하여 Colones 전송",
+  "fundExchangeArsBankTransferDescription": "아래의 정확한 아르헨티나 은행 세부 정보를 사용하여 은행 계좌에서 은행 송금을 보내십시오.",
+  "fundExchangeCrIbanUsdDescription": "아래 세부 사항을 사용하여 은행 계좌에서 은행 송금을 보내십시오 ",
+  "fundExchangeLabelBankAddress": "우리의 은행의 주소",
+  "fundExchangeLabelBankCountry": "은행 국가",
+  "fundExchangeBankTransferSubtitle": "은행 계좌에서 은행 송금",
+  "fundExchangeMethodOnlineBillPayment": "온라인 빌 지불",
+  "fundExchangeWarningConfirmation": "나는 내가 다른 사람에 의해 Bitcoin을 구입하는 것을 요청하지 않다는 것을 확인합니다.",
+  "fundExchangeLabelCvu": "사이트맵",
+  "fundExchangeLabelRecipientName": "이름 *",
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE 모빌",
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "미국 달러로 송금 (USD)",
+  "fundExchangeMethodRegularSepaSubtitle": "만 € 30,000 이상의 거래에 사용",
+  "fundExchangeLabelTransferCode": "Transfer code (결제 설명 추가)",
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "콜롬비아",
+  "fundExchangeSpeiTitle": "SPEI 전송",
+  "fundExchangeRegularSepaInfo": "만 € 20,000 이상의 거래에 사용됩니다. 작은 거래를 위해, 즉시 SEPA 옵션을 사용하십시오.",
+  "fundExchangeDoneButton": "한국어",
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "가장 느린 옵션이지만 온라인 뱅킹을 통해 수행 할 수 있습니다 (3-4 영업일)",
+  "fundExchangeLabelBankAccountDetails": "Bank 계좌 정보",
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "전송 코드.",
+  "fundExchangeLabelRecipientNameArs": "이름 *",
+  "fundExchangeCanadaPostStep2": "2. 명세 \"Loadhub\" QR 코드를 스캔하는 캐비티를 요청하십시오",
+  "fundExchangeCrIbanUsdTitle": "은행 송금 (USD)",
+  "fundExchangeETransferLabelBeneficiaryName": "E-transfer beneficiary 이름과 같이 이것을 사용하십시오",
+  "fundExchangeWarningDescription": "누군가가 Bitcoin 또는 \"helping you\", 조심, 그들은 당신을 사기 위해 시도 할 수있다!",
+  "fundExchangeJurisdictionEurope": "유럽 (SEPA)",
+  "fundExchangeBankTransferWireDescription": "아래 Bull Bitcoin의 은행 세부 정보를 사용하여 은행 계좌에서 송금하십시오. 귀하의 은행은이 세부 사항의 일부 부분을 필요로 할 수 있습니다.",
+  "fundExchangeWarningTactic4": "그들은 그들의 주소에 Bitcoin을 보내 요청",
+  "fundExchangeSinpeDescription": "SINPE를 사용하여 Colones 전송",
+  "fundExchangeMethodCanadaPostSubtitle": "사람의 지불을 선호하는 사람들을 위해",
+  "fundExchangeSinpeDescriptionBold": "그것은 거부됩니다.",
+  "fundExchangeMethodBankTransferWireSubtitle": "더 큰 금액에 가장 신뢰할 수있는 옵션 (매일 또는 그 다음날)",
+  "fundExchangeCanadaPostStep4": "4. 명세 캐피니어는 정부 조직 ID의 조각을보고 ID의 이름을 확인하면 Bull Bitcoin 계정",
+  "fundExchangeCrIbanCrcLabelIban": "IBAN 계정 번호 (만화)",
+  "fundExchangeOnlineBillPaymentDescription": "아래 정보를 사용하여 은행의 온라인 결제 기능을 통해 전송하는 금액은 3-4 영업일 이내에 Bull Bitcoin 계정 잔액에 적립됩니다.",
+  "fundExchangeETransferDescription": "아래 정보를 사용하여 이메일 E-Transfer를 통해 은행에서 보내는 금액은 몇 분 안에 Bull Bitcoin 계정 잔액에 적립됩니다.",
+  "fundExchangeLabelClabe": "사이트맵",
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN 코스타리카 (USD)",
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR 코드",
+  "fundExchangeSinpeLabelRecipientName": "이름 *",
+  "fundExchangeMethodInstantSepa": "즉시 및 일반 SEPA 송금",
+  "fundExchangeCrIbanUsdTransferCodeWarning": "지불을 할 때 \"message\"또는 \"reason\"또는 \"description\"으로 전송 코드를 추가해야합니다. 이 코드를 포함 하는 것을 잊지 면, 당신의 지불 거부 될 수 있습니다.",
+  "fundExchangeSpeiInfo": "SPEI 송금 (instant)을 사용하여 입금하십시오.",
+  "fundExchangeMethodEmailETransferSubtitle": "가장 빠르고 빠른 방법 (instant)",
+  "fundExchangeErrorLoadingDetails": "지불 세부사항은 이 순간에 적재될 수 없습니다. 다시 가서 다시 시도, 다른 지불 방법을 선택하거나 나중에 다시 온다.",
+  "fundExchangeErrorTitleOrdPo404": "결제 옵션 사용 불가",
+  "fundExchangeErrorTitleRcpPo404": "결제 옵션을 사용할 수 없음",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE 사용 불가",
+  "fundExchangeErrorTitleOrdKyc400": "KYC 요건 미충족",
+  "fundExchangeErrorOrdKyc400": "이 작업에 필요한 KYC 요건을 충족하지 않습니다",
+  "fundExchangeErrorOrdCsrcp400": "이 SEPA 수취인에 대해 가상 결제 옵션을 활성화해 주세요.",
+  "fundExchangeErrorOpeningPaymentLink": "결제 링크를 열 수 없습니다. 다시 시도해 주세요.",
+  "fundExchangeErrorTitleOrdCop400": "잘못된 COP 자금 조달 데이터",
+  "fundExchangeErrorOrdCop400": "COP 자금 조달을 위한 요청 데이터가 잘못되었습니다",
+  "fundExchangeErrorTitleOrdCsrcp400": "가상 결제가 활성화되지 않음",
+  "fundExchangeErrorTitleRcp400": "잘못된 요청",
+  "fundExchangeErrorRcp400": "잘못된 요청",
+  "fundExchangeErrorOrdPo404": "사용 가능한 결제 옵션이 없습니다",
+  "fundExchangeErrorRcpPo404": "이 자금 조달 옵션에 액세스할 수 있는 권한이 없습니다. KYC가 부족하거나 이 옵션이 귀하의 계정에서 사용할 수 없습니다",
+  "fundExchangeErrorRcpPosinpe404": "이 자금 조달 옵션에 액세스하려면 전화번호가 코스타리카 SINPE 네트워크에 등록되어 있어야 합니다.",
+  "fundExchangeErrorFetchingBankCodes": "은행 코드를 가져오는 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.",
+  "fundExchangeSpeiTransfer": "SPEI 전송",
+  "fundExchangeCrIbanCrcRecipientNameHelp": "공식 법인 이름을 사용하십시오. \"Bull Bitcoin\"을 사용하지 마십시오.",
+  "fundExchangeSinpeAddedToBalance": "결제가 전송되면 계정 잔액에 추가됩니다.",
+  "fundExchangeSpeiSubtitle": "CLABE를 사용하여 자금을 전송",
+  "fundExchangeAccountSubtitle": "국가 및 결제 방법 선택",
+  "fundExchangeJurisdictionMexico": "┗ 멕시코",
+  "fundExchangeLabelSwiftCode": "SWIFT 코드",
+  "fundExchangeCrIbanCrcDescription": "아래 세부 사항을 사용하여 은행 계좌에서 은행 송금을 보내십시오 ",
+  "fundExchangeLabelRoutingNumber": "연락처",
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "지불 묘사",
+  "fundExchangeInfoBeneficiaryNameLeonod": "비만의 이름은 LEONOD이어야합니다. 당신이 다른 것을 넣으면, 당신의 지불은 거절될 것입니다.",
+  "doneButton": "한국어",
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Costa Rican Colón (CRC)의 송금 자금",
+  "fundExchangeCanadaPostStep3": "3. 명세 당신이 적재하고 싶은 총계를 말하십시오",
+  "fundExchangeLabelIban": "IBAN 계정 번호",
+  "fundExchangeOnlineBillPaymentLabelBillerName": "이 이름의 은행 목록 검색",
+  "fundExchangeMethodEmailETransfer": "이메일 E-Transfer",
+  "fundExchangeLabelBankName": "은행 이름",
+  "fundExchangeInfoBankCountryUk": "우리의 은행 국가는 영국입니다.",
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN 코스타리카 (CRC)",
+  "fundExchangeLabelBeneficiaryName": "이름 *",
+  "fundExchangeWarningTactic2": "그들은 당신에게 대출을 제공",
+  "fundExchangeCanadaPostTitle": "캐나다 포스트에서 개인 현금 또는 직불",
+  "fundExchangeOnlineBillPaymentTitle": "온라인 빌 지불",
+  "fundExchangeHelpTransferCode": "전송에 대한 이유로 이것을 추가",
+  "fundExchangeCrIbanUsdDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
+  "fundExchangeRestrictedTitle": "입금을 사용할 수 없음",
+  "fundExchangeRestrictedMessage": "귀하의 계정에서 입금을 사용할 수 없습니다. 자세한 내용은 고객 지원에 문의하세요.",
+  "fundExchangeWarningTitle": "사기꾼에 대한 조심",
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "콜롬비아",
+  "fundExchangeCrIbanCrcLabelRecipientName": "이름 *",
+  "fundExchangeCanadaPostStep7": "7. 명세 자금은 30 분 이내에 Bull Bitcoin 계정 잔액에 추가됩니다",
+  "fundExchangeWarningTactic8": "그들은 신속하게 행동하고 있습니다",
+  "fundExchangeBankTransfer": "은행 송금",
+  "fundExchangeWarningTactic3": "그들은 부채 또는 세금 수집을 위해 작동 말한다",
+  "fundExchangeWarningTacticsTitle": "일반적인 사기꾼 전술",
+  "fundExchangeHelpBeneficiaryAddress": "우리의 공식 주소는 은행에 의해 요구됩니다",
+  "fundExchangeBankTransferWireTimeframe": "당신이 보내는 어떤 자금은 1-2 영업일 이내에 Bull Bitcoin에 추가됩니다.",
+  "fundExchangeLabelInstitutionNumber": "기관 번호",
+  "fundExchangeSpeiDescription": "CLABE를 사용하여 자금을 전송",
+  "fundExchangeCrIbanUsdLabelRecipientName": "이름 *",
+  "fundExchangeScamConsentError": "동의 등록에 실패했습니다. 다시 시도해 주세요.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 콜롬비아",
+  "fundExchangeCopDailyLimitWarning": "일일 거래 한도를 초과하면 거래가 실패합니다. 고객 지원팀에 문의해야 합니다.",
+  "fundExchangeCopSenderName": "송금인 이름",
+  "fundExchangeCopIssuingBank": "발급 은행",
+  "fundExchangeCopSelectBankError": "발급 은행을 선택해 주세요",
+  "fundExchangeCopAmount": "금액",
+  "fundExchangeCopEnterAmountError": "금액을 입력해 주세요",
+  "fundExchangeCopValidAmountError": "유효한 금액을 입력해 주세요",
+  "fundExchangeCopGeneratePaymentLink": "결제 링크 생성",
+  "fundExchangeCopRedirectMessage": "결제를 진행하기 위해 외부 페이지로 이동합니다.",
+  "fundExchangeCopOpenPaymentLink": "결제 링크 열기",
+  "fundExchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
+  "fundExchangeMethodConfidentialSepa": "기밀 SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "비공개로 입금할 수 있는 개인 가상 IBAN",
+  "fundExchangeSinpeWarningNoBitcoin": "칫",
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "이 독특한 계정 번호는 당신을 위해 다만 창조됩니다",
+  "fundExchangeSinpeWarningNoBitcoinDescription": " 지불 설명에서 \"Bitcoin\"또는 \"Crypto\"라는 단어. 결제를 차단합니다.",
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "계정 번호로 추가",
+  "exchangeCurrencyDropdownTitle": "통화 선택",
+  "exchangeAmountInputValidationInvalid": "잘못된 금액",
+  "exchangeAmountInputValidationInsufficient": "충분한 균형",
+  "exchangeAmountInputValidationEmpty": "금액",
+  "exchangeCurrencyDropdownValidation": "통화 선택",
+  "exchangeAmountInputTitle": "자주 묻는 질문",
+  "exchangeAmountInputValidationZero": "금액은 0 이상이어야합니다",
+  "save": "제품 정보",
+  "exchangeBitcoinWalletsDescription": "자동 Bitcoin 인출을위한 기본 지갑 주소를 설정합니다.",
+  "exchangeBitcoinWalletsEnterAddressHint": "자주 묻는 질문",
+  "exchangeDcaAddressLabelLiquid": "액체 주소",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin 주소",
+  "delete": "기타 제품",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin 주소",
+  "cancel": "이름 *",
+  "exchangeBitcoinWalletsSaveSuccess": "지갑 주소 성공적으로 저장",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "액체 주소",
+  "exchangeBitcoinWalletsLightningAddressLabel": "번개 (LN 주소)",
+  "exchangeDcaAddressLabelLightning": "연락처",
+  "settingsTermsOfServiceTitle": "이용 약관",
+  "continueButton": "계속하기",
+  "autoBuyTitle": "자동 매수",
+  "autoBuyDescription": "계정에 자금을 입금할 때마다 자동으로 Bitcoin을 매수하세요",
+  "autoBuyActivate": "자동 매수 활성화",
+  "autoBuyDeactivate": "자동 매수 비활성화",
+  "autoBuyCancelTitle": "자동 매수를 취소할까요?",
+  "autoBuyCancelMessage": "다음에 계정에 자금을 입금할 때 Bitcoin이 자동으로 매수되지 않습니다.",
+  "autoBuyDeactivateConfirm": "예, 비활성화",
+  "autoBuyHowItWorks": "작동 방식",
+  "autoBuyConnectWallet": "Bitcoin, Lightning 또는 Liquid 지갑을 연결하세요",
+  "autoBuyPurchaseCreated": "Bull Bitcoin 계정에 자금을 입금할 때마다 Bitcoin 매수가 자동으로 생성됩니다.",
+  "autoBuyBitcoinSent": "Bitcoin은 본인의 지갑으로 직접 전송됩니다.",
+  "autoBuyRiskDisclaimer": "주문 체결은 보장되지 않습니다. 입금과 매수 사이의 지연이나 가격 변동으로 실제 적용 환율이 달라질 수 있습니다.",
+  "autoBuyGetStarted": "자동 매수 시작하기",
+  "autoBuyConfirmTitle": "자동 매수 확인",
+  "autoBuyInfoMessage": "계정에 추가된 금액은 현재 환율로 Bitcoin으로 전환되어 지갑으로 전송됩니다.",
+  "autoBuyUpdateError": "자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "exchangeAuthLoginFailedMessage": "오류가 발생했습니다. 다시 로그인하십시오.",
+  "exchangeAuthLoginFailedOkButton": "이름 *",
+  "exchangeAuthLoginFailedTitle": "로그인 실패",
+  "exchangeDcaUnableToGetConfig": "DCA 구성을 얻을 수 없음",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "exchangeDcaNetworkLiquid": "액체 네트워크",
+  "exchangeDcaNetworkBitcoin": "Bitcoin 네트워크",
+  "exchangeDcaCancelDialogCancelButton": "이름 *",
+  "exchangeDcaActivateTitle": "Recurring 구매",
+  "exchangeDcaCancelDialogConfirmButton": "예, 비활성화",
+  "exchangeDcaCancelDialogMessage": "Bitcoin 구매 계획은 중지되며, 예약 된 구매가 종료됩니다. 다시 시작하려면 새로운 계획을 설정해야합니다.",
+  "exchangeDcaFrequencyDay": "일 시",
+  "exchangeHomeDepositButton": "계좌정보",
+  "exchangeKycCardSubtitle": "거래 제한을 제거",
+  "exchangeDcaFrequencyWeek": "주 메뉴",
+  "exchangeDcaNetworkLightning": "Lightning 네트워크",
+  "exchangeHomeWithdrawButton": "공지사항",
+  "exchangeKycLevelLimited": "가격 :",
+  "exchangeKycLevelLight": "제품 정보",
+  "exchangeDcaFrequencyHour": "1시간",
+  "exchangeKycCardTitle": "지원하다 사이트맵",
+  "exchangeDcaCancelDialogTitle": "Bitcoin Recurring 구매를 취소합니까?",
+  "transactionHistoryTitle": "거래 내역",
+  "exchangeDcaDeactivateTitle": "Recurring 구매",
+  "exchangeDcaSummaryMessage": "{amount} 모든 {frequency}를 구입하고 있습니다. {network} 귀하의 계정에 자금이 있습니다.",
+  "exchangeDcaFrequencyMonth": "1 개월",
+  "settingsScreenTitle": "계정 설정",
+  "exchangeDcaHideSettings": "설정 숨기기",
+  "exchangeDcaViewSettings": "설정 보기",
+  "homeActionBuy": "구매",
+  "homeActionSell": "판매",
+  "homeActionPay": "결제",
+  "homeActionTransfer": "스왑",
+  "recipientsSearchHint": "이름 또는 상표로 받는 사람 검색",
+  "recipientsFieldSinpePhoneNumberHint": "국가 코드 없이 8자리",
+  "recipientsCopDocCcRecipientNumber": "수신자 cédula 번호",
+  "recipientsCopDocCeRecipientNumber": "수신자 cédula de extranjería 번호",
+  "recipientsCopDocNitRecipientNumber": "수신자 세금 ID 번호",
+  "recipientsCopDocPassportRecipientNumber": "수신자 여권 번호",
+  "recipientsCopDocTiRecipientNumber": "수신자 신분증 번호",
+  "recipientsCopDocRegistroCivilRecipientNumber": "수신자 민법등록 번호",
+  "recipientsValidationSinpePhoneCountryCode": "국가 코드(+506)를 제거하세요. 8자리 번호만 입력하세요",
+  "recipientsValidationSinpePhoneInvalidChars": "숫자만 사용하세요 (글자나 기호 금지)",
+  "recipientsValidationSinpePhoneTooShort": "전화번호 8자리를 모두 입력하세요",
+  "recipientsFieldDocumentType": "수신자 신분증 유형",
+  "recipientsFieldDocumentNumberHint": "수신자 신분증 번호 입력",
+  "recipientsScreenTitle": "수신자 선택",
+  "recipientsScreenSubtitle": "누구에게 결제하시겠습니까?",
+  "recipientsTabNew": "새 수신자",
+  "recipientsTabList": "내 법정화폐 수신자",
+  "recipientsPayoutMethod": "출금 방법",
+  "recipientsFilterByJurisdiction": "관할 지역으로 필터링:",
+  "recipientsListEmpty": "수신자를 찾을 수 없습니다.",
+  "recipientsContinue": "계속",
+  "recipientsJurisdictionAll": "전체 관할 지역",
+  "recipientsJurisdictionCanada": "🇨🇦 캐나다",
+  "recipientsJurisdictionEurope": "🇪🇺 유럽 (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 멕시코",
+  "recipientsJurisdictionCostaRica": "🇨🇷 코스타리카",
+  "recipientsJurisdictionArgentina": "🇦🇷 아르헨티나",
+  "recipientsJurisdictionColombia": "🇨🇴 콜롬비아",
+  "recipientsTypeInteracEmail": "이메일 송금",
+  "recipientsTypeBillPayment": "청구서 납부",
+  "recipientsTypeBankTransfer": "계좌 이체",
+  "recipientsTypeSepa": "SEPA 이체",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI 카드",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU 아르헨티나",
+  "recipientsTypeBankAccountCo": "은행 계좌 (COP)",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "이메일",
+  "recipientsInfoPayee": "수취인",
+  "recipientsInfoAccount": "계좌",
+  "recipientsInfoPhone": "전화번호",
+  "recipientsInfoCard": "카드",
+  "recipientsInfoLabel": "라벨",
+  "recipientsValidationFieldRequired": "이 필드는 비워둘 수 없습니다",
+  "recipientsLabelOptional": "라벨 (선택 사항)",
+  "recipientsLabelHint": "이 수신자의 라벨을 입력하세요",
+  "recipientsFieldName": "이름",
+  "recipientsFieldNameHint": "수신자 이름을 입력하세요",
+  "recipientsFieldRecipientNameLabel": "수신자의 이름",
+  "recipientsFieldPhoneNumber": "전화번호",
+  "recipientsFieldPhoneNumberHint": "전화번호를 입력하세요",
+  "recipientsFieldOwnerName": "예금주 이름",
+  "recipientsFieldOwnerNameHint": "예금주 이름을 입력하세요",
+  "recipientsAccountOwnerQuestion": "이 계좌는 누구의 것인가요?",
+  "recipientsAccountOwnerMine": "제 계좌입니다",
+  "recipientsAccountOwnerSomeoneElse": "다른 사람의 계좌입니다",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "IBAN을 입력하세요",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "CLABE 번호를 입력하세요",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "CVU/CBU 번호를 입력하세요",
+  "recipientsFieldBankInstitution": "은행",
+  "recipientsFieldBankInstitutionPlaceholder": "은행 선택",
+  "recipientsValidationBankInstitution": "은행을 선택해 주세요",
+  "recipientsFieldAccountType": "계좌 유형",
+  "recipientsAccountTypeSavings": "저축예금",
+  "recipientsAccountTypeChecking": "당좌예금",
+  "recipientsFieldBankAccountNumber": "은행 계좌번호",
+  "recipientsFieldBankAccountNumberHint": "은행 계좌번호를 입력하세요",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "여권",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "직불카드 번호",
+  "recipientsFieldDebitCardHint": "직불카드 번호를 입력하세요",
+  "recipientsFieldOwnerNameSinpeHint": "예금주 이름이 여기에 표시됩니다",
+  "recipientsValidationSinpeOwner": "전화번호를 인증해 주세요",
+  "recipientsFieldEmailAddress": "이메일 주소",
+  "recipientsFieldEmailAddressHint": "이메일 주소를 입력하세요",
+  "recipientsFieldSecurityQuestion": "보안 질문",
+  "recipientsFieldSecurityQuestionHint": "보안 질문을 입력하세요 (10~40자)",
+  "recipientsFieldSecurityAnswer": "보안 답변",
+  "recipientsFieldSecurityAnswerHint": "보안 답변을 입력하세요",
+  "recipientsCharCounter": "{count}/40자",
+  "recipientsFieldInstitutionCode": "기관 코드",
+  "recipientsFieldInstitutionCodeHint": "기관 코드를 입력하세요",
+  "recipientsFieldInstitutionNumber": "기관 번호",
+  "recipientsFieldInstitutionNumberHint": "기관 번호를 입력하세요",
+  "recipientsFieldTransitNumber": "지점 번호",
+  "recipientsFieldTransitNumberHint": "지점 번호를 입력하세요",
+  "recipientsFieldAccountNumber": "계좌번호",
+  "recipientsFieldAccountNumberHint": "계좌번호를 입력하세요",
+  "recipientsFieldDefaultComment": "기본 메모 (선택 사항)",
+  "recipientsFieldDefaultCommentHint": "기본 메모를 입력하세요",
+  "recipientsFieldCorporateAccount": "법인 계좌",
+  "recipientsFieldFirstName": "이름",
+  "recipientsFieldFirstNameHint": "이름을 입력하세요",
+  "recipientsFieldLastName": "성",
+  "recipientsFieldLastNameHint": "성을 입력하세요",
+  "recipientsFieldCorporateName": "법인명",
+  "recipientsFieldCorporateNameHint": "법인명을 입력하세요",
+  "recipientsFieldBillerName": "청구 기관명",
+  "recipientsFieldBillerNameHint": "청구 기관을 검색하여 선택하세요",
+  "recipientsValidationBillerSearchMin": "검색하려면 3자 이상 입력하세요",
+  "recipientsValidationBillerSelect": "목록에서 청구 기관을 선택해 주세요",
+  "recipientsFieldPayeeAccountNumber": "수취인 계좌번호",
+  "recipientsErrorLoadFailed": "수취인을 불러올 수 없습니다. 다시 시도해 주세요.",
+  "recipientsErrorSaveFailed": "이 수취인을 저장할 수 없습니다. 정보를 확인한 후 다시 시도해 주세요.",
+  "recipientsErrorSinpeLookupFailed": "이 전화번호를 확인할 수 없습니다. 번호를 확인한 후 다시 시도해 주세요.",
+  "recipientsErrorBillerSearchFailed": "청구 기관을 검색할 수 없습니다. 다시 시도해 주세요.",
+  "recipientsErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
+  "recipientsListPullToRetry": "아래로 당겨 다시 시도하세요.",
+  "recipientsErrorSavedButNotSelected": "이 수취인은 저장되었지만 계속할 수 없습니다. 목록에서 찾아 계속하세요.",
+  "recipientsTypeConfidentialSepa": "기밀 SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "이 자금 조달 옵션에 액세스할 수 있는 권한이 없습니다. KYC가 부족하거나 이 옵션이 귀하의 계정에서 사용할 수 없습니다",
+  "recipientsErrorEuResidencyRequired": "기밀 SEPA를 활성화하려면 유럽 연합 거주자여야 합니다.",
+  "recipientsConfidentialSepaActivatingTitle": "수신자 활성화 중",
+  "recipientsConfidentialSepaActivatingDescription": "수신자를 기밀 SEPA용으로 활성화하고 있습니다. 몇 분 정도 걸릴 수 있습니다.",
+  "recipientsConfidentialSepaNotActivatedTitle": "수신자가 기밀 SEPA용으로 활성화되지 않음",
+  "recipientsConfidentialSepaNotActivatedDescription": "이 수신자는 아직 기밀 SEPA용으로 활성화되지 않았습니다. 지금 활성화하고 있습니다. 몇 분 정도 걸릴 수 있습니다. 대신 즉시 및 일반 SEPA를 사용할 수 있습니다.",
+  "recipientsConfidentialSepaActivatedTitle": "수신자 활성화됨",
+  "recipientsConfidentialSepaActivatedDescription": "이제 수신자가 기밀 SEPA용으로 활성화되었습니다.",
+  "recipientsConfidentialSepaUseRegularSepa": "대신 즉시 및 일반 SEPA 사용",
+  "recipientsVirtualIbanIntroTitle": "기밀 SEPA를 활성화할까요?",
+  "recipientsVirtualIbanNewBadge": "신규",
+  "recipientsVirtualIbanIntroDescription": "본인 명의의 개인 가상 IBAN으로 계정에 비공개로 입금하세요. 무료입니다.",
+  "recipientsVirtualIbanIntroSelfTransfer": "은행에서 Bull Bitcoin으로 자금을 보내면 본인에게 송금한 것으로 표시됩니다.",
+  "recipientsVirtualIbanIntroNoTransferCode": "송금 코드가 필요하지 않습니다.",
+  "recipientsVirtualIbanNameWarningTitle": "중요: 이름이 일치해야 합니다",
+  "recipientsVirtualIbanNameWarningDescription": "은행 계좌 이름이 Bull Bitcoin 가상 IBAN 이름과 정확히 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다. 이름이 일치하지 않나요? 지원팀에 문의하세요.",
+  "recipientsVirtualIbanAccountOwnerName": "계좌 소유자 이름",
+  "recipientsVirtualIbanNameConfirmation": "이름이 내 은행 계좌와 일치함을 확인합니다",
+  "recipientsVirtualIbanActivate": "기밀 SEPA 활성화",
+  "recipientsVirtualIbanActivatingTitle": "기밀 SEPA 활성화 중...",
+  "recipientsVirtualIbanActivatingDescription": "가상 IBAN을 생성하는 중입니다. 몇 분 정도 걸릴 수 있습니다.",
+  "recipientsVirtualIbanActivatedTitle": "기밀 SEPA가 활성화되었습니다",
+  "recipientsVirtualIbanActivatedDescription": "이제 개인 가상 IBAN을 사용해 비공개로 출금할 수 있습니다.",
+  "recipientsVirtualIbanCopied": "클립보드에 복사",
+  "recipientsVirtualIbanDone": "한국어",
+  "recipientsVirtualIbanRecipientName": "이름 *",
+  "recipientsVirtualIbanIbanLabel": "가상 IBAN 계좌번호",
+  "recipientsVirtualIbanCountry": "은행 계좌",
+  "recipientsVirtualIbanBic": "BIC 코드",
+  "recipientsVirtualIbanActivatedFundingDescription": "이제 개인 가상 IBAN을 사용해 비공개로 입금할 수 있습니다.",
+  "recipientsVirtualIbanShowDetails": "내 가상 IBAN 정보 보기",
+  "recipientsVirtualIbanDetailsDescription": "본인 명의의 개인 가상 IBAN으로 계정에 비공개로 입금하세요. 입금은 본인에게 보낸 결제로 표시되며 송금 코드가 필요하지 않습니다.",
+  "recipientsVirtualIbanBankAddress": "은행 주소",
+  "recipientsVirtualIbanBankAddressHelp": "은행에서 요구하는 경우 사용할 공식 은행 주소입니다.",
+  "recipientsConfidentialSepaNameMustMatchHint": "은행 계좌와 가상 IBAN 계좌의 이름이 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다.",
+  "recipientsFieldBankAccountIban": "은행 계좌번호 (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "출금 내역은 본인 계좌명으로 자신에게 이체한 것으로 표시됩니다",
+  "withdrawAmountContinue": "계속하기",
+  "withdrawConfirmTitle": "자주 묻는 질문",
+  "withdrawConfirmAmount": "계정 정보",
+  "withdrawConfirmButton": "자주 묻는 질문",
+  "withdrawAmountTitle": "인출 fiat",
+  "withdrawConfirmRecipientName": "이름 *",
+  "withdrawSuccessOrderDetails": "자주 묻는 질문",
+  "withdrawSuccessTitle": "출금 개시",
+  "withdrawConfirmBankAccount": "은행 계좌",
+  "withdrawInteracSecurityDetailsTitle": "송금 보안 정보",
+  "withdrawInteracSaveAsDefault": "이 정보를 기본값으로 저장",
+  "withdrawInteracSecurityQuestionLengthError": "보안 질문은 3~40자여야 합니다",
+  "withdrawInteracSecurityAnswerLengthError": "보안 답변은 3~40자여야 합니다",
+  "withdrawInteracSecurityAnswerFormatError": "공백 없이 문자, 숫자 또는 하이픈을 사용하세요",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "상태",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "로그아웃",
+  "logoutConfirmationTitle": "로그아웃",
+  "logoutConfirmationCancel": "이름 *",
+  "logoutConfirmationDescription": "Bull Bitcoin 계정에서 로그인 하시겠습니까? 교환 기능을 다시 로그인해야합니다.",
+  "exchangeSettingsLogOutTitle": "로그아웃",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "이 요청을 보내면 저희 지원팀에 계정 삭제 요청이 전달됩니다. 귀하의 계정은 5 영업일 이내에 삭제됩니다.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "계정 삭제 요청됨",
+  "deleteAccountSuccessDescription": "계정 삭제 요청이 접수되었습니다. 5 영업일 이내에 처리됩니다.",
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "당신의 지불금은 보내질 것입니다 ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "비트코인 지갑 선택",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExternalWallet": "외부 Bitcoin 지갑",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "자주 묻는 질문",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "안전한 Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "호환 지갑 필요",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "견적 요청",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyConfirmPayoutWallet": "지급 지갑",
+  "buyPayoutMethodLiquid": "Liquid의 L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin 체인의 BTC",
+  "buyConfirmPayoutMethod": "Payout 방법",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "제품정보",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "최소 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "계속하기",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSetupInsufficientBalance": "충분한 균형",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "매 시간마다 {amount}를 구입할 것입니다",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmPaymentMethod": "지불 방법",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin 가격",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "예상 수수료 값",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "금액",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "네트워크 선택",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "buyInputContinue": "계속하기",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaWalletTypeBitcoin": "비트 코인 (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "확인 시간",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "{fiatAmount}으로 {amount}을 구매했습니다",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "계정 만들기",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "최대",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "Bitcoin 구매",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "지갑 선택",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "KYC ID 검증 완료",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "ID Verification을 먼저 완료해야 합니다",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "네트워크 수수료",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "매월 {amount}를 구입할 것입니다",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "연락처",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "선택 빈도",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "연락처",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} 밸런스",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Bitcoin 구매는이 일정 당 자동으로 배치됩니다.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "완료 KYC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "주파수 영역",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "주문 유형",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaSuccessMessageDaily": "매일 {amount}를 구입할 것입니다",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "무료 인출",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "호환 지갑, 최대 0.25 BTC 필요",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "계정 생성",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "~10분",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "Awaiting 확인 ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSuccessTitle": "Recurring 구매는 활성입니다!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSetupFrequencyError": "주파수 선택",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "Bitcoin 구매",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "그것은 빠르지 않았습니까?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "매일",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyNetworkFeeRate": "네트워크 요금",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "집으로 돌아가기",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "즉시 결제",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "회사연혁",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "자주 묻는 질문 구매하기",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaSetupContinue": "계속하기",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "buyConfirmYouPay": "결제하기",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "Bitcoin Wallet 유형 선택",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "충분한 균형",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "dcaSuccessMessageWeekly": "매주 {amount}를 살 것입니다",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "계정 정보",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "매주",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "계정 생성",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "비트 코인 주소를 입력",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSetupInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "주문은 이 설정에 따라 자동으로 배치됩니다. 언제든지 비활성화 할 수 있습니다.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "번개 네트워크 (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Bitcoin 네트워크 수수료는 Bitcoin 광부에 의해 수신 및 수집 한 금액에서 공제됩니다",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "Bitcoin 구매는이 일정 당 자동으로 배치됩니다.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmContinue": "계속하기",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaConfirmNetworkBitcoin": "비트 코인",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "더 보기",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "매시간",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "연락처",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "지불 방법",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "매월",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "비트코인 전송!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "dcaUseDefaultLightningAddress": "기본 번개 주소를 사용합니다.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "더 빠른 확인",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "자주 묻는 질문",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "Recurring 구매",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "액체 (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Recurring 구매",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "sellAdvancedOptions": "고급 옵션",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySinpeBeneficiario": "한국어",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "payInstantPayments": "즉시 결제",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellReplaceByFeeActivated": "Replace-by-fee 활성화",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payNetworkFees": "네트워크 수수료",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "sellCompleteKYC": "완료 KYC",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payPayFromWallet": "지갑에서 지불",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellEurBalance": "EUR 유로 (주)",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "paySinpeMonto": "계정 정보",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeEnviado": "SINPE 엔비 아도!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "sellShowQrCode": "QR 코드 보기",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellSecureBitcoinWallet": "Bitcoin 지갑 보안",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payShowQrCode": "QR 코드 보기",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellViewDetailsButton": "더 보기",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "paySinpeOrigen": "주요 특징",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payRecipientType": "관련 제품",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellCadBalance": "자료실 (주)",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "sellPriceWillRefreshIn": "가격은 상쾌합니다 ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "ARS 밸런스",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellPayFromWallet": "지갑에서 지불",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellBitcoinAmount": "비트 코인 금액",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellBalanceWillBeCredited": "귀하의 계정 잔액은 거래가 1 확인 onchain을받습니다.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "copyDialogButton": "관련 기사",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payQrCode": "QR 코드",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellLightningNetwork": "Lightning 네트워크",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "즉시 결제",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellDone": "한국어",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellBitcoinOnChain": "비트코인",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellFromAnotherWallet": "다른 Bitcoin 지갑에서 판매",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payFeePriority": "요금 우선",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "payTitle": "결제하기",
+  "payPaymentDescription": "결제 설명",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellQrCode": "QR 코드",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "payContinue": "계속하기",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "Replace-by-fee 활성화",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellCopyInvoice": "복사 송장",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "sellFeePriority": "요금 우선",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "Payin 금액",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "closeDialogButton": "뚱 베어",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellMxnBalance": "비트 코인 (주)",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellCopBalance": "제품정보 (주)",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellKycPendingDescription": "먼저 ID 검증을 완료해야 합니다",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellPayoutAmount": "결제 금액",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellWhichWalletQuestion": "어떤 지갑에서 판매하고 싶습니까?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "sellFastest": "빠른 속도",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payCopyInvoice": "복사 송장",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellCrcBalance": "사이트맵 (주)",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "paySelectCoinsManually": "동전을 수동으로",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payPriceRefreshIn": "가격은 상쾌합니다 ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "sellExchangeRate": "환율",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "비트코인",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUsdBalance": "100원 (주)",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellKycPendingTitle": "KYC ID 검증 완료",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "payOrderNumber": "주문 번호",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "주문 번호",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "sellPayoutRecipient": "Payout 수신자",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "paySinpeNumeroComprobante": "참고 번호",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "Bitcoin 지갑 보안",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payRecipientName": "이름 *",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "sellConfirmPayment": "결제방법",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellSelectCoinsManually": "동전을 수동으로",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payNotAvailable": "사이트맵",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "빠른 속도",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payOrderDetails": "주문 세부 사항",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "sellLiquidNetwork": "액체 네트워크",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payAdvancedOptions": "고급 옵션",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellOrderNumber": "주문 번호",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payDone": "한국어",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "payAdvancedSettings": "고급 설정",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellSendPaymentNetworkFees": "네트워크 수수료",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "sellAdvancedSettings": "고급 설정",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payViewDetails": "더 보기",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "viewerTapToCopy": "복사하려면 탭하세요",
+  "invoiceViewerTitle": "인보이스",
+  "paySinpeReceipt": "SINPE 영수증",
+  "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+  "copiedToClipboard": "클립보드에 복사되었습니다",
+  "sellPayoutBalance": "내 계정 잔액에 추가",
+  "sellPayoutTitle": "수신자 선택",
+  "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
+  "sendSelectedUtxosInsufficient": "선택된 utxos는 필요한 금액을 커버하지 않습니다",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "선택 금액",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "유형: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "주소: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "요청 수량 : {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "받기",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "잔돈",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrdersInsufficientBalance": "충분한 균형",
+  "limitOrdersInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
+  "limitOrdersFundAccount": "계정 생성",
+  "exchangeLandingRecommendedExchange": "Bitcoin 교환",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureCustomerSupport": "· 고객 지원",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency 교환 서비스는 Bull Bitcoin 모바일 애플리케이션에서 사용할 수 없습니다.",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLandingDisclaimerLegal": "교환 서비스에 대한 액세스는 Bull Bitcoin이 합법적으로 작동 할 수있는 국가에 제한되며 KYC가 필요할 수 있습니다.",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeFeatureSelfCustody": "• Bitcoin을 Self-custody로 구매하십시오",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeLandingConnectAccount": "Bull Bitcoin 교환 계정 연결",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeFeatureSellBitcoin": "• Bitcoin을 판매, Bitcoin으로 지불",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeBrandName": "비트 코인",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLoginButton": "로그인 또는 회원가입",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeFeatureBankTransfers": "· 은행 송금 및 지불 청구서 발송",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeGoToWebsiteButton": "Bull Bitcoin 교환 웹 사이트로 이동",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, 제한 주문 및 자동 구매",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureUnifiedHistory": "• 통합된 거래 내역",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeErrorSigningOut": "완전히 로그아웃되지 않았습니다. 다시 시도해 주세요.",
+  "exchangeErrorLoadingAnnouncements": "공지사항을 불러올 수 없습니다.",
+  "exchangeErrorRequestingAccountDeletion": "계정 삭제 요청을 보낼 수 없습니다. 다시 시도해 주세요.",
+  "exchangeFileUploadStatusUnknown": "상태 알 수 없음",
+  "exchangeSupportChatAttachFileTooltip": "파일 첨부",
+  "exchangeSupportChatAttachLogsTooltip": "로그 첨부",
+  "exchangeSupportChatSendTooltip": "메시지 보내기",
+  "exchangeSupportChatLogDraft": "제 로그를 첨부합니다",
+  "exchangeSupportChatLoadOlder": "이전 메시지 불러오기",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "거래소 기능",
+  "exchangeAccessSettingsOffHint": "켜면 Bull Bitcoin 계정에 로그인하거나 계정을 만들 수 있습니다.",
+  "exchangeAccessSettingsOnHint": "거래소 기능이 켜져 있습니다.",
+  "exchangeAccessSignIn": "로그인 또는 계정 만들기",
+  "exchangeAccessDisableTitle": "거래소 기능을 끌까요?",
+  "exchangeAccessDisableBody": "이 기기에서 로그아웃됩니다. 기존 주문, AutoBuy 및 반복 구매는 취소되지 않습니다.",
+  "exchangeAccessDisableConfirm": "로그아웃하고 끄기",
+  "exchangeTradingRetry": "다시 시도",
+  "exchangeAccessUnreadable": "거래소 접근 상태를 읽을 수 없습니다. 다시 시도하거나 재설정하세요.",
+  "exchangeAccessReset": "거래소 접근 재설정",
+  "exchangeAccessLogoutIncomplete": "로그아웃이 완료되지 않았습니다. 거래소를 켜기 전에 로그아웃을 완료하세요.",
+  "exchangeAccessRetryLogout": "로그아웃 완료하기",
+  "exchangeAccessExpiring": "세션이 만료되었습니다. 이 기기에서 로그아웃하는 중입니다.",
+  "exchangeLogoutDidNotFinish": "이 기기에서 로그아웃이 완료되지 않았습니다.",
+  "networkFeatureUnavailable": "선택한 네트워크에서는 이 기능을 사용할 수 없습니다.",
+  "exchangeBitcoinWalletsLoadFailed": "기본 지갑을 불러오지 못했습니다",
+  "exchangeBitcoinWalletsAddressEmpty": "주소를 입력해야 합니다",
+  "exchangeBitcoinWalletsSaveFailed": "지갑 주소를 저장하지 못했습니다",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "이 주소가 저장되었는지 확인할 수 없습니다. 다시 저장하기 전에 아래에서 확인하세요.",
+  "exchangeBitcoinWalletsDeleteFailed": "지갑 주소를 삭제하지 못했습니다",
+  "exchangeSettingsWriteBusy": "다른 거래소 요청이 아직 진행 중입니다. 잠시 후 다시 시도하세요.",
+  "exchangeSettingsSignedOut": "거래소에서 로그아웃되었습니다. 이 설정을 변경하려면 다시 로그인하세요.",
+  "exchangeBitcoinWalletsBusy": "다른 거래소 요청이 아직 진행 중입니다. 잠시 후 다시 시도하세요.",
+  "exchangeBitcoinWalletsUnsetSuccess": "지갑 주소가 삭제되었습니다",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "이 주소가 삭제되었는지 확인할 수 없습니다. 변경하기 전에 다시 확인하세요.",
+  "exchangeBitcoinWalletsCheckAgain": "다시 확인",
+  "exchangeBitcoinWalletsSessionEnded": "거래소에서 로그아웃되었습니다. 기본 지갑을 수정하려면 다시 로그인하세요.",
+  "destinationExpectedType": "유효한 {type}을(를) 입력하거나 스캔하세요.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "지갑에서 바로 Bull Bitcoin으로 매수, 매도 및 결제하세요.",
+  "exchangeTradingUnavailable": "거래를 사용할 수 없습니다.",
+  "priceChartShowTooltip": "가격 차트 보기",
+  "recipientsErrorSaveOutcomeUnknown": "이 수취인이 저장되었는지 확인할 수 없습니다. 다시 추가하기 전에 수취인 목록을 확인하세요.",
+  "recipientsConfidentialSepaStatusUnknownTitle": "활성화 상태 알 수 없음",
+  "recipientsConfidentialSepaStatusUnknownDescription": "이 수취인의 활성화 상태를 읽을 수 없습니다. 기밀 SEPA에 사용하기 전에 고객 지원에 문의하세요.",
+  "recipientsReturnHome": "홈으로 돌아가기",
+  "withdrawConfirmOutcomeUnknownError": "출금이 처리되었는지 확인할 수 없습니다. 새 출금을 시작하기 전에 다시 확인하세요.",
+  "withdrawConfirmCheckAgainButton": "다시 확인",
+  "limitOrderStatusUnknown": "상태 알 수 없음",
+  "dcaUseDefaultBitcoinWallet": "기본 Bitcoin 지갑 사용",
+  "dcaUseDefaultLiquidWallet": "기본 Liquid 지갑 사용",
+  "dcaNoDefaultBitcoinWallet": "Bull Bitcoin 계정에 기본 Bitcoin 지갑이 없습니다. 지갑을 설정하거나 아래에 Bitcoin 주소를 입력하세요.",
+  "dcaNoDefaultLiquidWallet": "Bull Bitcoin 계정에 기본 Liquid 지갑이 없습니다. 지갑을 설정하거나 아래에 Liquid 주소를 입력하세요.",
+  "dcaManageDefaultWallets": "기본 지갑 설정",
+  "dcaEnterBitcoinAddressLabel": "Bitcoin 주소 입력",
+  "dcaEnterLiquidAddressLabel": "Liquid 주소 입력",
+  "dcaConfirmPayoutAddress": "받는 주소",
+  "exchangePaymentOutcomeUnknownChecking": "결제가 전송되었는지 확인하는 중…",
+  "walletSpendAwaitingObservation": "이 지갑이 동기화되어 네트워크에서 이전 결제를 확인할 때까지 송금할 수 없습니다. 지갑을 새로고침하거나 '누락된 거래 스캔'을 사용한 후 다시 시도하세요.",
+  "sendPayjoinSpendPaused": "지갑이 안전하게 계속할 수 없어 이 Payjoin 결제가 일시 중지되었습니다. 입력은 계속 예약되어 있습니다. 지갑을 새로고침하거나 '누락된 거래 스캔'을 사용한 후, 이 제안이 유효한 동안 다시 시도하세요. 만료되었다면 추가 조치를 하기 전에 거래 내역에서 결제를 확인하세요.",
+  "walletSpendBusy": "지갑이 사용 중입니다. 잠시 후 다시 시도하세요.",
+  "fundExchangeJurisdictionHint": "송금하는 지역을 선택하세요",
+  "fundExchangeScamConsentUnverified": "동의가 기록되었는지 확인할 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+  "fundExchangeSessionEnded": "거래소 세션이 종료되었습니다. 계정에 입금하려면 다시 로그인하세요.",
+  "exchangePlatformNotAllowedError": "이 기기에서는 거래소를 켤 수 없습니다.",
+  "exchangeStepReadFailed": "지금은 거래소에서 이 정보를 불러올 수 없습니다. 다시 시도하세요.",
+  "exchangeStepNotSent": "거래소로 아무것도 전송되지 않았습니다. 연결을 확인하고 다시 시도하세요.",
+  "exchangeStepNotApplied": "거래소에서 이 요청이 적용되지 않았습니다. 다시 시도할 수 있습니다.",
+  "exchangeStepWriteRefused": "거래소에서 이 요청을 거부했습니다.",
+  "exchangeOrderBelowMinimum": "최소 금액은 {amount} {currency}입니다",
+  "exchangeOrderAboveMaximum": "최대 금액은 {amount} {currency}입니다",
+  "exchangePayeeInactive": "이 수취인은 아직 기밀 SEPA가 활성화되지 않았습니다.",
+  "exchangeWriteGateBusy": "다른 거래소 요청이 아직 진행 중입니다. 완료될 때까지 기다린 후 다시 시도하세요.",
+  "exchangeWriteGateUnsettled": "이전 거래소 요청을 아직 확인하는 중입니다. 처리가 끝나면 다시 시도하세요.",
+  "exchangeWriteGateJournalUnreadable": "이전 거래소 요청을 확인할 수 없습니다. 다시 시도하세요.",
+  "exchangeStepUnverified": "거래소가 이 요청을 받았는지 확인할 수 없습니다. 새로 시작하기 전에 다시 확인하세요.",
+  "exchangeStepTimedOut": "예상보다 오래 걸리고 있습니다. 다시 확인하거나 나중에 다시 와서 확인할 수 있습니다.",
+  "exchangeAmountNoRate": "지금은 bitcoin 가격을 확인할 수 없습니다. 다시 시도하세요.",
+  "exchangeAmountKycNeeded": "이 금액을 사용하려면 신원 인증을 완료하세요.",
+  "exchangeStepVerifying": "거래소에 확인하는 중…",
+  "exchangeFlowSessionEnded": "거래소 세션이 종료되었습니다. 계속하려면 다시 로그인하세요.",
+  "withdrawNoFundedBalance": "출금할 잔액이 없습니다.",
+  "exchangePayinNoFunds": "이 지갑에는 이 결제와 네트워크 수수료를 지불할 자금이 부족합니다.",
+  "exchangePayinFeeTooLow": "네트워크 수수료가 네트워크 최소 금액보다 낮습니다. 다시 시도하세요.",
+  "exchangePayinWalletBusy": "지갑이 동기화 중입니다. 잠시 후 다시 시도하세요.",
+  "exchangePayinConsolidationRequired": "이 금액을 결제하려면 먼저 이 지갑의 코인을 통합해야 합니다.",
+  "exchangePayinSigningRefused": "지갑이 결제에 서명하지 못했습니다.",
+  "exchangePayinNotAuthorized": "이 지갑은 결제를 보낼 권한이 없습니다.",
+  "exchangePayinBuildFailed": "결제를 준비하지 못했습니다. 아무것도 전송되지 않았습니다.",
+  "exchangePayinNodeRejected": "네트워크가 거래를 거부했습니다. 아무것도 전송되지 않았습니다.",
+  "exchangePayinPayjoinNotStarted": "payjoin 결제를 시작하지 못했습니다. 아무것도 전송되지 않았습니다.",
+  "exchangePayinDeadlinePassed": "결제를 보내기 전에 주문의 결제 기한이 끝났습니다. 아무것도 전송되지 않았습니다.",
+  "exchangePayinSending": "결제를 보내는 중…",
+  "exchangePayinNotSent": "결제가 전송되지 않음",
+  "exchangePayinPayjoinNegotiating": "거래소와 payjoin을 협상하는 중…",
+  "exchangePayinPayjoinPaused": "지갑이 사용 중이어서 payjoin이 일시 중지되었습니다. 다시 시도하세요.",
+  "exchangePayinUnseen": "네트워크와 거래소 모두 아직 이 결제를 표시하지 않습니다. 같은 거래를 다시 보낼 수 있습니다.",
+  "exchangePayinResend": "같은 거래 다시 보내기",
+  "exchangeStepCheckAgain": "다시 확인",
+  "exchangePayinLeaveTitle": "이 결제를 나갈까요?",
+  "exchangePayinLeaveMessage": "이미 결제했다면 거래소는 그대로 받게 됩니다. 결제하지 않았다면 주문은 기한에 만료됩니다.",
+  "exchangePayinStay": "머무르기",
+  "exchangePayinExternalTitle": "아래 주소로 정확히 이 금액을 보내세요",
+  "exchangePayinExternalWaiting": "결제를 기다리는 중…",
+  "exchangePayinRefusedByExchange": "거래소가 이 결제를 받지 않았습니다. 주문 번호와 함께 고객 지원에 문의하세요.",
+  "exchangePayinOrderEnded": "결제를 보내기 전에 이 주문이 종료되었습니다. 아무것도 전송되지 않았습니다.",
+  "exchangePayinDepositRefused": "이 주문은 이 지갑으로 결제할 수 없습니다. 아무것도 전송되지 않았습니다.",
+  "exchangePayinReceived": "거래소가 결제를 받았습니다",
+  "exchangePayinCoinsUnavailable": "지갑의 코인을 불러오지 못했습니다. 다시 시도하세요.",
+  "buyPayoutAddressUnavailable": "이 지갑에서 수신 주소를 가져오지 못했습니다. 다시 선택하거나 다른 지갑을 선택하세요.",
+  "buyPayoutFailed": "거래소가 이 지급을 완료하지 못했습니다. 주문 상세를 열거나 고객지원에 문의하세요.",
+  "buyPayoutStillPending": "지급이 아직 진행 중입니다. 주문 상세에서 확인할 수 있습니다.",
+  "limitOrdersOverBalanceWarning": "사용 가능한 잔액보다 많습니다. 주문이 체결될 때 그 시점의 잔액으로 매수합니다.",
+  "autoBuyAlreadyActive": "자동 매수가 이미 계정에서 활성화되어 있습니다.",
+  "recipientsValidationEmailInvalid": "올바른 이메일 주소를 입력하세요",
+  "recipientsValidationClabeLength": "CLABE는 18자리 숫자입니다",
+  "recipientsValidationClabeCheckDigit": "유효하지 않은 CLABE입니다. 번호를 확인하세요",
+  "recipientsValidationSpeiPhone": "국가 코드 없이 10자리 전화번호를 입력하세요",
+  "recipientsValidationDebitCard": "직불카드 번호는 16자리 숫자입니다",
+  "recipientsErrorFieldRefused": "거래소에서 이 값을 받아들이지 않았습니다",
+  "recipientsErrorCheckFields": "일부 정보가 받아들여지지 않았습니다. 위에 표시된 항목을 확인하세요.",
+  "recipientsErrorFieldsRefused": "일부 정보가 받아들여지지 않았습니다: {fields}"
+}

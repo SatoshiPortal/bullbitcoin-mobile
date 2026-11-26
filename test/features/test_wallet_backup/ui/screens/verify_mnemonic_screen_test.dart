@@ -1,57 +1,51 @@
-import 'dart:async';
+import 'package:all_seed_view/testing.dart';
+import 'package:all_seed_view/setup.dart';
+import 'package:swaps/swaps.dart';
+import 'package:backups/testing.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
-import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
+import 'dart:async';
+import 'dart:io';
+
+import '../../../../support/inventory_fixture.dart';
+
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullPinPad;
+
+import 'package:access/access.dart';
+import 'package:access/setup.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:primitives/primitives.dart'
+    show Err, Ok, Result, BitcoinNetwork, Fingerprint;
+import 'package:physical_backup_verification/physical_backup_verification.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _AllCubit extends Mock implements AllSeedViewCubit {}
 
-class _RevealUnlock extends AppUnlockFacade {
-  const _RevealUnlock();
-
-  @override
-  Widget buildReauthenticationGate({
-    required ValueChanged<AppUnlockGrant> onSuccess,
-    bool canPop = false,
-  }) {
-    final gate = super.buildReauthenticationGate(
-      onSuccess: onSuccess,
-      canPop: canPop,
-    ) as PinCodeUnlockScreen;
-    return Scaffold(
-      body: TextButton(
-        onPressed: gate.onSuccess,
-        child: const Text('Authenticate reveal'),
-      ),
-    );
-  }
-}
+class _SwapEngine extends Mock implements BoltzSwaps {}
 
 class _MockCompleteBackupVerificationUsecase extends Mock
-    implements CompleteBackupVerificationUsecase {}
+    implements CompleteBackupVerificationUsecase {
+  int calls = 0;
+  Result<void, TestWalletBackupFailure> result = const Ok(null);
+
+  @override
+  Future<Result<void, TestWalletBackupFailure>> execute(
+    BackupWallet wallet,
+    PhysicalBackupProof proof,
+  ) async {
+    calls++;
+    return result;
+  }
+}
 
 class _MockLoadWalletsForNetworkUsecase extends Mock
     implements LoadWalletsForNetworkUsecase {}
@@ -109,28 +103,20 @@ const _wordsB = [
   'above',
 ];
 
-Wallet _wallet(String fingerprint) => Wallet(
-  origin: 'origin-$fingerprint',
-  label: 'Wallet $fingerprint',
-  network: Network.bitcoinMainnet,
+BackupWallet _wallet(String fingerprint) => BackupWallet(
+  id: 'origin-$fingerprint',
+  label: 'BackupWallet $fingerprint',
+  network: BitcoinNetwork.mainnet,
   isDefault: false,
-  masterFingerprint: fingerprint,
-  xpubFingerprint: fingerprint,
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
+  fingerprint: Fingerprint(fingerprint),
 );
 
 late Secret _secretA;
 late Secret _secretB;
-late Wallet _walletA;
-late Wallet _walletB;
+late BackupWallet _walletA;
+late BackupWallet _walletB;
 
-TestWalletBackupState _selected(Wallet wallet) => TestWalletBackupState(
+TestWalletBackupState _selected(BackupWallet wallet) => TestWalletBackupState(
   wallets: [_walletA, _walletB],
   selectedWallet: wallet,
 );
@@ -139,9 +125,15 @@ void main() {
   late _MockGetSecretFromFingerprintUsecase getSecretUsecase;
   late _SeedableTestWalletBackupBloc bloc;
   late _MockCompleteBackupVerificationUsecase completeUsecase;
+  late Directory inventoryDirectory;
+  late InventoryFixture inventoryFixture;
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
+    inventoryDirectory = await Directory.systemTemp.createTemp(
+      'backup-access-',
+    );
+    inventoryFixture = await InventoryFixture.open(inventoryDirectory);
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     _secretA = ((await secrets.import(
       words: _wordsA,
@@ -159,8 +151,6 @@ void main() {
 
     getSecretUsecase = _MockGetSecretFromFingerprintUsecase();
     completeUsecase = _MockCompleteBackupVerificationUsecase();
-    when(() => completeUsecase.execute())
-        .thenAnswer((_) async => const Ok(null));
     bloc = _SeedableTestWalletBackupBloc(
       completeBackupVerificationUsecase: completeUsecase,
       loadWalletsForNetworkUsecase: _MockLoadWalletsForNetworkUsecase(),
@@ -170,6 +160,8 @@ void main() {
 
   tearDown(() async {
     await bloc.close();
+    await inventoryFixture.close();
+    await inventoryDirectory.delete(recursive: true);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_noScreenshotChannel, null);
   });
@@ -179,40 +171,102 @@ void main() {
         .thenAnswer((_) async => Ok(secret));
   }
 
-  Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
-    MaterialApp(
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: BlocProvider<TestWalletBackupBloc>.value(
-        value: bloc,
-        child: const VerifyMnemonicScreen(),
+  Future<void> mountAccess(Secrets secrets) async {
+    expect(
+      await inventoryFixture.inventory.setCredential(
+        '1234',
+        backupVerification: inventoryFixture.backup,
       ),
-    ),
+      isA<Ok>(),
+    );
+    final services = GetIt.asNewInstance()..registerSingleton(secrets);
+    addTearDown(services.reset);
+    AccessFeature.mount(
+      services: services,
+      inventory: inventoryFixture.inventory,
+      backupVerification: inventoryFixture.backup,
+      hasVerifiedBackup: () async => false,
+      onUnlocked: (_) {},
+      onBackUp: (_) async {},
+    );
+  }
+
+  Finder findUnlockTitle(WidgetTester tester) => find.text(
+    AccessLocalizations.of(tester.element(find.byType(MnemonicView)))
+        .appUnlockScreenTitle,
   );
 
-  // The spinner animates forever, so pumpAndSettle would never return while
-  // it is on screen. The challenge reads its words inside the package, which
-  // does real asynchronous work (PBKDF2), so frames alternate with the real
-  // clock until no spinner is left, within a bound generous enough for a
-  // suite running in parallel.
-  Future<void> flush(WidgetTester tester) async {
-    for (var i = 0; i < 25; i++) {
+  Future<void> openRevealGate(WidgetTester tester, Finder title) async {
+    await tester.ensureVisible(find.text('Show passphrase'));
+    await tester.tap(find.text('Show passphrase'));
+    await tester.pumpAndSettle();
+    expect(title, findsOneWidget);
+  }
+
+  Future<void> authorize(WidgetTester tester) async {
+    for (final digit in [1, 2, 3, 4]) {
+      tester.widget<BullPinPad>(find.byType(BullPinPad)).onDigit(digit);
+      await tester.pump();
+    }
+    final context = tester.element(find.byType(BullPinPad));
+    final label = AccessLocalizations.of(context).appUnlockButton;
+    final unlock = find.byWidgetPredicate(
+      (widget) => widget is BullButton && widget.label == label,
+    );
+    await pumpUntilInventoryReady(
+      tester,
+      () => !tester.widget<BullButton>(unlock).disabled,
+    );
+    tester.widget<BullButton>(unlock).onPressed();
+    await pumpUntilInventoryReady(
+      tester,
+      () => find.byType(BullPinPad).evaluate().isEmpty,
+    );
+  }
+
+  Future<void> pumpScreen(WidgetTester tester, {Widget? screen}) =>
+      tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: [
+            AllSeedViewLocalizations.delegate,
+            ...appLocalizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: BlocProvider<TestWalletBackupBloc>.value(
+            value: bloc,
+            child:
+                screen ??
+                VerifyMnemonicScreen(
+                  onTestSucceeded: (_) {},
+                  successImage: AssetImage(Assets.animations.successTick.path),
+                ),
+          ),
+        ),
+      );
+
+  // Secret operations complete off-isolate, so pump frames while letting the
+  // real clock run. The challenge has a spinner. Passphrase verification
+  // keeps the form visible, so its callers wait for the result in the UI.
+  Future<void> flush(WidgetTester tester, {bool Function()? until}) async {
+    final isReady =
+        until ??
+        () => find.byType(CircularProgressIndicator).evaluate().isEmpty;
+    final attempts = until == null ? 25 : 100;
+    for (var i = 0; i < attempts; i++) {
       await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
       await tester.pump();
-      if (i >= 2 && find.byType(CircularProgressIndicator).evaluate().isEmpty) {
-        return;
-      }
+      if (i >= 2 && isReady()) return;
     }
   }
 
   // The words are sealed inside `MnemonicChallenge` and carry no text the
   // test could look for: which wallet is on screen is read from the
   // challenge's key, which is that wallet's fingerprint.
-  void expectChallengeFor(Wallet wallet, Matcher matcher) => expect(
-    find.byKey(ValueKey<String?>(wallet.masterFingerprint)),
+  void expectChallengeFor(BackupWallet wallet, Matcher matcher) => expect(
+    find.byKey(ValueKey<String?>(wallet.fingerprint?.hex)),
     matcher,
     reason: wallet.label,
   );
@@ -222,10 +276,40 @@ void main() {
   // binding fails the test over a pending timer at teardown.
   Future<void> drainSnackBar(WidgetTester tester) async {
     await tester.pump(const Duration(seconds: 4));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
   }
 
   final spinner = find.byType(CircularProgressIndicator);
+
+  testWidgets('uses the default wallet name in both mnemonic titles', (
+    tester,
+  ) async {
+    final wallet = BackupWallet(
+      id: _walletA.id,
+      network: _walletA.network,
+      isDefault: true,
+      label: null,
+      fingerprint: _walletA.fingerprint,
+    );
+    stubSecret(_secretA);
+    bloc.seed(TestWalletBackupState(wallets: [wallet], selectedWallet: wallet));
+
+    await pumpScreen(
+      tester,
+      screen: ShowMnemonicScreen(
+        onTestSucceeded: (_) {},
+        successImage: AssetImage(Assets.animations.successTick.path),
+      ),
+    );
+    await tester.pump();
+    String? title() =>
+        (tester.widget<AppBar>(find.byType(AppBar)).title as Text).data;
+    expect(title(), 'Test Secure Bitcoin');
+
+    await pumpScreen(tester);
+    await tester.pump();
+    expect(title(), 'Test Secure Bitcoin');
+  });
 
   testWidgets('loads a wallet selected while screen protection is pending', (
     tester,
@@ -285,15 +369,90 @@ void main() {
     );
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.enterText(find.byType(TextField), 'Mixed');
+    final incorrectPassphrase = find.text('Incorrect passphrase.');
     await tester.tap(find.text('Continue'));
-    await flush(tester);
-    expect(find.text('Incorrect passphrase.'), findsOneWidget);
-    verifyNever(() => completeUsecase.execute());
+    await flush(tester, until: incorrectPassphrase.tryEvaluate);
+    expect(incorrectPassphrase, findsOneWidget);
+    expect(completeUsecase.calls, 0);
 
+    final success = find.byType(BackupTestSuccessScreen);
     await tester.enterText(find.byType(TextField), ' Mixed ');
     await tester.tap(find.text('Continue'));
+    await flush(tester, until: success.tryEvaluate);
+    expect(success, findsOneWidget);
+    expect(completeUsecase.calls, 1);
+  });
+
+  testWidgets('only the sealed verdict records a backup', (tester) async {
+    stubSecret(_secretA);
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
     await flush(tester);
-    verify(() => completeUsecase.execute()).called(1);
+    final challenge = tester.widget<MnemonicChallenge>(
+      find.byType(MnemonicChallenge),
+    );
+    challenge.onProgress?.call(12, 12);
+    await tester.pump();
+    expect(completeUsecase.calls, 0);
+
+    challenge.onSolved();
+    await flush(
+      tester,
+      until: find.byType(BackupTestSuccessScreen).tryEvaluate,
+    );
+    expect(find.byType(BackupTestSuccessScreen), findsOneWidget);
+    expect(completeUsecase.calls, 1);
+  });
+
+  testWidgets('drops a verdict after the wallet selection is cleared', (
+    tester,
+  ) async {
+    stubSecret(_secretA);
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
+    await flush(tester);
+    final challenge = tester.widget<MnemonicChallenge>(
+      find.byType(MnemonicChallenge),
+    );
+    // Emit the new selection before the old widget gets a chance to rebuild.
+    bloc.seed(bloc.state.copyWith(selectedWallet: null));
+    challenge.onSolved();
+    await tester.pump();
+    expect(find.byType(BackupTestSuccessScreen), findsNothing);
+    expect(completeUsecase.calls, 0);
+    await drainSnackBar(tester);
+  });
+
+  testWidgets('drops a verdict for a different selected wallet', (
+    tester,
+  ) async {
+    stubSecret(_secretA);
+    stubSecret(_secretB);
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
+    await flush(tester);
+    final challenge = tester.widget<MnemonicChallenge>(
+      find.byType(MnemonicChallenge),
+    );
+    bloc.seed(_selected(_walletB));
+    challenge.onSolved();
+    await tester.pump();
+    expect(find.byType(BackupTestSuccessScreen), findsNothing);
+    expect(completeUsecase.calls, 0);
+    await drainSnackBar(tester);
+  });
+
+  testWidgets('a failed write does not report success', (tester) async {
+    stubSecret(_secretA);
+    completeUsecase.result = const Err(TestWalletBackupCompletionFailure());
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
+    await flush(tester);
+    tester.widget<MnemonicChallenge>(find.byType(MnemonicChallenge)).onSolved();
+    await tester.pump();
+    expect(find.byType(BackupTestSuccessScreen), findsNothing);
+    expect(completeUsecase.calls, 1);
+    await drainSnackBar(tester);
   });
 
   testWidgets('a protected backup offers explicit passphrase reveal', (
@@ -301,6 +460,7 @@ void main() {
   ) async {
     Device.screen = const Size(800, 600);
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    await tester.runAsync(() => mountAccess(secrets));
     final result = await tester.runAsync(
       () => secrets.import(
         words: _wordsA,
@@ -315,15 +475,22 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: [
+          AllSeedViewLocalizations.delegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<TestWalletBackupBloc>.value(
           value: bloc,
-          child: const ShowMnemonicScreen(appUnlockFacade: _RevealUnlock()),
+          child: ShowMnemonicScreen(
+            successImage: AssetImage(Assets.animations.successTick.path),
+            onTestSucceeded: (_) {},
+          ),
         ),
       ),
     );
     await flush(tester);
+    final pinTitle = findUnlockTitle(tester);
     expect(find.text('Show passphrase'), findsOneWidget);
     expect(
       find.text(
@@ -335,33 +502,28 @@ void main() {
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
       isFalse,
     );
-    await tester.ensureVisible(find.text('Show passphrase'));
-    await tester.tap(find.text('Show passphrase'));
-    await tester.pumpAndSettle();
-    expect(find.text('Authenticate reveal'), findsOneWidget);
+    await openRevealGate(tester, pinTitle);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
+    expect(pinTitle, findsNothing);
+    await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
       isFalse,
     );
-    await tester.ensureVisible(find.text('Show passphrase'));
-    await tester.tap(find.text('Show passphrase'));
-    await tester.pumpAndSettle();
+    await openRevealGate(tester, pinTitle);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await tester.tap(find.text('Authenticate reveal'));
+    await authorize(tester);
     await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
       isFalse,
     );
-    await tester.ensureVisible(find.text('Show passphrase'));
-    await tester.tap(find.text('Show passphrase'));
-    await tester.pumpAndSettle();
+    await openRevealGate(tester, pinTitle);
     stubSecret(_secretB);
     bloc.seed(_selected(_walletB));
-    await tester.tap(find.text('Authenticate reveal'));
+    await authorize(tester);
     await tester.pump();
     await flush(tester);
     expect(
@@ -370,10 +532,8 @@ void main() {
     );
     bloc.seed(_selected(wallet));
     await flush(tester);
-    await tester.ensureVisible(find.text('Show passphrase'));
-    await tester.tap(find.text('Show passphrase'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Authenticate reveal'));
+    await openRevealGate(tester, pinTitle);
+    await authorize(tester);
     await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
@@ -392,6 +552,7 @@ void main() {
     'all seeds offers explicit passphrase reveal and hides it on pause',
     (tester) async {
       final secrets = Secrets(scratchDirectory: () async => '/tmp');
+      await tester.runAsync(() => mountAccess(secrets));
       final result = await tester.runAsync(
         () => secrets.import(
           words: _wordsA,
@@ -413,15 +574,22 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: appLocalizationsDelegates,
+          localizationsDelegates: [
+            AllSeedViewLocalizations.delegate,
+            ...appLocalizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<AllSeedViewCubit>.value(
             value: cubit,
-            child: const AllSeedViewScreen(appUnlockFacade: _RevealUnlock()),
+            child: AllSeedViewScreen(
+              access: const Access(),
+              swaps: _SwapEngine(),
+            ),
           ),
         ),
       );
       await flush(tester);
+      final pinTitle = findUnlockTitle(tester);
       expect(find.text('Show passphrase'), findsOneWidget);
       expect(
         find.text(
@@ -433,23 +601,22 @@ void main() {
         tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
         isFalse,
       );
-      await tester.ensureVisible(find.text('Show passphrase'));
-      await tester.tap(find.text('Show passphrase'));
-      await tester.pumpAndSettle();
-      expect(find.text('Authenticate reveal'), findsOneWidget);
+      await openRevealGate(tester, pinTitle);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-      await tester.tap(find.text('Authenticate reveal'));
+      await authorize(tester);
       await tester.pumpAndSettle();
+      expect(pinTitle, findsNothing);
+      await flush(tester);
       expect(
         tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
         isFalse,
       );
-      await tester.ensureVisible(find.text('Show passphrase'));
-      await tester.tap(find.text('Show passphrase'));
+      await openRevealGate(tester, pinTitle);
+      await authorize(tester);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Authenticate reveal'));
-      await tester.pumpAndSettle();
+      expect(pinTitle, findsNothing);
+      await flush(tester);
       expect(
         tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
         isTrue,
@@ -494,8 +661,7 @@ void main() {
 
     expect(spinner, findsNothing);
     expectChallengeFor(_walletA, findsOneWidget);
-    verify(() => getSecretUsecase.execute(_walletA.masterFingerprint))
-        .called(1);
+    verify(() => getSecretUsecase.execute(_secretA.id.hex)).called(1);
   });
 
   testWidgets('reloads the words when the selected wallet changes', (
@@ -528,8 +694,7 @@ void main() {
     );
     await flush(tester);
 
-    verify(() => getSecretUsecase.execute(_walletA.masterFingerprint))
-        .called(1);
+    verify(() => getSecretUsecase.execute(_secretA.id.hex)).called(1);
     expectChallengeFor(_walletA, findsOneWidget);
     await drainSnackBar(tester);
   });
@@ -537,10 +702,10 @@ void main() {
   testWidgets('drops a load overtaken by a later wallet switch', (
     tester,
   ) async {
-    // Wallet A's read is held open until after wallet B's has landed, so the
+    // BackupWallet A's read is held open until after wallet B's has landed, so the
     // stale result arrives last and must not replace B's words.
     final slowReadOfA = Completer<_SecretResult>();
-    when(() => getSecretUsecase.execute(_walletA.masterFingerprint))
+    when(() => getSecretUsecase.execute(_secretA.id.hex))
         .thenAnswer((_) => slowReadOfA.future);
     stubSecret(_secretB);
 
@@ -564,7 +729,7 @@ void main() {
     tester,
   ) async {
     stubSecret(_secretA);
-    when(() => getSecretUsecase.execute(_walletB.masterFingerprint)).thenAnswer(
+    when(() => getSecretUsecase.execute(_secretB.id.hex)).thenAnswer(
       (_) async => const Err(TestWalletBackupSeedUnavailableFailure()),
     );
     bloc.seed(_selected(_walletA));
@@ -574,7 +739,7 @@ void main() {
     bloc.seed(_selected(_walletB));
     await flush(tester);
 
-    // Wallet A's challenge must not sit under wallet B's name, and the screen
+    // BackupWallet A's challenge must not sit under wallet B's name, and the screen
     // must not fall back to the spinner either.
     expectChallengeFor(_walletA, findsNothing);
     expect(spinner, findsNothing);

@@ -1,0 +1,44 @@
+{
+  "bip329LabelsImportSuccessSingular": "1 etichetta importata",
+  "bip329LabelsImportSuccessPlural": "{count} etichette importate",
+  "@bip329LabelsImportSuccessPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelSwaps": "Scambi",
+  "systemLabelExchangeBuy": "Comprare",
+  "systemLabelExchangeSell": "Vendita",
+  "labelDeleteFailed": "Impossibile eliminare \"{label}\". Riprova.",
+  "@labelDeleteFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "Entra qui...",
+  "bip329LabelsImportButton": "Importa etichette",
+  "systemLabelPayjoin": "Pagamento",
+  "bip329LabelsExportSuccess": "Etichette esportate",
+  "receiveSave": "Salva",
+  "bip329LabelsTitle": "Etichette BIP329",
+  "bip329LabelsHeading": "Importa/esporta etichette BIP329",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "bip329LabelsExportButton": "Esporta etichette",
+  "systemLabelSelfSpend": "Trascorrere",
+  "bip329LabelsDescription": "Importa o esporta le etichette del portafoglio nel formato standard BIP329.",
+  "noteVisibleToSenderNotice": "Questa nota sarà visibile al destinatario del tuo QR o della tua fattura.",
+  "labelsErrorNoteTooLong": "La nota non può superare {max} caratteri",
+  "labelsErrorNoteForbiddenCharacter": "La nota non può contenere il carattere {character}",
+  "labelsErrorFileTooLarge": "Questo file è troppo grande. I file di etichette devono essere inferiori a {max}.",
+  "labelsErrorFileUnreadable": "Questo non sembra un file di etichette BIP-329. Verifica di aver scelto il file giusto.",
+  "labelsErrorFileEmpty": "Questo file non contiene etichette da importare.",
+  "labelsErrorExportFailed": "Non è stato possibile salvare le tue etichette. Riprova.",
+  "labelsErrorFileReservedName": "Questo file usa un nome di etichetta riservato dall'app. Rinominalo nel file e riprova.",
+  "labelsErrorNoteForbiddenWhitespace": "La nota non può contenere interruzioni di riga o tabulazioni",
+  "labelsErrorFileInvalidEntry": "Alcune voci di questo file non sono state lette. Controlla il file e riprova."
+}

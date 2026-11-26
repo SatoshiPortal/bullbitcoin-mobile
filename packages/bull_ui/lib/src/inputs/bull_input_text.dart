@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -16,14 +18,17 @@ class BullInputText extends StatefulWidget {
     this.controller,
     required this.onChanged,
     required this.value,
+    this.semanticLabel,
     this.hint,
     this.hintStyle,
     this.rightIcon,
     this.onRightTap,
+    this.rightActionLabel,
     this.disabled = false,
     this.focusNode,
     this.onEnter,
     this.onDone,
+    this.onEditingComplete,
     this.maxLength,
     this.onlyPaste = false,
     this.onlyNumbers = false,
@@ -39,7 +44,7 @@ class BullInputText extends StatefulWidget {
     this.maxLines,
     this.minLines,
     this.fixedPrefix,
-  });
+  }) : assert(onRightTap == null || rightActionLabel != null);
 
   /// Key applied to the inner [TextField] (for widget tests).
   final Key? uiKey;
@@ -53,6 +58,9 @@ class BullInputText extends StatefulWidget {
   /// The current value (the field is controlled by the parent).
   final String value;
 
+  /// Accessible name when the caller displays a separate field label.
+  final String? semanticLabel;
+
   /// Placeholder text.
   final String? hint;
 
@@ -65,6 +73,9 @@ class BullInputText extends StatefulWidget {
   /// Tap callback for [rightIcon].
   final Function? onRightTap;
 
+  /// Required accessible name when [onRightTap] owns the trailing action.
+  final String? rightActionLabel;
+
   /// Disables input when true.
   final bool disabled;
 
@@ -76,6 +87,9 @@ class BullInputText extends StatefulWidget {
 
   /// Called on submit.
   final Function(String)? onDone;
+
+  /// Overrides the default keyboard completion behavior when supplied.
+  final VoidCallback? onEditingComplete;
 
   /// Maximum input length.
   final int? maxLength;
@@ -167,6 +181,11 @@ class _BullInputTextState extends State<BullInputText> {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final semanticLabel = widget.semanticLabel;
+    final placeholder = widget.hint;
+    final fieldStyle =
+        widget.style ?? context.bullType.body.copyWith(color: colors.onSurface);
+    final hintStyle = widget.hintStyle ?? TextStyle(color: colors.textMuted);
     // Numeric and obscured fields are never legitimately multiline, so they
     // default to a single line instead of Flutter's unlimited `null`.
     final effectiveMaxLines =
@@ -174,7 +193,7 @@ class _BullInputTextState extends State<BullInputText> {
     final shouldPreventNewlines =
         effectiveMaxLines != null && effectiveMaxLines <= 2;
 
-    return TextField(
+    final field = TextField(
       key: widget.uiKey,
       controller: _controller,
       onChanged: widget.onChanged,
@@ -207,17 +226,27 @@ class _BullInputTextState extends State<BullInputText> {
       maxLength: widget.maxLength,
       minLines: widget.minLines ?? 1,
       maxLines: effectiveMaxLines,
-      style:
-          widget.style ??
-          context.bullType.body.copyWith(color: colors.onSurface),
+      style: fieldStyle,
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
+      onEditingComplete: widget.onEditingComplete,
       textAlign: TextAlign.left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        hintText: widget.hint,
+        hintText: semanticLabel == null ? placeholder : null,
+        hint: semanticLabel != null && placeholder != null
+            ? ExcludeSemantics(
+                child: Text(
+                  placeholder,
+                  style: fieldStyle.merge(hintStyle),
+                  textAlign: TextAlign.left,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
+            : null,
         suffixText: widget.suffixText,
-        hintStyle: widget.hintStyle ?? TextStyle(color: colors.textMuted),
+        hintStyle: hintStyle,
         prefixIcon: widget.fixedPrefix != null
             ? Container(
                 padding: const EdgeInsets.symmetric(
@@ -233,17 +262,25 @@ class _BullInputTextState extends State<BullInputText> {
                 ),
               )
             : null,
-        suffixIcon: widget.rightIcon != null
-            ? IconButton(
-                padding: const EdgeInsets.all(4),
-                icon: widget.rightIcon!,
-                onPressed: () => widget.onRightTap?.call(),
-                // Claim long presses so they never reach the TextField: there
-                // they start a selection whose iOS magnifier can get stuck in
-                // the root overlay.
-                onLongPress: () {},
-              )
-            : null,
+        suffixIcon: switch ((
+          widget.rightIcon,
+          widget.onRightTap,
+          widget.rightActionLabel,
+        )) {
+          (final content?, final callback?, final label?) => Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: BullFieldAction(
+              label: label,
+              onPressed: () => callback(),
+              child: content,
+            ),
+          ),
+          (final content?, _, _) => Padding(
+            padding: const EdgeInsets.all(4),
+            child: GestureDetector(onLongPress: () {}, child: content),
+          ),
+          _ => null,
+        },
         border: _getBorder(context),
         enabledBorder: _getBorder(context),
         focusedBorder: _getBorder(context),
@@ -252,6 +289,13 @@ class _BullInputTextState extends State<BullInputText> {
         filled: true,
         fillColor: colors.surface,
       ),
+    );
+    return Semantics(
+      label: semanticLabel,
+      hint: semanticLabel == null || semanticLabel == placeholder
+          ? null
+          : placeholder,
+      child: field,
     );
   }
 }

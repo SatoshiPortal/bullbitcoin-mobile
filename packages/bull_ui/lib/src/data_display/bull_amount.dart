@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../generated/l10n/bull_ui_localizations.dart';
-import '../inputs/bull_bitcoin_amount_text.dart';
 import '../theme/bull_tokens.dart';
 import 'bull_amount_scope.dart';
 
@@ -25,6 +24,18 @@ class BullAmount extends StatefulWidget {
     this.color,
     this.textAlign,
   });
+
+  /// Displays a signed number of satoshis without losing its magnitude.
+  BullAmount.signedSats(
+    int sats, {
+    super.key,
+    this.interactive = true,
+    this.overrideHideAmounts = false,
+    this.style,
+    this.color,
+    this.textAlign,
+  }) : magnitude = Sats(BigInt.from(sats).abs()),
+       isNegative = sats.isNegative;
 
   final Sats magnitude;
   final bool isNegative;
@@ -63,7 +74,7 @@ class _BullAmountState extends State<BullAmount> {
         (_) => symbols.GROUP_SEP,
       );
     } else {
-      var btc = BullBitcoinAmountText.format(widget.magnitude.value, unit);
+      var btc = widget.magnitude.toBitcoinText(unit);
       if (widget.magnitude.value > BigInt.zero &&
           widget.magnitude.value < BigInt.from(10000000)) {
         final parts = btc.split('.');

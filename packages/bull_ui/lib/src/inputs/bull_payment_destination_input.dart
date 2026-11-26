@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/buttons/bull_button.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -94,21 +96,19 @@ class _BullPaymentDestinationInputState
           Row(
             children: [
               Expanded(
-                child: Text(
-                  widget.label ?? '',
-                  style: context.bullType.body.copyWith(color: colors.text),
+                child: ExcludeSemantics(
+                  excluding: !valid,
+                  child: Text(
+                    widget.label ?? '',
+                    style: context.bullType.body.copyWith(color: colors.text),
+                  ),
                 ),
               ),
               if (widget.onRemove != null)
-                SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    tooltip: widget.removeLabel,
-                    onPressed: widget.enabled ? widget.onRemove : null,
-                    icon: Icon(Icons.close, size: 20, color: colors.text),
-                  ),
+                BullFieldAction(
+                  label: widget.removeLabel ?? widget.clearLabel,
+                  onPressed: widget.enabled ? widget.onRemove : null,
+                  icon: Icons.close,
                 ),
             ],
           ),
@@ -157,42 +157,47 @@ class _BullPaymentDestinationInputState
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        tooltip: widget.clearLabel,
-                        onPressed: widget.enabled ? widget.onClear : null,
-                        icon: Icon(Icons.close, size: 20, color: colors.text),
-                      ),
+                    BullFieldAction(
+                      label: widget.clearLabel,
+                      onPressed: widget.enabled ? widget.onClear : null,
+                      icon: Icons.close,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 8),
                   ],
                 )
-              : TextField(
-                  controller: _controller,
-                  enabled: widget.enabled,
-                  onChanged: widget.onChanged,
-                  keyboardType: widget.keyboardType,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  smartQuotesType: SmartQuotesType.disabled,
-                  smartDashesType: SmartDashesType.disabled,
-                  textCapitalization: TextCapitalization.none,
-                  maxLines: 1,
-                  style: context.bullType.body.copyWith(color: colors.text),
-                  decoration: InputDecoration(
-                    hintText: widget.hint,
-                    hintStyle: context.bullType.body.copyWith(
-                      color: colors.textMuted,
+              : Semantics(
+                  label: widget.label ?? widget.hint,
+                  hint: widget.label == null || widget.label == widget.hint
+                      ? null
+                      : widget.hint,
+                  child: TextField(
+                    controller: _controller,
+                    enabled: widget.enabled,
+                    onChanged: widget.onChanged,
+                    keyboardType: widget.keyboardType,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    smartQuotesType: SmartQuotesType.disabled,
+                    smartDashesType: SmartDashesType.disabled,
+                    textCapitalization: TextCapitalization.none,
+                    maxLines: 1,
+                    style: context.bullType.body.copyWith(color: colors.text),
+                    decoration: InputDecoration(
+                      hint: ExcludeSemantics(
+                        child: Text(
+                          widget.hint,
+                          style: context.bullType.body.copyWith(
+                            color: colors.textMuted,
+                          ),
+                        ),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      isDense: true,
                     ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    isDense: true,
                   ),
                 ),
         ),
@@ -210,12 +215,9 @@ class _BullPaymentDestinationInputState
           Row(
             children: [
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: widget.pasteLabel,
-                  onPressed: widget.onPaste,
-                  disabled: !widget.enabled,
-                  bgColor: colors.secondary,
-                  textColor: colors.onSecondary,
+                  onPressed: (!widget.enabled) ? null : widget.onPaste,
                   iconData: Icons.paste_sharp,
                   iconFirst: true,
                   height: 44,
@@ -226,12 +228,9 @@ class _BullPaymentDestinationInputState
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: widget.scanLabel,
-                  onPressed: widget.onScan,
-                  disabled: !widget.enabled,
-                  bgColor: colors.secondary,
-                  textColor: colors.onSecondary,
+                  onPressed: (!widget.enabled) ? null : widget.onScan,
                   iconData: Icons.qr_code_scanner,
                   iconFirst: true,
                   height: 44,

@@ -10,7 +10,7 @@ void main() {
   group('Security audit #2653 xpub prefixes', () {
     test('getXpub selects the extended-key version from the script type', () {
       final source = File(
-        'lib/core/bitbox/data/datasources/bitbox_device_datasource.dart',
+        'features/signers/lib/src/bitbox/data/datasources/bitbox_device_datasource.dart',
       ).readAsStringSync();
       final start = source.indexOf('Future<String> getXpub');
       final end = source.indexOf('Future<String> getMasterFingerprint', start);

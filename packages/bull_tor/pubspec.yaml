@@ -11,11 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: c0ca21189cf87d653dca513df80bd26f00f0c0a1
-      path: packages/bull_sdk
+  rust_bindings:
   connectivity_plus: ^7.3.1
   get_it: ^9.1.1
   meta: ^1.17.0

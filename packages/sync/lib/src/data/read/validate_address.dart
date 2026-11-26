@@ -1,5 +1,5 @@
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
 import '../../domain/sync_failure.dart';

@@ -1,0 +1,25 @@
+{
+  "@@locale": "hi",
+  "currencySettingsDefaultFiatCurrencyLabel": "डिफ़ॉल्ट फ़िएट मुद्रा",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "fiatCurrencySettingsLabel": "फ़िएट मुद्रा",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "priceChartFetchingHistory": "Fetching Price इतिहास..।",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
+  "retry": "पुनः प्रयास करें",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "विनिमय दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
+  "priceChartLoadFailed": "मूल्य चार्ट डेटा लोड नहीं हो सका। कृपया पुनः प्रयास करें।"
+}

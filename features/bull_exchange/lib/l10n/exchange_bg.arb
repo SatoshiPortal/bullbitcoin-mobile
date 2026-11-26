@@ -1,0 +1,1293 @@
+{
+  "@@locale": "bg",
+  "exchangeAccountInfoEmailLabel": "Имейл",
+  "exchangeAccountInfoFirstNameLabel": "Първо име",
+  "exchangeAccountInfoLastNameLabel": "Фамилия",
+  "exchangeAccountInfoLoadErrorMessage": "Не може да се зареди информация за акаунта",
+  "exchangeAccountInfoTitle": "Информация за акаунт",
+  "exchangeAccountInfoUserNumberCopiedMessage": "Номерът на потребителя е копиран в клипборда",
+  "exchangeAccountInfoUserNumberLabel": "Потребителски номер",
+  "exchangeAccountInfoVerificationIdentityVerified": "Идентичността е потвърдена",
+  "exchangeAccountInfoVerificationLevelLabel": "Ниво на верификация",
+  "exchangeAccountInfoVerificationLightVerification": "Лека верификация",
+  "exchangeAccountInfoVerificationLimitedVerification": "Ограничена верификация",
+  "exchangeAccountInfoVerificationNotVerified": "Не е потвърден",
+  "exchangeAppSettingsDefaultCurrencyLabel": "Валута по подразбиране",
+  "exchangeAppSettingsEmailNotificationsDescription": "Получавайте известия по имейл за поръчки и актуализации на акаунта",
+  "exchangeAppSettingsEmailNotificationsLabel": "Известия по имейл",
+  "exchangeAppSettingsPreferredLanguageLabel": "Предпочитан език",
+  "exchangeAppSettingsSaveButton": "Запази",
+  "exchangeAppSettingsSaveSuccessMessage": "Настройките са успешно запазени.",
+  "exchangeAppSettingsValidationWarning": "Моля, задайте езика и валутата като предпочитания преди запазване.",
+  "exchangeAuthErrorMessage": "Възникна грешка, моля, опитайте да влезете отново.",
+  "exchangeBitcoinWalletsTitle": "Портфейли по подразбиране за Bitcoin",
+  "exchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
+  "exchangeErrorSavingPreferences": "Вашите предпочитания не можаха да бъдат запазени. Моля, опитайте отново.",
+  "exchangeFileUploadButton": "Качване",
+  "exchangeFileUploadDocumentTitle": "Качете произволен документ",
+  "exchangeFileUploadInstructions": "Ако трябва да изпратите други документи, качете ги тук.",
+  "exchangeFileUploadStatusAccepted": "Прието",
+  "exchangeFileUploadStatusInReview": "В преглед",
+  "exchangeFileUploadStatusRejectedBadge": "Отхвърлено",
+  "exchangeFileUploadSuccess": "Файлът е качен успешно.",
+  "exchangeFileUploadTapToReupload": "Натиснете, за да качите отново",
+  "exchangeFileUploadTitle": "Сигурно качване на файл",
+  "exchangeReferralsApplyToJoinMessage": "Кандидатствайте, за да се присъедините към програмата тук",
+  "exchangeReferralsContactSupportMessage": "Свържете се с поддръжката, за да научите за нашата реферална програма",
+  "exchangeReferralsJoinMissionTitle": "Присъединете се към мисията",
+  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
+  "exchangeReferralsTitle": "Реферални кодове",
+  "exchangeSecurityAccessSettingsButton": "Настройки за достъп",
+  "exchangeSecurityManage2FAPasswordLabel": "Управление на двуфакторната автентикация и паролата",
+  "exchangeSettingsAccountInformationTitle": "Информация за акаунта",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Вече е подаден документ.",
+  "exchangeSettingsErrorDocumentEmpty": "Този файл е празен. Изберете друг.",
+  "exchangeSettingsErrorDocumentTooLarge": "Този файл е твърде голям. Изберете по-малък.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Този тип файл не се приема. Изберете друг.",
+  "exchangeSettingsErrorDocumentUnreadable": "Този файл не можа да бъде прочетен. Изберете друг.",
+  "exchangeSettingsErrorLoadingAccount": "Данните за акаунта ви не можаха да бъдат заредени. Моля, опитайте отново.",
+  "exchangeSettingsErrorLoadingStatistics": "Вашата търговска статистика не можа да бъде заредена. Моля, опитайте отново.",
+  "exchangeSettingsErrorLoadingUploadStatus": "Статусът на качването ви не можа да бъде зареден. Моля, опитайте отново.",
+  "exchangeSettingsErrorUploadingDocument": "Документът не можа да бъде качен. Моля, опитайте отново.",
+  "exchangeSettingsLogInTitle": "Вход",
+  "exchangeSettingsRecipientsTitle": "Получатели",
+  "exchangeSettingsReferralsTitle": "Реферали",
+  "exchangeSettingsSecuritySettingsTitle": "Настройки за сигурност",
+  "exchangeSettingsTransactionsTitle": "Транзакции",
+  "exchangeStatisticsAsOf": "Към {date}",
+  "exchangeStatisticsAveragePrice": "Средна цена",
+  "exchangeStatisticsBillerStats": "Статистика за издателите на фактури",
+  "exchangeStatisticsBuyAvgPriceDesc": "Средна цена, платена за биткойн при покупки",
+  "exchangeStatisticsBuySellRatio": "Съотношение Купуване/Продажба",
+  "exchangeStatisticsBuySellRatioDesc": "Процент от общия обем между покупки и продажби",
+  "exchangeStatisticsBuyStats": "Статистика за покупки",
+  "exchangeStatisticsBuyTradeCountDesc": "Брой транзакции за покупка на биткойн",
+  "exchangeStatisticsBuyVolumeDesc": "Обща сума, изразходвана за покупка на биткойн",
+  "exchangeStatisticsCurrency": "Валута: {currency}",
+  "exchangeStatisticsNoData": "Няма налична статистика",
+  "exchangeStatisticsOrderStats": "Статистика за поръчки",
+  "exchangeStatisticsSellAvgPriceDesc": "Средна цена, получена за биткойн при продажби",
+  "exchangeStatisticsSellStats": "Статистика за продажби",
+  "exchangeStatisticsSellTradeCountDesc": "Брой транзакции за продажба на биткойн",
+  "exchangeStatisticsSellVolumeDesc": "Обща сума, получена от продажба на биткойн",
+  "exchangeStatisticsTitle": "Статистика",
+  "exchangeStatisticsTotalAmount": "Обща сума",
+  "exchangeStatisticsTotalVolume": "Общ обем на търговията",
+  "exchangeStatisticsTotalVolumeDesc": "Комбинирани обеми за покупка и продажба в фиатни валути",
+  "exchangeStatisticsTradeCount": "Брой сделки",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 сделка ({currency})} other{{count} сделки ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 сделка} other{{count} сделки}}",
+  "exchangeStatisticsVolume": "Обем",
+  "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
+  "exchangeSupportChatAttachmentImage": "Изображение",
+  "exchangeSupportChatAttachmentUnknownFile": "Неизвестен файл",
+  "exchangeSupportChatEmptyState": "Все още няма съобщения. Започнете разговор!",
+  "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",
+  "exchangeSupportChatInputHint": "Напишете съобщение...",
+  "exchangeSupportChatLoadAttachmentError": "Прикаченият файл не можа да бъде отворен. Моля, опитайте отново.",
+  "exchangeSupportChatLoadMessagesError": "Съобщенията не могат да бъдат заредени. Моля, опитайте отново.",
+  "exchangeSupportChatMessageEmptyError": "Съобщението не може да бъде празно",
+  "exchangeSupportChatMessageRequired": "Изисква се съобщение",
+  "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
+  "exchangeSupportChatSendMessageError": "Съобщението ви не можа да бъде изпратено. Моля, опитайте отново.",
+  "exchangeSupportChatTitle": "Чат за поддръжка",
+  "exchangeSupportChatYesterday": "Вчера",
+  "exchangeSupportLoginChatRequired": "За да получите помощ от жив оператор, първо трябва да влезете в акаунта си в Bull Bitcoin. Напълно безплатно е и не се изисква KYC, само имейл адрес.",
+  "loginButton": "ВХОД",
+  "notLoggedInTitle": "Не сте влезли в акаунта си.",
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "retry": "Повтори",
+  "settingsAppSettingsTitle": "Настройки на приложението",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Тази настройка не можа да бъде запазена. Моля, опитайте отново.",
+  "fundExchangeSepaDescriptionExactly": "точно.",
+  "fundExchangeInstantSepaInfo": "Използвайте само за транзакции под €20 000. За по-големи транзакции използвайте опцията Стандартен SEPA.",
+  "fundExchangeETransferLabelSecretAnswer": "Секретен отговор",
+  "fundExchangeLabelBicCode": "BIC код",
+  "fundExchangeCanadaPostStep6": "6. Касиерът ще ви даде разписка; пазете я като доказателство за плащането",
+  "fundExchangeMethodRegularSepa": "Стандартен SEPA",
+  "fundExchangeSinpeLabelPhone": "Изпратете към този телефонен номер",
+  "fundExchangeCrIbanCrcTransferCodeWarning": "Трябва да добавите кода за прехвърляне като \"съобщение\" или \"причина\" или \"описание\" при извършване на плащането. Ако забравите да включите този код, плащането ви може да бъде отхвърлено.",
+  "fundExchangeSinpeTitle": "SINPE превод",
+  "fundExchangeCanadaPostStep5": "5. Платете с пари в брой или дебитна карта",
+  "fundExchangeInfoPaymentDescription": "В описанието на плащането добавете вашия код за прехвърляне.",
+  "fundExchangeCrIbanCrcDescriptionBold": "точно",
+  "fundExchangeLabelRecipientAddress": "Адрес на получателя",
+  "fundExchangeCrIbanCrcTitle": "Банков превод (CRC)",
+  "fundExchangeMethodInstantSepaSubtitle": "Най-бързият - само за транзакции до €30 000",
+  "fundExchangeSepaDescription": "Изпратете SEPA превод от банковата си сметка, използвайки данните по-долу ",
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Вашият код за превод.",
+  "fundExchangeLabelBankAccountCountry": "Държава на банковата сметка",
+  "fundExchangeLabelTransitNumber": "Транзитен номер",
+  "fundExchangeLabelMemo": "Бележка",
+  "fundExchangeBankTransferWireTitle": "Банков превод (международен)",
+  "fundExchangeWarningTactic5": "Те искат да изпратите Bitcoin на друга платформа",
+  "fundExchangeETransferLabelEmail": "Изпратете E-трансфер към този имейл адрес",
+  "fundExchangeOnlineBillPaymentHelpBillerName": "Добавете тази компания като получател на плащане - това е платежният процесор на Bull Bitcoin",
+  "fundExchangeAccountTitle": "Заредете акаунта си",
+  "fundExchangeWarningTactic1": "Те обещават възвръщане на инвестицията",
+  "fundExchangeETransferTitle": "Детайли за E-трансфер",
+  "fundExchangeMethodBankTransferWire": "Банков превод (Wire или EFT)",
+  "fundExchangeJurisdictionCostaRica": "🇨🇷 Коста Рика",
+  "fundExchangeContinueButton": "Продължи",
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Използвайте нашето официално корпоративно име. Не използвайте \"Bull Bitcoin\".",
+  "fundExchangeArsBankTransferTitle": "Банков превод",
+  "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
+  "fundExchangeCrIbanUsdLabelIban": "IBAN номер на сметка (само щатски долари)",
+  "fundExchangeInfoTransferCode": "Трябва да добавите кода за превод като \"съобщение\" или \"основание\" при извършване на плащането.",
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Описание на плащането",
+  "fundExchangeTitle": "Финансиране",
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Средствата ще бъдат добавени към баланса ви в акаунта.",
+  "fundExchangeETransferLabelSecretQuestion": "Секретен въпрос",
+  "fundExchangeHelpBeneficiaryName": "Използвайте нашето официално корпоративно име. Не използвайте \"Bull Bitcoin\".",
+  "fundExchangeWarningTactic7": "Те ви казват да не се притеснявате за това предупреждение",
+  "fundExchangeMethodCanadaPost": "На място - пари в брой или дебитна карта в Canada Post",
+  "fundExchangeSepaTitle": "SEPA превод",
+  "fundExchangeCanadaPostStep1": "1. Отидете във всеки пункт на Canada Post",
+  "fundExchangeLabelBeneficiaryAddress": "Адрес на получателя",
+  "fundExchangeJurisdictionArgentina": "🇦🇷 Аржентина",
+  "fundExchangeWarningTactic6": "Искат да споделите екрана си",
+  "fundExchangeCrIbanUsdDescriptionBold": "точно",
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Прехвърляне на колони чрез SINPE",
+  "fundExchangeArsBankTransferDescription": "Изпратете банков превод от вашата банкова сметка, използвайки точните аржентински банкови данни по-долу.",
+  "fundExchangeCrIbanUsdDescription": "Изпратете банков превод от вашата банкова сметка, използвайки посочените по-долу данни ",
+  "fundExchangeLabelBankAddress": "Адрес на нашата банка",
+  "fundExchangeLabelBankCountry": "Държава на банката",
+  "fundExchangeMethodOnlineBillPayment": "Онлайн плащане на сметки",
+  "fundExchangeWarningConfirmation": "Потвърждавам, че не ме молят да купувам Bitcoin от друг човек.",
+  "fundExchangeLabelCvu": "CVU",
+  "fundExchangeLabelRecipientName": "Име на получателя",
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE мобилен",
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Прехвърлете средства в щатски долари (USD)",
+  "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €30 000",
+  "fundExchangeLabelTransferCode": "Код за превод (добавете това като описание на плащането)",
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Юридически идентификационен номер",
+  "fundExchangeSpeiTitle": "SPEI превод",
+  "fundExchangeRegularSepaInfo": "Използвайте само за транзакции над €20 000. За по-малки транзакции използвайте опцията Instant SEPA.",
+  "fundExchangeDoneButton": "Готово",
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "Най-бавният вариант, но може да се извърши чрез онлайн банкиране (3-4 работни дни)",
+  "fundExchangeLabelBankAccountDetails": "Данни за банковата сметка",
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Вашият код за превод.",
+  "fundExchangeLabelRecipientNameArs": "Име на получателя",
+  "fundExchangeCanadaPostStep2": "2. Помолете касиера да сканира QR кода „Loadhub“",
+  "fundExchangeCrIbanUsdTitle": "Банков превод (USD)",
+  "fundExchangeETransferLabelBeneficiaryName": "Използвайте това като име на бенефициента на E-трансфер",
+  "fundExchangeWarningDescription": "Ако някой ви моли да купите Bitcoin или да ви помогне, бъдете внимателни — може да се опитват да ви измамат!",
+  "fundExchangeJurisdictionEurope": "🇪🇺 Европа (SEPA)",
+  "fundExchangeBankTransferWireDescription": "Изпратете банков превод от вашата банкова сметка, използвайки банковите данни на Bull Bitcoin по-долу. Вашата банка може да изисква само някои от тези данни.",
+  "fundExchangeWarningTactic4": "Те искат да изпратите Bitcoin на техния адрес",
+  "fundExchangeSinpeDescription": "Прехвърляне на колони чрез SINPE",
+  "fundExchangeMethodCanadaPostSubtitle": "Най-подходящ за тези, които предпочитат да платят лично",
+  "fundExchangeSinpeDescriptionBold": "Ще бъде отхвърлено.",
+  "fundExchangeMethodBankTransferWireSubtitle": "Най-добрият и най-надежден избор за по-големи суми (същия ден или на следващия ден)",
+  "fundExchangeCanadaPostStep4": "4. Касиерът ще поиска документ за самоличност издаден от държавата и ще провери дали името в документа съвпада с името във вашия Bull Bitcoin акаунт",
+  "fundExchangeCrIbanCrcLabelIban": "IBAN номер на сметка (само колони)",
+  "fundExchangeOnlineBillPaymentDescription": "Каквато и сума да изпратите чрез онлайн плащане на сметки във вашата банка, използвайки долупосочената информация, ще бъде кредитирана към баланса на вашия Bull Bitcoin акаунт в рамките на 3–4 работни дни.",
+  "fundExchangeETransferDescription": "Каквато и сума да изпратите от банковия си акаунт чрез имейл E-трансфер, използвайки долупосочената информация, ще бъде кредитирана към баланса на вашия Bull Bitcoin акаунт в рамките на няколко минути.",
+  "fundExchangeLabelClabe": "CLABE",
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Коста Рика (USD)",
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR код",
+  "fundExchangeSinpeLabelRecipientName": "Име на получателя",
+  "fundExchangeMethodInstantSepa": "Моментен и стандартен SEPA превод",
+  "fundExchangeCrIbanUsdTransferCodeWarning": "Трябва да добавите кода за прехвърляне като \"съобщение\" или \"причина\" или \"описание\" при извършване на плащането. Ако забравите да включите този код, плащането ви може да бъде отхвърлено.",
+  "fundExchangeSpeiInfo": "Направете депозит чрез SPEI трансфер (мгновен).",
+  "fundExchangeMethodEmailETransferSubtitle": "Най-лесният и най-бърз метод (мгновено)",
+  "fundExchangeErrorLoadingDetails": "Детайлите за плащането не могат да се заредят в момента. Моля върнете се назад и опитайте отново, изберете друг метод на плащане или се върнете по-късно.",
+  "fundExchangeErrorTitleOrdPo404": "Опцията за плащане не е налична",
+  "fundExchangeErrorTitleRcpPo404": "Опцията за плащане не е налична",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE не е наличен",
+  "fundExchangeErrorTitleOrdKyc400": "Липсващи изисквания за KYC",
+  "fundExchangeErrorOrdKyc400": "Нямате необходимите изисквания за KYC за това действие",
+  "fundExchangeErrorOrdCsrcp400": "Моля, активирайте опцията за виртуално плащане за този получател по SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "Връзката за плащане не можа да бъде отворена. Моля, опитайте отново.",
+  "fundExchangeErrorTitleOrdCop400": "Невалидни данни за финансиране в COP",
+  "fundExchangeErrorOrdCop400": "Невалидни данни за заявка за финансиране в COP",
+  "fundExchangeErrorTitleOrdCsrcp400": "Виртуалното плащане не е активирано",
+  "fundExchangeErrorTitleRcp400": "Невалидна заявка",
+  "fundExchangeErrorRcp400": "Невалидна заявка",
+  "fundExchangeErrorOrdPo404": "Няма налична опция за плащане",
+  "fundExchangeErrorRcpPo404": "Нямате необходимите разрешения за достъп до тази опция за финансиране. Или KYC ви е недостатъчен, или тази опция не е налична за вашия акаунт",
+  "fundExchangeErrorRcpPosinpe404": "За достъп до тази опция за финансиране телефонният ви номер трябва да е регистриран в мрежата SINPE в Коста Рика.",
+  "fundExchangeErrorFetchingBankCodes": "Грешка при извличане на банкови кодове. Моля, опитайте отново по-късно.",
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Използвайте нашето официално корпоративно име. Не използвайте \"Bull Bitcoin\".",
+  "fundExchangeSinpeAddedToBalance": "След като плащането бъде изпратено, то ще бъде добавено към баланса ви в акаунта.",
+  "fundExchangeAccountSubtitle": "Изберете вашата държава и начин на плащане",
+  "fundExchangeJurisdictionMexico": "🇲🇽 Мексико",
+  "fundExchangeLabelSwiftCode": "SWIFT код",
+  "fundExchangeCrIbanCrcDescription": "Изпратете банков превод от вашата банкова сметка, използвайки посочените по-долу данни ",
+  "fundExchangeLabelRoutingNumber": "Код за маршрутизация",
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Описание на плащането",
+  "fundExchangeInfoBeneficiaryNameLeonod": "Името на получателя трябва да бъде LEONOD. Ако въведете друго име, плащането ви ще бъде отхвърлено.",
+  "doneButton": "Готово",
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Прехвърлете средства в костарикански колони (CRC)",
+  "fundExchangeCanadaPostStep3": "3. Кажете на касиера сумата, която искате да заредите",
+  "fundExchangeLabelIban": "IBAN номер на сметка",
+  "fundExchangeOnlineBillPaymentLabelBillerName": "Търсете това име в списъка на издателите на плащания за сметки във вашата банка",
+  "fundExchangeMethodEmailETransfer": "Имейл E-Transfer",
+  "fundExchangeLabelBankName": "Име на банката",
+  "fundExchangeInfoBankCountryUk": "Страната на банката ни е Обединеното кралство.",
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Коста Рика (CRC)",
+  "fundExchangeLabelBeneficiaryName": "Име на получателя",
+  "fundExchangeWarningTactic2": "Те ви предлагат заем",
+  "fundExchangeCanadaPostTitle": "На място - пари в брой или дебитна карта в Canada Post",
+  "fundExchangeOnlineBillPaymentTitle": "Онлайн плащане на сметки",
+  "fundExchangeHelpTransferCode": "Добавете това като основание за превода",
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Средствата ще бъдат добавени към баланса ви в акаунта.",
+  "fundExchangeRestrictedTitle": "Финансирането е недостъпно",
+  "fundExchangeRestrictedMessage": "Финансирането не е достъпно за вашия акаунт. Моля, свържете се с поддръжката за повече информация.",
+  "fundExchangeWarningTitle": "Внимавайте за измамници",
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Юридически идентификационен номер",
+  "fundExchangeCrIbanCrcLabelRecipientName": "Име на получателя",
+  "fundExchangeCanadaPostStep7": "7. Средствата ще бъдат добавени към баланса на вашия акаунт в Bull Bitcoin в рамките на 30 минути",
+  "fundExchangeWarningTactic8": "Натискат ви да действате бързо",
+  "fundExchangeWarningTactic3": "Казват, че работят за събиране на дългове или данъци",
+  "fundExchangeWarningTacticsTitle": "Общи тактики на измамници",
+  "fundExchangeHelpBeneficiaryAddress": "Нашият официален адрес, в случай че банката ви го изисква.",
+  "fundExchangeBankTransferWireTimeframe": "Всички изпратени от вас средства ще бъдат добавени към вашия баланс в Bull Bitcoin в рамките на 1-2 работни дни.",
+  "fundExchangeLabelInstitutionNumber": "Номер на институцията",
+  "fundExchangeSpeiDescription": "Прехвърлете средства чрез вашата CLABE",
+  "fundExchangeCrIbanUsdLabelRecipientName": "Име на получателя",
+  "fundExchangeScamConsentError": "Неуспешна регистрация на съгласието ви. Моля, опитайте отново.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Колумбия",
+  "fundExchangeSpeiTransfer": "SPEI превод",
+  "fundExchangeSpeiSubtitle": "Прехвърляйте средства чрез вашия CLABE",
+  "fundExchangeBankTransfer": "Банков превод",
+  "fundExchangeBankTransferSubtitle": "Изпратете банков превод от вашата банкова сметка",
+  "fundExchangeCopDailyLimitWarning": "Ако надвишите дневния си лимит за транзакции, транзакцията ще се провали. Ще трябва да се свържете с отдела за поддръжка на клиенти.",
+  "fundExchangeCopSenderName": "Име на подателя",
+  "fundExchangeCopIssuingBank": "Издаваща банка",
+  "fundExchangeCopSelectBankError": "Моля, изберете издаваща банка",
+  "fundExchangeCopAmount": "Сума",
+  "fundExchangeCopEnterAmountError": "Моля, въведете сума",
+  "fundExchangeCopValidAmountError": "Моля, въведете валидна сума",
+  "fundExchangeCopGeneratePaymentLink": "Генерирай линк за плащане",
+  "fundExchangeCopRedirectMessage": "Ще бъдете пренасочени към външна страница, за да извършите плащането.",
+  "fundExchangeCopOpenPaymentLink": "Отвори линка за плащане",
+  "fundExchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
+  "fundExchangeMethodConfidentialSepa": "Поверителен SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Личен виртуален IBAN за поверително депозиране на пари",
+  "fundExchangeSinpeWarningNoBitcoin": "Не поставяйте",
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "Този уникален номер на сметката е създаден специално за вас",
+  "fundExchangeSinpeWarningNoBitcoinDescription": " думата \"Bitcoin\" или \"Crypto\" в описанието на плащането. Това ще блокира вашето плащане.",
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Добавете това като номер на сметката",
+  "exchangeCurrencyDropdownTitle": "Избери валута",
+  "exchangeCurrencyDropdownValidation": "Моля, изберете валута",
+  "exchangeAmountInputTitle": "Въведи сума",
+  "exchangeAmountInputValidationEmpty": "Моля, въведете сума",
+  "exchangeAmountInputValidationInvalid": "Невалидна сума",
+  "exchangeAmountInputValidationZero": "Сумата трябва да бъде по-голяма от нула",
+  "exchangeAmountInputValidationInsufficient": "Недостатъчен баланс",
+  "exchangeBitcoinWalletsDescription": "Задайте адресите на портфейла по подразбиране за автоматично теглене на биткойни",
+  "exchangeBitcoinWalletsEnterAddressHint": "Въведете адрес",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Адрес на Bitcoin",
+  "exchangeBitcoinWalletsSaveSuccess": "Адресът на портфейла е успешно запазен",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid адрес",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN адрес)",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "exchangeDcaAddressLabelLightning": "Lightning адрес",
+  "exchangeDcaAddressLabelLiquid": "Liquid адрес",
+  "cancel": "Отказ",
+  "delete": "Изтрий",
+  "save": "Запази",
+  "settingsTermsOfServiceTitle": "Условия за ползване",
+  "continueButton": "Продължи",
+  "autoBuyTitle": "Автоматична покупка",
+  "autoBuyDescription": "Купувайте Bitcoin автоматично всеки път, когато захранвате сметката си",
+  "autoBuyActivate": "Активиране на автоматичната покупка",
+  "autoBuyDeactivate": "Деактивиране на автоматичната покупка",
+  "autoBuyCancelTitle": "Отмяна на автоматичната покупка?",
+  "autoBuyCancelMessage": "Следващия път, когато захраните сметката си, няма да купите Bitcoin автоматично.",
+  "autoBuyDeactivateConfirm": "Да, деактивирай",
+  "autoBuyHowItWorks": "Как работи",
+  "autoBuyConnectWallet": "Свържете своя Bitcoin, Lightning или Liquid портфейл",
+  "autoBuyPurchaseCreated": "Всеки път, когато захраните своята Bull Bitcoin сметка, автоматично се създава покупка на Bitcoin.",
+  "autoBuyBitcoinSent": "Bitcoin се изпраща директно към вашия собствен портфейл.",
+  "autoBuyRiskDisclaimer": "Изпълнението на поръчката не може да бъде гарантирано. Забавяния или промени в цената между депозита и покупката могат да променят реалния курс.",
+  "autoBuyGetStarted": "Започнете с автоматичната покупка",
+  "autoBuyConfirmTitle": "Потвърдете автоматичната покупка",
+  "autoBuyInfoMessage": "Всяка сума, добавена към сметката ви, ще бъде конвертирана в Bitcoin по текущия обменен курс и изпратена към портфейла ви.",
+  "autoBuyUpdateError": "Автоматичната покупка не можа да бъде актуализирана. Опитайте отново по-късно.",
+  "exchangeAuthLoginFailedTitle": "Неуспешен вход",
+  "exchangeAuthLoginFailedMessage": "Възникна грешка, моля, опитайте да влезете отново.",
+  "exchangeAuthLoginFailedOkButton": "ОК",
+  "transactionHistoryTitle": "История на транзакциите",
+  "settingsScreenTitle": "Настройки",
+  "homeActionBuy": "Купи",
+  "homeActionSell": "Продай",
+  "homeActionPay": "Плати",
+  "homeActionTransfer": "Обмени",
+  "exchangeHomeDepositButton": "Депозит",
+  "exchangeHomeWithdrawButton": "Тегли",
+  "exchangeDcaUnableToGetConfig": "Конфигурацията за DCA не можа да бъде получена",
+  "exchangeDcaDeactivateTitle": "Деактивирай периодична покупка",
+  "exchangeDcaActivateTitle": "Активирай периодична покупка",
+  "exchangeDcaHideSettings": "Скрий настройките",
+  "exchangeDcaViewSettings": "Виж настройките",
+  "exchangeDcaCancelDialogTitle": "Отмяна на периодична покупка на Bitcoin?",
+  "exchangeDcaCancelDialogMessage": "Планът ви за периодична покупка на Bitcoin ще бъде спрян и планираните покупки ще приключат. За да рестартирате, ще трябва да настроите нов план.",
+  "exchangeDcaCancelDialogCancelButton": "Отмени",
+  "exchangeDcaCancelDialogConfirmButton": "Да, деактивирай",
+  "exchangeDcaFrequencyHour": "час",
+  "exchangeDcaFrequencyDay": "ден",
+  "exchangeDcaFrequencyWeek": "седмица",
+  "exchangeDcaFrequencyMonth": "месец",
+  "exchangeDcaNetworkBitcoin": "Bitcoin мрежа",
+  "exchangeDcaNetworkLightning": "Lightning мрежа",
+  "exchangeDcaNetworkLiquid": "Liquid мрежа",
+  "exchangeDcaSummaryMessage": "Купувате {amount} на всеки {frequency} през {network}, докато има средства в сметката ви.",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "exchangeKycLevelLight": "Лек",
+  "exchangeKycLevelLimited": "Ограничен",
+  "exchangeKycCardTitle": "Завършете своя KYC",
+  "exchangeKycCardSubtitle": "За премахване на лимитите за транзакции",
+  "recipientsScreenTitle": "Избор на получател",
+  "recipientsScreenSubtitle": "На кого плащаш?",
+  "recipientsTabNew": "Нов получател",
+  "recipientsTabList": "Моите фиатни получатели",
+  "recipientsPayoutMethod": "Метод на плащане",
+  "recipientsFilterByJurisdiction": "Филтър по юрисдикция:",
+  "recipientsListEmpty": "Не са намерени получатели.",
+  "recipientsContinue": "Продължи",
+  "recipientsJurisdictionAll": "Всички юрисдикции",
+  "recipientsJurisdictionCanada": "🇨🇦 Канада",
+  "recipientsJurisdictionEurope": "🇪🇺 Европа (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Мексико",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Коста Рика",
+  "recipientsJurisdictionArgentina": "🇦🇷 Аржентина",
+  "recipientsJurisdictionColombia": "🇨🇴 Колумбия",
+  "recipientsTypeInteracEmail": "Паричен превод по имейл",
+  "recipientsTypeBillPayment": "Плащане на сметка",
+  "recipientsTypeBankTransfer": "Банков превод",
+  "recipientsTypeSepa": "SEPA превод",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Карта",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Аржентина",
+  "recipientsTypeBankAccountCo": "Банкова сметка COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "Имейл",
+  "recipientsInfoPayee": "Получател",
+  "recipientsInfoAccount": "Сметка",
+  "recipientsInfoPhone": "Телефон",
+  "recipientsInfoCard": "Карта",
+  "recipientsInfoLabel": "Етикет",
+  "recipientsValidationFieldRequired": "Това поле не може да бъде празно",
+  "recipientsLabelOptional": "Етикет (по избор)",
+  "recipientsLabelHint": "Въведете етикет за този получател",
+  "recipientsFieldName": "Име",
+  "recipientsFieldNameHint": "Въведете името на получателя",
+  "recipientsFieldRecipientNameLabel": "Име на получателя",
+  "recipientsFieldPhoneNumber": "Телефонен номер",
+  "recipientsFieldPhoneNumberHint": "Въведете телефонния номер",
+  "recipientsFieldDocumentType": "Тип на ID на получателя",
+  "recipientsFieldDocumentNumberHint": "Въведете ID номер на получателя",
+  "recipientsFieldOwnerName": "Име на собственика",
+  "recipientsFieldOwnerNameHint": "Въведете името на собственика",
+  "recipientsAccountOwnerQuestion": "На кого принадлежи тази сметка?",
+  "recipientsAccountOwnerMine": "Това е моята сметка",
+  "recipientsAccountOwnerSomeoneElse": "Това е сметка на друг човек",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "Въведете IBAN",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "Въведете номер CLABE",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "Въведете номер CVU/CBU",
+  "recipientsFieldBankInstitution": "Банкова институция",
+  "recipientsFieldBankInstitutionPlaceholder": "Изберете банкова институция",
+  "recipientsValidationBankInstitution": "Моля, изберете банкова институция",
+  "recipientsFieldAccountType": "Тип сметка",
+  "recipientsAccountTypeSavings": "Спестовна",
+  "recipientsAccountTypeChecking": "Разплащателна",
+  "recipientsFieldBankAccountNumber": "Номер на банковата сметка",
+  "recipientsFieldBankAccountNumberHint": "Въведете номера на банковата сметка",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "Паспорт",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "Номер на дебитна карта",
+  "recipientsFieldDebitCardHint": "Въведете номера на дебитната карта",
+  "recipientsFieldOwnerNameSinpeHint": "Името на собственика ще се появи тук",
+  "recipientsValidationSinpeOwner": "Моля, потвърдете телефонния номер",
+  "recipientsFieldEmailAddress": "Имейл адрес",
+  "recipientsFieldEmailAddressHint": "Въведете имейл адреса",
+  "recipientsFieldSecurityQuestion": "Контролен въпрос",
+  "recipientsFieldSecurityQuestionHint": "Въведете контролния въпрос (10-40 знака)",
+  "recipientsFieldSecurityAnswer": "Контролен отговор",
+  "recipientsFieldSecurityAnswerHint": "Въведете контролния отговор",
+  "recipientsCharCounter": "{count}/40 знака",
+  "recipientsFieldInstitutionCode": "Код на институцията",
+  "recipientsFieldInstitutionCodeHint": "Въведете кода на институцията",
+  "recipientsFieldInstitutionNumber": "Номер на институцията",
+  "recipientsFieldInstitutionNumberHint": "Въведете номера на институцията",
+  "recipientsFieldTransitNumber": "Транзитен номер",
+  "recipientsFieldTransitNumberHint": "Въведете транзитния номер",
+  "recipientsFieldAccountNumber": "Номер на сметката",
+  "recipientsFieldAccountNumberHint": "Въведете номера на сметката",
+  "recipientsFieldDefaultComment": "Коментар по подразбиране (по избор)",
+  "recipientsFieldDefaultCommentHint": "Въведете коментар по подразбиране",
+  "recipientsFieldCorporateAccount": "Корпоративна сметка",
+  "recipientsFieldFirstName": "Име",
+  "recipientsFieldFirstNameHint": "Въведете името",
+  "recipientsFieldLastName": "Фамилия",
+  "recipientsFieldLastNameHint": "Въведете фамилията",
+  "recipientsFieldCorporateName": "Име на компанията",
+  "recipientsFieldCorporateNameHint": "Въведете името на компанията",
+  "recipientsFieldBillerName": "Име на доставчика",
+  "recipientsFieldBillerNameHint": "Търсете и изберете доставчик",
+  "recipientsValidationBillerSearchMin": "Въведете 3 или повече знака за търсене",
+  "recipientsValidationBillerSelect": "Моля, изберете доставчик от списъка",
+  "recipientsFieldPayeeAccountNumber": "Номер на сметката на получателя",
+  "recipientsFieldSinpePhoneNumberHint": "8 цифри без код на държава",
+  "recipientsCopDocCcRecipientNumber": "Cédula номер на получателя",
+  "recipientsCopDocCeRecipientNumber": "Cédula de extranjería номер на получателя",
+  "recipientsCopDocNitRecipientNumber": "Данъчен ID номер на получателя",
+  "recipientsCopDocPassportRecipientNumber": "Номер на паспорт на получателя",
+  "recipientsCopDocTiRecipientNumber": "Номер на личната карта на получателя",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Номер от гражданския регистър на получателя",
+  "recipientsValidationSinpePhoneCountryCode": "Премахнете кода на държавата (+506). Въведете само 8-цифрения номер",
+  "recipientsValidationSinpePhoneInvalidChars": "Използвайте само цифри (без букви или символи)",
+  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер",
+  "recipientsSearchHint": "Търси получатели по име или етикет",
+  "recipientsErrorLoadFailed": "Получателите ви не можаха да бъдат заредени. Опитайте отново.",
+  "recipientsErrorSaveFailed": "Този получател не можа да бъде запазен. Проверете данните и опитайте отново.",
+  "recipientsErrorSinpeLookupFailed": "Не успяхме да проверим този телефонен номер. Проверете го и опитайте отново.",
+  "recipientsErrorBillerSearchFailed": "Търсенето на получатели на плащания не бе успешно. Опитайте отново.",
+  "recipientsErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
+  "recipientsListPullToRetry": "Плъзнете надолу, за да опитате отново.",
+  "recipientsErrorSavedButNotSelected": "Този получател е запазен, но не успяхме да продължим. Намерете го в списъка си, за да продължите.",
+  "recipientsTypeConfidentialSepa": "Поверителен SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "Нямате необходимите разрешения за достъп до тази опция за финансиране. Или KYC ви е недостатъчен, или тази опция не е налична за вашия акаунт",
+  "recipientsErrorEuResidencyRequired": "Трябва да сте жител на Европейския съюз, за да активирате поверителен SEPA.",
+  "recipientsConfidentialSepaActivatingTitle": "Активиране на получателя",
+  "recipientsConfidentialSepaActivatingDescription": "Вашият получател се активира за Поверителен SEPA. Това може да отнеме няколко минути.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Получателят не е активиран за Поверителен SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Този получател все още не е активиран за Поверителен SEPA. Активираме го в момента. Това може да отнеме няколко минути. Междувременно можете да използвате Незабавен и стандартен SEPA.",
+  "recipientsConfidentialSepaActivatedTitle": "Получателят е активиран",
+  "recipientsConfidentialSepaActivatedDescription": "Вашият получател вече е активен за Поверителен SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Използвайте Незабавен и стандартен SEPA вместо това",
+  "recipientsVirtualIbanIntroTitle": "Да се активира ли Поверителен SEPA?",
+  "recipientsVirtualIbanNewBadge": "Ново",
+  "recipientsVirtualIbanIntroDescription": "Захранвайте сметката си поверително с личен виртуален IBAN на ваше име. Безплатно е.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Когато изпращате средства от банката си към Bull Bitcoin, това се вижда като превод към самия вас.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Не е нужен код за превод.",
+  "recipientsVirtualIbanNameWarningTitle": "Важно: Името трябва да съвпада",
+  "recipientsVirtualIbanNameWarningDescription": "Името на банковата сметка трябва точно да съвпада с името на виртуалния ви IBAN в Bull Bitcoin, иначе преводът ще бъде върнат автоматично. Имената не съвпадат? Свържете се с поддръжката.",
+  "recipientsVirtualIbanAccountOwnerName": "Име на титуляра на сметката",
+  "recipientsVirtualIbanNameConfirmation": "Потвърждавам, че името съвпада с банковата ми сметка/сметки",
+  "recipientsVirtualIbanActivate": "Активирай Поверителен SEPA",
+  "recipientsVirtualIbanActivatingTitle": "Активиране на Поверителен SEPA...",
+  "recipientsVirtualIbanActivatingDescription": "Създаваме виртуалния ви IBAN. Това може да отнеме няколко минути.",
+  "recipientsVirtualIbanActivatedTitle": "Поверителният SEPA е активиран",
+  "recipientsVirtualIbanActivatedDescription": "Вече можете да използвате личния си виртуален IBAN, за да теглите пари поверително.",
+  "recipientsVirtualIbanCopied": "Копирано в клипборда",
+  "recipientsVirtualIbanDone": "Готово",
+  "recipientsVirtualIbanRecipientName": "Име на получателя",
+  "recipientsVirtualIbanIbanLabel": "Номер на виртуална IBAN сметка",
+  "recipientsVirtualIbanCountry": "Държава на банковата сметка",
+  "recipientsVirtualIbanBic": "BIC код",
+  "recipientsVirtualIbanActivatedFundingDescription": "Вече можете да използвате личния си виртуален IBAN, за да внасяте пари поверително.",
+  "recipientsVirtualIbanShowDetails": "Покажи данните на виртуалния ми IBAN",
+  "recipientsVirtualIbanDetailsDescription": "Захранвайте сметката си поверително с личен виртуален IBAN на ваше име. Вноската ще се вижда като плащане към самия вас, без код за превод.",
+  "recipientsVirtualIbanBankAddress": "Адрес на банката",
+  "recipientsVirtualIbanBankAddressHelp": "Официалният адрес на банката, ако банката ви го изисква.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Имената в банковата ви сметка и във виртуалния IBAN трябва да съвпадат, иначе преводите ще бъдат върнати автоматично.",
+  "recipientsFieldBankAccountIban": "Номер на банкова сметка (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Тегленията се показват като превод към вас самите с името на вашата сметка",
+  "withdrawAmountTitle": "Тегли фиат",
+  "withdrawAmountContinue": "Продължи",
+  "withdrawConfirmTitle": "Потвърди тегленето",
+  "withdrawConfirmRecipientName": "Име на получателя",
+  "withdrawConfirmAmount": "Сума",
+  "withdrawConfirmButton": "Потвърди тегленето",
+  "withdrawSuccessTitle": "Тегленето е инициирано",
+  "withdrawSuccessOrderDetails": "Детайли за поръчката",
+  "withdrawConfirmBankAccount": "Банкова сметка",
+  "withdrawInteracSecurityDetailsTitle": "Данни за сигурност на превода",
+  "withdrawInteracSaveAsDefault": "Запази тези данни по подразбиране",
+  "withdrawInteracSecurityQuestionLengthError": "Контролният въпрос трябва да е между 3 и 40 знака",
+  "withdrawInteracSecurityAnswerLengthError": "Контролният отговор трябва да е между 3 и 40 знака",
+  "withdrawInteracSecurityAnswerFormatError": "Използвайте букви, цифри или тирета без интервали",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Статус",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsLogOutTitle": "Изход",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Това ще изпрати заявка за изтриване на акаунта до нашия екип за поддръжка. Акаунтът ви ще бъде изтрит в рамките на 5 работни дни.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Заявката за изтриване на акаунта е подадена",
+  "deleteAccountSuccessDescription": "Заявката ви за изтриване на акаунта беше подадена. Тя ще бъде обработена в рамките на 5 работни дни.",
+  "deleteAccountSuccessClose": "Close",
+  "logoutConfirmationTitle": "Потвърди изхода",
+  "logoutConfirmationDescription": "Сигурни ли сте, че искате да излезете от акаунта си в Bull Bitcoin? Ще трябва да влезете отново, за да получите достъп до функциите на борсата.",
+  "logoutConfirmationCancel": "Отказ",
+  "logoutConfirmationLogout": "Изход",
+  "buyConfirmPayoutWallet": "Портфейл за изплащане",
+  "buyPayoutMethodLiquid": "L-BTC в Liquid",
+  "buyPayoutMethodBitcoin": "BTC в блокчейна на Bitcoin",
+  "buyPayoutWillBeSentIn": "Вашето изплащане ще бъде изпратено в ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "Изберете портфейл за Биткойн",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExpressWithdrawal": "Потвърдете експресното теглене",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Безопасен Биткойн",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "Изисква се съвместим портфейл.",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "dcaWalletBitcoinSubtitle": "Минимум 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "Продължи",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSuccessMessageHourly": "Ще купите {amount} на всеки час",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyEstimatedFeeValue": "Очаквана такса",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Въведете сума",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "Моля, изберете мрежа",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "dcaWalletTypeBitcoin": "Биткойн (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "Време за потвърждаване",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "Купихте {amount} за {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Ускорете транзакцията",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Макс.",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buySelectWallet": "Изберете портфейл",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyNetworkFees": "Такси за мрежата",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "Ще купите {amount} всеки месец",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSelectFrequencyLabel": "Изберете честота",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "Въведете Lightning адрес",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaWalletSelectionDescription": "Покупките на Биткойн ще се извършват автоматично според този график.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "dcaSuccessMessageDaily": "Ще купите {amount} всеки ден",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Изчакайте безплатното теглене",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Изисква съвместим портфейл, максимум 0.25 BTC.",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyConfirmationTimeValue": "~10 минути",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "dcaSuccessTitle": "Повтаряща се покупка е активна!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "buyThatWasFast": "Беше бързо, нали?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "buyNetworkFeeRate": "Ставка на таксата за мрежата",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "Назад към началната страница",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Моментални плащания",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaSelectWalletTypeLabel": "Изберете тип портфейл за Bitcoin.",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "dcaSuccessMessageWeekly": "Ще купите {amount} всяка седмица",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyEnterBitcoinAddress": "Въведете адрес на биткойн",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "dcaWalletTypeLightning": "Лайтнинг мрежа (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Таксата за мрежата на биткойн ще се приспадне от сумата, която получавате, и ще бъде събрана от биткойн миньорите.",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "buyViewDetails": "Виж подробности",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "buyPaymentMethod": "Начин на плащане",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "buyBitcoinSent": "биткойн изпратен!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "dcaUseDefaultLightningAddress": "Използвайте моя по подразбиране Lightning адрес.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "Постигнете по-бързо потвърждение",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "Потвърдете експресното теглене",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaWalletTypeLiquid": "Liquid (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Настрой периодична покупка",
+  "dcaSetupInsufficientBalance": "Недостатъчен баланс",
+  "dcaSetupInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
+  "dcaSetupFundAccount": "Захрани сметката си",
+  "dcaSetupScheduleMessage": "Покупките на Bitcoin ще се извършват автоматично според този график.",
+  "dcaSetupFrequencyError": "Моля, изберете честота",
+  "dcaSetupContinue": "Продължи",
+  "dcaConfirmTitle": "Потвърди периодичната покупка",
+  "dcaConfirmAutoMessage": "Поръчките за покупка ще се извършват автоматично според тези настройки. Можете да ги деактивирате по всяко време.",
+  "dcaConfirmFrequency": "Честота",
+  "dcaConfirmFrequencyHourly": "Всеки час",
+  "dcaConfirmFrequencyDaily": "Всеки ден",
+  "dcaConfirmFrequencyWeekly": "Всяка седмица",
+  "dcaConfirmFrequencyMonthly": "Всеки месец",
+  "dcaConfirmAmount": "Сума",
+  "dcaConfirmPaymentMethod": "Метод на плащане",
+  "dcaConfirmPaymentBalance": "Баланс в {currency}",
+  "dcaConfirmOrderType": "Тип поръчка",
+  "dcaConfirmOrderTypeValue": "Периодична покупка",
+  "dcaConfirmNetwork": "Мрежа",
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "dcaConfirmNetworkLightning": "Lightning",
+  "dcaConfirmNetworkLiquid": "Liquid",
+  "dcaConfirmLightningAddress": "Lightning адрес",
+  "dcaConfirmContinue": "Продължи",
+  "buyInputTitle": "Купи Bitcoin",
+  "buyInputKycPending": "Изчаква се проверка на самоличността (KYC)",
+  "buyInputKycMessage": "Първо трябва да завършите проверка на самоличността",
+  "buyInputCompleteKyc": "Завърши KYC",
+  "buyInputInsufficientBalance": "Недостатъчен баланс",
+  "buyInputInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
+  "buyInputFundAccount": "Захрани сметката си",
+  "buyInputContinue": "Продължи",
+  "buyConfirmTitle": "Купи Bitcoin",
+  "buyConfirmYouPay": "Вие плащате",
+  "buyConfirmYouReceive": "Вие получавате",
+  "buyConfirmBitcoinPrice": "Цена на Bitcoin",
+  "buyConfirmPayoutMethod": "Метод на изплащане",
+  "buyConfirmExternalWallet": "Външен биткойн портфейл",
+  "buyConfirmAwaitingConfirmation": "Изчаква потвърждение ",
+  "closeDialogButton": "Затвори",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellAdvancedOptions": "Разширени настройки",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "paySinpeBeneficiario": "Получател",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "payInstantPayments": "Моментални плащания",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellReplaceByFeeActivated": "Replace-by-fee е активирана",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payNetworkFees": "Такси за мрежата",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "sellCompleteKYC": "Завършете KYC верификацията",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payPayFromWallet": "Плати от портфейла",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellEurBalance": "Баланс EUR",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "paySinpeMonto": "Сума",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeEnviado": "SINPE изпратено!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "sellShowQrCode": "Покажете QR кода",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "sellSecureBitcoinWallet": "Сигурен портфейл за Биткойн",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payShowQrCode": "Покажете QR кода",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "paySinpeOrigen": "Произход",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payRecipientType": "Тип получател",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellCadBalance": "Баланс CAD",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "sellPriceWillRefreshIn": "Цената ще се обнови след ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "Баланс ARS",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellPayFromWallet": "Плати от портфейла",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellBitcoinAmount": "Сума в биткойни",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellBalanceWillBeCredited": "Балансът ви ще бъде кредитиран, след като вашата транзакция получи 1 потвърждение в блокчейн.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "copyDialogButton": "Копирай",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payQrCode": "QR код",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellLightningNetwork": "Лайтнинг мрежа",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "Моментални плащания",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "sellDone": "Готово",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellBitcoinOnChain": "Биткойн в блокчейна",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "sellFromAnotherWallet": "Продайте от друг биткойн портфейл",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payFeePriority": "Приоритет на таксата",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "payTitle": "Плати",
+  "payPaymentDescription": "Описание на плащането",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellQrCode": "QR код",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "payContinue": "Продължи",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "Replace-by-fee е активирана",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellCopyInvoice": "Копирай инвойс",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "sellFeePriority": "Приоритет на таксата",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "Входяща сума",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellMxnBalance": "Баланс MXN",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellCopBalance": "Баланс COP",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellPayoutAmount": "Сума за изплащане",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "sellWhichWalletQuestion": "От кой портфейл искате да продавате?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "sellFastest": "Най-бързият",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payCopyInvoice": "Копирайте фактурата",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellCrcBalance": "Баланс CRC",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "paySelectCoinsManually": "Изберете монетите ръчно",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payPriceRefreshIn": "Цената ще се обнови след ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "sellExchangeRate": "Курс на обмен",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "Продайте биткойн",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUsdBalance": "Баланс USD",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "payOrderNumber": "Номер на поръчка",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "Номер на поръчка",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "sellPayoutRecipient": "Получател на изплащане",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "paySinpeNumeroComprobante": "==WEBLATE_PART==\nРеференционен номер",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "Сигурен портфейл за Биткойн",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payRecipientName": "Име на получателя",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "sellConfirmPayment": "Потвърдете плащането",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "sellSelectCoinsManually": "Изберете монетите ръчно",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payNotAvailable": "Н/А",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "Най-бързият",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payOrderDetails": "Детайли за поръчката",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "sellLiquidNetwork": "Liquid мрежа",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payAdvancedOptions": "Разширени настройки",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellOrderNumber": "Номер на поръчка",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payDone": "Готово",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "payAdvancedSettings": "Разширени настройки",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "sellAdvancedSettings": "Разширени настройки",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payViewDetails": "Виж подробности",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "viewerTapToCopy": "Натиснете за копиране",
+  "invoiceViewerTitle": "Фактура",
+  "paySinpeReceipt": "SINPE разписка",
+  "sellSendPaymentNetworkFees": "Мрежови такси",
+  "sellViewDetailsButton": "Виж детайлите",
+  "sellKycPendingTitle": "Изчаква се проверка на самоличността (KYC)",
+  "sellKycPendingDescription": "Първо трябва да завършите проверка на самоличността",
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "copiedToClipboard": "Копирано в клипборда",
+  "sellPayoutBalance": "Добавяне към баланса по моята сметка",
+  "sellPayoutTitle": "Избор на получател",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
+  "sendSelectedUtxosInsufficient": "Избраните UTXO не покриват необходимата сума",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Изберете сума",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "Тип: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "Адрес: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Заявена сума: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "Получаване",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Ресто",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrdersInsufficientBalance": "Недостатъчен баланс",
+  "limitOrdersInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
+  "limitOrdersFundAccount": "Захрани сметката си",
+  "exchangeBrandName": "BULL BITCOIN",
+  "exchangeLandingConnectAccount": "Свържете сметката си в борсата Bull Bitcoin",
+  "exchangeLandingRecommendedExchange": "Препоръчана борса за Bitcoin",
+  "exchangeFeatureSelfCustody": "• Купувайте Bitcoin директно в самостоятелно попечителство",
+  "exchangeFeatureDcaOrders": "• DCA, лимитни поръчки и автопокупка",
+  "exchangeFeatureSellBitcoin": "• Продавайте Bitcoin, получавайте плащане в Bitcoin",
+  "exchangeFeatureBankTransfers": "• Изпращайте банкови преводи и плащайте сметки",
+  "exchangeFeatureCustomerSupport": "• Разговаряйте с клиентска поддръжка",
+  "exchangeFeatureUnifiedHistory": "• Обединена история на транзакциите",
+  "exchangeLandingDisclaimerLegal": "Достъпът до услугите на борсата ще бъде ограничен само до държави, в които Bull Bitcoin може законно да оперира, и може да изисква KYC.",
+  "exchangeLandingDisclaimerNotAvailable": "Услугите за обмен на криптовалута не са налични в мобилното приложение Bull Bitcoin.",
+  "exchangeLoginButton": "Вход или регистрация",
+  "exchangeGoToWebsiteButton": "Отиди на уебсайта на борсата Bull Bitcoin",
+  "exchangeErrorSigningOut": "Не можахте да излезете напълно от профила си. Моля, опитайте отново.",
+  "exchangeErrorLoadingAnnouncements": "Съобщенията не можаха да бъдат заредени.",
+  "exchangeErrorRequestingAccountDeletion": "Заявката ви за изтриване на акаунта не можа да бъде изпратена. Моля, опитайте отново.",
+  "exchangeFileUploadStatusUnknown": "Неизвестен статус",
+  "exchangeSupportChatAttachFileTooltip": "Прикачване на файл",
+  "exchangeSupportChatAttachLogsTooltip": "Прикачване на регистри",
+  "exchangeSupportChatSendTooltip": "Изпращане на съобщение",
+  "exchangeSupportChatLogDraft": "Ето моите регистри",
+  "exchangeSupportChatLoadOlder": "Зареждане на по-стари съобщения",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "Функции на борсата",
+  "exchangeAccessSettingsOffHint": "Включете, за да влезете или да създадете акаунт в Bull Bitcoin.",
+  "exchangeAccessSettingsOnHint": "Функциите на борсата са включени.",
+  "exchangeAccessSignIn": "Вход или създаване на акаунт",
+  "exchangeAccessDisableTitle": "Изключване на функциите на борсата?",
+  "exchangeAccessDisableBody": "Това ще ви изведе от профила на това устройство. Съществуващите поръчки, AutoBuy и периодичните покупки няма да бъдат отменени.",
+  "exchangeAccessDisableConfirm": "Изход и изключване",
+  "exchangeTradingRetry": "Опитай отново",
+  "exchangeAccessUnreadable": "Достъпът до борсата не можа да бъде прочетен. Опитайте отново или го нулирайте.",
+  "exchangeAccessReset": "Нулиране на достъпа до борсата",
+  "exchangeAccessLogoutIncomplete": "Излизането не е завършено. Завършете излизането, преди да включите борсата.",
+  "exchangeAccessRetryLogout": "Завършване на излизането",
+  "exchangeAccessExpiring": "Сесията ви изтече. Извеждаме ви от профила на това устройство.",
+  "exchangeLogoutDidNotFinish": "Излизането не завърши на това устройство.",
+  "networkFeatureUnavailable": "Тази функция не е налична в избраната мрежа.",
+  "exchangeBitcoinWalletsLoadFailed": "Неуспешно зареждане на портфейлите по подразбиране",
+  "exchangeBitcoinWalletsAddressEmpty": "Адресът не може да бъде празен",
+  "exchangeBitcoinWalletsSaveFailed": "Неуспешно запазване на адреса на портфейла",
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "Не можахме да разберем дали този адрес е запазен. Проверете го по-долу, преди да запазите отново.",
+  "exchangeBitcoinWalletsDeleteFailed": "Неуспешно изтриване на адреса на портфейла",
+  "exchangeSettingsWriteBusy": "Друга заявка към борсата все още се изпълнява. Опитайте отново след малко.",
+  "exchangeSettingsSignedOut": "Вече не сте влезли в борсата. Влезте отново, за да промените тези настройки.",
+  "exchangeBitcoinWalletsBusy": "Друга заявка към борсата все още се изпълнява. Опитайте отново след малко.",
+  "exchangeBitcoinWalletsUnsetSuccess": "Адресът на портфейла е премахнат",
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Не можахме да разберем дали този адрес е премахнат. Проверете отново, преди да го промените.",
+  "exchangeBitcoinWalletsCheckAgain": "Провери отново",
+  "exchangeBitcoinWalletsSessionEnded": "Вече не сте влезли в борсата. Влезте отново, за да редактирате портфейлите си по подразбиране.",
+  "destinationExpectedType": "Въведете или сканирайте валиден {type}.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "Купувайте, продавайте и плащайте с Bull Bitcoin директно от портфейла си.",
+  "exchangeTradingUnavailable": "Търговията не е налична.",
+  "priceChartShowTooltip": "Показване на графиката на цената",
+  "recipientsErrorSaveOutcomeUnknown": "Не можахме да разберем дали този получател е запазен. Проверете получателите си, преди да го добавите отново.",
+  "recipientsConfidentialSepaStatusUnknownTitle": "Неизвестен статус на активиране",
+  "recipientsConfidentialSepaStatusUnknownDescription": "Не успяхме да прочетем статуса на активиране на този получател. Моля, свържете се с поддръжката, преди да го използвате за Confidential SEPA.",
+  "recipientsReturnHome": "Към началния екран",
+  "withdrawConfirmOutcomeUnknownError": "Не можахме да потвърдим дали тегленето ви е извършено. Проверете отново, преди да започнете ново теглене.",
+  "withdrawConfirmCheckAgainButton": "Провери отново",
+  "limitOrderStatusUnknown": "Неизвестен статус",
+  "dcaUseDefaultBitcoinWallet": "Използвай моя Bitcoin портфейл по подразбиране",
+  "dcaUseDefaultLiquidWallet": "Използвай моя Liquid портфейл по подразбиране",
+  "dcaNoDefaultBitcoinWallet": "Нямате Bitcoin портфейл по подразбиране в акаунта си в Bull Bitcoin. Задайте такъв или въведете Bitcoin адрес по-долу.",
+  "dcaNoDefaultLiquidWallet": "Нямате Liquid портфейл по подразбиране в акаунта си в Bull Bitcoin. Задайте такъв или въведете Liquid адрес по-долу.",
+  "dcaManageDefaultWallets": "Задаване на портфейли по подразбиране",
+  "dcaEnterBitcoinAddressLabel": "Въведете Bitcoin адрес",
+  "dcaEnterLiquidAddressLabel": "Въведете Liquid адрес",
+  "dcaConfirmPayoutAddress": "Адрес за получаване",
+  "exchangePaymentOutcomeUnknownChecking": "Проверяваме дали плащането ви е изпратено…",
+  "walletSpendAwaitingObservation": "Харченето не е възможно, докато този портфейл не се синхронизира и не види предишните си плащания в мрежата. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново.",
+  "sendPayjoinSpendPaused": "Това Payjoin плащане е на пауза, защото портфейлът не може да продължи безопасно. Входовете му остават резервирани. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново това предложение, докато е валидно. Ако е изтекло, проверете плащането в „Транзакции“, преди да предприемете други действия.",
+  "walletSpendBusy": "Портфейлът е зает. Опитайте отново след малко.",
+  "fundExchangeJurisdictionHint": "Изберете откъде изпращате пари",
+  "fundExchangeScamConsentUnverified": "Не можахме да потвърдим, че съгласието ви е записано. Проверете връзката си и опитайте отново.",
+  "fundExchangeSessionEnded": "Сесията ви в борсата приключи. Влезте отново, за да заредите акаунта си.",
+  "exchangePlatformNotAllowedError": "Борсата не може да бъде включена на това устройство.",
+  "exchangeStepReadFailed": "В момента не можахме да заредим това от борсата. Опитайте отново.",
+  "exchangeStepNotSent": "Нищо не беше изпратено към борсата. Проверете връзката си и опитайте отново.",
+  "exchangeStepNotApplied": "Борсата не изпълни тази заявка. Можете да опитате отново.",
+  "exchangeStepWriteRefused": "Борсата отказа тази заявка.",
+  "exchangeOrderBelowMinimum": "Минималната сума е {amount} {currency}",
+  "exchangeOrderAboveMaximum": "Максималната сума е {amount} {currency}",
+  "exchangePayeeInactive": "Този получател все още не е активиран за Confidential SEPA.",
+  "exchangeWriteGateBusy": "Друга заявка към борсата все още е в процес. Изчакайте я да приключи и опитайте отново.",
+  "exchangeWriteGateUnsettled": "Предишна заявка към борсата все още се проверява. Опитайте отново, след като бъде уредена.",
+  "exchangeWriteGateJournalUnreadable": "Не можахме да проверим предишните ви заявки към борсата. Опитайте отново.",
+  "exchangeStepUnverified": "Не можахме да проверим дали борсата е получила това. Проверете отново, преди да започнете нова.",
+  "exchangeStepTimedOut": "Това отнема повече време от очакваното. Можете да проверите отново или да излезете и да се върнете по-късно.",
+  "exchangeAmountNoRate": "Цената на биткойн в момента не е налична. Опитайте отново.",
+  "exchangeAmountKycNeeded": "Завършете проверката на самоличността си, за да използвате тази сума.",
+  "exchangeStepVerifying": "Проверяваме при борсата…",
+  "exchangeFlowSessionEnded": "Сесията ви в борсата приключи. Влезте отново, за да продължите.",
+  "withdrawNoFundedBalance": "Нямате наличност за теглене.",
+  "exchangePayinNoFunds": "Този портфейл няма достатъчно средства за това плащане и таксата за мрежата.",
+  "exchangePayinFeeTooLow": "Таксата за мрежата е под минимума на мрежата. Опитайте отново.",
+  "exchangePayinWalletBusy": "Портфейлът се синхронизира. Опитайте отново след малко.",
+  "exchangePayinConsolidationRequired": "Този портфейл трябва да консолидира монетите си, преди да може да плати тази сума.",
+  "exchangePayinSigningRefused": "Портфейлът не можа да подпише плащането.",
+  "exchangePayinNotAuthorized": "Този портфейл няма разрешение да изпраща плащания.",
+  "exchangePayinBuildFailed": "Плащането не можа да бъде подготвено. Нищо не е изпратено.",
+  "exchangePayinNodeRejected": "Мрежата отказа транзакцията. Нищо не е изпратено.",
+  "exchangePayinPayjoinNotStarted": "Payjoin плащането не можа да започне. Нищо не е изпратено.",
+  "exchangePayinDeadlinePassed": "Срокът за плащане на поръчката изтече, преди плащането да бъде изпратено. Нищо не е изпратено.",
+  "exchangePayinSending": "Изпращаме плащането ви…",
+  "exchangePayinNotSent": "Плащането не е изпратено",
+  "exchangePayinPayjoinNegotiating": "Договаряме payjoin с борсата…",
+  "exchangePayinPayjoinPaused": "Payjoin е на пауза, защото портфейлът е зает. Опитайте отново.",
+  "exchangePayinUnseen": "Нито мрежата, нито борсата показват това плащане засега. Можете да изпратите същата транзакция отново.",
+  "exchangePayinResend": "Изпрати същата транзакция отново",
+  "exchangeStepCheckAgain": "Провери отново",
+  "exchangePayinLeaveTitle": "Напускане на това плащане?",
+  "exchangePayinLeaveMessage": "Ако вече сте платили, борсата пак ще го получи. Ако не, поръчката изтича в крайния си срок.",
+  "exchangePayinStay": "Остани",
+  "exchangePayinExternalTitle": "Изпратете точно тази сума на адреса по-долу",
+  "exchangePayinExternalWaiting": "Изчакваме плащането ви…",
+  "exchangePayinRefusedByExchange": "Борсата не прие това плащане. Свържете се с поддръжката, като посочите номера на поръчката.",
+  "exchangePayinOrderEnded": "Тази поръчка приключи, преди плащането ви да бъде изпратено. Нищо не е изпратено.",
+  "exchangePayinDepositRefused": "Тази поръчка не може да бъде платена от този портфейл. Нищо не е изпратено.",
+  "exchangePayinReceived": "Борсата получи плащането ви",
+  "exchangePayinCoinsUnavailable": "Монетите на портфейла ви не можаха да се заредят. Опитайте отново.",
+  "buyPayoutAddressUnavailable": "Не успяхме да получим адрес за получаване от този портфейл. Изберете го отново или изберете друг портфейл.",
+  "buyPayoutFailed": "Борсата не успя да завърши това плащане. Отворете детайлите на поръчката или се свържете с поддръжката.",
+  "buyPayoutStillPending": "Плащането ви все още е на път. Можете да го следите в детайлите на поръчката.",
+  "limitOrdersOverBalanceWarning": "Това е повече от наличния ви баланс. Когато поръчката се изпълни, тя купува с наличното тогава в баланса ви.",
+  "autoBuyAlreadyActive": "Автоматичната покупка вече е активна за профила ви.",
+  "recipientsValidationEmailInvalid": "Въведете валиден имейл адрес",
+  "recipientsValidationClabeLength": "CLABE се състои от 18 цифри",
+  "recipientsValidationClabeCheckDigit": "Тази CLABE не е валидна. Проверете номера",
+  "recipientsValidationSpeiPhone": "Въведете 10-цифрения телефонен номер без кода на държавата",
+  "recipientsValidationDebitCard": "Номерът на дебитната карта се състои от 16 цифри",
+  "recipientsErrorFieldRefused": "Борсата не прие тази стойност",
+  "recipientsErrorCheckFields": "Някои данни не бяха приети. Проверете отбелязаните по-горе полета.",
+  "recipientsErrorFieldsRefused": "Някои данни не бяха приети: {fields}"
+}

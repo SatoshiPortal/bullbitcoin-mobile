@@ -1,0 +1,76 @@
+[package]
+name = "onion"
+description = "Embedded Tor client and loopback SOCKS5 proxy, built on Arti. Not an official Tor Project product."
+authors = ["ethicnology <ethicnology@pm.me>"]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+# Not `onion`: Native Assets names the iOS framework after the library, and the
+# `onion` CocoaPods plugin (IPtProxy) already produces `onion.framework`. With
+# `use_frameworks!` the pod's framework overwrites the Rust one in the app
+# bundle and FRB finds no symbols. `rust_lib_` matches `rust_lib_bull_sdk`.
+name = "rust_lib_onion"
+# `lib` is added to the template's `["cdylib", "staticlib"]` so `tests/` can
+# `use rust_lib_onion::…`. The upstream template tests through the Flutter example app
+# instead; we keep a `cargo test` suite because the Tor logic is worth
+# exercising without a device attached.
+crate-type = ["lib", "cdylib", "staticlib"]
+doctest = false
+
+[dependencies]
+flutter_rust_bridge = "=2.13.0"
+
+# `static` vendors OpenSSL and SQLite instead of looking for system copies.
+# Non-negotiable on Android, which has neither; it is also what the previous
+# Foundation-Devices wrapper used. Upstream flags `static` as non-additive, so
+# it must be set here rather than left to a downstream consumer to remember.
+#
+# TLS is native-tls, NOT rustls: the bull_sdk aggregate already links both
+# `ring` and `aws-lc-rs` transitively (see the pin in lwk-dart/rust/Cargo.toml),
+# which makes rustls 0.23 panic when it auto-selects a crypto provider.
+arti-client = { version = "0.48.0", default-features = false, features = [
+    "tokio",
+    "native-tls",
+    "static",
+    "compression",
+    "bridge-client",
+    "onion-service-client",
+    "pt-client",
+] }
+tor-error = "0.48.0"
+# The SOCKS5 wire protocol only. We deliberately do NOT depend on the `arti`
+# crate: since arti 2.0.0 every API it exposes is marked experimental and
+# "likely to get moved into other crates or removed", which is what pinned the
+# previous Foundation-Devices wrapper to arti 1.7.0 for nine releases.
+tor-socksproto = { version = "0.48.0", features = ["proxy-handshake"] }
+tor-rtcompat = { version = "0.48.0", features = ["tokio", "native-tls"] }
+
+tokio = { version = "1", features = [
+    "rt-multi-thread",
+    "net",
+    "time",
+    "sync",
+    "macros",
+    "io-util",
+] }
+futures = "0.3"
+thiserror = "2"
+tracing = "0.1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full", "test-util"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
+
+# Not part of the rust_bindings cargo workspace (see the onion README for why),
+# so this profile applies. Mirrors the aggregate's settings so a reader is not
+# surprised by a different code shape between the two halves of the app.
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"

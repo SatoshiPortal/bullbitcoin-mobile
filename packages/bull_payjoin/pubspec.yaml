@@ -13,10 +13,13 @@ dependencies:
   dio: ^5.9.0
   drift: ^2.35.4
   freezed_annotation: ^3.1.0
+  legacy_storage:
   meta: ^1.17.0
   # Use the published archive for its release-locked native Cargo dependencies.
   payjoin: 0.26.0
   primitives:
+  bull_logger:
+  sync:
   sqlite3: ^3.5.2
   synchronized: ^3.4.0
 

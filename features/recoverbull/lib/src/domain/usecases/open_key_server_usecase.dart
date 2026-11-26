@@ -45,7 +45,7 @@ final class OpenKeyServerUsecase {
           value.permissionGranted &&
               (!monitoring || value.monitoringEnabled) &&
               value.server == expected.server &&
-              value.generation == expected.generation,
+              value.sameGeneration(expected),
         Err() => false,
       };
 }

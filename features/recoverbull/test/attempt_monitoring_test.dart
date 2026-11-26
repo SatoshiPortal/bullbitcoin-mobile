@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bull_recoverbull/testing.dart';
+
 import 'package:bull_recoverbull/src/data/attempt_monitoring_repository_impl.dart';
 import 'package:bull_recoverbull/src/data/backup_metadata_repository_impl.dart';
 import 'package:bull_recoverbull/src/data/database/recoverbull_database.dart';
@@ -30,7 +32,7 @@ void main() {
   final collection = DateTime.utc(2026, 11, 9);
 
   Future<void> open() async {
-    database = RecoverBullDatabase.open('${directory.path}/rb.sqlite');
+    database = openRecoverBullDatabaseForTesting('${directory.path}/rb.sqlite');
     await database.forceOpen();
     repository = AttemptMonitoringRepositoryImpl(database, durable: true);
     metadata = BackupMetadataRepositoryImpl(database);

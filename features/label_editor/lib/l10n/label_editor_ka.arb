@@ -1,0 +1,33 @@
+{
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "receiveSave": "შენახვა",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "receiveEnterHere": "შეიყვანეთ აქ...",
+  "bip329LabelsTitle": "BIP329 ლეიბლები",
+  "bip329LabelsHeading": "BIP329 ლეიბლების იმპორტი/ექსპორტი",
+  "bip329LabelsDescription": "იმპორტი ან ექსპორტი გაუკეთეთ საფულის ლეიბლებს BIP329 სტანდარტული ფორმატის გამოყენებით.",
+  "bip329LabelsImportButton": "ლეიბლების იმპორტი",
+  "bip329LabelsExportButton": "ლეიბლების ექსპორტი",
+  "bip329LabelsExportSuccess": "ლეიბლები წარმატებით ექსპორტირდა",
+  "bip329LabelsImportSuccessSingular": "1 ლეიბლი შემოტანილია",
+  "bip329LabelsImportSuccessPlural": "{count} ლეიბლი შემოტანილია",
+  "noteVisibleToSenderNotice": "ეს შენიშვნა ხილული იქნება თქვენი QR-ის ან ინვოისის მიმღებისთვის.",
+  "systemLabelSwaps": "სვაპები",
+  "systemLabelAutoSwap": "ავტომატური სვაპი",
+  "systemLabelPayjoin": "Payjoin",
+  "systemLabelSelfSpend": "საკუთარი თავისთვის გადახდა",
+  "systemLabelExchangeBuy": "ყიდვა",
+  "systemLabelExchangeSell": "გაყიდვა",
+  "labelDeleteFailed": "„{label}“-ის წაშლა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "labelsErrorNoteTooLong": "შენიშვნა უნდა იყოს არაუმეტეს {max} სიმბოლო",
+  "labelsErrorNoteForbiddenCharacter": "შენიშვნა არ უნდა შეიცავდეს სიმბოლოს {character}",
+  "labelsErrorFileTooLarge": "ეს ფაილი ძალიან დიდია. ეტიკეტების ფაილები უნდა იყოს {max}-ზე ნაკლები.",
+  "labelsErrorFileUnreadable": "ეს არ ჰგავს BIP-329 ეტიკეტების ფაილს. შეამოწმეთ, სწორი ფაილი აირჩიეთ თუ არა.",
+  "labelsErrorFileEmpty": "ეს ფაილი არ შეიცავს იმპორტისთვის ეტიკეტებს.",
+  "labelsErrorExportFailed": "თქვენი ეტიკეტების შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.",
+  "labelsErrorFileReservedName": "ეს ფაილი იყენებს აპლიკაციის მიერ დაცულ ეტიკეტის სახელს. გადაარქვით სახელი ფაილში და სცადეთ ხელახლა.",
+  "labelsErrorNoteForbiddenWhitespace": "შენიშვნა არ უნდა შეიცავდეს ხაზის გადატანას ან ტაბულაციას",
+  "labelsErrorFileInvalidEntry": "ამ ფაილის ზოგიერთი ჩანაწერის წაკითხვა ვერ მოხერხდა. შეამოწმეთ ფაილი და სცადეთ ხელახლა."
+}

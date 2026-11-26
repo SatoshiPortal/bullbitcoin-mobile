@@ -1,0 +1,315 @@
+{
+  "translationWarningContributeButton": "ความช่วยเหลือ",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "การแปลส่วนใหญ่ในแอปนี้สร้างขึ้นโดยใช้ AI และอาจมีข้อผิดพลาด หากคุณพบข้อผิดพลาดหรือต้องการช่วยปรับปรุงการแปล คุณสามารถส่งการแก้ไขได้ที่คลัง GitHub ของเรา",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI สร้างการแปล",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "walletDeletionConfirmationCancelButton": "ยกเลิก",
+  "@walletDeletionConfirmationCancelButton": {
+    "description": "Cancel button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationDeleteButton": "ลบ",
+  "@walletDeletionConfirmationDeleteButton": {
+    "description": "Delete button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationMessage": "คุณต้องลบกระเป๋าสตางค์นี้?",
+  "@walletDeletionConfirmationMessage": {
+    "description": "Message in the wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationTitle": "ลบกระเป๋าสตางค์",
+  "@walletDeletionConfirmationTitle": {
+    "description": "Title for the wallet deletion confirmation dialog"
+  },
+  "walletDeletionErrorDefaultWallet": "คุณสามารถลบกระเป๋าสตางค์เริ่มต้น.",
+  "@walletDeletionErrorDefaultWallet": {
+    "description": "Error message when attempting to delete a default wallet"
+  },
+  "walletDeletionErrorGeneric": "ค้นหากระเป๋าสตางค์โปรดลองอีกครั้ง.",
+  "@walletDeletionErrorGeneric": {
+    "description": "Generic error message when wallet deletion fails"
+  },
+  "walletDeletionErrorOngoingSwaps": "คุณไม่สามารถลบกระเป๋าสตางค์อย่างต่อเนื่อง.",
+  "@walletDeletionErrorOngoingSwaps": {
+    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+  },
+  "walletDeletionErrorWalletNotFound": "กระเป๋าเงินที่คุณพยายามที่จะลบ.",
+  "@walletDeletionErrorWalletNotFound": {
+    "description": "Error message when the wallet to delete cannot be found"
+  },
+  "walletDeletionFailedOkButton": "ตกลง",
+  "@walletDeletionFailedOkButton": {
+    "description": "OK button label in wallet deletion failed dialog"
+  },
+  "walletDeletionFailedTitle": "ลบ",
+  "@walletDeletionFailedTitle": {
+    "description": "Title for the wallet deletion failed dialog"
+  },
+  "walletDetailsAddressTypeLabel": "ที่อยู่",
+  "@walletDetailsAddressTypeLabel": {
+    "description": "Label for the address type field in wallet details"
+  },
+  "walletDetailsDeletingMessage": "ข้อความ ...",
+  "@walletDetailsDeletingMessage": {
+    "description": "Message displayed while a wallet is being deleted"
+  },
+  "walletDetailsDerivationPathLabel": "กฎระเบียบ",
+  "@walletDetailsDerivationPathLabel": {
+    "description": "Label for the derivation path field in wallet details"
+  },
+  "walletDetailsDescriptorLabel": "ข้อความ",
+  "@walletDetailsDescriptorLabel": {
+    "description": "Label for the wallet descriptor field in wallet details"
+  },
+  "walletDetailsNetworkLabel": "เครือข่ายเครือข่าย",
+  "@walletDetailsNetworkLabel": {
+    "description": "Label for the network field in wallet details"
+  },
+  "walletDetailsPubkeyLabel": "หน้าแรก",
+  "@walletDetailsPubkeyLabel": {
+    "description": "Label for the public key field in wallet details"
+  },
+  "walletDetailsSignerDeviceLabel": "อุปกรณ์",
+  "@walletDetailsSignerDeviceLabel": {
+    "description": "Label for the signer device field in wallet details"
+  },
+  "walletDetailsSignerDeviceNotSupported": "ไม่สนับสนุน",
+  "@walletDetailsSignerDeviceNotSupported": {
+    "description": "Message displayed when a signer device is not supported"
+  },
+  "walletDetailsSignerLabel": "ลงทะเบียน",
+  "@walletDetailsSignerLabel": {
+    "description": "Label for the signer field in wallet details"
+  },
+  "walletDetailsUnnamedWalletFallback": "ชื่อข้อความ",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "walletDetailsWalletFingerprintLabel": "ลายนิ้วมือ",
+  "@walletDetailsWalletFingerprintLabel": {
+    "description": "Label for the wallet fingerprint field in wallet details"
+  },
+  "addressViewAddressesTitle": "ที่อยู่",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "copyDialogButton": "คัดลอก",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "globalDefaultBitcoinWalletLabel": "รักษาความปลอดภัย Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "bitcoinSettingsTestnetModeTitle": "โหมดทดสอบ",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "เข้าสู่ระบบ",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "เปลี่ยนสกุลเงิน",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "รหัส",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "บริการ",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "ความปลอดภัย",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "ป้าย",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "การกู้คืน",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "ผมเข้าใจ",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "สกุลเงิน",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "ภาษา",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "electrumTestnet": "การทดสอบ",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "การตั้งค่าอัตราแลกเปลี่ยน",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "การตั้งค่า",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "หน่วยความจํา",
+  "exchangeTestnetBasicAuthTitle": "ข้อมูลรับรองการแลกเปลี่ยน testnet",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth สำหรับหน้าเว็บการแลกเปลี่ยน testnet (เข้าสู่ระบบและ KYC)",
+  "exchangeTestnetBasicAuthUsernameLabel": "ชื่อผู้ใช้",
+  "exchangeTestnetBasicAuthPasswordLabel": "รหัสผ่าน",
+  "exchangeTestnetBasicAuthClearButton": "ล้าง",
+  "exchangeTestnetBasicAuthSaveButton": "บันทึก",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "สงวนลิขสิทธิ์",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "เงิน",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "ประวัติธุรกรรม",
+  "allSeedViewTitle": "โพสต์เมล็ดพันธุ์",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "settingsSuperuserModeDisabledMessage": "โหมดที่ใช้งานง่าย.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "ข้อกําหนดในการให้บริการ",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "โหมดนี้มีความเสี่ยง โดยช่วยให้คุณสามารถสูญเสียเงิน",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "การทําธุรกรรม",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "ธีม",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsDevModeWarningTitle": "หน่วยความจํา",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "รุ่น: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "อย่าลืม",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "โหมดผู้ใช้ปลดล็อค!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "การตั้งค่า",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 การกําหนดข้อมูล",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "การตั้งค่า Auto Swap",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "torSettingsTitle": "ปุ่ม",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "backupSettingsStartBackup": "เริ่มต้นการสํารองข้อมูล",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "กู้คืน Swap",
+  "settingsErrorReportingTitle": "การรายงานข้อผิดพลาด",
+  "errorReportingProgramTitle": "โปรแกรมรายงานข้อผิดพลาด",
+  "errorReportingProgramDescriptionP1": "ช่วยเราปรับปรุง Bull ให้ดีขึ้นด้วยการเข้าร่วมโปรแกรมรายงานข้อผิดพลาดของเรา",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin ส่งรายงานข้อผิดพลาดแบบไม่ระบุตัวตนเมื่อเกิดปัญหาขึ้น",
+  "errorReportingProgramDescriptionP3": "ข้อมูลนี้ช่วยให้เราทราบว่าแต่ละบั๊กส่งผลกระทบต่อผู้ใช้กี่คน และจัดลำดับความสำคัญในการแก้ไขได้อย่างเหมาะสม หากไม่มีข้อมูลนี้ เราจะไม่มีทางวัดผลกระทบได้",
+  "errorReportingProgramDescriptionP4": "รายงานจะถูกส่งไปยังเซิร์ฟเวอร์ของ Bull เท่านั้น ไม่ส่งให้บุคคลที่สาม",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin เป็นโอเพนซอร์ส คุณจึงสามารถตรวจสอบได้ว่ามีการส่งข้อมูลอะไรบ้าง",
+  "errorReportingAcceptButton": "ยอมรับ",
+  "errorReportingCancelButton": "ยกเลิก",
+  "errorReportingRestartSnackbar": "รีสตาร์ทแอปเพื่อให้การเปลี่ยนแปลงนี้มีผล",
+  "settingsPayjoinDisclaimerRowLabel": "ข้อควรทราบเกี่ยวกับ Payjoin",
+  "settingsPayjoinAdvancedTitle": "การตั้งค่า Payjoin ขั้นสูง",
+  "settingsScreenPrivacyTitle": "ความเป็นส่วนตัวของหน้าจอ",
+  "settingsScreenPrivacyDisabledMessage": "ตอนนี้อนุญาตให้จับภาพหน้าจอในหน้าจอที่ละเอียดอ่อนได้แล้ว",
+  "settingsSearchHint": "ค้นหาการตั้งค่า",
+  "settingsSearchNoResults": "ไม่พบการตั้งค่า",
+  "settingsSearchMempoolKeywords": "ตัวสำรวจบล็อก|ประมาณค่าธรรมเนียม|ค่าธรรมเนียมธุรกรรม|API เมมพูล",
+  "settingsSearchExchangeKeywords": "บัญชี|บัญชีเอ็กซ์เชนจ์|ซื้อขาย|ซื้อและขาย",
+  "settingsSearchStartBackupKeywords": "สร้างข้อมูลสำรอง|บันทึกข้อมูลสำรอง|สำรองกระเป๋า",
+  "settingsSearchRecoverbullKeywords": "ข้อมูลสำรองเข้ารหัส|ข้อมูลสำรองบนคลาวด์|ห้องนิรภัยเข้ารหัส|กู้คืนห้องนิรภัย",
+  "settingsSearchLabelsKeywords": "ป้ายกำกับกระเป๋า|ป้ายกำกับธุรกรรม|BIP329|นำเข้าป้ายกำกับ|ส่งออกป้ายกำกับ",
+  "settingsSearchTransactionHistoryKeywords": "ส่งออกธุรกรรม|ส่งออกประวัติธุรกรรม|CSV|ประวัติกระเป๋า",
+  "settingsSearchAppSettingsKeywords": "การกำหนดค่าแอป|การตั้งค่าแอปพลิเคชัน|การตั้งค่าทั่วไป",
+  "settingsSearchTermsOfServiceKeywords": "ข้อกำหนดและเงื่อนไข|ข้อมูลทางกฎหมาย|ข้อตกลงผู้ใช้|TOS",
+  "settingsSearchServicesStatusKeywords": "สถานะบริการ|สถานะระบบ|ออนไลน์|บริการขัดข้อง",
+  "settingsSearchImportWalletKeywords": "เพิ่มกระเป๋า|กู้คืนกระเป๋า|นำเข้าคำช่วยจำ|กระเป๋าดูอย่างเดียว|กระเป๋าฮาร์ดแวร์",
+  "settingsSearchBroadcastTransactionKeywords": "เผยแพร่ธุรกรรมที่ลงนามแล้ว|ส่งธุรกรรม|ธุรกรรมดิบ|เลขฐานสิบหกของธุรกรรม|PSBT",
+  "settingsSearchPayjoinKeywords": "ความเป็นส่วนตัวของ Payjoin|ธุรกรรมร่วมกัน|P2EP",
+  "settingsSearchAutoswapKeywords": "สวอปอัตโนมัติ|แลกเปลี่ยนอัตโนมัติ|โอนอัตโนมัติ|ยอดคงเหลือกระเป๋าทันที",
+  "settingsSearchElectrumKeywords": "โหนดบิตคอยน์|โหนด Electrum|เซิร์ฟเวอร์กำหนดเอง|โหนดส่วนตัว",
+  "settingsSearchTestnetModeKeywords": "เครือข่ายทดสอบ|บิตคอยน์เทสต์เน็ต|Liquid เทสต์เน็ต|โหมดทดสอบ",
+  "settingsSearchSeedViewerKeywords": "วลีซีด|วลีกู้คืน|คำช่วยจำ|คำสำรอง|ดูซีด",
+  "settingsSearchBip85Keywords": "เอนโทรปีแบบกำหนดได้|ซีดย่อย|เอนโทรปีที่ได้มา|BIP85",
+  "settingsSearchLanguageKeywords": "ภูมิภาคภาษา|การแปล|ภาษาที่แสดง|ภาษาที่ต้องการ",
+  "settingsSearchThemeKeywords": "ลักษณะที่ปรากฏ|โหมดมืด|โหมดสว่าง|ธีมระบบ",
+  "settingsSearchCurrencyKeywords": "สกุลเงินเฟียต|สกุลเงินท้องถิ่น|สกุลเงินเริ่มต้น|สกุลเงินแลกเปลี่ยน",
+  "settingsSearchSecurityPinKeywords": "รหัส PIN|รหัสผ่าน|ล็อกแอป|การยืนยันตัวตน|เปลี่ยน PIN",
+  "settingsSearchLogsKeywords": "บันทึกดีบัก|บันทึกการวินิจฉัย|บันทึกแอป|ส่งออกบันทึก",
+  "settingsSearchDevModeKeywords": "โหมดนักพัฒนา|การตั้งค่านักพัฒนา|โหมดดีบัก|การทดสอบขั้นสูง",
+  "settingsSearchTestnetCredentialsKeywords": "ข้อมูลรับรองผู้ใช้เทสต์เน็ต|เข้าสู่ระบบเทสต์เน็ต|ชื่อผู้ใช้เทสต์เน็ต|รหัสผ่านเทสต์เน็ต|การยืนยันตัวตนพื้นฐาน",
+  "settingsSearchErrorReportingKeywords": "รายงานข้อขัดข้อง|รายงานข้อบกพร่อง|การวินิจฉัย|ข้อมูลการใช้งาน|บันทึกข้อผิดพลาด",
+  "settingsSearchScreenPrivacyKeywords": "ภาพหน้าจอ|การบันทึกหน้าจอ|การป้องกันการจับภาพ|ความเป็นส่วนตัว",
+  "settingsSearchStartTyping": "เริ่มพิมพ์เพื่อดูผลลัพธ์",
+  "settingsErrorSavingSetting": "ไม่สามารถบันทึกการตั้งค่านี้ได้ โปรดลองอีกครั้ง",
+  "settingsErrorConsentNotGiven": "การตั้งค่านี้ต้องได้รับการยืนยันจากคุณก่อนจึงจะเปลี่ยนได้",
+  "settingsErrorLoadingLogs": "ไม่สามารถเตรียมบันทึกการวินิจฉัยได้ โปรดลองอีกครั้ง",
+  "settingsSearchTorKeywords": "พร็อกซี Tor|Orbot|การกำหนดเส้นทางแบบหัวหอม|Tor ในตัว|เครือข่ายความเป็นส่วนตัว",
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
+  "settingsDarkModeTitle": "โหมดมืด",
+  "settingsSourceCodeTitle": "ซอร์สโค้ด",
+  "backgroundTasksTitle": "งานเบื้องหลัง",
+  "notificationsBlockedMessage": "การแจ้งเตือนถูกบล็อกในการตั้งค่าระบบ",
+  "notificationsTitle": "การแจ้งเตือน",
+  "openSystemSettings": "เปิดการตั้งค่าระบบ",
+  "permissionsTitle": "สิทธิ์",
+  "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน"
+}

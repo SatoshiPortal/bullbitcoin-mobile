@@ -1,0 +1,17 @@
+name: boltz_stream
+description: BoltzWebSocket stream for Boltz swap status updates
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  rust_bindings:
+  web_socket_channel: ^3.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

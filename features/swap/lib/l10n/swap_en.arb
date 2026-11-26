@@ -1,0 +1,727 @@
+{
+  "paymentStepLockupSent": "Lockup sent",
+  "paymentStepBoltzLocked": "Boltz locked",
+  "paymentStepClaimed": "Claimed",
+  "paymentStepPayinBroadcast": "Payin broadcast",
+  "paymentStepCompleted": "Completed",
+  "paymentStepClaimBroadcast": "Claim broadcast",
+  "paymentStepPayoutInProgress": "Payout in progress",
+  "paymentStepSendingLockup": "Sending lockup",
+  "paymentStepClaimable": "Claimable",
+  "paymentStepConfirmed": "Confirmed",
+  "paymentStepSendingPayin": "Sending payin",
+  "paymentStepPayoutBroadcast": "Payout broadcast",
+  "paymentExchangeDescriptor": "EXCHANGE // ORDER",
+  "retry": "Retry",
+  "@@locale": "en",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "swapSettingsTitle": "Swaps",
+  "@swapSettingsTitle": {
+    "description": "Title of the swap settings page and its row in wallet settings"
+  },
+  "swapSettingsExchangeFallbackLabel": "Fall back to the Bull Bitcoin exchange",
+  "@swapSettingsExchangeFallbackLabel": {
+    "description": "Switch label: use an exchange order when Boltz cannot take the swap"
+  },
+  "swapSettingsExchangeFallbackDescription": "Swaps go through Boltz. When Boltz cannot be reached or does not accept the amount, a Bull Bitcoin exchange order is created instead. The exchange holds the funds until the order completes.",
+  "@swapSettingsExchangeFallbackDescription": {
+    "description": "Explains the exchange fallback switch on the swap settings page"
+  },
+  "swapSettingsRouteOverrideTitle": "Swap provider",
+  "@swapSettingsRouteOverrideTitle": {
+    "description": "Developer-only section title for pinning the swap provider"
+  },
+  "swapSettingsRouteOverrideAuto": "Auto",
+  "@swapSettingsRouteOverrideAuto": {
+    "description": "Swap provider option: Boltz first, exchange per the fallback setting"
+  },
+  "swapSettingsRouteOverrideBoltzOnly": "Boltz only",
+  "@swapSettingsRouteOverrideBoltzOnly": {
+    "description": "Swap provider option: always Boltz"
+  },
+  "swapSettingsRouteOverrideExchangeOnly": "Exchange only",
+  "@swapSettingsRouteOverrideExchangeOnly": {
+    "description": "Swap provider option: always the Bull Bitcoin exchange"
+  },
+  "swapServerTitle": "Swap server",
+  "@swapServerTitle": {
+    "description": "Row and editor title for the Boltz server used by swaps"
+  },
+  "swapServerSubtitle": "The Boltz server used for trustless swaps on this network. Leave empty for the default.",
+  "@swapServerSubtitle": {
+    "description": "Explains the swap server editor"
+  },
+  "swapServerDefault": "Default",
+  "@swapServerDefault": {
+    "description": "Shown as the swap server value when the default Boltz server is used"
+  },
+  "swapServerReset": "Reset to default",
+  "@swapServerReset": {
+    "description": "Button that restores the default swap server"
+  },
+  "swapServerInvalid": "Enter a valid server address (e.g. api.boltz.exchange/v2)",
+  "@swapServerInvalid": {
+    "description": "Error under the swap server input"
+  },
+  "swapServerChangedNotice": "Swaps now use this server.",
+  "@swapServerChangedNotice": {
+    "description": "Shown after the swap server changed"
+  },
+  "swapServerBusyError": "Finish your ongoing swaps before changing the swap server.",
+  "@swapServerBusyError": {
+    "description": "Error when the user changes the swap server while swaps on the current server are still in progress"
+  },
+  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
+  "@networkFeatureUnavailable": {
+    "description": "Refusal when a service does not support the active network"
+  },
+  "addressLabel": "Address: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountEnteredAtRate": "You entered {amount} {currency} · rate of {time}",
+  "@amountEnteredAtRate": {
+    "description": "Original fiat entry and the time of its frozen conversion quote.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "amountRequestedLabel": "Amount requested: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "When disabled, you will be given the option to allow an auto-swap that is blocked due to high fees",
+  "@autoswapAlwaysBlockInfoDisabled": {
+    "description": "Help text when always block is disabled"
+  },
+  "autoswapAlwaysBlockInfoEnabled": "When enabled, auto-swaps with fees above the set limit will always be blocked",
+  "@autoswapAlwaysBlockInfoEnabled": {
+    "description": "Help text when always block is enabled"
+  },
+  "autoswapAlwaysBlockLabel": "Always Block High Fees",
+  "@autoswapAlwaysBlockLabel": {
+    "description": "Label for toggle to always block high fee transfers"
+  },
+  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this target balance after an autoswap.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapEnableToggleLabel": "Enable Auto Swap",
+  "@autoswapEnableToggleLabel": {
+    "description": "Label for the main toggle switch to enable/disable auto transfer feature"
+  },
+  "autoswapLoadSettingsError": "Failed to load auto swap settings",
+  "@autoswapLoadSettingsError": {
+    "description": "Error message when loading settings fails"
+  },
+  "autoswapMaxBalanceLabel": "Max Instant Wallet Balance",
+  "@autoswapMaxBalanceLabel": {
+    "description": "Label for amount threshold input field"
+  },
+  "autoswapMaxFeeInfoText": "If total swap fee is above the set percentage, the auto-swap will be blocked",
+  "@autoswapMaxFeeInfoText": {
+    "description": "Help text explaining how the max fee threshold works"
+  },
+  "autoswapMaxFeeLabel": "Max Swap Fee",
+  "@autoswapMaxFeeLabel": {
+    "description": "Label for fee threshold percentage input field"
+  },
+  "autoswapMaximumBalanceLabel": "Maximum Instant Wallet Balance",
+  "@autoswapMaximumBalanceLabel": {
+    "description": "Label for the maximum instant wallet balance setting in autoswap"
+  },
+  "autoswapMaximumFeeError": "Maximum fee threshold is {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "description": "Validation error shown when fee threshold exceeds maximum",
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Minimum balance threshold is {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "Minimum balance threshold is {amount} sats",
+  "@autoswapMinimumThresholdErrorSats": {
+    "description": "Validation error shown when amount threshold is below minimum (sats display)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Choose which Bitcoin wallet will receive the transferred funds (required)",
+  "@autoswapRecipientWalletInfoText": {
+    "description": "Help text explaining wallet selection"
+  },
+  "autoswapRecipientWalletLabel": "Recipient Bitcoin Wallet",
+  "@autoswapRecipientWalletLabel": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "autoswapRecipientWalletPlaceholder": "Select a Bitcoin wallet",
+  "@autoswapRecipientWalletPlaceholder": {
+    "description": "Dropdown placeholder text when no wallet is selected"
+  },
+  "autoswapRecipientWalletPlaceholderRequired": "Select a Bitcoin wallet *",
+  "@autoswapRecipientWalletPlaceholderRequired": {
+    "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+  },
+  "autoswapRecipientWalletRequired": "*",
+  "@autoswapRecipientWalletRequired": {
+    "description": "Required field indicator asterisk"
+  },
+  "autoswapSaveButton": "Save",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "autoswapSelectWalletError": "Please select a recipient Bitcoin wallet",
+  "@autoswapSelectWalletError": {
+    "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+  },
+  "autoswapSettingsTitle": "Auto Swap Settings",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
+  "@autoswapTargetBalanceLabel": {
+    "description": "Label for the target instant wallet balance setting in autoswap"
+  },
+  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this maximum balance.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
+  "autoswapTriggerBalanceError": "Maximum balance must be at least 2x the target balance",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
+  },
+  "autoswapUpdateSettingsError": "Failed to update auto swap settings",
+  "@autoswapUpdateSettingsError": {
+    "description": "Error message when updating settings fails"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
+  "@bitcoinPriceExchangeRateUnavailable": {
+    "description": "Error shown when exchange rate cannot be fetched"
+  },
+  "broadcastSignedTxErrorOutcomeUnknown": "We couldn't confirm that your transaction was broadcast. Check a block explorer before trying again.",
+  "@broadcastSignedTxErrorOutcomeUnknown": {
+    "description": "Broadcast Transaction error when the failure does not show whether the transaction reached the network"
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "coinsKeychainChange": "Change",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Receive",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Consolidate the wallet",
+  "@consolidationRequiredTitle": {
+    "description": "Title of the message prompting the user to consolidate their Liquid wallet"
+  },
+  "coreScreensAmountLabel": "Amount",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensConfirmButton": "Confirm",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "coreScreensExternalTransfer": "External Swap",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensFeeDeductionExplanation": "This is the total fee deducted from the amount sent",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensFeePriorityLabel": "Fee Priority",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensFromLabel": "From",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensInternalTransfer": "Internal Swap",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensNetworkFeesLabel": "Network fees",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensReceiveAmountLabel": "Receive Amount",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Receive Network Fee",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensSendAmountLabel": "Send Amount",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Send Network Fee",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Server Network Fees",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensToLabel": "To",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensTransferFeeLabel": "Swap Fee",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensTransferIdLabel": "Swap ID",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "networkRelaunchRequiredError": "The network changed since the app started. Close and reopen the app, then try again.",
+  "@networkRelaunchRequiredError": {
+    "description": "Error shown when a payment cannot start because the app is still running on the network it was launched with"
+  },
+  "payNetworkError": "Network error. Please try again",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveNote": "Note",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "selectAmountTitle": "Select amount",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "sendAdvancedOptions": "Advanced Options",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendDone": "Done",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendErrorBuildFailed": "This payment could not be prepared. Please try again.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorSelectedCoinsInsufficient": "The selected coins do not cover the amount and fees. Select more coins or reduce the amount.",
+  "sendErrorSelectedCoinsUnavailable": "One or more selected coins are no longer available. Review your coin selection and try again.",
+  "sendErrorSwapCreationFailed": "Failed to create swap.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorTransactionChanged": "The transaction details changed. Review the amount, destination, and fees, then confirm again.",
+  "sendFastFee": "Fast",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "@sendPayjoinLabel": {
+    "description": "Row title on the send confirmation details showing (with a tick) that this send will attempt a payjoin."
+  },
+  "sendReplaceByFeeActivated": "Replace-by-fee activated",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "Select coins manually",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "Selected utxos does not cover required amount",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendSelfTransfer": "Self-transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
+  "settingsPayjoinSatsUnit": "sats",
+  "@settingsPayjoinSatsUnit": {
+    "description": "Unit shown inside the payjoin minimum amount field"
+  },
+  "swapAmountLabel": "Amount",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapAmountPlaceholder": "0",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapArkBelowMinimum": "Amount is too low. Minimum is {amount} sats + fees",
+  "@swapArkBelowMinimum": {
+    "description": "Shown when the transfer amount is below the real Board minimum. The amount is a formatted satoshi string.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "swapArkFeeReview": "Fees and the amount received are confirmed in the next review.",
+  "@swapArkFeeReview": {
+    "description": "Explains that the native quote determines fees and the amount received before confirmation."
+  },
+  "swapArkMinimum": "Minimum amount {amount} sats + network fees",
+  "@swapArkMinimum": {
+    "description": "Board minimum reported by the Ark server. The amount is a formatted satoshi string.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "swapArkRouteUnavailable": "This transfer is unavailable.",
+  "@swapArkRouteUnavailable": {
+    "description": "Shown for an internal transfer pair without a supported native operation."
+  },
+  "swapAvailableBalance": "Available balance",
+  "@swapAvailableBalance": {
+    "description": "Available balance label"
+  },
+  "swapConfirmTransferTitle": "Confirm Swap",
+  "@swapConfirmTransferTitle": {
+    "description": "AppBar title on the confirmation page"
+  },
+  "swapContinueButton": "Continue",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapDoNotUninstallWarning": "Do not uninstall the app until the swap completes!",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
+  "swapErrorAmountAboveMaximum": "Amount exceeds maximum swap amount: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "Amount is below minimum swap amount: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorInvalidBitcoinAddress": "Please enter a valid Bitcoin address",
+  "@swapErrorInvalidBitcoinAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Bitcoin"
+  },
+  "swapErrorInvalidLiquidAddress": "Please enter a valid Liquid address",
+  "@swapErrorInvalidLiquidAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Liquid"
+  },
+  "swapErrorRateLimited": "Too many requests. Please wait {seconds} seconds and try again.",
+  "@swapErrorRateLimited": {
+    "description": "Error shown when the swap provider rate limits a request",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "swapErrorRouteUnavailable": "{fromNetwork} to {toNetwork} is not available.",
+  "@swapErrorRouteUnavailable": {
+    "description": "Shown when the exchange rejects a swap because no payment option/route exists for it (API ERR_ORD_PO404), naming the source and destination networks.",
+    "placeholders": {
+      "fromNetwork": {
+        "type": "String"
+      },
+      "toNetwork": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorRouteUnavailableGeneric": "This swap is not available.",
+  "@swapErrorRouteUnavailableGeneric": {
+    "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
+  },
+  "swapExternalAddressHint": "Enter external wallet address",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapExternalTransferLabel": "External Swap",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "From",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapGoHomeButton": "Go home",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapInfoDescription": "Swap Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
+  "@swapInfoDescription": {
+    "description": "Information banner text on amount page"
+  },
+  "swapInsufficientFunds": "Insufficient Funds",
+  "@swapInsufficientFunds": {
+    "description": "Error shown when the amount exceeds the wallet balance during a swap"
+  },
+  "swapInternalTransferDescription": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
+  "@swapInternalTransferDescription": {
+    "description": "Introduction to internal wallet transfers and everyday spending funds."
+  },
+  "swapInternalTransferTitle": "Internal Swap",
+  "@swapInternalTransferTitle": {
+    "description": "AppBar title on the amount entry page"
+  },
+  "swapMaxButton": "MAX",
+  "@swapMaxButton": {
+    "description": "Button to use maximum available balance"
+  },
+  "swapReceiveExactAmountLabel": "Receive exact amount",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapReverseDirectionTooltip": "Reverse direction",
+  "@swapReverseDirectionTooltip": {
+    "description": "Accessible name of the Swap button that exchanges the source and destination wallets"
+  },
+  "swapSubtractFeesLabel": "Subtract fees from amount",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapToLabel": "To",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapTotalFees": "Total Fees ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapTransferCompletedMessage": "Wow, you waited! The swap has completed successfully.",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferCompletedTitle": "Swap completed",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferDirection": "Swap From and To",
+  "@swapTransferDirection": {
+    "description": "Accessibility label for swapping the internal transfer source and destination."
+  },
+  "swapTransferPendingMessage": "The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferPendingTitle": "Swap Pending",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferRefundInProgressMessage": "There was an error with the swap. Your refund is in progress.",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundInProgressTitle": "Swap Refund In Progress",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundedMessage": "The swap has been successfully refunded.",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapTransferRefundedTitle": "Swap Refunded",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferTitle": "Swap",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapUnderReviewContactSupport": "Contact support",
+  "@swapUnderReviewContactSupport": {
+    "description": "Button opening support for a swap under review"
+  },
+  "swapUnderReviewDescription": "This swap requires a manual review. Contact support for assistance. If you do not have a support account, you only need to create one; KYC is not required.",
+  "@swapUnderReviewDescription": {
+    "description": "Explanation and no-KYC guidance for a swap under review"
+  },
+  "swapUnderReviewSupportMessage": "Swap under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "@swapUnderReviewSupportMessage": {
+    "description": "Prefilled support message containing swap identifiers",
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      },
+      "requestId": {
+        "type": "String"
+      },
+      "orderNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "swapUnderReviewTitle": "Swap under review",
+  "@swapUnderReviewTitle": {
+    "description": "Title shown when a swap payin requires manual review"
+  },
+  "swapValidationSelectFromWallet": "Please select a wallet to swap from",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Please select a wallet to swap to",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkLiquid": "Liquid",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionStatusSwapExpired": "Swap Expired",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionStatusSwapFailed": "Swap Failed",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescChainExpired": "This swap has expired. Your funds will be automatically returned to your wallet.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescChainFailed": "There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
+  "@transactionSwapOpenWithin24h": {
+    "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
+  },
+  "typeLabel": "Type: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
+  "@walletLoadFailed": {
+    "description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."
+  },
+  "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
+  "@walletSpendAwaitingObservation": {
+    "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
+  },
+  "walletSpendBusy": "The wallet is busy. Try again in a moment.",
+  "@walletSpendBusy": {
+    "description": "Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments."
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {"description": "Generic toast message after copying a value to the clipboard"},
+  "coreSwapsStatusCompleted": "Completed",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "Pending",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "Amount",
+  "@swapRescueAmountLabel": {"description": "Detail row label for the swap amount"},
+  "swapRescueButton": "Restore",
+  "@swapRescueButton": {"description": "Button that re-imports the swap and resumes it"},
+  "swapRescueCreatedLabel": "Created",
+  "@swapRescueCreatedLabel": {"description": "Detail row label for when the swap was created"},
+  "swapRescueIdLabel": "Swap ID",
+  "@swapRescueIdLabel": {"description": "Detail row label for the swap id"},
+  "swapRescueRouteLabel": "Route",
+  "@swapRescueRouteLabel": {"description": "Detail row label for the swap from/to assets"},
+  "swapRescueStatusLabel": "Status",
+  "@swapRescueStatusLabel": {"description": "Detail row label for the swap status"},
+  "swapRescueSuccess": "Swap restored — it will now resume",
+  "@swapRescueSuccess": {"description": "Confirmation shown after a swap is rescued"},
+  "swapRescueTitle": "Rescue swap",
+  "@swapRescueTitle": {"description": "Title of the swap rescue details page"},
+  "swapRescueTypeLabel": "Type",
+  "@swapRescueTypeLabel": {"description": "Detail row label for the swap type"},
+  "swapRescueWalletHint": "Select a wallet",
+  "@swapRescueWalletHint": {"description": "Placeholder for the rescue wallet picker"},
+  "swapRescueWalletLabel": "Restore to wallet",
+  "@swapRescueWalletLabel": {"description": "Label above the wallet picker on the rescue page"},
+  "swapRestoreActionable": "{count, plural, =0{No swaps to recover} =1{You can attempt recovering 1 swap. It may already be in a terminal status.} other{You can attempt recovering {count} swaps. Note, some of them may already be in a terminal status.}}",
+  "@swapRestoreActionable": {"description": "Header count of restorable swaps with locked, unresolved funds", "placeholders": {"count": {"type": "int"}}},
+  "swapRestoreAllSection": "All swaps",
+  "@swapRestoreAllSection": {"description": "Section header for the remaining (non-recoverable) swaps"},
+  "swapRestoreFailed": "Couldn't restore swaps",
+  "@swapRestoreFailed": {"description": "Error message when restoring swaps fails"},
+  "swapRestoreKindCrossChain": "Cross Chain",
+  "@swapRestoreKindCrossChain": {"description": "Label for a chain swap in the restore list"},
+  "swapRestoreKindLightningReceive": "Lightning Receive",
+  "@swapRestoreKindLightningReceive": {"description": "Label for a reverse (Lightning to on-chain) swap in the restore list"},
+  "swapRestoreKindLightningSend": "Lightning Send",
+  "@swapRestoreKindLightningSend": {"description": "Label for a submarine (on-chain to Lightning) swap in the restore list"},
+  "swapRestoreNoSwaps": "No swaps found to restore",
+  "@swapRestoreNoSwaps": {"description": "Empty state when the restore endpoint returns no swaps"},
+  "swapRestoreRecoverableSection": "Recoverable",
+  "@swapRestoreRecoverableSection": {"description": "Section header for swaps that can be recovered (tappable)"},
+  "swapRestoreTitle": "Swap Restore",
+  "@swapRestoreTitle": {"description": "Title for the swap restore settings page"},
+  "swapsFailureMasterKeyUnavailable": "This wallet cannot restore swaps: no bitcoin seed is available to derive the swap key.",
+  "@swapsFailureMasterKeyUnavailable": {"description": "Rescue failure: watch-only or hardware-only wallet"},
+  "swapsFailureNetwork": "Could not reach any server. Check your connection and try again.",
+  "@swapsFailureNetwork": {"description": "Rescue failure: no server reachable"},
+  "swapsFailureNotRestorable": "This swap could not be rebuilt from the server. Contact support with your swap ID.",
+  "@swapsFailureNotRestorable": {"description": "Rescue failure: restore endpoint could not rebuild the swap"},
+  "swapsFailureRefundNotFinal": "The refund is not spendable yet (timelock). Try again later.",
+  "@swapsFailureRefundNotFinal": {"description": "Rescue failure: refund timelock not passed"},
+  "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
+  "@swapsFailureUnexpected": {"description": "Rescue failure: generic catch-all, never shows raw details"}
+}

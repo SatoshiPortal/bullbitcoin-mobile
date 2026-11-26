@@ -5,6 +5,7 @@ enum WalletStatus { initial, loading, success, failure }
 @freezed
 sealed class WalletState with _$WalletState {
   const factory WalletState({
+    AmountDisplayPreferences? amountDisplay,
     @Default(WalletStatus.initial) WalletStatus status,
     @Default([]) List<Wallet> wallets,
     @Default([]) List<WalletWarning> warnings,
@@ -12,8 +13,6 @@ sealed class WalletState with _$WalletState {
     WalletFailure? failure,
     @Default(0) int unconfirmedIncomingBalance,
     @Default(false) bool isRefreshing,
-    @Default(false) bool isDeletingWallet,
-    WalletFailure? walletDeletionFailure,
     @Default(false) bool isCheckingServiceStatus,
     @Default(0) int spBalanceSat,
     @Default(false) bool isSpWalletSetup,

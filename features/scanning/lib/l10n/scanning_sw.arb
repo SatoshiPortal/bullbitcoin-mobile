@@ -1,0 +1,15 @@
+{
+  "@@locale": "sw",
+  "scanningProgressLabel": "Inachanganua: {percent}%",
+  "urProgressLabel": "Maendeleo ya UR: sehemu {parts}",
+  "scanningCompletedMessage": "Uchanganuzi umekamilika",
+  "urDecodingFailedMessage": "Kufungua UR kumeshindwa",
+  "urProcessingFailedMessage": "Uchakataji wa UR umeshindwa",
+  "scanNfcButton": "Changanua NFC",
+  "nfcConnectionLost": "Muunganisho wa NFC umepotea. Weka kifaa chako karibu na tag ya NFC na ujaribu tena.",
+  "nfcWriteFailed": "Uhamisho wa NFC umeshindwa. Tafadhali jaribu tena.",
+  "nfcDisabled": "NFC imezimwa. Iwashe kwenye mipangilio.",
+  "nfcNotAvailable": "NFC haiungwi mkono kwenye kifaa hiki",
+  "nfcFailed": "Lo! Hitilafu fulani imetokea",
+  "nfcInvalidData": "Hakuna data ya NFC inayoungwa mkono iliyopatikana"
+}

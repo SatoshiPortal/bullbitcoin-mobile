@@ -185,7 +185,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     return utf8.decode(bytes);
   }
 
-  /// Cancels queued discovery capabilities and closes the owned HTTP client.
+  /// Cancels queued discovery capabilities and releases the storage session.
   void dispose() {
     if (_disposed) return;
     _disposed = true;
@@ -210,35 +210,29 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     _Session session,
     Future<T> Function() action,
   ) => _serialized(() async {
-    if (!session._active || session._generation != _accountGeneration) {
-      throw const _DiscoverySessionExpiredException();
-    }
+    _checkDiscoverySession(session);
     final account = await _dataSource.connectSilently();
-    if (account != session.account ||
-        session._generation != _accountGeneration) {
+    _checkDiscoverySession(session);
+    if (account != session.account) {
       throw const _DiscoverySessionExpiredException();
     }
     return action();
   });
 
-  Future<List<DriveFileMetadata>> _sessionMetadata(_Session session) async {
-    final files = <DriveFileMetadata>[];
-    final seenTokens = <String>{};
-    String? token;
-    while (true) {
-      final page = await _withCurrentAccount(
-        session,
-        () => _dataSource.fetchMetadataPage(token),
-      );
-      files.addAll(page.files.map((file) => file.toEntity()));
-      final next = page.nextPageToken;
-      if (next == null || next.isEmpty) return files;
-      if (!seenTokens.add(next)) {
-        throw const FormatException('Drive pagination repeated a page token');
-      }
-      token = next;
+  void _checkDiscoverySession(_Session session) {
+    if (_disposed ||
+        !session._active ||
+        session._generation != _accountGeneration) {
+      throw const _DiscoverySessionExpiredException();
     }
   }
+
+  Future<List<DriveFileMetadata>> _sessionMetadata(_Session session) =>
+      _withCurrentAccount(session, () async {
+        final files = await _dataSource.fetchAllMetadata();
+        _checkDiscoverySession(session);
+        return files.map((file) => file.toEntity()).toList();
+      });
 }
 
 final class _Session implements GoogleDriveDiscoverySession {

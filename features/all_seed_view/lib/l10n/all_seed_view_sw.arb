@@ -1,0 +1,26 @@
+{
+  "allSeedViewSecurityWarningMessage": "Kuonyesha misemo ya mbegu ni hatari ya usalama. Yeyote anayeona msemo wako wa mbegu anaweza kufikia fedha zako. Hakikisha uko mahali pa faragha na hakuna anayeweza kuona skrini yako.",
+  "cancel": "Ghairi",
+  "allSeedViewLoadingMessage": "Hii huenda ikachukua muda kupakia ikiwa una mbegu nyingi kwenye kifaa hiki.",
+  "retry": "Jaribu Tena",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "allSeedViewNoSeedsFound": "Hakuna mbegu zilizopatikana.",
+  "allSeedViewSecurityWarningTitle": "Onyo la Usalama",
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "allSeedViewOldWallets": "Pochi za Zamani ({count})",
+  "allSeedViewIUnderstandButton": "Naelewa",
+  "allSeedViewDeleteWarningTitle": "ONYO!",
+  "allSeedViewDeleteWarningMessage": "Kufuta mbegu ni kitendo kisichoweza kutenduliwa. Fanya hivi tu ikiwa una nakala rudufu salama za mbegu hii au pochi zinazohusiana zimeondolewa fedha zote.",
+  "delete": "Futa",
+  "allSeedViewErrorDelete": "Imeshindwa kufuta mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Imeshindwa kupakia mbegu. Tafadhali jaribu tena.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Onyesha Mbegu",
+  "allSeedViewTitle": "Kitazamaji cha Mbegu",
+  "allSeedViewExistingWallets": "Pochi Zilizopo ({count})"
+}

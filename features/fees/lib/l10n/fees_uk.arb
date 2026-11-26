@@ -1,0 +1,22 @@
+{
+  "retry": "Птиця",
+  "doneButton": "Сонце",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Абсолютні збори",
+  "sendBelowMinFeeRateError": "Комісія має становити щонайменше 0.1 sat/vB.",
+  "sendCustomFee": "Спеціальний Fee",
+  "sendEconomyFee": "Економ",
+  "sendEnterAbsoluteFee": "Введіть абсолютний внесок у сати",
+  "sendEnterRelativeFee": "Введіть відносну плату в sats/vB",
+  "sendEstimatedDelivery": "Орієнтовна доставка ~ ",
+  "sendEstimatedDelivery10Minutes": "10 хвилин",
+  "sendEstimatedDelivery10to30Minutes": "10-30 хвилин",
+  "sendEstimatedDeliveryHours": "години",
+  "sendEstimatedDeliveryHoursToDays": "час",
+  "sendFastFee": "Швидкий",
+  "sendRelativeFees": "Відносні збори",
+  "sendSats": "атласне",
+  "sendSatsPerVB": "сати/ВБ",
+  "sendSelectNetworkFee": "Оберіть послугу",
+  "sendSubSatVbyteWarning": "Транзакції з комісією менше 1 sat/vB можуть підтверджуватися довше і можуть не поширитися на всі вузли."
+}

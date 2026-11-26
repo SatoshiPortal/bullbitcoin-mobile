@@ -8,6 +8,38 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/address_view
+  - features/announcements
+  - features/backups
+  - features/coins
+  - features/bitcoin_price
+  - features/bull_exchange
+  - features/receive
+  - features/send
+  - packages/labels
+  - packages/legacy_storage
+  - packages/exchange
+  - features/label_editor
+  - features/network
+  - features/onboarding
+  - features/mnemonic_entry
+  - features/scanning
+  - features/settings
+  - features/signers
+  - features/access
+  - features/startup
+  - features/overview
+  - features/all_seed_view
+  - features/bip85
+  - features/silent
+  - features/transactions
+  - features/ark
+  - features/fees
+  - features/swap
+  - features/wallet_import
+  - features/wizard
+  - packages/fees
+  - packages/ark
   - packages/secrets
   - packages/bull_payjoin
   - packages/bull_ui
@@ -16,10 +48,18 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/file_system
+  - packages/google_drive
+  - packages/backup_storage
   - packages/background_tasks
   - packages/notifications
   - packages/sync
+  - packages/spend
+  - packages/electrum
   - packages/bull_tor
+  - packages/mempool
+  - packages/preferences
+  - packages/provisioning
   - packages/screen_privacy
   - packages/bull_reporting
   - packages/screen_awake
@@ -31,8 +71,46 @@ workspace:
   - features/logs
   - features/quick_actions
   - features/recoverbull
+  - features/backup_metadata
+  - features/physical_backup_verification
+  - packages/rust_bindings
+  - packages/onion
+  - packages/boltz_stream
+  - packages/bitbox_transport
+  - packages/satoshifier
+  - packages/bbx_api
 
 dependencies:
+  send:
+  all_seed_view:
+  bip85:
+  access:
+  startup:
+  overview:
+  provisioning:
+  wallet_import:
+  wizard:
+  address_view:
+  announcements:
+  backups:
+  coins:
+  bitcoin_price:
+  receive:
+  labels:
+  label_editor:
+  network:
+  onboarding:
+  mnemonic_entry:
+  scanning:
+  settings:
+  signers:
+  silent:
+  ark:
+  bull_ark:
+  fees:
+  fees_feature:
+  swap_feature:
+  physical_backup_verification:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:
@@ -40,20 +118,30 @@ dependencies:
   secrets:
   bull_payjoin:
   bull_pricer:
+  bbx_api:
+  bull_exchange:
+  exchange:
   novlang:
   btc_map:
   bull_ui:
   primitives:
+  file_system:
   background_tasks:
   notifications:
   flutter_local_notifications: ^23.0.2
   sync:
+  spend:
+  electrum:
   bull_tor:
+  mempool:
+  legacy_storage:
+  preferences:
   screen_privacy:
   bull_reporting:
   screen_awake:
   bull_logger:
   bull_recoverbull:
+  backup_metadata:
   bull_logs:
   swaps:
   bull_quick_actions:
@@ -61,10 +149,9 @@ dependencies:
   get_it: ^9.1.1
   flutter_svg: ^2.4.0
   go_router: ^18.1.4
-  flutter_secure_storage: ^10.3.3
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
-  qr_flutter: ^4.1.0
+  shared_preferences_platform_interface: ^2.4.2
   decimal: ^3.2.4
   clock: ^1.1.2
   dio: ^5.9.0
@@ -72,24 +159,9 @@ dependencies:
   flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
-  file_picker: ^13.3.3
-  bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: c0ca21189cf87d653dca513df80bd26f00f0c0a1
-      path: packages/bull_sdk
+  rust_bindings:
   boltz_stream:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: c0ca21189cf87d653dca513df80bd26f00f0c0a1
-      path: packages/boltz-stream
   bitbox_transport:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: c0ca21189cf87d653dca513df80bd26f00f0c0a1
-      path: packages/bitbox-transport
-  universal_ble: ^3.3.0
-  auto_size_text: ^3.0.0
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
   crypto: ^3.0.7
@@ -110,7 +182,6 @@ dependencies:
   bip21_uri: ^2.2.0
   bip32_keys: ^3.1.1
   bip39_mnemonic: ^4.1.0
-  bip329_labels: ^2.0.0
   bs58check: ^1.0.2
   gif: ^2.3.0
   custom_sliding_segmented_control: ^2.0.0
@@ -121,7 +192,6 @@ dependencies:
   webview_flutter_wkwebview: ^3.23.4
   async: ^2.11.0
   drift: ^2.35.4
-  drift_flutter: ^0.3.1
   sqlite3: ^3.5.2
   package_info_plus: ^10.2.2
   share_plus: ^13.3.1
@@ -130,17 +200,8 @@ dependencies:
       url: https://github.com/fusion44/dart_bolt11_decoder
       ref: f5deec21fb0ac2ee507de1f683344b03f8cc92a3
   satoshifier:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: c0ca21189cf87d653dca513df80bd26f00f0c0a1
-      path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
-  ledger_bitcoin:
-    git:
-      url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
-      path: packages/ledger-bitcoin
-      ref: d71f36e95a763491adab95fc1f5abf86f532ac4e
   permission_handler: ^13.0.2
   cbor: ^6.3.7
   ur:
@@ -156,9 +217,10 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.26.0
-  keyboard_actions: ^5.0.3
+  transactions:
 
 dev_dependencies:
+  file_picker: ^13.3.3
   # Parse import, conditional export and part directives in the shell boundary test.
   analyzer: ^13.0.0
   build_runner: ^2.10.4
@@ -171,6 +233,8 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^6.11.2
   mocktail: ^1.0.4
+  # Its plugin integration test runs in integration_test/onion.
+  onion:
   # Direct dep for the webview test fake: the Platform* types and callback typedefs it extends are not re-exported by webview_flutter.
   webview_flutter_platform_interface: ^2.15.1
   path_provider_platform_interface: ^2.1.2
@@ -178,8 +242,9 @@ dev_dependencies:
   flutter_gen_runner: any
   drift_dev: ^2.35.3
   melos: ^8.10.1
-  # Direct dep for tools/novlang_bridge.dart, which reads the novlang manifest.
+  # Manifest parsers for tools/novlang_bridge.dart and tools/workspace_graph.dart.
   yaml: ^3.1.3
+  toml: ^0.18.0
   bloc_test: ^10.0.0
 
 # Payjoin 0.26.0's archive predates upstream's hooks-2 metadata-only fix:
@@ -196,6 +261,8 @@ hooks:
   user_defines:
     payjoin:
       build: source
+    sqlite3:
+      source: sqlite3mc
 
 # Melos monorepo workspace. The Flutter app remains at the root
 # (useRootAsPackage) while shared modules are extracted incrementally into the

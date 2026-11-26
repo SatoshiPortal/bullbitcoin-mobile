@@ -1,33 +1,110 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, Ok;
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
+    show
+        BitcoinNetwork,
+        BitcoinUnit,
+        Err,
+        Fingerprint,
+        LiquidNetwork,
+        Ok,
+        Result,
+        ScriptType;
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    show Wallet, Network;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:primitives/primitives.dart' as primitives show Network;
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:startup/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {
-  int storeDeletions = 0;
+class _MockWalletRepository extends Mock implements WalletRepository {}
+
+/// Records the repair account creations the startup check performs.
+final class _RecordingAccounts implements WalletProvisioning {
+  final List<({Secret secret, primitives.Network network})> created = [];
 
   @override
-  dynamic noSuchMethod(Invocation invocation) {
-    if (invocation.memberName == #deleteLwkDb) {
-      storeDeletions++;
-      return Future<void>.value();
-    }
-    return super.noSuchMethod(invocation);
+  Future<Result<void, WalletProvisioningFailure>> resume() async =>
+      const Ok(null);
+
+  @override
+  Future<Result<String, WalletProvisioningFailure>> createDefault(
+    Secret secret,
+    primitives.Network network, {
+    DateTime? birthday,
+  }) async {
+    created.add((secret: secret, network: network));
+    return Ok(network.toString());
   }
+
+  @override
+  Future<Result<void, ParentCustodyFailure>> importMnemonic({
+    required Fingerprint parent,
+    required Secrets secrets,
+    required ParentCustodyAdmissionPort admission,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    String? label,
+  }) => throw StateError('Unexpected mnemonic provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importDescriptor(
+    WatchOnlyAccount account,
+  ) => throw StateError('Unexpected descriptor provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importXpub({
+    required String xpub,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required String label,
+  }) => throw StateError('Unexpected xpub provisioning');
+}
+
+final class _FailingAccounts implements WalletProvisioning {
+  @override
+  Future<Result<void, WalletProvisioningFailure>> resume() async =>
+      const Ok(null);
+
+  @override
+  Future<Result<String, WalletProvisioningFailure>> createDefault(
+    Secret secret,
+    primitives.Network network, {
+    DateTime? birthday,
+  }) async => fail('complete default pair');
+
+  @override
+  Future<Result<void, ParentCustodyFailure>> importMnemonic({
+    required Fingerprint parent,
+    required Secrets secrets,
+    required ParentCustodyAdmissionPort admission,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    String? label,
+  }) => throw StateError('Unexpected mnemonic provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importDescriptor(
+    WatchOnlyAccount account,
+  ) => throw StateError('Unexpected descriptor provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importXpub({
+    required String xpub,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required String label,
+  }) => throw StateError('Unexpected xpub provisioning');
 }
 
 /// Startup must not collapse three different states into one screen.
@@ -86,10 +163,12 @@ void main() {
     wallets = _MockWalletRepository();
 
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     // A complete default set, so the test exercises the seed read alone.
@@ -106,14 +185,24 @@ void main() {
     );
   });
 
+  var hasWalletsCalls = 0;
+
   CheckForExistingDefaultWalletsUsecase usecaseOn(
-    FakeSecureStoragePlatform storage,
-  ) {
+    FakeSecureStoragePlatform storage, {
+    WalletProvisioning? accounts,
+  }) {
     storage.install();
+    hasWalletsCalls = 0;
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
     return CheckForExistingDefaultWalletsUsecase(
-      settingsRepository: settings,
-      walletRepository: wallets,
-      secrets: Secrets(scratchDirectory: () async => '/tmp'),
+      preferences: _StartupPreferences(settings),
+      inventory: _StartupInventory(wallets),
+      hasWallets: () async {
+        hasWalletsCalls++;
+        return const Ok(true);
+      },
+      secrets: secrets,
+      repair: DefaultWalletRepair(secrets, accounts ?? _RecordingAccounts()),
     );
   }
 
@@ -121,10 +210,12 @@ void main() {
     'empty active regtest preserves an existing catalog without secret IO',
     () async {
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
         ),
       );
       when(
@@ -133,7 +224,6 @@ void main() {
           environment: Environment.regtest,
         ),
       ).thenAnswer((_) async => const Ok([]));
-      when(wallets.hasStoredWallets).thenAnswer((_) async => const Ok(true));
       final storage = FakeSecureStoragePlatform();
       final result = await usecaseOn(storage).execute();
       expect(
@@ -149,8 +239,12 @@ void main() {
           onlyDefaults: true,
           environment: Environment.regtest,
         ),
-      ).called(1);
-      verify(wallets.hasStoredWallets).called(1);
+      ).called(2);
+      expect(
+        hasWalletsCalls,
+        1,
+        reason: 'the existing catalog proves the device',
+      );
       verifyNoMoreInteractions(wallets);
       expect(storage.entries, isEmpty);
     },
@@ -158,10 +252,12 @@ void main() {
 
   void onRegtest(List<Wallet> defaults) {
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(
@@ -191,33 +287,21 @@ void main() {
         onlyDefaults: true,
         environment: Environment.regtest,
       ),
-    ).called(1);
+    ).called(2);
     verifyNoMoreInteractions(wallets);
   });
 
   test(
     'a bitcoin-only regtest set heals its Liquid default from the default seed',
     () async {
-      // `Secret` is final; mocktail's fallback for `any(named: 'secret')` is a
-      // real one, read from the same fake keystore.
       final storage = FakeSecureStoragePlatform(
         entries: {'seed_$fingerprint': entry},
       );
       storage.install();
-      final fallback = await Secrets(scratchDirectory: () async => '/tmp')
-          .fetch(Fingerprint(fingerprint));
-      registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
       onRegtest([wallet(Network.bitcoinRegtest)]);
-      when(
-        () => wallets.createWallet(
-          secret: any(named: 'secret'),
-          network: Network.liquidRegtest,
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-        ),
-      ).thenAnswer((_) async => wallet(Network.liquidRegtest));
+      final accounts = _RecordingAccounts();
 
-      final result = await usecaseOn(storage).execute();
+      final result = await usecaseOn(storage, accounts: accounts).execute();
 
       expect(
         result,
@@ -227,27 +311,21 @@ void main() {
           true,
         ),
       );
-      final created = verify(
-        () => wallets.createWallet(
-          secret: captureAny(named: 'secret'),
-          network: Network.liquidRegtest,
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-        ),
-      )..called(1);
-      expect((created.captured.single as Secret).id.hex, fingerprint);
+      final created = accounts.created.single;
+      expect(created.secret.id.hex, fingerprint);
+      expect(created.network, LiquidNetwork.regtest);
       // The catalog is read once, then re-read after the heal.
       verify(
         () => wallets.getWallets(
           onlyDefaults: true,
           environment: Environment.regtest,
         ),
-      ).called(2);
+      ).called(4);
       verifyNoMoreInteractions(wallets);
     },
   );
 
-  test('a status conflict never deletes stores or retries the read', () async {
+  test('a status conflict never retries the read', () async {
     when(
       () => wallets.getWallets(
         onlyDefaults: any(named: 'onlyDefaults'),
@@ -256,7 +334,8 @@ void main() {
     ).thenAnswer((_) async => const Err(WalletLwkStatusConflictFailure()));
     final result = await usecaseOn(FakeSecureStoragePlatform()).execute();
     expect(result, isA<Err<bool, AppStartupFailure>>());
-    expect(wallets.storeDeletions, 0);
+    // Startup no longer owns store deletion: a conflict only fails the check.
+    expect(hasWalletsCalls, 0);
     verify(
       () => wallets.getWallets(
         onlyDefaults: true,
@@ -356,13 +435,52 @@ void main() {
           wallet(Network.bitcoinMainnet),
         ]),
       );
-      final usecase = usecaseOn(FakeSecureStoragePlatform());
+      final usecase = usecaseOn(
+        FakeSecureStoragePlatform(entries: {'seed_$fingerprint': entry}),
+      );
       expect(
         (await usecase.execute() as Err).failure,
         isA<AppStartupWalletCheckFailure>(),
       );
     },
   );
+
+  test('startup resolves local custody by secret reference', () async {
+    final storage = FakeSecureStoragePlatform(
+      entries: {'seed_$fingerprint': entry},
+    )..install();
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final inventory = _RegistrationInventory([
+      for (final network in [
+        Network.bitcoinMainnet.shared,
+        LiquidNetwork.mainnet,
+      ])
+        walletRegistrationForTesting(
+          id: network.toString(),
+          network: network,
+          isDefault: true,
+          signer: WalletSigner.local,
+          masterFingerprint: Fingerprint('deadbeef'),
+          secretFingerprint: Fingerprint(fingerprint),
+        ),
+    ]);
+    final usecase = CheckForExistingDefaultWalletsUsecase(
+      preferences: _StartupPreferences(settings),
+      inventory: inventory,
+      hasWallets: () async => const Ok(true),
+      secrets: secrets,
+      repair: DefaultWalletRepair(secrets, _FailingAccounts()),
+    );
+    expect(
+      await usecase.execute(),
+      isA<Ok<bool, AppStartupFailure>>().having(
+        (value) => value.value,
+        'has defaults',
+        true,
+      ),
+    );
+    expect(storage.entries, contains('seed_$fingerprint'));
+  });
 
   test('an unreadable seed is neither of those', () async {
     // Still on the device and possibly readable after a plugin fix, so it
@@ -382,4 +500,80 @@ void main() {
       ),
     );
   });
+
+  test('an unexpected error ends on the startup error screen', () async {
+    // Without a result the splash would wait forever.
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: any(named: 'onlyDefaults'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenThrow(StateError('unexpected'));
+    final usecase = usecaseOn(FakeSecureStoragePlatform());
+
+    expect(
+      await usecase.execute(),
+      isA<Err<bool, AppStartupFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<AppStartupWalletCheckFailure>(),
+      ),
+    );
+  });
+}
+
+class _StartupPreferences implements ActiveEnvironmentReader {
+  final Preferences _preferences;
+  const _StartupPreferences(this._preferences);
+
+  @override
+  Future<Ok<Environment, PreferencesFailure>> readActiveEnvironment() async {
+    final settings =
+        await _preferences.fetch() as Ok<SettingsEntity, PreferencesFailure>;
+    return Ok(settings.value.environment);
+  }
+}
+
+class _StartupInventory extends Mock implements WalletInventory {
+  final WalletRepository _wallets;
+  _StartupInventory(this._wallets);
+
+  @override
+  Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
+    primitives.Network network,
+  ) async =>
+      (await _wallets.getWallets(
+            onlyDefaults: true,
+            environment: Environment.fromName(network.env.name),
+          ))
+          .map(
+            (wallets) => walletSelectionForTesting([
+              for (final wallet in wallets)
+                if (wallet.network.shared == network)
+                  walletRegistrationForTesting(
+                    id: wallet.id,
+                    network: network,
+                    isDefault: true,
+                    signer: WalletSigner.local,
+                    masterFingerprint: Fingerprint(wallet.masterFingerprint),
+                    secretFingerprint: Fingerprint(wallet.masterFingerprint),
+                  ),
+            ]),
+          )
+          .mapErr((_) => const FetchSecretFailure());
+}
+
+class _RegistrationInventory extends Mock implements WalletInventory {
+  final List<WalletRegistration> registrations;
+
+  _RegistrationInventory(this.registrations);
+
+  @override
+  Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
+    primitives.Network network,
+  ) async => Ok(
+    walletSelectionForTesting(
+      registrations.where((wallet) => wallet.network == network).toList(),
+    ),
+  );
 }

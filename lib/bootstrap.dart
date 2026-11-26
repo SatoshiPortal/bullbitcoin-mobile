@@ -3,44 +3,67 @@ import 'package:primitives/primitives.dart' show Err;
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
-import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:startup/startup.dart' show AppInitErrorScreen;
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
+import 'package:notifications/payment_store.dart' show PaymentNotifications;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
+import 'package:exchange/exchange.dart'
+    show ExchangeAvailability, ExchangePlatform;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
+import 'package:legacy_storage/legacy_storage.dart' show LegacyImportFailure;
 import 'package:material_ui/material_ui.dart';
+import 'package:wizard/wizard.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future<void> startApp() async {
   await runZonedGuarded(
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
-        await runStartupWizard();
-        if (await Bull.init() case Err(:final failure)) {
+        final wizard = WizardFeature.mount();
+        var allowDeveloperNetwork = false;
+        try {
+          allowDeveloperNetwork = await WizardFeature.mayOfferInitialNetwork(
+            documents: await getApplicationDocumentsDirectory(),
+            support: await getApplicationSupportDirectory(),
+          );
+        } on Exception {
+          // Unavailable evidence must not unlock first-install controls.
+        }
+        final startup = await wizard.runIfNeeded(
+          allowDeveloperNetwork: allowDeveloperNetwork,
+          notificationChannelId: PaymentNotifications.channelId,
+          branding: WizardBranding(
+            headerLogo: AssetImage(Assets.logos.bbLogoSmall.path),
+            welcomeLogo: AssetImage(Assets.logos.bbLogoWhite.path),
+            welcomePattern: AssetImage(Assets.backgrounds.bgLong.path),
+          ),
+          exchangeAllowed: ExchangeAvailability.platformAllowed(
+            defaultTargetPlatform == TargetPlatform.iOS
+                ? ExchangePlatform.ios
+                : ExchangePlatform.other,
+          ),
+        );
+        if (startup case Err(:final failure)) {
+          _showInitError(failure);
+          return;
+        }
+        if (await Bull.init(retryStorage: _retryStorage, wizard: wizard)
+            case Err(:final failure)) {
           log.severe(
             message: 'App Init Error',
             error: failure,
             trace: StackTrace.current,
           );
-          runApp(
-            BullSupportScope(
-              onContactSupport: SupportFacade.contactSupport,
-              child: AppInitErrorScreen(error: failure),
-            ),
-          );
-          _refreshDiagnosticContextAfterFirstFrame();
+          _showInitError(failure);
           return;
         }
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
-        runApp(
-          BullSupportScope(
-            onContactSupport: SupportFacade.contactSupport,
-            child: AppInitErrorScreen(error: error),
-          ),
-        );
-        _refreshDiagnosticContextAfterFirstFrame();
+        _showInitError(error);
         return;
       } finally {
         // Make sure the just-logged severe line is on disk before we
@@ -75,6 +98,29 @@ Future<void> startApp() async {
       }
     },
   );
+}
+
+Future<void> _retryStorage(LegacyImportFailure failure) async {
+  final retry = Completer<void>();
+  log.warning('Application storage preparation could not complete');
+  _showInitError(failure, onRetry: retry.complete);
+  await log.flush();
+  await retry.future;
+}
+
+void _showInitError(Object error, {VoidCallback? onRetry}) {
+  runApp(
+    BullSupportScope(
+      onContactSupport: Support.contactSupport,
+      child: AppInitErrorScreen(
+        error: error,
+        onRetry: onRetry,
+        onMachineTranslationSelected: TranslationWarningBottomSheet.show,
+        extraLocalizations: const [SettingsLocalizations.delegate],
+      ),
+    ),
+  );
+  _refreshDiagnosticContextAfterFirstFrame();
 }
 
 void _refreshDiagnosticContextAfterFirstFrame() {

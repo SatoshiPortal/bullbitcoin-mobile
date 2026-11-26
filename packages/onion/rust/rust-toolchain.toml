@@ -1,0 +1,26 @@
+# Pinned explicitly rather than inherited.
+#
+# onion is not part of the rust_bindings cargo workspace and ships as its own
+# .so, so it must declare the compiler
+# that builds it. `native_toolchain_rust` reads this file and runs
+# `rustup run <channel> cargo build`, which is also what the app's
+# verify-rustc-pins check compares the embedded rustc version against.
+#
+# Kept equal to rust_bindings' pin for now so both halves of the app are built by
+# the same compiler; they can diverge without harm if a future arti bumps its
+# MSRV (arti-client 0.47 requires 1.92).
+[toolchain]
+channel = "1.100.0"
+# Native Assets validates the requested target against this list.
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "aarch64-linux-android",
+    "armv7-linux-androideabi",
+    "x86_64-linux-android",
+    "aarch64-apple-ios",
+    "aarch64-apple-ios-sim",
+    "x86_64-apple-ios",
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+]

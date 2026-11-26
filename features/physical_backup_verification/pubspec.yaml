@@ -1,0 +1,23 @@
+name: physical_backup_verification
+description: Sealed physical backup verification UI.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  material_ui: ^1.11.0
+  primitives:
+  screen_privacy:
+  secrets:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

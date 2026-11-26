@@ -6,6 +6,8 @@ import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/write/native_wallet_writer_repository.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
+import 'package:sync/src/domain/spend.dart' show signedForGeneration;
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
@@ -21,7 +23,8 @@ import 'package:sync/src/data/write/datasources/electrum_cache_datasource.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -91,6 +94,92 @@ final class _Wallet {
 
 String _hex(List<int> b) =>
     b.map((x) => x.toRadixString(16).padLeft(2, '0')).join();
+
+List<int> _bytes(String hex) => [
+  for (var i = 0; i < hex.length; i += 2)
+    int.parse(hex.substring(i, i + 2), radix: 16),
+];
+
+/// The Electrum script hash of a script, as a server names it.
+String _scripthash(String scriptHex) =>
+    _hex(sha256.convert(_bytes(scriptHex)).bytes.reversed.toList());
+
+/// A validly signed spend of [input] from the wallet stored at [path], paying
+/// [sats] to a foreign script. BDK drops an unconfirmed transaction whose
+/// owned inputs fail script verification, so the witness must be real. Another
+/// [sats] value yields a conflicting spend of the same outpoint.
+Uint8List _replacementSpend(String path, Outpoint input, int sats) {
+  final open = _Wallet.open(path);
+  final mnemonic = bdk.Mnemonic.fromString(mnemonic: _testMnemonic);
+  final secret = bdk.DescriptorSecretKey(
+    networkKind: bdk.NetworkKind.test,
+    mnemonic: mnemonic,
+    password: null,
+  );
+  final signers = [
+    for (final keychain in [
+      bdk.KeychainKind.external_,
+      bdk.KeychainKind.internal,
+    ])
+      bdk.SignersContainer.fromDescriptor(
+        descriptor: bdk.Descriptor.newBip84(
+          secretKey: secret,
+          keychainKind: keychain,
+          networkKind: bdk.NetworkKind.test,
+        ),
+      ),
+  ];
+  final recipient = bdk.Script(
+    rawOutputScript: Uint8List.fromList([0, 20, ...List.filled(20, 0xab)]),
+  );
+  final outpoint = bdk.OutPoint(
+    txid: bdk.Txid.fromString(hex: input.txId),
+    vout: input.vout,
+  );
+  try {
+    final psbt = bdk.TxBuilder()
+        .addUtxo(outpoint: outpoint)
+        .manuallySelectedOnly()
+        .addRecipient(
+          script: recipient,
+          amount: bdk.Amount.fromSat(satoshi: sats),
+        )
+        .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: 1000))
+        .finish(wallet: open.wallet);
+    try {
+      expect(
+        open.wallet.signWithSigners(
+          psbt: psbt,
+          signers: signers,
+          signOptions: null,
+        ),
+        isTrue,
+      );
+      final tx = psbt.extractTx();
+      try {
+        return Uint8List.fromList(tx.serialize());
+      } finally {
+        tx.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
+  } finally {
+    recipient.dispose();
+    for (final signer in signers) {
+      signer.dispose();
+    }
+    secret.dispose();
+    mnemonic.dispose();
+    open.close();
+  }
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
+}
 
 Map<String, String> _walletScripts() {
   final dir = Directory.systemTemp.createTempSync('wts_cache_scripts_');
@@ -663,6 +752,215 @@ void main() {
       },
     );
 
+    for (final scenario in [
+      'confirmed conflict',
+      'unconfirmed conflict',
+      'confirmed nonconflict',
+      'unknown replacement',
+      'legacy missing inputs',
+    ]) {
+      test('never-observed accepted spend: $scenario', () async {
+        // T1 and T2 provide independent confirmed coins in this wallet.
+        final phase = await fixture.load('S5-incoming-older-revealed', 1);
+        final initial = completed(await sync.execute(descriptor));
+        final input = (txId: phase.ids['T1'] ?? fail('missing T1'), vout: 0);
+        final independent = (
+          txId: phase.ids['T2'] ?? fail('missing T2'),
+          vout: 0,
+        );
+        final original = _replacementSpend(path, input, 90000);
+        final native = bdk.Transaction(transactionBytes: original);
+        final txid = native.computeTxid();
+        final originalId = txid.toString();
+        txid.dispose();
+        native.dispose();
+        ForegroundStores openStores() => openForeground(
+          documentsDirectory: dir.path,
+          catalog: SingleWalletCatalog(descriptor),
+          reservedAddresses: NoReservedAddresses(),
+          freezes: MemoryFreezeStore(),
+          inputReservations: _NoInputReservations(),
+          connections: connections,
+        );
+        var stores = openStores();
+        addTearDown(() => stores.close());
+        final receipt = await stores.spend.broadcast(
+          signedForGeneration(
+            key: descriptor.key,
+            generation: initial.revision!.generation,
+            transaction: SignedBitcoinTransaction(original),
+          ),
+        );
+        expect(receipt, isA<Ok<SpendReceipt, SyncFailure>>());
+        expect(
+          (receipt as Ok<SpendReceipt, SyncFailure>).value.durable,
+          isTrue,
+        );
+        expect(
+          await stores.spendGate.check(descriptor.key),
+          BitcoinSpendStatus.pending,
+        );
+        if (scenario == 'legacy missing inputs') {
+          final db = sqlite3.open(spendGateStorePath(dir.path));
+          db.execute('UPDATE broadcasts SET inputs=NULL WHERE txid=?', [
+            originalId,
+          ]);
+          db.close();
+        }
+
+        // Bull never imports T. Only another application's R is returned by
+        // subsequent history requests, and no absence cancels T's obligation.
+        await fixture.dropBroadcasts();
+        String? replacementId;
+        if (scenario != 'unknown replacement') {
+          final replacement = bdk.Transaction(
+            transactionBytes: _replacementSpend(
+              path,
+              scenario == 'confirmed nonconflict' ? independent : input,
+              scenario == 'confirmed nonconflict' ? 40000 : 80000,
+            ),
+          );
+          final client = bdk.ElectrumClient(
+            url: fixture.url,
+            socks5: null,
+            timeout: 5,
+            retry: 0,
+            validateDomain: false,
+          );
+          try {
+            final id = client.transactionBroadcast(tx: replacement);
+            try {
+              replacementId = id.toString();
+              if (scenario != 'unconfirmed conflict') {
+                await fixture.confirmBroadcast(id.toString());
+              } else {
+                await fixture.exposeBroadcasts(true);
+              }
+            } finally {
+              id.dispose();
+            }
+          } finally {
+            client.dispose();
+            replacement.dispose();
+          }
+        }
+        completed(await sync.execute(descriptor, discover: true));
+        final ready = scenario == 'confirmed conflict';
+        final expected = ready
+            ? BitcoinSpendStatus.ready
+            : BitcoinSpendStatus.pending;
+
+        Future<void> assertReopened() async {
+          final wallet = _Wallet.open(path);
+          final originalTxid = bdk.Txid.fromString(hex: originalId);
+          try {
+            expect(
+              wallet.wallet.getTx(txid: originalTxid),
+              isNull,
+              reason:
+                  'T must never have been imported, including after restart',
+            );
+            if (replacementId case final id?) {
+              final nativeId = bdk.Txid.fromString(hex: id);
+              final replacement = wallet.wallet.getTx(txid: nativeId);
+              nativeId.dispose();
+              expect(replacement, isNotNull);
+              if (replacement case final transaction?) {
+                expect(
+                  transaction.chainPosition is bdk.ConfirmedChainPosition,
+                  scenario != 'unconfirmed conflict',
+                );
+              }
+            }
+            if (ready) {
+              final coins = wallet.wallet.listUnspent();
+              try {
+                expect(
+                  coins.any(
+                    (coin) =>
+                        coin.outpoint.txid.toString() == independent.txId &&
+                        coin.outpoint.vout == independent.vout,
+                  ),
+                  isTrue,
+                );
+              } finally {
+                for (final coin in coins) {
+                  coin.outpoint.txid.dispose();
+                  coin.txout.scriptPubkey.dispose();
+                  coin.txout.value.dispose();
+                  if (coin.chainPosition case bdk.ConfirmedChainPosition(
+                    :final confirmationBlockTime,
+                    :final transitively,
+                  )) {
+                    confirmationBlockTime.blockId.hash.dispose();
+                    transitively?.dispose();
+                  }
+                }
+              }
+            }
+          } finally {
+            originalTxid.dispose();
+            wallet.close();
+          }
+          final revisions = RevisionStoreDatasource.openExisting(
+            revisionStorePath(dir.path),
+          );
+          try {
+            final reopened = BitcoinSpendGate(
+              documentsDirectory: dir.path,
+              revisions: revisions,
+              catalog: SingleWalletCatalog(descriptor),
+            );
+            expect(
+              await reopened.check(descriptor.key),
+              expected,
+              reason:
+                  'Only a positive confirmed input conflict settles absent T',
+            );
+          } finally {
+            revisions.close();
+          }
+        }
+
+        // This is separate from receipt/input SQL assertions: on baseline it
+        // exposes the wallet-wide refusal even after R actually confirmed.
+        await assertReopened();
+        expect(await stores.spendGate.check(descriptor.key), expected);
+        await stores.close();
+        stores = openStores();
+        expect(await stores.spendGate.check(descriptor.key), expected);
+        await assertReopened();
+        if (ready) {
+          final wallet = _Wallet.open(path);
+          final recipient = wallet.wallet
+              .peekAddress(keychain: bdk.KeychainKind.external_, index: 2)
+              .address;
+          final address = recipient.toString();
+          recipient.dispose();
+          wallet.close();
+          for (var run = 0; run < 2; run++) {
+            final built = await stores.spend.build(
+              descriptor.key,
+              initial.revision!.generation,
+              BitcoinSpendRequest(
+                recipients: [SpendRecipient(address, amountSat: 1000)],
+                fee: SpendAbsoluteFee(1000),
+                selected: [independent],
+                selectedOnly: true,
+              ),
+            );
+            expect(built, isA<Ok<UnsignedSpend, SyncFailure>>());
+            expect((built as Ok<UnsignedSpend, SyncFailure>).value.inputs, [
+              independent,
+            ]);
+            await assertReopened();
+            await stores.close();
+            stores = openStores();
+          }
+        }
+      });
+    }
+
     for (final visible in [true, false]) {
       test('chained send diagnostic: broadcast visible=$visible', () async {
         await fixture.load('S10-no-change', 0);
@@ -909,11 +1207,15 @@ void main() {
           if (replacing case final BitcoinSpendAdmission lease) lease.close();
         }
         expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
-        // A tracked replacement seen in the pass settles the payment it
-        // conflicts with, for that pass only: nothing is forgotten.
+        // An observed but unconfirmed replacement does not settle the absent
+        // predecessor, so ordinary spends and another fee bump stay blocked.
         completed(await sync.execute(descriptor));
-        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
-        expect(settled(aId), isTrue);
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+        expect(
+          await gate.check(descriptor.key, replacing: cId),
+          BitcoinSpendStatus.pending,
+        );
+        expect(settled(aId), isFalse);
         expect(settled(cId), isTrue);
         // The conflict is no longer seen: protection of both is reinstated.
         await fixture.exposeBroadcasts(false);
@@ -1181,6 +1483,627 @@ void main() {
       final reopened = _Wallet.open(path);
       expect(_observe(reopened.wallet, phase.ids), phase.truth);
       reopened.close();
+    });
+
+    group('targeted pass', () {
+      late Map<String, String> scripts;
+      setUpAll(() => scripts = _walletScripts());
+
+      /// The foreign script the fixture serves for no wallet index.
+      final foreign = '0014${'ab' * 20}';
+
+      Outpoint input(Map<String, String> ids) =>
+          (txId: ids['T1'] ?? fail('missing T1'), vout: 0);
+
+      /// Broadcasts [raw] and returns its txid. Nothing is served in a script
+      /// history until the fixture is told to expose broadcasts.
+      Future<String> broadcast(List<int> raw) async {
+        final client = bdk.ElectrumClient(
+          url: fixture.url,
+          socks5: null,
+          timeout: 5,
+          retry: 0,
+          validateDomain: false,
+        );
+        final tx = bdk.Transaction(transactionBytes: Uint8List.fromList(raw));
+        try {
+          final id = client.transactionBroadcast(tx: tx);
+          try {
+            return id.toString();
+          } finally {
+            id.dispose();
+          }
+        } finally {
+          tx.dispose();
+          client.dispose();
+        }
+      }
+
+      test(
+        'covers the indices a target pays and reports it confirmed',
+        () async {
+          // The initial scan runs before T2 is mined, so this pass is the one
+          // that brings it and proves it.
+          await fixture.load('S5-incoming-older-revealed', 0);
+          completed(await sync.execute(descriptor));
+          final phase = await fixture.load('S5-incoming-older-revealed', 1);
+          await fixture.requests();
+          final t2 = phase.ids['T2'] ?? fail('missing T2');
+
+          final completion = completed(
+            await sync.execute(
+              descriptor,
+              targets: [
+                SyncTransactionTarget(
+                  txid: t2,
+                  outputScripts: [Uint8List.fromList(_bytes(scripts['ext1']!))],
+                ),
+              ],
+            ),
+          );
+
+          expect(completion.mode, SyncMode.targeted);
+          expect(completion.visibleTransactionIds, {t2});
+          expect(completion.coveredTransactionIds, {t2});
+          final requests = await fixture.requests();
+          expect(
+            requests.scriptHashes,
+            {_scripthash(scripts['ext1']!)},
+            reason: 'the server is asked about the one script the target pays',
+          );
+          expect(requests.fetchedTxids, {
+            t2,
+          }, reason: 'the target itself, never its prevouts');
+          final reopened = _Wallet.open(path);
+          try {
+            expect(
+              reopened.wallet.getTx(txid: bdk.Txid.fromString(hex: t2)),
+              isNotNull,
+              reason: 'the update is applied and persisted under the writer',
+            );
+          } finally {
+            reopened.close();
+          }
+        },
+      );
+
+      test('covers the index that held a spent outpoint', () async {
+        final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+        completed(await sync.execute(descriptor));
+        final spend = _replacementSpend(path, input(phase.ids), 5000);
+        final txid = await broadcast(spend);
+        await fixture.exposeBroadcasts(true);
+        await fixture.requests();
+
+        final completion = completed(
+          await sync.execute(
+            descriptor,
+            targets: [
+              SyncTransactionTarget(
+                txid: txid,
+                spentOutpoints: [input(phase.ids)],
+              ),
+            ],
+          ),
+        );
+
+        expect(completion.mode, SyncMode.targeted);
+        expect(completion.coveredTransactionIds, {txid});
+        expect(completion.visibleTransactionIds, {
+          txid,
+        }, reason: 'this pass brought a fresh last-seen stamp for it');
+        final requests = await fixture.requests();
+        expect(
+          requests.scriptHashes,
+          {_scripthash(scripts['ext0']!)},
+          reason:
+              'the target pays no wallet script: its spent outpoint names '
+              'the only index to cover',
+        );
+        expect(requests.fetchedTxids, {txid});
+      });
+
+      test(
+        'a fresh mempool sighting survives wallet graph deduplication',
+        () async {
+          final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+          completed(await sync.execute(descriptor));
+          final outpoint = input(phase.ids);
+          final raw = _replacementSpend(path, outpoint, 5000);
+          final txid = await broadcast(raw);
+          await fixture.exposeBroadcasts(true);
+
+          // Give the existing observation a later timestamp so BDK does not
+          // stage a lastSeen change on the next pass, regardless of timing.
+          final stored = _Wallet.open(path);
+          final tx = bdk.Transaction(transactionBytes: raw);
+          try {
+            stored.wallet.applyUnconfirmedTxs(
+              unconfirmedTxs: [bdk.UnconfirmedTx(tx: tx, lastSeen: 0x7fffffff)],
+            );
+            stored.wallet.persist(persister: stored.persister);
+          } finally {
+            tx.dispose();
+            stored.close();
+          }
+
+          final completion = completed(
+            await sync.execute(
+              descriptor,
+              targets: [
+                SyncTransactionTarget(txid: txid, spentOutpoints: [outpoint]),
+              ],
+            ),
+          );
+
+          expect(completion.coveredTransactionIds, {txid});
+          expect(completion.visibleTransactionIds, {txid});
+
+          // A later pass that does not list it cannot vouch for the
+          // canonical transaction left by the newer stored observation.
+          await fixture.dropBroadcasts();
+          final omitted = completed(
+            await sync.execute(
+              descriptor,
+              targets: [
+                SyncTransactionTarget(txid: txid, spentOutpoints: [outpoint]),
+              ],
+            ),
+          );
+          expect(omitted.coveredTransactionIds, isEmpty);
+          expect(omitted.visibleTransactionIds, isEmpty);
+        },
+      );
+
+      test('an observed mempool transaction excluded from the wallet stays unknown', () async {
+        final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+        completed(await sync.execute(descriptor));
+        final outpoint = input(phase.ids);
+        final raw = _replacementSpend(path, outpoint, 5000);
+        final txid = await broadcast(raw);
+        await fixture.exposeBroadcasts(true);
+
+        // Keep the native eviction newer than the existing observation and
+        // the next pass, so the graph deduplicates the new sighting.
+        final stored = _Wallet.open(path);
+        final tx = bdk.Transaction(transactionBytes: raw);
+        final id = bdk.Txid.fromString(hex: txid);
+        try {
+          stored.wallet.applyUnconfirmedTxs(
+            unconfirmedTxs: [bdk.UnconfirmedTx(tx: tx, lastSeen: 0x7ffffffe)],
+          );
+          stored.wallet.applyEvictedTxs(
+            evictedTxs: [bdk.EvictedTx(txid: id, evictedAt: 0x7fffffff)],
+          );
+          stored.wallet.persist(persister: stored.persister);
+          expect(stored.wallet.getTx(txid: id), isNull);
+        } finally {
+          id.dispose();
+          tx.dispose();
+          stored.close();
+        }
+
+        final completion = completed(
+          await sync.execute(
+            descriptor,
+            targets: [
+              SyncTransactionTarget(txid: txid, spentOutpoints: [outpoint]),
+            ],
+          ),
+        );
+
+        expect(completion.coveredTransactionIds, isEmpty);
+        expect(completion.visibleTransactionIds, isEmpty);
+      });
+
+      test(
+        'an unrevealed lookahead script does not block other targets',
+        () async {
+          await fixture.load('S1-reorg-reconfirmed', 0);
+          completed(await sync.execute(descriptor));
+          await fixture.requests();
+          final wallet = _Wallet.open(path);
+          const keychain = bdk.KeychainKind.external_;
+          try {
+            final last = wallet.wallet.derivationIndex(keychain: keychain);
+            expect(last, isNotNull);
+            expect(last, lessThan(5));
+            final script = bdk.Script(
+              rawOutputScript: Uint8List.fromList(_bytes(scripts['ext5']!)),
+            );
+            try {
+              expect(wallet.wallet.derivationOfSpk(spk: script)?.index, 5);
+            } finally {
+              script.dispose();
+            }
+          } finally {
+            wallet.close();
+          }
+
+          final knownId = '11' * 32;
+          final unrevealedId = '22' * 32;
+          final completion = completed(
+            await sync.execute(
+              descriptor,
+              targets: [
+                SyncTransactionTarget(
+                  txid: knownId,
+                  outputScripts: [Uint8List.fromList(_bytes(scripts['ext0']!))],
+                ),
+                SyncTransactionTarget(
+                  txid: unrevealedId,
+                  outputScripts: [Uint8List.fromList(_bytes(scripts['ext5']!))],
+                ),
+              ],
+            ),
+          );
+
+          expect(completion.coveredTransactionIds, {knownId});
+          expect(completion.visibleTransactionIds, isEmpty);
+          expect((await fixture.requests()).scriptHashes, {
+            _scripthash(scripts['ext0']!),
+          });
+        },
+      );
+
+      test('a covered eviction proves the target absent', () async {
+        final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+        completed(await sync.execute(descriptor));
+        final spend = _replacementSpend(path, input(phase.ids), 5000);
+        final txid = await broadcast(spend);
+        await fixture.exposeBroadcasts(true);
+        final target = SyncTransactionTarget(
+          txid: txid,
+          spentOutpoints: [input(phase.ids)],
+        );
+        expect(
+          completed(await sync.execute(descriptor, targets: [target]))
+              .visibleTransactionIds,
+          {txid},
+        );
+
+        // The queried history no longer lists the expected transaction, so
+        // BDK evicts it from the canonical graph in this pass.
+        await fixture.dropBroadcasts();
+        final again = completed(
+          await sync.execute(descriptor, targets: [target]),
+        );
+        expect(again.coveredTransactionIds, {txid});
+        expect(
+          again.visibleTransactionIds,
+          isEmpty,
+          reason: 'the queried history led to an eviction, not a stale read',
+        );
+      });
+
+      test('a fresh confirmation proves a target visible', () async {
+        final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+        completed(await sync.execute(descriptor));
+        final txid = await broadcast(
+          _replacementSpend(path, input(phase.ids), 5000),
+        );
+        await fixture.confirmBroadcast(txid);
+        final target = SyncTransactionTarget(
+          txid: txid,
+          spentOutpoints: [input(phase.ids)],
+        );
+
+        expect(
+          completed(await sync.execute(descriptor, targets: [target]))
+              .visibleTransactionIds,
+          {txid},
+        );
+
+        // Two empty blocks replace the tip: its confirmation is gone and
+        // nothing in this pass vouches for it.
+        await fixture.reorgTip();
+        expect(
+          completed(await sync.execute(descriptor, targets: [target]))
+              .visibleTransactionIds,
+          isEmpty,
+        );
+      });
+
+      test(
+        'a listed transaction without a verified anchor stays unknown',
+        () async {
+          final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+          completed(await sync.execute(descriptor));
+          final outpoint = input(phase.ids);
+          final txid = await broadcast(_replacementSpend(path, outpoint, 5000));
+          await fixture.confirmBroadcast(txid, validAnchor: false);
+          await fixture.requests();
+
+          final completion = completed(
+            await sync.execute(
+              descriptor,
+              targets: [
+                SyncTransactionTarget(txid: txid, spentOutpoints: [outpoint]),
+              ],
+            ),
+          );
+
+          final requests = await fixture.requests();
+          expect(requests.fetchedTxids, {txid});
+          expect(requests.counts['blockchain.transaction.get_merkle'], 1);
+          expect(completion.coveredTransactionIds, isEmpty);
+          expect(completion.visibleTransactionIds, isEmpty);
+        },
+      );
+
+      test(
+        'two observed conflicting spends do not prove either absent',
+        () async {
+          final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+          completed(await sync.execute(descriptor));
+          final outpoint = input(phase.ids);
+          final first = await broadcast(
+            _replacementSpend(path, outpoint, 5000),
+          );
+          await fixture.exposeBroadcasts(true);
+          final second = await broadcast(
+            _replacementSpend(path, outpoint, 4000),
+          );
+          await fixture.exposeBroadcasts(true);
+          await fixture.requests();
+
+          final completion = completed(
+            await sync.execute(
+              descriptor,
+              targets: [
+                SyncTransactionTarget(txid: first, spentOutpoints: [outpoint]),
+                SyncTransactionTarget(txid: second, spentOutpoints: [outpoint]),
+              ],
+            ),
+          );
+
+          expect((await fixture.requests()).fetchedTxids, {first, second});
+          expect(completion.visibleTransactionIds, hasLength(1));
+          expect(
+            completion.coveredTransactionIds,
+            completion.visibleTransactionIds,
+            reason: 'the noncanonical but observed spend remains unknown',
+          );
+        },
+      );
+
+      test(
+        'a wallet that never scanned is deferred, never initialized',
+        () async {
+          final phase = await fixture.load('S1-reorg-reconfirmed', 0);
+          await fixture.requests();
+          // The installed wallet starts before any scan.
+          final installed = _Wallet.open(path);
+          final checkpoint = installed.wallet.latestCheckpoint();
+          try {
+            expect(checkpoint.height, 0);
+          } finally {
+            checkpoint.hash.dispose();
+            installed.close();
+          }
+
+          final result = await sync.execute(
+            descriptor,
+            targets: [
+              SyncTransactionTarget(
+                txid: phase.ids['T2'] ?? fail('missing T2'),
+                outputScripts: [Uint8List.fromList(_bytes(scripts['ext1']!))],
+              ),
+            ],
+          );
+
+          expect(
+            (result as Err<SyncCompletion, SyncFailure>).failure,
+            isA<SyncInitialScanRequiredFailure>(),
+          );
+          final requests = await fixture.requests();
+          expect(
+            requests.counts.containsKey('blockchain.scripthash.get_history'),
+            isFalse,
+            reason: 'the preflight defers before any script history is asked',
+          );
+        },
+      );
+
+      test('a target this wallet owns nothing of proves nothing', () async {
+        await fixture.load('S1-reorg-reconfirmed', 0);
+        completed(await sync.execute(descriptor));
+        await fixture.requests();
+
+        final completion = completed(
+          await sync.execute(
+            descriptor,
+            targets: [
+              SyncTransactionTarget(
+                txid: '11' * 32,
+                outputScripts: [Uint8List.fromList(_bytes(foreign))],
+                spentOutpoints: [(txId: '22' * 32, vout: 7)],
+              ),
+            ],
+          ),
+        );
+
+        expect(
+          completion.coveredTransactionIds,
+          isNull,
+          reason: 'a target this wallet owns nothing of is never covered',
+        );
+        expect(
+          completion.visibleTransactionIds,
+          isNull,
+          reason: 'no covered script means neither presence nor absence',
+        );
+        final requests = await fixture.requests();
+        expect(
+          requests.counts.containsKey('blockchain.scripthash.get_history'),
+          isFalse,
+          reason: 'nothing this wallet owns was covered, so nothing is asked',
+        );
+      });
+
+      test('covers only the targets that touch a wallet script', () async {
+        await fixture.load('S5-incoming-older-revealed', 0);
+        completed(await sync.execute(descriptor));
+        final phase = await fixture.load('S5-incoming-older-revealed', 1);
+        await fixture.requests();
+        final t2 = phase.ids['T2'] ?? fail('missing T2');
+
+        final completion = completed(
+          await sync.execute(
+            descriptor,
+            targets: [
+              SyncTransactionTarget(
+                txid: t2,
+                outputScripts: [Uint8List.fromList(_bytes(scripts['ext1']!))],
+              ),
+              SyncTransactionTarget(
+                txid: '11' * 32,
+                outputScripts: [Uint8List.fromList(_bytes(foreign))],
+              ),
+            ],
+          ),
+        );
+
+        expect(
+          completion.coveredTransactionIds,
+          {t2},
+          reason:
+              'a covered target does not lend its coverage to an uncovered '
+              'peer',
+        );
+        expect(completion.visibleTransactionIds, {t2});
+        final requests = await fixture.requests();
+        expect(requests.scriptHashes, {_scripthash(scripts['ext1']!)});
+      });
+
+      test('one owned script covers a candidate that also pays foreign '
+          'outputs', () async {
+        await fixture.load('S1-reorg-reconfirmed', 0);
+        completed(await sync.execute(descriptor));
+        await fixture.requests();
+        const absent =
+            '4444444444444444444444444444444444444444444444444444444444444444';
+        final target = SyncTransactionTarget(
+          txid: absent,
+          outputScripts: [
+            Uint8List.fromList(_bytes(scripts['ext1']!)),
+            Uint8List.fromList(_bytes(foreign)),
+          ],
+        );
+
+        final completion = completed(
+          await sync.execute(descriptor, targets: [target]),
+        );
+
+        expect(
+          completion.coveredTransactionIds,
+          {absent},
+          reason:
+              'a proposal carries counterparty outputs the receiver owns no '
+              'script of; one owned script still covers it',
+        );
+        expect(
+          completion.visibleTransactionIds,
+          isEmpty,
+          reason: 'the covered target is absent from this pass',
+        );
+        final requests = await fixture.requests();
+        expect(requests.scriptHashes, {_scripthash(scripts['ext1']!)});
+      });
+
+      test('a target joined before the pass starts is covered too', () async {
+        final phase = await fixture.load('S5-incoming-older-revealed', 1);
+        completed(await sync.execute(descriptor));
+        await fixture.requests();
+        final t1 = phase.ids['T1'] ?? fail('missing T1');
+        final t2 = phase.ids['T2'] ?? fail('missing T2');
+
+        // Both requests run in the same turn, before the pass yields and fixes
+        // its covered scripts, so the second target joins the first.
+        final first = sync.execute(
+          descriptor,
+          targets: [
+            SyncTransactionTarget(
+              txid: t1,
+              outputScripts: [Uint8List.fromList(_bytes(scripts['ext0']!))],
+            ),
+          ],
+        );
+        final second = sync.execute(
+          descriptor,
+          targets: [
+            SyncTransactionTarget(
+              txid: t2,
+              outputScripts: [Uint8List.fromList(_bytes(scripts['ext1']!))],
+            ),
+          ],
+        );
+
+        expect(completed(await first).coveredTransactionIds, {t1, t2});
+        expect(completed(await second).coveredTransactionIds, {t1, t2});
+        final requests = await fixture.requests();
+        expect(requests.scriptHashes, {
+          _scripthash(scripts['ext0']!),
+          _scripthash(scripts['ext1']!),
+        });
+      });
+
+      test('rejects a target that does not name a transaction', () {
+        expect(() => SyncTransactionTarget(txid: ''), throwsArgumentError);
+        expect(
+          () => SyncTransactionTarget(txid: ' '),
+          throwsArgumentError,
+          reason: 'a blank id is not a transaction',
+        );
+        expect(
+          () => SyncTransactionTarget(txid: '11' * 31),
+          throwsArgumentError,
+          reason: 'a short id is not a transaction',
+        );
+        expect(
+          () => SyncTransactionTarget(txid: '${'11' * 32}00'),
+          throwsArgumentError,
+          reason: 'a long id is not a transaction',
+        );
+        expect(
+          () => SyncTransactionTarget(txid: 'zz' * 32),
+          throwsArgumentError,
+          reason: 'a non-hex id is not a transaction',
+        );
+        expect(
+          () => SyncTransactionTarget(
+            txid: '11' * 32,
+            spentOutpoints: [(txId: '22', vout: 0)],
+          ),
+          throwsArgumentError,
+          reason: 'a malformed spent outpoint is rejected too',
+        );
+        expect(
+          SyncTransactionTarget(
+            txid: '11' * 32,
+            spentOutpoints: [(txId: '22' * 32, vout: 0)],
+          ).spentOutpoints,
+          hasLength(1),
+        );
+      });
+
+      test('rejects uppercase txids instead of normalizing them', () {
+        // Native ids are lowercase and answers are keyed by the supplied id,
+        // so an uppercase id names nothing rather than the same transaction.
+        expect(
+          () => SyncTransactionTarget(txid: 'AB' * 32),
+          throwsArgumentError,
+          reason: 'an uppercase target txid never matches the native id',
+        );
+        expect(
+          () => SyncTransactionTarget(
+            txid: '11' * 32,
+            spentOutpoints: [(txId: 'CD' * 32, vout: 0)],
+          ),
+          throwsArgumentError,
+          reason: 'an uppercase spent outpoint never matches either',
+        );
+      });
     });
   });
 

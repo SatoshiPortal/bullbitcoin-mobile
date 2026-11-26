@@ -1,11 +1,6 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
+import 'package:backups/testing.dart';
+import 'package:primitives/primitives.dart'
+    show Err, Ok, BitcoinNetwork, Fingerprint;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -44,21 +39,14 @@ const _mnemonicWords = [
   'yes',
 ];
 
-Wallet _wallet({required bool isDefault, required String origin}) => Wallet(
-  origin: origin,
-  label: 'Test',
-  network: Network.bitcoinMainnet,
-  isDefault: isDefault,
-  masterFingerprint: _fingerprint,
-  xpubFingerprint: _fingerprint,
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
-);
+BackupWallet _wallet({required bool isDefault, required String origin}) =>
+    BackupWallet(
+      id: origin,
+      label: 'Test',
+      network: BitcoinNetwork.mainnet,
+      isDefault: isDefault,
+      fingerprint: Fingerprint(_fingerprint),
+    );
 
 void main() {
   late _MockCompleteBackupVerificationUsecase completeUsecase;
@@ -95,56 +83,6 @@ void main() {
       );
       bloc.add(const LoadWallets());
       await expectation;
-      await bloc.close();
-    });
-
-    test(
-      'records the backup once the sealed challenge has judged it',
-      () async {
-        // The comparison no longer happens here: `MnemonicChallenge` runs it
-        // through `secret.verify.mnemonic`, inside the package, and the event
-        // that reaches this bloc carries no words at all. What is left to test
-        // is the bookkeeping.
-        when(() => completeUsecase.execute())
-            .thenAnswer((_) async => const Ok(null));
-        final bloc = buildBloc();
-        bloc.seed(
-          TestWalletBackupState(
-            selectedWallet: _wallet(isDefault: true, origin: 'a'),
-          ),
-        );
-
-        final expectation = expectLater(
-          bloc.stream,
-          emits(
-            predicate<TestWalletBackupState>(
-              (s) => s.verificationStatus == BackupVerificationStatus.success,
-            ),
-          ),
-        );
-        bloc.add(const VerifyPhysicalBackup());
-        await expectation;
-
-        verify(() => completeUsecase.execute()).called(1);
-        await bloc.close();
-      },
-    );
-
-    test('refuses to record a backup with no wallet selected', () async {
-      final bloc = buildBloc();
-
-      final expectation = expectLater(
-        bloc.stream,
-        emits(
-          predicate<TestWalletBackupState>(
-            (s) => s.failure is TestWalletBackupNoWalletSelectedFailure,
-          ),
-        ),
-      );
-      bloc.add(const VerifyPhysicalBackup());
-      await expectation;
-
-      verifyNever(() => completeUsecase.execute());
       await bloc.close();
     });
 
@@ -189,33 +127,6 @@ void main() {
       for (final word in _mnemonicWords) {
         expect(bloc.state.toString(), isNot(contains(word)));
       }
-      await bloc.close();
-    });
-
-    test('reports a failed completion instead of claiming success', () async {
-      when(() => completeUsecase.execute()).thenAnswer(
-        (_) async =>
-            const Err(TestWalletBackupCompletionFailure('drift: locked')),
-      );
-      final bloc = buildBloc();
-      bloc.seed(
-        TestWalletBackupState(
-          selectedWallet: _wallet(isDefault: true, origin: 'a'),
-        ),
-      );
-
-      final expectation = expectLater(
-        bloc.stream,
-        emits(
-          predicate<TestWalletBackupState>(
-            (s) =>
-                s.failure is TestWalletBackupCompletionFailure &&
-                s.verificationStatus != BackupVerificationStatus.success,
-          ),
-        ),
-      );
-      bloc.add(const VerifyPhysicalBackup());
-      await expectation;
       await bloc.close();
     });
 

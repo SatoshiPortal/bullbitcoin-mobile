@@ -1,15 +1,9 @@
+import 'package:primitives/primitives.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok, Sats;
 
 class _MockGetTransactionsUsecase extends Mock
     implements GetTransactionsUsecase {}
@@ -17,7 +11,7 @@ class _MockGetTransactionsUsecase extends Mock
 WalletTransaction _walletTx({
   required String txId,
   required int amountSat,
-  Network network = Network.bitcoinMainnet,
+  Network network = BitcoinNetwork.mainnet,
   WalletTransactionDirection direction = WalletTransactionDirection.incoming,
   int feeSat = 0,
   DateTime? confirmationTime,
@@ -109,9 +103,14 @@ void main() {
   });
 
   void stub(List<Transaction> txs) {
-    when(
-      () => getTransactions.execute(),
-    ).thenAnswer((_) async => Ok<List<Transaction>, TransactionFailure>(txs));
+    when(() => getTransactions.execute()).thenAnswer(
+      (_) async => Ok<TransactionHistory, TransactionFailure>(
+        TransactionHistory(
+          transactions: txs,
+          exchangeOrders: const ExchangeOrdersMerged(),
+        ),
+      ),
+    );
   }
 
   /// Unwraps the `Result` for the tests that assert on CSV content: there a
@@ -155,7 +154,7 @@ void main() {
         walletTransaction: _walletTx(
           txId: 'lq',
           amountSat: 200000,
-          network: Network.liquidMainnet,
+          network: LiquidNetwork.mainnet,
           direction: WalletTransactionDirection.outgoing,
           feeSat: 350,
           confirmationTime: DateTime.utc(2026, 2, 1, 8),
@@ -377,7 +376,7 @@ void main() {
           walletTransaction: _walletTx(
             txId: 'chain_recv_txid',
             amountSat: 99000,
-            network: Network.liquidMainnet,
+            network: LiquidNetwork.mainnet,
             direction: WalletTransactionDirection.incoming,
             confirmationTime: DateTime.utc(2026, 3, 3, 11),
           ),
@@ -445,7 +444,7 @@ void main() {
           walletTransaction: _walletTx(
             txId: 'chain_recv_a',
             amountSat: 99000,
-            network: Network.liquidMainnet,
+            network: LiquidNetwork.mainnet,
             direction: WalletTransactionDirection.incoming,
             confirmationTime: null, // claim tx not yet seen confirmed
           ),
@@ -484,7 +483,7 @@ void main() {
         walletTransaction: _walletTx(
           txId: 'chain_recv_b',
           amountSat: 99000,
-          network: Network.liquidMainnet,
+          network: LiquidNetwork.mainnet,
           direction: WalletTransactionDirection.incoming,
           confirmationTime: null,
         ),

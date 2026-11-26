@@ -1,3 +1,5 @@
+import 'package:legacy_storage/coordination.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -15,6 +17,8 @@ import '../domain/repositories/background_sync_interval_repository.dart';
 final backgroundRunBudget = Platform.isIOS
     ? const Duration(seconds: 20)
     : const Duration(minutes: 8);
+
+final Object _invocationClockKey = Object();
 
 typedef BackgroundTaskHandler =
     Future<BackgroundTaskExecutionResult> Function();
@@ -42,7 +46,12 @@ Future<bool> mapBackgroundTaskResult(
   // Acknowledge unknown and obsolete work without opening wallet resources.
   if (task == null || task == BackgroundTask.swapsSync) return true;
   try {
-    final result = await (await bootstrap(task)).run(task);
+    // Startup counts against the OS window too. Consumers check admission at
+    // stage boundaries; expiration never abandons an admitted native Future.
+    final result = await runZoned(
+      () async => (await bootstrap(task)).run(task),
+      zoneValues: {_invocationClockKey: Stopwatch()..start()},
+    );
     return !result.shouldRetry;
   } catch (error) {
     log.warning('Background startup failed type=${error.runtimeType}');
@@ -55,11 +64,36 @@ Future<bool> mapBackgroundTaskResult(
 /// Register cleanup immediately after acquisition, before the next await.
 final class BackgroundTaskResources {
   final List<FutureOr<void> Function()> _cleanup = [];
+  final Stopwatch _clock =
+      Zone.current[_invocationClockKey] as Stopwatch? ?? (Stopwatch()..start());
   bool _closed = false;
+  final LifecycleAdmission? _admission;
+
+  BackgroundTaskResources({this._admission});
+
+  RuntimeAdmission? get storageAdmission => switch (_admission) {
+    RuntimeAdmission admission => admission,
+    _ => null,
+  };
+
+  Duration get remainingBudget {
+    final remaining = backgroundRunBudget - _clock.elapsed;
+    return remaining.isNegative ? Duration.zero : remaining;
+  }
+
+  bool get mayAdmitNextStage => !_closed && remainingBudget > Duration.zero;
 
   void onClose(FutureOr<void> Function() dispose) {
     if (_closed) throw StateError('Background resources already closed');
-    _cleanup.add(dispose);
+    final admission = _admission;
+    if (admission == null) {
+      _cleanup.add(dispose);
+    } else {
+      final handle = admission.track(() async {
+        await dispose();
+      });
+      _cleanup.add(handle.close);
+    }
   }
 
   /// Closes in reverse order of acquisition, attempting every close.
@@ -78,6 +112,12 @@ final class BackgroundTaskResources {
       }
     }
     _cleanup.clear();
+    try {
+      await _admission?.close();
+    } catch (error, stack) {
+      firstFailure ??= error;
+      firstStack ??= stack;
+    }
     if (firstFailure != null && firstStack != null) {
       Error.throwWithStackTrace(firstFailure, firstStack);
     }
@@ -104,8 +144,9 @@ final class BackgroundTaskRunner {
     required BackgroundTaskLoggerPort logger,
     required BackgroundSyncIntervalRepository intervals,
     required Map<BackgroundTask, BackgroundTaskSetup> tasks,
+    RuntimeAdmission? admission,
   }) async {
-    final resources = BackgroundTaskResources();
+    final resources = BackgroundTaskResources(admission: admission);
     try {
       final setup = tasks[task];
       final handlers = <BackgroundTask, BackgroundTaskHandler>{};
@@ -157,8 +198,8 @@ final class BackgroundTaskRunner {
       'elapsed_ms=${stopwatch.elapsedMilliseconds}',
     );
 
-    // A failed flush or dispose does not undo what the task did: the next run
-    // opens everything again, so the task's own result stands.
+    // Logging failure does not change completed work. Resource cleanup failure
+    // requires retry: a quarantined admission may still own live handles.
     try {
       await logger.flush();
     } catch (error) {
@@ -168,6 +209,7 @@ final class BackgroundTaskRunner {
       await onFinished?.call();
     } catch (error) {
       _warning('Background task cleanup failed type=${error.runtimeType}');
+      return const BackgroundTaskExecutionResult.retry();
     }
     return result;
   }

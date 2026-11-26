@@ -1,0 +1,29 @@
+{
+  "@@locale": "es",
+  "scanningProgressLabel": "Escaneando: {percent}%",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "Progreso UR: {parts} partes",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Escaneo completado",
+  "urDecodingFailedMessage": "Decodificación UR fallida",
+  "urProcessingFailedMessage": "Procesamiento UR fallido",
+  "scanNfcButton": "Escanear NFC",
+  "nfcConnectionLost": "Se perdió la conexión NFC. Mantenga su dispositivo cerca de la etiqueta NFC e inténtelo de nuevo.",
+  "nfcWriteFailed": "La transferencia NFC falló. Inténtelo de nuevo.",
+  "nfcDisabled": "NFC está deshabilitado. Actívelo en los ajustes.",
+  "nfcNotAvailable": "NFC no es compatible con este dispositivo",
+  "nfcFailed": "¡Ups! Algo salió mal",
+  "nfcInvalidData": "No se encontraron datos NFC compatibles"
+}

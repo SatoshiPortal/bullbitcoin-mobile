@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
@@ -25,6 +26,33 @@ Widget _dark(Widget child) => MaterialApp(
 );
 
 void main() {
+  testWidgets('dropdown and its chevron have one keyboard focus stop', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Column(
+          children: [
+            TextButton(onPressed: () {}, child: const Text('Before')),
+            BullDropdown<String>(
+              items: const [BullPickerItem(value: 'BTC', label: 'Bitcoin')],
+              value: 'BTC',
+              onChanged: (_) {},
+            ),
+            TextButton(onPressed: () {}, child: const Text('After')),
+          ],
+        ),
+      ),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(Focus.of(tester.element(find.text('After'))).hasFocus, isTrue);
+  });
+
   group('BullDropdown', () {
     testWidgets('reports the tapped item to onChanged', (tester) async {
       String? selected = 'a';
@@ -97,7 +125,7 @@ void main() {
       final apple = tester.widget<Text>(find.text('Apple').last);
       final banana = tester.widget<Text>(find.text('Banana'));
       expect(apple.style?.color, testBullTheme.primary);
-      expect(apple.style?.fontWeight, FontWeight.w600);
+      expect(apple.style?.fontWeight, FontWeight.w500);
       expect(banana.style?.color, testBullTheme.text);
       expect(banana.style?.fontWeight, FontWeight.w400);
     });

@@ -1,0 +1,12 @@
+{
+  "currencySettingsDefaultFiatCurrencyLabel": "По умолчанию фиатная валюта",
+  "fiatCurrencySettingsLabel": "Fiat валюта",
+  "priceChartFetchingHistory": "Получение истории цен...",
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
+  "priceChartLoadFailed": "Данные графика цен не удалось загрузить. Пожалуйста, попробуйте снова."
+}

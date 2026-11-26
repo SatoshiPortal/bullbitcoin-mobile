@@ -1,0 +1,22 @@
+{
+  "retry": "Riprova",
+  "doneButton": "Fatto",
+  "feePrioritySlow": "Lenta",
+  "sendAbsoluteFees": "Commissioni assolute",
+  "sendBelowMinFeeRateError": "Il tasso di commissione deve essere almeno 0,1 sat/vB.",
+  "sendCustomFee": "Commissione personalizzata",
+  "sendEconomyFee": "Economica",
+  "sendEnterAbsoluteFee": "Inserisci la commissione in sats",
+  "sendEnterRelativeFee": "Inserisci la commissione relativa in sats/vB",
+  "sendEstimatedDelivery": "Consegna prevista ~ ",
+  "sendEstimatedDelivery10Minutes": "10 minuti",
+  "sendEstimatedDelivery10to30Minutes": "10-30 minuti",
+  "sendEstimatedDeliveryHours": "ore",
+  "sendEstimatedDeliveryHoursToDays": "ore a giorni",
+  "sendFastFee": "Veloce",
+  "sendRelativeFees": "Commissioni relative",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Seleziona la commissione di rete",
+  "sendSubSatVbyteWarning": "Le transazioni sotto 1 sat/vB potrebbero impiegare più tempo per essere confermate e potrebbero non propagarsi a tutti i nodi."
+}

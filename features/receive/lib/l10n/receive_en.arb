@@ -1,0 +1,399 @@
+{
+  "@@locale": "en",
+  "receiveStepDetected": "Detected",
+  "receiveStepConfirmed": "Confirmed",
+  "receiveStepOriginalReceived": "Original received",
+  "receiveStepProposalSent": "Proposal sent",
+  "receiveStepBroadcast": "Broadcast",
+  "receiveStepClaiming": "Claiming",
+  "receiveStepReceived": "Received",
+  "receiveStepComplete": "Complete",
+  "receiveStepPending": "Pending",
+  "receiveStepFailed": "Failed",
+  "receiveStepSkipped": "Skipped",
+  "receiveStepPaymentDetected": "Payment detected",
+  "receiveStepBoltzLockup": "Boltz lockup",
+  "receiveStepClaimBroadcast": "Claim broadcast",
+  "receiveStatusClaimable": "Claimable",
+  "receiveStatusExpired": "Expired",
+  "receiveStatusRefundable": "Refundable",
+  "receiveStatusRefunded": "Refunded",
+  "receiveStatusCooperative": "Cooperative claim",
+  "receiveStatusStarted": "Started",
+  "receiveStatusPaid": "Paid",
+  "receiveStatusRequested": "Requested",
+  "receiveStatusProposed": "Proposed",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "receiveTitle": "Receive",
+  "@receiveTitle": {
+    "description": "Main screen title for receive feature"
+  },
+  "receiveBitcoin": "Bitcoin",
+  "@receiveBitcoin": {
+    "description": "Label for receiving Bitcoin on the base layer"
+  },
+  "receiveLightning": "Lightning",
+  "@receiveLightning": {
+    "description": "Label for receiving Bitcoin via Lightning Network"
+  },
+  "receiveLiquid": "Liquid",
+  "@receiveLiquid": {
+    "description": "Label for receiving Bitcoin via Liquid Network"
+  },
+  "receiveLightningInvoice": "Lightning invoice",
+  "@receiveLightningInvoice": {
+    "description": "Label for a Lightning Network invoice"
+  },
+  "receiveLiquidRiskDisclosureLabel": "Payments will be converted to Liquid L-BTC (not BTC). Learn more.",
+  "@receiveLiquidRiskDisclosureLabel": {
+    "description": "Small link label opening the Liquid Bitcoin risk disclosure on the Lightning receive screen"
+  },
+  "receiveAddress": "Address",
+  "@receiveAddress": {
+    "description": "Label for generated address"
+  },
+  "receiveTotalFee": "Total fee",
+  "@receiveTotalFee": {
+    "description": "Label for the total fee in a receive transaction"
+  },
+  "receiveNetworkFee": "Network fee",
+  "@receiveNetworkFee": {
+    "description": "Label for the network fee in a receive transaction"
+  },
+  "receiveNewAddress": "New address",
+  "@receiveNewAddress": {
+    "description": "Button label for generating a new receive address"
+  },
+  "receivePaymentReceived": "Payment received!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  },
+  "receiveDetails": "Details",
+  "@receiveDetails": {
+    "description": "Label for viewing transaction details"
+  },
+  "receivePaymentInProgress": "Payment in progress",
+  "@receivePaymentInProgress": {
+    "description": "Status message when a payment is being processed"
+  },
+  "receivePayjoinInProgress": "Payjoin in progress",
+  "@receivePayjoinInProgress": {
+    "description": "Status message when a payjoin transaction is in progress"
+  },
+  "receivePaymentNormally": "Receive payment normally",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "receiveContinue": "Continue",
+  "@receiveContinue": {
+    "description": "Button label for continuing in the receive flow"
+  },
+  "receiveErrorAmountAboveProtocolLimit": "Amount is above the maximum possible Bitcoin amount of {max}",
+  "@receiveErrorAmountAboveProtocolLimit": {
+    "description": "Shown under the receive amount field when the entered amount exceeds the total Bitcoin supply.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveErrorNoteNotSaved": "Your note could not be saved. Please try again.",
+  "@receiveErrorNoteNotSaved": {
+    "description": "Shown when persisting the receive note as an address label fails."
+  },
+  "receiveErrorAddressUnavailable": "Could not prepare a receiving address. Please try again.",
+  "@receiveErrorAddressUnavailable": {
+    "description": "Shown when no receive address could be derived for the selected wallet."
+  },
+  "receiveErrorBroadcastOriginal": "We could not broadcast the transaction. Check your internet connection and try again.",
+  "@receiveErrorBroadcastOriginal": {
+    "description": "Shown when broadcasting the sender original non-payjoin transaction fails."
+  },
+  "receiveFeeExplanation": "This fee will be deducted from the amount sent",
+  "@receiveFeeExplanation": {
+    "description": "Explanation that fees are deducted from the sent amount"
+  },
+  "receiveSendNetworkFee": "Send network fee",
+  "@receiveSendNetworkFee": {
+    "description": "Label for the network fee on the sending network in a swap transaction"
+  },
+  "receiveServerNetworkFees": "Server network fees",
+  "@receiveServerNetworkFees": {
+    "description": "Label for network fees charged by the swap server"
+  },
+  "receiveTransferFee": "Swap fee",
+  "@receiveTransferFee": {
+    "description": "Label for the transfer fee in a receive transaction"
+  },
+  "receiveVerifyAddressError": "Unable to verify address: Missing wallet or address information",
+  "@receiveVerifyAddressError": {
+    "description": "Error message when address verification is not possible"
+  },
+  "receiveVerifyAddressLedger": "Verify on Ledger",
+  "@receiveVerifyAddressLedger": {
+    "description": "Button label for verifying an address on a Ledger hardware wallet"
+  },
+  "receiveBitcoinConfirmationMessage": "Bitcoin transaction will take a while to confirm.",
+  "@receiveBitcoinConfirmationMessage": {
+    "description": "Information message about Bitcoin transaction confirmation time"
+  },
+  "receiveLiquidConfirmationMessage": "It will be confirmed in a few seconds",
+  "@receiveLiquidConfirmationMessage": {
+    "description": "Message indicating quick confirmation time for Liquid transactions"
+  },
+  "receiveWaitForPayjoin": "Wait for the sender to finish the payjoin transaction",
+  "@receiveWaitForPayjoin": {
+    "description": "Instructions to wait for the sender during a payjoin transaction"
+  },
+  "receivePayjoinFailQuestion": "No time to wait or did the payjoin fail on the sender's side?",
+  "@receivePayjoinFailQuestion": {
+    "description": "Question prompting user if they want to proceed without payjoin"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLiquid": "Liquid",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "liquidRiskDisclosureSemanticLabel": "Open Liquid Bitcoin risk disclosure",
+  "@liquidRiskDisclosureSemanticLabel": {
+    "description": "Accessibility label for the Liquid Bitcoin risk disclosure link"
+  },
+  "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin Risk Disclosure",
+  "@liquidRiskDisclosureTitle": {
+    "description": "Title for the Liquid Bitcoin risk disclosure bottom sheet"
+  },
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.005 BTC\n- **Target balance after auto-swap:** 0.0025 BTC\n- **Minimum transfer amount:** 0.0025 BTC\n\nWhen your balance reaches 0.005 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.0025 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.006 L-BTC and auto-swap is enabled, a transfer of 0.0035 L-BTC will be initiated and your remaining L-BTC will be 0.0025 L-BTC, and your BTC balance will be increased by 0.0035 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "@liquidRiskDisclosureBody": {
+    "description": "Long-form disclosure explaining Liquid Bitcoin and Instant Payments wallet risks. Preserve lightweight formatting markers: ## section headings, ### subsection headings, > callouts, - bullets, and **bold bullet labels**."
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "swapErrorAmountBelowMinimum": "Amount is below minimum swap amount: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountAboveMaximum": "Amount exceeds maximum swap amount: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapTransferTitle": "Swap",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "okButton": "OK",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "copyDialogButton": "Copy",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "amountLabel": "Amount",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "payNetworkError": "Network error. Please try again",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveInvoice": "Invoice",
+  "@receiveInvoice": {
+    "description": "Label for Lightning invoice"
+  },
+  "appStartupErrorMessage": "App failed to start up. Try completely stopping the app and restarting it. If the error persists, contact support and share your logs.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
+  },
+  "invoiceViewerTitle": "Invoice",
+  "@invoiceViewerTitle": {
+    "description": "Title shown in the invoice viewer detail dialog"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
+  "@bitcoinPriceExchangeRateUnavailable": {
+    "description": "Error shown when exchange rate cannot be fetched"
+  },
+  "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to your counterparty.",
+  "@settingsPayjoinPrivacyGainExplanation": {
+    "description": "First disclosure paragraph on the payjoin settings screen: the privacy benefit and the UTXO-exposure risk it trades against"
+  },
+  "settingsPayjoinV1DirectoryLeakExplanation": "If your counterparty uses an older payjoin version (v1) rather than the current one (v2), that same UTXO may also be revealed to the payjoin directory — a third-party relay used to coordinate the payjoin.",
+  "@settingsPayjoinV1DirectoryLeakExplanation": {
+    "description": "Second disclosure paragraph on the payjoin settings screen: a v1 (non-v2) counterparty leaks the same UTXO to the payjoin directory"
+  },
+  "settingsPayjoinDisclaimerTitle": "Payjoin disclaimer",
+  "@settingsPayjoinDisclaimerTitle": {
+    "description": "Title of the one-time payjoin disclaimer pop-up (also reachable from the payjoin settings screen)."
+  },
+  "receivePayjoinExpired": "Payjoin timed out",
+  "@receivePayjoinExpired": {
+    "description": "Title on the receive payjoin screen when the session expired without completing."
+  },
+  "receivePayjoinExpiredSubtext": "The payjoin window closed. The payment is being received as a regular transaction instead.",
+  "@receivePayjoinExpiredSubtext": {
+    "description": "Subtext explaining the expired payjoin fallback on the receive screen."
+  },
+  "receivePayjoinBelowMinimum": "Amount Below Payjoin Minimum",
+  "@receivePayjoinBelowMinimum": {
+    "description": "Title when an incoming payment was below the payjoin minimum and received as a regular transaction."
+  },
+  "receivePayjoinBelowMinimumSubtext": "This payment was smaller than your Payjoin minimum, so it was received as a regular transaction. You can change this threshold in Bitcoin settings.",
+  "@receivePayjoinBelowMinimumSubtext": {
+    "description": "Subtext for a below-minimum payjoin decline on the receive screen."
+  },
+  "receivePayjoinFallbackCompleted": "Received Without Payjoin",
+  "@receivePayjoinFallbackCompleted": {
+    "description": "Title when a payjoin could not be completed and the payment was received as a regular transaction."
+  },
+  "receivePayjoinFallbackCompletedSubtext": "A Payjoin could not be completed this time, so the payment was received as a regular transaction.",
+  "@receivePayjoinFallbackCompletedSubtext": {
+    "description": "Subtext for a generic payjoin fallback completion on the receive screen."
+  },
+  "receiveViewDetails": "View Details",
+  "@receiveViewDetails": {
+    "description": "Button to open transaction details from the receive payjoin screen."
+  },
+  "receivePayjoinFallbackCountdown": "Falling back to a normal payment in",
+  "@receivePayjoinFallbackCountdown": {
+    "description": "Label preceding a countdown until the payjoin falls back to a normal payment."
+  },
+  "receivePayjoinQrBadge": "Payjoin",
+  "@receivePayjoinQrBadge": {
+    "description": "Short badge shown on the receive QR code corner when the address advertises a payjoin endpoint, signalling the sender may propose a payjoin."
+  },
+  "swapErrorRateLimited": "Too many requests. Please wait {seconds} seconds and try again.",
+  "@swapErrorRateLimited": {
+    "description": "Error shown when the swap provider rate limits a request",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "swapErrorRouteUnavailable": "{fromNetwork} to {toNetwork} is not available.",
+  "@swapErrorRouteUnavailable": {
+    "description": "Shown when the exchange rejects a swap because no payment option/route exists for it (API ERR_ORD_PO404), naming the source and destination networks.",
+    "placeholders": {
+      "fromNetwork": {
+        "type": "String"
+      },
+      "toNetwork": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorRouteUnavailableGeneric": "This swap is not available.",
+  "@swapErrorRouteUnavailableGeneric": {
+    "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "receiveAdvancedSettings": "Advanced settings",
+  "@receiveAdvancedSettings": {},
+  "receiveInto": "Receive into",
+  "@receiveInto": {},
+  "receiveRecipientMessage": "Message to the recipient",
+  "@receiveRecipientMessage": {},
+  "receiveOptional": "Optional",
+  "@receiveOptional": {},
+  "receiveFees": "Fees",
+  "@receiveFees": {},
+  "receiveYouReceive": "You receive",
+  "@receiveYouReceive": {},
+  "receiveMessage": "Message",
+  "@receiveMessage": {},
+  "receiveCreateInvoice": "Create invoice",
+  "@receiveCreateInvoice": {},
+  "receiveCreatingInvoice": "Creating invoice…",
+  "@receiveCreatingInvoice": {},
+  "receivePayjoinAppliesGlobally": "Applies to all your receives",
+  "@receivePayjoinAppliesGlobally": {},
+  "receivePayjoinStartsWithFunds": "Starts once this wallet has funds",
+  "@receivePayjoinStartsWithFunds": {},
+  "receivePayjoinNotUsedForAmount": "Payjoin is not used for this amount",
+  "@receivePayjoinNotUsedForAmount": {},
+  "receivePayjoinOn": "Payjoin on",
+  "@receivePayjoinOn": {},
+  "receivePayjoinSettings": "Payjoin settings",
+  "@receivePayjoinSettings": {},
+  "receiveArrivesAsLiquid": "Arrives as L-BTC on Liquid.",
+  "@receiveArrivesAsLiquid": {},
+  "receiveEnlargeQr": "Enlarge the QR code",
+  "@receiveEnlargeQr": {},
+  "receiveLimits": "Min {min} sats · Max {max} sats",
+  "@receiveLimits": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveBelowMinimum": "Enter at least {min} sats",
+  "@receiveBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveAboveMaximum": "Enter no more than {max} sats",
+  "@receiveAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEditAmount": "Edit amount",
+  "@receiveEditAmount": {},
+  "receiveRecipientMessageHint": "Optional, visible to the payer",
+  "@receiveRecipientMessageHint": {},
+  "receiveVerifyBitbox": "Verify on BitBox",
+  "@receiveVerifyBitbox": {},
+  "receiveFeeDetails": "Fee details",
+  "@receiveFeeDetails": {
+    "description": "Accessible label for the filled action opening the Lightning fee breakdown."
+  }
+}

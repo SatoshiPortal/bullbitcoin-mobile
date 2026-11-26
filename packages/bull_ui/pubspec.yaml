@@ -18,9 +18,12 @@ dependencies:
   primitives:
   intl: any
   auto_size_text: ^3.0.0
+  keyboard_actions: ^5.0.3
   custom_sliding_segmented_control: ^2.0.0
   gif: ^2.3.0
   shimmer: ^4.0.0
+  qr_flutter: ^4.1.0
+  sensors_plus: 7.1.1
   timeago: ^3.7.1
 
 dev_dependencies:

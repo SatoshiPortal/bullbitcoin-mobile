@@ -1,3 +1,7 @@
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
+import 'support/real_swap_backends.dart';
+
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/data/models/swap_master_key_model.dart';
 import 'package:swaps/src/data/swap_storage.dart';
@@ -6,26 +10,17 @@ import 'package:swaps/src/data/db/drift_swap_row_store.dart';
 import 'package:drift/native.dart';
 import 'package:test/test.dart';
 
-class _Keychain implements SecretStore {
-  final values = <String, String>{};
-  @override
-  Future<String?> read(String key) async => values[key];
-  @override
-  Future<void> write(String key, String value) async => values[key] = value;
-  @override
-  Future<void> delete(String key) async => values.remove(key);
-}
-
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('deleting a testnet master key preserves the regtest allocation high-water mark', () async {
     final productionDb = BoltzSwapsDatabase(NativeDatabase.memory());
     final regtestDb = BoltzSwapsDatabase(NativeDatabase.memory());
     addTearDown(productionDb.close);
     addTearDown(regtestDb.close);
-    final keychain = _Keychain();
+    final keychain = ReproKeychainBackend();
     final canonical = SwapStorage(
       rows: DriftSwapRowStore(productionDb),
-      secrets: keychain,
+      secrets: keychain.capability,
     );
     final regtest = canonical.regtestView(rows: DriftSwapRowStore(regtestDb));
     await canonical.storeSwapMasterKey(

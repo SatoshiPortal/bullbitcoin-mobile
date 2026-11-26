@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+import 'auto_swap_table.dart';
+
 part 'boltz_swaps_database.g.dart';
 
 /// Stored by name; the values are wire format carried over unchanged from the
@@ -56,21 +58,39 @@ class SwapDataMigrations extends Table {
   Set<Column> get primaryKey => {name};
 }
 
+class LegacyImportReceipts extends Table {
+  TextColumn get id => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// The engine's own database. The app injects the [QueryExecutor] (file
 /// location, WAL/busy-timeout pragmas, cross-isolate sharing are the app's
-/// platform concerns) so this package stays pure Dart.
-@DriftDatabase(tables: [Swaps, SwapDataMigrations])
+/// platform concerns); schema and row persistence remain owned by the engine.
+@DriftDatabase(
+  tables: [Swaps, SwapDataMigrations, AutoSwap, LegacyImportReceipts],
+)
 class BoltzSwapsDatabase extends _$BoltzSwapsDatabase {
   static const String name = 'boltz_swaps';
+  static const schema = 3;
 
   BoltzSwapsDatabase(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => schema;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => transaction(() async {
+      for (final table in allTables) {
+        if (!await _hasTable(table.actualTableName)) await m.createTable(table);
+      }
+    }),
     onUpgrade: (migrator, from, to) async {
+      if (from < 1 || from >= to || to > schema) {
+        throw const _UnsupportedBoltzSchema();
+      }
       if (from < 2) {
         // Guarded: a re-run of this step (another connection upgraded
         // first) must leave the table unchanged.
@@ -90,8 +110,25 @@ class BoltzSwapsDatabase extends _$BoltzSwapsDatabase {
           await migrator.addColumn(swaps, swaps.provider);
         }
       }
+      if (from < 3) {
+        await transaction(() async {
+          if (!await _hasTable('auto_swap')) {
+            await migrator.createTable(autoSwap);
+          }
+          if (!await _hasTable('legacy_import_receipts')) {
+            await migrator.createTable(legacyImportReceipts);
+          }
+        });
+      }
     },
   );
+
+  Future<bool> _hasTable(String name) async =>
+      await customSelect(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        variables: [Variable(name)],
+      ).getSingleOrNull() !=
+      null;
 
   Future<bool> dataMigrationDone(String migrationName) async =>
       await (select(
@@ -123,4 +160,8 @@ class BoltzSwapsDatabase extends _$BoltzSwapsDatabase {
       );
     });
   }
+}
+
+final class _UnsupportedBoltzSchema implements Exception {
+  const _UnsupportedBoltzSchema();
 }

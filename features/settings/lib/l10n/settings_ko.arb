@@ -1,0 +1,315 @@
+{
+  "translationWarningContributeButton": "번역을 개선하는 데 도움이",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "이 앱의 대부분의 번역은 AI를 사용하여 생성되었으며 부정확할 수 있습니다. 오류를 발견하거나 번역 개선에 도움을 주고 싶으시다면, GitHub 저장소에서 수정 사항을 제출할 수 있습니다.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-Generated 번역",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "walletDeletionConfirmationCancelButton": "이름 *",
+  "@walletDeletionConfirmationCancelButton": {
+    "description": "Cancel button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationDeleteButton": "기타 제품",
+  "@walletDeletionConfirmationDeleteButton": {
+    "description": "Delete button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationMessage": "이 지갑을 삭제하시겠습니까?",
+  "@walletDeletionConfirmationMessage": {
+    "description": "Message in the wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationTitle": "지갑 삭제",
+  "@walletDeletionConfirmationTitle": {
+    "description": "Title for the wallet deletion confirmation dialog"
+  },
+  "walletDeletionErrorDefaultWallet": "기본 지갑을 삭제할 수 없습니다.",
+  "@walletDeletionErrorDefaultWallet": {
+    "description": "Error message when attempting to delete a default wallet"
+  },
+  "walletDeletionErrorGeneric": "지갑을 삭제하려면 다시 시도하십시오.",
+  "@walletDeletionErrorGeneric": {
+    "description": "Generic error message when wallet deletion fails"
+  },
+  "walletDeletionErrorOngoingSwaps": "지속적인 스왑으로 지갑을 삭제할 수 없습니다.",
+  "@walletDeletionErrorOngoingSwaps": {
+    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+  },
+  "walletDeletionErrorWalletNotFound": "삭제하려고 하는 지갑은 존재하지 않습니다.",
+  "@walletDeletionErrorWalletNotFound": {
+    "description": "Error message when the wallet to delete cannot be found"
+  },
+  "walletDeletionFailedOkButton": "이름 *",
+  "@walletDeletionFailedOkButton": {
+    "description": "OK button label in wallet deletion failed dialog"
+  },
+  "walletDeletionFailedTitle": "실패 삭제",
+  "@walletDeletionFailedTitle": {
+    "description": "Title for the wallet deletion failed dialog"
+  },
+  "walletDetailsAddressTypeLabel": "주소 유형",
+  "@walletDetailsAddressTypeLabel": {
+    "description": "Label for the address type field in wallet details"
+  },
+  "walletDetailsDeletingMessage": "지갑 삭제 ...",
+  "@walletDetailsDeletingMessage": {
+    "description": "Message displayed while a wallet is being deleted"
+  },
+  "walletDetailsDerivationPathLabel": "Derivation 경로",
+  "@walletDetailsDerivationPathLabel": {
+    "description": "Label for the derivation path field in wallet details"
+  },
+  "walletDetailsDescriptorLabel": "연구분야",
+  "@walletDetailsDescriptorLabel": {
+    "description": "Label for the wallet descriptor field in wallet details"
+  },
+  "walletDetailsNetworkLabel": "회사연혁",
+  "@walletDetailsNetworkLabel": {
+    "description": "Label for the network field in wallet details"
+  },
+  "walletDetailsPubkeyLabel": "스낵 바",
+  "@walletDetailsPubkeyLabel": {
+    "description": "Label for the public key field in wallet details"
+  },
+  "walletDetailsSignerDeviceLabel": "Signer 장치",
+  "@walletDetailsSignerDeviceLabel": {
+    "description": "Label for the signer device field in wallet details"
+  },
+  "walletDetailsSignerDeviceNotSupported": "지원되지 않음",
+  "@walletDetailsSignerDeviceNotSupported": {
+    "description": "Message displayed when a signer device is not supported"
+  },
+  "walletDetailsSignerLabel": "로그인",
+  "@walletDetailsSignerLabel": {
+    "description": "Label for the signer field in wallet details"
+  },
+  "walletDetailsUnnamedWalletFallback": "지갑 이름",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "walletDetailsWalletFingerprintLabel": "지갑 지문",
+  "@walletDetailsWalletFingerprintLabel": {
+    "description": "Label for the wallet fingerprint field in wallet details"
+  },
+  "addressViewAddressesTitle": "이름 *",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "copiedToClipboard": "클립보드에 복사되었습니다",
+  "copyDialogButton": "관련 기사",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "globalDefaultBitcoinWalletLabel": "안전한 Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "즉시 결제",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Testnet 형태",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "제품정보",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "기본 화폐",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "수입 지갑",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "서비스 상태",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "안전 Pin",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "회사 소개",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "다운로드",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "나는 이해",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "·",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "* 이름",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "electrumTestnet": "테스트넷",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "Exchange 설정",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "앱 설정",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Dev 모드",
+  "exchangeTestnetBasicAuthTitle": "Testnet 거래소 자격 증명",
+  "exchangeTestnetBasicAuthDescription": "Testnet 거래소 웹 페이지(로그인 및 KYC)를 위한 HTTP 기본 인증.",
+  "exchangeTestnetBasicAuthUsernameLabel": "사용자 이름",
+  "exchangeTestnetBasicAuthPasswordLabel": "비밀번호",
+  "exchangeTestnetBasicAuthClearButton": "지우기",
+  "exchangeTestnetBasicAuthSaveButton": "저장",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "메인넷",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "비트코인",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "거래 내역",
+  "allSeedViewTitle": "씨 뷰어",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "settingsSuperuserModeDisabledMessage": "슈퍼 유저 모드 비활성화.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "이용 약관",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "이 모드는 위험합니다. 이를 통해 돈을 잃을 수 있음을 인정합니다",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "방송 거래",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "이름 *",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsDevModeWarningTitle": "Dev 모드",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "앱 버전: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "한국어",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Superuser 모드 잠금 해제!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "계정 설정",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 신생 동물",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "자동 스왑 설정",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "torSettingsTitle": "Tor 설정",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "backupSettingsStartBackup": "백업하기",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "스왑 복구",
+  "settingsErrorReportingTitle": "오류 보고",
+  "errorReportingProgramTitle": "오류 보고 프로그램",
+  "errorReportingProgramDescriptionP1": "오류 보고 프로그램에 참여하여 Bull을 개선하는 데 도움을 주세요.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin은 문제가 발생하면 익명화된 오류 보고서를 전송합니다.",
+  "errorReportingProgramDescriptionP3": "이를 통해 각 버그가 얼마나 많은 사용자에게 영향을 미치는지 파악하고 그에 따라 수정 우선순위를 정할 수 있습니다. 이 정보가 없으면 영향 범위를 측정할 방법이 없습니다.",
+  "errorReportingProgramDescriptionP4": "보고서는 오직 Bull 서버로만 전송되며, 제3자에게 전달되지 않습니다.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin은 오픈소스이므로 전송되는 내용을 직접 확인할 수 있습니다.",
+  "errorReportingAcceptButton": "수락",
+  "errorReportingCancelButton": "취소",
+  "errorReportingRestartSnackbar": "이 변경 사항을 적용하려면 앱을 재시작하세요",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin 고지사항",
+  "settingsPayjoinAdvancedTitle": "Payjoin 고급 설정",
+  "settingsScreenPrivacyTitle": "화면 개인정보 보호",
+  "settingsScreenPrivacyDisabledMessage": "이제 민감한 화면에서 스크린샷이 허용됩니다",
+  "settingsSearchHint": "설정 검색",
+  "settingsSearchNoResults": "설정을 찾을 수 없습니다.",
+  "settingsSearchMempoolKeywords": "블록 탐색기|수수료 추정|거래 수수료|멤풀 API",
+  "settingsSearchExchangeKeywords": "계정|거래소 계정|거래|매수 및 매도",
+  "settingsSearchStartBackupKeywords": "백업 생성|백업 저장|지갑 백업",
+  "settingsSearchRecoverbullKeywords": "암호화 백업|클라우드 백업|암호화 보관소|보관소 복구",
+  "settingsSearchLabelsKeywords": "지갑 라벨|거래 라벨|BIP329|라벨 가져오기|라벨 내보내기",
+  "settingsSearchTransactionHistoryKeywords": "거래 내보내기|거래 내역 내보내기|CSV|지갑 기록",
+  "settingsSearchAppSettingsKeywords": "앱 환경설정|애플리케이션 설정|일반 설정",
+  "settingsSearchTermsOfServiceKeywords": "이용 약관|법률 정보|사용자 계약|TOS",
+  "settingsSearchServicesStatusKeywords": "서비스 상태|시스템 상태|온라인|서비스 중단",
+  "settingsSearchImportWalletKeywords": "지갑 추가|지갑 복구|니모닉 가져오기|읽기 전용 지갑|하드웨어 지갑",
+  "settingsSearchBroadcastTransactionKeywords": "서명된 거래 전파|거래 푸시|원시 거래|거래 16진수|PSBT",
+  "settingsSearchPayjoinKeywords": "Payjoin 개인정보 보호|협업 거래|P2EP",
+  "settingsSearchAutoswapKeywords": "자동 스왑|자동 교환|자동 전송|즉시 지갑 잔액",
+  "settingsSearchElectrumKeywords": "비트코인 노드|Electrum 노드|사용자 지정 서버|개인 노드",
+  "settingsSearchTestnetModeKeywords": "테스트 네트워크|비트코인 테스트넷|Liquid 테스트넷|테스트 모드",
+  "settingsSearchSeedViewerKeywords": "시드 구문|복구 구문|니모닉|백업 단어|시드 보기",
+  "settingsSearchBip85Keywords": "결정론적 엔트로피|하위 시드|파생 엔트로피|BIP85",
+  "settingsSearchLanguageKeywords": "로케일|번역|표시 언어|선호 언어",
+  "settingsSearchThemeKeywords": "화면 모양|다크 모드|라이트 모드|시스템 테마",
+  "settingsSearchCurrencyKeywords": "법정화폐|현지 통화|기본 통화|환전 통화",
+  "settingsSearchSecurityPinKeywords": "PIN 코드|암호|앱 잠금|인증|PIN 변경",
+  "settingsSearchLogsKeywords": "디버그 로그|진단 로그|앱 로그|로그 내보내기",
+  "settingsSearchDevModeKeywords": "개발자 모드|개발 설정|디버그 모드|고급 테스트",
+  "settingsSearchTestnetCredentialsKeywords": "테스트넷 사용자 자격 증명|테스트넷 로그인|테스트넷 사용자 이름|테스트넷 비밀번호|기본 인증",
+  "settingsSearchErrorReportingKeywords": "충돌 보고서|버그 보고서|진단|원격 측정|오류 로그",
+  "settingsSearchScreenPrivacyKeywords": "스크린샷|화면 녹화|화면 캡처 보호|개인정보 보호",
+  "settingsSearchStartTyping": "결과를 보려면 입력을 시작하세요.",
+  "settingsErrorSavingSetting": "해당 설정을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "settingsErrorConsentNotGiven": "이 설정을 변경하려면 확인이 필요합니다.",
+  "settingsErrorLoadingLogs": "진단 로그를 준비할 수 없습니다. 다시 시도해 주세요.",
+  "settingsSearchTorKeywords": "Tor 프록시|Orbot|어니언 라우팅|내장 Tor|개인정보 보호 네트워크",
+  "bitcoinSettingsAutoTransferTitle": "자동 스왑",
+  "settingsDarkModeTitle": "다크 모드",
+  "settingsSourceCodeTitle": "소스 코드",
+  "backgroundTasksTitle": "백그라운드 작업",
+  "notificationsBlockedMessage": "시스템 설정에서 알림이 차단되어 있습니다.",
+  "notificationsTitle": "알림",
+  "openSystemSettings": "시스템 설정 열기",
+  "permissionsTitle": "권한",
+  "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고"
+}

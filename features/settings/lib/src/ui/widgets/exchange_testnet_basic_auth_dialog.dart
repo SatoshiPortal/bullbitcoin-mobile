@@ -1,0 +1,106 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
+import 'package:settings/src/l10n.dart';
+import 'package:settings/src/presentation/bloc/settings_cubit.dart';
+import 'package:bull_ui/bull_ui.dart' show BullShapesX;
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+Future<void> showExchangeTestnetBasicAuthDialog(BuildContext context) {
+  final cubit = context.read<SettingsCubit>();
+  return showDialog<void>(
+    context: context,
+    builder: (_) => BlocProvider.value(
+      value: cubit,
+      child: const _ExchangeTestnetBasicAuthDialog(),
+    ),
+  );
+}
+
+class _ExchangeTestnetBasicAuthDialog extends StatefulWidget {
+  const _ExchangeTestnetBasicAuthDialog();
+
+  @override
+  State<_ExchangeTestnetBasicAuthDialog> createState() =>
+      _ExchangeTestnetBasicAuthDialogState();
+}
+
+class _ExchangeTestnetBasicAuthDialogState
+    extends State<_ExchangeTestnetBasicAuthDialog> {
+  late final TextEditingController _usernameController;
+  late final TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<SettingsCubit>().state;
+    _usernameController = TextEditingController(
+      text: state.exchangeTestnetBasicAuthUsername ?? '',
+    );
+    _passwordController = TextEditingController(
+      text: state.exchangeTestnetBasicAuthPassword ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.bullShapes.sheet),
+      ),
+      title: Text(context.loc.exchangeTestnetBasicAuthTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(context.loc.exchangeTestnetBasicAuthDescription),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _usernameController,
+            autocorrect: false,
+            enableSuggestions: false,
+            decoration: InputDecoration(
+              labelText: context.loc.exchangeTestnetBasicAuthUsernameLabel,
+            ),
+          ),
+          TextField(
+            controller: _passwordController,
+            autocorrect: false,
+            enableSuggestions: false,
+            decoration: InputDecoration(
+              labelText: context.loc.exchangeTestnetBasicAuthPasswordLabel,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        BullButton.secondary(
+          label: context.loc.exchangeTestnetBasicAuthClearButton,
+          onPressed: () async {
+            await context.read<SettingsCubit>().setExchangeTestnetBasicAuth();
+            if (context.mounted) Navigator.of(context).pop();
+          },
+          size: BullButtonSize.small,
+          compact: true,
+        ),
+        BullButton.primary(
+          label: context.loc.exchangeTestnetBasicAuthSaveButton,
+          onPressed: () async {
+            await context.read<SettingsCubit>().setExchangeTestnetBasicAuth(
+              username: _usernameController.text,
+              password: _passwordController.text,
+            );
+            if (context.mounted) Navigator.of(context).pop();
+          },
+          size: BullButtonSize.small,
+          compact: true,
+        ),
+      ],
+    );
+  }
+}

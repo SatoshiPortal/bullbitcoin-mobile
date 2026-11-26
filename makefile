@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: workspace-graph workspace-graph-check rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -55,14 +55,14 @@ format-check:
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
 # The only typed-in font sizes outside BullTypography.standard: the Bebas Neue brand wordmarks, sized by their splash layout and marked "Brand wordmark" at the call site.
-FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|lib/features/wizard/ui/widgets/welcome_step|lib/features/exchange/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
+FONT_SIZE_ALLOWLIST := ^(features/onboarding/lib/src/ui/screens/onboarding_splash|features/wizard/lib/src/ui/widgets/welcome_step|features/bull_exchange/lib/src/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
 BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/bull_ui/lib/src/inputs/bull_mnemonic_keyboard.dart packages/bull_ui/lib/src/inputs/bull_pin_pad.dart
 
 bull-ui-check: typography-check
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
-	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" features/coins/lib/src/ui; then echo "features/coins/lib/src/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
-	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^lib/core/themes/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
+	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
 	@echo "🧱 text sizes (typography roles, never a typed-in font size)"
 	@if grep -rnE "fontSize:[^,;]*([^A-Za-z0-9_.]|^)[0-9]+(\.[0-9]+)?([^A-Za-z0-9_]|$$)" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/bull_typography.dart:" | grep -vE "$(FONT_SIZE_ALLOWLIST)"; then echo "Read a text size from context.bullType.<role> (or BullText(role: ...)), changing only its weight or colour; size a keypad glyph from BullKeypadMetrics.glyphSize. The numbers live only in BullTypography.standard"; exit 1; fi
 	@if grep -rnE "fontSize: *$$" lib features packages --include='*.dart' | grep -v "/test/"; then echo "Keep a fontSize on one line so the typed-in size check can read it"; exit 1; fi
@@ -99,7 +99,13 @@ sync-api-docs:
 sync-api-docs-check:
 	@fvm dart packages/sync/tool/api_docs.dart --check
 
-checks: app-icons-check analyze bull-ui-check native-write-check custody-check secrets-api-docs-check sync-api-docs-check fix-check format-check rustc-pins-test unit-test
+workspace-graph:
+	@fvm dart tools/workspace_graph.dart
+
+workspace-graph-check:
+	@fvm dart tools/workspace_graph.dart --check
+
+checks: app-icons-check workspace-graph-check analyze bull-ui-check native-write-check custody-check secrets-api-docs-check sync-api-docs-check fix-check format-check rustc-pins-test unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -112,14 +118,23 @@ pr-governance-ci-test:
 	@echo "🛡️ Testing PR governance and custody policy (CI only)"
 	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
 
+# Regenerate the flutter_rust_bridge bindings after changing a Rust API. Needs
+# flutter_rust_bridge_codegen 2.13.0, the Flutter of .fvmrc on PATH and libclang
+# (LLVM_PATH=<llvm dir> when it is not found). Commit the output on its own.
+rust-bindings-codegen:
+	@bash packages/rust_bindings/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
+onion-codegen:
+	@bash packages/onion/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
+.PHONY: scuttle-codegen
+scuttle-codegen:
+	@bash packages/ark/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
+# One build over every workspace member: build_runner resolves cross-package inputs (Drift owners before their composer, a member's types before its dependents) from the package graph, in a single process whose cache lives in the root .dart_tool/build.
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit
-	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
-	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
-	@(cd packages/swaps && fvm dart run build_runner build --force-jit)
-	@$(MAKE) recoverbull-build-runner
-	@$(MAKE) btc-map-build-runner
+	@fvm dart run build_runner build --workspace --force-jit
 
 .PHONY: btc-map-build-runner
 btc-map-build-runner:
@@ -129,20 +144,53 @@ btc-map-build-runner:
 recoverbull-build-runner:
 	@(cd features/recoverbull && fvm dart run build_runner build --force-jit)
 
+# One workspace watcher by default, like build-runner. MEMBER=<path> watches that member alone, for example `make build-runner-watch MEMBER=features/coins`.
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & (cd packages/bull_pricer && fvm dart run build_runner watch --force-jit) & (cd packages/swaps && fvm dart run build_runner watch --force-jit) & wait'
+	@cd "$(if $(MEMBER),$(MEMBER),.)" && fvm dart run build_runner watch $(if $(MEMBER),,--workspace) --force-jit
 
 translations:
 	@echo "🌐 Generating translations files"
 	@$(MAKE) novlang-translations
 	@fvm flutter gen-l10n
+	@(cd features/announcements && fvm flutter gen-l10n)
+	@(cd features/bitcoin_price && fvm flutter gen-l10n)
 	@(cd features/btc_map && fvm flutter gen-l10n)
+	@(cd features/bull_exchange && fvm flutter gen-l10n)
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
+	@(cd features/signers && fvm flutter gen-l10n)
+	@(cd features/scanning && fvm flutter gen-l10n)
+	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
+	@(cd features/backups && fvm flutter gen-l10n)
+	@(cd features/backup_metadata && fvm flutter gen-l10n)
+	@(cd features/access && fvm flutter gen-l10n)
+	@(cd features/startup && fvm flutter gen-l10n)
+	@(cd features/bip85 && fvm flutter gen-l10n)
+	@(cd features/all_seed_view && fvm flutter gen-l10n)
+	@(cd features/silent && fvm flutter gen-l10n)
+	@(cd features/swap && fvm flutter gen-l10n)
+	@(cd features/wallet_import && fvm flutter gen-l10n)
+	@(cd features/transactions && fvm flutter gen-l10n)
+	@(cd features/send && fvm flutter gen-l10n)
+	@(cd features/address_view && fvm flutter gen-l10n)
+	@(cd features/receive && fvm flutter gen-l10n)
+	@(cd features/coins && fvm flutter gen-l10n)
+	@(cd features/label_editor && fvm flutter gen-l10n)
+	@(cd features/fees && fvm flutter gen-l10n)
+	@(cd features/network && fvm flutter gen-l10n)
+	@(cd features/settings && fvm flutter gen-l10n)
+	@(cd features/wizard && fvm flutter gen-l10n)
+	@(cd features/onboarding && fvm flutter gen-l10n)
+	@(cd packages/notifications && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
+	@$(MAKE) ark-translations
 	@$(MAKE) novlang-bridge
+
+.PHONY: ark-translations
+ark-translations:
+	@(cd features/ark && fvm flutter gen-l10n)
 
 .PHONY: bull-ui-translations
 bull-ui-translations:
@@ -152,8 +200,8 @@ bull-ui-translations:
 novlang-translations:
 	@(cd packages/novlang && fvm flutter gen-l10n)
 
-# Generates lib/generated/novlang from the novlang manifest and the gen-l10n
-# output of the root catalogue. `dart <file>` on purpose: `dart run` would run
+# Generates store-aware delegates from the novlang manifest and gen-l10n
+# output for each catalogue. `dart <file>` on purpose: `dart run` would run
 # the app's native build hooks.
 .PHONY: novlang-bridge
 novlang-bridge:
@@ -174,9 +222,31 @@ hooks:
 
 drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
-	fvm dart run drift_dev make-migrations
+	@(cd packages/legacy_storage && fvm dart run drift_dev make-migrations)
+	fvm dart run drift_dev schema dump packages/swaps/lib/src/orders/data/order_swaps_database.dart packages/swaps/lib/src/orders/data/schemas/order_swaps_database/
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
+	@(cd features/announcements && fvm dart run drift_dev make-migrations)
+	@(cd packages/swaps && fvm dart run drift_dev make-migrations)
+
+.PHONY: secrets-drift-migrations
+secrets-drift-migrations:
+	@(cd packages/secrets && fvm dart run drift_dev make-migrations)
+
+.PHONY: wallet-satellite-drift-migrations
+wallet-satellite-drift-migrations:
+	@(cd features/signers && fvm dart run drift_dev make-migrations)
+	@(cd packages/sync && fvm dart run drift_dev make-migrations)
+
+.PHONY: electrum-drift-migrations mempool-drift-migrations labels-drift-migrations
+electrum-drift-migrations:
+	@(cd packages/electrum && fvm dart run drift_dev make-migrations)
+
+mempool-drift-migrations:
+	@(cd packages/mempool && fvm dart run drift_dev make-migrations)
+
+labels-drift-migrations:
+	@(cd packages/labels && fvm dart run drift_dev make-migrations)
 
 .PHONY: recoverbull-drift-migrations
 recoverbull-drift-migrations:
@@ -370,7 +440,7 @@ verify-rustc-pins:
 		actual=$$($(CONTAINER) run --rm bull-app rustup run $$version rustc --version); \
 		case "$$actual" in "rustc $$version ("*) ;; *) echo "Unexpected Rust compiler: $$actual" >&2; exit 1 ;; esac; \
 	done; \
-	bash tools/verify_rustc_pins.sh "$(APK)" "$(RUST_VERSION)" "$(PAYJOIN_RUST_VERSION)" $(EXPECTED_ABIS)
+	bash tools/verify_rustc_pins.sh --require-scuttle "$(APK)" "$(RUST_VERSION)" "$(PAYJOIN_RUST_VERSION)" $(EXPECTED_ABIS)
 
 rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins
@@ -442,6 +512,20 @@ integration-test:
 	@echo "🧪 integration tests"
 	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
+
+# Plugin integration tests that need hardware, outside `make integration-test`:
+# onion's on a phone (Snowflake is mobile-only), bitbox_transport's on a phone
+# with a BitBox02 attached over USB or reachable over BLE. DEVICE=<flutter device id>.
+# The beta flavor installs beside the production app and leaves its data alone.
+DEVICE_TEST_FLAVOR ?= beta
+
+onion-device-test:
+	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
+	@fvm flutter test integration_test/onion --flavor $(DEVICE_TEST_FLAVOR) -d $(DEVICE) --timeout 5m
+
+bitbox-device-test:
+	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
+	@fvm flutter test integration_test/bitbox_transport --flavor $(DEVICE_TEST_FLAVOR) -d $(DEVICE) --timeout 5m
 
 # Physical-device credential probes use a separately installed debug APK.
 # The SDK driver connects through VM_SERVICE_URL without installing an app.

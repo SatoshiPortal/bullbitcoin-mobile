@@ -1,0 +1,10 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          store_date_time_values_as_text: true
+          databases:
+            announcements_database: lib/src/data/announcements_database.dart
+          schema_dir: lib/src/data/schemas/
+          test_dir: test/migrations_test/

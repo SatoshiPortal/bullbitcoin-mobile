@@ -11,9 +11,9 @@
 | Android SDK | `compileSdk` 37 (SDK platform 37.0) | Android Studio SDK Manager |
 | Android NDK | `29.0.14206865` (see `android/gradle.properties`) | Android Studio SDK Manager |
 
-The bwk bindings the SP feature calls come from the `bull_sdk` package (see `pubspec.yaml`), not a local crate. Its native Rust library (`rust_lib_bull_sdk`) is compiled by Native Assets hooks during the Android/iOS build, which is why the pinned Rust toolchains and platform targets are required. The accepted wrappers use Flutter Rust Bridge 2.13 and hooks 2; BDK uses UniFFI through its own Native Assets hook.
+The bwk bindings the SP feature calls come from the `rust_bindings` workspace package (its `rust/crates/bwk` crate). Its native Rust library (`rust_lib_bull_sdk`) is compiled by Native Assets hooks during the Android/iOS build, which is why the pinned Rust toolchains and platform targets are required. The accepted wrappers use Flutter Rust Bridge 2.13 and hooks 2; BDK uses UniFFI through its own Native Assets hook.
 
-`bull_sdk` is pinned directly to an accepted SatoshiPortal commit in the workspace manifests. `make deps` enforces the shared lockfile. Official hosted Payjoin selects Rust 1.85.1 explicitly; `RUSTUP_TOOLCHAIN=1.100.0` does not override that explicit selection. The makefile exports the SatoshiPortal compiler pin and disables implicit Rust toolchain installation.
+`rust_bindings` builds from its own locked Cargo graph (`packages/rust_bindings/rust/Cargo.lock`); `make deps` enforces the shared Dart lockfile. Official hosted Payjoin selects Rust 1.85.1 explicitly; `RUSTUP_TOOLCHAIN=1.100.0` does not override that explicit selection. The makefile exports the SatoshiPortal compiler pin and disables implicit Rust toolchain installation.
 
 Run `make fvm-check` to install the pinned Flutter, then `make deps` to fetch dependencies before starting.
 
@@ -40,11 +40,13 @@ There is no SP-specific make target. `make checks` is the local entry point: it 
 
 ## 4. Tests and the Scan Policy
 
-The SP suite needs no native libraries. `make unit-test` picks up the SP tests under `test/features/sp/` along with the rest of the project.
+`make unit-test` picks up the Silent Payments suite under `features/silent/test/` along with the rest of the workspace. To run only this suite, run `fvm flutter test` from `features/silent`.
 
-Scanning resumes on its own during a sync tick, but only through `SyncSpWalletUsecase`, and only when `spScanTrigger` says so: a wallet with no cursor yet, or one more than about a month behind the tip, stays on the manual path until the user acts.
+Automatic scanning runs only in the foreground through `SyncSpWalletUsecase`. It can resume a manual scan that previously started and was not paused with Stop. A failed automatic scan can be retried in the same session, but still follows `SpScanPolicy`: a wallet with no cursor or one more than about a month behind the tip needs a manual start. Stop blocks automatic scans even after reopening the account, until the user starts a scan or clears the scan state. WorkManager does not start Silent Payments scans.
 
-That confinement is enforced by the type system rather than by a grep. `scanOnce` lives alone on `SpScanPort`, and the locator hands that port to `ScanSpWalletUsecase` and nothing else, so no other class can reach the Rust scan without a visible change to the composition root. `sp_locator_scan_policy_test.dart` covers the behaviour on top of that: it boots the real locator graph with only the outbound ports faked and counts every `scanOnce` that reaches the boundary.
+Changing backends reconnects the existing account in place. Service Status only checks the configured Blindbit tip for an admitted Silent Payments wallet; the setup and settings checks also sample the scan data endpoints. Existing configurations without a minimum scan amount retain 600 sats. New configurations default to 1,000 sats, and lowering the amount does not automatically rescan earlier blocks.
+
+That confinement is enforced by the type system rather than by a grep. `scanOnce` lives alone on `SpScanPort`, and the feature graph hands that port to `ScanSpWalletUsecase` and nothing else, so no other class can reach the Rust scan without a visible change to the composition root. `silent_graph_scan_policy_test.dart` covers the behaviour on top of that: it boots the real feature graph with only the outbound ports faked and counts every `scanOnce` that reaches the boundary.
 
 ## 5. Reproducible Build
 

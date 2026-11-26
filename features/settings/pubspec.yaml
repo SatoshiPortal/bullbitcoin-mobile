@@ -1,0 +1,80 @@
+name: settings
+description: Settings, app preferences, Payjoin controls and support.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/icons/github.svg
+
+dependencies:
+  access:
+  address_view:
+  all_seed_view:
+  background_tasks:
+  backups:
+  bip85:
+  bitcoin_price:
+  bull_ark:
+  bull_exchange:
+  bull_logger:
+  bull_payjoin:
+  bull_pricer:
+  bull_recoverbull:
+  bull_tor:
+  bull_ui:
+  electrum:
+  exchange:
+  fees_feature:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  flutter_svg: ^2.4.0
+  freezed_annotation: ^3.1.0
+  get_it: ^9.1.1
+  go_router: ^18.1.4
+  intl: any
+  label_editor:
+  material_ui: ^1.11.0
+  meta: ^1.17.0
+  network:
+  notifications:
+  package_info_plus: ^10.2.2
+  path: ^1.9.1
+  preferences:
+  primitives:
+  provider: ^6.1.5+1
+  receive:
+  screen_privacy:
+  secrets:
+  send:
+  shared_preferences: ^2.3.0
+  signers:
+  silent:
+  swap_feature:
+  swaps:
+  sync:
+  transactions:
+  unorm_dart: ^0.3.2
+  url_launcher: ^6.3.2
+  wallet_import:
+
+dev_dependencies:
+  bloc_test: ^10.0.0
+  build_runner: ^2.10.4
+  drift: ^2.35.4
+  flutter_test:
+    sdk: flutter
+  freezed: ^4.0.0
+  legacy_storage:
+  mocktail: ^1.0.4

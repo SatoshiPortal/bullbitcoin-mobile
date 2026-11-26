@@ -1,0 +1,79 @@
+{
+  "@@locale": "ko",
+  "onboardingRecoverYourWallet": "지갑을 복구",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "onboardingEncryptedVaultDescription": "PIN을 사용하여 클라우드를 통해 백업을 복구합니다.",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingSplashDescription": "Sovereign 자체 custody Bitcoin 지갑과 Bitcoin 전용 교환 서비스.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingEncryptedVault": "암호화된 vault",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingCreateNewWallet": "새 지갑 만들기",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "onboardingPhysicalBackupDescription": "12 단어를 통해 지갑을 복구.",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "settingsLanguageTitle": "* 이름",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "retry": "이름 *",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "읽기",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "onboardingBullBitcoin": "비트코인",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "당신의 돈을 소유",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingRecoverWallet": "지갑 복구",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "onboardingPhysicalBackup": "물리적 백업",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "onboardingRecoverWalletButton": "지갑 복구",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "continueButton": "계속하기",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "torSettingsTitle": "Tor 설정",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "walletSetupErrorTryAgain": "지갑을 설정하는 중 문제가 발생했습니다. 다시 시도해 주세요.",
+  "onboardingAdvancedOptionsTitle": "고급 옵션",
+  "onboardingAdvancedOptionsDescription": "지갑을 생성하거나 복구하기 전에 고급 설정을 구성하세요",
+  "onboardingAdvancedOptionsCustomElectrum": "사용자 지정 Electrum 서버",
+  "onboardingAdvancedOptionsCustomMempool": "사용자 지정 Mempool 서버",
+  "onboardingAdvancedOptionsCustomRecoverbull": "사용자 지정 Recoverbull 서버",
+  "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
+  "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요."
+}

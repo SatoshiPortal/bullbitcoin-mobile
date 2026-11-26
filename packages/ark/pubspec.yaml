@@ -1,0 +1,20 @@
+name: ark
+description: Pure Dart Ark wallet boundary, native lifecycle and recovery journal.
+publish_to: none
+version: 0.1.0
+environment:
+  sdk: '3.14.0'
+resolution: workspace
+dependencies:
+  primitives:
+  meta: ^1.17.0
+  crypto: ^3.0.7
+  bip32_keys: 3.1.4
+  bip39_mnemonic: 4.1.0
+  sqlite3: ^3.5.2
+  flutter_rust_bridge: 2.13.0
+  flutter_rust_bridge_hooks: 2.13.0
+dev_dependencies:
+  ffigen: ^23.0.0
+  lints: ^6.0.0
+  test: ^1.26.3

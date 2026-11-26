@@ -1,0 +1,315 @@
+{
+  "translationWarningContributeButton": "Çevirileri Geliştirmeye Yardım",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "Bu uygulamadaki çevirilerin çoğu yapay zeka kullanılarak oluşturulmuştur ve hatalar içerebilir. Herhangi bir hata fark ederseniz veya çevirileri iyileştirmeye yardımcı olmak isterseniz, GitHub depomuzda bir düzeltme gönderebilirsiniz.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-Generated Translations",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "walletDeletionConfirmationCancelButton": "Cancel",
+  "@walletDeletionConfirmationCancelButton": {
+    "description": "Cancel button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationDeleteButton": "Delete",
+  "@walletDeletionConfirmationDeleteButton": {
+    "description": "Delete button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationMessage": "Bu cüzdanı silmek istediğinizden emin misiniz?",
+  "@walletDeletionConfirmationMessage": {
+    "description": "Message in the wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationTitle": "Delete Wallet",
+  "@walletDeletionConfirmationTitle": {
+    "description": "Title for the wallet deletion confirmation dialog"
+  },
+  "walletDeletionErrorDefaultWallet": "Varsayılan bir cüzdanı silemezsiniz.",
+  "@walletDeletionErrorDefaultWallet": {
+    "description": "Error message when attempting to delete a default wallet"
+  },
+  "walletDeletionErrorGeneric": "Cüzdanı silmek için başarısız oldu, lütfen tekrar deneyin.",
+  "@walletDeletionErrorGeneric": {
+    "description": "Generic error message when wallet deletion fails"
+  },
+  "walletDeletionErrorOngoingSwaps": "Devam eden takaslarla bir cüzdan silemezsiniz.",
+  "@walletDeletionErrorOngoingSwaps": {
+    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+  },
+  "walletDeletionErrorWalletNotFound": "Silmeye çalıştığınız cüzdan mevcut değildir.",
+  "@walletDeletionErrorWalletNotFound": {
+    "description": "Error message when the wallet to delete cannot be found"
+  },
+  "walletDeletionFailedOkButton": "TAMAM TAMAM",
+  "@walletDeletionFailedOkButton": {
+    "description": "OK button label in wallet deletion failed dialog"
+  },
+  "walletDeletionFailedTitle": "Delete Failed",
+  "@walletDeletionFailedTitle": {
+    "description": "Title for the wallet deletion failed dialog"
+  },
+  "walletDetailsAddressTypeLabel": "Adres tipi",
+  "@walletDetailsAddressTypeLabel": {
+    "description": "Label for the address type field in wallet details"
+  },
+  "walletDetailsDeletingMessage": "Cüzdanı bitirmek...",
+  "@walletDetailsDeletingMessage": {
+    "description": "Message displayed while a wallet is being deleted"
+  },
+  "walletDetailsDerivationPathLabel": "Türleme Yolu",
+  "@walletDetailsDerivationPathLabel": {
+    "description": "Label for the derivation path field in wallet details"
+  },
+  "walletDetailsDescriptorLabel": "Descriptor",
+  "@walletDetailsDescriptorLabel": {
+    "description": "Label for the wallet descriptor field in wallet details"
+  },
+  "walletDetailsNetworkLabel": "Ağ Ağı Ağı",
+  "@walletDetailsNetworkLabel": {
+    "description": "Label for the network field in wallet details"
+  },
+  "walletDetailsPubkeyLabel": "Pubkey",
+  "@walletDetailsPubkeyLabel": {
+    "description": "Label for the public key field in wallet details"
+  },
+  "walletDetailsSignerDeviceLabel": "Signer Device",
+  "@walletDetailsSignerDeviceLabel": {
+    "description": "Label for the signer device field in wallet details"
+  },
+  "walletDetailsSignerDeviceNotSupported": "Desteklenmedi",
+  "@walletDetailsSignerDeviceNotSupported": {
+    "description": "Message displayed when a signer device is not supported"
+  },
+  "walletDetailsSignerLabel": "Signer",
+  "@walletDetailsSignerLabel": {
+    "description": "Label for the signer field in wallet details"
+  },
+  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "walletDetailsWalletFingerprintLabel": "Cüzdan parmak izi",
+  "@walletDetailsWalletFingerprintLabel": {
+    "description": "Label for the wallet fingerprint field in wallet details"
+  },
+  "addressViewAddressesTitle": "Adresler",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "copiedToClipboard": "Panoya kopyalandı",
+  "copyDialogButton": "Kopya kopya",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Anında ödeme",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "Logs",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Varsayılan olarak",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "Import Wallet",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "Servis Durumu",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "Güvenlik Pin",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "Etiketler",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "Anlıyorum",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "Para",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "Dil Dili",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "Değişim Ayarları",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "App Ayarları",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Testnet borsa kimlik bilgileri",
+  "exchangeTestnetBasicAuthDescription": "Testnet borsa web sayfaları için HTTP basic auth (giriş ve KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Kullanıcı adı",
+  "exchangeTestnetBasicAuthPasswordLabel": "Parola",
+  "exchangeTestnetBasicAuthClearButton": "Temizle",
+  "exchangeTestnetBasicAuthSaveButton": "Kaydet",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "settingsSuperuserModeDisabledMessage": "Superuser modu engelli.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "Hizmet Şartları",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "Bu mod risklidir. Buna izin vererek, para kaybettiğinizi kabul ediyorsunuz",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "Yayın İşlemleri",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "Tema",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsDevModeWarningTitle": "Dev Mode",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "App version: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Superuser modu kilidini açtı!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "Ayarlar",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministik Entropiler",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "Otomatik Takas Ayarları",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "torSettingsTitle": "Tor Ayarları",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "Takas Kurtarma",
+  "settingsErrorReportingTitle": "Hata bildirimi",
+  "errorReportingProgramTitle": "Hata Bildirimi Programı",
+  "errorReportingProgramDescriptionP1": "Hata bildirimi programımıza katkıda bulunarak Bull'u geliştirmemize yardımcı olun.",
+  "errorReportingProgramDescriptionP2": "Bir şeyler bozulduğunda Bull Bitcoin anonimleştirilmiş hata raporları gönderir.",
+  "errorReportingProgramDescriptionP3": "Bu, her bir hatanın kaç kullanıcıyı etkilediğini görmemizi ve buna göre düzeltmelere öncelik vermemizi sağlar; bu olmadan etkiyi ölçmenin bir yolu yoktur.",
+  "errorReportingProgramDescriptionP4": "Raporlar yalnızca Bull'un sunucusuna gider, asla üçüncü taraflara gönderilmez.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin açık kaynaklıdır, bu yüzden nelerin gönderildiğini doğrulayabilirsiniz.",
+  "errorReportingAcceptButton": "Kabul Et",
+  "errorReportingCancelButton": "İptal",
+  "errorReportingRestartSnackbar": "Bu değişikliği uygulamak için uygulamayı yeniden başlatın",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin bilgilendirmesi",
+  "settingsPayjoinAdvancedTitle": "Gelişmiş Payjoin ayarları",
+  "settingsScreenPrivacyTitle": "Ekran gizliliği",
+  "settingsScreenPrivacyDisabledMessage": "Hassas ekranlarda ekran görüntüsü almaya artık izin veriliyor",
+  "settingsSearchHint": "Ayarlarda ara",
+  "settingsSearchNoResults": "Ayar bulunamadı.",
+  "settingsSearchMempoolKeywords": "blok gezgini|ücret tahmini|işlem ücretleri|mempool API",
+  "settingsSearchExchangeKeywords": "hesap|borsa hesabı|alım satım|satın alma ve satma",
+  "settingsSearchStartBackupKeywords": "yedek oluşturma|yedeği kaydetme|cüzdanı yedekleme",
+  "settingsSearchRecoverbullKeywords": "şifreli yedek|bulut yedeği|şifreli kasa|kasa kurtarma|Recoverbull",
+  "settingsSearchLabelsKeywords": "cüzdan etiketleri|işlem etiketleri|BIP329|etiketleri içe aktar|etiketleri dışa aktar",
+  "settingsSearchTransactionHistoryKeywords": "işlemleri dışa aktar|işlem dışa aktarma|CSV|cüzdan geçmişi",
+  "settingsSearchAppSettingsKeywords": "uygulama tercihleri|uygulama ayarları|genel ayarlar",
+  "settingsSearchTermsOfServiceKeywords": "şartlar ve koşullar|yasal bilgiler|kullanıcı sözleşmesi|TOS",
+  "settingsSearchServicesStatusKeywords": "hizmet durumu|sistem durumu|çevrimiçi|kesinti",
+  "settingsSearchImportWalletKeywords": "cüzdan ekle|cüzdanı kurtar|anımsatıcı ifadeyi içe aktar|sadece izleme cüzdanı|donanım cüzdanı",
+  "settingsSearchBroadcastTransactionKeywords": "imzalı işlemi yayınla|işlemi gönder|ham işlem|işlem hex kodu|PSBT",
+  "settingsSearchPayjoinKeywords": "Payjoin gizliliği|ortak işlem|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "otomatik takas|otomatik swap|otomatik aktarım|anlık cüzdan bakiyesi|Autoswap",
+  "settingsSearchElectrumKeywords": "Bitcoin düğümü|Electrum düğümü|özel sunucu|kişisel düğüm|Electrum",
+  "settingsSearchTestnetModeKeywords": "test ağı|Bitcoin testnet|Liquid testnet|test modu|Testnet",
+  "settingsSearchSeedViewerKeywords": "seed ifadesi|kurtarma ifadesi|anımsatıcı ifade|yedek kelimeleri|seed göster",
+  "settingsSearchBip85Keywords": "deterministik entropi|türetilmiş seedler|türetilmiş entropi|BIP85",
+  "settingsSearchLanguageKeywords": "yerel ayar|çeviri|görüntüleme dili|tercih edilen dil",
+  "settingsSearchThemeKeywords": "görünüm|karanlık mod|aydınlık mod|sistem teması",
+  "settingsSearchCurrencyKeywords": "itibari para birimi|yerel para birimi|varsayılan para birimi|döviz kuru para birimi",
+  "settingsSearchSecurityPinKeywords": "PIN kodu|geçiş kodu|uygulama kilidi|kimlik doğrulama|PIN değiştir",
+  "settingsSearchLogsKeywords": "debug günlükleri|tanılama günlükleri|uygulama günlükleri|günlükleri dışa aktar",
+  "settingsSearchDevModeKeywords": "geliştirici modu|geliştirme ayarları|debug modu|gelişmiş test",
+  "settingsSearchTestnetCredentialsKeywords": "testnet kimlik bilgileri|testnet girişi|testnet kullanıcı adı|testnet parolası|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "çökme raporları|hata raporları|tanılama|telemetri|hata günlükleri",
+  "settingsSearchScreenPrivacyKeywords": "ekran görüntüleri|ekran kaydı|ekran yakalama koruması|gizlilik",
+  "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın.",
+  "settingsErrorSavingSetting": "Bu ayar kaydedilemedi. Lütfen tekrar deneyin.",
+  "settingsErrorConsentNotGiven": "Bu ayarın değiştirilebilmesi için onayınız gerekiyor.",
+  "settingsErrorLoadingLogs": "Tanılama günlükleri hazırlanamadı. Lütfen tekrar deneyin.",
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion yönlendirme|gömülü Tor|gizlilik ağı",
+  "bitcoinSettingsAutoTransferTitle": "Otomatik Takas",
+  "settingsDarkModeTitle": "Karanlık mod",
+  "settingsSourceCodeTitle": "Kaynak kodu",
+  "backgroundTasksTitle": "Arka plan görevleri",
+  "notificationsBlockedMessage": "Bildirimler sistem ayarlarında engellendi.",
+  "notificationsTitle": "Bildirimler",
+  "openSystemSettings": "Sistem ayarlarını aç",
+  "permissionsTitle": "İzinler",
+  "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar"
+}

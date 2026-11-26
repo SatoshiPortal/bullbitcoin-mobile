@@ -1,5 +1,7 @@
 build/
 .dart_tool/
+# Host Cargo builds of the Rust bindings; the container builds its own.
+**/target/
 .gradle/
 android/.gradle/
 ios/

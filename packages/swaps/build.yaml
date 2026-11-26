@@ -1,0 +1,20 @@
+targets:
+  $default:
+    builders:
+      drift_dev:analyzer:
+        generate_for: &order_sources
+          - lib/src/orders/data/order_swaps_*.dart
+        options: &order_options
+          store_date_time_values_as_text: true
+      drift_dev:modular:
+        generate_for: *order_sources
+        options: *order_options
+      drift_dev:
+        generate_for:
+          exclude:
+            - lib/src/orders/**
+        options:
+          databases:
+            boltz_swaps_database: lib/src/data/db/boltz_swaps_database.dart
+          schema_dir: lib/src/data/db/schemas/
+          test_dir: test/migrations_test/

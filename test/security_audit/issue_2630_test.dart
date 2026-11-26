@@ -2,7 +2,7 @@
 // Finding: BIP21 labels can contain control characters and are returned unchanged.
 // Regression test for the fix.
 
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

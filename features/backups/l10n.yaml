@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: backups_en.arb
+output-localization-file: backups_localizations.dart
+output-class: BackupsLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false

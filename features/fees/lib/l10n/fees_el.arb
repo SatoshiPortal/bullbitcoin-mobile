@@ -1,0 +1,22 @@
+{
+  "retry": "Retry",
+  "doneButton": "Έγινε",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Absolutα τέλη",
+  "sendBelowMinFeeRateError": "Ο ρυθμός τέλους πρέπει να είναι τουλάχιστον 0.1 sat/vB.",
+  "sendCustomFee": "Custom Fee",
+  "sendEconomyFee": "Οικονομία",
+  "sendEnterAbsoluteFee": "Εισαγάγετε απόλυτο τέλος σε καθούς",
+  "sendEnterRelativeFee": "Εισαγάγετε σχετικό τέλος σε sats/vB",
+  "sendEstimatedDelivery": "Εκτιμώμενη παράδοση - ",
+  "sendEstimatedDelivery10Minutes": "10 λεπτά",
+  "sendEstimatedDelivery10to30Minutes": "10-30 λεπτά",
+  "sendEstimatedDeliveryHours": "ώρες",
+  "sendEstimatedDeliveryHoursToDays": "ώρες έως μέρες",
+  "sendFastFee": "Fast",
+  "sendRelativeFees": "Σχετικά τέλη",
+  "sendSats": "καθόταν",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Επιλέξτε τέλος του δικτύου",
+  "sendSubSatVbyteWarning": "Οι συναλλαγές κάτω από 1 sat/vB ενδέχεται να χρειαστούν περισσότερο χρόνο για επιβεβαίωση και μπορεί να μην διαδοθούν σε όλους τους κόμβους."
+}

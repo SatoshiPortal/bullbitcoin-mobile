@@ -111,11 +111,10 @@ class _BlockingFailure extends StatelessWidget {
             bgColor: context.bull.errorContainer,
           ),
           const Gap(16),
-          BullButton.small(
+          BullButton.primary(
+            size: BullButtonSize.small,
             key: const ValueKey('merchant-map-retry'),
             label: context.btcMapLoc.retry,
-            bgColor: context.bull.primary,
-            textColor: context.bull.onPrimary,
             onPressed: () => context.read<MapCubit>().refresh(),
           ),
         ],

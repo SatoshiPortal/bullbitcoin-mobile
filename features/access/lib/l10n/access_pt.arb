@@ -1,0 +1,44 @@
+{
+  "@@locale": "pt",
+  "appUnlockButton": "Desbloqueio",
+  "appUnlockPinCheckError": "Não foi possível carregar as configurações de segurança. Reinicie o aplicativo.",
+  "appUnlockPinVerifyError": "Não foi possível verificar o seu PIN. Tente novamente.",
+  "pinCodeSecurityPinTitle": "PIN de segurança",
+  "pinCodeCreateButton": "Criar PIN",
+  "pinCodeManageTitle": "Gerenciar seu PIN de segurança",
+  "pinCodeProcessing": "Processamento",
+  "pinCodeCreateTitle": "Criar novo pino",
+  "pinCodeContinue": "Continue",
+  "appUnlockAttemptSingular": "tentativa falhada",
+  "pinCodeCreateDescription": "Seu PIN protege o acesso à sua carteira e configurações. Mantenha-o memorável.",
+  "pinCodeConfirmTitle": "Confirme o novo pino",
+  "pinCodeRemoveButton": "Remover PIN de Segurança",
+  "appUnlockAttemptPlural": "tentativas falhadas",
+  "pinCodeMismatchError": "PINs não correspondem",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "pinCodeChangeButton": "Mudar PIN",
+  "pinCodeCheckingStatus": "Verificando o status PIN",
+  "pinCodeAuthentication": "Autenticação",
+  "pinCodeSettingUp": "Configurando seu código PIN",
+  "pinCodeBackupRequiredWarning": "Por favor, conclua uma cópia de segurança da carteira antes de definir um PIN",
+  "appUnlockScreenTitle": "Autenticação",
+  "appUnlockIncorrectPinError": "PIN incorreto. Por favor, tente novamente. {failedAttempts} {attemptsWord}",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Digite seu código do pino para desbloquear",
+  "backupSettingsStartBackup": "Iniciar backup",
+  "pinCodeConfirm": "Confirmação",
+  "pinCodeLoading": "A carregar",
+  "pinCodeSaveError": "Não foi possível guardar o seu PIN. Por favor, tente novamente.",
+  "pinCodeDeleteError": "Não foi possível eliminar o seu PIN. Por favor, tente novamente.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "Introduza {min} a {max} dígitos"
+}

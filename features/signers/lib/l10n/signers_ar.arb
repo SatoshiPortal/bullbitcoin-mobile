@@ -1,0 +1,1021 @@
+{
+  "ledgerHelpTitle": "Ledger Troubleshooting",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "bitboxErrorMultipleDevicesFound": "عدة أجهزة (بيتبوكس) وجدت يرجى ضمان وجود جهاز واحد فقط متصل.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxScreenNeedHelpButton": "تحتاج مساعدة؟?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "jadeStep13": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (جايد) افحصه.",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "psbtFlowClickScan": "Click Scan",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "passportStep1": "اسحبوا جهاز تصاريحكم",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "kruxStep3": "Click PSBT",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep2": "تأكّد من أنّ هاتفك مُمكّن من الحصول على إذن.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "kruxStep7": "   - زيادة السطوع على جهازك",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "الجايد سوف يريك رمزها الخاص.",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceProcessing": "جهاز الطير",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "ledgerButtonNeedHelp": "تحتاج مساعدة؟?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "ledgerImportButton": "البداية",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "bitboxActionPairDeviceButton": "ابدأ بالطير",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "jadeStep8": "   - حاول أن تحرك جهازك أقرب أو أبعد",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "ledgerActionFailedMessage": "{action} Failed",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (بريد سيغنر) افحصه.",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "keystoneStep14": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenConnectingSubtext": "إقامة إتصال آمن...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "jadeStep7": "   -اثبتوا وركزوا",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "محفظة بيتبوكس الخاصة بك تم استيرادها بنجاح.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "psbtFlowPartProgress": "الجزء {current} من {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerVerifyTitle": "Verify Address on Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "seedsignerStep1": "شغل جهازك",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "ledgerProcessingSign": "التوقيع على المعاملات",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "jadeStep6": "   - زيادة السطوع على جهازك",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "ledgerVerifyButton": "تصحيح العنوان",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "kruxStep14": "محفظة (بول بيتكوين) ستطلب منك فحص شفرة (كيو آر) على (كرو) افحصه.",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "bitboxScreenEnterPasswordSubtext": "الرجاء إدخال كلمة السر الخاصة بك على جهاز بيتبوكس للاستمرار.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportStep11": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "psbtFlowScanDeviceQr": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على {device}. افحصه.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "ledgerSuccessVerifyTitle": "عنوان التحقق على ليدجر...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "psbtFlowReadyToBroadcast": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "seedsignerStep5": "   - زيادة السطوع على جهازك",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportInstructionsTitle": "مؤسسة تعليمات جوازات السفر",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "ledgerSuccessImportTitle": "الجدارة المستوردة بنجاح",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "bitboxErrorOperationCancelled": "وألغيت العملية. أرجوك حاول مرة أخرى.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "jadeInstructionsTitle": "Blockstream Jade PSBT التعليمات",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "psbtFlowReviewTransaction": "عندما تستورد الصفقة في {device}، يستعرض عنوان المقصد والمبلغ.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowIncreaseBrightness": "زيادة السطوع على جهازك",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "bitboxActionSignTransactionProcessing": "التوقيع على المعاملات",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "ledgerErrorDeviceLocked": "جهاز ليدجر مغلق الرجاء فتح جهازك ومحاولة مرة أخرى.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerSuccessSignDescription": "صفقتك تم توقيعها بنجاح.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerConnectingSubtext": "إقامة إتصال آمن...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "kruxStep8": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "kruxStep15": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "jadeStep15": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "bitboxErrorDeviceNotPaired": "النّساء لَيسَ أزواجَ. من فضلك أكمل عملية الأزواج أولاً.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "ledgerProcessingImportSubtext": "وضع محفظتك فقط.",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "bitboxActionImportWalletTitle": "Import BitBox Wallet",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "psbtFlowInstructions": "التعليمات",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxScreenTroubleshootingStep1": "تأكدي من أن لديكِ آخر برمجة على (بيتبوكس).",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "kruxStep16": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "bitboxScreenVerifyAddressSubtext": "قارن هذا العنوان بشاشة بيت بوكس 02",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "ledgerVerifyAddressLabel": "عنوان التحقق:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "jadeStep1": "اسحبوا جهازكم",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "psbtFlowTroubleScanningTitle": "إذا كان لديك مشكلة في المسح",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "seedsignerInstructionsTitle": "تعليمات البذور",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "من فضلك تحقق من شفرة الأزواج على جهازك البثوري.",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep2": "الإشارة",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "kruxStep5": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "seedsignerStep11": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "bitboxErrorConnectionFailed": "فشل في التواصل مع جهاز (بيتبوكس) من فضلك تحقق من اتصالك.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "وضع محفظتك فقط.",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "psbtFlowDone": "لقد انتهيت",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommended",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "bitboxActionImportWalletProcessing": "الجدار الاستيراد",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "seedsignerStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "passportStep6": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "keystoneStep4": "إذا كان لديك مشكلة في المسح",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "psbtFlowMoveBack": "حاول أن تعيد جهازك قليلاً",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "keystoneStep2": "Click Scan",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "ledgerWalletTypeLabel": "نوع الجدار:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "keystoneStep6": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "ledgerInstructionsIos": "تأكد من أن (ليدجر) الخاص بك مُفَتح مع برنامج (بيتكوين) المُفَتَتح و (بلوتوث) مُمكّن.",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "passportStep14": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "psbtFlowSelectSeed": "عندما يتم استيراد الصفقة في {device}، يجب أن تختار البذور التي ترغب في التوقيع معها.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "kruxStep10": "بمجرد أن تستورد الصفقة في كروك، يستعرض عنوان المقصد والمبلغ.",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "bitboxErrorHandshakeFailed": "فشل في إقامة اتصال آمن. أرجوك حاول مرة أخرى.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep8": "بمجرد أن يتم استيراد الصفقة في الحجر الخاص بك، استعراض عنوان الوجهة والمبلغ.",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "psbtFlowSpecterTitle": "التعليمات الخاصة بالحشرات",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorDeviceNotFound": "جهاز (بيتبوكس) لم يعثر عليه.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "ledgerScanningMessage": "أبحث عن أجهزة ليدجر قريبة...",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "keystoneStep5": "   - زيادة السطوع على جهازك",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "kruxStep9": "   -حاول أن تعيد جهازك قليلاً",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "kruxStep11": "اضغط على الأزرار لتوقيع الصفقة على كروز.",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "من فضلك افتح تطبيق \"بيتكوين\" على جهاز \"ليدجر\" وحاول مرة أخرى.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "seedsignerStep9": "راجع عنوان المقصد والمبلغ، وتأكد من التوقيع على ستيد سيغنر.",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "keystoneStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "passportStep2": "اشارة لرمز QR",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "keystoneStep9": "اضغط على الأزرار لتوقيع الصفقة على حجرك.",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "bitboxActionVerifyAddressTitle": "تصحيح العنوان المتعلق بثنائي بوكس",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionImportWalletSuccess": "الجدارة المستوردة بنجاح",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "ledgerSignButton": "بدء التوقيع",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "jadeStep14": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "kruxStep13": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "ledgerSuccessVerifyDescription": "تم التحقق من العنوان على جهاز ليدجر الخاص بك.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "psbtFlowSignTransaction": "معاملات التوقيع",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "ledgerConnectingMessage": "التواصل مع {deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveQRCode": "QR Code",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "jadeStep10": "اضغط على الأزرار لتوقيع الصفقة على جايدك.",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "bitboxScreenUnknownError": "خطأ غير معروف",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "psbtFlowTransactionImported": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "kruxStep4": "كليك لود من الكاميرا",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "bitboxScreenVerifyOnDevice": "الرجاء التحقق من هذا العنوان على جهاز بثور الخاص بك",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "ledgerConnectTitle": "إربط جهازك",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "bitboxScreenConnecting": "Connecting to BitBox",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "من فضلك أدخل كلمة سرك على جهاز (بيتبوكس).",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "لقد تم التحقق من العنوان على جهازك.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "seedsignerStep6": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "psbtFlowScanQrShown": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "من فضلك تأكد من العنوان على جهاز (بيتبوكس) الخاص بك.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "keystoneInstructionsTitle": "Keystone Instructions",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "bitboxActionVerifyAddressProcessing": "عنوان عرض على بيتبوكس.",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionSignTransactionSuccess": "Transaction  signed Successfully",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "ledgerSuccessImportDescription": "محفظة ليدجر الخاصة بك تم استيرادها بنجاح.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "bitboxActionUnlockDeviceButton": "جهاز إطفاء",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "ledgerInstructionsAndroidUsb": "تأكد من (ليدجر) مُفْتح مع تطبيق (بيتكوين) الذي فُتح وربطه عن طريق (يو إس بي).",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "bitboxScreenTryAgainButton": "حاول مرة أخرى",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "psbtFlowClickDone": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "bitboxActionUnlockDeviceSuccess": "جهاز غير مقفل ناجح",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxErrorOperationTimeout": "العملية انتهت أرجوك حاول مرة أخرى.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "psbtFlowTurnOnDevice": "شغل جهاز {device} الخاص بك",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep2": "Click Scan",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "psbtFlowSignTransactionOnDevice": "اضغط على الأزرار لتوقيع الصفقة على {device} الخاص بك.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "keystoneStep7": "   -حاول أن تعيد جهازك قليلاً",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "passportStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep5": "إذا كان لديك مشكلة في المسح",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "bitboxScreenTroubleshootingStep3": "إعادة تشغيل جهاز بيت بوكس02 الخاص بك عن طريق تطهير وإعادة ربطه.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "keystoneStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (كيستون) افحصه.",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "ledgerErrorRejectedByUser": "ورفض المستعمل الصفقة على جهاز ليدجر.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "passportStep10": "الجوّار سيُظهر لك رمزها الخاص بـ (كيو آر).",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "ledgerProcessingSignSubtext": "من فضلك تأكد الصفقة على جهاز ليدجر الخاص بك...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "seedsignerStep10": "البذور ستريك رمزها الخاص.",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "seedsignerStep7": "   -حاول أن تعيد جهازك قليلاً",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "seedsignerStep8": "بمجرد أن تستورد الصفقة في بذورك يجب أن تختار البذور التي ترغب في التوقيع عليها.",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "ledgerButtonManagePermissions": "الموافقة",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommended",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenWaitingConfirmation": "في انتظار تأكيد (بيتبوكس).",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxActionPairDeviceSuccess": "Device Paired Successfully",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxErrorNoDevicesFound": "لا توجد أجهزة (بيتبوكس) تأكد من أن جهازك مزود بالكهرباء و متصل عبر \"يو إس بي\".",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "kruxStep6": "إذا كان لديك مشكلة في المسح",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "ledgerProcessingVerify": "عنوان عرض على ليدجر.",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "jadeStep2": "أضف مرارة إذا كان لديك واحدة (اختيارية)",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "keystoneStep1": "إتجهوا إلى جهازك",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "المعاملات",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "jadeStep3": "اختيار خيار \"إسكان QR\"",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "ledgerImportTitle": "Import Ledger Wallet",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "bitboxScreenScanning": "مسح للأدوات",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "bitboxActionImportWalletButton": "البداية",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "jadeStep4": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "ledgerErrorMissingPsbt": "PSBT مطلوب للتوقيع",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "kruxInstructionsTitle": "التعليمات الكيروية",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "ledgerErrorDeviceBusy": "برنامج آخر يستخدم جهاز Ledger الخاص بك. الرجاء إغلاقه (على سبيل المثال، Ledger Live) والمحاولة مرة أخرى.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
+  "ledgerErrorNoConnection": "No Ledger connection available",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "bitboxScreenActionFailed": "{action} Failed",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep4": "إذا كان لديك مشكلة في المسح",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxActionVerifyAddressButton": "تصحيح العنوان",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "أولاً، تأكد من أن جهازك (بيتبوكس02) متصل بميناء (يو إس بي) إذا كان جهازك لا يزال لا يتواصل مع التطبيق، حاول ما يلي:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenAddressToVerify": "عنوان التحقق:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxErrorPermissionDenied": "ويشترط الحصول على إذن من شركة USB للربط بأجهزة بيث بوكس.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "من فضلك تأكدي من الصفقة على جهازك.",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "جهازك (بيتبوكس) أصبح الآن مُقترناً ومستعداً لاستخدامه.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxScreenScanningSubtext": "أبحث عن جهازك الـ(بيتبوكس)...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "seedsignerStep14": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "نوع الإتصال غير مبدئي.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "ledgerErrorPermissionDenied": "أذونات البلوتوث مطلوبة للاتصال بأجهزة Ledger.",
+  "ledgerErrorNoDevicesFound": "لم يتم العثور على أجهزة Ledger. تأكد من أن جهازك قيد التشغيل وأن البلوتوث مُفعّل.",
+  "ledgerErrorMultipleDevicesFound": "تم العثور على عدة أجهزة Ledger. يرجى التأكد من وجود جهاز واحد فقط بالقرب منك.",
+  "ledgerErrorDeviceNotFound": "لم يتم العثور على جهاز Ledger.",
+  "ledgerErrorDeviceMismatch": "تم اكتشاف عدم تطابق الجهاز.",
+  "ledgerErrorInvalidPsbt": "تم اكتشاف تنسيق PSBT غير صالح.",
+  "ledgerErrorMissingDerivationPath": "مسار الاشتقاق مطلوب",
+  "ledgerErrorMissingScriptType": "نوع البرنامج النصي مطلوب",
+  "ledgerProcessingVerifySubtext": "يرجى تأكيد العنوان على جهاز ليدجر الخاص بك.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "ledgerInstructionsAndroidDual": "تأكد من أن (ليدجر) الخاص بك مُفَتح مع برنامج (بيتكوين) المُفَتَتح و (بلوتوث) مُمكّن.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "jadeStep9": "بمجرد أن يتم استيراد الصفقة في الجايد الخاص بك، استعراض عنوان الوجهة والمبلغ.",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "صفقتك تم توقيعها بنجاح.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "passportStep5": "   - زيادة السطوع على جهازك",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "تأكد من أن (بيتبوكس) الخاص بك غير مقفل و متصل عبر (يو إس بي).",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "رد غير سليم من جهاز (بيتبوكس) أرجوك حاول مرة أخرى.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxScreenWalletTypeLabel": "نوع الجدار:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "passportStep8": "بمجرد أن يتم استيراد الصفقة في جواز سفرك، استعراض عنوان المقصد والمبلغ.",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "keystoneStep11": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "bitboxActionSignTransactionButton": "بدء التوقيع",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "passportStep9": "اضغط على الأزرار لتوقيع الصفقة على جواز سفرك.",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "kruxStep12": "(الكرو) سيظهر لك رمز (كيو آر) الخاص به.",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "ledgerScanningTitle": "مسح للأدوات",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "جهازك (بيتبوكس) مفتوح الآن ومستعد لاستخدامه.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxScreenEnterPassword": "كلمة المرور",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "keystoneStep10": "ستريك \"كي ستون\" رمزها الخاص \"كيو آر\".",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "ledgerSuccessSignTitle": "Transaction  signed Successfully",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "bitboxActionPairDeviceTitle": "Pair BitBox Device",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "passportStep7": "   -حاول أن تعيد جهازك قليلاً",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "bitboxScreenPairingCodeSubtext": "التحقق من هذا الرمز يطابق شاشة بيت بوكس02 الخاص بك، ثم تأكيد على الجهاز.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "kruxStep1": "إتجه إلى جهازك",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "bitboxActionVerifyAddressSuccess": "العنوان الناجح",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxScreenSelectWalletType": "Select Wallet النوع",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenManagePermissionsButton": "الموافقة",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "psbtFlowMoveLaser": "حرك الليزر الأحمر فوق و أسفل على شفرة QR",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowDeviceShowsQr": "The {device} will then show you its own QR code.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenPairingCode": "قانون الجو",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "ledgerProcessingImport": "الجدار الاستيراد",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "ledgerErrorMissingAddress": "يلزم الحصول على عنوان للتحقق",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "bitboxActionUnlockDeviceProcessing": "جهاز إطفاء",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "إذا كان لديك مشكلة في المسح",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "ledgerButtonTryAgain": "حاول مرة أخرى",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenVerifyAddress": "تصحيح العنوان",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenConnectDevice": "إربط جهازك",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "ledgerSignTitle": "المعاملات",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "ledgerHelpStep3": "تأكد من أن (ليدجر) قد انقلب على (بلوتوث).",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "ledgerHelpStep4": "تأكّدْ بأنّك رَكّبتَ آخر نسخة من تطبيقِ بيتكوين مِنْ ليدجر لايف.",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerHelpStep1": "أعد تشغيل جهاز ليدجر.",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerSuccessAddressVerified": "تم التحقق من العنوان بنجاح!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "ledgerHelpStep2": "تأكدي من أن هاتفكِ قد انقلب على (بلوتوث) وسمح له.",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Older format",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "ledgerHelpStep5": "تأكد من جهاز (ليدجر) يستخدم آخر برمجيات الشركة يمكنك تحديث البرمجيات باستخدام برنامج (ليدجر لايف).",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerWalletTypeSelectTitle": "Select Wallet النوع",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "ledgerHelpSubtitle": "أولاً، تأكد من أن جهاز \"ليدجر\" الخاص بك مُفْتَتَجَح، و تطبيق \"بيتكوين\" مفتوح. إذا كان جهازك لا يزال لا يتواصل مع التطبيق، حاول ما يلي:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "psbtFlowSignViaNfc": "توقيع عبر NFC",
+  "psbtFlowSignViaNfcSheetTitle": "قرّب جهاز {deviceName} لإرسال PSBT عبر NFC",
+  "psbtFlowColdcardQInstructionsTitle": "تعليمات Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "تعليمات Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "سجّل الدخول إلى جهاز Coldcard Q الخاص بك",
+  "psbtFlowColdcardQStep2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "psbtFlowColdcardQStep3": "اختر طريقة التوقيع المفضّلة لديك:",
+  "psbtFlowColdcardQStep4": "بالنسبة لرمز QR:",
+  "psbtFlowColdcardQStep5": "   - اختر \"مسح أي رمز QR\" على جهاز Coldcard Q",
+  "psbtFlowColdcardQStep6": "   - امسح رمز QR الظاهر في محفظة Bull",
+  "psbtFlowColdcardQStep7": "   - إذا واجهت صعوبة في المسح:",
+  "psbtFlowColdcardQStep8": "     - زِد سطوع شاشة جهازك",
+  "psbtFlowColdcardQStep9": "     - حرّك الليزر الأحمر لأعلى ولأسفل فوق رمز QR",
+  "psbtFlowColdcardQStep10": "     - حاول إبعاد جهازك قليلاً للخلف",
+  "psbtFlowColdcardQStep11": "بالنسبة لـ NFC:",
+  "psbtFlowColdcardQStep12": "   - اختر \"جاهز للتوقيع\" على جهاز Coldcard Q، ثم اضغط زر NFC",
+  "psbtFlowColdcardQStep13": "   - قرّب هاتفك من جهاز Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - انتظر حتى يتم نقل PSBT",
+  "psbtFlowColdcardQStep15": "بمجرد استيراد المعاملة في جهاز Coldcard Q، راجع عنوان الوجهة والمبلغ.",
+  "psbtFlowColdcardQStep16": "اضغط الأزرار لتوقيع المعاملة على جهاز Coldcard Q.",
+  "psbtFlowColdcardQStep17": "سيعرض جهاز Coldcard Q بعد ذلك رمز QR للمعاملة الموقّعة أو يُجهّز نقلها عبر NFC.",
+  "psbtFlowColdcardQStep18": "إذا وقّعت باستخدام رمز QR، اضغط \"انتهيت\" في محفظة بول بيتكوين.",
+  "psbtFlowColdcardQStep19": "ستطلب منك محفظة بول بيتكوين مسح رمز QR للمعاملة الموقّعة أو استخدام NFC لاستلامها.",
+  "psbtFlowColdcardQStep20": "   - بالنسبة لرمز QR: امسح الرمز الظاهر على جهاز Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - بالنسبة لـ NFC: قرّب هاتفك من جهاز Coldcard Q",
+  "psbtFlowColdcardQStep22": "سيتم استيراد المعاملة الموقّعة في محفظة بول بيتكوين.",
+  "psbtFlowColdcardQStep23": "أصبحت الآن جاهزة للبث. بمجرد الضغط على بث، ستُنشر المعاملة على شبكة بيتكوين.",
+  "psbtFlowColdcardMk4Step1": "سجّل الدخول إلى جهاز Coldcard Mk4 الخاص بك",
+  "psbtFlowColdcardMk4Step2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "psbtFlowColdcardMk4Step3": "اختر \"جاهز للتوقيع\" على جهاز Coldcard Mk4، ثم اضغط الزر رقم 3",
+  "psbtFlowColdcardMk4Step4": "قرّب هاتفك من جهاز Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "انتظر حتى يتم نقل PSBT",
+  "psbtFlowColdcardMk4Step6": "بمجرد استيراد المعاملة في جهاز Coldcard Mk4، راجع عنوان الوجهة والمبلغ.",
+  "psbtFlowColdcardMk4Step7": "اضغط الأزرار لتوقيع المعاملة على جهاز Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "سيُجهّز جهاز Coldcard Mk4 بعد ذلك المعاملة الموقّعة لنقلها عبر NFC.",
+  "psbtFlowColdcardMk4Step9": "في محفظة بول بيتكوين، اضغط NFC في شاشة البث.",
+  "psbtFlowColdcardMk4Step10": "قرّب هاتفك من جهاز Coldcard Mk4 لاستلام المعاملة الموقّعة.",
+  "psbtFlowColdcardMk4Step11": "سيتم استيراد المعاملة الموقّعة في محفظة بول بيتكوين.",
+  "psbtFlowColdcardMk4Step12": "راجع تفاصيل المعاملة في محفظة بول بيتكوين.",
+  "psbtFlowColdcardMk4Step13": "أصبحت الآن جاهزة للبث. بمجرد الضغط على بث، ستُنشر المعاملة على شبكة بيتكوين.",
+  "bitboxErrorBluetoothPermissionDenied": "يلزم إذن البلوتوث للاتصال بجهاز BitBox02 Nova الخاص بك.",
+  "bitboxErrorBluetoothUnavailable": "البلوتوث غير متاح. فعّل البلوتوث وحاول مرة أخرى.",
+  "bitboxErrorNoBleDevicesFound": "لم يُعثر على جهاز BitBox02 Nova قريب. تحقق من البلوتوث وحاول مرة أخرى.",
+  "bitboxErrorMultipleBleDevicesFound": "تم العثور على عدة أجهزة BitBox02 Nova. أبقِ جهازًا واحدًا فقط قريبًا وحاول مرة أخرى.",
+  "bitboxErrorOperationFailed": "فشلت عملية BitBox. يرجى المحاولة مرة أخرى.",
+  "bitboxScreenConnectSubtextBluetooth": "تأكد من أن جهاز BitBox02 Nova غير مُقفل وأن البلوتوث مفعّل.",
+  "bitboxScreenScanningSubtextBluetooth": "جارٍ البحث عن جهاز BitBox02 Nova القريب...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "استكشاف أخطاء BitBox02 Nova وإصلاحها",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "إذا لم يتصل جهازك بالتطبيق، جرّب ما يلي:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "تأكد من تفعيل البلوتوث والسماح به لهذا التطبيق.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "تأكد من تفعيل البلوتوث على جهاز BitBox02 Nova الخاص بك.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "أعِد تشغيل جهاز BitBox02 Nova وحاول الاتصال مرة أخرى.",
+  "psbtFlowInvalidPsbtError": "لا يمكن قراءة هذه المعاملة. ارجع وأنشئها مرة أخرى.",
+  "psbtFlowQrEncodingError": "لا يمكن تحويل هذه المعاملة إلى رمز QR."
+}

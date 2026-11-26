@@ -1,4 +1,4 @@
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:meta/meta.dart';
 
 import '../../../domain/ports/wallet_connection_port.dart';
@@ -56,6 +56,35 @@ final class BdkElectrumDatasource {
     }
   }
 
+  /// One pass over the wallet's own scripts at [externalIndices] and
+  /// [internalIndices]: the server answers those histories only, never a
+  /// transaction id. Nothing of the previous outputs is fetched, because a
+  /// targeted pass reads the wallet's canonical transactions instead of
+  /// rebuilding them.
+  bdk.Update syncScriptIndices(
+    bdk.Wallet wallet, {
+    required List<int> externalIndices,
+    required List<int> internalIndices,
+    required int batchSize,
+  }) {
+    final builder = wallet.startSyncWithSpkIndices(
+      externalIndices: externalIndices,
+      internalIndices: internalIndices,
+    );
+    bdk.SyncRequest? request;
+    try {
+      request = builder.build();
+      return _client.sync_(
+        request: request,
+        batchSize: batchSize,
+        fetchPrevTxouts: false,
+      );
+    } finally {
+      request?.dispose();
+      builder.dispose();
+    }
+  }
+
   bdk.Update fullScan(
     bdk.Wallet wallet, {
     required int stopGap,
@@ -78,7 +107,7 @@ final class BdkElectrumDatasource {
   }
 
   void populateTxCache(List<bdk.Transaction> transactions) =>
-      _client.populateTxCache(transactions: transactions);
+      _client.populateTxCache(txs: transactions);
 
   void populateAnchorCache(List<bdk.TxAnchor> anchors) =>
       _client.populateAnchorCache(anchors: anchors);

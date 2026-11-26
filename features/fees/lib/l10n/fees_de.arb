@@ -1,0 +1,22 @@
+{
+  "retry": "Erneut versuchen",
+  "doneButton": "Fertig",
+  "feePrioritySlow": "Langsam",
+  "sendAbsoluteFees": "Gesamtgebühren",
+  "sendBelowMinFeeRateError": "Die Gebührenrate muss mindestens 0,1 sat/vB betragen.",
+  "sendCustomFee": "Benutzerdefinierte Gebühren",
+  "sendEconomyFee": "Günstig",
+  "sendEnterAbsoluteFee": "Absolute Gebühr in sats eingeben",
+  "sendEnterRelativeFee": "Relative Gebühr in sats/vB eingeben",
+  "sendEstimatedDelivery": "Geschätzte Ankunft: ~",
+  "sendEstimatedDelivery10Minutes": "10 Minuten",
+  "sendEstimatedDelivery10to30Minutes": "10–30 Minuten",
+  "sendEstimatedDeliveryHours": "Stunden",
+  "sendEstimatedDeliveryHoursToDays": "Stunden bis Tage",
+  "sendFastFee": "Schnell",
+  "sendRelativeFees": "Relative Gebühren",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Netzwerkgebühr auswählen",
+  "sendSubSatVbyteWarning": "Transaktionen mit weniger als 1 sat/vB können länger zur Bestätigung benötigen und werden möglicherweise nicht an alle Nodes weitergeleitet."
+}

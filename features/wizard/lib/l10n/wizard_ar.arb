@@ -1,0 +1,62 @@
+{
+  "wizardAdvancedOptionsTitle": "خيارات متقدمة",
+  "onboardingSplashDescription": "محفظة (بيتكوين) الذاتية الملكية وخدمة التبادل فقط.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "settingsLanguageTitle": "اللغة",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "مالك",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "getStartedButton": "ابدأ",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "wizardSkipButton": "تخطي",
+  "wizardPageIndicator": "صفحة {current} / {total}",
+  "wizardNextButton": "التالي",
+  "wizardCustomizeTitle": "خصص تجربتك",
+  "wizardCustomizeBody": "استخدم BULL بطريقتك مع هذه الإعدادات.",
+  "wizardCustomizeDefaultCurrency": "العملة الافتراضية",
+  "wizardMissionTitle": "ادعم مهمة Bull",
+  "wizardMissionBody1": "لمساعدتنا في تحسين برامجنا وضمان أعلى مستوى من الأمان والخصوصية وسهولة الاستخدام، يمكن لتطبيقك أن يرسل إلينا سجلات الأخطاء التي تتيح لنا اكتشاف المشكلات وإصلاحها بسرعة في التحديثات القادمة.",
+  "wizardMissionBody2": "هذه السجلات مجهولة الهوية، وغير مرتبطة بعنوان IP الخاص بك، ولا تشارك أبدًا أي معلومات عن معاملاتك أو هويتك. إنها تقنية بحتة ولا تعرضك لأي مخاطر. هذا مفيد جدًا لنا ولا يكلفك شيئًا.",
+  "wizardMissionQuestion": "هل توافق على الانضمام إلى برنامج الإبلاغ التلقائي عن المشكلات؟",
+  "wizardMissionYes": "نعم",
+  "wizardMissionNo": "لا",
+  "wizardMissionRequired": "يرجى اختيار نعم أو لا قبل المتابعة.",
+  "wizardJourneyTitle": "تقدم في رحلتك",
+  "wizardJourneyBody": "إذا كنت جديدًا على محفظة BULL، فإليك بعض الميزات التي يمكنك الاستفادة منها لتحسين خصوصيتك وأمانك وتجربة الاستخدام.",
+  "wizardJourneyTip1": "أضف رمز PIN للأمان لفتح محفظتك",
+  "wizardJourneyTip2": "جرب النسخة الاحتياطية المشفرة للخزنة",
+  "wizardJourneyTip3": "اتصل بعقدة Bitcoin الخاصة بك",
+  "wizardJourneyTip4": "اتصل بمستكشف Mempool الخاص بك",
+  "wizardJourneyTip5": "بادل بين Bitcoin وLiquid بدون KYC",
+  "wizardJourneyTip6": "خصص إعدادات autoswap",
+  "wizardJourneyTip7": "بدّل بين Bitcoin (BTC) و Satoshis (sats)",
+  "wizardJourneyTip8": "أنشئ معاملات air-gap لمحفظتك المادية",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsDarkModeTitle": "الوضع الداكن",
+  "backgroundTasksTitle": "المهام في الخلفية",
+  "blockedInSystemSettings": "محظور في إعدادات النظام",
+  "notificationsTitle": "الإشعارات",
+  "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
+}

@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/bwk.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
 
-export 'package:bull_sdk/bwk.dart'
+export 'package:rust_bindings/bwk.dart'
     show SpAccount, SpHeaderCheckpoint, SpNetwork;
 
 /// Opens the bwk Silent Payments account (BIP352) of a mnemonic.

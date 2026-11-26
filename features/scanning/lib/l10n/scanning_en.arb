@@ -1,0 +1,61 @@
+{
+  "@@locale": "en",
+  "scanningProgressLabel": "Scanning: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} parts",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Scanning completed",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR decoding failed",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR processing failed",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "NFC connection lost. Hold your device near the NFC tag and try again.",
+  "@nfcConnectionLost": {
+    "description": "Error message shown when an NFC tag connection is lost before the read or write completes"
+  },
+  "nfcWriteFailed": "NFC transfer failed. Please try again.",
+  "@nfcWriteFailed": {
+    "description": "Error message shown when an NFC write to a hardware wallet fails"
+  },
+  "nfcDisabled": "NFC is disabled. Enable it in settings.",
+  "@nfcDisabled": {
+    "description": "Error message shown when NFC is disabled on the current device"
+  },
+  "nfcNotAvailable": "NFC is not supported on this device",
+  "@nfcNotAvailable": {
+    "description": "Error message shown when NFC is not available on the current device"
+  },
+  "nfcFailed": "Oops! Something went wrong",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "No supported NFC data was found",
+  "@nfcInvalidData": {
+    "description": "Error message shown when an NFC tag is read but no supported payload can be parsed"
+  }
+}

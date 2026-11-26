@@ -1,0 +1,39 @@
+{
+  "@@locale": "en",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip85NoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@bip85NoDefaultWalletError": {
+    "description": "Error shown when BIP85 derivation fails because no default wallet is configured"
+  },
+  "bip85Title": "BIP85 Deterministic Entropies",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85ExperimentalWarning": "Experimental \nBackup your derivation paths manually",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "bip85NextMnemonic": "Next Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85NextHex": "Next HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "screenPrivacyUnavailable": "Screen protection could not be turned on, so this secret stays hidden.",
+  "@screenPrivacyUnavailable": {
+    "description": "Shown instead of a secret (recovery phrase, seed, BIP85 child) when the OS screen-capture blocking could not be enabled"
+  }
+}

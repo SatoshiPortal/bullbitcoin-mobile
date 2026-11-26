@@ -1,10 +1,21 @@
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:receive/testing.dart';
 import 'package:swaps/swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('an unchanged empty onchain request can return to its QR', () {
+    const state = ReceiveState(
+      type: ReceiveType.bitcoin,
+      inputAmountCurrencyCode: 'sats',
+    );
+    expect(canReuseConfirmedReceiveDetails(state), isTrue);
+    expect(
+      canReuseConfirmedReceiveDetails(state.copyWith(amountEntryValid: false)),
+      isFalse,
+    );
+  });
+
   test(
     'does not reuse a confirmed Lightning amount without an active order',
     () {

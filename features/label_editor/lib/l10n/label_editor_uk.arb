@@ -1,0 +1,44 @@
+{
+  "receiveSave": "Зберегти",
+  "receiveEnterHere": "Увійти.",
+  "bip329LabelsImportSuccessSingular": "1 мітка імпортована",
+  "bip329LabelsImportSuccessPlural": "{count} міток імпортовано",
+  "@bip329LabelsImportSuccessPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelAutoSwap": "Автообмін",
+  "systemLabelSwaps": "Обмін",
+  "systemLabelExchangeBuy": "Купити",
+  "systemLabelExchangeSell": "Продати",
+  "labelDeleteFailed": "Неможливо видалити \"{label}. Будь ласка, спробуйте знову.",
+  "@labelDeleteFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "bip329LabelsImportButton": "Імпорт етикеток",
+  "systemLabelPayjoin": "Офіціант",
+  "bip329LabelsExportSuccess": "Мітки успішно експортовано",
+  "bip329LabelsTitle": "BIP329 етикетки",
+  "bip329LabelsHeading": "BIP329 Етикетки Імпорт / Експорт",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "bip329LabelsExportButton": "Експорт етикеток",
+  "systemLabelSelfSpend": "Самопоширення",
+  "bip329LabelsDescription": "Імпорт або експорт етикеток гаманця за допомогою стандартного формату BIP329.",
+  "noteVisibleToSenderNotice": "Ця примітка буде видима отримувачу вашого QR-коду або рахунку.",
+  "labelsErrorNoteTooLong": "Примітка має містити не більше {max} символів",
+  "labelsErrorNoteForbiddenCharacter": "Примітка не може містити символ {character}",
+  "labelsErrorFileTooLarge": "Цей файл завеликий. Файли міток мають бути менші за {max}.",
+  "labelsErrorFileUnreadable": "Це не схоже на файл міток BIP-329. Перевірте, чи обрали ви потрібний файл.",
+  "labelsErrorFileEmpty": "У цьому файлі немає міток для імпорту.",
+  "labelsErrorExportFailed": "Не вдалося зберегти ваші мітки. Спробуйте ще раз.",
+  "labelsErrorFileReservedName": "У цьому файлі використано назву мітки, зарезервовану застосунком. Перейменуйте її у файлі та спробуйте ще раз.",
+  "labelsErrorNoteForbiddenWhitespace": "Примітка не може містити розриви рядків або табуляції",
+  "labelsErrorFileInvalidEntry": "Деякі записи в цьому файлі не вдалося прочитати. Перевірте файл і спробуйте ще раз."
+}

@@ -1,0 +1,62 @@
+{
+  "wizardAdvancedOptionsTitle": "Pokročilé možnosti",
+  "settingsLanguageTitle": "Čeština",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "onboardingSplashDescription": "Sovereign vlastní úschovu Bitcoin peněženku a Bitcoin-only směnárna služby.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingBullBitcoin": "Čeština",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "Vlastní peníze",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "getStartedButton": "Začít",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "wizardSkipButton": "Přeskočit",
+  "wizardPageIndicator": "STRÁNKA {current} / {total}",
+  "wizardNextButton": "Další",
+  "wizardCustomizeTitle": "Přizpůsobte si zážitek",
+  "wizardCustomizeBody": "Používejte BULL podle svých představ s těmito nastaveními.",
+  "wizardCustomizeDefaultCurrency": "Výchozí měna",
+  "wizardMissionTitle": "Podpořte misi Bull",
+  "wizardMissionBody1": "Abyste nám pomohli vylepšit náš software a zajistit nejvyšší úroveň zabezpečení, soukromí a použitelnosti, vaše aplikace nám může odesílat protokoly chyb, které nám umožní rychle zjišťovat a opravovat problémy v dalších aktualizacích.",
+  "wizardMissionBody2": "Tyto protokoly jsou anonymizovány, nejsou spojeny s vaší IP adresou a nikdy nesdílejí informace o vašich transakcích ani identitě. Jsou čistě technické a nevystavují vás žádnému riziku. Pro nás je to velmi užitečné a vás to nic nestojí.",
+  "wizardMissionQuestion": "Souhlasíte s účastí v našem automatickém programu hlášení problémů?",
+  "wizardMissionYes": "Ano",
+  "wizardMissionNo": "Ne",
+  "wizardMissionRequired": "Před pokračováním zvolte Ano nebo Ne.",
+  "wizardJourneyTitle": "Pokračujte ve své cestě",
+  "wizardJourneyBody": "Pokud jste novým uživatelem peněženky BULL, zde je několik funkcí, které můžete využít ke zlepšení svého soukromí, zabezpečení a uživatelského zážitku.",
+  "wizardJourneyTip1": "Přidejte bezpečnostní PIN pro odemčení peněženky",
+  "wizardJourneyTip2": "Vyzkoušejte šifrované zálohování trezoru",
+  "wizardJourneyTip3": "Připojte se k vlastnímu Bitcoin uzlu",
+  "wizardJourneyTip4": "Připojte se k vlastnímu Mempool průzkumníku",
+  "wizardJourneyTip5": "Swapujte mezi Bitcoinem a Liquid bez KYC",
+  "wizardJourneyTip6": "Přizpůsobte si nastavení autoswapu",
+  "wizardJourneyTip7": "Přepínejte mezi Bitcoinem (BTC) a Satoshis (sats)",
+  "wizardJourneyTip8": "Vytvářejte air-gap transakce pro hardwarovou peněženku",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsDarkModeTitle": "Tmavý režim",
+  "backgroundTasksTitle": "Úlohy na pozadí",
+  "blockedInSystemSettings": "Zablokováno v nastavení systému",
+  "notificationsTitle": "Oznámení",
+  "wizardBackgroundTasksDescription": "Kontroluje platby při zavřené aplikaci.",
+  "wizardNotificationsDescription": "Dozvíte se, když dorazí platba."
+}

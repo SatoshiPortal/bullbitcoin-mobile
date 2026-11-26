@@ -10,6 +10,11 @@ sealed class Network {
   int get coinType;
 }
 
+/// The selected network is not supported by a legacy protocol or SDK.
+final class UnsupportedNetworkException implements Exception {
+  const UnsupportedNetworkException();
+}
+
 /// A Bitcoin network. The chain is the type; [env] is the environment.
 enum BitcoinNetwork implements Network {
   mainnet(NetworkEnv.mainnet),

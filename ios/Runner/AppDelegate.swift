@@ -30,6 +30,14 @@ import workmanager_apple
     // scene apps to call this here.
     WorkmanagerPlugin.registerLaunchHandlers()
 
+    // A fresh install has no saved tasks, so register the ones Dart schedules on iOS (they must be in Info.plist).
+    for identifier in [
+      "com.bullbitcoin.mobile.wallets-sync-id",
+      "com.bullbitcoin.mobile.logs-prune-id",
+    ] {
+      WorkmanagerPlugin.registerPeriodicTask(withIdentifier: identifier)
+    }
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
@@ -41,17 +49,35 @@ import workmanager_apple
 
   private func excludeSensitiveFilesFromBackup() {
     let fileManager = FileManager.default
-    guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-      return
+    if let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+      // Wallet, Payjoin, wallet engine and logs all live below Documents.
+      try? Self.excludeFromBackup(documents)
     }
 
-    // Wallet, payjoin, wallet-engine, and TSV log data all live below Documents.
-    // Excluding the directory also covers wallet directories created after startup.
-    var documentsURL = documentsDirectory
-    var resourceValues = URLResourceValues()
-    resourceValues.isExcludedFromBackup = true
-    // `setResourceValues` is `mutating`, so it needs a `var` receiver.
+    if let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+      Self.excludeOwnerStorageFromBackup(in: support, fileManager: fileManager)
+    }
+  }
+
+  static func excludeOwnerStorageFromBackup(in support: URL, fileManager: FileManager = .default) {
+    // The database keys are device-only. Keep the stores and their migration
+    // marker out of backups so that they are not restored without those keys.
+    for name in ["databases", "storage-coordination"] {
+      let directory = support.appendingPathComponent(name, isDirectory: true)
+      do {
+        try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+        try excludeFromBackup(directory)
+      } catch {
+        NSLog("Could not exclude owner storage from iOS backup: %@", name)
+      }
+    }
+  }
+
+  private static func excludeFromBackup(_ directory: URL) throws {
+    var url = directory
+    var values = URLResourceValues()
     // URLResourceValues.isExcludedFromBackup sets NSURLIsExcludedFromBackupKey.
-    try? documentsURL.setResourceValues(resourceValues)
+    values.isExcludedFromBackup = true
+    try url.setResourceValues(values)
   }
 }

@@ -1,0 +1,60 @@
+{
+  "@@locale": "hi",
+  "save": "सहेजें",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "कॉपी",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "डिलीट",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "पुनः प्रयास करें",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "लेनदेन लोड हो रहे हैं...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "QR कोड",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "रद्द करना",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "लंबित",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "कल",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "आज",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "राशि",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
+  "viewerViewInExplorer": "एक्सप्लोरर में देखें",
+  "transactionViewerTitle": "लेन-देन आईडी",
+  "viewerCopyLink": "प्रतिरूप जोड़ना",
+  "coinsTitle": "कॉइन",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया"
+}

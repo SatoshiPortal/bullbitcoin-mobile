@@ -20,7 +20,7 @@ Future<void> importLegacyPayjoinData(
   if (completed != null) return;
 
   final snapshot = _quarantineSnapshot(await source.readSnapshot(), log: log);
-  final sourceDigest = _snapshotDigest(snapshot);
+  final sourceDigest = legacyPayjoinSnapshotDigest(snapshot);
 
   await database.transaction(() async {
     final marker = await (database.select(
@@ -108,7 +108,7 @@ Future<void> importLegacyPayjoinData(
       database,
       sourceSchemaVersion: snapshot.sourceSchemaVersion,
     );
-    final importedDigest = _snapshotDigest(imported);
+    final importedDigest = legacyPayjoinSnapshotDigest(imported);
     if (importedDigest != sourceDigest ||
         imported.senders.length != snapshot.senders.length ||
         imported.receivers.length != snapshot.receivers.length) {
@@ -145,10 +145,12 @@ PayjoinLegacySnapshot _quarantineSnapshot(
   final senderIds = <String>{};
   final senders = <PayjoinLegacySender>[];
   for (final sender in snapshot.senders) {
-    if (sender.uri.trim().isNotEmpty &&
-        senderIds.add(sender.uri) &&
-        sender.walletId.trim().isNotEmpty &&
-        sender.expireAfterSec > 0) {
+    if (isValidLegacyPayjoinSession(
+      sender.uri,
+      sender.walletId,
+      sender.expireAfterSec,
+      senderIds,
+    )) {
       senders.add(sender);
     } else {
       skippedSenders++;
@@ -158,10 +160,12 @@ PayjoinLegacySnapshot _quarantineSnapshot(
   final receiverIds = <String>{};
   final receivers = <PayjoinLegacyReceiver>[];
   for (final receiver in snapshot.receivers) {
-    if (receiver.id.trim().isNotEmpty &&
-        receiverIds.add(receiver.id) &&
-        receiver.walletId.trim().isNotEmpty &&
-        receiver.expireAfterSec > 0) {
+    if (isValidLegacyPayjoinSession(
+      receiver.id,
+      receiver.walletId,
+      receiver.expireAfterSec,
+      receiverIds,
+    )) {
       receivers.add(receiver);
     } else {
       skippedReceivers++;
@@ -187,6 +191,18 @@ PayjoinLegacySnapshot _quarantineSnapshot(
     receivers: receivers,
   );
 }
+
+// Keep the published order of checks, including when an ID is seen.
+bool isValidLegacyPayjoinSession(
+  String id,
+  String walletId,
+  int expiry,
+  Set<String> seen,
+) =>
+    id.trim().isNotEmpty &&
+    seen.add(id) &&
+    walletId.trim().isNotEmpty &&
+    expiry > 0;
 
 Future<PayjoinLegacySnapshot> _readSnapshot(
   PayjoinDatabase database, {
@@ -240,7 +256,7 @@ Future<PayjoinLegacySnapshot> _readSnapshot(
   );
 }
 
-String _snapshotDigest(PayjoinLegacySnapshot snapshot) {
+String legacyPayjoinSnapshotDigest(PayjoinLegacySnapshot snapshot) {
   final sink = BytesBuilder(copy: false);
   final senders = [...snapshot.senders]..sort((a, b) => a.uri.compareTo(b.uri));
   final receivers = [...snapshot.receivers]

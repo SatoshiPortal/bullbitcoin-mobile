@@ -1,0 +1,60 @@
+{
+  "@@locale": "fa",
+  "cancel": "لغو",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "حذف",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "کپی رایت",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "receiveQRCode": "کد QR",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "transactionStatusPending": "امتناع",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "amountLabel": "مبلغ",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "transactionListLoadingTransactions": "بارگذاری معاملات ...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionListYesterday": "دیروز",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "امروز",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "viewerTapToCopy": "برای کپی ضربه بزنید",
+  "viewerViewInExplorer": "مشاهده در اکسپلورر",
+  "transactionViewerTitle": "شناسه تراکنش",
+  "viewerCopyLink": "لینک را کپی کنید",
+  "coinsTitle": "سکه‌ها",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+}

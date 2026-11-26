@@ -11,8 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 /// A name left out of the `show` lists cannot be *written* by a consumer, but it can still be *reached*: a dot shorthand (`.new()`, Dart 3.10+) builds a value of the context type without naming it, and an exported signature is all the context it needs. `implementation_imports` sees only import directives, so it never fires. This test closes both halves: nothing exported hands a consumer a context of an unexported type, and nothing unexported can be constructed from outside even if it did.
 void main() {
-  late final LibraryElement secrets;
-  late final LibraryElement testing;
+  late final List<LibraryElement> publicLibraries;
   late final List<LibraryElement> internals;
 
   setUpAll(() async {
@@ -28,20 +27,39 @@ void main() {
       return result.element;
     }
 
-    secrets = await library('package:secrets/secrets.dart');
-    testing = await library('package:secrets/testing.dart');
-    internals = [
-      for (final file in Directory('$root/lib/src').listSync(recursive: true))
-        if (file is File && file.path.endsWith('.dart'))
-          await library(
-            'package:secrets/${file.path.substring('$root/lib/'.length)}',
-          ),
+    publicLibraries = [
+      for (final name in [
+        'secrets',
+        'testing',
+        'migration',
+        'storage',
+        'bip85',
+        'custody',
+        'metadata_backup',
+      ])
+        await library('package:secrets/$name.dart'),
     ];
+    internals = [];
+    for (final file in Directory('$root/lib/src').listSync(recursive: true)) {
+      // Drift owns the generated constructors. The exported-signature check
+      // below still rejects references to their unexported classes.
+      if (file is! File ||
+          !file.path.endsWith('.dart') ||
+          file.path.endsWith('.drift.dart')) {
+        continue;
+      }
+      final uri = 'package:secrets/${file.path.substring('$root/lib/'.length)}';
+      final result = await session.getLibraryByUri(uri);
+      // A part is resolved with its owning library and cannot be imported.
+      if (result is NotLibraryButPartResult) continue;
+      if (result is! LibraryElementResult) throw StateError('$uri: $result');
+      internals.add(result.element);
+    }
   });
 
   Set<Element> exported() => {
-    ...secrets.exportNamespace.definedNames2.values,
-    ...testing.exportNamespace.definedNames2.values,
+    for (final entryPoint in publicLibraries)
+      ...entryPoint.exportNamespace.definedNames2.values,
   };
 
   bool ours(Element e) =>

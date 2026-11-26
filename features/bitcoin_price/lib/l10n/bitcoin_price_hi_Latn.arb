@@ -1,0 +1,25 @@
+{
+  "@@locale": "hi_Latn",
+  "fiatCurrencySettingsLabel": "Fiat currency",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Default fiat currency",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "retry": "Dobara Try Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "priceChartFetchingHistory": "Price History fetch ho raha hai...",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
+  "priceChartLoadFailed": "Mulya chart data load nahi ho saka. Kripya punah prayas karein."
+}

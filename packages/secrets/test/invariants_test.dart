@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The package's custody invariants, as assertions rather than prose.
@@ -27,6 +28,30 @@ List<ImportDirective> _forbiddenDomainBip39Imports(String source) {
     if (!languageOnly) forbidden.add(directive);
   }
   return forbidden;
+}
+
+final class _FailureConstructions extends RecursiveAstVisitor<void> {
+  final Set<String> failures;
+  final names = <String>{};
+
+  _FailureConstructions(this.failures);
+
+  void _record(String name) {
+    if (failures.contains(name)) names.add(name);
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    _record(node.constructorName.type.name.lexeme);
+    super.visitInstanceCreationExpression(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    // Before resolution, an implicit constructor call is a method invocation.
+    if (node.target == null) _record(node.methodName.name);
+    super.visitMethodInvocation(node);
+  }
 }
 
 void main() {
@@ -57,7 +82,7 @@ void main() {
     final failures = RegExp(r'final class (\w+Failure) extends SecretFailure')
         .allMatches(read('lib/src/domain/failures.dart'))
         .map((m) => m.group(1)!)
-        .toList();
+        .toSet();
     expect(failures, isNotEmpty, reason: 'no failures found to check');
 
     const allowed = {
@@ -67,16 +92,25 @@ void main() {
       'lib/src/data/database_key_repository.dart', // not-found on an open-only read
     };
 
+    // Absence, unreadable records and duplicate identities are Results from
+    // successful inventory queries or claims, not translated exceptions.
+    const inventoryResults = {
+      'UnsupportedNetworkFailure',
+      'UnreadableWalletFailure',
+      'WalletRegistrationNotFoundFailure',
+      'WalletAlreadyRegisteredFailure',
+    };
     final offenders = <String>[];
     for (final file in sources) {
       if (allowed.contains(file.path)) continue;
-      final body = code(file.readAsStringSync());
-      for (final failure in failures) {
-        // `Name(` is a construction. `Name.new` (a reference handed to
-        // the boundary) and `Name` in a type position are not.
-        if (RegExp('\\b$failure\\(').hasMatch(body)) {
-          offenders.add('${file.path}: $failure(');
+      final constructions = _FailureConstructions(failures);
+      parseString(content: file.readAsStringSync()).unit.accept(constructions);
+      for (final failure in constructions.names) {
+        if (file.path == 'lib/src/data/inventory_repository.dart' &&
+            inventoryResults.contains(failure)) {
+          continue;
         }
+        offenders.add('${file.path}: $failure(');
       }
     }
     expect(offenders, isEmpty);
@@ -177,7 +211,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     // the part that needs no device to be verified; `public/` orchestrates
     // and computes nothing.
     const owner = {
-      'bull_sdk': {'crypto'},
+      'rust_bindings': {'crypto'},
       'recoverbull': {'crypto'},
       // `testing/` is a keystore too — the in-memory one the tests install.
       'flutter_secure_storage': {'data', 'testing'},
@@ -288,6 +322,11 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     const declared = {
       // lifecycle and handle
       'Secrets', 'Secret', 'SecretEntry', 'UnreadableSecret', 'RestoredVault',
+      // scoped inventory reads expose wallet metadata, not descriptors
+      'WalletInventory',
+      'WalletRegistration',
+      'WalletSelection',
+      'WalletSigner',
       // exhaustive custody references supplied by seed owners
       'SeedReferencePort', 'SeedReferencesUnavailable',
       // host exclusion between publishing obligations and deleting a parent
@@ -302,6 +341,10 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'SecretSigning', 'SecretBackup', 'SecretVerification',
       'SecretSilentPayments', 'DatabaseKeys',
       'Recoverbull', 'SecretPreview',
+      'AccessKeychain',
+      'ExchangeKeychain',
+      'SilentPaymentKeychain',
+      'SwapKeychain',
       // sealed display: the only way words reach a screen, built via `secret.widgets`
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
       // what generate takes: a closed set, never an int
@@ -316,6 +359,14 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseKey',
       'SecretInfo',
       'SecretKind',
+      // database open results
+      'DatabaseOpenFailure',
+      'DatabaseKeyProblem',
+      'DatabaseKeyUnavailable',
+      'DatabaseFileProblem',
+      'DatabaseFileUnavailable',
+      'DatabaseCipherUnavailable',
+      'DatabaseNotReady',
       // the failure family
       'SecretFailure',
       'SecretAlreadyExistsFailure',
@@ -328,6 +379,8 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'VaultIdentityMismatchFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
       'UseSecretFailure',
+      'UnreadableWalletFailure', 'WalletRegistrationNotFoundFailure',
+      'WalletAlreadyRegisteredFailure',
     };
 
     expect(surfaceOf('lib/secrets.dart'), declared);

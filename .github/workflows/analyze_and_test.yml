@@ -27,15 +27,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Three cheap prechecks gate two independent jobs split at the FRB boundary.
-# `checks` (analyze + fix +
-# format + unit tests) never compiles the Rust FRB crates — unit tests run on
-# the Dart VM against the bindings' Dart side only — so it reports in ~11min.
-# `integration` builds and launches the real Linux GTK app (Rust + GTK), the
-# ~28min long pole, in parallel. Both pay the same setup prefix (composite
-# action below); build_runner (~6.5min) dominates it — caching its output is
-# the known follow-up. Neither job `needs:` the other on purpose: the split
-# exists so the fast signal never waits for the slow one.
+# After the prechecks, x64 code generation and arm64 integration run in
+# parallel. All x64 test jobs consume the generated output of their own run.
 jobs:
   classification:
     name: Detect docs-only PR
@@ -85,6 +78,9 @@ jobs:
             while IFS= read -r path; do
               file_count=$((file_count + 1))
               case "$path" in
+                WORKSPACE.md|DEPENDENCIES.md)
+                  run_app_checks=true
+                  ;;
                 *.md|docs/*|LICENSE|.gitignore|.git-blame-ignore-revs|.github/ISSUE_TEMPLATE/*)
                   ;;
                 *)
@@ -163,16 +159,76 @@ jobs:
             if (!result.ready) core.setFailed(`PR is not ready: ${result.reason}. Link an open local issue labelled ready, or use the no-issue-needed exemption.`);
             else core.info(`PR readiness passed (${result.reason})`);
 
-  checks:
+  prepare-x64:
     needs: [classification, action-pins, readiness]
     if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Prepare generated code (x64)
+    runs-on: ubuntu-24.04
+    # A cold build compiles the host Rust hooks before running the generators.
+    # Give that work its own deadline so it cannot consume the test budget.
+    timeout-minutes: 60
+    outputs:
+      artifact: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Flutter setup
+        uses: ./.github/actions/flutter-setup
+
+      # Diagnostic, compared with the same step in unit shard 1: hooks_runner reruns a hook when one of these variables changes, so print a short hash of each value, never the value.
+      - name: Fingerprint the Native Assets hook environment
+        shell: bash
+        run: |
+          env | cut -d= -f1 | LC_ALL=C sort | grep -E '^(ANDROID_HOME|ANDROID_NDK.*|HOME|LIBCLANG_PATH|PATH|TEMP|TMP|TMPDIR|HTTPS?_PROXY|NO_PROXY|no_proxy|CARGO_.*|RUSTUP_.*|CCACHE_.*|NIX_.*)$' |
+            while IFS= read -r name; do printf '%s %s\n' "$name" "$(printenv "$name" | sha256sum | cut -c1-12)"; done
+
+      - name: Pack generated code and Native Assets
+        shell: bash
+        run: |
+          shopt -s nullglob
+          # Match the build_runner cache's source suffixes, and let Git
+          # exclude tracked files. Dart and Cargo intermediates stay here.
+          git ls-files --others --ignored --exclude-standard -z -- \
+            '*.g.dart' '*.freezed.dart' '*.drift.dart' '*.mocks.dart' \
+            '*.gen.dart' '*.gr.dart' '*.config.dart' \
+            ':(exclude,glob)**/.dart_tool/**' ':(exclude,glob)**/build/**' \
+            > "$RUNNER_TEMP/flutter-codegen-files"
+          test -s "$RUNNER_TEMP/flutter-codegen-files"
+          # Preserve the hook records and libraries at their original paths.
+          native_files=(
+            .dart_tool/hooks_runner/*/*/*.json
+            .dart_tool/hooks_runner/*/*/hook.dill
+            .dart_tool/hooks_runner/*/*/hook.dill.d
+            .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
+            .dart_tool/hooks_runner/shared/*/build/download-*/*.so
+          )
+          test "${#native_files[@]}" -gt 0
+          printf '%s\0' "${native_files[@]}" >> "$RUNNER_TEMP/flutter-codegen-files"
+          tar --format=pax -czf "$RUNNER_TEMP/flutter-codegen.tar.gz" \
+            --null -T "$RUNNER_TEMP/flutter-codegen-files"
+
+      - name: Upload generated code and Native Assets
+        id: upload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: flutter-codegen-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/flutter-codegen.tar.gz
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+  checks:
+    needs: prepare-x64
     name: Static checks and unit tests
     runs-on: ubuntu-24.04
     # Measured 2026-11-14 on develop: ~18 min of setup (free disk, Flutter,
     # build_runner), ~3 min of static checks, then the unit suites alone pass
     # 27 min (the app suite is ~22 min of that), so 45 min cancelled healthy
-    # runs with every test still green.
-    timeout-minutes: 75
+    # runs with every test still green. Raised to 90 min on 2026-11-23: the
+    # sibling unit-shards job already allows 90, and a slow runner must not
+    # cancel a green run.
+    timeout-minutes: 90
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -180,28 +236,14 @@ jobs:
       - name: PR governance and custody imports (CI only)
         run: make pr-governance-ci-test custody-ci-check
 
-      # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
-      # runner has ~21GB free, so dropping this risks turning every PR red on
-      # "No space left on device". The setup action logs `df -h` — only drop
-      # this once a few runs prove comfortable headroom.
-      - name: Free disk space
-        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
-        # on a runner that can hold PR test secrets — a retag must not run here.
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
-
       # The gates below reference steps.setup.outcome — if this `id` is ever
       # renamed, the expression silently evaluates to '' and every check
       # SKIPS (job goes green with nothing run). Keep id and gates in sync.
       - name: Flutter setup
         id: setup
         uses: ./.github/actions/flutter-setup
+        with:
+          codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
       # Static checks are gated on `!cancelled()` + setup success
       # instead of the implicit success(): one CI run surfaces ALL static
@@ -213,6 +255,10 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make analyze
 
+      - name: Workspace dependency docs should be current
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make workspace-graph-check
+
       - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
@@ -221,9 +267,17 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make custody-check
 
+      - name: Native stores have exactly one writer
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make native-write-check
+
       - name: Secrets public API trees should be current
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make secrets-api-docs-check
+
+      - name: Sync public API trees should be current
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make sync-api-docs-check
 
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
@@ -253,13 +307,13 @@ jobs:
       - name: Unit tests must pass (shard 0 of 3)
         run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=0
 
-  # The unit suites are the long pole of `checks`. Each shard gets a disjoint third of every member's test files (tools/unit_test_shard.sh) and pays only the cached setup.
+  # Each shard gets a disjoint third of every member's test files and uses
+  # the same generated code as checks.
   unit-shards:
-    needs: [classification, action-pins, readiness]
-    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    needs: prepare-x64
     name: Unit tests (shard ${{ matrix.shard }} of 3)
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -268,21 +322,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Same reclaim as `checks`: the setup's .dart_tool and SDK do not fit a stock x64 runner otherwise.
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
-
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
+        with:
+          codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
       - name: Unit tests must pass
+        env:
+          TRACE_ACCESS_SHARD: ${{ matrix.shard == 1 && '1' || '0' }}
         run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
 
   integration:
@@ -291,8 +338,8 @@ jobs:
     name: Integration tests
     # arm64: free 4-vCPU runners for public repos, native arm execution — the
     # Rust FRB compile is exactly the workload that benefits. If this arch
-    # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
-    # jlumbroso free-disk-space step (see checks job) in one commit.
+    # surfaces a toolchain wart, revert this job to ubuntu-24.04 in one commit
+    # (x64 runners have ~86 GB free before setup and need no cleanup).
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
@@ -300,9 +347,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # This job builds the FRB Rust crates, the Flutter SDK toolchain and the
-      # Linux desktop app on one runner. The arm64 partner image is leaner
-      # than x64 (more free space, and the x64-oriented free-disk-space action
-      # doesn't apply), so reclaim the few big preinstalled dirs inline;
+      # Linux desktop app on one runner. The arm64 partner image keeps a few
+      # big preinstalled dirs, so reclaim them inline;
       # `|| true` because they may not exist on this image. The setup action
       # logs `df -h` to confirm headroom.
       - name: Free disk space (inline, arch-agnostic)

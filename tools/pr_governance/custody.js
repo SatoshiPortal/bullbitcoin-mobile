@@ -7,29 +7,26 @@
 
 const MARKER = '<!-- bull-custody-review -->';
 
-// The app's own secure key-value store predates packages/secrets and keeps the PIN and
-// preferences in the same OS keystore; it refuses the package's key prefixes
-// (`Secrets.reservedKeyPrefixes`). These files may import the plugin; any other importer is new.
-const FSS_IMPORTERS_ALLOWED = new Set([
-  'lib/core/storage/storage_locator.dart',
-  'lib/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart',
-  'test/core_test/storage/secure_storage_reserved_keys_test.dart',
-]);
-
 const inSecrets = (path) => path.startsWith('packages/secrets/');
 const isDart = (path) => path.endsWith('.dart');
+// The bindings packages must never reach package:secrets (`bindings-secrets` below, enforced on resolved
+// libraries by packages/secrets/tool/key_material_gate.dart). That keeps the
+// suppression flutter_rust_bridge writes into every file it generates, for its own runtime's internal
+// members, unable to silence the seal; hand-written files there stay checked.
+const inBindings = (path) => /^packages\/(rust_bindings|onion)\//.test(path);
+const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
 
 const RULES = [
   {
     id: 'seal-ignore',
-    applies: isDart,
+    applies: (path) => isDart(path) && !isGeneratedBridge(path),
     matches: (text) => /\bignore(_for_file)?\s*:.*\binvalid_use_of_internal_member\b/.test(text),
     why: 'silences `invalid_use_of_internal_member`, the analyzer seal on package:secrets (`Secret.revealMnemonic`, every constructor the package does not export)',
   },
   {
     id: 'fss-import',
-    applies: (path) => isDart(path) && !inSecrets(path) && !FSS_IMPORTERS_ALLOWED.has(path),
+    applies: (path) => isDart(path) && !inSecrets(path),
     // The URI, not the `import` keyword: a directive may be split across lines or conditional.
     matches: (text) => /['"]package:flutter_secure_storage/.test(text),
     why: 'reaches the OS keystore that holds the seeds from outside packages/secrets',
@@ -41,8 +38,22 @@ const RULES = [
     why: 'imports package:secrets internals instead of `package:secrets/secrets.dart`',
   },
   {
+    id: 'bindings-secrets',
+    applies: (path) => inBindings(path) && isDart(path),
+    // Comments the plain spelling on a pull request. `make custody-check` enforces the boundary on
+    // resolved libraries, so relative or encoded spellings and inferred types are caught there.
+    matches: (text) => /['"]package:secrets[/'"]/.test(text),
+    why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
+  },
+  {
+    id: 'bindings-secrets-dependency',
+    applies: (path) => inBindings(path) && isPubspec(path),
+    matches: (text) => /^\s*secrets\s*:/.test(text),
+    why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
+  },
+  {
     id: 'fss-dependency',
-    applies: (path) => isPubspec(path) && path !== 'packages/secrets/pubspec.yaml' && path !== 'pubspec.yaml',
+    applies: (path) => isPubspec(path) && path !== 'packages/secrets/pubspec.yaml',
     matches: (text) => /^\s*flutter_secure_storage(_[a-z_]+)?\s*:/.test(text),
     why: 'adds a dependency on the keystore plugin outside packages/secrets',
   },
@@ -110,7 +121,7 @@ function commentBody({ findings, uninspected }, { hadComment = false } = {}) {
     '### Custody review',
     '',
     findings.length > 0
-      ? 'This pull request touches the boundary around users\' seeds. Could you explain, in a reply, why each change below is needed? A maintainer reviews it before merge, and a safer route usually exists: `package:secrets/secrets.dart` is the only supported way to reach seed material, and the app\'s own secure store is `KeyValueStorageDatasource`.'
+      ? 'This pull request touches the boundary around users\' seeds. Could you explain, in a reply, why each change below is needed? A maintainer reviews it before merge, and a safer route usually exists: `package:secrets/secrets.dart` is the only supported way to reach seed material. Closed owner-scoped keychain capabilities serve access, exchange, Silent Payments and swaps.'
       : 'Custody inspection is incomplete. No custody finding was identified in the inspected changes.',
     '',
   ];
@@ -127,4 +138,4 @@ function commentBody({ findings, uninspected }, { hadComment = false } = {}) {
   return lines.join('\n');
 }
 
-module.exports = { MARKER, FSS_IMPORTERS_ALLOWED, RULES, reviewFiles, reviewTree, commentBody };
+module.exports = { MARKER, RULES, reviewFiles, reviewTree, commentBody };

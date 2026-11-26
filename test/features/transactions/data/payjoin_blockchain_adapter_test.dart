@@ -1,14 +1,16 @@
-import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import '../../../scripted_wallet_connections.dart';
+
+import 'package:transactions/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:sync/sync.dart'
     show
+        BitcoinSpendStatus,
+        SignedPsbt,
+        SpendOwner,
+        SpendReceipt,
+        SyncFailure,
         SyncBusyFailure,
         SyncConnectionFailure,
         SyncInvalidTransactionFailure,
@@ -16,57 +18,27 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure;
 
-final class _Servers implements ElectrumServersPort {
-  @override
-  Future<bool> hasCustomServers({
-    required ElectrumServerNetwork network,
-  }) async => false;
-
-  int calls = 0;
-
-  @override
-  Future<T> runWithFallback<T>({
-    required ElectrumServerNetwork network,
-    required Future<T> Function(ElectrumConnection connection) operation,
-    bool Function(Object error)? isTransient,
-  }) {
-    calls++;
-    throw StateError('connection reset after send');
-  }
-}
-
 void main() {
-  late _Servers servers;
+  late ScriptedWalletConnections servers;
 
-  setUp(() => servers = _Servers());
+  setUp(() => servers = ScriptedWalletConnections());
 
   Future<void> broadcast(Result<SpendReceipt, SyncFailure> outcome) =>
-      AppPayjoinBlockchainAdapter(
-        const BdkBitcoinBlockchainDatasource(),
-        servers,
-        WalletFacade(
-          const Stream.empty(),
-          broadcastSpend:
-              (
-                walletId,
-                transaction, {
-                required network,
-                built,
-                owner,
-                replacing,
-              }) async {
-                expect(walletId, 'wallet-1');
-                expect((transaction as SignedPsbt).psbt, 'psbt');
-                expect(network, BitcoinNetwork.testnet);
-                // The session alone may spend the inputs it reserved.
-                expect(
-                  owner,
-                  SpendOwner(protocol: 'payjoin', session: 'session-1'),
-                );
-                return outcome;
-              },
-        ),
-      ).broadcastPsbt(
+      AppPayjoinBlockchainAdapter(servers, (
+        walletId,
+        transaction, {
+        required network,
+        built,
+        owner,
+        replacing,
+      }) async {
+        expect(walletId, 'wallet-1');
+        expect((transaction as SignedPsbt).psbt, 'psbt');
+        expect(network, BitcoinNetwork.testnet);
+        // The session alone may spend the inputs it reserved.
+        expect(owner, SpendOwner(protocol: 'payjoin', session: 'session-1'));
+        return outcome;
+      }).broadcastPsbt(
         walletId: 'wallet-1',
         sessionId: 'session-1',
         network: BitcoinNetwork.testnet,
@@ -77,7 +49,7 @@ void main() {
     await broadcast(
       const Ok(SpendReceipt('txid', durable: false, guarded: true)),
     );
-    expect(servers.calls, 0);
+    expect(servers.networks, isEmpty);
   });
 
   for (final failure in <SyncFailure>[

@@ -1,84 +1,67 @@
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/refresh_pending_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
-import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
-import 'package:bb_mobile/features/wallet/data/coordinated_swap_sync.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_sp_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/wallet_sync_locator.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:overview/overview.dart';
+import 'package:overview/setup.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:silent/silent.dart';
+import 'package:swap_feature/swap_feature.dart';
+import 'package:swap_feature/testing.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:sync/sync.dart';
 
-class _WalletRepository extends Mock implements WalletRepository {}
+class _Inventory extends Mock implements WalletInventory {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _RefreshPending extends Mock implements RefreshPendingOrderSwapsUsecase {}
 
 class _ApplyLabels extends Mock
     implements ApplyCompletedOrderSwapLabelsUsecase {}
 
-class _Swaps extends Mock implements SwapFacade {}
+class _Swaps extends Mock implements SwapActivity {}
 
-class _Sp extends Mock implements SpFacade {}
-
-class _GetWallets extends Mock implements GetWalletsUsecase {}
-
-class _SyncWallet extends Mock implements SyncWalletUsecase {}
+class _Sp extends Mock implements Silent {}
 
 void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
   late _Swaps swaps;
   late _Sp sp;
-  late GetIt locator;
-  late SyncCoordinator coordinator;
+  late OverviewSynchronization foreground;
+  late SyncCoordinator<WalletKey, SyncFailure> coordinator;
+  late SwapSyncPort port;
 
   setUp(() {
     binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    locator = GetIt.asNewInstance();
     final settings = _Settings();
-    when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-      ),
+    when(settings.readActiveEnvironment)
+        .thenAnswer((_) async => const Ok(Environment.mainnet));
+    foreground = OverviewSynchronization.open(
+      inventory: _Inventory(),
+      environment: settings,
+      catalog: () => throw StateError('Unexpected wallet catalog read'),
+      synchronize: (
+        _, {
+        discover = false,
+        allowInitialScan = true,
+        reason = SyncReason.auto,
+      }) => throw StateError('Unexpected wallet sync'),
+      refreshRevisions: () async => const Ok(null),
+      swaps: () => swaps,
+      silent: () => sp,
     );
-    locator.registerSingleton<SettingsRepository>(settings);
-    locator.registerSingleton<GetWalletsUsecase>(_GetWallets());
-    locator.registerSingleton<SyncWalletUsecase>(_SyncWallet());
-    locator.registerSingleton<WalletRepository>(_WalletRepository());
-    SyncLocator.setupForeground(locator);
     // Resolution before either facade exists must remain safe.
-    coordinator = locator<SyncCoordinator>();
+    coordinator = foreground.coordinator;
+    port = foreground.swapPolling;
     swaps = _Swaps();
     sp = _Sp();
-    locator.registerSingleton<SwapFacade>(swaps);
-    locator.registerSingleton<SpFacade>(sp);
   });
 
-  tearDown(() async {
-    coordinator.dispose();
-    await locator.reset();
-  });
+  tearDown(() => foreground.close());
 
   for (final count in [0, 1]) {
     test(
@@ -93,9 +76,9 @@ void main() {
             ),
           ),
         );
-        final outcome = await locator<SyncOrderSwapsUsecase>().execute();
+        await port.request();
         expect(
-          outcome.kind,
+          coordinator.lastSwapSyncOutcome?.kind,
           count == 0 ? SyncOutcomeKind.idle : SyncOutcomeKind.active,
         );
       },
@@ -121,17 +104,17 @@ void main() {
           (const Err(SwapNetworkFailure()), null),
         ]) {
       when(swaps.refreshOrdersWithOutcome).thenAnswer((_) async => result);
-      final outcome = await locator<SyncOrderSwapsUsecase>().execute();
-      expect(outcome.kind, SyncOutcomeKind.rateLimited);
-      expect(outcome.failure, isNotNull);
-      expect(outcome.retryAfter, retryAfter);
+      await port.request();
+      final outcome = coordinator.lastSwapSyncOutcome;
+      expect(outcome?.kind, SyncOutcomeKind.rateLimited);
+      expect(outcome?.failure, isNotNull);
+      expect(outcome?.retryAfter, retryAfter);
     }
   });
 
   test(
     'thrown refresh preserves last outcome, including initial null',
     () async {
-      final port = locator<SwapSyncPort>();
       when(swaps.refreshOrdersWithOutcome)
           .thenThrow(Exception('private detail'));
       final initial = await port.request();
@@ -146,7 +129,6 @@ void main() {
   );
 
   test('gated calls preserve previous polling state', () async {
-    final port = locator<SwapSyncPort>();
     for (final state in [
       AppLifecycleState.inactive,
       AppLifecycleState.hidden,
@@ -173,11 +155,11 @@ void main() {
         ),
       );
       final watcher = OrderSwapWatcher(
-        ScheduleOrderSwapRefreshUsecase(locator<SwapSyncPort>()),
+        ScheduleOrderSwapRefreshUsecase(() => port),
       );
       addTearDown(watcher.dispose);
       await watcher.refresh();
-      final attempt = await locator<SwapSyncPort>().request();
+      final attempt = await port.request();
       expect(attempt.lastOutcome?.kind, OrderSwapPollingKind.idle);
       expect(attempt.failure, isNull);
       verify(swaps.refreshOrdersWithOutcome).called(1);
@@ -195,7 +177,7 @@ void main() {
       final refresh = RefreshOrderSwapsUsecase(pending, labels);
       when(swaps.refreshOrdersWithOutcome).thenAnswer((_) => refresh.execute());
       final direct = refresh.execute();
-      final scheduled = locator<SwapSyncPort>().request();
+      final scheduled = port.request();
       await Future<void>.delayed(Duration.zero);
       verify(pending.execute).called(1);
       gate.complete(
@@ -219,24 +201,20 @@ void main() {
     () async {
       final error = StateError('programmer error');
       when(swaps.refreshOrdersWithOutcome).thenThrow(error);
-      await expectLater(
-        CoordinatedSwapSync(coordinator).request(),
-        throwsA(same(error)),
-      );
+      await expectLater(port.request(), throwsA(same(error)));
     },
   );
 
   test('SP failure fails the pass without throttling its retry', () async {
-    when(sp.syncWallet)
-        .thenAnswer((_) async => const Err(SpBackendUnreachable('private')));
-    final result = await locator<SyncSpForWalletUsecase>().execute();
-    expect(result, isA<Err<void, WalletFailure>>());
+    when(
+      sp.syncWallet,
+    ).thenAnswer((_) async => const Err(SilentBackendUnreachable('private')));
     await expectLater(
       coordinator.sync(only: {SyncKind.sp}),
       throwsA(isA<SyncCoordinatorException>()),
     );
     when(sp.syncWallet).thenAnswer((_) async => const Ok(null));
     await coordinator.sync(only: {SyncKind.sp});
-    verify(sp.syncWallet).called(3);
+    verify(sp.syncWallet).called(2);
   });
 }

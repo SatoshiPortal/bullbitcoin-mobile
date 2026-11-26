@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -18,7 +18,9 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
-class _MockGetOrderUsecase extends Mock implements GetOrderUsecase {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
+
+class _MockPreferences extends Mock implements Preferences {}
 
 Order _order() => Order.buy(
   orderId: 'order-1',
@@ -39,26 +41,63 @@ Order _order() => Order.buy(
 );
 
 void main() {
-  late _MockGetOrderUsecase getOrder;
+  late _MockExchangeOrders getOrder;
   late GetTransactionOrderUsecase usecase;
+  late _MockPreferences preferences;
+  late List<ExchangeEnvironment> requestedEnvironments;
 
   setUp(() {
-    getOrder = _MockGetOrderUsecase();
-    usecase = GetTransactionOrderUsecase(getOrder);
+    getOrder = _MockExchangeOrders();
+    preferences = _MockPreferences();
+    requestedEnvironments = [];
+    when(preferences.fetch).thenAnswer(
+      (_) async => const Ok(
+        SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      ),
+    );
+    usecase = GetTransactionOrderUsecase(
+      exchangeForTesting(
+        orders: (environment) {
+          requestedEnvironments.add(environment);
+          return getOrder;
+        },
+      ),
+      preferences,
+    );
   });
 
   test('forwards the order on success', () async {
     final order = _order();
-    when(() => getOrder.execute(orderId: 'order-1'))
-        .thenAnswer((_) async => order);
+    when(() => getOrder.getOrder('order-1')).thenAnswer((_) async => Ok(order));
 
     expect(_valueOf(await usecase.execute('order-1')), order);
   });
 
-  test('sanitizes an exchange API error', () async {
-    when(() => getOrder.execute(orderId: 'order-1')).thenThrow(
-      GetOrderException('401 {"error":"invalid api key bb_live_abc123"}'),
+  test('regtest does not request either exchange backend', () async {
+    when(preferences.fetch).thenAnswer(
+      (_) async => const Ok(
+        SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      ),
     );
+
+    expect(
+      _failureOf(await usecase.execute('order-1')),
+      isA<TransactionUnexpectedFailure>(),
+    );
+    expect(requestedEnvironments, isEmpty);
+  });
+
+  test('sanitizes an exchange API error', () async {
+    when(() => getOrder.getOrder('order-1'))
+        .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
     final result = await usecase.execute('order-1');
 

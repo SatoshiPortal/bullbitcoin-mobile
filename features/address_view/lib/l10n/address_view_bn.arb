@@ -1,0 +1,99 @@
+{
+  "addressViewTransactions": "লেনদেন",
+  "@addressViewTransactions": {
+    "description": "Label for number of transactions"
+  },
+  "addressViewNoAddressesFound": "কোনো ঠিকানা পাওয়া যায়নি",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "okButton": "ঠিক আছে",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewBalance": "ব্যালান্স",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "addressViewAddress": "ঠিকানা",
+  "@addressViewAddress": {
+    "description": "Label for address field"
+  },
+  "addressViewShowQR": "QR কোড দেখান",
+  "@addressViewShowQR": {
+    "description": "Button to display address as QR code"
+  },
+  "addressViewAddressesTitle": "ঠিকানাসমূহ",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "addressCardUsedLabel": "ব্যবহৃত",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "addressViewChangeAddressesComingSoon": "পরিবর্তন ঠিকানাগুলো শীঘ্রই আসছে",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressCardBalanceLabel": "ব্যালেন্স: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "addressCardUnusedLabel": "অব্যবহৃত",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "addressCardIndexLabel": "সূচক: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "addressViewCopyAddress": "ঠিকানা কপি করুন",
+  "@addressViewCopyAddress": {
+    "description": "Button to copy address to clipboard"
+  },
+  "addressViewChangeType": "বাকি",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressViewReceiveType": "গ্রহণ করুন",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewChangeAddressesDescription": "ওয়ালেট বদল ঠিকানাগুলো প্রদর্শন করুন",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "addressViewTitle": "ঠিকানার বিস্তারিত",
+  "@addressViewTitle": {
+    "description": "AppBar title for address details screen"
+  },
+  "addressViewerTitle": "ঠিকানা",
+  "viewerTapToCopy": "কপি করতে ট্যাপ করুন",
+  "viewerViewInExplorer": "এক্সপ্লোরারে দেখুন",
+  "viewerCopyLink": "লিঙ্ক কপি করুন",
+  "viewerAddressTab": "ঠিকানা",
+  "viewerPaymentUriTab": "পেমেন্ট URI",
+  "addressViewErrorWalletNotFound": "এই ওয়ালেটটি খুঁজে পাওয়া যায়নি।",
+  "addressViewErrorLoadFailed": "আপনার ঠিকানাগুলো লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
+  "sendErrorInvalidAddressOrInvoice": "বিটকয়েন পেমেন্ট ঠিকানা বা ইনভয়েস অবৈধ",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "বিটকয়েন ঠিকানা",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "লিকুইড ঠিকানা",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "লাইটনিং ঠিকানা",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
+}

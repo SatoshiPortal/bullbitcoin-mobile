@@ -60,40 +60,59 @@ m.Widget bullTextUseCase(m.BuildContext context) {
 // Buttons
 // ---------------------------------------------------------------------------
 
-@widgetbook.UseCase(name: 'Big', type: BullButton)
-m.Widget bullButtonBigUseCase(m.BuildContext context) {
+@widgetbook.UseCase(name: 'Primary', type: BullButton)
+m.Widget bullButtonPrimaryUseCase(m.BuildContext context) {
   final disabled = context.knobs.boolean(label: 'disabled');
-  final outlined = context.knobs.boolean(label: 'outlined');
   return _frame(
     context,
-    BullButton.big(
+    BullButton.primary(
       label: context.knobs.string(label: 'label', initialValue: 'Continue'),
-      onPressed: () {},
-      bgColor: context.bull.primary,
-      textColor: context.bull.onPrimary,
+      onPressed: disabled ? null : () {},
       iconData: context.knobs.boolean(label: 'with icon')
           ? BullIcons.check
           : null,
-      outlined: outlined,
-      borderColor: context.bull.border,
-      disabled: disabled,
+      compact: context.knobs.boolean(label: 'compact'),
     ),
   );
 }
 
-@widgetbook.UseCase(name: 'Small', type: BullButton)
-m.Widget bullButtonSmallUseCase(m.BuildContext context) {
+@widgetbook.UseCase(name: 'Secondary', type: BullButton)
+m.Widget bullButtonSecondaryUseCase(m.BuildContext context) {
   return _frame(
     context,
-    BullButton.small(
-      label: context.knobs.string(label: 'label', initialValue: 'Action'),
-      onPressed: () {},
-      bgColor: context.bull.secondary,
-      textColor: context.bull.onSecondary,
-      disabled: context.knobs.boolean(label: 'disabled'),
+    BullButton.secondary(
+      size: BullButtonSize.small,
+      label: context.knobs.string(label: 'label', initialValue: 'Cancel'),
+      onPressed: context.knobs.boolean(label: 'disabled') ? null : () {},
     ),
   );
 }
+
+@widgetbook.UseCase(name: 'Default', type: BullAdvancedOptionsLink)
+m.Widget bullAdvancedOptionsLinkUseCase(m.BuildContext context) => _frame(
+  context,
+  BullAdvancedOptionsLink(
+    label: context.knobs.string(
+      label: 'label',
+      initialValue: 'Advanced options',
+    ),
+    onPressed: context.knobs.boolean(label: 'disabled') ? null : () {},
+  ),
+);
+
+@widgetbook.UseCase(name: 'Legacy', type: BullButton)
+m.Widget bullButtonLegacyUseCase(m.BuildContext context) => _frame(
+  context,
+  BullButton.small(
+    label: context.knobs.string(label: 'label', initialValue: 'Legacy'),
+    onPressed: () {},
+    bgColor: context.bull.secondary,
+    textColor: context.bull.onSecondary,
+    outlined: context.knobs.boolean(label: 'outlined'),
+    compact: context.knobs.boolean(label: 'compact'),
+    disabled: context.knobs.boolean(label: 'disabled'),
+  ),
+);
 
 @widgetbook.UseCase(name: 'Default', type: BullToolButton)
 m.Widget bullToolButtonUseCase(m.BuildContext context) {
@@ -662,6 +681,31 @@ m.Widget bullBadgeUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullServerTile)
+m.Widget bullServerTileUseCase(m.BuildContext context) {
+  final unencrypted = context.knobs.boolean(label: 'unencrypted');
+  return _frame(
+    context,
+    m.SizedBox(
+      width: 360,
+      child: BullServerTile(
+        title: 'electrum.example.com:50002',
+        statusColor: context.bull.success,
+        statusLabel: 'Online',
+        badgeLabel: unencrypted ? 'Unencrypted' : 'Encrypted',
+        badgeIsWarning: unencrypted,
+        showDragHandle: context.knobs.boolean(label: 'drag handle'),
+        disabled: context.knobs.boolean(label: 'disabled'),
+        disabledLabel: 'Not used',
+        onDelete: context.knobs.boolean(label: 'deletable', initialValue: true)
+            ? () {}
+            : null,
+        deleteTooltip: 'Delete',
+      ),
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Default', type: BullBorderedTile)
 m.Widget bullBorderedTileUseCase(m.BuildContext context) {
   return _frame(
@@ -1195,10 +1239,6 @@ m.Widget bullConfirmDialogUseCase(m.BuildContext context) {
         ),
         confirmLabel: 'Delete',
         cancelLabel: 'Cancel',
-        destructive: context.knobs.boolean(
-          label: 'destructive',
-          initialValue: true,
-        ),
       ),
     ),
   );

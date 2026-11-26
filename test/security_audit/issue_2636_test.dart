@@ -11,21 +11,33 @@ void main() {
   group('Security audit #2636 scanner latch', () {
     test('cancelled derivation choice releases the scanner latch', () {
       final source = File(
-        'lib/features/import_watch_only_wallet/presentation/scan_watch_only_screen.dart',
+        'features/wallet_import/lib/src/ui/watch_only/scan_watch_only_screen.dart',
       ).readAsStringSync();
 
-      // The latch is set before the derivation prompt is shown…
-      expect(
-        source.indexOf('_handled = true'),
-        lessThan(source.indexOf('_chooseDerivation')),
-      );
-      // …and a dismissed prompt returns early…
-      expect(source, contains('if (selectedDescriptor == null)'));
+      final latch = source.indexOf('_handled = true;');
+      final read = source.indexOf('await readWatchOnlyQr(');
+      expect(latch, greaterThanOrEqualTo(0));
+      expect(read, greaterThan(latch));
 
-      // …without releasing the latch: between that early return and the
-      // catch block there is no reset.
-      expect(source, contains('if (selectedDescriptor == null) {'));
-      expect(source, contains('_handled = false;'));
+      final qr = File('features/wallet_import/lib/src/ui/watch_only_qr.dart')
+          .readAsStringSync();
+      expect(qr, contains('return Ok(choice);'));
+      expect(
+        qr,
+        contains(
+          'if (input == null || !context.mounted) return const Ok(null);',
+        ),
+      );
+      expect(
+        source.substring(read),
+        matches(
+          RegExp(
+            r'if \(watchOnly case Ok\(value: final value\?\)\) \{\s*'
+            r'ImportNavigation\.replaceWithWatchOnly\(context, value\);\s*'
+            r'\} else \{\s*_handled = false;',
+          ),
+        ),
+      );
     });
   });
 }

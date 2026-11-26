@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_failure_l10n.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -85,44 +85,33 @@ class EmptyNetworkWallets extends StatelessWidget {
                     ),
                     const Gap(BullSpacing.sm),
                     for (final fingerprint in options.reusable) ...[
-                      BullButton.big(
+                      BullButton.secondary(
                         label:
                             '${context.loc.walletDetailsWalletFingerprintLabel}: ${fingerprint.hex}',
-                        onPressed: () => cubit.create(reuse: fingerprint),
-                        disabled: state.working,
-                        bgColor: context.bull.surface,
-                        textColor: context.bull.onSurface,
-                        outlined: true,
+                        onPressed: (state.working)
+                            ? null
+                            : () => cubit.create(reuse: fingerprint),
                       ),
                       const Gap(BullSpacing.sm),
                     ],
                   ],
-                  BullButton.big(
+                  BullButton.secondary(
                     label: context.loc.importWalletImportMnemonic,
-                    onPressed: onImport,
-                    disabled: state.working,
-                    bgColor: context.bull.surface,
-                    textColor: context.bull.onSurface,
-                    outlined: true,
+                    onPressed: (state.working) ? null : onImport,
                   ),
                   if (options.network == NetworkEnv.regtest) ...[
                     const Gap(BullSpacing.sm),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: context.loc.onboardingEncryptedVault,
-                      onPressed: onRecoverEncryptedVault,
-                      disabled: state.working,
-                      bgColor: context.bull.surface,
-                      textColor: context.bull.onSurface,
-                      outlined: true,
+                      onPressed: (state.working)
+                          ? null
+                          : onRecoverEncryptedVault,
                     ),
                   ],
                   const Gap(BullSpacing.sm),
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.onboardingCreateWalletButtonLabel,
-                    onPressed: () => cubit.create(),
-                    disabled: state.working,
-                    bgColor: context.bull.primary,
-                    textColor: context.bull.onPrimary,
+                    onPressed: (state.working) ? null : () => cubit.create(),
                   ),
                 ],
                 if (state.failure case final failure?) ...[
@@ -132,11 +121,9 @@ class EmptyNetworkWallets extends StatelessWidget {
                     style: context.bullType.body,
                   ),
                   if (options == null)
-                    BullButton.big(
+                    BullButton.primary(
                       label: context.loc.retry,
                       onPressed: cubit.load,
-                      bgColor: context.bull.primary,
-                      textColor: context.bull.onPrimary,
                     ),
                 ],
               ],

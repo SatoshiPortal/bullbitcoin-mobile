@@ -3,7 +3,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Hero price display — duplicated from `core/widgets/cards/price_card.dart`.
+/// Hero price display.
 ///
 /// Renders [text] as a large display number coloured for placement on a brand
 /// surface (uses [BullTheme.onRed]).

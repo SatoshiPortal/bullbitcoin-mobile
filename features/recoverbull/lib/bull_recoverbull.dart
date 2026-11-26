@@ -6,8 +6,7 @@ export 'src/domain/entities/encrypted_vault.dart' show EncryptedVault;
 export 'src/domain/entities/vault_backup.dart' show VaultBackup;
 export 'src/domain/entities/vault_context.dart' show VaultContext;
 export 'src/domain/entities/backup_status.dart' show BackupStatus;
-export 'src/domain/entities/backup_settings.dart'
-    show LegacyBackupSettings, BackupSettings;
+export 'src/domain/entities/backup_settings.dart' show BackupSettings;
 export 'src/domain/entities/recoverbull_flow.dart' show RecoverBullFlow;
 export 'src/domain/entities/vault_recovery.dart'
     show VaultRecovery, VaultRecovered, VaultRecoveryNeedsWallets;
@@ -40,8 +39,10 @@ export 'src/domain/recoverbull_route_port.dart'
     show RecoverBullRoutePort, RecoverBullRoute;
 export 'src/domain/recoverbull_environment_port.dart'
     show RecoverBullEnvironmentPort;
-export 'src/domain/recoverbull_legacy_settings_port.dart'
-    show RecoverBullLegacySettingsPort;
+export 'src/domain/recoverbull_permission_port.dart'
+    show RecoverBullPermissionPort;
+export 'src/domain/recoverbull_server_url.dart'
+    show recoverBullDefaultServerUrl;
 export 'src/domain/recoverbull_wallet_port.dart' show RecoverBullWalletPort;
 export 'src/public/recoverbull_facade.dart' show RecoverBullFacade;
 export 'src/public/recoverbull_feature.dart' show RecoverBullFeature;
@@ -49,3 +50,5 @@ export 'src/ui/widgets/historical_backup_warning.dart'
     show RecoverBullHistoricalWarning;
 
 export 'src/domain/entities/vault_completion.dart' show VaultCompletion;
+export 'src/domain/wallet_backup_usage.dart' show SecretBackupProjection;
+export 'src/public/mainnet_backup_lookup.dart' show MainnetBackupLookup;

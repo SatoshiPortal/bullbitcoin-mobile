@@ -1,4 +1,4 @@
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 
 /// The native store does not exist where the catalog expects it.
 final class NativeStoreMissing implements Exception {

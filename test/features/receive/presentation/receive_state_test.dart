@@ -1,6 +1,6 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:receive/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,6 +14,17 @@ void main() {
     expect(state.qrData, 'LNTB-INVOICE');
     expect(state.getSwap?.id, 'order-1');
     expect(state.transaction.orderSwap?.localId, 'local-1');
+  });
+
+  test('the invoice summary uses accepted Exchange amounts, not the quote or decoder', () {
+    final state = ReceiveState(
+      type: ReceiveType.lightning,
+      confirmedAmountSat: 100050,
+      orderSwap: _record(OrderSwapLocalStatus.awaitingUserConfirmation),
+    );
+    expect(state.lightningAmountSat, 100000);
+    expect(state.lightningReceivedSat, 99000);
+    expect(state.lightningFeeSat, 1000);
   });
 
   test('maps Exchange payout progress to the receive progress screen', () {

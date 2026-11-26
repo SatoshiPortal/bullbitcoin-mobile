@@ -1,0 +1,477 @@
+{
+  "torSettingsPortHint": "9050년",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "electrumTimeoutPositiveError": "Timeout은 긍정적이어야한다",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "mempoolSettingsCustomServer": "사용자 지정 서버",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "electrumPrivacyNoticeSave": "제품 정보",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerAlreadyExists": "이 서버는 이미 존재합니다",
+  "electrumServerUnreachable": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumTitle": "Electrum 서버 설정",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "save": "제품 정보",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "electrumTimeoutWarning": "타임 아웃 ({timeoutValue} 초)은 권장 값 ({recommended} 초)보다 낮습니다.",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "제품정보",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumEmptyFieldError": "이 분야는 비어있을 수 없습니다",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumServerOnline": "- 한국어",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "torSettingsStatusConnected": "준비됨",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "statusCheckUnknown": "이름 *",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "mempoolCustomServerBottomSheetDescription": "사용자 정의 mempool 서버의 URL을 입력하십시오. 서버는 저장하기 전에 유효합니다.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description in bottom sheet for adding/editing custom server"
+  },
+  "electrumAddCustomServer": "Custom Server 추가",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "mempoolSettingsTitle": "Mempool 서버",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "torSettingsConnectionStatus": "연결 상태",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsPortValidationEmpty": "항구 번호를 입력하십시오",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "electrumPrivacyNoticeCancel": "이름 *",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "statusCheckOffline": "옵션 정보",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "mempoolCustomServerDeleteMessage": "이 사용자 정의 mempool 서버를 삭제하시겠습니까? 기본 서버는 대신 사용됩니다.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete custom server confirmation dialog"
+  },
+  "electrumValidateDomain": "Validate 도메인",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumInvalidRetryError": "잘못된 Retry 카운트 값: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "항구 수",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "electrumReset": "지원하다",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumStopGapNegativeError": "Gap를 멈추지 않을 수 없습니다",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumServerUrlHint": "{network} {environment} 서버 URL",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "로드 서버에 실패",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails"
+  },
+  "electrumAdvancedOptions": "고급 옵션",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumCancel": "이름 *",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "mempoolCustomServerDeleteTitle": "사용자 정의 서버 삭제?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete custom server confirmation dialog"
+  },
+  "electrumStopGap": "공지사항",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumServerOffline": "옵션 정보",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
+  "electrumStopGapTooHighError": "Gap은 너무 높다. (최대. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "Timeout은 너무 높다. (최대. {maxTimeout} 초)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(지게 눌러 드래그 및 변경 우선 순위)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumInvalidStopGapError": "잘못된 정지 갭 값: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "잘못된 타임아웃 값: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "기타 제품",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "mempoolSettingsDefaultServer": "기본 서버",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "electrumTestnet": "테스트넷",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "mempoolCustomServerAdd": "Custom Server 추가",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add custom mempool server"
+  },
+  "statusCheckOnline": "- 한국어",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "electrumCloseTooltip": "뚱 베어",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumBitcoinServerInfo": "형식의 서버 주소를 입력하십시오 : 호스트 : 포트 (예 : example.com : 50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumServerNotUsed": "이름 *",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumRetryCountEmptyError": "Retry Count는 비어있을 수 없습니다",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "torSettingsDescConnecting": "회사연혁 Tor 연결",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsPortValidationInvalid": "유효한 번호를 입력하세요",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails"
+  },
+  "electrumDeleteServerTitle": "사용자 정의 서버",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "torSettingsSaveButton": "제품 정보",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "electrumPrivacyNoticeTitle": "회사연혁",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumMainnet": "메인넷",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "statusCheckLastChecked": "마지막 검사: {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "항구: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "연결하기",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "electrumSavePriorityFailedError": "서버 우선순위 저장 실패",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails"
+  },
+  "electrumUnknownError": "오류가 발생했습니다",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumDefaultServers": "기본 서버",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "mempoolCustomServerUrlEmpty": "서버 URL을 입력하십시오",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when server URL is empty"
+  },
+  "electrumFormatError": "호스트:포트 형식 (예: example.com:50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "cancel": "이름 *",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "electrumDefaultServersInfo": "개인 정보를 보호하려면, 기본 서버는 사용자 지정 서버가 구성될 때 사용되지 않습니다.",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumProtocolError": "프로토콜 (ssl:// 또는 tcp://)을 포함하지 마십시오.",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "torSettingsProxyPort": "Tor 프록시 포트",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "electrumAddServer": "서버 추가",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "electrumStopGapEmptyError": "Gap을 중지 할 수 없습니다",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "torSettingsStatusUnknown": "상태 Unknown",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "electrumAddFailedError": "사용자 정의 서버 추가 실패",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails"
+  },
+  "torSettingsStatusConnecting": "연결 ...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "electrumDeletePrivacyNotice": "이메일:\n\n자신의 노드를 사용하여 제3자가 귀하의 트랜잭션과 IP 주소를 연결할 수 있다는 것을 보장합니다. 마지막 사용자 정의 서버를 삭제하면 BullBitcoin 서버에 연결됩니다.\n.\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDelete": "기타 제품",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "statusCheckTitle": "서비스 상태",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "한국어",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "electrumNetworkBitcoin": "비트 코인",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumConfirm": "제품정보",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumInvalidNumberError": "유효한 번호를 입력",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumRetryCount": "Retry 조사",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumCustomServers": "사용자 정의 서버",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumTimeout": "운동 (둘째로)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumSaveFailedError": "고급 옵션을 저장할 실패",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumLiquidSslInfo": "프로토콜이 지정되지 않아 SSL은 자동으로 사용됩니다.",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumRetryCountNegativeError": "Retry Count는 부정적인 수 없습니다",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumDeleteConfirmation": "이 서버를 삭제하시겠습니까?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "개인 정보 보호 정책 : 자신의 노드를 사용하여 제 3자가 귀하의 IP 주소를 링크 할 수 없다는 것을 보장합니다.",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "torSettingsTitle": "Tor 설정",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "electrumEnableSsl": "SSL 사용",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "torSettingsPortValidationRange": "항구는 1과 65535 사이에서 있어야 합니다",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "electrumTimeoutEmptyError": "타임아웃은 비어있을 수 없습니다",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumPrivacyNoticeContent2": "그러나, Transaction ID 또는 Recipient Details 페이지를 클릭하여 mempool을 통해 트랜잭션을 볼 경우, 이 정보는 BullBitcoin으로 알려집니다.",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "torSettingsDescConnected": "Tor 프록시는 실행 및 준비",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescDisconnected": "Tor 프록시는 실행되지 않습니다",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "electrumStopGapHighWarning": "높은 stop gap 값은 동기화 시간을 크게 증가시킵니다. 동기화가 완료될 때까지 앱을 포그라운드에서 열어두십시오 — 백그라운드로 전환하면 중단될 수 있습니다.",
+  "mempoolErrorInvalidUrl": "잘못된 서버 URL입니다. 유효한 도메인 또는 IP 주소를 입력하세요.",
+  "mempoolServerStatusOnline": "온라인",
+  "mempoolServerStatusOffline": "오프라인",
+  "mempoolServerStatusChecking": "확인 중...",
+  "mempoolServerStatusUnknown": "알 수 없음",
+  "mempoolCustomServerSaveFailed": "서버 저장에 실패했습니다",
+  "mempoolCustomServerInfoDescription": "Mempool 서버는 수수료 추정과 트랜잭션 세부정보를 볼 때 블록 탐색기를 여는 데 사용됩니다.",
+  "mempoolCustomServerUseSsl": "SSL 사용",
+  "mempoolCustomServerSslAutoDetected": "(자동 감지됨)",
+  "mempoolCustomServerSslHelpText": "로컬(.local, 사설 IP) 및 Tor(.onion) 서버의 경우 일반적으로 SSL이 비활성화됩니다. 공용 IP와 도메인에는 SSL을 사용해야 합니다.",
+  "mempoolErrorSameAsDefault": "이 URL은 기본 서버와 동일합니다. 다른 URL을 사용해 주세요.",
+  "mempoolErrorConnectionTimeout": "연결 시간이 초과되었습니다. 서버가 느리거나 응답하지 않을 수 있습니다.",
+  "mempoolErrorHostNotFound": "이 서버를 찾을 수 없습니다. URL을 확인하고 다시 시도해 주세요.",
+  "mempoolErrorConnectionFailed": "서버에 연결할 수 없습니다. 네트워크 연결을 확인하고 다시 시도해 주세요.",
+  "mempoolErrorNotMempoolServer": "이 URL은 Mempool 서버가 아닌 것 같습니다. 주소를 확인해 주세요.",
+  "mempoolErrorServerUnavailable": "서버를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "mempoolErrorServerError": "서버에서 오류가 발생했습니다. 나중에 다시 시도해 주세요.",
+  "mempoolErrorInvalidResponse": "서버가 잘못된 응답을 반환했습니다.",
+  "mempoolErrorSaveServerFailed": "서버 저장에 실패했습니다",
+  "mempoolErrorLoadFailed": "Mempool 서버 데이터를 불러오지 못했습니다",
+  "mempoolErrorDeleteFailed": "사용자 지정 서버 삭제에 실패했습니다",
+  "torSettingsStatusCensored": "연결이 차단된 것으로 보입니다",
+  "torSettingsDescCensored": "Tor가 네트워크에 연결하지 못했습니다. 보통 연결이 차단되고 있다는 뜻입니다.",
+  "torSettingsBootstrapProgress": "연결 중… {percent}%",
+  "torSettingsEmbeddedTitle": "내장 Tor",
+  "torSettingsEmbeddedDescription": "내장 Tor는 RecoverBull과 Bitcoin Electrum .onion 서버에서 사용됩니다. 앱의 다른 트래픽은 그대로 직접 연결됩니다.",
+  "torSettingsTransportMode": "연결 방식",
+  "torSettingsModeAutomatic": "자동",
+  "torSettingsModeDirect": "직접",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "먼저 Tor에 직접 연결하고, 네트워크가 Tor를 차단하는 것으로 보이면 Snowflake를 사용합니다.",
+  "torSettingsModeDirectDescription": "플러그형 전송 없이 Tor 네트워크에 직접 연결합니다.",
+  "torSettingsModeSnowflakeDescription": "자원봉사자의 Snowflake 프록시를 이용해 차단된 네트워크에서 Tor에 연결합니다.",
+  "torSettingsActiveTransport": "활성 전송: {transport}",
+  "statusCheckNoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
+  "statusCheckResultsMayBeOutdated": "결과가 오래되었을 수 있습니다",
+  "torSettingsStatusNoInternetOrBlocked": "인터넷이 없거나 검열된 네트워크",
+  "torSettingsDescNoInternetOrBlocked": "이 네트워크는 인터넷에 연결되어 있지 않거나 Tor를 차단합니다.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
+  "serverEncrypted": "암호화됨",
+  "serverUnencrypted": "암호화되지 않음"
+}

@@ -1,0 +1,86 @@
+{
+  "allSeedViewSecurityWarningMessage": "Η εμφάνιση φράσεων σπόρων είναι ένας κίνδυνος ασφαλείας. Όποιος βλέπει τη φράση του σπόρου σας μπορεί να έχει πρόσβαση στα χρήματά σας. Βεβαιωθείτε ότι βρίσκεστε σε ιδιωτική τοποθεσία και ότι κανείς δεν μπορεί να δει την οθόνη σας.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "cancel": "Ακύρωση",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "allSeedViewLoadingMessage": "Αυτό μπορεί να πάρει λίγο χρόνο για να φορτώσει αν έχετε πολλούς σπόρους σε αυτή τη συσκευή.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "allSeedViewNoSeedsFound": "Δεν βρέθηκαν σπόροι.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewSecurityWarningTitle": "Προειδοποίηση ασφαλείας",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "allSeedViewOldWallets": "Old Wallets ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Κατανοώ",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "ΨΗΦΊΣΤΕ!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "Η διαγραφή του σπόρου είναι μια μη αναστρέψιμη δράση. Μόνο αν έχετε εξασφαλίσει αντίγραφα ασφαλείας αυτού του σπόρου ή τα συνδεδεμένα πορτοφόλια έχουν αποστραγγιστεί πλήρως.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "delete": "Διαγράψτε",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "allSeedViewErrorDelete": "Αποτυχία διαγραφής του seed. Παρακαλώ δοκιμάστε ξανά.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Αποτυχία φόρτωσης των seeds. Παρακαλώ δοκιμάστε ξανά.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Show Seeds",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewExistingWallets": "Υπάρχοντα Wallets ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

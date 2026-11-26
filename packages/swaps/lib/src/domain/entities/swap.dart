@@ -1,6 +1,7 @@
 import 'package:bolt11_decoder/bolt11_decoder.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:swaps/src/util.dart';
+import 'package:primitives/primitives.dart'
+    show ConversionConstants, StringFormatting, calculatePercentage;
 
 part 'swap.freezed.dart';
 

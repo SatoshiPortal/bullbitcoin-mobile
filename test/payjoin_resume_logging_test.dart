@@ -1,10 +1,11 @@
+import 'package:bull_payjoin/setup.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/transactions/data/payjoin_codec_adapter.dart';
-import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' as support;
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_payjoin/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -57,15 +58,22 @@ void main() {
       when(() => transactions.watchWallet(any()))
           .thenAnswer((_) => const Stream.empty());
       when(
-        () => transactions.isTransactionVisible(
+        () => transactions.transactionsPresence(
           walletId: any(named: 'walletId'),
-          transactionId: any(named: 'transactionId'),
+          transactions: any(named: 'transactions'),
           refresh: any(named: 'refresh'),
         ),
-      ).thenAnswer((_) async => false);
+      ).thenAnswer(
+        (invocation) async => {
+          for (final transaction
+              in invocation.namedArguments[#transactions]
+                  as List<PayjoinTransaction>)
+            transaction.txid: false,
+        },
+      );
       when(() => transactions.refreshWallet(any())).thenAnswer((_) async {});
       Future<PayjoinLifecycle> open() async {
-        final result = await openPayjoin(
+        final result = await openPayjoinForTesting(
           databasePath: '${dir.path}/payjoin.sqlite',
           wallet: _Wallet(),
           blockchain: _Blockchain(),

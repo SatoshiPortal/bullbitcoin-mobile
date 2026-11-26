@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show ScriptType;
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_type_l10n.dart';
 import 'package:bb_mobile/localizations.dart';

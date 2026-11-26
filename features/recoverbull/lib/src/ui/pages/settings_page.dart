@@ -97,23 +97,26 @@ class _SettingsPageState extends State<SettingsPage> {
                   Row(
                     mainAxisAlignment: .spaceBetween,
                     children: [
-                      BullText(
-                        context.loc.recoverbullSettingsKeyServerUrl,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: BullText(
+                          context.loc.recoverbullSettingsKeyServerUrl,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          color: context.bull.onSurface,
                         ),
-                        color: context.bull.onSurface,
                       ),
-                      if (!_isEditing)
-                        TextButton.icon(
+                      if (!_isEditing && (settings?.serverEditable ?? false))
+                        BullButton.secondary(
+                          label: context.loc.recoverbullSettingsEdit,
                           onPressed: settings == null || state.busy
                               ? null
                               : () {
                                   _urlController.text = url;
                                   setState(() => _isEditing = true);
                                 },
-                          icon: const Icon(Icons.edit, size: 18),
-                          label: Text(context.loc.recoverbullSettingsEdit),
+                          size: BullButtonSize.small,
+                          compact: true,
                         ),
                     ],
                   ),
@@ -187,21 +190,16 @@ class _SettingsPageState extends State<SettingsPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: BullButton.big(
+                          child: BullButton.secondary(
                             label: context.loc.recoverbullSettingsCancel,
                             onPressed: () => setState(() => _isEditing = false),
-                            bgColor: context.bull.cardBackground,
-                            textColor: context.bull.onSurface,
                           ),
                         ),
                         const Gap(8),
                         Expanded(
-                          child: BullButton.big(
+                          child: BullButton.primary(
                             label: context.loc.recoverbullSettingsSave,
-                            onPressed: _saveUrl,
-                            bgColor: context.bull.onSurface,
-                            textColor: context.bull.surface,
-                            disabled: state.busy,
+                            onPressed: (state.busy) ? null : _saveUrl,
                           ),
                         ),
                       ],

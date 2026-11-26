@@ -1,0 +1,267 @@
+part of 'transfer_bloc.dart';
+
+enum AmountValidationError { minimum, maximum }
+
+SwapStatus transferSwapStatusForOrderSwap(OrderSwapLocalStatus status) =>
+    switch (status) {
+      OrderSwapLocalStatus.completed => SwapStatus.completed,
+      OrderSwapLocalStatus.refunded => SwapStatus.refunded,
+      OrderSwapLocalStatus.expired => SwapStatus.expired,
+      OrderSwapLocalStatus.failed => SwapStatus.failed,
+      OrderSwapLocalStatus.payinBroadcast ||
+      OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
+      _ => SwapStatus.pending,
+    };
+
+@freezed
+sealed class TransferState with _$TransferState {
+  const factory TransferState({
+    SignedBitcoinSpend? bitcoinSignature,
+    SignedLiquidSpend? liquidSignature,
+    @Default(false) bool isStarting,
+    SwapFailure? startError,
+    @Default([]) List<SwapWallet> wallets,
+    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+    FeeOptions? liquidNetworkFees,
+    FeeOptions? bitcoinNetworkFees,
+    (SwapLimits, SwapFees)? btcToLbtcSwapLimitsAndFees,
+    (SwapLimits, SwapFees)? lbtcToBtcSwapLimitsAndFees,
+    SwapRoute? swapRoute,
+    SwapWallet? fromWallet,
+    SwapWallet? toWallet,
+    int? maxAmountSat,
+    @Default(false) bool isCreatingSwap,
+    @Default(false) bool continueClicked,
+    SwapCreationException? swapCreationException,
+    // Set when the Liquid swap-funding build fails because the wallet has too
+    // many UTXOs to spend in a single transaction and needs consolidating.
+    @Default(false) bool consolidationRequired,
+    SwapFailure? swapFailure,
+    ChainSwap? swap,
+    OrderSwapRecord? orderSwap,
+    // The swap's claim or payout transaction as the receiving wallet sees it.
+    WalletTransaction? receiveTransaction,
+    @Default('') String signedPsbt,
+    int? bitcoinAbsoluteFeesSat,
+    int? liquidAbsoluteFeesSat,
+    @Default(false) bool isConfirming,
+    ConfirmTransactionException? confirmTransactionException,
+    // Set when a freshly-built Bitcoin tx fails the relay-floor re-assert
+    // (an absolute custom fee that cleared the pre-build gate against a stale
+    // vsize but lands below the floor at the real, larger vsize). Mirrors
+    // SendState.buildTransactionException — surfaced on the confirm page and
+    // accompanied by a cleared signedPsbt so the below-relay tx can't broadcast.
+    BuildTransactionException? buildTransactionException,
+    @Default('') String txId,
+    @Default(false) bool sendToExternal,
+    @Default('') String externalAddress,
+    SwapFailure? externalAddressError,
+    @Default(true) bool receiveExactAmount,
+    @Default('') String amount,
+    String? receiveAddress,
+    @Default(true) bool replaceByFee,
+    @Default([]) List<Coin> selectedUtxos,
+    @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
+    NetworkFee? customFee,
+    // Arm/disarm snapshot — set by TransferCustomFeeArmed, cleared by
+    // TransferCustomFeeChanged / TransferFeeOptionSelected /
+    // TransferCustomFeeDisarmed. Internal to the custom-fee modal flow;
+    // gates the rollback. UI must not read these directly.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
+    // Real-fee previews + cached unsigned PSBTs per FeeSelection slot.
+    // Mirrors SendState.feePreviewCache exactly — see that doc for the
+    // BDK-coin-selection rationale. Cleared on any input-shape change.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
+    List<Coin>? utxos,
+    int? bitcoinTxSize,
+    double? exchangeRate,
+    @Default({}) Map<SupportedCurrency, BitcoinPrice> amountQuotes,
+    @Default(true) bool amountEntryValid,
+    @Default(false) bool maxSelected,
+    SwapAmountConversion? amountConversion,
+    SwapAmountConversion? confirmedConversion,
+    String? fiatCurrencyCode,
+    // The payment animations preference; null until read, so a confirmation
+    // waits for it instead of guessing a path.
+    bool? showPaymentAnimations,
+  }) = _TransferState;
+  const TransferState._();
+
+  String get displayToCurrencyCode {
+    return '${toWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
+  }
+
+  String get displayFromCurrencyCode {
+    return '${fromWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
+  }
+
+  SwapLimits? get swapLimits {
+    if (sendToExternal) {
+      if (fromWallet?.isLiquid == false) {
+        return btcToLbtcSwapLimitsAndFees?.$1;
+      } else if (fromWallet?.isLiquid == true) {
+        return lbtcToBtcSwapLimitsAndFees?.$1;
+      }
+    } else {
+      if (fromWallet?.isLiquid == false && toWallet?.isLiquid == true) {
+        return btcToLbtcSwapLimitsAndFees?.$1;
+      } else if (fromWallet?.isLiquid == true && toWallet?.isLiquid == false) {
+        return lbtcToBtcSwapLimitsAndFees?.$1;
+      }
+    }
+    return null;
+  }
+
+  SwapFees? get swapFees {
+    if (sendToExternal) {
+      if (fromWallet?.isLiquid == false) {
+        return btcToLbtcSwapLimitsAndFees?.$2;
+      } else if (fromWallet?.isLiquid == true) {
+        return lbtcToBtcSwapLimitsAndFees?.$2;
+      }
+    } else {
+      if (fromWallet?.isLiquid == false && toWallet?.isLiquid == true) {
+        return btcToLbtcSwapLimitsAndFees?.$2;
+      } else if (fromWallet?.isLiquid == true && toWallet?.isLiquid == false) {
+        return lbtcToBtcSwapLimitsAndFees?.$2;
+      }
+    }
+    return null;
+  }
+
+  int getSwapFeesSat(int fromAmountSat) {
+    final fees = swapFees;
+    return fees?.totalFees(fromAmountSat) ?? 0;
+  }
+
+  int get inputAmountSat =>
+      Sats.tryParseBitcoin(amount, bitcoinUnit)?.value.toInt() ?? 0;
+
+  String get formattedInputAmount {
+    if (amount.isEmpty) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(inputAmountSat);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(inputAmountSat));
+    }
+  }
+
+  int? get absoluteFees {
+    if (fromWallet?.isLiquid == true) {
+      return liquidAbsoluteFeesSat;
+    } else {
+      return bitcoinAbsoluteFeesSat;
+    }
+  }
+
+  String get absoluteFeesFormatted {
+    if (absoluteFees == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
+  }
+
+  bool get isSameChainTransfer {
+    if (sendToExternal) return false;
+    return fromWallet?.isLiquid == false && toWallet?.isLiquid == false;
+  }
+
+  bool get shouldShowAdvancedOptions {
+    return fromWallet?.isLiquid == false;
+  }
+
+  bool get shouldShowReceiveExactAmount {
+    return fromWallet != null && !isSameChainTransfer;
+  }
+
+  /// Editing exits the explicit drain intent, even if the digits still equal Max.
+  bool get isMaxSelected => maxSelected;
+
+  int get selectedUtxoTotalSat {
+    return selectedUtxos.fold(
+      0,
+      (previousValue, element) => previousValue + element.amountSat.toInt(),
+    );
+  }
+
+  bool get isCoinSelectionValid {
+    if (selectedUtxos.isEmpty) return false;
+    return selectedUtxoTotalSat >= confirmedAmountSat;
+  }
+
+  int get confirmedAmountSat {
+    if (isSameChainTransfer) {
+      return inputAmountSat;
+    }
+    if (swap != null && swap is ChainSwap) {
+      return (swap as ChainSwap).paymentAmount;
+    }
+    return inputAmountSat;
+  }
+
+  NetworkFee? get selectedFee {
+    if (fromWallet == null) return null;
+    switch (selectedFeeOption) {
+      case FeeSelection.fastest:
+        return fromWallet!.isLiquid
+            ? liquidNetworkFees?.fastest
+            : bitcoinNetworkFees?.fastest;
+      case FeeSelection.economic:
+        return fromWallet!.isLiquid
+            ? liquidNetworkFees?.economic
+            : bitcoinNetworkFees?.economic;
+      case FeeSelection.slow:
+        return fromWallet!.isLiquid
+            ? liquidNetworkFees?.slow
+            : bitcoinNetworkFees?.slow;
+      case FeeSelection.custom:
+        return customFee;
+    }
+  }
+
+  String get formattedSelectedUtxoTotal {
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(selectedUtxoTotalSat);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat));
+    }
+  }
+
+  bool get isInsufficientBalance {
+    if (fromWallet == null) return false;
+    if (inputAmountSat <= 0) return false;
+    final balance = fromWallet?.balanceSat;
+    return balance == null || inputAmountSat > balance.toInt();
+  }
+
+  bool get hasAmountError {
+    return amountValidationError != null || isInsufficientBalance;
+  }
+
+  AmountValidationError? get amountValidationError {
+    if (amount.isEmpty) return null;
+
+    if (inputAmountSat <= 0) return null;
+
+    final balanceSat = fromWallet?.balanceSat?.toInt() ?? 0;
+    if (inputAmountSat > balanceSat) return null;
+
+    if (swapRoute != SwapRoute.boltz) return null;
+    final limits = swapLimits;
+    if (limits == null) return null;
+
+    if (limits.min > inputAmountSat) {
+      return AmountValidationError.minimum;
+    }
+
+    if (limits.max < inputAmountSat) {
+      return AmountValidationError.maximum;
+    }
+
+    return null;
+  }
+}

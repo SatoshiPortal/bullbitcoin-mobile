@@ -1,0 +1,22 @@
+{
+  "retry": "Hledat",
+  "doneButton": "Čeština",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Absolutní poplatky",
+  "sendBelowMinFeeRateError": "Poplatek musí být alespoň 0,1 sat/vB.",
+  "sendCustomFee": "Vlastní poplatek",
+  "sendEconomyFee": "Úsporný",
+  "sendEnterAbsoluteFee": "Zadejte absolutní poplatek ve sdělcích",
+  "sendEnterRelativeFee": "Zadejte relativní poplatek ve sdělcích/vB",
+  "sendEstimatedDelivery": "Odhadovaná dodávka ~ ",
+  "sendEstimatedDelivery10Minutes": "10 minut",
+  "sendEstimatedDelivery10to30Minutes": "10-30 minut",
+  "sendEstimatedDeliveryHours": "hodiny",
+  "sendEstimatedDeliveryHoursToDays": "hodiny do dnů",
+  "sendFastFee": "Rychlý",
+  "sendRelativeFees": "Relativní poplatky",
+  "sendSats": "čeština",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Vyberte poplatek za síť",
+  "sendSubSatVbyteWarning": "Transakce s poplatkem pod 1 sat/vB se mohou potvrzovat déle a nemusí se rozšířit na všechny uzly."
+}

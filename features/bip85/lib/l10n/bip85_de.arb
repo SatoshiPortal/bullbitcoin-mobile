@@ -1,0 +1,15 @@
+{
+  "@@locale": "de",
+  "bip85NextMnemonic": "Nächste Mnemonic",
+  "bip85ExperimentalWarning": "Experimentell\nSichern Sie Ihre Ableitungspfade manuell.",
+  "bip85Title": "BIP85 Deterministische Entropie",
+  "bip85NextHex": "Nächste HEX",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "bip85NoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte erstellen Sie eine Standard-Wallet und versuchen Sie es erneut.",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "copiedToClipboard": "In die Zwischenablage kopiert",
+  "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen."
+}

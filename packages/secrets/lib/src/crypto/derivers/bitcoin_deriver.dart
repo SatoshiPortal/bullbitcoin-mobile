@@ -1,5 +1,5 @@
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';

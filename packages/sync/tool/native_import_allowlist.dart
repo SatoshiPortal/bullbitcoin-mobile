@@ -8,4 +8,10 @@ const nativeImportAllowlist = <String>{
   'packages/secrets/lib/src/crypto/generator.dart',
   'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart',
   'packages/secrets/lib/src/crypto/signers/liquid_signer.dart',
+  // Address and PSBT parsing, already there when satoshifier moved into the
+  // workspace from bull_sdk.
+  'packages/satoshifier/lib/enums/network.dart',
+  'packages/satoshifier/lib/parsers/bitcoin_address_parser.dart',
+  'packages/satoshifier/lib/parsers/liquid_address_parser.dart',
+  'packages/satoshifier/lib/parsers/psbt_parser.dart',
 };

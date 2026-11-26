@@ -1,0 +1,65 @@
+[package]
+name = "lwk"
+description = "Flutter-Rust Bridge for Liquid Wallet Kit (lwk)"
+authors = ["i5hi <ishi@satoshiportal.com>, mocodesmo <morteza@satoshiportal.com>"]
+version = "0.3.0"
+edition = "2021"
+
+[lib]
+name = "lwk"
+doctest = false
+crate-type = ["lib", "staticlib", "cdylib"]
+
+[dependencies]
+# Pin the rustls crypto provider to ring; both ring + aws-lc-rs are linked
+# transitively in the bull_sdk aggregate, which makes rustls 0.23 panic when it
+# tries to auto-pick a default. We install ring explicitly at runtime.
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
+# SatoshiPortal LWK with the merged blocking scanner no-op fix.
+# Includes `SwSigner::from_seed_with_network` (Blockstream/lwk#196).
+# Switch back to crates.io once both changes are released upstream.
+lwk_wollet = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_signer = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_common = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+thiserror = "2.0.18"
+flutter_rust_bridge = "=2.13.0"
+anyhow = "1.0.68"
+lazy_static = "1.5.0"
+hex = "0.4"
+log = "0.4.22"
+zeroize = "1.8"
+
+# lwk_wollet and lwk_signer require their sibling crates by crates.io version;
+# LWK's own workspace redirects them with a [patch] that does not apply to
+# dependents. Redirect them here too, so the graph holds a single copy of each
+# (two lwk_common copies would make their `Signer` traits incompatible).
+[patch.crates-io]
+lwk_common = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_jade = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_prices = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_registry = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+
+[features]
+bull_sdk = []
+
+[build-dependencies]
+flutter_rust_bridge_codegen = { version = "=2.13.0" }
+
+[build]
+profiler = true
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[target.'cfg(target_os = "macos")']
+rustflags = [
+    "-C", "link-arg=-undefined",
+    "-C", "link-arg=dynamic_lookup",
+]
+
+[dev-dependencies]
+bip39 = { version = "2", features = ["japanese"] }

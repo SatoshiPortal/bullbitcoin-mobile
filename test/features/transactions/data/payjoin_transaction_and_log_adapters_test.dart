@@ -1,83 +1,67 @@
-import 'dart:io';
+import 'package:bull_payjoin/setup.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
-import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
-import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
+import 'package:sync/sync.dart'
+    show
+        SyncCompletion,
+        SyncConnectionFailure,
+        SyncFailure,
+        SyncMode,
+        SyncTransactionTarget,
+        WalletKey;
+
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:transactions/testing.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' hide Network;
 
 class _MockLogger extends Mock implements Logger {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _Inventory extends Mock implements WalletInventory {}
 
-class _MockWalletTransactionRepository extends Mock
-    implements WalletTransactionRepository {}
-
-class _MockBlockchain extends Mock implements BdkBitcoinBlockchainDatasource {}
-
-class _MockWallet extends Mock implements Wallet {}
-
-/// One server; like the real runner, a transient failure ends up wrapped and
-/// a permanent one is rethrown as is.
-class _FakeServers implements ElectrumServersPort {
-  @override
-  Future<bool> hasCustomServers({
-    required ElectrumServerNetwork network,
-  }) async => false;
-
-  ElectrumServerNetwork? network;
-
-  @override
-  Future<T> runWithFallback<T>({
-    required ElectrumServerNetwork network,
-    required Future<T> Function(ElectrumConnection connection) operation,
-    bool Function(Object error)? isTransient,
-  }) async {
-    this.network = network;
-    try {
-      return await operation(_connection);
-    } catch (e) {
-      if (isTransient != null && !isTransient(e)) rethrow;
-      throw AllElectrumServersFailedException([
-        ElectrumServerAttempt(url: _connection.url, isCustom: false, error: e),
-      ]);
-    }
-  }
+abstract interface class _Synchronization {
+  Future<Result<void, SyncFailure>> execute(WalletKey key);
 }
 
-const _connection = ElectrumConnection(
-  url: 'ssl://electrum.test:50002',
-  retry: 0,
-  timeout: 5,
-  stopGap: 20,
-  validateDomain: true,
-  isCustom: false,
-);
+abstract interface class _TargetedSynchronization {
+  Future<Result<SyncCompletion, SyncFailure>> executeTargeted(
+    WalletKey key,
+    List<SyncTransactionTarget> targets,
+  );
+}
+
+class _MockSynchronization extends Mock implements _Synchronization {}
+
+class _MockTargetedSynchronization extends Mock
+    implements _TargetedSynchronization {}
+
+class _MockTransactions extends Mock implements Transactions {}
 
 const _walletId = 'wallet';
 const _txId =
     'bb71279aa030b144a12329126f0b44e6954225834d3dafaab6328bfd48939325';
+const _otherTxId =
+    'aa71279aa030b144a12329126f0b44e6954225834d3dafaab6328bfd48939325';
+const _previousTxId =
+    '1111111111111111111111111111111111111111111111111111111111111111';
+const _script = [0x00, 0x14, 1, 2, 3];
+const _otherScript = [0x00, 0x14, 9, 8, 7];
 
 void main() {
-  late _MockWalletRepository wallets;
-  late _MockWalletTransactionRepository transactions;
-  late _MockBlockchain blockchain;
-  late _FakeServers servers;
-  late _MockWallet wallet;
+  late _Inventory inventory;
+  late _MockSynchronization synchronization;
+  late _MockTargetedSynchronization targeted;
+  late _MockTransactions transactions;
   late AppPayjoinTransactionAdapter adapter;
+  final key = WalletKey(id: _walletId, network: BitcoinNetwork.testnet);
 
   test('poll state codes survive the persisted host adapter', () async {
     final directory = await Directory.systemTemp.createTemp(
@@ -114,29 +98,34 @@ void main() {
   });
 
   setUpAll(() {
-    registerFallbackValue(_connection);
     registerFallbackValue(StackTrace.empty);
+    registerFallbackValue(<SyncTransactionTarget>[]);
+    registerFallbackValue(key);
   });
 
   setUp(() {
-    wallets = _MockWalletRepository();
-    transactions = _MockWalletTransactionRepository();
-    blockchain = _MockBlockchain();
-    servers = _FakeServers();
+    inventory = _Inventory();
+    synchronization = _MockSynchronization();
+    targeted = _MockTargetedSynchronization();
+    when(() => inventory.readWallet(_walletId)).thenAnswer(
+      (_) async =>
+          Ok(walletRegistrationForTesting(id: _walletId, network: key.network)),
+    );
+    when(() => synchronization.execute(key))
+        .thenAnswer((_) async => const Ok(null));
+    transactions = _MockTransactions();
     adapter = AppPayjoinTransactionAdapter(
-      wallets,
+      inventory,
       transactions,
-      blockchain,
-      servers,
+      synchronize: synchronization.execute,
+      synchronizeTargeted: targeted.executeTargeted,
+      finished: const Stream.empty(),
+      protectSpend: (_, _) async => false,
       reconcileDelay: Duration.zero,
     );
 
-    wallet = _MockWallet();
-    when(() => wallet.network).thenReturn(Network.bitcoinTestnet);
-    when(() => wallets.getWallet(_walletId, sync: any(named: 'sync')))
-        .thenAnswer((_) async => Ok(wallet));
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => null);
+        .thenAnswer((_) async => const Ok(null));
   });
 
   test('structured events preserve the exported TSV contract', () async {
@@ -451,87 +440,50 @@ void main() {
     expect(reportedError, isNot(contains('0123456')));
   });
 
-  test('answers from the wallet when no refresh is asked', () async {
+  PayjoinTransaction candidate({
+    String txid = _txId,
+    List<List<int>> scripts = const [],
+    List<Outpoint> inputs = const [],
+  }) => PayjoinTransaction(
+    txid: txid,
+    inputs: inputs,
+    outputs: [
+      for (final script in scripts)
+        PayjoinTransactionOutput(
+          value: Sats.fromInt(1000),
+          scriptPubkey: Uint8List.fromList(script),
+        ),
+    ],
+  );
+
+  void stubPass(SyncCompletion completion) =>
+      when(() => targeted.executeTargeted(any(), any()))
+          .thenAnswer((_) async => Ok(completion));
+
+  List<SyncTransactionTarget> capturedTargets() {
+    final captured = verify(
+      () => targeted.executeTargeted(captureAny(), captureAny()),
+    ).captured;
+    expect(
+      captured.first,
+      key,
+      reason: 'a targeted pass names the wallet it settles',
+    );
+    return captured.last as List<SyncTransactionTarget>;
+  }
+
+  test('answers a local read from the wallet alone', () async {
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => _transaction());
+        .thenAnswer((_) async => Ok(_transaction()));
 
-    final visible = await adapter.isTransactionVisible(
+    final answers = await adapter.transactionsPresence(
       walletId: _walletId,
-      transactionId: _txId,
+      transactions: [candidate()],
     );
 
-    expect(visible, isTrue);
-    verifyNever(
-      () => blockchain.isTransactionKnown(
-        any(),
-        connection: any(named: 'connection'),
-      ),
-    );
-  });
-
-  test('a refresh trusts the server over a pending wallet copy', () async {
-    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => _transaction());
-    when(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
-      ),
-    ).thenAnswer((_) async => false);
-
-    final visible = await adapter.isTransactionVisible(
-      walletId: _walletId,
-      transactionId: _txId,
-      refresh: true,
-    );
-
-    expect(visible, isFalse);
-    verify(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
-      ),
-    ).called(1);
-  });
-
-  test('stays local when no refresh is asked', () async {
-    final visible = await adapter.isTransactionVisible(
-      walletId: _walletId,
-      transactionId: _txId,
-    );
-
-    expect(visible, isFalse);
-    verifyNever(
-      () => blockchain.isTransactionKnown(
-        any(),
-        connection: any(named: 'connection'),
-      ),
-    );
-  });
-
-  test('asks the server for the one transaction instead of syncing', () async {
-    when(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
-      ),
-    ).thenAnswer((_) async => true);
-    var synced = false;
-    when(() => wallets.getWallet(_walletId, sync: true)).thenAnswer((_) async {
-      synced = true;
-      return Ok(wallet);
-    });
-    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => synced ? _transaction() : null);
-
-    final visible = await adapter.isTransactionVisible(
-      walletId: _walletId,
-      transactionId: _txId,
-      refresh: true,
-    );
-
-    expect(visible, isTrue);
-    expect(servers.network, ElectrumServerNetwork.bitcoinTestnet);
+    expect(answers, {_txId: true});
+    verifyNever(() => targeted.executeTargeted(any(), any()));
+    verifyNever(() => synchronization.execute(key));
     verifyNever(
       () => transactions.getWalletTransaction(
         _txId,
@@ -539,161 +491,312 @@ void main() {
         sync: true,
       ),
     );
+  });
+
+  test('answers a local miss as absent without syncing', () async {
+    final answers = await adapter.transactionsPresence(
+      walletId: _walletId,
+      transactions: [candidate()],
+    );
+
+    expect(answers, {_txId: false});
+    verifyNever(() => targeted.executeTargeted(any(), any()));
+    verifyNever(() => synchronization.execute(key));
+    verifyNever(
+      () => transactions.getWalletTransaction(
+        _txId,
+        walletId: _walletId,
+        sync: true,
+      ),
+    );
+  });
+
+  test('judges every candidate in one targeted pass', () async {
+    stubPass(
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        visibleTransactionIds: {_txId},
+        coveredTransactionIds: {_txId, _otherTxId},
+      ),
+    );
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async => Ok(_transaction()));
+
+    final answers = await adapter.transactionsPresence(
+      walletId: _walletId,
+      transactions: [
+        candidate(scripts: [_script], inputs: [(txId: _previousTxId, vout: 1)]),
+        candidate(txid: _otherTxId, scripts: [_otherScript]),
+      ],
+      refresh: true,
+    );
+
+    expect(answers, {_txId: true, _otherTxId: false});
+    final targets = capturedTargets();
+    expect(targets.map((target) => target.txid), [_txId, _otherTxId]);
+    expect(targets.first.outputScripts, [Uint8List.fromList(_script)]);
+    expect(targets.first.spentOutpoints, [(txId: _previousTxId, vout: 1)]);
+    expect(targets.last.outputScripts, [Uint8List.fromList(_otherScript)]);
     // The wallet catches up in the background.
     await pumpEventQueue();
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(1);
+    verify(() => synchronization.execute(key)).called(1);
   });
 
-  test('syncs again when the wallet fails or misses the transaction', () async {
-    when(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
+  test('answers only candidates the pass covered, never the others', () async {
+    stubPass(
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        visibleTransactionIds: {},
+        coveredTransactionIds: {_txId},
       ),
-    ).thenAnswer((_) async => true);
-    var syncs = 0;
-    when(() => wallets.getWallet(_walletId, sync: true)).thenAnswer((_) async {
-      syncs++;
-      return syncs == 1 ? const Err(WalletStorageFailure('busy')) : Ok(wallet);
-    });
-    // The second sync joined a pass that started before the broadcast.
+    );
+
+    final answers = await adapter.transactionsPresence(
+      walletId: _walletId,
+      transactions: [
+        candidate(scripts: const [_script]),
+        candidate(txid: _otherTxId, scripts: const [_otherScript]),
+      ],
+      refresh: true,
+    );
+
+    expect(answers, {
+      _txId: false,
+      _otherTxId: null,
+    }, reason: 'only a covered target may be answered, absent included');
+    verifyNever(() => synchronization.execute(key));
+  });
+
+  test('answers a covered target the pass saw as visible', () async {
+    stubPass(
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        visibleTransactionIds: {_txId},
+        coveredTransactionIds: {_txId},
+      ),
+    );
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => syncs >= 3 ? _transaction() : null);
+        .thenAnswer((_) async => Ok(_transaction()));
 
-    await adapter.isTransactionVisible(
+    final answers = await adapter.transactionsPresence(
       walletId: _walletId,
-      transactionId: _txId,
+      transactions: [
+        candidate(scripts: const [_script]),
+        candidate(txid: _otherTxId, scripts: const [_otherScript]),
+      ],
       refresh: true,
     );
-    await pumpEventQueue();
 
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(3);
+    expect(answers, {_txId: true, _otherTxId: null});
   });
 
-  test('stops reconciling after a few failed syncs', () async {
-    when(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
+  test('a malformed candidate is unknown without blocking its peers', () async {
+    const malformedTxId = 'not-a-transaction-id';
+    stubPass(
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        visibleTransactionIds: {},
+        coveredTransactionIds: {_otherTxId},
       ),
-    ).thenAnswer((_) async => true);
-    when(() => wallets.getWallet(_walletId, sync: true))
-        .thenAnswer((_) async => const Err(WalletStorageFailure('busy')));
+    );
 
-    await adapter.isTransactionVisible(
+    final answers = await adapter.transactionsPresence(
       walletId: _walletId,
-      transactionId: _txId,
+      transactions: [
+        candidate(txid: malformedTxId, scripts: const [_script]),
+        candidate(inputs: const [(txId: 'bad-outpoint', vout: 0)]),
+        candidate(txid: _otherTxId, scripts: const [_otherScript]),
+      ],
       refresh: true,
     );
-    await pumpEventQueue();
 
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(3);
+    expect(answers, {malformedTxId: null, _txId: null, _otherTxId: false});
+    expect(capturedTargets().map((target) => target.txid), [
+      _otherTxId,
+    ], reason: 'a malformed candidate is dropped, its valid peer still syncs');
   });
 
-  test('a failing wallet read does not end the reconciliation', () async {
-    when(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
+  test('a completion that covered nothing answers nothing', () async {
+    for (final completion in [
+      const SyncCompletion(SyncMode.targeted, Duration.zero),
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        visibleTransactionIds: {_txId},
       ),
-    ).thenAnswer((_) async => true);
-    when(() => wallets.getWallet(_walletId, sync: true))
-        .thenAnswer((_) async => Ok(wallet));
-    var reads = 0;
-    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async {
-          reads++;
-          if (reads == 1) throw Exception('database locked');
-          return _transaction();
-        });
-
-    await adapter.isTransactionVisible(
-      walletId: _walletId,
-      transactionId: _txId,
-      refresh: true,
-    );
-    await pumpEventQueue();
-
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(2);
-  });
-
-  test('reports an unknown transaction without syncing the wallet', () async {
-    when(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        coveredTransactionIds: {_txId},
       ),
-    ).thenAnswer((_) async => false);
+    ]) {
+      stubPass(completion);
 
-    final visible = await adapter.isTransactionVisible(
-      walletId: _walletId,
-      transactionId: _txId,
-      refresh: true,
-    );
-
-    expect(visible, isFalse);
-    verifyNever(() => wallets.getWallet(_walletId, sync: true));
-  });
-
-  for (final present in [true, false]) {
-    test('falls back to a wallet sync when the reply is unclassified '
-        '(transaction ${present ? 'present' : 'absent'})', () async {
-      when(
-        () => blockchain.isTransactionKnown(
-          _txId,
-          connection: any(named: 'connection'),
-        ),
-      ).thenThrow(const UnrecognizedElectrumReplyException('txid not found'));
-      when(
-        () => transactions.getWalletTransaction(
-          _txId,
-          walletId: _walletId,
-          sync: true,
-        ),
-      ).thenAnswer((_) async => present ? _transaction() : null);
-
-      final visible = await adapter.isTransactionVisible(
+      final answers = await adapter.transactionsPresence(
         walletId: _walletId,
-        transactionId: _txId,
+        transactions: [
+          candidate(scripts: const [_script]),
+        ],
         refresh: true,
       );
 
-      expect(visible, present);
-      // An absence is only trusted after a second pass: the first sync can
-      // have joined a pass that started before the broadcast.
-      verify(
-        () => transactions.getWalletTransaction(
-          _txId,
-          walletId: _walletId,
-          sync: true,
+      expect(answers, {_txId: null});
+      await pumpEventQueue();
+      verifyNever(() => synchronization.execute(key));
+    }
+  });
+
+  test('answers a failed pass as unknown, never as absent', () async {
+    when(() => targeted.executeTargeted(any(), any()))
+        .thenAnswer((_) async => const Err(SyncConnectionFailure()));
+
+    final answers = await adapter.transactionsPresence(
+      walletId: _walletId,
+      transactions: [
+        candidate(scripts: const [_script]),
+      ],
+      refresh: true,
+    );
+
+    expect(answers, {_txId: null});
+    await pumpEventQueue();
+    verifyNever(() => synchronization.execute(key));
+  });
+
+  test('answers an unavailable pass as unknown, never as absent', () async {
+    when(() => targeted.executeTargeted(any(), any()))
+        .thenAnswer((_) async => throw Exception('pass unavailable'));
+
+    final answers = await adapter.transactionsPresence(
+      walletId: _walletId,
+      transactions: [
+        candidate(scripts: const [_script]),
+      ],
+      refresh: true,
+    );
+
+    expect(answers, {_txId: null});
+    await pumpEventQueue();
+    verifyNever(() => synchronization.execute(key));
+  });
+
+  test('refuses a Liquid wallet before any pass', () async {
+    when(() => inventory.readWallet(_walletId)).thenAnswer(
+      (_) async => Ok(
+        walletRegistrationForTesting(
+          id: _walletId,
+          network: LiquidNetwork.testnet,
         ),
-      ).called(present ? 1 : 2);
-      verifyNever(() => wallets.getWallet(_walletId, sync: true));
-    });
-  }
-
-  test('propagates a server failure instead of answering absent', () async {
-    when(
-      () => blockchain.isTransactionKnown(
-        _txId,
-        connection: any(named: 'connection'),
       ),
-    ).thenThrow(Exception('unreachable'));
+    );
 
-    expect(
-      adapter.isTransactionVisible(
+    await expectLater(
+      adapter.transactionsPresence(
         walletId: _walletId,
-        transactionId: _txId,
+        transactions: [
+          candidate(scripts: const [_script]),
+        ],
         refresh: true,
       ),
       throwsException,
     );
+    verifyNever(() => targeted.executeTargeted(any(), any()));
+  });
+
+  test('reconciles only the ids the pass proved visible', () async {
+    stubPass(
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        visibleTransactionIds: {_txId},
+        coveredTransactionIds: {_txId, _otherTxId},
+      ),
+    );
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async => Ok(_transaction()));
+
+    await adapter.transactionsPresence(
+      walletId: _walletId,
+      transactions: [
+        candidate(scripts: const [_script]),
+        candidate(txid: _otherTxId, scripts: const [_otherScript]),
+      ],
+      refresh: true,
+    );
+    await pumpEventQueue();
+
+    verify(() => synchronization.execute(key)).called(1);
+    verify(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .called(1);
+    verifyNever(
+      () => transactions.getWalletTransaction(_otherTxId, walletId: _walletId),
+    );
+  });
+
+  test('sync completion requires admission for the exact account', () async {
+    final finished = StreamController<WalletKey>();
+    final adapter = AppPayjoinTransactionAdapter(
+      inventory,
+      transactions,
+      synchronize: synchronization.execute,
+      synchronizeTargeted: targeted.executeTargeted,
+      finished: finished.stream,
+      protectSpend: (_, _) async => false,
+    );
+    final completions = <Object?>[];
+    final subscription = adapter
+        .watchWallet(_walletId)
+        .listen((_) => completions.add(null));
+    addTearDown(subscription.cancel);
+    addTearDown(finished.close);
+
+    when(() => inventory.readWallet(_walletId))
+        .thenAnswer((_) async => const Err(KeystoreLockedFailure()));
+    finished.add(key);
+    await pumpEventQueue();
+    expect(completions, isEmpty);
+
+    when(() => inventory.readWallet(_walletId)).thenAnswer(
+      (_) async =>
+          Ok(walletRegistrationForTesting(id: _walletId, network: key.network)),
+    );
+    finished.add(WalletKey(id: _walletId, network: BitcoinNetwork.mainnet));
+    finished.add(key);
+    await pumpEventQueue();
+    expect(completions, hasLength(1));
+  });
+
+  test('never answers a candidate it cannot describe', () async {
+    stubPass(
+      const SyncCompletion(
+        SyncMode.targeted,
+        Duration.zero,
+        visibleTransactionIds: {},
+        coveredTransactionIds: {_txId},
+      ),
+    );
+
+    final answers = await adapter.transactionsPresence(
+      walletId: _walletId,
+      transactions: [
+        PayjoinTransaction.idOnly('undescribed-tx'),
+        candidate(scripts: const [_script]),
+      ],
+      refresh: true,
+    );
+
+    expect(answers, {'undescribed-tx': null, _txId: false});
+    expect(capturedTargets().map((target) => target.txid), [_txId]);
   });
 }
 
 WalletTransaction _transaction() => const WalletTransaction(
   walletId: _walletId,
-  network: Network.bitcoinTestnet,
+  network: BitcoinNetwork.testnet,
   direction: WalletTransactionDirection.incoming,
   status: WalletTransactionStatus.pending,
   txId: _txId,

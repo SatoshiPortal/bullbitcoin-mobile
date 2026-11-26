@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';

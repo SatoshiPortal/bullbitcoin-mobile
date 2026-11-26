@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/inputs/labeled_input_frame.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/foundation.dart';
@@ -117,14 +119,12 @@ class _BullSecretTextInputState extends State<BullSecretTextInput> {
               ),
             ),
           ),
-          IconButton(
-            tooltip: _obscured ? widget.showLabel : widget.hideLabel,
+          BullFieldAction(
+            label: _obscured ? widget.showLabel : widget.hideLabel,
             onPressed: () => setState(() => _obscured = !_obscured),
-            icon: Icon(
-              _obscured ? Icons.visibility_outlined : Icons.visibility_off,
-              color: colors.textMuted,
-            ),
+            icon: _obscured ? Icons.visibility_outlined : Icons.visibility_off,
           ),
+          const SizedBox(width: 8),
         ],
       ),
     );

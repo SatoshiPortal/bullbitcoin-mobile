@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart' show NetworkEnv;
 
 import 'dart:async';
 
-import 'package:bull_sdk/boltz.dart' as native;
+import 'package:rust_bindings/boltz.dart' as native;
 import 'package:mocktail/mocktail.dart';
 import 'package:swaps/src/data/boltz_api.dart';
 import 'package:swaps/swaps.dart';
@@ -19,6 +19,11 @@ class _LiquidSwap extends Mock implements native.LbtcLnSwap {}
 class _ChainSwap extends Mock implements native.ChainSwap {}
 
 void main() {
+  const counterpartyElectrum = ElectrumConnection(
+    url: 'tcp://127.0.0.1:1',
+    validateDomain: false,
+    timeout: 1,
+  );
   final actions = <String, (String, Future<Object?> Function(BoltzDatasource))>{
     'Bitcoin claim': (
       'btc',
@@ -77,6 +82,7 @@ void main() {
         claimLiquidAddress: 'unused',
         absoluteFees: 1,
         tryCooperate: true,
+        counterpartyElectrum: counterpartyElectrum,
       ),
     ),
     'Liquid to Bitcoin claim': (
@@ -86,6 +92,7 @@ void main() {
         claimBitcoinAddress: 'unused',
         absoluteFees: 1,
         tryCooperate: true,
+        counterpartyElectrum: counterpartyElectrum,
       ),
     ),
     'Bitcoin to Liquid refund': (
@@ -95,6 +102,7 @@ void main() {
         refundBitcoinAddress: 'unused',
         absoluteFees: 1,
         tryCooperate: true,
+        counterpartyElectrum: counterpartyElectrum,
       ),
     ),
     'Liquid to Bitcoin refund': (
@@ -104,6 +112,7 @@ void main() {
         refundLiquidAddress: 'unused',
         absoluteFees: 1,
         tryCooperate: true,
+        counterpartyElectrum: counterpartyElectrum,
       ),
     ),
   };

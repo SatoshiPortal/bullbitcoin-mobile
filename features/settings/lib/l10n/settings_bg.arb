@@ -1,0 +1,300 @@
+{
+  "translationWarningTitle": "Преводи, генерирани от ИИ",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "translationWarningDescription": "Повечето преводи в това приложение са генерирани с помощта на AI и може да съдържат неточности. Ако забележите грешки или искате да помогнете за подобряване на преводите, можете да изпратите корекция в нашето GitHub хранилище.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningContributeButton": "Помогнете да се подобрят преводите",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "walletDeletionConfirmationCancelButton": "Отказ",
+  "@walletDeletionConfirmationCancelButton": {
+    "description": "Cancel button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationDeleteButton": "Изтрий",
+  "@walletDeletionConfirmationDeleteButton": {
+    "description": "Delete button label in wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationMessage": "Сигурни ли сте, че искате да изтриете този портфейл?",
+  "@walletDeletionConfirmationMessage": {
+    "description": "Message in the wallet deletion confirmation dialog"
+  },
+  "walletDeletionConfirmationTitle": "Изтриване на портфейл",
+  "@walletDeletionConfirmationTitle": {
+    "description": "Title for the wallet deletion confirmation dialog"
+  },
+  "walletDeletionErrorDefaultWallet": "Не можете да изтриете портфейл по подразбиране.",
+  "@walletDeletionErrorDefaultWallet": {
+    "description": "Error message when attempting to delete a default wallet"
+  },
+  "walletDeletionErrorGeneric": "Неуспях да изтрия портфейла, моля опитайте отново.",
+  "@walletDeletionErrorGeneric": {
+    "description": "Generic error message when wallet deletion fails"
+  },
+  "walletDeletionErrorOngoingSwaps": "==WEBLATE_PART==\nНе можете да изтриете портфейл с активни размени.",
+  "@walletDeletionErrorOngoingSwaps": {
+    "description": "Error message when attempting to delete a wallet with ongoing swaps"
+  },
+  "walletDeletionErrorWalletNotFound": "Портфейлът, който опитвате да изтриете, не съществува.",
+  "@walletDeletionErrorWalletNotFound": {
+    "description": "Error message when the wallet to delete cannot be found"
+  },
+  "walletDeletionFailedOkButton": "ОК",
+  "@walletDeletionFailedOkButton": {
+    "description": "OK button label in wallet deletion failed dialog"
+  },
+  "walletDeletionFailedTitle": "Изтриването не успя",
+  "@walletDeletionFailedTitle": {
+    "description": "Title for the wallet deletion failed dialog"
+  },
+  "walletDetailsAddressTypeLabel": "Тип адрес",
+  "@walletDetailsAddressTypeLabel": {
+    "description": "Label for the address type field in wallet details"
+  },
+  "walletDetailsDeletingMessage": "Изтриване на портфейл...",
+  "@walletDetailsDeletingMessage": {
+    "description": "Message displayed while a wallet is being deleted"
+  },
+  "walletDetailsDerivationPathLabel": "Път на деривация",
+  "@walletDetailsDerivationPathLabel": {
+    "description": "Label for the derivation path field in wallet details"
+  },
+  "walletDetailsDescriptorLabel": "Дескриптор",
+  "@walletDetailsDescriptorLabel": {
+    "description": "Label for the wallet descriptor field in wallet details"
+  },
+  "walletDetailsNetworkLabel": "Мрежа",
+  "@walletDetailsNetworkLabel": {
+    "description": "Label for the network field in wallet details"
+  },
+  "walletDetailsPubkeyLabel": "Публичен ключ",
+  "@walletDetailsPubkeyLabel": {
+    "description": "Label for the public key field in wallet details"
+  },
+  "walletDetailsSignerDeviceLabel": "Устройство за подписване",
+  "@walletDetailsSignerDeviceLabel": {
+    "description": "Label for the signer device field in wallet details"
+  },
+  "walletDetailsSignerDeviceNotSupported": "Не се поддържа",
+  "@walletDetailsSignerDeviceNotSupported": {
+    "description": "Message displayed when a signer device is not supported"
+  },
+  "walletDetailsSignerLabel": "Подписвач",
+  "@walletDetailsSignerLabel": {
+    "description": "Label for the signer field in wallet details"
+  },
+  "walletDetailsUnnamedWalletFallback": "Безименен портфейл",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "walletDetailsWalletFingerprintLabel": "Отпечатък на портфейла",
+  "@walletDetailsWalletFingerprintLabel": {
+    "description": "Label for the wallet fingerprint field in wallet details"
+  },
+  "addressViewAddressesTitle": "Адреси",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "copiedToClipboard": "Копирано в клипборда",
+  "copyDialogButton": "Копирай",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "globalDefaultBitcoinWalletLabel": "Безопасен Биткойн",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Моментални плащания",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "bitcoinSettingsTestnetModeTitle": "Режим тестнета",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "Логове",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "По подразбиране фиатна валута",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "Импортиране на портфейл",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "Статус на услугите",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "PIN за сигурност",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "Етикети",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "Разбирам",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "Валута",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "Език",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsExchangeSettingsTitle": "Настройки за обмен",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "Настройки на приложението",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Режим за разработчици",
+  "exchangeTestnetBasicAuthTitle": "Идентификационни данни за testnet борсата",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth за уеб страниците на testnet борсата (вход и KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Потребителско име",
+  "exchangeTestnetBasicAuthPasswordLabel": "Парола",
+  "exchangeTestnetBasicAuthClearButton": "Изчисти",
+  "exchangeTestnetBasicAuthSaveButton": "Запази",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "История на транзакциите",
+  "settingsSuperuserModeDisabledMessage": "Режимът на суперпотребителя е деактивиран.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "Условия за ползване",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "Този режим е рискован. При активирането му приемате, че може да загубите пари.",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "Изпрати транзакцията",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "Тема",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "settingsDevModeWarningTitle": "Режим за разработчици",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "Версия на приложението: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "Готово",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Режимът на суперпотребителя е отключен!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "Настройки",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Детерминирани ентропии",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "Настройки за автоматичен обмен",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "backupSettingsStartBackup": "Започни резервно копиране",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "Възстановяване на обмен",
+  "electrumMainnet": "Основна мрежа",
+  "electrumTestnet": "Тестова мрежа",
+  "allSeedViewTitle": "Преглед на seed фразите",
+  "torSettingsTitle": "Настройки на Tor",
+  "settingsErrorReportingTitle": "Отчитане на грешки",
+  "errorReportingProgramTitle": "Програма за отчитане на грешки",
+  "errorReportingProgramDescriptionP1": "Помогнете ни да подобрим Bull, като се включите в нашата програма за отчитане на грешки.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin изпраща анонимизирани доклади за грешки, когато нещо се повреди.",
+  "errorReportingProgramDescriptionP3": "Това ни позволява да виждаме колко потребители засяга всеки бъг и да приоритизираме поправките съответно — без него нямаме начин да измерим въздействието.",
+  "errorReportingProgramDescriptionP4": "Докладите отиват само на сървъра на Bull, никога до трети страни.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin е с отворен код, така че можете да проверите какво се изпраща.",
+  "errorReportingAcceptButton": "Приеми",
+  "errorReportingCancelButton": "Отказ",
+  "errorReportingRestartSnackbar": "Рестартирайте приложението, за да приложите тази промяна",
+  "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
+  "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
+  "settingsScreenPrivacyTitle": "Поверителност на екрана",
+  "settingsScreenPrivacyDisabledMessage": "Екранните снимки вече са разрешени на чувствителните екрани",
+  "settingsSearchHint": "Търсене в настройките",
+  "settingsSearchNoResults": "Няма намерени настройки.",
+  "settingsSearchMempoolKeywords": "блоков експлорър|оценка на таксите|такси за транзакции|mempool API",
+  "settingsSearchExchangeKeywords": "акаунт|акаунт в борсата|търговия|купуване и продаване",
+  "settingsSearchStartBackupKeywords": "създаване на резервно копие|запазване на резервно копие|архивиране на портфейла",
+  "settingsSearchRecoverbullKeywords": "криптирано резервно копие|облачно резервно копие|криптиран трезор|възстановяване от трезор|Recoverbull",
+  "settingsSearchLabelsKeywords": "етикети на портфейла|етикети на транзакциите|BIP329|импортиране на етикети|експортиране на етикети",
+  "settingsSearchTransactionHistoryKeywords": "експортиране на транзакции|експорт на транзакции|CSV|история на портфейла",
+  "settingsSearchAppSettingsKeywords": "предпочитания на приложението|настройки на приложението|общи настройки",
+  "settingsSearchTermsOfServiceKeywords": "общи условия|правна информация|потребителско споразумение|TOS",
+  "settingsSearchServicesStatusKeywords": "състояние на услугите|системен статус|онлайн|прекъсване",
+  "settingsSearchImportWalletKeywords": "добавяне на портфейл|възстановяване на портфейл|импортиране на мнемонична фраза|портфейл само за наблюдение|хардуерен портфейл",
+  "settingsSearchBroadcastTransactionKeywords": "излъчване на подписана транзакция|публикуване на транзакция|сурова транзакция|hex на транзакция|PSBT",
+  "settingsSearchPayjoinKeywords": "поверителност с Payjoin|съвместна транзакция|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "автоматичен суап|автоматична размяна|автоматично прехвърляне|баланс на незабавния портфейл|Autoswap",
+  "settingsSearchElectrumKeywords": "биткойн възел|Electrum възел|персонализиран сървър|личен възел|Electrum",
+  "settingsSearchTestnetModeKeywords": "тестова мрежа|Bitcoin testnet|Liquid testnet|тестов режим|Testnet",
+  "settingsSearchSeedViewerKeywords": "seed фраза|фраза за възстановяване|мнемонична фраза|думи за архивиране|показване на seed фразите",
+  "settingsSearchBip85Keywords": "детерминистична ентропия|дъщерни seed фрази|производна ентропия|BIP85",
+  "settingsSearchLanguageKeywords": "регионални настройки|превод|език на интерфейса|предпочитан език",
+  "settingsSearchThemeKeywords": "външен вид|тъмен режим|светъл режим|системна тема",
+  "settingsSearchCurrencyKeywords": "фиатна валута|местна валута|валута по подразбиране|валута за обмен",
+  "settingsSearchSecurityPinKeywords": "PIN код|код за достъп|заключване на приложението|удостоверяване|смяна на PIN",
+  "settingsSearchLogsKeywords": "debug логове|диагностични логове|логове на приложението|експортиране на логове",
+  "settingsSearchDevModeKeywords": "режим за разработчици|настройки за разработка|debug режим|разширено тестване",
+  "settingsSearchTestnetCredentialsKeywords": "данни за вход в testnet|testnet вход|testnet потребителско име|testnet парола|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "доклади за сривове|доклади за грешки|диагностика|телеметрия|логове за грешки",
+  "settingsSearchScreenPrivacyKeywords": "екранни снимки|запис на екрана|защита от заснемане|поверителност",
+  "settingsSearchStartTyping": "Започнете да пишете, за да видите резултати.",
+  "settingsErrorSavingSetting": "Тази настройка не можа да бъде запазена. Моля, опитайте отново.",
+  "settingsErrorConsentNotGiven": "Тази настройка изисква вашето потвърждение, преди да бъде променена.",
+  "settingsErrorLoadingLogs": "Диагностичните дневници не можаха да бъдат подготвени. Моля, опитайте отново.",
+  "settingsSearchTorKeywords": "Tor прокси|Orbot|onion маршрутизация|вграден Tor|мрежа за поверителност",
+  "bitcoinSettingsAutoTransferTitle": "Автоматичен обмен",
+  "settingsDarkModeTitle": "Тъмен режим",
+  "settingsSourceCodeTitle": "Изходен код",
+  "backgroundTasksTitle": "Фонови задачи",
+  "notificationsBlockedMessage": "Известията са блокирани в системните настройки.",
+  "notificationsTitle": "Известия",
+  "openSystemSettings": "Отвори системните настройки",
+  "permissionsTitle": "Разрешения",
+  "settingsSearchPermissionsKeywords": "известия|фонови задачи|батерия|сигнали"
+}

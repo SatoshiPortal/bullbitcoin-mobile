@@ -1,0 +1,44 @@
+{
+  "@@locale": "fi",
+  "pinCodeAuthentication": "Tunnistautuminen",
+  "pinCodeCreateTitle": "Luo uusi PIN",
+  "pinCodeCreateDescription": "PIN suojaa pääsyn lompakkoosi ja asetuksiin. Pidä se muistettavana.",
+  "pinCodeConfirmTitle": "Vahvista uusi PIN",
+  "pinCodeMismatchError": "PIN-koodit eivät täsmää",
+  "pinCodeSecurityPinTitle": "PIN",
+  "pinCodeManageTitle": "PIN-koodi",
+  "pinCodeChangeButton": "Vaihda PIN",
+  "pinCodeCreateButton": "Luo PIN",
+  "pinCodeRemoveButton": "Poista PIN",
+  "pinCodeContinue": "Jatka",
+  "pinCodeConfirm": "Vahvista",
+  "pinCodeLoading": "Ladataan",
+  "pinCodeCheckingStatus": "Tarkistetaan PIN-tilaa",
+  "pinCodeProcessing": "Käsitellään",
+  "pinCodeSettingUp": "PIN-koodin käyttöönotto",
+  "pinCodeBackupRequiredWarning": "Suorita lompakkosi varmuuskopiointi ennen PIN-koodin asettamista",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "appUnlockScreenTitle": "Tunnistautuminen",
+  "appUnlockEnterPinMessage": "Avaaminen vaatii PIN-koodin",
+  "appUnlockIncorrectPinError": "Väärä PIN-koodi. Yritä uudelleen. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockAttemptSingular": "epäonnistunut yritys",
+  "appUnlockAttemptPlural": "epäonnistunutta yritystä",
+  "appUnlockButton": "Avaa",
+  "appUnlockPinCheckError": "Suojausasetusten lataaminen epäonnistui. Käynnistä sovellus uudelleen.",
+  "appUnlockPinVerifyError": "PIN-koodisi tarkistaminen epäonnistui. Yritä uudelleen.",
+  "backupSettingsStartBackup": "Aloita varmuuskopiointi",
+  "pinCodeSaveError": "PIN-koodia ei voitu tallentaa. Yritä uudelleen.",
+  "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "Syötä {min}–{max} numeroa"
+}

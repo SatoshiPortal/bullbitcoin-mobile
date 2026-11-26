@@ -18,7 +18,7 @@ ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Native Assets hooks select exact Rust versions. RUSTUP_TOOLCHAIN covers
 # inherited cargo/rustc calls; explicit rustup run requests use the preinstalled
-# SatoshiPortal and official Payjoin toolchains below.
+# SatoshiPortal, Payjoin and Bark toolchains below.
 ARG RUST_VERSION="1.100.0"
 
 # Android versions (passed via --build-arg from Makefile, defaults as fallback)
@@ -43,6 +43,22 @@ RUN apt-get update && apt-get install -y \
     make \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
+
+# Scuttle's prost-build runs the host protoc even when cross-compiling Android.
+# The tools image is pinned to linux/amd64 above; use the same official release
+# and digest as the Linux x64 CI setup, retaining the well-known proto includes.
+RUN curl --retry 5 --retry-all-errors -fL \
+      https://github.com/protocolbuffers/protobuf/releases/download/v33.1/protoc-33.1-linux-x86_64.zip \
+      -o /tmp/protoc-33.1.zip \
+    && echo "f3340e28a83d1c637d8bafdeed92b9f7db6a384c26bca880a6e5217b40a4328b  /tmp/protoc-33.1.zip" | sha256sum --check --strict \
+    && mkdir -p /opt/protoc-33.1 \
+    && unzip -q /tmp/protoc-33.1.zip -d /opt/protoc-33.1 \
+    && test "$(/opt/protoc-33.1/bin/protoc --version)" = 'libprotoc 33.1' \
+    && test -f /opt/protoc-33.1/include/google/protobuf/descriptor.proto \
+    && chmod -R a+rX /opt/protoc-33.1 \
+    && rm /tmp/protoc-33.1.zip
+ENV PROTOC=/opt/protoc-33.1/bin/protoc
+ENV PATH=/opt/protoc-33.1/bin:$PATH
 
 # Android build deps: JDK (needed by sdkmanager and Gradle)
 RUN apt-get update && apt-get install -y \
@@ -105,7 +121,7 @@ USER $USER
 # Install Rust (pinned via RUST_VERSION arg).
 # rustup-init is fetched from the immutable archive path and checked against
 # the SHA256 rustup publishes next to it, rather than piping sh.rustup.rs into
-# a shell: everything downstream — the FFI crypto in bull_sdk, payjoin and tor
+# a shell: everything downstream — the FFI crypto in rust_bindings, payjoin and tor
 # — is built by whatever this step installs, so it has to be tamper-evident.
 # The base image is pinned to linux/amd64, so a single x86_64 digest is right.
 # Refresh: curl -fsSL https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init.sha256
@@ -123,9 +139,8 @@ ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 # Pre-install clippy and rustfmt for the pinned toolchain.
 RUN rustup component add clippy rustfmt
 
-# Force every cargo/rustc invocation through the pinned RUST_VERSION,
-# regardless of what plugins/build scripts request via +channel or
-# rust-toolchain.toml. Blocks rustup auto-install of other toolchains.
+# Select the default/preflight compiler without completing unrelated manifest
+# targets. Native Assets still invokes each explicit preinstalled crate pin.
 ENV RUSTUP_TOOLCHAIN=${RUST_VERSION}
 ENV RUSTUP_AUTO_INSTALL=0
 

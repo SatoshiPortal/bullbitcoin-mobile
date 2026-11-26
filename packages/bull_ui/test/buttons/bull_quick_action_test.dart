@@ -127,4 +127,53 @@ void main() {
         );
     expect((circle.decoration as BoxDecoration).border, isNotNull);
   });
+
+  for (final (scale, grows) in [(1.0, false), (3.0, true)]) {
+    testWidgets(
+      'bar is minHeight tall and grows to fit the label at ${scale}x',
+      (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            MediaQuery(
+              data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+              child: Center(
+                child: BullQuickActionBar(
+                  children: [
+                    for (final label in [
+                      'Settings',
+                      'History',
+                      'Transfer',
+                      'More',
+                    ])
+                      BullQuickAction(
+                        label: label,
+                        icon: BullIcons.swapHoriz,
+                        onPressed: () {},
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+        expect(tester.takeException(), isNull);
+        final bar = tester.getSize(find.byType(BullQuickActionBar)).height;
+        expect(
+          bar,
+          BullQuickActionBar.heightOf(
+            tester.element(find.byType(BullQuickActionBar)),
+          ),
+        );
+        expect(
+          bar,
+          grows
+              ? greaterThan(BullQuickActionBar.minHeight)
+              : BullQuickActionBar.minHeight,
+        );
+        for (final cell in find.byType(BullQuickAction).evaluate()) {
+          expect(cell.size?.height, bar);
+        }
+      },
+    );
+  }
 }

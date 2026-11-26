@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart';
+import 'package:exchange/testing.dart';
+
 // Behavioral proof for two audit findings on GetTransactionsUsecase
 // (issues #2663 and #2664 fixes).
 //
@@ -8,37 +11,26 @@
 // swap's lockup address.
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:exchange/exchange.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' as bb;
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
 /// The use case returns a `Result`; these tests are about what it binds, so a
 /// failure is a test failure rather than a case to assert on.
 List<Transaction> _transactionsOf(
-  bb.Result<List<Transaction>, TransactionFailure> result,
+  bb.Result<TransactionHistory, TransactionFailure> result,
 ) => switch (result) {
-  bb.Ok(:final value) => value,
+  bb.Ok(:final value) => value.transactions,
   bb.Err(:final failure) => fail('expected transactions, got $failure'),
 };
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
@@ -47,8 +39,7 @@ class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockLabelExchangeOrdersUsecase extends Mock
     implements LabelExchangeOrdersUsecase {}
@@ -64,7 +55,7 @@ WalletTransaction _walletTransaction({
   String walletId = 'wallet-1',
 }) => WalletTransaction(
   walletId: walletId,
-  network: Network.bitcoinMainnet,
+  network: BitcoinNetwork.mainnet,
   direction: direction,
   status: WalletTransactionStatus.confirmed,
   txId: txId,
@@ -89,7 +80,7 @@ void main() {
   late _MockWalletTransactionRepository walletTransactionRepository;
   late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
-  late _MockExchangeOrderRepository orderRepository;
+  late _MockExchangeOrders orderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
   late _MockGetTransactionOrderSwapsUsecase getTransactionOrderSwapsUsecase;
   late GetTransactionsUsecase usecase;
@@ -103,15 +94,17 @@ void main() {
     walletTransactionRepository = _MockWalletTransactionRepository();
     swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
-    orderRepository = _MockExchangeOrderRepository();
+    orderRepository = _MockExchangeOrders();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
     getTransactionOrderSwapsUsecase = _MockGetTransactionOrderSwapsUsecase();
 
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(() => payjoinSessions.list(any()))
@@ -133,8 +126,11 @@ void main() {
       walletTransactionRepository: walletTransactionRepository,
       swapStore: swapStore,
       payjoinSessions: payjoinSessions,
-      mainnetExchangeOrderRepository: orderRepository,
-      testnetExchangeOrderRepository: _MockExchangeOrderRepository(),
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? _MockExchangeOrders()
+            : orderRepository,
+      ),
       labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
       getTransactionOrderSwapsUsecase: getTransactionOrderSwapsUsecase,
     );
@@ -155,7 +151,7 @@ void main() {
           sync: any(named: 'sync'),
           environment: any(named: 'environment'),
         ),
-      ).thenAnswer((_) async => [tx]);
+      ).thenAnswer((_) async => Ok([tx]));
       when(() => orderRepository.getOrders()).thenAnswer(
         (_) async => Ok([
           Order.buy(
@@ -210,7 +206,7 @@ void main() {
           sync: any(named: 'sync'),
           environment: any(named: 'environment'),
         ),
-      ).thenAnswer((_) async => [tx]);
+      ).thenAnswer((_) async => Ok([tx]));
       when(() => swapStore.all(walletId: any(named: 'walletId'))).thenAnswer(
         (_) async => Ok([
           Swap.lnSend(

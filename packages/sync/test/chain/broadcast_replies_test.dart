@@ -1,5 +1,5 @@
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sync/src/data/chain/broadcast_replies.dart';
 import 'package:sync/sync.dart';

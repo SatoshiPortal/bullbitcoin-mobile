@@ -127,7 +127,7 @@ class BullPickerChip<T> extends StatelessWidget {
               ),
             ),
             const SizedBox(width: BullSpacing.xxs),
-            Icon(Icons.keyboard_arrow_down, size: 20, color: colors.primary),
+            Icon(Icons.expand_more, size: 20, color: colors.primary),
           ],
         ),
       ),

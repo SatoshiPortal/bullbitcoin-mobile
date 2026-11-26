@@ -7,4 +7,6 @@
 /// Import this in `test/` only. It is not part of the custody contract and is not exported by `package:secrets/secrets.dart`.
 library;
 
-export 'src/testing/testing.dart' show FakeSecureStoragePlatform;
+export 'src/testing/testing.dart'
+    show FakeSecureStoragePlatform, ExchangeKeychainProbe;
+export 'src/testing/wallet_inventory_fixtures.dart';

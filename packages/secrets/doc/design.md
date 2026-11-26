@@ -10,6 +10,8 @@ The grouped interface is the only public spelling: `secret.derive.xpub`, `secret
 
 `secrets.preview` is the one operation on words that are not stored. `bitcoinDescriptors` derives one seed from the candidate words in their own BIP39 language and with their passphrase, off the keystore and in a separate isolate, and returns only the public descriptors of each requested script type; it creates no handle, because a handle that held unstored words would be the cached material handles never are. The isolate zeroes the seed buffer before returning; copies inside bip32_keys, bdk and the master xprv string are immutable or library-internal, so their erasure cannot be guaranteed. The material it builds is seed-only, so no word-based library can run on it. The descriptors equal those of an import of the same words in the same language, since `import` and `contains` take the same `language` parameter. The wallet package scans with those descriptors before import and never receives the words.
 
+`preview.arkFingerprint(words:)` computes the Bark m/350h public fingerprint from an already scoped English BIP85 child with an empty passphrase. This is an explicit protocol-specific exception to language-parameterized preview: English and the empty child passphrase preserve existing Ark account identity, while the parent BIP85 derivation still honors its own language and passphrase. The operation does not access the keystore; only a validated `Fingerprint` leaves its isolate. The host supplies words and identity from the same admitted child callback, and Ark checks the journal, native datadir and returned wallet identity before publication. Four-byte fingerprints distinguish accidental account mismatches; they are not cryptographic authentication. Seed buffers are wiped, with the same immutable/library-copy erasure limits as descriptor preview.
+
 `import` returns a `Secret` on success and a dedicated duplicate failure for an existing entry. An import never silently overwrites a stored secret. `contains(words:, language:, passphrase:)` combines candidate validation and a preliminary existence check; `exists(id)` checks a known fingerprint. Neither replaces the import's own duplicate decision. `idOf` is not public.
 
 `list` returns `List<SecretEntry>`. The sealed family has two alternatives: `Secret` for a usable entry and `UnreadableSecret` carrying the failure and a fingerprint when recoverable. This preserves individual unreadable entries without making a usable handle's properties nullable. A global read failure returns an `Err`, not an empty list.
@@ -223,8 +225,7 @@ The on-disk format never moving is pinned byte for byte by
 `test/secret_model_golden_test.dart`. The CI-only `make custody-ci-check` refuses any `// ignore:` of
 `invalid_use_of_internal_member` in the workspace — `cannot-ignore` does not
 hold that diagnostic on Dart 3.12.2 — and any import of `flutter_secure_storage`
-or `package:secrets/src/` outside the package, the app's own secure store
-excepted. The `PR custody review` workflow comments on a pull request that
+or `package:secrets/src/` outside the package, with no exemption. The `PR custody review` workflow comments on a pull request that
 adds one, asking the contributor why.
 
 Local `make custody-check`, included in `make checks`, requires only Dart. It resolves production Dart symbols to reject known private-key derivation and vault-opening operations outside `secrets`. Its named exceptions cover swap-scoped credentials and the public-only xpub decoding adapter. Public-key operations, mnemonic validation and formatting of an exported BIP85 child remain valid. The gate also rejects imports or exports of `secrets/testing.dart` and references to its test-support declarations throughout application and workspace production code, including aliases and re-exports. Unresolved production code fails the gate. This is an operation policy, not complete data-flow analysis or proof that arbitrary strings cannot carry secrets. Pre-import scanning, RecoverBull restoration and inspection are migrated.
@@ -353,7 +354,7 @@ Android installs from 6.5.2 kept their secrets in Jetpack Security's
 EncryptedSharedPreferences, read through the `flutter_secure_storage` 9
 plugin. **That plugin is gone and there is no fallback** (decision of
 2026-09-15): one storage generation, chosen in
-`lib/core/storage/storage_locator.dart`, no probing, no
+`packages/secrets/lib/src/data/`, no probing, no
 `seed_store_type` flag. Those entries are simply not readable any more.
 
 So the guarantee is not that they can be read. It is that the app can
@@ -364,7 +365,7 @@ tell this apart from everything else and says the right thing:
 | nothing under `seed_` | `list()` → `Ok([])`, `fetch` → `SecretNotFoundFailure` after the full retry budget | `AppStartupMissingDefaultSecretFailure` at startup → the user re-enters the recovery phrase, checked against the missing fingerprint before it is stored |
 | an fss9 value still under `seed_<fp>` | `list()` includes an `UnreadableSecret`; `fetch` → `FetchSecretFailure` | the generic failure — **never** a restore offer, because the bytes may still be recoverable |
 | unmigrated EncryptedSharedPreferences data in the plugin's file | the pinned plugin (10.3.3, `migrateOnAlgorithmChange: false`) refuses to initialise on every call: `list()` and `fetch` → `FetchSecretFailure`, `import` and `DatabaseKeys.getOrCreate` → `StoreSecretFailure`, nothing written | the generic failure, as above |
-| the keystore is locked | `KeystoreLockedFailure` | `KeychainLockedException` → wait for unlock and retry, no screen |
+| the keystore is locked | `KeystoreLockedFailure` | `AppStartupKeychainLockedFailure` → wait for unlock and retry, no screen |
 
 `test/fss9_cohort_test.dart` pins the first three — the fake keystore cannot model the plugin refusing to initialise, which is established from the plugin's source — including that nothing is
 ever written over an unreadable entry: a backup is the cohort's way back,
@@ -377,8 +378,8 @@ Their way back is the same — a backup.
 
 ## The package owns the keystore
 
-`FlutterSecureStorageDatasource` holds the only `FlutterSecureStorage`
-instance in the package, and no constructor accepts one from outside. No
+`FlutterSecureStorageDatasource` and the closed `OwnerKeychain` transport hold
+`FlutterSecureStorage` instances inside the package; no constructor accepts one from outside. No
 exported type can read it, so reaching the seeds means constructing the
 plugin yourself and hardcoding the `seed_` prefix — visible in review,
 rather than an ordinary-looking call on an object you were given. In a
@@ -389,12 +390,11 @@ Its Android options — `resetOnError: false`, `migrateOnAlgorithmChange:
 false`, never delete, never migrate — hold only while every
 `FlutterSecureStorage` client in the engine passes the same ones: the
 pinned plugin keeps one native store per preferences name and freezes the
-options of whichever client initialises it first. Today there is one other
-client, the app's `lib/core/storage/storage_locator.dart`, and it passes
-the same options. A new client with the defaults would re-enable
+options of whichever client initialises it first. The owner keychain
+transport passes the same options. A new client with the defaults would re-enable
 delete-on-error for the seeds.
 
-That one type also owns the whole keyspace — `seed_<fingerprint>` for
+The seed datasource owns two namespaces — `seed_<fingerprint>` for
 secrets, `com.bullbitcoin.secrets/<kind>/<package>/<name>` for the keys
 held on other modules' behalf — so both namespaces are read side by side
 in one file. They differ because the first is frozen and predates the
@@ -481,3 +481,9 @@ read. PSETs lwk builds for the app leave the field absent. Beyond the
 sighash, the package applies no policy on outputs, fees or inputs: it
 signs the inputs its keys own, and deciding what is acceptable to sign is
 the caller's.
+
+## Legacy owner keychains
+
+The owner keychain transport is private to `data/`; public final handles are constructed by `Secrets` and provide a closed keyspace. `AccessKeychain` never exposes a PIN read, only presence, comparison, replacement and deletion. Its explicit `securityKey` allowance preserves the AuthCubit-era entry. Exchange and Silent Payments select fixed keys; the swap capability validates the fixed `swap_` prefix on full keys supplied by the existing engine. There is no read-all or delete-all capability. The platform seam remains the only test substitution.
+
+Exchange keychain operations leave recoverable-error diagnostics to their consumer; access operations retain sanitized failure diagnostics in the boundary. This preserves exchange log deduplication and avoids reporting expected keychain failures twice. `boundary` still sanitizes foreign payloads and preserves the locked-versus-absent distinction.

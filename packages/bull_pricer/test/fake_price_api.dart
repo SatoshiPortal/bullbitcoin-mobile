@@ -87,6 +87,7 @@ FakePriceAnswer realisticAnswer(FakePriceRequest request) {
 final class FakePriceApi {
   final HttpServer _server;
   final requests = <FakePriceRequest>[];
+  void Function(FakePriceRequest)? onRequest;
   FakePriceAnswer Function(FakePriceRequest request) respond = realisticAnswer;
 
   /// When set, every answer waits for it.
@@ -126,6 +127,7 @@ final class FakePriceApi {
       apiKey: httpRequest.headers.value('X-API-Key'),
     );
     requests.add(request);
+    onRequest?.call(request);
     await answerAfter;
     if (offline) {
       final socket = await httpRequest.response.detachSocket(

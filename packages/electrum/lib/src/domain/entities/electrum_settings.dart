@@ -1,0 +1,87 @@
+import 'package:electrum/src/domain/errors/electrum_settings_exception.dart';
+import 'package:electrum/src/domain/electrum_server_network.dart';
+
+import '../value_objects/electrum_options.dart';
+
+class ElectrumSettings {
+  int _stopGap;
+  int _timeout;
+  int _retry;
+  bool _validateDomain;
+  // It should not be possible to change the environment of existing settings
+  //  as they are tied to just one environment, so it's final
+  final ElectrumServerNetwork _network;
+  String? _socks5;
+
+  ElectrumSettings({
+    required this._stopGap,
+    required this._timeout,
+    required this._retry,
+    required this._validateDomain,
+    required this._network,
+    this._socks5,
+  });
+
+  int get stopGap => _stopGap;
+  int get timeout => _timeout;
+  int get retry => _retry;
+  bool get validateDomain => _validateDomain;
+  ElectrumServerNetwork get network => _network;
+  String? get socks5 => _socks5;
+
+  void update({
+    int? newStopGap,
+    int? newTimeout,
+    int? newRetry,
+    bool? newValidateDomain,
+    // Usage of a supplier function to handle nullable updates for socks5:
+    // `newSocks5Supplier: null` or not specifying socks5 to keep current value
+    // `newSocks5Supplier: () => 'new_value'` to set a new value
+    // `newSocks5Supplier: () => null` to clear the value and make socks5 null
+    String? Function()? newSocks5Supplier,
+  }) {
+    if (newStopGap != null) {
+      _ensureValidStopGap(newStopGap);
+    }
+    if (newTimeout != null) {
+      _ensureValidTimeout(newTimeout);
+    }
+    if (newRetry != null) {
+      _ensureValidRetry(newRetry);
+    }
+    // TODO: Add validation for socks5 format or are there too many valid formats?
+
+    _stopGap = newStopGap ?? _stopGap;
+    _timeout = newTimeout ?? _timeout;
+    _retry = newRetry ?? _retry;
+    _validateDomain = newValidateDomain ?? _validateDomain;
+    _socks5 = newSocks5Supplier != null ? newSocks5Supplier() : _socks5;
+  }
+
+  void _ensureValidStopGap(int stopGap) {
+    if (stopGap < 0 || stopGap > ElectrumOptions.maxStopGap) {
+      throw InvalidStopGapException(stopGap);
+    }
+  }
+
+  void _ensureValidTimeout(int timeout) {
+    if (timeout <= 0 || timeout > ElectrumOptions.maxTimeout) {
+      throw InvalidTimeoutException(timeout);
+    }
+  }
+
+  void _ensureValidRetry(int retry) {
+    if (retry < 0) {
+      throw InvalidRetryException(retry);
+    }
+  }
+}
+
+ElectrumOptions toElectrumOptions(ElectrumSettings settings) => ElectrumOptions(
+  stopGap: settings.stopGap,
+  timeout: settings.timeout,
+  retry: settings.retry,
+  validateDomain: settings.validateDomain,
+  network: settings.network,
+  socks5: settings.socks5,
+);

@@ -1,14 +1,24 @@
 {
-  "buy": "Buy",
-  "@buy": {},
-  "sell": "Sell",
-  "@sell": {},
+  "exchangeOff": "Exchange is off",
+  "@exchangeOff": {
+    "description": "Exchange activation prompt in the More sheet."
+  },
+  "activate": "Activate",
+  "@activate": {
+    "description": "Exchange activation prompt in the More sheet."
+  },
+  "dismiss": "Dismiss",
+  "@dismiss": {
+    "description": "Exchange activation prompt in the More sheet."
+  },
   "pay": "Pay",
   "@pay": {},
   "transfer": "Swap",
   "@transfer": {},
   "map": "Map",
   "@map": {},
+  "history": "History",
+  "@history": {},
   "settings": "Settings",
   "@settings": {},
   "more": "More",
@@ -27,13 +37,11 @@
   "@saveFailed": {},
   "loading": "Loading",
   "@loading": {},
-  "history": "History",
-  "@history": {},
   "support": "Support",
   "@support": {},
   "priceHistory": "Price",
   "@priceHistory": {},
-  "quickActionTrade": "Trade",
+  "quickActionTrade": "Exchange",
   "@quickActionTrade": {},
   "onHome": "On Home",
   "@onHome": {
@@ -59,7 +67,7 @@
   "@saving": {
     "description": "Wallet quick action customization."
   },
-  "emptyHint": "No actions selected. Settings stays on Home.",
+  "emptyHint": "No actions selected. All actions are in More.",
   "@emptyHint": {
     "description": "Wallet quick action customization."
   },
@@ -86,5 +94,13 @@
   "dragHint": "Touch and hold an action to move it. Home holds up to 3 actions.",
   "@dragHint": {
     "description": "Explains whole-row long press and the Home capacity."
-  }
+  },
+  "hideAmounts": "Hide amounts",
+  "@hideAmounts": {},
+  "showAmounts": "Show amounts",
+  "@showAmounts": {},
+  "hide": "Hide",
+  "@hide": {},
+  "show": "Show",
+  "@show": {}
 }

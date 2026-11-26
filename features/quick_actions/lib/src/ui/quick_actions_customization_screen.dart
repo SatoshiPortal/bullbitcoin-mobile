@@ -138,13 +138,9 @@ class _QuickActionsCustomizationScreenState
                             )
                           : const SizedBox.shrink(),
                     ),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: l10n.reset,
-                      onPressed: _restoreDefaults,
-                      disabled: saving,
-                      bgColor: context.bull.surface,
-                      textColor: context.bull.text,
-                      outlined: true,
+                      onPressed: (saving) ? null : _restoreDefaults,
                     ),
                   ],
                 ),

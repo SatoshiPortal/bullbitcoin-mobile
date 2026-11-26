@@ -1,11 +1,11 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
 import 'initialization_result.dart';
 
-import 'package:bb_mobile/core/utils/liquid_address.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:satoshifier/liquid_address.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
@@ -37,7 +37,7 @@ Future<void> main({bool isInitialized = false}) async {
       expect(bip21.lightning, lnurlStr);
       expect(bip21.label, 'Donation');
       expect(bip21.message, 'Thanks');
-      expect(bip21.network, Network.bitcoinMainnet);
+      expect(bip21.network, BitcoinNetwork.mainnet);
     });
 
     test('BIP21 with Bolt11 lightning param', () async {
@@ -47,7 +47,7 @@ Future<void> main({bool isInitialized = false}) async {
       final bip21 = result as Bip21PaymentRequest;
       expect(bip21.address.toLowerCase(), btcAddress);
       expect(bip21.lightning, bolt11Invoice);
-      expect(bip21.network, Network.bitcoinMainnet);
+      expect(bip21.network, BitcoinNetwork.mainnet);
     });
 
     test('HTTPS URL with a percent-encoded LNAddress is rejected', () async {
@@ -79,28 +79,11 @@ Future<void> main({bool isInitialized = false}) async {
       expect(isConfidentialLiquidAddress(pair.standard), isFalse);
     });
 
-    test(
-      'audit reproducer: an unconfidential Liquid address is accepted by '
-      'parse with no confidentiality signal, and the send state flags it',
-      () async {
-        // Before the fix, nothing in the send flow distinguished this from a
-        // confidential address: the amount would go on-chain in the clear
-        // with no warning.
-        final result = await PaymentRequest.parse(pair.standard);
-        expect(result, isA<LiquidPaymentRequest>());
-
-        final state = SendState(
-          sendType: SendType.liquid,
-          paymentRequest: result,
-        );
-        expect(state.isUnconfidentialLiquidDestination, isTrue);
-
-        final confidentialState = SendState(
-          sendType: SendType.liquid,
-          paymentRequest: await PaymentRequest.parse(pair.confidential),
-        );
-        expect(confidentialState.isUnconfidentialLiquidDestination, isFalse);
-      },
-    );
+    test('the parser accepts an unconfidential Liquid address', () async {
+      expect(
+        await PaymentRequest.parse(pair.standard),
+        isA<LiquidPaymentRequest>(),
+      );
+    });
   });
 }

@@ -1,0 +1,12 @@
+{
+  "fiatCurrencySettingsLabel": "Фіат валюта",
+  "currencySettingsDefaultFiatCurrencyLabel": "Валюта за замовчуванням",
+  "priceChartFetchingHistory": "Історія ціни.",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "retry": "Птиця",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Обмінний курс недоступний. Будь ласка, спробуйте пізніше.",
+  "priceChartLoadFailed": "Дані графіка цін не вдалося завантажити. Будь ласка, спробуйте знову."
+}

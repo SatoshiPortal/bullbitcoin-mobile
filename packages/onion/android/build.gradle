@@ -1,0 +1,84 @@
+// The Android Gradle Plugin builds the native code with the Android NDK.
+
+group 'com.bullbitcoin.onion'
+version '0.1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        // The Android Gradle Plugin knows how to build native code with the NDK.
+        classpath 'com.android.tools.build:gradle:8.12.2'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+def iptProxyBinary = configurations.create('iptProxyBinary')
+
+dependencies {
+    implementation 'com.netzarchitekten:IPtProxy:5.6.0'
+    add(iptProxyBinary.name, 'com.netzarchitekten:IPtProxy:5.6.0@aar') {
+        transitive = false
+    }
+}
+
+def verifyIPtProxyBinary = tasks.register('verifyIPtProxyBinary') {
+    doLast {
+        def artifacts = iptProxyBinary.resolve()
+        if (artifacts.size() != 1) {
+            throw new GradleException("Expected one IPtProxy AAR, got ${artifacts.size()}")
+        }
+        def digest = java.security.MessageDigest.getInstance('SHA-256')
+        artifacts.first().withInputStream { stream ->
+            byte[] buffer = new byte[8192]
+            for (int read = stream.read(buffer); read != -1; read = stream.read(buffer)) {
+                digest.update(buffer, 0, read)
+            }
+        }
+        def actual = digest.digest().encodeHex().toString()
+        def expected = '4eab74a060f8ebec908e31d03f0bf9daee386f586e054bd6f0a0a0d907192c32'
+        if (actual != expected) {
+            throw new GradleException("IPtProxy AAR checksum mismatch: ${actual}")
+        }
+    }
+}
+
+android {
+    if (project.android.hasProperty("namespace")) {
+        namespace 'com.bullbitcoin.onion'
+    }
+
+    // Bumping the plugin compileSdkVersion requires all clients of this plugin
+    // to bump the version in their app.
+    compileSdkVersion 36
+
+    // Use the NDK version
+    // declared in /android/app/build.gradle file of the Flutter project.
+    // Replace it with a version number if this plugin requires a specfic NDK version.
+    // (e.g. ndkVersion "23.1.7779620")
+    ndkVersion android.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    defaultConfig {
+        minSdkVersion 24
+    }
+}
+
+tasks.named('preBuild').configure {
+    dependsOn verifyIPtProxyBinary
+}

@@ -1,10 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/delete_transaction_note_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/save_transaction_note_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_label_policy.dart';
+import 'package:labels/labels.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -20,7 +16,7 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 
@@ -28,11 +24,11 @@ class _FakeNewLabel extends Fake implements NewLabel {}
 /// labels feature is another feature, and its failure type is not part of this
 /// feature's contract.
 void main() {
-  late _MockLabelsFacade labels;
+  late _MockLabels labels;
 
   setUpAll(() => registerFallbackValue(_FakeNewLabel()));
 
-  setUp(() => labels = _MockLabelsFacade());
+  setUp(() => labels = _MockLabels());
 
   group('SaveTransactionNoteUsecase', () {
     test('returns the stored label on success', () async {
@@ -99,17 +95,17 @@ void main() {
   group('DeleteTransactionNoteUsecase', () {
     test('returns Ok when the note is trashed', () async {
       when(() => labels.trash(1))
-          .thenAnswer((_) async => const Ok<Null, LabelFailure>(null));
+          .thenAnswer((_) async => const Ok<void, LabelFailure>(null));
 
       expect(
         await DeleteTransactionNoteUsecase(labels).execute(1),
-        isA<Ok<Null, TransactionFailure>>(),
+        isA<Ok<void, TransactionFailure>>(),
       );
     });
 
     test('translates a LabelFailure into the transaction family', () async {
       when(() => labels.trash(1)).thenAnswer(
-        (_) async => const Err<Null, LabelFailure>(
+        (_) async => const Err<void, LabelFailure>(
           LabelUnexpectedFailure('database is locked'),
         ),
       );
@@ -125,8 +121,8 @@ void main() {
 
   group('GetTransactionNoteSuggestionsUsecase', () {
     test('returns the distinct labels', () async {
-      when(() => labels.fetchDistinctLabels())
-          .thenAnswer((_) async => {'coffee', 'rent'});
+      when(() => labels.suggestions())
+          .thenAnswer((_) async => Ok({'coffee', 'rent'}));
 
       expect(await GetTransactionNoteSuggestionsUsecase(labels).execute(), {
         'coffee',
@@ -135,8 +131,8 @@ void main() {
     });
 
     test('degrades to no suggestions rather than failing the screen', () async {
-      when(() => labels.fetchDistinctLabels())
-          .thenThrow(StateError('database is locked'));
+      when(() => labels.suggestions())
+          .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
 
       expect(
         await GetTransactionNoteSuggestionsUsecase(labels).execute(),

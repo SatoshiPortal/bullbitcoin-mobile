@@ -1,0 +1,22 @@
+{
+  "retry": "Thử lại",
+  "doneButton": "Xong",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Phí tuyệt đối",
+  "sendBelowMinFeeRateError": "Mức phí phải tối thiểu 0.1 sat/vB.",
+  "sendCustomFee": "Phí tùy chỉnh",
+  "sendEconomyFee": "Tiết kiệm",
+  "sendEnterAbsoluteFee": "Nhập phí tuyệt đối theo sats",
+  "sendEnterRelativeFee": "Nhập phí tương đối theo sats/vB",
+  "sendEstimatedDelivery": "Thời gian ước tính ~ ",
+  "sendEstimatedDelivery10Minutes": "10 phút",
+  "sendEstimatedDelivery10to30Minutes": "10-30 phút",
+  "sendEstimatedDeliveryHours": "giờ",
+  "sendEstimatedDeliveryHoursToDays": "vài giờ đến vài ngày",
+  "sendFastFee": "Nhanh",
+  "sendRelativeFees": "Phí tương đối",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Chọn phí mạng",
+  "sendSubSatVbyteWarning": "Giao dịch dưới 1 sat/vB có thể mất nhiều thời gian hơn để xác nhận và có thể không lan truyền đến tất cả các node."
+}

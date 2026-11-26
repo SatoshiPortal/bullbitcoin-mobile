@@ -33,11 +33,30 @@ final class CompleteVaultUsecase {
   Future<VaultCompletion> retryWallets(VaultCompletion completion) async {
     final recovery = completion.recovery;
     if (recovery is! VaultRecoveryNeedsWallets) return completion;
+    final retried = await _restore.retryWallets(recovery);
+    final pending = completion.pendingVerificationContext;
+    VaultContext? verifiedContext;
+    RecoverBullFailure? warning = completion.warning;
+    if (retried is VaultRecovered &&
+        pending != null &&
+        pending.matches(retried.context)) {
+      verifiedContext = retried.context;
+      final metadata = _metadata;
+      if (metadata == null) {
+        warning ??= unavailableFailure ?? const RecoverBullJournalFailure();
+      } else if (await metadata.markVerified(retried.context, completion.vault)
+          case Err(:final failure)) {
+        warning ??= failure;
+      }
+    }
     return VaultCompletion(
       vault: completion.vault,
-      verifiedContext: completion.verifiedContext,
-      recovery: await _restore.retryWallets(recovery),
-      warning: completion.warning,
+      verifiedContext: verifiedContext,
+      pendingVerificationContext: retried is VaultRecoveryNeedsWallets
+          ? pending
+          : null,
+      recovery: retried,
+      warning: warning,
     );
   }
 
@@ -62,7 +81,7 @@ final class CompleteVaultUsecase {
         case Ok(:final value):
           if (!value.permissionGranted ||
               value.server != capturedSettings.server ||
-              value.generation != capturedSettings.generation) {
+              !value.sameGeneration(capturedSettings)) {
             return const Err(VaultContextChangedFailure());
           }
       }
@@ -70,6 +89,7 @@ final class CompleteVaultUsecase {
     }
     final VaultContext? context;
     VaultRecovery? recovery;
+    VaultContext? pendingVerificationContext;
     if (recoveryNetwork != null) {
       switch (await _restore.execute(
         vault: vault,
@@ -83,6 +103,12 @@ final class CompleteVaultUsecase {
           return Err(failure);
         case Ok(:final value):
           recovery = value;
+          if (value is VaultRecoveryNeedsWallets && !allowUnverified) {
+            pendingVerificationContext = VaultContext(
+              fingerprint: value.importedSecret,
+              network: value.network,
+            );
+          }
           context = value is VaultRecovered && !allowUnverified
               ? value.context
               : null;
@@ -107,6 +133,7 @@ final class CompleteVaultUsecase {
         VaultCompletion(
           vault: vault,
           verifiedContext: context,
+          pendingVerificationContext: pendingVerificationContext,
           recovery: recovery,
           warning: unavailableFailure ?? const RecoverBullJournalFailure(),
         ),
@@ -134,6 +161,7 @@ final class CompleteVaultUsecase {
       VaultCompletion(
         vault: vault,
         verifiedContext: context,
+        pendingVerificationContext: pendingVerificationContext,
         recovery: recovery,
         warning: warning,
       ),

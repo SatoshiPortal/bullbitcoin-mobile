@@ -734,40 +734,30 @@ class _FailurePanel extends StatelessWidget {
           ),
         ],
         const Gap(24),
-        BullButton.big(
+        BullButton.primary(
           label: context.loc.recoverbullNewRoute,
           textStyle: context.bullType.subtitle.copyWith(
             fontWeight: FontWeight.w700,
           ),
-          bgColor: context.bull.onSurface,
-          textColor: context.bull.surface,
-          disabled: busy,
-          onPressed: onNewRoute,
+          onPressed: (busy) ? null : onNewRoute,
         ),
         if (onSnowflake case final onSnowflake?) ...[
           const Gap(12),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.recoverbullUseSnowflake,
             textStyle: context.bullType.subtitle.copyWith(
               fontWeight: FontWeight.w700,
             ),
-            bgColor: context.bull.surface,
-            textColor: context.bull.onSurface,
-            outlined: true,
-            borderColor: context.bull.onSurface,
-            disabled: busy,
-            onPressed: onSnowflake,
+            onPressed: (busy) ? null : onSnowflake,
           ),
         ],
         if (onOpenTorSettings case final onOpenTorSettings?) ...[
           const Gap(12),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.torSettingsTitle,
             textStyle: context.bullType.subtitle.copyWith(
               fontWeight: FontWeight.w700,
             ),
-            bgColor: context.bull.surface,
-            textColor: context.bull.onSurface,
             onPressed: onOpenTorSettings,
           ),
         ],

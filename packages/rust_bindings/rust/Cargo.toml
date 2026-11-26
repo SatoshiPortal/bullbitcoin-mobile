@@ -1,0 +1,63 @@
+[package]
+name = "rust_lib_bull_sdk"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+flutter_rust_bridge = "=2.13.0"
+log = "0.4"
+# Transaction signature verification (GHSA-6jp4-8v48-cc5v guard); versions
+# already unified in the graph via boltz/lwk.
+bitcoin = "0.32"
+miniscript = "12"
+# Binding crates live in this package; their upstream libraries stay pinned by
+# immutable revisions inside each crate so clean builds remain reproducible.
+bitbox = { path = "crates/bitbox", features = ["bull_sdk"] }
+bbqr = { git = "https://github.com/SatoshiPortal/bbqr-rust.git", rev = "b1b3a7f7b9901b1ec320542bfd84411a4860033e", default-features = false }
+dart_bbqr = { path = "crates/bbqr", features = ["bull_sdk"] }
+boltz = { path = "crates/boltz", features = ["bull_sdk"] }
+# Keep the workspace patches below on the same LWK core as this crate.
+lwk = { path = "crates/lwk", features = ["bull_sdk"] }
+dart_bwk = { path = "crates/bwk", package = "dart_bwk", features = ["bull_sdk"] }
+dart_bip138 = { path = "crates/dart_bip138", features = ["bull_sdk"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
+
+[workspace]
+# The binding crates are path dependencies, not members: as members their
+# dev-dependencies would enter Cargo.lock and change the locked graph.
+exclude = [
+    "crates/bbqr",
+    "crates/bitbox",
+    "crates/boltz",
+    "crates/bwk",
+    "crates/dart_bip138",
+    "crates/lwk",
+]
+resolver = "2"
+
+# lwk_wollet and lwk_signer require their sibling crates by crates.io version,
+# and the lwk crate's own [patch] only applies when it is the workspace root.
+# Repeat its redirection here so the aggregate graph holds a single copy of
+# each LWK crate (two lwk_common copies make their `Signer` traits
+# incompatible). Keep these revs equal to crates/lwk's.
+[patch.crates-io]
+lwk_common = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_jade = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_prices = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+lwk_registry = { git = "https://github.com/SatoshiPortal/lwk", rev = "6ad7a81dccfa37abe322c5871cfae39623880147" }
+
+[profile.dev]
+debug = false
+
+[profile.release]
+debug = false
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"

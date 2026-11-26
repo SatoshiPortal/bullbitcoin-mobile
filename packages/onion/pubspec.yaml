@@ -1,0 +1,35 @@
+name: onion
+description: "Embedded Tor client and loopback SOCKS5 proxy, built on Arti. Not an official Tor Project product."
+version: 0.1.0
+repository: https://github.com/SatoshiPortal/bullbitcoin-mobile
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_rust_bridge: 2.13.0
+  flutter_rust_bridge_hooks: 2.13.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  # ^23, the first range that resolves with melos (cli_util). With
+  # flutter_rust_bridge 2.12, ffigen 21 emitted an orphaned
+  # `) => $allocator<WireSyncRust2DartSse>()` that did not parse; with 2.13 and
+  # ffigen 23 the same lines are complete `$allocate` helpers.
+  ffigen: ^23.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.bullbitcoin.onion
+        pluginClass: OnionPlugin
+      ios:
+        pluginClass: OnionPlugin

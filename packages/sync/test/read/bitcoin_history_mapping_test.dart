@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/src/data/read/wallet_frame_mapper.dart';

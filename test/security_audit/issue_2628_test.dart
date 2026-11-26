@@ -12,7 +12,7 @@ void main() {
       'confirmed amount is the full spendable balance, fee not subtracted',
       () {
         final source = File(
-          'lib/features/send/presentation/bloc/send_cubit.dart',
+          'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
         ).readAsStringSync();
 
         // Toggling MAX fills the amount with the entire spendable balance.

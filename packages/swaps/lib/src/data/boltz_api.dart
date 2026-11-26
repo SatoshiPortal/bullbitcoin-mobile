@@ -18,8 +18,8 @@ import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
 import 'package:swaps/src/log.dart';
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:dio/dio.dart';
-import 'package:bull_sdk/boltz.dart' hide Network;
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' hide Network;
+import 'package:rust_bindings/boltz.dart' as boltz;
 
 typedef BoltzWebSocketFactory = BoltzWebSocket Function(
   String boltzUrl, {
@@ -62,6 +62,8 @@ class BoltzDatasource {
   final Set<String> _subscribedSwapIds = {};
 
   final Map<String, Future<void>> _eventChains = {};
+  final List<String> _reconcileQueue = [];
+  Future<void>? _reconcileWork;
 
   int _reconnectAttempt = 0;
   Timer? _reconnectTimer;
@@ -313,22 +315,21 @@ class BoltzDatasource {
     return stored.requireEnvironment(environment);
   }
 
-  /// Deletes the swap master key blob, retaining the shared high-water counter for
-  /// [walletFingerprint]. Clears the in-memory binding when it pointed at this
-  /// wallet so a subsequent read forces a fresh derive.
-  Future<void> deleteSwapMasterKey({
+  Future<bool> deleteConfirmedSwapMasterKey({
     required String walletFingerprint,
+    required String keyFingerprint,
     required NetworkEnv environment,
   }) async {
     _requireEnvironment(environment);
-    final network = BoltzNetwork.fromEnvironment(environment);
-    await _boltzStore.deleteSwapMasterKey(
-      network,
+    final deleted = await _boltzStore.deleteSwapMasterKeyIfMatches(
+      BoltzNetwork.fromEnvironment(environment),
       walletFingerprint: walletFingerprint,
+      keyFingerprint: keyFingerprint,
     );
-    if (_swapMasterKeyWalletFingerprint == walletFingerprint) {
+    if (deleted && _swapMasterKeyWalletFingerprint == walletFingerprint) {
       _swapMasterKeyWalletFingerprint = null;
     }
+    return deleted;
   }
 
   // RESTORE — thin wrappers over the new boltz restore API; driven by usecases
@@ -1004,9 +1005,8 @@ class BoltzDatasource {
     }
   }
 
-  /// The swap object carries the electrum URLs baked in at creation time;
-  /// [electrum] overrides them with a currently-working server so refunds
-  /// are not pinned to a host that has since become unreachable.
+  /// Preserve the configured transport and settings. The native swap stores
+  /// only the Electrum host and port, so its URL cannot identify plaintext TCP.
   ElectrumSettings? _electrumOverride(ElectrumConnection? electrum) =>
       electrum == null
       ? null
@@ -1050,6 +1050,7 @@ class BoltzDatasource {
     required String claimLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1060,6 +1061,7 @@ class BoltzDatasource {
         outAddress: claimLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: _electrumOverride(counterpartyElectrum),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
@@ -1076,6 +1078,7 @@ class BoltzDatasource {
     required String claimBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1087,6 +1090,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
+        lbtcElectrumSettings: _electrumOverride(counterpartyElectrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1129,6 +1133,7 @@ class BoltzDatasource {
     required String refundBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1140,6 +1145,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
+        lbtcElectrumSettings: _electrumOverride(counterpartyElectrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1155,6 +1161,7 @@ class BoltzDatasource {
     required String refundLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     try {
@@ -1166,6 +1173,7 @@ class BoltzDatasource {
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: _electrumOverride(counterpartyElectrum),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
       return signedTxHex;
@@ -1274,17 +1282,19 @@ class BoltzDatasource {
     required String swapId,
     required String claimAddress,
     bool isCooperative = true,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     final chainSwap = await _boltzStore.fetchChainSwap(swapId);
     final override = _electrumOverride(electrum);
+    final counterparty = _electrumOverride(counterpartyElectrum);
     // The claim tx spends Boltz's lockup on the RECEIVING chain.
     final claimOnLiquid = chainSwap.direction == ChainSwapDirection.btcToLbtc;
     final size = await chainSwap.claimTxSize(
       outAddress: claimAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: claimOnLiquid ? null : override,
-      lbtcElectrumSettings: claimOnLiquid ? override : null,
+      btcElectrumSettings: claimOnLiquid ? counterparty : override,
+      lbtcElectrumSettings: claimOnLiquid ? override : counterparty,
     );
     return size.toInt();
   }
@@ -1319,17 +1329,19 @@ class BoltzDatasource {
     required String swapId,
     required String refundAddress,
     bool isCooperative = true,
+    required ElectrumConnection counterpartyElectrum,
     ElectrumConnection? electrum,
   }) async {
     final chainSwap = await _boltzStore.fetchChainSwap(swapId);
     final override = _electrumOverride(electrum);
+    final counterparty = _electrumOverride(counterpartyElectrum);
     // The refund tx is built from the lockup on the SENDING chain.
     final refundOnLiquid = chainSwap.direction == ChainSwapDirection.lbtcToBtc;
     final size = await chainSwap.refundTxSize(
       refundAddress: refundAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: refundOnLiquid ? null : override,
-      lbtcElectrumSettings: refundOnLiquid ? override : null,
+      btcElectrumSettings: refundOnLiquid ? counterparty : override,
+      lbtcElectrumSettings: refundOnLiquid ? override : counterparty,
     );
     return size.toInt();
   }
@@ -1448,27 +1460,56 @@ class BoltzDatasource {
   /// Fetches each swap's current status over REST and runs it through the same
   /// mapping pipeline as websocket events, so recovery never depends on Boltz
   /// replaying events missed while disconnected.
-  Future<void> reconcileSwaps(List<String> swapIds) async {
-    if (_disposed) return;
+  Future<void> reconcileSwaps(List<String> swapIds) {
+    if (_disposed) return Future<void>.value();
+    final active = _reconcileWork;
+    if (active != null) return active;
+    late final Future<void> work;
+    work = _reconcileSwaps(swapIds).whenComplete(() {
+      if (identical(_reconcileWork, work)) _reconcileWork = null;
+    });
+    _reconcileWork = work;
+    return work;
+  }
+
+  Future<void> _reconcileSwaps(List<String> swapIds) async {
+    // Refresh only between owned passes. Overlapping callers join the active
+    // pass and supply their current membership on their next normal call.
+    final ids = swapIds.toSet();
+    _reconcileQueue.removeWhere((id) => !ids.contains(id));
+    for (final id in ids) {
+      if (!_reconcileQueue.contains(id)) _reconcileQueue.add(id);
+    }
+    final pending = _reconcileQueue.toList();
     final cancellation = CancelToken();
     final deadline = Timer(const Duration(seconds: 30), () {
       cancellation.cancel('status reconciliation deadline');
     });
     try {
-      for (final swapId in swapIds) {
+      for (final swapId in pending) {
         if (_disposed || cancellation.isCancelled) break;
+        var admitted = false;
         try {
           final response = await _http.get<Map<String, dynamic>>(
             '/swap/$swapId',
             cancelToken: cancellation,
           );
           if (_disposed || cancellation.isCancelled) break;
+          admitted = true;
           final data = response.data;
           if (data == null) continue;
           final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
+          // An admitted mutation remains owned even after the HTTP budget.
           await _enqueueEvent(swapId, status.status, status.transaction?.id);
         } catch (e) {
           swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
+        } finally {
+          // Completed failures/null responses also yield their place. Keep an
+          // interrupted HTTP attempt at the head for the next bounded pass.
+          if (admitted || (!_disposed && !cancellation.isCancelled)) {
+            _reconcileQueue.remove(swapId);
+            _reconcileQueue.add(swapId);
+          }
         }
       }
     } finally {

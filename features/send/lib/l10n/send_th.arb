@@ -1,0 +1,570 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "เลือกค่าธรรมเนียม",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "กล้อง",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "อย่าลืม",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "วาง PSBT หรือการทําธุรกรรม HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "ออกอากาศ",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "ออกอากาศ",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "จํานวน",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "กด",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "แทนที่ค่าธรรมเนียม",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "ออกอากาศ",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "ค่าธรรมเนียมเครือข่าย",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "รวดเร็ว",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "ธุรกรรมทั่วไป",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "จาก",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "ราคาโดยประมาณ ~ 10 นาที",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "อย่าลืม",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "อ่านต่อ",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "ไปที่",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "เราไม่สามารถเผยแพร่ธุรกรรมของคุณได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง",
+  "broadcastSignedTxErrorInvalidTransaction": "นี่ดูเหมือนจะไม่ใช่ธุรกรรมที่ลงนามแล้วที่ถูกต้อง กรุณาตรวจสอบว่าคุณวาง PSBT หรือธุรกรรมครบถ้วนแล้ว",
+  "broadcastSignedTxErrorInvalidPushTx": "เราไม่สามารถอ่านธุรกรรมจากแท็กนี้ได้ กรุณาสแกนอีกครั้ง",
+  "replaceByFeeFeeRateDisplay": "ค่าธรรมเนียม: {feeRate} นั่ง/Vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
+  "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "ไม่ทราบเอาต์พุตทอน — แสดงเอาต์พุตทั้งหมดเท่าเทียมกัน",
+  "coreScreensUnknown": "ไม่ทราบ",
+  "coreScreensFetchFailed": "ไม่สามารถดึงธุรกรรม {txid} จาก Electrum",
+  "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
+  "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้",
+  "mempoolServerStatusUnknown": "ไม่ทราบ",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "แตะ Coldcard ของคุณเพื่อรับธุรกรรมที่เซ็นแล้วผ่าน NFC",
+  "consolidationDone": "เสร็จสิ้น",
+  "consolidationFailedBody": "เกิดข้อผิดพลาดที่ไม่คาดคิด เงินของคุณปลอดภัย: ไม่มีการเผยแพร่ธุรกรรมใด ๆ โปรดลองอีกครั้ง",
+  "consolidationFailedTitle": "การรวมล้มเหลว",
+  "consolidationInProgress": "กำลังรวม…",
+  "consolidationRequiredTitle": "รวมกระเป๋าเงิน",
+  "consolidationRequiredTitleNamed": "รวมกระเป๋าเงิน {walletName}",
+  "consolidationRowAmount": "จำนวน",
+  "consolidationRowNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "consolidationRowOutputs": "เอาต์พุต",
+  "consolidationRowTransactions": "ธุรกรรม",
+  "consolidationScreenDescription": "เอาต์พุตที่มากเกินไปอาจทำให้กระเป๋าเงินไม่เสถียร การรวมจะรวมเข้าด้วยกันให้น้อยลงเพื่อให้กระเป๋าเงินทำงานอย่างถูกต้อง",
+  "consolidationScreenTitle": "รวม",
+  "consolidationSuccessBody": "เหรียญของคุณกำลังถูกรวมเข้าด้วยกัน จะเสร็จสมบูรณ์เมื่อเครือข่ายยืนยัน",
+  "consolidationSuccessTitle": "เริ่มการรวมแล้ว",
+  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง",
+  "broadcastSignedTxErrorPsbtFinalization": "ไม่สามารถสรุปธุรกรรมที่ลงนามแล้วได้ โปรดตรวจสอบว่ามีลายเซ็นที่จำเป็นครบถ้วนแล้วลองอีกครั้ง",
+  "coreScreensOutputsExceedInputs": "เอาต์พุตมากกว่าอินพุต: ธุรกรรมนี้ไม่ถูกต้องและเครือข่ายจะปฏิเสธ",
+  "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
+  "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
+  "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
+  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
+  "swapMax": "แม็กซ์",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "sendSendNetworkFee": "ค่าธรรมเนียมเครือข่าย",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "transactionNoteHint": "หมายเหตุ",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNetworkLightning": "ฟ้าผ่า",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "sendBroadcastingTransaction": "การทําธุรกรรม.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "globalDefaultBitcoinWalletLabel": "รักษาความปลอดภัย Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "sendAddress": "ที่อยู่: ",
+  "@sendAddress": {
+    "description": "Label prefix for address field"
+  },
+  "sendAmountRequested": "จํานวน: ",
+  "@sendAmountRequested": {
+    "description": "Label for the requested amount in a payment request"
+  },
+  "sendTransferFeeDescription": "นี่เป็นค่าธรรมเนียมรวมจากจํานวนเงิน",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendShowPsbt": "แสดง PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSelectAmount": "เลือกจํานวน",
+  "@sendSelectAmount": {
+    "description": "Label for selecting the amount to send"
+  },
+  "sendSendAmount": "ราคา",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendSelectedUtxosInsufficient": "เลือก utxos ไม่ได้ครอบคลุมจํานวน",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendErrorInsufficientFundsForFees": "จํานวนเงินเพียงพอต่อค่าธรรมเนียมและค่าธรรมเนียม",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendChange": "เปลี่ยนการเปลี่ยนแปลง",
+  "@sendChange": {
+    "description": "Label for change output in a transaction"
+  },
+  "sendSwapWillTakeTime": "มันจะใช้เวลาในขณะที่ยืนยันยืนยัน",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendOpenTheCamera": "เปิดกล้อง",
+  "@sendOpenTheCamera": {
+    "description": "Button label for opening the camera to scan QR codes"
+  },
+  "sendSwapId": "รหัส",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "receiveNote": "หมายเหตุ",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "sendFrom": "จาก",
+  "@sendFrom": {
+    "description": "Label for the sender/source in a transaction"
+  },
+  "sendErrorAmountBelowMinimum": "จำนวนเงินต่ำกว่าขีดจำกัดขั้นต่ำของ Swap: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "ที่อยู่อีเมล",
+  "@sendRecipientAddress": {
+    "description": "Label for the recipient address field"
+  },
+  "sendServerNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendErrorInvalidAddressOrInvoice": "บัญชี Bitcoin ชําระเงินหรือใบแจ้งหนี้",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "รูปแบบรหัส QR ที่ไม่รองรับ",
+  "appStartupErrorMessage": "แอปไม่สามารถเริ่มต้นได้ ลองปิดแอปทั้งหมดแล้วเปิดใหม่อีกครั้ง หากยังมีปัญหา กรุณาติดต่อฝ่ายสนับสนุนและส่งบันทึกของคุณ",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "sendSignWithBitBox": "ลงชื่อเข้าใช้ BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendSwapRefundInProgress": "การคืนเงินในความคืบหน้า",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendInsufficientBalance": "สมดุล",
+  "@sendInsufficientBalance": {
+    "description": "Error message when the wallet has insufficient balance to send"
+  },
+  "sendNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "@sendNetworkFees": {
+    "description": "Label for network transaction fees"
+  },
+  "sendSwapInitiated": "การยกเลิก",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "transactionNoteAddTitle": "บันทึก",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "sendHighFeeWarning": "ค่าแจ้งเตือนสูง",
+  "@sendHighFeeWarning": {
+    "description": "Warning title for high transaction fees"
+  },
+  "receiveEnterHere": "ใส่ที่นี่.",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "sendDone": "อย่าลืม",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "exchangeDcaAddressLabelLiquid": "กล่องไม้",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "sendErrorAmountAboveMaximum": "จำนวนเงินสูงกว่าขีดจำกัดสูงสุดของ Swap: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "การคืนเงินของคุณจะถูกประมวลผล.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendUnconfirmed": "การยืนยัน",
+  "@sendUnconfirmed": {
+    "description": "Status for 0-conf UTXO"
+  },
+  "sendTransferFee": "ค่าธรรมเนียม Swap",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendContinue": "อ่านต่อ",
+  "@sendContinue": {
+    "description": "Button label for continuing in the send flow"
+  },
+  "sendErrorSwapCreationFailed": "จัดเรียงเพื่อสร้างการเชื่อมต่อ.",
+  "sendErrorInvoiceMustContainAmount": "ใบแจ้งหนี้ต้องมีจำนวนเงิน",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorHardwareWalletCannotSwap": "ไม่สามารถใช้กระเป๋าเงินฮาร์ดแวร์สำหรับการแลกเปลี่ยนได้",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
+  "addressViewBalance": "สมดุล",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "sendReplaceByFeeActivated": "แทนที่การเปิดใช้งาน",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendType": "ประเภท: ",
+  "@sendType": {
+    "description": "Label prefix for transaction type field"
+  },
+  "settingsCurrencyTitle": "สกุลเงิน",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "sendSats": "นอน",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "sendPaymentWillTakeTime": "ชําระเงิน",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendPasteAddressOrInvoice": "วางการชําระเงินหรือใบแจ้งหนี้",
+  "@sendPasteAddressOrInvoice": {
+    "description": "Placeholder text for the payment address or invoice input field"
+  },
+  "sendHighFeeWarningDescription": "ค่าธรรมเนียมรวม {feePercent}",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count} ยืนยัน",
+  "@sendCoinConfirmations": {
+    "description": "Label for UTXO confirmation count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "ไปที่",
+  "@sendTo": {
+    "description": "Label for the recipient/destination in a transaction"
+  },
+  "sendSelectCoinsManually": "เลือกเหรียญด้วยตนเอง",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendReceiveNetworkFee": "รับค่าธรรมเนียมเครือข่าย",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "sendBroadcastTransaction": "การทําธุรกรรม",
+  "@sendBroadcastTransaction": {
+    "description": "Button label for broadcasting a transaction to the network"
+  },
+  "sendSwapInProgressBitcoin": "บันทึกในความคืบหน้า การทําธุรกรรม Bitcoin สามารถฝากเงินได้ คุณสามารถคืนบ้านและรอ.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendTransactionSignedLedger": "การทําธุรกรรมที่ประสบความสําเร็จกับ Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendEconomyFee": "เศรษฐกิจ",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 นาที",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendReceive": "ลงทะเบียน",
+  "@sendReceive": {
+    "description": "Label for receive transaction type"
+  },
+  "sendSatsPerVB": "เบาะ / VB",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "sendTitle": "ส่ง",
+  "@sendTitle": {
+    "description": "Title for the send screen"
+  },
+  "sendSlowPaymentWarningDescription": "บันทึก Bitcoin จะใช้เวลายืนยัน.",
+  "@sendSlowPaymentWarningDescription": {
+    "description": "Description for slow payment warning"
+  },
+  "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "sendFastFee": "ได้อย่างรวดเร็ว",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendAdvancedSettings": "การตั้งค่าขั้นสูง",
+  "@sendAdvancedSettings": {
+    "description": "Title for advanced settings in the send flow"
+  },
+  "exchangeDcaAddressLabelBitcoin": "โทรศัพท์",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "cancel": "ยกเลิก",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "sendPaymentProcessing": "การชําระเงินจะถูกประมวลผล อาจใช้เวลานาที",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendErrorBroadcastFailed": "ค้นหาการทําธุรกรรม ตรวจสอบเครือข่ายของคุณและลองอีกครั้ง.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendCustomFee": "ค่าธรรมเนียมที่กําหนดเอง",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "sendAmount": "จํานวน",
+  "@sendAmount": {
+    "description": "Label for the transaction amount"
+  },
+  "sendSwapRefundCompleted": "การคืนเงิน",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendSending": "ส่ง",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendErrorConfirmationFailed": "การยืนยัน",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "coreScreensFeePriorityLabel": "ค่าธรรมเนียม",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "sendInvoicePaid": "พิธีการศุลกากร",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendSignWithLedger": "ลงชื่อเข้าใช้",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSlowPaymentWarning": "คําเตือน",
+  "@sendSlowPaymentWarning": {
+    "description": "Warning title for slow payment confirmation"
+  },
+  "sendErrorAmountBelowSwapLimits": "ปริมาณด้านล่าง",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendCoinControl": "บันทึก",
+  "@sendCoinControl": {
+    "description": "Feature to manually select UTXOs"
+  },
+  "sendAdvancedOptions": "ตัวเลือกขั้นสูง",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendViewDetails": "รายละเอียด",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "transactionNetworkLiquid": "ของเหลว",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreWalletTransactionStatusConfirmed": "ยืนยัน",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "sendErrorBuildFailed": "ไม่สามารถเตรียมการชำระเงินนี้ได้ โปรดลองอีกครั้ง",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendConfirmSend": "ยืนยัน",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSwapInProgressInvoice": "บันทึกในความคืบหน้า ใบแจ้งหนี้จะชําระเงินในไม่กี่วินาที.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendScanBitcoinQRCode": "การสแกน Bitcoin หรือ QR.",
+  "@sendScanBitcoinQRCode": {
+    "description": "Instructions for scanning a QR code to make a Bitcoin payment"
+  },
+  "sendConfirm": "ยืนยัน",
+  "@sendConfirm": {
+    "description": "Button label for confirming a send transaction"
+  },
+  "sendSuccessfullySent": "ประสบความสําเร็จ",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendSwapFailed": "สัญญาณล้มเหลว การคืนเงินของคุณจะถูกประมวลผล.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "exchangeDcaAddressLabelLightning": "ที่อยู่",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "sendErrorInsufficientBalanceForPayment": "ไม่สูญเสียค่าการชําระเงินนี้",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendReceiveAmount": "จํานวนเงิน",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
+  "sendEstimatedDeliveryHours": "ชั่วโมง",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coinsSelectedCount": "{count, plural, =1{เลือกแล้ว 1} other{เลือกแล้ว {count}}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSelfTransfer": "โอนให้ตัวเอง",
+  "sendCoordinatingPayjoinTransaction": "กำลังประสานงานธุรกรรม Payjoin",
+  "sendErrorInvoiceExpired": "ใบแจ้งหนี้นี้หมดอายุแล้ว กรุณาขอใบแจ้งหนี้ใหม่จากผู้รับ",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "ลองพิจารณาเติมเงินเข้า Instant Payments เพื่อทำการชำระเงินจำนวนน้อยลง",
+  "sendErrorInsufficientBalanceFrozenHint": "ยอดคงเหลือที่ใช้ได้ไม่เพียงพอ — {amount} ถูกแช่แข็งไว้ ปลดการแช่แข็งเหรียญใน \"จัดการเหรียญ\" เพื่อใช้งาน",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "คำสั่งหมดอายุ",
+  "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ",
+  "sendErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
+  "sendErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
+  "sendErrorInvoiceExpiryTooShort": "ใบแจ้งหนี้นี้จะหมดอายุเร็วเกินไป โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ",
+  "closeDialogButton": "ปิด",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  }
+}

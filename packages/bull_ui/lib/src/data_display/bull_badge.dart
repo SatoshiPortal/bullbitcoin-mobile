@@ -17,6 +17,8 @@ class BullBadge extends StatelessWidget {
     this.uppercase = false,
     this.radius,
     this.border,
+    this.textStyle,
+    this.padding = const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
   });
 
   /// Badge text.
@@ -43,10 +45,15 @@ class BullBadge extends StatelessWidget {
   /// Optional outline. When null the pill has no border (the default).
   final BoxBorder? border;
 
+  /// Optional typography role for a larger badge.
+  final TextStyle? textStyle;
+
+  final EdgeInsetsGeometry padding;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      padding: padding,
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(radius ?? context.bullShapes.badge),
@@ -61,11 +68,13 @@ class BullBadge extends StatelessWidget {
           ],
           Text(
             uppercase ? label.toUpperCase() : label,
-            style: context.bullType.caption.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: uppercase ? 0.2 : null,
-              color: foreground,
-            ),
+            style:
+                textStyle?.copyWith(color: foreground) ??
+                context.bullType.caption.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: uppercase ? 0.2 : null,
+                  color: foreground,
+                ),
           ),
         ],
       ),

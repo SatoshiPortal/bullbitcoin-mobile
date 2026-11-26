@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bolt11_decoder/bolt11_decoder.dart';
 import 'package:crypto/crypto.dart';
@@ -26,28 +28,6 @@ bool preimageMatchesInvoice({
   } catch (_) {
     return false;
   }
-}
-
-double calculatePercentage(num amount, num fee) {
-  if (amount == 0) return 0.0;
-  final percent = (fee / amount) * 100;
-  return double.parse(percent.toStringAsFixed(2));
-}
-
-class StringFormatting {
-  static String truncateMiddle(
-    String input, {
-    int head = 8,
-    int tail = 8,
-    String placeholder = '...',
-  }) {
-    if (input.length <= head + tail + placeholder.length) return input;
-    return '${input.substring(0, head)}$placeholder${input.substring(input.length - tail)}';
-  }
-}
-
-class ConversionConstants {
-  static final satsAmountOfOneBitcoin = BigInt.from(100000000);
 }
 
 /// Mirrors the app's wallet network enum so engine call sites read the same.
@@ -251,6 +231,22 @@ class BoltzApiException implements Exception {
     null => kind == 'HTTP' || kind == 'IO' || kind == 'WebSocket',
     final code => code >= 500 || code == 418,
   };
+
+  bool get isInvoiceExpiryTooShort {
+    if (statusCode != 400) return false;
+
+    // boltz-client appends the JSON response after the HTTP status.
+    final separator = message.indexOf(',');
+    if (separator == -1) return false;
+    try {
+      return switch (jsonDecode(message.substring(separator + 1))) {
+        {'error': 'invoice expiry too short'} => true,
+        _ => false,
+      };
+    } on FormatException {
+      return false;
+    }
+  }
 
   @override
   String toString() => message;

@@ -1,0 +1,39 @@
+{
+  "@@locale": "en",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "announcementPayjoinTitle": "Increase your privacy",
+  "@announcementPayjoinTitle": {
+    "description": "Title of the home announcement inviting the user to enable payjoin for better on-chain privacy."
+  },
+  "announcementPayjoinDescription": "Turn on Payjoin to make your Bitcoin payments more private.",
+  "@announcementPayjoinDescription": {
+    "description": "Description of the home announcement inviting the user to enable payjoin."
+  },
+  "announcementDismissConfirmTitle": "Dismiss this announcement?",
+  "@announcementDismissConfirmTitle": {
+    "description": "Title of the confirmation dialog shown before dismissing a home announcement."
+  },
+  "announcementDismissConfirmBody": "Read to learn more, or dismiss to hide it. Dismissed announcements won't show again.",
+  "@announcementDismissConfirmBody": {
+    "description": "Body of the confirmation dialog shown before dismissing a home announcement."
+  },
+  "announcementDismissConfirmAction": "Dismiss",
+  "@announcementDismissConfirmAction": {
+    "description": "Confirm button label to dismiss a home announcement."
+  },
+  "announcementDismissConfirmRead": "Read",
+  "@announcementDismissConfirmRead": {
+    "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
+  },
+  "announcementAppUpdateRequiredTitle": "Update BULL",
+  "@announcementAppUpdateRequiredTitle": {
+    "description": "Title for the wallet home announcement shown when swap services require an app update"
+  },
+  "announcementAppUpdateRequiredDescription": "To use the Lightning payment and swap service, please update the BULL mobile app with the new version.",
+  "@announcementAppUpdateRequiredDescription": {
+    "description": "Description shown after the swap API reports that this app version is no longer supported"
+  }
+}

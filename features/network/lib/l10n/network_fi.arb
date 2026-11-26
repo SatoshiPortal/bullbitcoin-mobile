@@ -1,0 +1,244 @@
+{
+  "@@locale": "fi",
+  "mempoolSettingsTitle": "Mempool Server",
+  "mempoolSettingsDefaultServer": "Default Server",
+  "mempoolSettingsCustomServer": "Mukautettu palvelin",
+  "mempoolCustomServerAdd": "Add Custom Server",
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "mempoolCustomServerDeleteMessage": "Haluatko varmasti poistaa tämän mukautetun mempool-palvelimen? Sen sijaan käytetään oletuspalvelinta.",
+  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
+  "mempoolCustomServerBottomSheetDescription": "Anna mukautetun mempool-palvelimesi URL-osoite. Palvelin vahvistetaan ennen tallennusta.",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "doneButton": "Valmis",
+  "electrumTitle": "Electrum-palvelinasetukset",
+  "electrumNetworkBitcoin": "Bitcoin",
+  "electrumNetworkLiquid": "Liquid",
+  "electrumAdvancedOptions": "Lisäasetukset",
+  "electrumAddCustomServer": "Lisää oma palvelin",
+  "electrumCloseTooltip": "Sulje",
+  "electrumServerUrlHint": "{network} {environment} -palvelimen URL",
+  "@electrumServerUrlHint": {
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "electrumEmptyFieldError": "Tämä kenttä ei voi olla tyhjä",
+  "electrumLiquidSslInfo": "Protokollaa ei tule määrittää, SSL otetaan käyttöön automaattisesti.",
+  "electrumAddServer": "Lisää palvelin",
+  "electrumEnableSsl": "Ota SSL käyttöön",
+  "electrumProtocolError": "Älä sisällytä protokollaa (ssl:// tai tcp://).",
+  "electrumFormatError": "Käytä muotoa host:port (esim. example.com:50001)",
+  "electrumBitcoinServerInfo": "Anna palvelinosoite muodossa host:port (esim. example.com:50001)",
+  "electrumStopGap": "Stop Gap",
+  "electrumTimeout": "Aikakatkaisu (sekuntia)",
+  "electrumRetryCount": "Uusintayritysten määrä",
+  "electrumValidateDomain": "Tarkista verkkotunnus",
+  "electrumStopGapEmptyError": "Stop Gap ei voi olla tyhjä",
+  "electrumInvalidNumberError": "Anna kelvollinen numero",
+  "electrumStopGapNegativeError": "Stop Gap ei voi olla negatiivinen",
+  "electrumStopGapTooHighError": "Stop Gap vaikuttaa liian suurelta. (Enintään {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutEmptyError": "Aikakatkaisu ei voi olla tyhjä",
+  "electrumTimeoutPositiveError": "Aikakatkaisun on oltava positiivinen",
+  "electrumTimeoutTooHighError": "Aikakatkaisu vaikuttaa liian suurelta. (Enintään {maxTimeout} sekuntia)",
+  "@electrumTimeoutTooHighError": {
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumRetryCountEmptyError": "Uusintayritysten määrä ei voi olla tyhjä",
+  "electrumRetryCountNegativeError": "Uusintayritysten määrä ei voi olla negatiivinen",
+  "electrumTimeoutWarning": "Aikakatkaisusi ({timeoutValue} sekuntia) on alempi kuin suositus ({recommended} sekuntia) tälle Stop Gap -arvolle.",
+  "@electrumTimeoutWarning": {
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidStopGapError": "Virheellinen Stop Gap -arvo: {value}",
+  "@electrumInvalidStopGapError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Virheellinen aikakatkaisu: {value}",
+  "@electrumInvalidTimeoutError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidRetryError": "Virheellinen uusintayritysten määrä: {value}",
+  "@electrumInvalidRetryError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSaveFailedError": "Lisäasetusten tallennus epäonnistui",
+  "electrumUnknownError": "Tapahtui virhe",
+  "electrumReset": "Palauta oletukset",
+  "electrumConfirm": "Vahvista",
+  "electrumDeleteServerTitle": "Poista oma palvelin",
+  "electrumDeletePrivacyNotice": "Tietosuoja-ilmoitus:\n\nOman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi. Poistamalla viimeisen oman palvelimesi muodostat yhteyden BullBitcoin-palvelimeen.\n",
+  "electrumDeleteConfirmation": "Haluatko varmasti poistaa tämän palvelimen?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumCancel": "Peruuta",
+  "electrumDelete": "Poista",
+  "electrumDefaultServers": "Oletuspalvelimet",
+  "electrumDefaultServersInfo": "Yksityisyytesi suojaamiseksi oletuspalvelimia ei käytetä, kun omia palvelimia on määritetty.",
+  "electrumCustomServers": "Omat palvelimet",
+  "electrumDragToReorder": "(Pitkä painallus, raahaa ja muuta prioriteettia)",
+  "electrumLoadFailedError": "Palvelinten lataus epäonnistui",
+  "@electrumLoadFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSavePriorityFailedError": "Palvelinten prioriteetin tallennus epäonnistui",
+  "@electrumSavePriorityFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumAddFailedError": "Oman palvelimen lisääminen epäonnistui",
+  "@electrumAddFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDeleteFailedError": "Oman palvelimen poistaminen epäonnistui",
+  "@electrumDeleteFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumServerAlreadyExists": "Tämä palvelin on jo olemassa",
+  "electrumServerUnreachable": "Palvelimeen ei saada yhteyttä. Tarkista osoite ja yritä uudelleen.",
+  "electrumPrivacyNoticeTitle": "Tietosuoja-ilmoitus",
+  "electrumPrivacyNoticeContent1": "Tietosuoja-ilmoitus: Oman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi.",
+  "electrumPrivacyNoticeContent2": "Jos kuitenkin tarkastelet transaktioita mempoolin kautta napsauttamalla transaktio-ID tai vastaanottajan tietoja, tämä tieto tulee BullBitcoinin tietoon.",
+  "electrumPrivacyNoticeCancel": "Peruuta",
+  "electrumPrivacyNoticeSave": "Tallenna",
+  "electrumServerNotUsed": "Ei käytössä",
+  "electrumServerOnline": "Käytössä",
+  "electrumServerOffline": "Poissa käytöstä",
+  "cancel": "Peruuta",
+  "delete": "Poista",
+  "statusCheckTitle": "Palvelun tila",
+  "statusCheckLastChecked": "Viimeksi tarkistettu: {time}",
+  "@statusCheckLastChecked": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCheckOnline": "Käytössä",
+  "statusCheckOffline": "Poissa käytöstä",
+  "statusCheckUnknown": "Tuntematon",
+  "torSettingsTitle": "Tor-asetukset",
+  "torSettingsProxyPort": "Tor-välityspalvelimen portti",
+  "torSettingsPortDisplay": "Portti: {port}",
+  "@torSettingsPortDisplay": {
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Porttinumero",
+  "torSettingsPortHint": "9050",
+  "torSettingsPortValidationEmpty": "Anna porttinumero",
+  "torSettingsPortValidationInvalid": "Anna kelvollinen numero",
+  "torSettingsPortValidationRange": "Portin on oltava välillä 1 ja 65535",
+  "torSettingsSaveButton": "Tallenna",
+  "torSettingsConnectionStatus": "Yhteyden tila",
+  "torSettingsStatusConnected": "Valmis",
+  "torSettingsStatusConnecting": "Yhdistetään...",
+  "torSettingsStatusDisconnected": "Ei yhteyttä",
+  "torSettingsStatusUnknown": "Tila tuntematon",
+  "torSettingsDescConnected": "Tor-välityspalvelin on käynnissä ja valmiina",
+  "torSettingsDescConnecting": "Muodostetaan Tor-yhteyttä",
+  "torSettingsDescDisconnected": "Tor-välityspalvelin ei ole käynnissä",
+  "save": "Tallenna",
+  "mempoolServerStatusOnline": "Verkossa",
+  "mempoolServerStatusOffline": "Ei verkossa",
+  "mempoolServerStatusChecking": "Tarkistetaan...",
+  "mempoolServerStatusUnknown": "Tuntematon",
+  "mempoolCustomServerSaveFailed": "Palvelimen tallennus epäonnistui",
+  "mempoolCustomServerInfoDescription": "Mempool-palvelimia käytetään maksuarviointiin ja lohkoselaimen avaamiseen transaktiotietoja tarkasteltaessa.",
+  "mempoolCustomServerUseSsl": "Käytä SSL:ää",
+  "mempoolCustomServerSslAutoDetected": "(Tunnistettu automaattisesti)",
+  "mempoolCustomServerSslHelpText": "Paikallisille (.local, yksityiset IP:t) ja Tor (.onion) -palvelimille SSL on yleensä pois käytöstä. Julkiset IP:t ja verkkotunnukset tulisi käyttää SSL:ää.",
+  "mempoolErrorSameAsDefault": "Tämä URL on sama kuin oletuspalvelin. Käytä eri URL-osoitetta.",
+  "mempoolErrorConnectionTimeout": "Yhteys aikakatkaistiin. Palvelin voi olla hidas tai tavoittamattomissa.",
+  "mempoolErrorHostNotFound": "Palvelinta ei löydy. Tarkista URL ja yritä uudelleen.",
+  "mempoolErrorConnectionFailed": "Palvelimeen ei voi yhdistää. Tarkista verkkoyhteys ja yritä uudelleen.",
+  "mempoolErrorNotMempoolServer": "Tämä URL ei vaikuta olevan mempool-palvelin. Tarkista osoite.",
+  "mempoolErrorServerUnavailable": "Palvelin ei ole käytettävissä. Yritä myöhemmin uudelleen.",
+  "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
+  "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
+  "mempoolErrorInvalidUrl": "Virheellinen palvelimen URL-osoite. Anna kelvollinen verkkotunnus tai IP-osoite.",
+  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui",
+  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui",
+  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui",
+  "electrumStopGapHighWarning": "Korkeat stop gap -arvot kasvattavat merkittävästi synkronointiaikaa. Pidä sovellus avoinna edustalla, kunnes synkronointi on valmis — sovelluksen siirtäminen taustalle voi keskeyttää sen.",
+  "torSettingsStatusCensored": "Yhteys vaikuttaa suodatetulta",
+  "torSettingsDescCensored": "Tor ei saanut yhteyttä verkkoon. Tämä tarkoittaa usein, että yhteyttä suodatetaan.",
+  "torSettingsBootstrapProgress": "Yhdistetään… {percent} %",
+  "torSettingsEmbeddedTitle": "Sisäänrakennettu Tor",
+  "torSettingsEmbeddedDescription": "Sisäänrakennettua Toria käyttävät RecoverBull ja Bitcoin Electrumin .onion-palvelimet. Sovelluksen muu liikenne pysyy suorana.",
+  "torSettingsTransportMode": "Yhteystapa",
+  "torSettingsModeAutomatic": "Automaattinen",
+  "torSettingsModeDirect": "Suora",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Kokeilee ensin suoraa Tor-yhteyttä ja käyttää Snowflakea, jos verkko näyttää estävän Torin.",
+  "torSettingsModeDirectDescription": "Yhdistää suoraan Tor-verkkoon ilman liitettävää siirtotapaa.",
+  "torSettingsModeSnowflakeDescription": "Käyttää vapaaehtoisten Snowflake-välityspalvelimia Torin tavoittamiseen suodatetusta verkosta.",
+  "torSettingsActiveTransport": "Aktiivinen siirtotapa: {transport}",
+  "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
+  "statusCheckResultsMayBeOutdated": "Tulokset saattavat olla vanhentuneita",
+  "torSettingsStatusNoInternetOrBlocked": "Ei internetiä tai sensuroitu verkko",
+  "torSettingsDescNoInternetOrBlocked": "Tällä verkolla ei ole internetyhteyttä, tai se estää Torin.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull ei saanut yhteyttä määritettyyn SOCKS5-välityspalvelimeen.",
+  "serverEncrypted": "Salattu",
+  "serverUnencrypted": "Salaamaton"
+}

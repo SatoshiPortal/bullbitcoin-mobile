@@ -1,0 +1,44 @@
+{
+  "@@locale": "ru",
+  "appUnlockButton": "Разблокировка",
+  "appUnlockPinCheckError": "Не удалось загрузить настройки безопасности. Пожалуйста, перезапустите приложение.",
+  "appUnlockPinVerifyError": "Не удалось проверить ваш PIN. Пожалуйста, попробуйте снова.",
+  "pinCodeSecurityPinTitle": "Безопасность PIN",
+  "pinCodeCreateButton": "Создать PIN",
+  "pinCodeManageTitle": "Управляйте своей безопасностью PIN",
+  "pinCodeProcessing": "Обработка",
+  "pinCodeCreateTitle": "Создать новый значок",
+  "pinCodeContinue": "Продолжить",
+  "appUnlockAttemptSingular": "неудачная попытка",
+  "pinCodeCreateDescription": "Ваш PIN защищает доступ к вашему кошельку и настройкам. Не забывай об этом.",
+  "pinCodeConfirmTitle": "Подтвердить новый значок",
+  "pinCodeRemoveButton": "Удалить PIN",
+  "appUnlockAttemptPlural": "неудачные попытки",
+  "pinCodeMismatchError": "PIN не совпадает",
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "pinCodeChangeButton": "Изменение PIN",
+  "pinCodeCheckingStatus": "Проверка состояния PIN",
+  "pinCodeAuthentication": "Аутентификация",
+  "pinCodeSettingUp": "Настройка PIN-кода",
+  "pinCodeBackupRequiredWarning": "Пожалуйста, выполните резервное копирование кошелька перед установкой PIN-кода",
+  "appUnlockScreenTitle": "Аутентификация",
+  "appUnlockIncorrectPinError": "Неправильный PIN. Попробуй еще раз. {failedAttempts} {attemptsWord}",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Введите код значка для разблокировки",
+  "backupSettingsStartBackup": "Запуск",
+  "pinCodeConfirm": "Подтверждение",
+  "pinCodeLoading": "Загрузка",
+  "pinCodeSaveError": "Не удалось сохранить PIN. Пожалуйста, попробуйте ещё раз.",
+  "pinCodeDeleteError": "Не удалось удалить PIN. Пожалуйста, попробуйте ещё раз.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "Введите от {min} до {max} цифр"
+}

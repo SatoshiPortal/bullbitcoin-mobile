@@ -1,0 +1,32 @@
+name: backup_storage
+description: Session-bound byte storage for app backups.
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  primitives:
+  meta: ^1.17.0
+  google_drive:
+  crypto: ^3.0.7
+
+dev_dependencies:
+  google_sign_in: ^6.3.0
+  google_sign_in_platform_interface: ^2.5.0
+  http: ^1.2.2
+  flutter_test:
+    sdk: flutter
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.bullbitcoin.backup_storage
+        pluginClass: BackupStoragePlugin
+      ios:
+        pluginClass: BackupStoragePlugin

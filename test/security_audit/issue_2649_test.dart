@@ -9,10 +9,17 @@ import 'package:test/test.dart';
 
 void main() {
   group('Security audit #2649 P2WSH signing', () {
+    // The BitBox binding crate now lives in packages/rust_bindings; the
+    // `todo!()` of `script_config_from_utxo` is in bitbox-api-rs, still an
+    // external git dependency of that crate.
     test('Rust dependency is not vendored in the checkout', () {
-      final lock = File('pubspec.lock').readAsStringSync();
-      expect(lock, contains('https://github.com/SatoshiPortal/bull_sdk'));
-      expect(Directory('packages/bitbox-transport').existsSync(), isFalse);
+      final lock = File('packages/rust_bindings/rust/Cargo.lock')
+          .readAsStringSync();
+      expect(
+        lock,
+        contains('git+https://github.com/ben-kaufman/bitbox-api-rs'),
+      );
+      expect(Directory('packages/bitbox-api-rs').existsSync(), isFalse);
     });
   });
 }

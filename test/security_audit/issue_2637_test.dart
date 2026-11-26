@@ -8,24 +8,31 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Security audit #2637 UR scanner recovery', () {
-    test('scanner catch path has no reader reset', () {
-      final source = File('lib/core/widgets/qr_scanner_widget.dart')
+    test('scanner resets the reader and reports a processing error', () {
+      final source = File('features/scanning/lib/src/qr_scanner_widget.dart')
           .readAsStringSync();
       final catchStart = source.indexOf('} catch (e) {');
+      expect(catchStart, isNonNegative);
       final catchBody = source.substring(catchStart);
 
-      expect(catchStart, isNonNegative);
       expect(catchBody, contains('_urReader.reset()'));
-      expect(catchBody, contains("'UR processing failed'"));
+      expect(catchBody, contains('labels.urProcessingFailedMessage'));
     });
 
-    test('reader exposes reset but widget never calls it', () {
-      final readerSource = File('lib/core/urqr/urqr.dart').readAsStringSync();
-      final widgetSource = File('lib/core/widgets/qr_scanner_widget.dart')
+    test('scanner resets the reader before delivering a decoded result', () {
+      final readerSource = File('features/signers/lib/src/urqr/urqr.dart')
           .readAsStringSync();
+      final widgetSource = File(
+        'features/scanning/lib/src/qr_scanner_widget.dart',
+      ).readAsStringSync();
 
       expect(readerSource, contains('void reset()'));
-      expect(widgetSource, contains('_urReader.reset()'));
+      expect(
+        widgetSource,
+        matches(
+          RegExp(r'_urReader\.reset\(\);\s+widget\.onScanned\(decoded\);'),
+        ),
+      );
     });
   });
 }

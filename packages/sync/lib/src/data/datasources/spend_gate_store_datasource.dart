@@ -88,8 +88,9 @@ final class SpendGateStoreDatasource {
     [key.id, key.network.env.name, generation],
   ).isNotEmpty;
 
-  /// Spent outpoints (`txid:vout`) of each tracked transaction, empty until a
-  /// sync has seen it. They let a later sync recognize a conflicting spend.
+  /// Spent outpoints (`txid:vout`) captured at acceptance or observation.
+  /// Empty means unknown (legacy or txid-only handoff), never cancellation.
+  /// A sync can recover unknown inputs by positively observing the original.
   Map<String, Set<String>> trackedInputs(PublicWalletDescriptor descriptor) {
     tracked(descriptor);
     final key = descriptor.key;
@@ -118,20 +119,38 @@ final class SpendGateStoreDatasource {
   void accepted(
     PublicWalletDescriptor descriptor,
     int generation,
-    String txid,
-  ) {
+    String txid, {
+    Set<String>? inputs,
+  }) {
     if (!RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(txid)) {
       throw const BitcoinSpendGateUnavailable();
     }
+    // NULL is an honest unknown: never encode it as an empty outpoint.
+    final known = inputs == null || inputs.isEmpty ? null : inputs;
+    if (known != null) {
+      for (final input in known) {
+        final match = RegExp(r'^[0-9a-f]{64}:([0-9]+)$').firstMatch(input);
+        final index = int.tryParse(match?.group(1) ?? '');
+        if (index == null ||
+            index > 0xffffffff ||
+            '$index' != match?.group(1)) {
+          throw const BitcoinSpendGateUnavailable();
+        }
+      }
+    }
+    final encoded = known == null ? null : (known.toList()..sort()).join(' ');
     tracked(descriptor);
     _db.execute(
-      'INSERT OR IGNORE INTO broadcasts (wallet,network,descriptor,generation,txid) VALUES (?,?,?,?,?)',
+      'INSERT INTO broadcasts (wallet,network,descriptor,generation,txid,inputs) VALUES (?,?,?,?,?,?) '
+      'ON CONFLICT(wallet,network,txid) DO UPDATE SET inputs=excluded.inputs '
+      'WHERE broadcasts.inputs IS NULL AND excluded.inputs IS NOT NULL',
       [
         descriptor.key.id,
         descriptor.key.network.env.name,
         descriptorDigest(descriptor),
         generation,
         txid.toLowerCase(),
+        encoded,
       ],
     );
   }

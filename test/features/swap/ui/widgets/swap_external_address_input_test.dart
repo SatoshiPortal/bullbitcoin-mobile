@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:swap_feature/testing.dart';
+import 'package:address_view/payment_destination.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, bullUiLocalizationsDelegate;
@@ -26,7 +25,7 @@ Future<void> _pumpInput(WidgetTester tester, TransferBloc bloc) =>
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
           localizationsDelegates: [
-            ...AppLocalizations.localizationsDelegates,
+            ...appLocalizationsDelegates,
             bullUiLocalizationsDelegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
@@ -38,7 +37,7 @@ Future<void> _pumpInput(WidgetTester tester, TransferBloc bloc) =>
 void main() {
   setUpAll(BullSdk.init);
   tearDownAll(BullSdk.dispose);
-  testWidgets('offers named secondary Scan and Paste buttons at 44 dp', (
+  testWidgets('offers named secondary Scan and Paste buttons at 48 dp', (
     tester,
   ) async {
     final bloc = _Transfer();
@@ -54,7 +53,7 @@ void main() {
         (widget) => widget is BullButton && widget.label == label,
       );
       expect(button, findsOneWidget, reason: label);
-      expect(tester.getSize(button).height, 44);
+      expect(tester.getSize(button).height, 48);
     }
     await tester.pumpWidget(const SizedBox.shrink());
     await bloc.close();

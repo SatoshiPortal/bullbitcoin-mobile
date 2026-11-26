@@ -2,8 +2,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A thin themed [Scaffold] whose background comes from the injected
-/// [BullTheme]. No generic scaffold exists in `lib/core/widgets`, so this is a
-/// new (thin) primitive.
+/// [BullTheme].
 class BullScaffold extends StatelessWidget {
   const BullScaffold({
     super.key,
@@ -11,6 +10,7 @@ class BullScaffold extends StatelessWidget {
     required this.body,
     this.bottomNavigationBar,
     this.resizeToAvoidBottomInset,
+    this.backgroundColor,
   });
 
   /// Optional top bar (typically a [PreferredSizeWidget] or a sized box).
@@ -25,10 +25,13 @@ class BullScaffold extends StatelessWidget {
   /// Forwarded to [Scaffold.resizeToAvoidBottomInset].
   final bool? resizeToAvoidBottomInset;
 
+  /// An optional theme role for pages with a background behind surface cards.
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.bull.surface,
+      backgroundColor: backgroundColor ?? context.bull.surface,
       appBar: appBar,
       body: body,
       bottomNavigationBar: bottomNavigationBar,

@@ -1,0 +1,44 @@
+{
+  "bip329LabelsImportSuccessSingular": "1 Label importiert",
+  "bip329LabelsImportSuccessPlural": "{count} Labels importiert",
+  "@bip329LabelsImportSuccessPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelAutoSwap": "Auto-Swap",
+  "systemLabelSwaps": "Tauschvorgänge",
+  "systemLabelExchangeBuy": "Kaufen",
+  "systemLabelExchangeSell": "Verkauf",
+  "labelDeleteFailed": "„{label}“ kann nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+  "@labelDeleteFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "Hier eingeben…",
+  "bip329LabelsImportButton": "Labels importieren",
+  "systemLabelPayjoin": "Payjoin",
+  "bip329LabelsExportSuccess": "Labels erfolgreich exportiert",
+  "bip329LabelsTitle": "BIP329 Labels",
+  "bip329LabelsHeading": "BIP329-Labels importieren/exportieren",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "bip329LabelsExportButton": "Labels exportieren",
+  "systemLabelSelfSpend": "Eigen-Transfer",
+  "bip329LabelsDescription": "Wallet-Labels (BIP-329) importieren oder exportieren.",
+  "receiveSave": "Speichern",
+  "noteVisibleToSenderNotice": "Diese Notiz ist für den Empfänger Ihres QR-Codes oder Ihrer Rechnung sichtbar.",
+  "labelsErrorNoteTooLong": "Die Notiz darf höchstens {max} Zeichen lang sein",
+  "labelsErrorNoteForbiddenCharacter": "Die Notiz darf das Zeichen {character} nicht enthalten",
+  "labelsErrorFileTooLarge": "Diese Datei ist zu groß. Etikettendateien müssen kleiner als {max} sein.",
+  "labelsErrorFileUnreadable": "Dies scheint keine BIP-329-Etikettendatei zu sein. Prüfen Sie, ob Sie die richtige Datei ausgewählt haben.",
+  "labelsErrorFileEmpty": "Diese Datei enthält keine Etiketten zum Importieren.",
+  "labelsErrorExportFailed": "Ihre Etiketten konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+  "labelsErrorFileReservedName": "Diese Datei verwendet einen von der App reservierten Etikettennamen. Benennen Sie ihn in der Datei um und versuchen Sie es erneut.",
+  "labelsErrorNoteForbiddenWhitespace": "Die Notiz darf keine Zeilenumbrüche oder Tabulatoren enthalten",
+  "labelsErrorFileInvalidEntry": "Einige Einträge in dieser Datei konnten nicht gelesen werden. Prüfen Sie die Datei und versuchen Sie es erneut."
+}

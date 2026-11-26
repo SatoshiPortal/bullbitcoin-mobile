@@ -1,0 +1,25 @@
+{
+  "@@locale": "bn",
+  "currencySettingsDefaultFiatCurrencyLabel": "ডিফল্ট ফিয়াট মুদ্রা",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "fiatCurrencySettingsLabel": "ফিয়াট মুদ্রা",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "priceChartFetchingHistory": "মূল্য ইতিহাস সংগ্রহ হচ্ছে..।",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
+  "retry": "পুনরায় চেষ্টা করুন",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "বিনিময় হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
+  "priceChartLoadFailed": "মূল্য চার্ট ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।"
+}

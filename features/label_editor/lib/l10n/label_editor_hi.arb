@@ -1,0 +1,95 @@
+{
+  "@@locale": "hi",
+  "systemLabelAutoSwap": "ऑटो स्वैप",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelSwaps": "स्वैप",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} लेबल आयातित",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelExchangeBuy": "खरीदें",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "bip329LabelsImportSuccessSingular": "1 लेबल आयात",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "systemLabelExchangeSell": "बेचें",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "\"{label}\" को हटाने में असमर्थ। फिर से प्रयास करें।।",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "यहाँ दर्ज करें...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "आयात लेबल",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "systemLabelPayjoin": "पेजोइन",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "bip329LabelsExportSuccess": "लेबल सफलतापूर्वक निर्यात",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "सहेजें",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "BIP329 लेबल",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 लेबल आयात / निर्यात",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsExportButton": "निर्यात लेबल",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "systemLabelSelfSpend": "आत्म खर्च",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "bip329LabelsDescription": "BIP329 मानक प्रारूप का उपयोग करके वॉलेट लेबल आयात या निर्यात करें।।",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "यह नोट आपके QR या चालान के प्राप्तकर्ता को दिखाई देगा।",
+  "labelsErrorNoteTooLong": "नोट {max} अक्षरों से अधिक नहीं होना चाहिए",
+  "labelsErrorNoteForbiddenCharacter": "नोट में {character} वर्ण नहीं हो सकता",
+  "labelsErrorFileTooLarge": "यह फ़ाइल बहुत बड़ी है। लेबल फ़ाइलें {max} से छोटी होनी चाहिए।",
+  "labelsErrorFileUnreadable": "यह BIP-329 लेबल फ़ाइल नहीं लगती। जाँचें कि आपने सही फ़ाइल चुनी है।",
+  "labelsErrorFileEmpty": "इस फ़ाइल में आयात करने के लिए कोई लेबल नहीं है।",
+  "labelsErrorExportFailed": "आपके लेबल सहेजे नहीं जा सके। कृपया फिर से प्रयास करें।",
+  "labelsErrorFileReservedName": "यह फ़ाइल ऐप द्वारा आरक्षित लेबल नाम का उपयोग करती है। फ़ाइल में इसका नाम बदलें और फिर से प्रयास करें।",
+  "labelsErrorNoteForbiddenWhitespace": "नोट में लाइन ब्रेक या टैब नहीं हो सकते",
+  "labelsErrorFileInvalidEntry": "उस फ़ाइल की कुछ प्रविष्टियाँ पढ़ी नहीं जा सकीं। फ़ाइल जाँचें और फिर से प्रयास करें।"
+}

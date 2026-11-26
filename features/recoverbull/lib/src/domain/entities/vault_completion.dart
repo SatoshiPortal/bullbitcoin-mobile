@@ -7,12 +7,17 @@ import '../recoverbull_failure.dart';
 final class VaultCompletion {
   final EncryptedVault vault;
   final VaultContext? verifiedContext;
+
+  /// Verified imported identity awaiting successful wallet provisioning.
+  /// Null for legacy completions and explicit unverified sibling imports.
+  final VaultContext? pendingVerificationContext;
   final VaultRecovery? recovery;
   final RecoverBullFailure? warning;
 
   const VaultCompletion({
     required this.vault,
     this.verifiedContext,
+    this.pendingVerificationContext,
     this.recovery,
     this.warning,
   });

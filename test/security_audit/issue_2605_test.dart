@@ -11,7 +11,7 @@ void main() {
   group('Security audit #2605 silent freeze import', () {
     test('import does not apply freezes unless explicitly opted in', () {
       final source = File(
-        'lib/features/labels/application/usecases/import_labels_usecase.dart',
+        'packages/labels/lib/src/domain/usecases/import_labels_usecase.dart',
       ).readAsStringSync();
 
       expect(source, contains('bool importFreezes = false'));
@@ -20,7 +20,7 @@ void main() {
 
     test('imported freezes are limited to wallet-owned outpoints', () {
       final source = File(
-        'lib/features/labels/application/usecases/import_labels_usecase.dart',
+        'packages/labels/lib/src/domain/usecases/import_labels_usecase.dart',
       ).readAsStringSync();
 
       // Unattributed records are dropped (they cannot be ownership-verified)
@@ -29,7 +29,16 @@ void main() {
         source,
         contains('if (walletId == null || walletId.isEmpty) continue;'),
       );
-      expect(source, contains('getOwnedOutpoints('));
+      expect(source, contains('ownedImportedFreezes(entry.key, entry.value)'));
+      final ownership = File(
+        'packages/labels/lib/src/domain/wallet_freeze_port.dart',
+      ).readAsStringSync();
+      expect(ownership, contains('getOwnedOutpoints(walletId: walletId)'));
+      expect(ownership, contains('output.walletId == walletId'));
+      expect(
+        ownership,
+        contains('owned.contains((txId: output.txId, vout: output.vout))'),
+      );
     });
   });
 }

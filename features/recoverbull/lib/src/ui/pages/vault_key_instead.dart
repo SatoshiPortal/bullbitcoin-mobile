@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_ui/material_ui.dart';
 
 import '../../domain/entities/recoverbull_flow.dart';
 import '../../l10n/context_localizations.dart';
@@ -27,10 +26,8 @@ class VaultKeyInsteadButton extends StatelessWidget {
     if (!offeredFor(RecoverBullFlowScope.of(context).flow)) {
       return const SizedBox.shrink();
     }
-    return BullButton.big(
+    return BullButton.secondary(
       label: context.loc.recoverbullEnterVaultKeyInstead,
-      bgColor: context.bull.transparent,
-      textColor: context.bull.info,
       textStyle: context.bullType.label,
       onPressed: () {
         onLeave?.call();

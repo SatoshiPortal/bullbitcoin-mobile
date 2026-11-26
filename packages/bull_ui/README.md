@@ -1,19 +1,12 @@
 # bull_ui
 
-The Bull Bitcoin design-system component library — the go-forward source of truth for
-shared UI primitives. It is the first melos workspace member (`packages/bull_ui`).
-
-Every public widget is prefixed `Bull*` (e.g. `BullText`, `BullButton`, `BullScaffold`).
-This prefix is provenance: **`BB*` = legacy widgets in `lib/core/widgets`, `Bull*` = here**.
-The two coexist during the incremental migration; `BB*` originals are retired
-feature-by-feature in later scoped PRs as usages migrate. Nothing is moved or renamed —
-`bull_ui` components are duplicated copies, so existing app code is untouched.
+The Bull Bitcoin design system publishes reusable Flutter components through `package:bull_ui/bull_ui.dart`. Shared component names use the `Bull*` prefix. App features supply localized copy, assets and callbacks and compose the components into their own screens.
 
 ## Theme injection
 
-`bull_ui` is **brightness-agnostic**: the app injects the palette. It builds a `BullTheme` (a `ThemeExtension`) from `AppColors.light` and another from `AppColors.dark`, and registers each on the matching `ThemeData` with `extensions: bullUiExtensions(colors: …, brightness: …)`, which adds every other extension the components read (`BullShapes`, `BullTypography`, `BullKeypadColors`, `BullLoaderTheme`). The one exception to injected colours is `BullKeypadColors`: `bull_ui` holds its `light` and `dark` presets, chosen so each glyph-on-key and key-on-panel pair has the same contrast in both themes.
+`package:bull_ui/app_theme.dart` builds the app's light and dark `ThemeData` from `AppColors`. It registers the matching `BullTheme` and the other design tokens through `bullUiExtensions`. The components remain brightness-agnostic: they read the extensions on the active theme. `BullKeypadColors` supplies separate light and dark presets so each glyph-on-key and key-on-panel pair has the same contrast in both themes.
 Components read colours through `context.bull` (e.g. `context.bull.primary`). `BullTheme` is a
-**1:1 mirror of the app's `AppColors`** — same field names — so the app wires every field through
+**1:1 mirror of `AppColors`** — same field names — so `AppTheme` wires every field through
 without translation. Derived fills use `tokenColor.withValues(alpha: …)` so they adapt to both
 light and dark automatically.
 
@@ -28,6 +21,8 @@ Brightness-invariant tokens are static consts, from the design system:
 - **`BullLoaderTheme`** — which animation `BullLoader` plays (`BullLoaderStyle.cubes` or `.spinner`); Bull's is `BullLoaderTheme.standard` (cubes), and an app picks another with `bullUiExtensions(loader: …)`.
 - **Icons** via `BullIcon(BullIcons.…)`.
 
+`BullPaymentAnimation` uses `sensors_plus` for decorative accelerometer roll on Android and iOS. It does not require motion data to render, and it does not open the sensor stream when motion is reduced or the route is inactive. Payment features own the actual status and supply localized text to `BullPaymentTransition`.
+
 **Tokens are fixed — never scaled by screen size.** Responsiveness is a *layout* concern
 (breakpoints, `LayoutBuilder`, max-width wrappers, adaptive columns), not a token concern; text
 already honours the user's `MediaQuery.textScaler`. The catalogue (`packages/bull_ui_catalogue`)
@@ -35,6 +30,16 @@ has a `Foundation/` section showcasing colours, radius, spacing and the text sca
 
 Fonts (Golos Text, Bebas Neue) are declared at the app root and resolve by family name
 across the workspace — `bull_ui` references them by name and does not re-ship the `.ttf`s.
+
+## Action buttons
+
+Use `BullButton.primary` for the single action that confirms or advances a screen (including deletion), and `BullButton.secondary` for alternatives, cancel actions and symmetric choices. Both resolve fill and foreground from the injected theme (`primary`/`onPrimary` and `secondary`/`onSecondary`); ordinary buttons never use fixed tokens or error colors. A screen may have no primary action.
+
+Pass `onPressed: null` to disable a role button. `size: BullButtonSize.small` and `compact: true` affect layout, and retain a minimum 48 dp target when the parent permits it. Use `BullInlineIconButton` with a translated tooltip for icon-only actions. In a pair, use icons on both buttons or neither.
+
+`BullAdvancedOptionsLink` is reserved for advanced options: an underlined primary-colored label with a minimum 48 dp target. Labels and tooltips come translated from the consumer.
+
+The legacy `BullButton.big`/`.small` constructors and their appearance parameters remain during the Ark migration. Their `bgColor`/`textColor` properties represent explicit legacy colors; role buttons resolve their colors at build time and leave these properties null. The `onPressed` getter remains non-null for existing consumers; use `disabled` to inspect availability.
 
 ## Import surface
 
@@ -49,8 +54,7 @@ symbols plus every `Bull*` component and the theme. Internals live under `lib/sr
 
 ## Components
 
-Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
-`BB*`/core originals are left untouched). Grouped by barrel category:
+The public barrel groups components by role.
 
 **Buttons** — `BullButton`, `BullToolButton`, `BullTabMenuVerticalButton`,
 `BullViewerActionButton`.
@@ -58,45 +62,26 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 **Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText`,
 `BullLabeledTextInput`, `BullSecretTextInput`, `BullPasteInput`, `BullDropdown`,
 `BullSelectableList` + `BullSelectableListItem`, `BullMnemonicKeyboard`, `BullPinPad`,
-`BullAmountInputFormatter`, `BullLowerCaseTextFormatter`.
+`BullAmountInputFormatter`, `BullLowerCaseTextFormatter`, `BullKeyboardActions`.
 
 **Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch`.
 
 **Feedback** — `BullRefreshIndicator`, `BullShimmerBox`/`BullShimmerLine`,
 `BullSnackBar`, `BullCountdown`, `BullFadingLinearProgress`, `BullLoader`
 (`.large()` on a progress screen, `.small()` inline; its GIF ships in this package's `assets/`),
-`BullErrorState` (`BBErrorRetry`).
+`BullErrorState`.
 
-**Layout** — `BullScrollableColumn` (`ScrollableColumn`), `BullStackedPage`
-(`StackedPage`), `BullPullableBody` (`BBPullableBody`).
+**Layout** — `BullScrollableColumn`, `BullStackedPage`, `BullPullableBody`.
 
 **Data display** — `BullAddressText`, `BullBadge`, `BullInfoBar`,
-`BullLabelChip`, `BullStatTile`, `BullText` (`BBText`), `BullOptionsTag`,
-`BullInfoCard` (`InfoCard`), `BullPriceCard` (`PriceCard`),
+`BullLabelChip`, `BullStatTile`, `BullText`, `BullOptionsTag`,
+`BullInfoCard`, `BullAlertCard`, `BullPriceCard`,
 `BullBackupOptionCard`, `BullBorderedTile`, `BullTransactionDirectionBadge`,
-`BullSettingsEntryItem`, `BullDetailsTable` + `BullDetailsTableItem`.
+`BullSettingsEntryItem`, `BullDetailsTable` + `BullDetailsTableItem`, `BullQrCode`, `BullInvoiceViewer`, `BullTransactionViewer`, `BullConfirmationHeader`, and `BullConfirmationRow`.
 
 **Overlays** — `BullBottomSheet`, `BullDialog`, `BullConfirmDialog`,
-`BullPickerSheet` (`BBPickerSheet`), `BullInstructionsSheet`
-(`InstructionsBottomSheet`).
+`BullPickerSheet`, `BullInstructionsSheet`, `BullDisclosureLink`, and `BullDisclosureSheet`.
 
 **Chrome** — `BullScaffold`, `BullTopBar`, `BullSelectionActionBar`.
 
 **Support** — `BullSupportButton` (`.big`, `.icon`, `.text`, `.tile`) and `BullSupportScope`, which the app places above its screens to supply the contact-support action. Without a scope the button renders disabled.
-
-## Not yet migrated (needs dep abstraction)
-
-These `core/widgets` widgets still reach into `package:bb_mobile/*` (or otherwise
-can't preserve their public API on top of the clean kit) and are **deferred**
-until the dependency is abstracted out of the widget:
-
-| Widget | Blocker |
-| --- | --- |
-| `CopyInput`, `BBKeyboardActions` | depend on `package:bb_mobile/*` localization / app utils. |
-| `BBButton` (`buttons/button.dart`) | already superseded by `BullButton`; not a 1:1 copy. |
-| Cards: `ActionCard`, `AutoswapWarningCard`, `BackupCard`, `BalanceCard`, `ProviderCart`, `WalletCard` | `package:bb_mobile/*` (router, l10n, feature models, `Assets`). |
-| `BBKeyboardActions` | needs `package:keyboard_actions/keyboard_actions.dart`, not declared in `bull_ui/pubspec.yaml` (no new deps rule). |
-| Bottom sheets: `AdvancedOptions`, `ComingSoon`, `Warning`, `NotLoggedIn`, `DeleteAccount*`, `Logout*`, `TranslationWarning` | `context.loc` localization and/or `package:bb_mobile/*` router & assets. |
-| Cards: `AutoswapWarningCard` | `context.loc` (`autoswapWarningCard*` strings) + `context.font` from `package:bb_mobile/core/utils/build_context_x.dart`. |
-| Loading: `ProgressScreen`, `StatusScreen` | `ProgressScreen` imports `package:bb_mobile/generated/flutter_gen/assets.gen.dart`; `StatusScreen` uses `context.loc` + `BBButton`. |
-| Viewers: `AddressViewer`, `TransactionViewer`, `InvoiceViewer`, `LogViewer`, `QrScanner`, `NfcScanner`, `ShareLogs`, `Bip85Derivation`, `MnemonicWidget`, `CoinSelectionBottomSheet`, `AppLanguagePicker`, `BackupSuccessScreen`, `PriceInput`, `TransactionsByDayList`, `BalanceRow`, `RecoverbullVaultProviderSelector` | `package:bb_mobile/*` (entities, l10n, assets, feature blocs). |

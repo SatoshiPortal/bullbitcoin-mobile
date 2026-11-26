@@ -1,0 +1,9 @@
+{
+  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
+  "bitcoinPriceExchangeRateUnavailable": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
+  "priceChartLoadFailed": "Գնի գծապատկերի տվյալները չհաջողվեց բեռնել: Խնդրում ենք կրկին փորձել:",
+  "fiatCurrencySettingsLabel": "Ֆիատ արժույթ",
+  "currencySettingsDefaultFiatCurrencyLabel": "Լռելյայն ֆիատ արժույթ",
+  "retry": "Կրկին փորձել",
+  "priceChartFetchingHistory": "Գնի պատմությունը բեռնվում է..."
+}

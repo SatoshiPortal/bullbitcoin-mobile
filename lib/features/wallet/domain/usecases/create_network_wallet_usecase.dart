@@ -1,9 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -12,14 +11,14 @@ import 'package:secrets/secrets.dart';
 /// Provision from an existing handle or generate via the existing resumable
 /// default-wallet flow. Never delete a secret on failure.
 final class CreateNetworkWalletUsecase {
-  final SettingsRepository _settings;
-  final WalletSecretReferencesRepository _references;
+  final DeveloperEnvironmentReader _settings;
+  final WalletInventory _inventory;
   final Secrets _secrets;
-  final CreateDefaultWalletsUsecase _createDefaults;
+  final DefaultWalletProvisioning _createDefaults;
 
   CreateNetworkWalletUsecase(
     this._settings,
-    this._references,
+    this._inventory,
     this._secrets,
     this._createDefaults,
   );
@@ -30,7 +29,10 @@ final class CreateNetworkWalletUsecase {
     Fingerprint? reuse,
   }) async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.readDeveloperEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (network == NetworkEnv.mainnet ||
           network == NetworkEnv.signet ||
           settings.environment.networkEnv != network ||
@@ -41,9 +43,11 @@ final class CreateNetworkWalletUsecase {
       }
       Secret? secret;
       if (reuse != null) {
-        switch (await _references.list()) {
-          case Err(:final failure):
-            return Err(NetworkWalletSetupReadFailure(failure));
+        switch (await _inventory.referencedFingerprints()) {
+          case Err():
+            return const Err(
+              NetworkWalletSetupReadFailure(WalletStorageFailure()),
+            );
           case Ok(:final value) when !value.contains(reuse):
             return const Err(
               NetworkWalletSetupReadFailure(WalletNotFoundFailure()),

@@ -43,6 +43,7 @@ final class Sync {
   final ForegroundStores _stores;
   final WalletProjections _projections;
   final _Cell<bool> _recoveryPending;
+  Future<void>? _closing;
 
   Sync._(this._stores, this._projections)
     : _recoveryPending = _Cell(_stores.recoveredMetadata);
@@ -136,7 +137,9 @@ final class Sync {
   SyncCoins get coins => SyncCoins._(_projections.freezes);
 
   /// Publishes `closed` to every observer, then ends their streams.
-  Future<void> close() async {
+  Future<void> close() => _closing ??= _close();
+
+  Future<void> _close() async {
     try {
       await _projections.close();
       _recoveryPending.close();
@@ -282,6 +285,29 @@ final class Wallet {
         (frozen as Ok<Set<Outpoint>, SyncFailure>).value,
       ),
     );
+  }
+
+  /// Reads exact ownership, retrying briefly while the writer is busy.
+  @useResult
+  Future<Result<OwnershipIndex, SyncFailure>> readExactOwnership() =>
+      _retryBusyRead(ownership);
+
+  /// Reads exact unspent coins, retrying briefly while the writer is busy.
+  @useResult
+  Future<Result<CoinList, SyncFailure>> readExactUnspent() =>
+      _retryBusyRead(unspent);
+
+  static Future<Result<T, SyncFailure>> _retryBusyRead<T>(
+    Future<Result<T, SyncFailure>> Function() query,
+  ) async {
+    for (var attempt = 1; ; attempt++) {
+      final result = await query();
+      if (result case Err(failure: SyncBusyFailure()) when attempt < 5) {
+        await Future<void>.delayed(Duration(milliseconds: 250 * attempt));
+        continue;
+      }
+      return result;
+    }
   }
 
   /// Refuses a handle a delete or a re-import has ended.
@@ -463,6 +489,64 @@ extension type const WalletAddressGroup._(Wallet _wallet) {
     index,
     keychain,
   );
+
+  /// Address usage from the published frame and its coin freeze policy.
+  ///
+  /// A transaction paying the same address more than once counts once.
+  /// Liquid outputs and coins use their confidential addresses.
+  @useResult
+  Result<Map<String, AddressUsage>, SyncFailure> usage() {
+    final history = _wallet.history.now.latest;
+    final addresses = book.now.latest;
+    final coins = _wallet.coins.now.latest;
+    if (history case Err(:final failure)) return Err(failure);
+    if (addresses case Err(:final failure)) return Err(failure);
+    final transactions =
+        (history as Ok<ChainTransactionList, SyncFailure>).value;
+
+    final counts = <String, int>{};
+    final balances = <String, BigInt>{};
+    for (final transaction in transactions) {
+      if (transaction.feeSat == null) {
+        return const Err(SyncNeedsRepairFailure());
+      }
+      final destinations = switch (transaction) {
+        BitcoinTransaction(:final outputs) => {
+          for (final output in outputs) ?output.address,
+        },
+        LiquidTransaction(:final outputs) => {
+          for (final output in outputs) output.confidentialAddress,
+        },
+      };
+      for (final address in destinations) {
+        counts.update(address, (count) => count + 1, ifAbsent: () => 1);
+      }
+    }
+    if (coins case Err(:final failure)) return Err(failure);
+    final unspent = (coins as Ok<CoinList, SyncFailure>).value;
+    for (final coin in unspent) {
+      final address = switch (coin) {
+        BitcoinCoin(:final address) => address,
+        LiquidCoin(:final confidentialAddress) => confidentialAddress,
+      };
+      if (address != null) {
+        balances.update(
+          address,
+          (amount) => amount + coin.amountSat,
+          ifAbsent: () => coin.amountSat,
+        );
+      }
+    }
+    return Ok(
+      Map.unmodifiable({
+        for (final address in {...counts.keys, ...balances.keys})
+          address: (
+            balanceSat: balances[address] ?? BigInt.zero,
+            transactionCount: counts[address] ?? 0,
+          ),
+      }),
+    );
+  }
 
   /// Ownership for display. Protocol decisions use [Wallet.ownership].
   WalletOwnsGroup get owns => WalletOwnsGroup._(_wallet);

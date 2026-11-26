@@ -1,0 +1,731 @@
+{
+  "transactionNoteHint": "Σημείωση",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "coreSwapsChainCanCoop": "Η ανταλλαγή θα ολοκληρωθεί σε λίγο.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "transactionSwapStatusSwapStatus": "Swap status",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionStatusTransferFailed": "Η ανταλλαγή απέτυχε",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionFilterTransfer": "Ανταλλαγή",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelSwapFees": "Swap τέλη",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionStatusSwapExpired": "Swap Expired",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionFilterBuy": "Αγοράστε αγορά αγορά",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "coreWalletTransactionStatusPending": "Pending",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionDetailLabelTransferStatus": "Κατάσταση ανταλλαγής",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "coreSwapsLnSendExpired": "Swap Expired",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsChainFailedRefunding": "Η ανταλλαγή θα επιστραφεί σύντομα.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionStatusPaymentRefunded": "Πληρωμοδότηση",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "Πληρωμή σε εξέλιξη",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "buyTitle": "Αγοράστε Bitcoin Bitcoin",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC - BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionSwapProgressClaim": "Αξιώσεις",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionDetailLabelTransferId": "ID ανταλλαγής",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionFilterAll": "Όλα όλα",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "coreSwapsLnSendPaid": "Το Invoice θα πληρωθεί μετά την επιβεβαίωση της πληρωμής σας.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "transactionDetailLabelPayjoinExpired": "Επεκτάθηκαν",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionSwapProgressCompleted": "Πλήρης",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionStatusTransferInProgress": "Ανταλλαγή σε εξέλιξη",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailTransferProgress": "Πρόοδος ανταλλαγής",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "coreSwapsLnSendPending": "Το Swap δεν έχει ακόμη οριστικοποιηθεί.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "transactionSwapProgressInitiated": "Initiated",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "coreSwapsLnReceivePaid": "Ο αποστολέας έχει πληρώσει το τιμολόγιο.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "transactionDetailLabelRefunded": "Υποχρηματοδοτούνται",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionNoteAddTitle": "Προσθήκη σημείωση",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Πλήρης",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelCreatedAt": "Δημιουργήθηκε στο",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "coreSwapsChainCompletedRefunded": "Η ανταλλαγή έχει επιστραφεί.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "transactionDetailLabelPayjoinStatus": "Payjoin status",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionFilterReceive": "Παραλαβή",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionSwapProgressInProgress": "Σε εξέλιξη",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Το Swap ολοκληρώνεται με επιτυχία.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC - L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "coreSwapsStatusPending": "Pending",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "coreSwapsChainCompletedSuccess": "Η ανταλλαγή ολοκληρώθηκε με επιτυχία.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsLnReceiveFailed": "Σουβάλι.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "transactionDetailLabelPayinStatus": "Payin status",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "receivePaymentNormally": "Λήψη πληρωμής κανονικά",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "coreSwapsStatusInProgress": "Σε εξέλιξη",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "transactionSwapProgressConfirmed": "Επιβεβαιώθηκε",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionTitle": "Συναλλαγές",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionSwapDescLnReceivePending": "Η ανταλλαγή σας έχει ξεκινήσει. Αναμένουμε μια πληρωμή που πρέπει να ληφθεί στο Lightning Network.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "coreSwapsLnSendRefundable": "Το Swap είναι έτοιμο να επιστραφεί.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "transactionPayjoinSendWithout": "Στείλε χωρίς payjoin",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionFilterPayjoin": "Payjoinin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "coreSwapsLnSendCanCoop": "Το Swap θα ολοκληρώσει στιγμιαία.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "retry": "Επανάληψη",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreSwapsLnReceiveClaimable": "Το Swap είναι έτοιμο να διεκδικήσει.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "transactionSwapProgressFundsClaimed": "Ταμεία\nΑπαιτείται",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "coreSwapsLnReceiveCanCoop": "Το Swap θα ολοκληρώσει στιγμιαία.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "transactionSwapProgressPaymentMade": "Πληρωμή πληρωμής\nMade Made",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "coreSwapsChainPending": "Η ανταλλαγή δεν έχει ακόμη αρχικοποιηθεί.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "coreSwapsLnSendFailed": "Σουβάλι.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainRefundable": "Η ανταλλαγή είναι έτοιμη για επιστροφή.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "transactionStatusPayjoinRequested": "Payjoin ζήτησε",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionDetailLabelPayoutStatus": "Payout status",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "coreSwapsLnSendCompletedRefunded": "Το Swap έχει επιστραφεί.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "transactionDetailLabelBitcoinTxId": "Bitcoin συναλλαγών ID",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "coreSwapsChainFailed": "Η ανταλλαγή απέτυχε.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "Προσθήκη σημείωση",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionDetailLabelPayinMethod": "Μέθοδος Payin",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionStatusTransferCompleted": "Η ανταλλαγή ολοκληρώθηκε",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "Liquid συναλλαγών ID",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "coreSwapsChainPaid": "Περιμένοντας την πληρωμή του παρόχου ανταλλαγής για να λάβετε επιβεβαίωση. Αυτό μπορεί να πάρει λίγο χρόνο για να ολοκληρωθεί.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "Η ανταλλαγή είναι έτοιμη για διεκδίκηση.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "Στείλε δίκτυο Fee",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionStatusInProgress": "Σε εξέλιξη",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionHistoryTitle": "Ιστορικό συναλλαγών",
+  "exportTransactionsDescription": "Εξαγωγή όλων των συναλλαγών του πορτοφολιού σας (Bitcoin, Liquid, Lightning και swaps) ως αρχείο CSV. Προαιρετικά φιλτράρετε ανά εύρος ημερομηνιών.",
+  "exportTransactionsStartDate": "Ημερομηνία έναρξης",
+  "exportTransactionsEndDate": "Ημερομηνία λήξης",
+  "exportTransactionsAnyDate": "Οποιαδήποτε",
+  "exportTransactionsButton": "Εξαγωγή CSV",
+  "exportTransactionsSuccess": "Οι συναλλαγές εξήχθησαν με επιτυχία",
+  "exportTransactionsEmpty": "Δεν υπάρχουν συναλλαγές προς εξαγωγή για την επιλεγμένη περίοδο",
+  "exportTransactionsError": "Αποτυχία εξαγωγής συναλλαγών",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Η ημερομηνία έναρξης πρέπει να είναι πριν από την ημερομηνία λήξης",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionStatusPending": "Pending",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "coreSwapsChainExpired": "Η ανταλλαγή έληξε",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionDetailLabelPayoutMethod": "Μέθοδος πληρωμής",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "coreSwapsStatusFailed": "Φθάνατο",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "transactionFilterSell": "Πώληση",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "sellTitle": "Πουλά Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionDetailLabelSwapStatus": "Καθεστώς Swap",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "coreSwapsLnReceiveRefundable": "Το Swap είναι έτοιμο να επιστραφεί.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFees": "Τέλη ανταλλαγής",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionSwapStatusTransferStatus": "Κατάσταση ανταλλαγής",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "coreSwapsLnSendFailedRefunding": "Το Swap θα επιστραφεί σύντομα.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "transactionSwapProgressBroadcasted": "Broadcasted",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "coreSwapsLnReceivePending": "Το Swap δεν έχει ακόμη οριστικοποιηθεί.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin Δημιουργία χρόνος",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "coreSwapsStatusExpired": "Επεκτάθηκαν",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsLnReceiveExpired": "Η Swap επεκτάθηκε.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "transactionStatusTransferExpired": "Η ανταλλαγή έληξε",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsLnReceiveCompleted": "Το Swap ολοκληρώνεται.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFee": "Τέλος ανταλλαγής",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionNetworkLiquid": "Υγρό",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreSwapsStatusCompleted": "Πλήρης",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreWalletTransactionStatusConfirmed": "Επιβεβαιώθηκε",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionStatusSwapFailed": "Σουβάλι",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionDetailSwapProgress": "Swap Progress",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailLabelOrderStatus": "Θέση",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionFilterSend": "Αποστολή αποστολής",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "coreSwapsLnSendClaimable": "Το Swap είναι έτοιμο να διεκδικήσει.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "transactionDetailTitle": "Στοιχεία συναλλαγής",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailLabelCompletedAt": "Πλήρης",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionSwapProgressInvoicePaid": "Invoice\nPaid",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionDetailLabelSwapId": "Swap ID",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionSwapDescLnReceivePaid": "Η πληρωμή έχει ληφθεί! Τώρα μεταδίδουμε τη συναλλαγή on-chain στο πορτοφόλι σας.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionNotesLabel": "Οι σημειώσεις συναλλαγών",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionDetailLabelTransactionFee": "Συναλλαγή Fee",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionSwapDescLnSendPending": "Η ανταλλαγή σας έχει ξεκινήσει. Μεταδίδουμε τη συναλλαγή on-chain για να κλειδώσουμε τα χρήματά σας.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionLabelPreimage": "Προεπισκόπηση",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "transactionDetailLabelConfirmationTime": "Επιβεβαίωση χρόνου επιβεβαίωσης",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionSwapDescChainPending": "Η ανταλλαγή σας έχει δημιουργηθεί αλλά δεν έχει ξεκινήσει ακόμα.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionSwapDescChainFailed": "Παρουσιάστηκε πρόβλημα με τη ανταλλαγή σας. Επικοινωνήστε με την υποστήριξη εάν τα κεφάλαια δεν έχουν επιστραφεί εντός 24 ωρών.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescLnSendDefault": "Η ανταλλαγή σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "transactionSwapDescLnSendFailed": "Υπήρχε ένα θέμα με την ανταλλαγή σας. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "Αυτή η ανταλλαγή έχει λήξει. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "Αυτή η ανταλλαγή έχει λήξει. Κάθε ταμείο που αποστέλλεται θα επιστραφεί αυτόματα στον αποστολέα.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionDetailLabelAmountReceived": "Ποσό που λαμβάνεται",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionLabelReceiveAmount": "Αποδεχόμενο ποσό",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionDetailAccelerate": "Accelerate",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionSwapDescLnSendCompleted": "Η πληρωμή Lightning έχει αποσταλεί με επιτυχία! Η ανταλλαγή σας είναι τώρα πλήρης.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionListNoTransactions": "Καμία συναλλαγή ακόμα.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionDetailLabelPayinAmount": "Ποσό Payin",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "transactionSwapInfoClaimableTransfer": "Η ανταλλαγή θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε χειροκίνητη διεκδίκηση πατώντας το κουμπί «Επανάληψη διεκδίκησης ανταλλαγής».",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionLabelSendAmount": "Στείλε ποσό",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "Λήψη δικτύου Fee",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionSwapDescChainExpired": "Αυτή η ανταλλαγή έληξε. Τα κεφάλαιά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "Η ανταλλαγή σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionSwapDoNotUninstall": "Μην απεγκαταστήσετε την εφαρμογή μέχρι να ολοκληρωθεί η ανταλλαγή.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionDetailLabelExchangeRate": "Συναλλαγματική ισοτιμία",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionDetailLabelToWallet": "To πορτοφόλι",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "transactionListOngoingTransfersTitle": "Ανταλλαγές σε εξέλιξη",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος επιβεβαιώθηκε. Διεκδικείτε τώρα τα κεφάλαια για να ολοκληρώσετε τη ανταλλαγή σας.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "Η ανταλλαγή θα επιστραφεί. Τα κεφάλαιά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "transactionDetailLabelFromWallet": "Από το πορτοφόλι",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionSwapDescChainCompleted": "Η ανταλλαγή σας ολοκληρώθηκε με επιτυχία! Τα κεφάλαια θα πρέπει να είναι πλέον διαθέσιμα στο πορτοφόλι σας.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "transactionDetailLabelTransactionId": "Σύνδεση ID",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "transactionFeesTotalDeducted": "Αυτό είναι το συνολικό ποσό που αφαιρείται από το ποσό που αποστέλλεται",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionSwapInfoRefundableTransfer": "Αυτή η ανταλλαγή θα επιστραφεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε χειροκίνητη επιστροφή πατώντας το κουμπί «Επανάληψη επιστροφής ανταλλαγής».",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapDescLnReceiveCompleted": "Η ανταλλαγή σας έχει ολοκληρωθεί με επιτυχία! Τα κεφάλαια θα πρέπει τώρα να είναι διαθέσιμα στο πορτοφόλι σας.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionSwapInfoClaimableSwap": "Η ανταλλαγή θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική αξίωση κάνοντας κλικ στο κουμπί \"Retry Swap Claim\".",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionListLoadingTransactions": "Φόρτωση συναλλαγών...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionLabelServerNetworkFees": "Δίκτυο server Fees",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "transactionSwapDescLnSendPaid": "Η συναλλαγή σας on-chain έχει μεταδοθεί. Μετά από 1 επιβεβαίωση, η πληρωμή Lightning θα αποστέλλεται.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescChainDefault": "Η ανταλλαγή σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "transactionOrderLabelOriginName": "Όνομα προέλευσης",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "transactionSwapInfoRefundableSwap": "Αυτή η ανταλλαγή θα επιστραφεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική επιστροφή κάνοντας κλικ στο κουμπί \"Retry Swap Refund\".",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionDetailLabelAddressNotes": "Αναφορά σημειώσεις",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionOrderLabelReferenceNumber": "Αριθμός αναφοράς",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "Κατάσταση status status",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionFeesDeductedFrom": "Αυτά τα τέλη θα αφαιρεθούν από το ποσό που αποστέλλεται",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionLabelSendNetworkFees": "Να στείλετε τέλη δικτύου",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "transactionListYesterday": "Χθες",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionSwapInfoChainDelay": "Οι ανταλλαγές on-chain μπορεί να χρειαστούν λίγο χρόνο για να ολοκληρωθούν λόγω των χρόνων επιβεβαίωσης του blockchain.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "transactionListToday": "Σήμερα σήμερα",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionDetailLabelAmountSent": "Ποσό που αποστέλλεται",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "transactionDetailLabelOrderType": "Τύπος",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelPayoutAmount": "Ποσό πληρωμής",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "transactionDetailLabelAddress": "Διεύθυνση",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "transactionSwapInfoFailedExpired": "Εάν έχετε οποιεσδήποτε ερωτήσεις ή ανησυχίες, παρακαλούμε επικοινωνήστε με την υποστήριξη για βοήθεια.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "transactionDetailLabelOrderNumber": "Αριθμός αριθμών",
+  "transactionDetailLabelPaymentDescription": "Περιγραφή πληρωμής",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionListOngoingTransfersDescription": "Αυτές οι ανταλλαγές βρίσκονται σε εξέλιξη. Τα κεφάλαιά σας είναι ασφαλή και θα είναι διαθέσιμα όταν ολοκληρωθεί η ανταλλαγή.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionOrderLabelOriginCedula": "Προέλευση Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionSwapDescChainPaid": "Η συναλλαγή σας έχει μεταδοθεί. Τώρα περιμένουμε να επιβεβαιωθεί η συναλλαγή κλειδώματος.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "transactionSwapDescLnReceiveFailed": "Υπήρχε ένα θέμα με την ανταλλαγή σας. Παρακαλούμε επικοινωνήστε με την υποστήριξη εάν τα κεφάλαια δεν έχουν επιστραφεί εντός 24 ωρών.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "Η συναλλαγή on-chain έχει επιβεβαιωθεί. Υποστηρίζουμε τώρα τα κεφάλαια για να ολοκληρώσουμε την ανταλλαγή σας.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionDetailLabelRecipientAddress": "Μαθητής Διεύθυνση",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "viewerTapToCopy": "Πατήστε για αντιγραφή",
+  "viewerViewInExplorer": "Προβολή στον εξερευνητή",
+  "transactionViewerTitle": "ID συναλλαγής",
+  "viewerCopyLink": "Αντιγραφή συνδέσμου",
+  "recipientsTypeInteracEmail": "Μεταφορά χρημάτων μέσω email",
+  "transactionStatusPayjoinCompleted": "Το Payjoin ολοκληρώθηκε",
+  "coreSwapsStatusRefunded": "Επιστράφηκε",
+  "payViewReceipt": "Προβολή απόδειξης",
+  "transactionFilterWithdraw": "Ανάληψη",
+  "transactionFilterPay": "Πληρωμή",
+  "transactionFilterFunding": "Χρηματοδότηση",
+  "transactionFilterReward": "Ανταμοιβή",
+  "transactionFilterRefund": "Επιστροφή",
+  "transactionListLoadingFailed": "Δεν ήταν δυνατή η φόρτωση των συναλλαγών.",
+  "transactionLabelNetworkFees": "Τέλη δικτύου",
+  "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
+  "transactionStatusPayjoinAborted": "Το Payjoin ματαιώθηκε",
+  "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
+  "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
+  "coreSwapsStatusNotStarted": "Δεν ξεκίνησε",
+  "coreSwapsStatusAwaitingPayment": "Αναμονή πληρωμής",
+  "coreSwapsStatusAwaitingConfirmation": "Αναμονή επιβεβαίωσης",
+  "coreSwapsStatusUnderReview": "Υπό εξέταση",
+  "coreSwapsStatusRejected": "Απορρίφθηκε",
+  "coreSwapsStatusCanceled": "Ακυρώθηκε",
+  "coreSwapsStatusPaymentDeadlineExpired": "Η προθεσμία πληρωμής έληξε",
+  "coreSwapsStatusScheduled": "Προγραμματισμένο",
+  "coreSwapsStatusAwaitingClaim": "Αναμονή διεκδίκησης",
+  "coreSwapsStatusUnknown": "Άγνωστο",
+  "transactionDetailLoadError": "Δεν ήταν δυνατή η φόρτωση των λεπτομερειών της συναλλαγής.",
+  "transactionPayjoinBroadcastFailed": "Δεν ήταν δυνατή η μετάδοση της αρχικής συναλλαγής. Παρακαλώ δοκιμάστε ξανά.",
+  "transactionPayjoinOriginalUnavailable": "Η αρχική συναλλαγή δεν είναι πλέον διαθέσιμη για μετάδοση.",
+  "transactionLabelLimitReached": "Μπορείτε να έχετε έως 10 ετικέτες.",
+  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
+  "transactionListExchangeOrdersUnavailable": "Δεν ήταν δυνατή η φόρτωση των εντολών του ανταλλακτηρίου."
+}

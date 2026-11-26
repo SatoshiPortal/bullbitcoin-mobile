@@ -6,6 +6,11 @@ class BullPickerItem<T> {
     required this.value,
     required this.label,
     this.leading,
+    this.enabled = true,
+    this.disabledReason,
+    this.subtitle,
+    this.checked,
+    this.dividerBefore = false,
   });
 
   /// The value reported to `onChanged`.
@@ -16,4 +21,11 @@ class BullPickerItem<T> {
 
   /// Optional widget drawn before [label], in the menu and in the closed field.
   final Widget? leading;
+  final bool enabled;
+  final String? disabledReason;
+
+  /// Supporting text for a choice, independent of its disabled state.
+  final String? subtitle;
+  final bool? checked;
+  final bool dividerBefore;
 }

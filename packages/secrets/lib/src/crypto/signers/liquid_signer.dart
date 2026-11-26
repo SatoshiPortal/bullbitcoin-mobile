@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/derivers/liquid_deriver.dart'
     show liquidSeed, lwkLiquidNetwork;
@@ -118,12 +118,12 @@ final class LiquidSigner {
   ///
   /// Called by `Secrets` at construction, so a leftover of a signature the
   /// process did not survive does not wait for the next Liquid signature,
-  /// which may never come. Best effort: a failure is logged by type and
-  /// errno, never by path.
+  /// which may never come. Best effort: a failing directory callback is
+  /// logged by type, never by path.
   Future<void> sweepScratch(Future<String> Function() scratchDirectory) async {
     try {
       await sweepStale(Directory(await scratchDirectory()));
-    } on Exception catch (e) {
+    } on Object catch (e) {
       log.warning('Could not sweep lwk scratch: ${e.runtimeType}');
     }
   }

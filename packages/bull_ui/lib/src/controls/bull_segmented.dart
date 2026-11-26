@@ -1,8 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
+
+import '../theme/bull_tokens.dart';
 
 /// Full-width sliding segmented control.
 class BullSegmented extends StatefulWidget {
@@ -11,26 +15,39 @@ class BullSegmented extends StatefulWidget {
     required this.items,
     this.initialValue,
     required this.onSelected,
+    this.labelBuilder,
     this.disabledItems = const {},
+    this.fitLabels = false,
+    this.height = BullSpacing.xl + BullSpacing.xs,
   }) : assert(items.length > 0, 'BullSegmented requires at least one item');
 
-  /// The ordered set of segment labels.
+  /// The ordered set of segment values, displayed as labels by default.
   final Set<String> items;
 
-  /// The initially selected label (defaults to the first item).
+  /// The initially selected value (defaults to the first item).
   final String? initialValue;
 
-  /// Fired with the selected label.
+  /// Fired with the selected value.
   final ValueChanged<String> onSelected;
 
-  /// Labels that cannot be selected.
+  /// Resolves a display label without changing the identity of the segment.
+  final String Function(String)? labelBuilder;
+
+  /// Values that cannot be selected.
   final Set<String> disabledItems;
+  final double height;
+
+  /// Grows the control to fit translated labels at the current text scale.
+  final bool fitLabels;
 
   @override
   State<BullSegmented> createState() => _BullSegmentedState();
 }
 
 class _BullSegmentedState extends State<BullSegmented> {
+  static const _innerPadding = 4.0;
+  static const _segmentPadding = 12.0;
+
   late String selectedSegment;
 
   @override
@@ -57,18 +74,21 @@ class _BullSegmentedState extends State<BullSegmented> {
     // away from it, in both themes: light thumb on a grey track, black thumb
     // on a dark grey track.
     final dark = Theme.of(context).brightness == Brightness.dark;
-    return Center(
+    String labelFor(String item) => widget.labelBuilder?.call(item) ?? item;
+    Widget control(double height) => Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(context.bullShapes.button),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
+          height: height,
           initialValue: widget.initialValue ?? widget.items.first,
           onValueChanged: (v) {
             if (widget.disabledItems.contains(v)) return;
             setState(() => selectedSegment = v);
             widget.onSelected(v);
           },
-          innerPadding: const EdgeInsets.all(4),
+          innerPadding: const EdgeInsets.all(_innerPadding),
+          padding: _segmentPadding,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInToLinear,
           isStretch: true,
@@ -80,30 +100,67 @@ class _BullSegmentedState extends State<BullSegmented> {
             borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           thumbDecoration: BoxDecoration(
-            color: dark ? colors.background : colors.surface,
+            color: colors.background,
             borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           children: {
             for (final item in widget.items)
               // One role for every segment, so a control reads at the same
               // size on every screen; the selection shows by colour and weight.
-              item: Text(
-                item,
-                style: item == selectedSegment
-                    ? context.bullType.label.copyWith(color: colors.primary)
-                    : widget.disabledItems.contains(item)
-                    ? context.bullType.label.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: colors.outline.withValues(alpha: 0.5),
-                      )
-                    : context.bullType.label.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: colors.secondary,
-                      ),
+              item: Semantics(
+                button: true,
+                enabled: !widget.disabledItems.contains(item),
+                selected: item == selectedSegment,
+                inMutuallyExclusiveGroup: true,
+                child: Text(
+                  labelFor(item),
+                  style: item == selectedSegment
+                      ? context.bullType.label.copyWith(color: colors.primary)
+                      : widget.disabledItems.contains(item)
+                      ? context.bullType.label.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: colors.outline.withValues(alpha: 0.5),
+                        )
+                      : context.bullType.label.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: colors.secondary,
+                        ),
+                ),
               ),
           },
         ),
       ),
+    );
+    if (!widget.fitLabels) return control(widget.height);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!constraints.hasBoundedWidth) return control(widget.height);
+        final labelWidth = math.max(
+          1.0,
+          (constraints.maxWidth - 2 * _innerPadding) / widget.items.length -
+              2 * _segmentPadding,
+        );
+        var height = widget.height;
+        for (final item in widget.items) {
+          final label = labelFor(item);
+          for (final weight in [
+            context.bullType.label.fontWeight,
+            FontWeight.w400,
+          ]) {
+            final painter = TextPainter(
+              text: TextSpan(
+                text: label,
+                style: context.bullType.label.copyWith(fontWeight: weight),
+              ),
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+            )..layout(maxWidth: labelWidth);
+            height = math.max(height, painter.height + 16);
+            painter.dispose();
+          }
+        }
+        return control(height);
+      },
     );
   }
 }

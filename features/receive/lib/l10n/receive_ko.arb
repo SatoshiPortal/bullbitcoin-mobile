@@ -1,0 +1,193 @@
+{
+  "receiveInvoice": "Lightning 청구서",
+  "@receiveInvoice": {
+    "description": "Label for Lightning invoice"
+  },
+  "receiveServerNetworkFees": "서버 네트워크 요금",
+  "@receiveServerNetworkFees": {
+    "description": "Label for network fees charged by the swap server"
+  },
+  "transactionNetworkLightning": "연락처",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "globalDefaultBitcoinWalletLabel": "안전한 Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "receiveAddress": "자주 묻는 질문",
+  "@receiveAddress": {
+    "description": "Label for generated address"
+  },
+  "receiveSendNetworkFee": "네트워크 수수료",
+  "@receiveSendNetworkFee": {
+    "description": "Label for the network fee on the sending network in a swap transaction"
+  },
+  "okButton": "이름 *",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "receiveWaitForPayjoin": "Payjoin 거래를 완료하는 sender를 기다립니다",
+  "@receiveWaitForPayjoin": {
+    "description": "Instructions to wait for the sender during a payjoin transaction"
+  },
+  "swapTransferTitle": "스왑",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "receivePaymentReceived": "지불받은!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  },
+  "appStartupErrorMessage": "앱을 시작하지 못했습니다. 앱을 완전히 종료한 후 다시 시작해 보세요. 오류가 계속되면 지원팀에 문의하고 로그를 공유하세요.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "swapErrorAmountBelowMinimum": "금액은 최소 스왑 금액 이하입니다. {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveNewAddress": "새 주소",
+  "@receiveNewAddress": {
+    "description": "Button label for generating a new receive address"
+  },
+  "receiveNetworkFee": "네트워크 요금",
+  "@receiveNetworkFee": {
+    "description": "Label for the network fee in a receive transaction"
+  },
+  "receiveLiquidConfirmationMessage": "몇 초 안에 확인됩니다",
+  "@receiveLiquidConfirmationMessage": {
+    "description": "Message indicating quick confirmation time for Liquid transactions"
+  },
+  "receiveLightningInvoice": "연락처",
+  "@receiveLightningInvoice": {
+    "description": "Label for a Lightning Network invoice"
+  },
+  "receiveVerifyAddressError": "주소 확인 가능: 지갑 또는 주소 정보",
+  "@receiveVerifyAddressError": {
+    "description": "Error message when address verification is not possible"
+  },
+  "copyDialogButton": "관련 기사",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "receivePaymentNormally": "지불을 일반적으로 받으십시오",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "retry": "이름 *",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionNetworkBitcoin": "비트 코인",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "receiveBitcoinConfirmationMessage": "Bitcoin 거래는 확인하는 동안 걸릴 것입니다.",
+  "@receiveBitcoinConfirmationMessage": {
+    "description": "Information message about Bitcoin transaction confirmation time"
+  },
+  "receiveTotalFee": "총 비용",
+  "@receiveTotalFee": {
+    "description": "Label for the total fee in a receive transaction"
+  },
+  "closeDialogButton": "뚱 베어",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "receivePaymentInProgress": "결제 진행",
+  "@receivePaymentInProgress": {
+    "description": "Status message when a payment is being processed"
+  },
+  "receiveLiquid": "제품정보",
+  "@receiveLiquid": {
+    "description": "Label for receiving Bitcoin via Liquid Network"
+  },
+  "receiveTransferFee": "스왑 수수료",
+  "@receiveTransferFee": {
+    "description": "Label for the transfer fee in a receive transaction"
+  },
+  "globalDefaultLiquidWalletLabel": "즉시 결제",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "payNetworkError": "네트워크 오류. 다시 시도",
+  "@payNetworkError": {
+    "description": "Error message for network connectivity issues during payment"
+  },
+  "receiveTitle": "이름 *",
+  "@receiveTitle": {
+    "description": "Main screen title for receive feature"
+  },
+  "receivePayjoinInProgress": "진행중인 Payjoin",
+  "@receivePayjoinInProgress": {
+    "description": "Status message when a payjoin transaction is in progress"
+  },
+  "receiveLightning": "연락처",
+  "@receiveLightning": {
+    "description": "Label for receiving Bitcoin via Lightning Network"
+  },
+  "receivePayjoinFailQuestion": "기다리거나 payjoin이 보낸 사람의 측에 실패 했습니까?",
+  "@receivePayjoinFailQuestion": {
+    "description": "Question prompting user if they want to proceed without payjoin"
+  },
+  "receiveBitcoin": "비트 코인",
+  "@receiveBitcoin": {
+    "description": "Label for receiving Bitcoin on the base layer"
+  },
+  "receiveVerifyAddressLedger": "Ledger에 주소 확인",
+  "@receiveVerifyAddressLedger": {
+    "description": "Button label for verifying an address on a Ledger hardware wallet"
+  },
+  "amountLabel": "계정 정보",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "receiveDetails": "제품 정보",
+  "@receiveDetails": {
+    "description": "Label for viewing transaction details"
+  },
+  "receiveFeeExplanation": "이 요금은 전송된 금액에서 공제됩니다",
+  "@receiveFeeExplanation": {
+    "description": "Explanation that fees are deducted from the sent amount"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "transactionNetworkLiquid": "제품정보",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "swapErrorAmountAboveMaximum": "금액은 최대 스왑 금액을 초과합니다: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveContinue": "계속하기",
+  "@receiveContinue": {
+    "description": "Button label for continuing in the receive flow"
+  },
+  "viewerTapToCopy": "복사하려면 탭하세요",
+  "invoiceViewerTitle": "인보이스",
+  "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "receiveLiquidRiskDisclosureLabel": "결제는 Liquid L-BTC로 전환됩니다(BTC 아님). 자세히 알아보기.",
+  "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin 위험 고지 열기",
+  "liquidRiskDisclosureTitle": "Instant Payment Wallet Liquid Bitcoin 위험 고지",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "settingsPayjoinDisclaimerTitle": "Payjoin 고지사항",
+  "receiveErrorAmountAboveProtocolLimit": "금액이 비트코인의 최대 가능 금액인 {max}을(를) 초과합니다",
+  "receiveErrorNoteNotSaved": "메모를 저장할 수 없습니다. 다시 시도해 주세요.",
+  "receiveErrorAddressUnavailable": "수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
+  "receiveErrorBroadcastOriginal": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.",
+  "copiedToClipboard": "클립보드에 복사되었습니다"
+}
