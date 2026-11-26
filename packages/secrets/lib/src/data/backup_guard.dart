@@ -17,7 +17,7 @@ final _inventoryWrites = Lock();
 Future<T> inventoryWriteTransaction<T>(
   SecretsDatabase database,
   Future<T> Function() action,
-) => _inventoryWrites.synchronized(() => guardedTransaction(database, action));
+) => guardedTransaction(database, action);
 
 /// Zone key under which an inventory operation publishes "my session is still
 /// the live one". Read by [guardedTransaction] just before the commit.
@@ -29,12 +29,14 @@ const inventorySessionCheck = #secretsInventorySessionCheck;
 Future<T> guardedTransaction<T>(
   SecretsDatabase database,
   Future<T> Function() action,
-) => database.transaction(() async {
-  final result = await action();
-  final live = Zone.current[inventorySessionCheck];
-  if (live is bool Function() && !live()) throw const InventorySessionEnded();
-  return result;
-});
+) => _inventoryWrites.synchronized(
+  () => database.transaction(() async {
+    final result = await action();
+    final live = Zone.current[inventorySessionCheck];
+    if (live is bool Function() && !live()) throw const InventorySessionEnded();
+    return result;
+  }),
+);
 
 /// Completes once every write already queued or running has settled.
 Future<void> inventoryWritesSettled() => _inventoryWrites.synchronized(() {});
