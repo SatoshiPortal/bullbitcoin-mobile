@@ -1,11 +1,19 @@
 import 'package:bull_exchange/src/payin/domain/usecases/build_payin_usecase.dart';
 import 'package:bull_exchange/src/payin/domain/usecases/check_transaction_seen_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/get_fee_options_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/get_wallet_coins_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/preview_custom_fee_usecase.dart';
+import 'package:bull_exchange/src/payin/domain/usecases/preview_fee_presets_usecase.dart';
 import 'package:bull_exchange/src/payin/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bull_exchange/src/payin/domain/usecases/send_payin_usecase.dart';
 import 'package:bull_exchange/src/payin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
+import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_runner.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/sync.dart' show Coin;
 
 import '../orders/order_usecase_fakes.dart';
 
@@ -95,5 +103,80 @@ PayinUsecases fakePayin({
       retryPayjoin ??
       FakeRetryPayjoinProposalUsecase(
         (_) => throw StateError('no payjoin retry'),
+      ),
+);
+
+final class FakeGetFeeOptionsUsecase implements GetFeeOptionsUsecase {
+  final Future<FeeOptions?> Function(ExchangeSession session) answer;
+
+  FakeGetFeeOptionsUsecase(this.answer);
+
+  @override
+  Future<FeeOptions?> execute(ExchangeSession session) => answer(session);
+}
+
+final class FakeGetWalletCoinsUsecase implements GetWalletCoinsUsecase {
+  final Future<List<Coin>?> Function(String walletId) answer;
+
+  FakeGetWalletCoinsUsecase(this.answer);
+
+  @override
+  Future<List<Coin>?> execute(String walletId) => answer(walletId);
+}
+
+final class FakePreviewFeePresetsUsecase implements PreviewFeePresetsUsecase {
+  final Future<Map<FeeSelection, BitcoinFeePreviewSlot>> Function(
+    SpendPreviewShape shape,
+    FeeOptions fees,
+  )
+  answer;
+
+  FakePreviewFeePresetsUsecase(this.answer);
+
+  @override
+  Future<Map<FeeSelection, BitcoinFeePreviewSlot>> execute(
+    SpendPreviewShape shape,
+    FeeOptions fees,
+  ) => answer(shape, fees);
+}
+
+final class FakePreviewCustomFeeUsecase implements PreviewCustomFeeUsecase {
+  final Future<BitcoinFeePreviewSlot> Function(
+    SpendPreviewShape shape,
+    NetworkFee fee,
+  )
+  answer;
+
+  FakePreviewCustomFeeUsecase(this.answer);
+
+  @override
+  Future<BitcoinFeePreviewSlot> execute(
+    SpendPreviewShape shape,
+    NetworkFee fee,
+  ) => answer(shape, fee);
+}
+
+/// Spend options use cases where every call fails the test unless given.
+SpendOptionsUsecases fakeSpendOptions({
+  FakeGetFeeOptionsUsecase? getFees,
+  FakeGetWalletCoinsUsecase? getCoins,
+  FakePreviewFeePresetsUsecase? previewPresets,
+  FakePreviewCustomFeeUsecase? previewCustom,
+}) => SpendOptionsUsecases(
+  getFees:
+      getFees ??
+      FakeGetFeeOptionsUsecase((_) => throw StateError('no fee estimates')),
+  getCoins:
+      getCoins ??
+      FakeGetWalletCoinsUsecase((_) => throw StateError('no coin read')),
+  previewPresets:
+      previewPresets ??
+      FakePreviewFeePresetsUsecase(
+        (_, _) => throw StateError('no preset preview'),
+      ),
+  previewCustom:
+      previewCustom ??
+      FakePreviewCustomFeeUsecase(
+        (_, _) => throw StateError('no custom preview'),
       ),
 );

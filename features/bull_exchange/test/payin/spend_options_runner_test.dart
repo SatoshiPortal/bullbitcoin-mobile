@@ -1,8 +1,12 @@
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/src/payin/spend_options_runner.dart';
+import 'package:exchange/exchange.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'payin_fixtures.dart';
+import 'payin_usecase_fakes.dart';
 
 const _fees = FeeOptions(
   fastest: RelativeFee(2500),
@@ -23,12 +27,24 @@ void main() {
     fakeAsync((async) {
       final events = <SpendOptionsEvent>[];
       var feesOk = false;
-      final runner = SpendOptionsRunner((
-        fees: () async => feesOk ? _fees : null,
-        coins: (walletId) async => null,
-        presets: (shape, fees) async => {FeeSelection.fastest: _slot},
-        custom: (shape, fee) async => _slot,
-      ), events.add);
+      final sessions = <ExchangeSession>[];
+      final runner = SpendOptionsRunner(
+        fakeSpendOptions(
+          getFees: FakeGetFeeOptionsUsecase((session) async {
+            sessions.add(session);
+            return feesOk ? _fees : null;
+          }),
+          getCoins: FakeGetWalletCoinsUsecase((walletId) async => null),
+          previewPresets: FakePreviewFeePresetsUsecase(
+            (shape, fees) async => {FeeSelection.fastest: _slot},
+          ),
+          previewCustom: FakePreviewCustomFeeUsecase(
+            (shape, fee) async => _slot,
+          ),
+        ),
+        payinTestnetSession,
+        events.add,
+      );
       runner.run(const [
         SpendLoadFees(1),
         SpendLoadCoins('w1'),
@@ -61,18 +77,20 @@ void main() {
         events[4],
         isA<SpendFeesLoaded>().having((e) => e.attempt, 'attempt', 2),
       );
+      expect(sessions, [payinTestnetSession, payinTestnetSession]);
     });
   });
 
   test('nothing is answered after close', () {
     fakeAsync((async) {
       final events = <SpendOptionsEvent>[];
-      final runner = SpendOptionsRunner((
-        fees: () async => _fees,
-        coins: (walletId) async => const [],
-        presets: (shape, fees) async => const {},
-        custom: (shape, fee) async => _slot,
-      ), events.add);
+      final runner = SpendOptionsRunner(
+        fakeSpendOptions(
+          getFees: FakeGetFeeOptionsUsecase((session) async => _fees),
+        ),
+        payinSession,
+        events.add,
+      );
       runner.run(const [SpendLoadFees(1)]);
       runner.close();
       async.flushMicrotasks();

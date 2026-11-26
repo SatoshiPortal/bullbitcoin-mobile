@@ -26,7 +26,7 @@ typedef SellFlowCalls = ({
   Future<ExchangeRead<Order>> Function(Order order) refresh,
   PayoutRequirementsUsecases requirements,
   PayinUsecases payin,
-  SpendOptionsCalls spend,
+  SpendOptionsUsecases spend,
 });
 
 SellFlowCalls sellFlowCallsOf(
@@ -110,7 +110,7 @@ SellFlowCalls sellFlowCallsOf(
     },
     requirements: PayoutRequirementsUsecases.of(exchange),
     payin: PayinUsecases.of(exchange, wallets),
-    spend: spendOptionsCallsOf(session, wallets),
+    spend: SpendOptionsUsecases.of(wallets),
   );
 }
 
@@ -161,7 +161,7 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
       _payin = PayinRunner(calls.payin, session, (event) {
         if (!isClosed) add(SellPayinChanged(event));
       });
-      _spend = SpendOptionsRunner(calls.spend, (event) {
+      _spend = SpendOptionsRunner(calls.spend, session, (event) {
         if (!isClosed) add(SellSpendChanged(event));
       });
     }
