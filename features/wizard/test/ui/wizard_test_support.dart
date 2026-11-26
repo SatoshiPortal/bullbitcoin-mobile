@@ -98,3 +98,19 @@ Future<void> pumpWizard(WidgetTester tester, Widget home) async {
   );
   await tester.pumpAndSettle();
 }
+
+/// Taps the welcome logo seven times, which toggles the superuser mode.
+Future<void> unlockSuperuser(WidgetTester tester) async {
+  final logo = find.byWidgetPredicate(
+    (widget) =>
+        widget is Semantics &&
+        widget.properties.identifier == 'wizard.superuser.unlock',
+  );
+  for (var i = 0; i < 7; i++) {
+    await tester.tap(logo);
+    await tester.pump();
+  }
+  await tester.pumpAndSettle();
+  await tester.pump(const Duration(seconds: 4));
+  await tester.pumpAndSettle();
+}

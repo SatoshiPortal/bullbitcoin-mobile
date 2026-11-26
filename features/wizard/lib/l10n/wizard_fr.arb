@@ -1,7 +1,6 @@
 {
   "@@locale": "fr",
   "settingsLanguageTitle": "Langue",
-  "wizardAdvancedOptionsTitle": "Options avancées",
   "onboardingBullBitcoin": "Bull Bitcoin",
   "onboardingOwnYourMoney": "Possédez votre argent",
   "onboardingSplashDescription": "Portefeuille Bitcoin à auto-garde souveraine et service d'échange exclusivement Bitcoin.",
@@ -19,8 +18,8 @@
   "wizardMissionBody1": "Pour nous aider à améliorer notre logiciel et garantir le meilleur niveau de sécurité, de confidentialité et d'utilisabilité, votre application peut nous envoyer des journaux d'erreurs qui nous permettent de détecter et corriger les problèmes rapidement dans nos prochaines mises à jour.",
   "wizardMissionBody2": "Ces journaux sont anonymisés, ne sont pas liés à votre adresse IP, et ne partagent jamais d'informations sur vos transactions ou votre identité. Ils sont purement techniques et ne vous exposent à aucun risque. Cela nous aide énormément, et ne vous coûte rien.",
   "wizardMissionQuestion": "Acceptez-vous de participer à notre programme de signalement automatique des problèmes ?",
-  "wizardMissionYes": "Envoyer les rapports d’erreurs",
-  "wizardMissionNo": "Ne pas envoyer les rapports d’erreurs",
+  "wizardMissionYes": "Oui",
+  "wizardMissionNo": "Non",
   "wizardMissionRequired": "Veuillez choisir d’envoyer ou non les rapports d’erreurs avant de continuer.",
   "wizardJourneyTitle": "Progressez dans votre parcours",
   "wizardJourneyBody": "Si vous découvrez le portefeuille BULL, voici quelques fonctionnalités dont vous pouvez profiter pour améliorer votre confidentialité, votre sécurité et votre expérience utilisateur.",

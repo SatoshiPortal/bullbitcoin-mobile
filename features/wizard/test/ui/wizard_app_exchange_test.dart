@@ -1,14 +1,15 @@
 import 'package:wizard/src/ui/screens/wizard_screen.dart';
+import 'package:wizard/src/ui/widgets/customize_step.dart';
 import 'package:wizard/src/ui/wizard_app.dart';
-import 'package:bull_exchange/bull_exchange.dart' show WizardExchangeOption;
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'test_branding.dart';
 
-/// The App Store does not allow the exchange: the wizard must not offer it on
-/// iOS, where only a superuser can turn it on later from the settings.
+/// The wizard offers no exchange choice on any platform: the exchange is only
+/// managed from Settings > Exchange. [WizardScreen.exchangeAllowed] still
+/// follows the platform, as it gates the default applied on completion.
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
@@ -16,9 +17,7 @@ void main() {
     (ExchangePlatform.ios, false),
     (ExchangePlatform.other, true),
   ]) {
-    testWidgets('offers the exchange on ${platform.name}: $allowed', (
-      tester,
-    ) async {
+    testWidgets('shows no exchange row on ${platform.name}', (tester) async {
       await tester.pumpWidget(
         WizardApp(
           notificationChannelId: 'payments',
@@ -34,10 +33,8 @@ void main() {
 
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
-      expect(
-        find.byType(WizardExchangeOption),
-        allowed ? findsOneWidget : findsNothing,
-      );
+      expect(find.byType(CustomizeStep), findsOneWidget);
+      expect(find.text('BULL Exchange'), findsNothing);
     });
   }
 }

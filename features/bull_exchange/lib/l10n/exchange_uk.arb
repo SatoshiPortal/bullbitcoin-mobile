@@ -871,8 +871,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Перевірити ще раз",
   "exchangeBitcoinWalletsSessionEnded": "Ви більше не ввійшли в біржу. Увійдіть знову, щоб змінити гаманці за замовчуванням.",
   "destinationExpectedType": "Введіть або відскануйте дійсний {type}.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Купуйте, продавайте й платіть з Bull Bitcoin прямо зі свого гаманця.",
   "exchangeTradingUnavailable": "Торгівля недоступна.",
   "priceChartShowTooltip": "Показати графік ціни",
   "recipientsErrorSaveOutcomeUnknown": "Не вдалося визначити, чи цього отримувача збережено. Перевірте список отримувачів, перш ніж додавати його знову.",

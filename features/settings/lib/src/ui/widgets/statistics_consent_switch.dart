@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:bull_reporting/statistics.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSettingsEntryItem, BullSnackBar, BullSwitch;
 import 'package:material_ui/material_ui.dart';
 import 'package:settings/src/l10n.dart';
 
@@ -54,11 +55,17 @@ class _StatisticsConsentSwitchState extends State<StatisticsConsentSwitch> {
     builder: (context, snapshot) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SwitchListTile(
-          title: Text(context.loc.statisticsConsentTitle),
-          subtitle: Text(context.loc.statisticsConsentDescription),
-          value: snapshot.data ?? false,
-          onChanged: _writing ? null : _change,
+        MergeSemantics(
+          child: BullSettingsEntryItem(
+            icon: Icons.bar_chart,
+            title: context.loc.statisticsConsentTitle,
+            subtitle: context.loc.statisticsConsentDescription,
+            contentPadding: EdgeInsets.zero,
+            trailing: BullSwitch(
+              value: snapshot.data ?? false,
+              onChanged: _writing ? null : _change,
+            ),
+          ),
         ),
         if (_failedChoice case final choice?)
           Row(

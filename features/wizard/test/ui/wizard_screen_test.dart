@@ -4,8 +4,7 @@ import 'package:wizard/src/domain/entity/wizard_choices.dart';
 import 'package:wizard/src/ui/screens/wizard_screen.dart';
 import 'package:wizard/src/ui/widgets/customize_step.dart';
 import 'package:wizard/src/ui/widgets/mission_consent_row.dart';
-import 'package:bull_exchange/bull_exchange.dart' show WizardExchangeOption;
-import 'package:bull_ui/bull_ui.dart' show BullSwitch;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSwitch;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,54 +31,36 @@ void main() {
         ),
       ),
     );
-    final logo = find.byWidgetPredicate(
-      (widget) =>
-          widget is Semantics &&
-          widget.properties.identifier == 'wizard.superuser.unlock',
+    await unlockSuperuser(tester);
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Screen Privacy'),
+          matching: find.byType(ListTile),
+        ),
+        matching: find.byType(BullSwitch),
+      ),
     );
-    for (var i = 0; i < 7; i++) {
-      await tester.tap(logo);
-      await tester.pump();
-    }
-    await tester.tap(find.text('Advanced Options'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(BullSwitch));
+    await tester.tap(find.text('Mainnet'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Testnet'));
+    await tester.tap(find.text('Testnet').last);
     await tester.pumpAndSettle();
-    final loc = SettingsLocalizations.of(tester.element(find.text('Testnet')));
+    final loc = SettingsLocalizations.of(tester.element(find.text('Network')));
     await tester.tap(find.text(loc.settingsDevModeUnderstandButton));
     await tester.pumpAndSettle();
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-    await tester.pump(const Duration(seconds: 4));
-    await tester.pumpAndSettle();
+    expect(find.text('Testnet'), findsOneWidget);
+    // The rows stay when the user goes on and comes back.
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Advanced Options'));
-    await tester.pumpAndSettle();
-    expect(
-      tester
-          .widget<Semantics>(
-            find.byWidgetPredicate(
-              (widget) =>
-                  widget is Semantics &&
-                  widget.properties.identifier == 'wizard.network.testnet',
-            ),
-          )
-          .properties
-          .selected,
-      isTrue,
-    );
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Next'));
-    await tester.pumpAndSettle();
+    expect(find.text('Testnet'), findsOneWidget);
     await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Don't send error reports"));
+    await tester.tap(find.text('No'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
@@ -92,7 +73,7 @@ void main() {
 
   for (final allowed in [false, true]) {
     testWidgets(
-      'the exchange switch follows the platform permission $allowed',
+      'the exchange default follows the platform permission $allowed',
       (tester) async {
         final repository = FakeWizardRepository();
         await pumpWizard(
@@ -117,23 +98,15 @@ void main() {
           of: find.byType(CustomizeStep),
           matching: find.byType(BullSwitch),
         );
-        // Dark mode, then the exchange where the platform allows it.
-        expect(switches, findsNWidgets(allowed ? 2 : 1));
-        expect(
-          find.byType(WizardExchangeOption),
-          allowed ? findsOneWidget : findsNothing,
-        );
-        if (allowed) {
-          await tester.tap(switches.at(1));
-          await tester.pump();
-        }
+        // Dark mode only: the exchange is managed from the app settings.
+        expect(switches, findsOneWidget);
+        expect(find.text('BULL Exchange'), findsNothing);
 
-        // Skip on the settings page confirms the exchange choice shown there,
-        // then sends the user to the mandatory mission question.
+        // Skip sends the user to the mandatory mission question.
         await tester.tap(find.text('Skip'));
         await tester.pumpAndSettle();
         expect(find.byType(MissionConsentRow), findsOneWidget);
-        await tester.tap(find.text("Don't send error reports"));
+        await tester.tap(find.text('No'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Get started'));
         await tester.pumpAndSettle();
@@ -141,8 +114,10 @@ void main() {
         final saved = repository.pending;
         expect(saved, isNotNull);
         expect(saved?.reportingConsent, isFalse);
+        // Where the platform allows the exchange, finishing stages its
+        // default (on) with no choice offered.
         expect(saved?.touched.contains(WizardField.exchangeAccess), allowed);
-        if (allowed) expect(saved?.exchangeAccess, isFalse);
+        expect(saved?.exchangeAccess, isTrue);
         // Lets the mission-required snackbar time out.
         await tester.pump(const Duration(seconds: 3));
       },
@@ -172,7 +147,6 @@ void main() {
       'Language',
       'Default currency',
       'Dark Mode',
-      'BULL Exchange',
       'Background Tasks',
       'Notifications',
     ];
@@ -210,7 +184,7 @@ void main() {
 
     await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Don't send error reports"));
+    await tester.tap(find.text('No'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
@@ -240,9 +214,7 @@ void main() {
           ),
         );
         for (final answer in [true, false]) {
-          final label = answer
-              ? 'Send error reports'
-              : "Don't send error reports";
+          final label = answer ? 'Yes' : 'No';
           final nodes = find.semantics.byPredicate(
             (node) => node.label == label && node.flagsCollection.isButton,
           );
@@ -253,8 +225,8 @@ void main() {
             consent == answer ? Tristate.isTrue : Tristate.isFalse,
           );
         }
-        await tester.tap(find.text('Send error reports'));
-        await tester.tap(find.text("Don't send error reports"));
+        await tester.tap(find.text('Yes'));
+        await tester.tap(find.text('No'));
         expect(yesTaps, 1);
         expect(noTaps, 1);
       } finally {
@@ -262,6 +234,25 @@ void main() {
       }
     });
   }
+
+  testWidgets('the answers are plain Yes and No buttons', (tester) async {
+    await pumpWizard(
+      tester,
+      Scaffold(
+        body: MissionConsentRow(
+          consent: true,
+          onYes: () {},
+          onNo: () {},
+          yesFirst: true,
+        ),
+      ),
+    );
+    expect(find.text('Yes'), findsOneWidget);
+    expect(find.text('No'), findsOneWidget);
+    expect(find.byIcon(Icons.radio_button_checked), findsNothing);
+    expect(find.byIcon(Icons.radio_button_unchecked), findsNothing);
+    expect(find.byType(BullButton), findsNWidgets(2));
+  });
 
   for (final yesFirst in [true, false]) {
     testWidgets('the consent row puts Yes on the left: $yesFirst', (
@@ -278,8 +269,8 @@ void main() {
           ),
         ),
       );
-      final yesX = tester.getCenter(find.text('Send error reports')).dx;
-      final noX = tester.getCenter(find.text("Don't send error reports")).dx;
+      final yesX = tester.getCenter(find.text('Yes')).dx;
+      final noX = tester.getCenter(find.text('No')).dx;
       expect(yesX < noX, yesFirst);
     });
   }

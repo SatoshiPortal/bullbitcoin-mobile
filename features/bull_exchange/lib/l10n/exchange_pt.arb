@@ -871,8 +871,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Verificar novamente",
   "exchangeBitcoinWalletsSessionEnded": "Já não tem sessão iniciada na exchange. Inicie sessão novamente para editar as suas carteiras padrão.",
   "destinationExpectedType": "Introduza ou digitalize um {type} válido.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Compre, venda e pague com a Bull Bitcoin diretamente a partir da sua carteira.",
   "exchangeTradingUnavailable": "A negociação não está disponível.",
   "priceChartShowTooltip": "Mostrar gráfico de preços",
   "recipientsErrorSaveOutcomeUnknown": "Não conseguimos saber se este destinatário foi guardado. Verifique os seus destinatários antes de o adicionar novamente.",

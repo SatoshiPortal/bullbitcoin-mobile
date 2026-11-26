@@ -871,8 +871,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Проверить снова",
   "exchangeBitcoinWalletsSessionEnded": "Вы больше не авторизованы на бирже. Войдите снова, чтобы изменить кошельки по умолчанию.",
   "destinationExpectedType": "Введите или отсканируйте действительный {type}.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Покупайте, продавайте и платите с Bull Bitcoin прямо из своего кошелька.",
   "exchangeTradingUnavailable": "Торговля недоступна.",
   "priceChartShowTooltip": "Показать график цены",
   "recipientsErrorSaveOutcomeUnknown": "Не удалось определить, был ли сохранён этот получатель. Проверьте список получателей, прежде чем добавлять его снова.",

@@ -1,5 +1,4 @@
 {
-  "wizardAdvancedOptionsTitle": "Разширени опции",
   "onboardingSplashDescription": "Суверен портфейл за Bitcoin със самоуправление и услуга за обмен само за Bitcoin.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"

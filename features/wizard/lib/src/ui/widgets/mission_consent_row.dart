@@ -62,16 +62,12 @@ class _ConsentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The picked answer is the filled button; the other stays outlined.
     return Semantics(
       selected: selected,
-      child: BullButton.secondary(
-        label: label,
-        onPressed: onTap,
-        iconData: selected
-            ? Icons.radio_button_checked
-            : Icons.radio_button_unchecked,
-        iconFirst: true,
-      ),
+      child: selected
+          ? BullButton.primary(label: label, onPressed: onTap)
+          : BullButton.secondary(label: label, onPressed: onTap),
     );
   }
 }
