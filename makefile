@@ -1,4 +1,4 @@
-.PHONY: workspace-graph workspace-graph-check rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: regtest-hosted-check workspace-graph workspace-graph-check rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -448,6 +448,10 @@ rustc-pins-test:
 
 unit-test-shard-test:
 	@python3 -m unittest tools.testing.test_unit_test_shard
+
+# Read-only reachability check of every hosted regtest endpoint the app uses.
+regtest-hosted-check:
+	@python3 -I tools/regtest/check_hosted.py tools/regtest/hosted.json
 
 # Compile the app to a release AOT snapshot without the native build; catches Dart AOT compiler crashes that debug builds and tests miss. Needs generated code.
 aot-check:
