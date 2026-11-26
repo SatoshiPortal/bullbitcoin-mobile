@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -115,6 +116,84 @@ void main() {
   });
 
   group('BullPaymentViews', () {
+    for (final themeType in [AppThemeType.light, AppThemeType.dark]) {
+      testWidgets('switch strip follows $themeType and the selected view', (
+        tester,
+      ) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final theme = AppTheme.themeData(themeType);
+        final colors = theme.extension<BullTheme>();
+        if (colors == null) fail('BullTheme is missing');
+        final palette = colors;
+        Widget screen(bool showingStatus) => MaterialApp(
+          theme: theme,
+          home: BullPaymentViews(
+            showingStatus: showingStatus,
+            switcher: BullPaymentViewSwitch(
+              showingStatus: showingStatus,
+              statusLabel: 'Status',
+              detailsLabel: 'Details',
+              semanticsLabel: 'Views',
+              onStatus: () {},
+              onDetails: () {},
+            ),
+            views: const SizedBox.expand(key: ValueKey('scene')),
+          ),
+        );
+        Rect? selectorRect;
+        Rect? sceneRect;
+        for (final showingStatus in [true, false]) {
+          await tester.pumpWidget(screen(showingStatus));
+          final switchFinder = find.byType(BullPaymentViewSwitch);
+          final surface = tester.widget<ColoredBox>(
+            find
+                .ancestor(of: switchFinder, matching: find.byType(ColoredBox))
+                .first,
+          );
+          expect(surface.color, palette.background);
+          final selected = showingStatus ? 'Status' : 'Details';
+          final secondary = showingStatus ? 'Details' : 'Status';
+          Material materialFor(String label) => tester.widget<Material>(
+            find
+                .descendant(
+                  of: find.widgetWithText(BullToolButton, label),
+                  matching: find.byType(Material),
+                )
+                .first,
+          );
+          expect(materialFor(selected).color, palette.primary);
+          expect(
+            tester.widget<Text>(find.text(selected)).style?.color,
+            palette.onPrimary,
+          );
+          final secondaryColor = materialFor(secondary).color;
+          expect(secondaryColor, palette.textMuted.withValues(alpha: 0.12));
+          final text = tester.widget<Text>(find.text(secondary));
+          expect(text.style?.color, palette.text);
+          final blended = Color.alphaBlend(
+            palette.textMuted.withValues(alpha: 0.12),
+            surface.color,
+          );
+          final foreground = palette.text.computeLuminance();
+          final background = blended.computeLuminance();
+          final contrast = foreground > background
+              ? (foreground + 0.05) / (background + 0.05)
+              : (background + 0.05) / (foreground + 0.05);
+          expect(contrast, greaterThanOrEqualTo(4.5));
+          final nextSelector = tester.getRect(switchFinder);
+          final nextScene = tester.getRect(find.byKey(const ValueKey('scene')));
+          if (selectorRect != null) {
+            expect(nextSelector, selectorRect);
+            expect(nextScene, sceneRect);
+          }
+          selectorRect = nextSelector;
+          sceneRect = nextScene;
+        }
+      });
+    }
+
     Widget views({required bool showingStatus, bool withSwitch = true}) =>
         wrapWithTheme(
           MediaQuery(
