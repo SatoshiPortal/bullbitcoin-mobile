@@ -20,6 +20,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  material_ui: ^1.11.0
   crypto: ^3.0.7
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
@@ -33,6 +34,5 @@ dependencies:
 
 dev_dependencies:
   legacy_storage:
-  material_ui: ^1.11.0
   flutter_test:
     sdk: flutter

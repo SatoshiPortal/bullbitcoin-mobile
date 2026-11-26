@@ -1,6 +1,8 @@
 /// Composition contracts for the foreground flow.
 library;
 
+export 'src/backup_metadata_feature.dart'
+    show BackupMetadataFeature, BackupMetadataTrigger;
 export 'src/backup_metadata_locator.dart' show BackupMetadataLocator;
 export 'src/data/backup_metadata_store.dart'
     show BackupMetadataKey, BackupMetadataStore;

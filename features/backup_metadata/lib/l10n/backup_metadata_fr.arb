@@ -63,6 +63,8 @@
   "failureTooLarge": "Cette sauvegarde est trop volumineuse.",
   "failureScopeChanged": "La vue a changé pendant l'opération. Rien n'a été sauvegardé ni restauré.",
   "failureIncompatible": "Cette sauvegarde ne correspond pas aux données de ce téléphone. Rien n'a été modifié pour cette partie.",
+  "defaultBitcoinWallet": "Portefeuille Bitcoin par défaut",
+  "unnamedWallet": "Portefeuille sans nom",
   "failureUnexpected": "Une erreur est survenue. Veuillez réessayer.",
   "privacyProvider": "Sans ces informations, {provider} ne peut pas l’ouvrir.",
   "backUpWallet": "Sauvegarder {wallet}",
