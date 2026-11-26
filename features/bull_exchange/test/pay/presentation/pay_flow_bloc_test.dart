@@ -48,14 +48,18 @@ final class _Calls {
     refresh: (order) async => ReadGot<Order>(payOrder()),
     requirements: requirements,
     payin: payin,
-    spend: (
-      fees: () async {
+    spend: fakeSpendOptions(
+      getFees: FakeGetFeeOptionsUsecase((session) async {
         log.add('fees');
         return payFees;
-      },
-      coins: (walletId) async => const [],
-      presets: (shape, fees) async => const {},
-      custom: (shape, fee) async => const BitcoinFeePreviewSlot(),
+      }),
+      getCoins: FakeGetWalletCoinsUsecase((walletId) async => const []),
+      previewPresets: FakePreviewFeePresetsUsecase(
+        (shape, fees) async => const {},
+      ),
+      previewCustom: FakePreviewCustomFeeUsecase(
+        (shape, fee) async => const BitcoinFeePreviewSlot(),
+      ),
     ),
   );
 }

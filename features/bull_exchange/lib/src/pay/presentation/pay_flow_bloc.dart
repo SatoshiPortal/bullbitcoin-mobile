@@ -27,7 +27,7 @@ typedef PayFlowCalls = ({
   Future<ExchangeRead<Order>> Function(Order order) refresh,
   PayoutRequirementsUsecases requirements,
   PayinUsecases payin,
-  SpendOptionsCalls spend,
+  SpendOptionsUsecases spend,
 });
 
 PayFlowCalls payFlowCallsOf(
@@ -96,7 +96,7 @@ PayFlowCalls payFlowCallsOf(
         readOfResult(await orders.refreshPayOrder(order.orderId)),
     requirements: PayoutRequirementsUsecases.of(exchange),
     payin: PayinUsecases.of(exchange, wallets),
-    spend: spendOptionsCallsOf(session, wallets),
+    spend: SpendOptionsUsecases.of(wallets),
   );
 }
 
@@ -147,7 +147,7 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
       _payin = PayinRunner(calls.payin, session, (event) {
         if (!isClosed) add(PayPayinChanged(event));
       });
-      _spend = SpendOptionsRunner(calls.spend, (event) {
+      _spend = SpendOptionsRunner(calls.spend, session, (event) {
         if (!isClosed) add(PaySpendChanged(event));
       });
       _receipt = OutcomeWatchRunner(
