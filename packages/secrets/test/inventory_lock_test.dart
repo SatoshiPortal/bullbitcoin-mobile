@@ -126,8 +126,19 @@ void main() {
         isA<Err<List<RegisteredWallet>, SecretFailure>>(),
         reason: 'a timeout never reopens the lock',
       );
+      final resuming = inventory.resumeUnprotected();
+      final premature = await resuming.timeout(
+        const Duration(milliseconds: 250),
+        onTimeout: () => const Err(UseSecretFailure('resume did not settle')),
+      );
+      expect(
+        await inventory.unlock('1234'),
+        isA<Err<AccessAttempt, SecretFailure>>(),
+      );
       release.complete();
       expect(await registering, isA<Err<void, SecretFailure>>());
+      await resuming;
+      expect(premature, isA<Err<void, SecretFailure>>());
       expect(inventory.isLocked, isTrue);
     },
   );
@@ -139,6 +150,8 @@ void main() {
     _value(await inventory.resumeUnprotected());
     expect(_value(await inventory.findWallet(wallet().id)), isNotNull);
   });
+
+
 }
 
 T _value<T, F extends Failure>(Result<T, F> result) {
