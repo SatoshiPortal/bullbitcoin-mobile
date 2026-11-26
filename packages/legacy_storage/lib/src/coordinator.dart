@@ -284,7 +284,7 @@ final class StorageCutover {
       for (final participant in participants) {
         if (marker.admittedOwners.contains(participant.ownerId) &&
             !await participant.hasState()) {
-          return const Err(LegacyImportUnavailable());
+          return Err(_missingAfterAdmission(participant.ownerId));
         }
       }
       await legacy.prepare(exclusive);
@@ -393,7 +393,7 @@ final class StorageCutover {
           return const Err(LegacyImportDeferred());
         }
         if (!await participant.hasState()) {
-          return const Err(LegacyImportUnavailable());
+          return Err(_missingAfterAdmission(ownerId));
         }
         final inspection = await participant.inspect(shared);
         if (inspection case Err(:final failure)) return Err(failure);
@@ -429,6 +429,12 @@ final class StorageCutover {
       }
     }
   }
+
+  LegacyOwnerFailure _missingAfterAdmission(String ownerId) =>
+      LegacyOwnerFailure(
+        ownerId,
+        LegacyOwnerFailureCause.missingAfterAdmission,
+      );
 
   bool _ready(
     Result<OwnerReadiness, LegacyImportFailure> result,

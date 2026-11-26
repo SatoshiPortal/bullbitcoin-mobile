@@ -308,7 +308,11 @@ void main() {
         isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
           (err) => err.failure,
           'failure',
-          isA<LegacyImportUnavailable>(),
+          isA<LegacyOwnerFailure>().having(
+            (failure) => failure.cause,
+            'cause',
+            LegacyOwnerFailureCause.missingAfterAdmission,
+          ),
         ),
       );
       final background = await cutover().admit();

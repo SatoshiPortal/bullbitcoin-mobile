@@ -11,6 +11,7 @@ extension AppStartupFailureL10n on AppStartupFailure {
     AppStartupRestoreFailure() => context.loc.appStartupErrorMessage,
     AppStartupMissingDefaultSecretFailure() =>
       context.loc.appStartupMissingSecretMessage,
+    InventoryRecoveryRequired() => context.loc.inventoryUnreadableMessage,
     AppStartupRestoreMismatchFailure() => context.loc.appStartupRestoreMismatch,
   };
 }
