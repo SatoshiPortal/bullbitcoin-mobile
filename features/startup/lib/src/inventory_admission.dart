@@ -19,8 +19,8 @@ typedef AdmittedInventory<A extends Object, I extends Object> = ({
 /// Nothing here replaces or erases a file.
 ///
 /// [openInventory] receives the admission and registers whatever it opens.
-/// When it fails or throws, [release] runs once before any screen is shown, so a retry starts
-
+/// When it fails or throws, [release] runs once before any screen is shown, so
+/// a retry starts from nothing; an exception is then rethrown.
 Future<Result<AdmittedInventory<A, I>, Failure>>
 admitInventory<A extends Object, I extends Object>({
   required Future<Result<A, LegacyImportFailure>> Function() prepare,
