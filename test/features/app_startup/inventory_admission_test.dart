@@ -12,6 +12,10 @@ void main() {
       failure: const DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
       blocks: true,
     ),
+    'a missing file': (
+      failure: const DatabaseFileUnavailable(DatabaseFileProblem.missing),
+      blocks: true,
+    ),
     'a missing key': (
       failure: const DatabaseKeyUnavailable(DatabaseKeyProblem.missing),
       blocks: true,
@@ -57,7 +61,11 @@ void main() {
                 'prepare',
                 'open',
                 'release',
-                'blocked:${key == 'corruption' ? 'unreadable' : 'keyLost'}',
+                'blocked:${switch (key) {
+                  'corruption' => 'unreadable',
+                  'a missing file' => 'missingAfterAdmission',
+                  _ => 'keyLost',
+                }}',
                 'prepare',
                 'open',
               ]
