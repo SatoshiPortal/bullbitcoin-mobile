@@ -5,7 +5,6 @@ import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 import 'dart:ui' show Tristate;
 
 import 'package:exchange/exchange.dart';
-import 'package:bull_exchange/src/settings/domain/manage_exchange_access_usecase.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_bloc.dart';
 import 'package:bull_exchange/src/settings/ui/screens/exchange_access_settings_screen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
@@ -14,17 +13,14 @@ import 'package:primitives/primitives.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+
+import '../settings_usecase_fakes.dart';
 
 const _testSession = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,
   sessionId: 'test',
 );
-
-class _Watch extends Mock implements WatchExchangeAccessUsecase {}
-
-class _Set extends Mock implements ManageExchangeAccessUsecase {}
 
 Widget _screen(ExchangeAccessSettingsBloc bloc) => MaterialApp(
   theme: ThemeData(extensions: testBullExtensions),
@@ -47,11 +43,9 @@ Widget _screen(ExchangeAccessSettingsBloc bloc) => MaterialApp(
 void main() {
   testWidgets('switch has a merged accessible label', (tester) async {
     final semantics = tester.ensureSemantics();
-    final watch = _Watch();
-    final set = _Set();
-    when(() => watch.current).thenReturn(const ExchangeAccessDisabled());
-    when(watch.execute).thenAnswer((_) => const Stream.empty());
-    final cubit = ExchangeAccessSettingsBloc(watch, set);
+    final cubit = accessSettingsBloc(
+      current: () => const ExchangeAccessDisabled(),
+    );
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(extensions: testBullExtensions),
@@ -93,13 +87,12 @@ void main() {
   testWidgets('incomplete sign out offers retry and never activation', (
     tester,
   ) async {
-    final watch = _Watch();
-    final set = _Set();
-    when(() => watch.current)
-        .thenReturn(const ExchangeAccessSignOutIncomplete());
-    when(watch.execute).thenAnswer((_) => const Stream.empty());
-    when(() => set.execute(false)).thenAnswer((_) async => const Ok(null));
-    final cubit = ExchangeAccessSettingsBloc(watch, set);
+    final calls = <String>[];
+    final cubit = accessSettingsBloc(
+      current: () => const ExchangeAccessSignOutIncomplete(),
+      calls: calls,
+      signOut: () async => const Ok(null),
+    );
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(extensions: testBullExtensions),
@@ -125,17 +118,16 @@ void main() {
     expect(find.text(loc.exchangeAccessLogoutIncomplete), findsOneWidget);
     await tester.tap(find.text(loc.exchangeAccessRetryLogout));
     await tester.pumpAndSettle();
-    verify(() => set.execute(false)).called(1);
-    verifyNever(() => set.execute(true));
+    expect(calls, ['signOut']);
     await tester.pumpWidget(const SizedBox.shrink());
   });
   testWidgets('reset asks for confirmation before signing out', (tester) async {
-    final watch = _Watch();
-    final set = _Set();
-    when(() => watch.current).thenReturn(const ExchangeAccessUnreadable());
-    when(watch.execute).thenAnswer((_) => const Stream.empty());
-    when(() => set.execute(false)).thenAnswer((_) async => const Ok(null));
-    final cubit = ExchangeAccessSettingsBloc(watch, set);
+    final calls = <String>[];
+    final cubit = accessSettingsBloc(
+      current: () => const ExchangeAccessUnreadable(),
+      calls: calls,
+      signOut: () async => const Ok(null),
+    );
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(extensions: testBullExtensions),
@@ -161,27 +153,25 @@ void main() {
     );
     await tester.tap(find.text(loc.exchangeAccessReset));
     await tester.pumpAndSettle();
-    verifyNever(() => set.execute(false));
+    expect(calls, isEmpty);
     expect(find.text(loc.exchangeAccessDisableConfirm), findsOneWidget);
     await tester.tap(find.text(loc.exchangeAccessDisableConfirm));
     await tester.pumpAndSettle();
-    verify(() => set.execute(false)).called(1);
+    expect(calls, ['signOut']);
     await tester.pumpWidget(const SizedBox.shrink());
   });
   for (final signedIn in [true, false]) {
     testWidgets(
       'iOS non-superuser ${signedIn ? 'can manage signed-in account and sign out' : 'cannot activate'}',
       (tester) async {
-        final watch = _Watch();
-        final set = _Set();
-        when(() => watch.current).thenReturn(
-          signedIn
+        final calls = <String>[];
+        final cubit = accessSettingsBloc(
+          current: () => signedIn
               ? const ExchangeAccessSignedIn(_testSession)
               : const ExchangeAccessDisabled(),
+          calls: calls,
+          signOut: () async => const Ok(null),
         );
-        when(watch.execute).thenAnswer((_) => const Stream.empty());
-        when(() => set.execute(false)).thenAnswer((_) async => const Ok(null));
-        final cubit = ExchangeAccessSettingsBloc(watch, set);
         var accountOpened = false;
         await tester.pumpWidget(
           BlocProvider<ExchangeAccessSettingsBloc>(
@@ -214,12 +204,12 @@ void main() {
           await tester.pumpAndSettle();
           await tester.tap(find.text(loc.exchangeAccessDisableConfirm));
           await tester.pumpAndSettle();
-          verify(() => set.execute(false)).called(1);
+          expect(calls, ['signOut']);
         } else {
           expect(find.byType(Switch), findsNothing);
           expect(find.text(loc.settingsAccountSettingsTitle), findsNothing);
+          expect(calls, isEmpty);
         }
-        verifyNever(() => set.execute(true));
         await tester.pumpWidget(const SizedBox.shrink());
       },
     );
@@ -228,12 +218,13 @@ void main() {
   testWidgets('an expiring session says it is signing out (INT-15)', (
     tester,
   ) async {
-    final watch = _Watch();
-    final set = _Set();
-    when(() => watch.current)
-        .thenReturn(const ExchangeAccessExpiring(_testSession));
-    when(watch.execute).thenAnswer((_) => const Stream.empty());
-    await tester.pumpWidget(_screen(ExchangeAccessSettingsBloc(watch, set)));
+    await tester.pumpWidget(
+      _screen(
+        accessSettingsBloc(
+          current: () => const ExchangeAccessExpiring(_testSession),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     final loc = ExchangeLocalizations.of(
       tester.element(find.byType(ExchangeAccessSettingsScreen)),
@@ -246,14 +237,16 @@ void main() {
   testWidgets('a failed attempt is shown until the next access change', (
     tester,
   ) async {
-    final watch = _Watch();
-    final set = _Set();
     final changes = StreamController<ExchangeAccess>();
-    when(() => watch.current).thenReturn(const ExchangeAccessUnreadable());
-    when(watch.execute).thenAnswer((_) => changes.stream);
-    when(set.retry)
-        .thenAnswer((_) async => const Err(ExchangeCredentialReadFailure()));
-    await tester.pumpWidget(_screen(ExchangeAccessSettingsBloc(watch, set)));
+    await tester.pumpWidget(
+      _screen(
+        accessSettingsBloc(
+          current: () => const ExchangeAccessUnreadable(),
+          changes: changes.stream,
+          resolve: () async => const Err(ExchangeCredentialReadFailure()),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     final loc = ExchangeLocalizations.of(
       tester.element(find.byType(ExchangeAccessSettingsScreen)),
