@@ -33,6 +33,7 @@ class WalletRepository implements WalletReaderRepository {
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
   final WalletRegistrations _walletRegistrations;
+  final WalletSessionJoin _session;
   final SyncWalletValuesDatasource _values;
   final ForegroundWalletSynchronization _synchronization;
   final Stream<String> _walletSyncStartedStream;
@@ -40,6 +41,7 @@ class WalletRepository implements WalletReaderRepository {
 
   WalletRepository({
     required this._walletRegistrations,
+    required this._session,
     required SyncWalletValuesDatasource walletValuesDatasource,
     required this._synchronization,
     required Stream<String> syncStarted,
@@ -63,7 +65,7 @@ class WalletRepository implements WalletReaderRepository {
     bool sync = false,
   }) async {
     try {
-      final wallet = await _readWallet(walletId, sync: sync);
+      final wallet = await _session(() => _readWallet(walletId, sync: sync));
       // A missing wallet is a modeled outcome, not an exception: the id simply
       // is not in the store.
       return wallet == null
@@ -156,12 +158,14 @@ class WalletRepository implements WalletReaderRepository {
         walletDisplayOrder(
           await LeaseDiagnostics.from(
             LeaseSource.walletList,
-            () => _readWallets(
-              environment: environment,
-              onlyDefaults: onlyDefaults,
-              onlyBitcoin: onlyBitcoin,
-              onlyLiquid: onlyLiquid,
-              sync: sync,
+            () => _session(
+              () => _readWallets(
+                environment: environment,
+                onlyDefaults: onlyDefaults,
+                onlyBitcoin: onlyBitcoin,
+                onlyLiquid: onlyLiquid,
+                sync: sync,
+              ),
             ),
           ),
         ),
@@ -257,11 +261,13 @@ class WalletRepository implements WalletReaderRepository {
   Future<native_sync.Balances> getWalletBalances({
     required String walletId,
   }) async {
-    final metadata = await _walletRegistrations.fetch(walletId);
-    if (metadata == null) {
-      throw WalletNotFoundException(walletId);
-    }
-    return _getBalance(metadata);
+    return _session(() async {
+      final metadata = await _walletRegistrations.fetch(walletId);
+      if (metadata == null) {
+        throw WalletNotFoundException(walletId);
+      }
+      return _getBalance(metadata);
+    });
   }
 
   /// Synchronizes the native wallet [metadata] describes.
