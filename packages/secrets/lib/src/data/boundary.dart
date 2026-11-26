@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicException;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
@@ -18,6 +19,9 @@ Future<Result<T, SecretFailure>> boundary<T>(
 }) async {
   try {
     return Ok(await body());
+  } on InventorySessionEnded {
+    // A write reached its commit after the lock: rolled back, not a failure to report.
+    return const Err(inventorySessionChangedFailure);
   } on SecretAlreadyExistsException catch (e) {
     return Err(SecretAlreadyExistsFailure(e.id));
   } on KeystoreLockedException catch (e) {
@@ -77,3 +81,11 @@ const unreadableBip85RecordFailure = FetchSecretFailure(
 const invalidBip85HexLengthFailure = UseSecretFailure(
   'Invalid BIP85 HEX length',
 );
+
+/// Thrown inside a transaction whose session ended before its commit. Drift
+/// rolls the transaction back, so an operation either committed while its
+/// session was live or left nothing behind.
+final class InventorySessionEnded implements Exception {
+  @internal
+  const InventorySessionEnded();
+}

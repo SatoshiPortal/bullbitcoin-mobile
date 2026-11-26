@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart' show Variable;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../domain/domain.dart';
+import 'boundary.dart' show InventorySessionEnded;
 import '../domain/inventory_backup_verification.dart';
 import 'secrets_database.dart';
 
@@ -14,7 +17,27 @@ final _inventoryWrites = Lock();
 Future<T> inventoryWriteTransaction<T>(
   SecretsDatabase database,
   Future<T> Function() action,
-) => _inventoryWrites.synchronized(() => database.transaction(action));
+) => _inventoryWrites.synchronized(() => guardedTransaction(database, action));
+
+/// Zone key under which an inventory operation publishes "my session is still
+/// the live one". Read by [guardedTransaction] just before the commit.
+const inventorySessionCheck = #secretsInventorySessionCheck;
+
+/// A transaction that refuses to commit after its session ended. The check is
+/// made inside the transaction, after the last write and before the commit:
+/// checking after an `await` outside would not undo anything.
+Future<T> guardedTransaction<T>(
+  SecretsDatabase database,
+  Future<T> Function() action,
+) => database.transaction(() async {
+  final result = await action();
+  final live = Zone.current[inventorySessionCheck];
+  if (live is bool Function() && !live()) throw const InventorySessionEnded();
+  return result;
+});
+
+/// Completes once every write already queued or running has settled.
+Future<void> inventoryWritesSettled() => _inventoryWrites.synchronized(() {});
 
 /// Takes SQLite's write lock before any state is read, so a guard decision and
 /// the write it permits see the same committed state. Every mutation that

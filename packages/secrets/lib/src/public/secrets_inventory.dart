@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
@@ -129,9 +130,23 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     return attempt;
   }
 
-  void lock() {
+  /// Closes the inventory, in this order: the admission and the authority
+  /// close first, so nothing new starts and no handle reaches key material;
+  /// then work already admitted settles. A write that reaches its commit after
+  /// the lock is rolled back; one already committed reports its true result.
+  ///
+  /// Returns false if admitted work had not settled within [drain]. It then
+  /// stays closed: the lock never reopens on a timeout, and the operation still
+  /// running reports [inventorySessionChangedFailure] when it ends.
+  Future<bool> lock({Duration drain = const Duration(seconds: 2)}) async {
     _session++;
     _authority.revoke();
+    try {
+      await inventoryWritesSettled().timeout(drain);
+      return true;
+    } on TimeoutException {
+      return false;
+    }
   }
 
   @useResult
@@ -344,15 +359,18 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       return const Err(inventoryLockedFailure);
     }
     final session = _session;
-    final result = await run(session);
+    // The transaction of a write checks this just before its commit.
+    final result = await Zone.current
+        .fork(zoneValues: {inventorySessionCheck: () => session == _session})
+        .run(() => run(session));
     return session == _session
         ? result
         : const Err(inventorySessionChangedFailure);
   }
 
-  Future<void> close() {
-    lock();
-    return _store.close();
+  Future<void> close() async {
+    await lock();
+    await _store.close();
   }
 }
 

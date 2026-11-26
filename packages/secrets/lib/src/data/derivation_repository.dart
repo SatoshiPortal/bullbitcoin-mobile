@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/domain.dart';
 import '../domain/recorded_derivation.dart';
+import 'backup_guard.dart';
 import 'boundary.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
@@ -90,7 +91,7 @@ final class DerivationRepository {
     required String prefix,
     required String? alias,
   }) => boundary(
-    () => _database.transaction(() async {
+    () => guardedTransaction(_database, () async {
       // The first write acquires SQLite's writer lock before reading the
       // high-water index, including when another process has opened the store.
       await _database.customStatement(
@@ -132,7 +133,7 @@ final class DerivationRepository {
     required String path,
     required DerivationsCompanion change,
   }) => boundary(
-    () => _database.transaction(() async {
+    () => guardedTransaction(_database, () async {
       await _database.customStatement(
         'UPDATE access_state SET singleton = singleton WHERE singleton = 1',
       );
