@@ -428,6 +428,101 @@ void main() {
     expect(native.executes, executed);
   });
 
+  test('exit polling observes a submitted claim becoming confirmed', () async {
+    await startExit();
+    await becomeClaimable();
+    final beforeClaim = native.opens;
+    expect(await client.progressStartedExits(account), isA<Ok>());
+    expect(native.opens, beforeClaim, reason: 'claimable alone does not poll');
+    expect(await client.claimAuthorized(account), isA<Ok>());
+    final afterClaim = await client.read(account);
+    final snapshot = (afterClaim as Ok<ArkSnapshot, ArkWalletFailure>).value;
+    expect(snapshot.exitDetails.single.status, ArkExitStatus.claimable);
+    expect(
+      snapshot.operations.where(
+        (op) =>
+            op.kind == ArkOperationKind.claim &&
+            op.actualIds.contains(FakeOpener.firstId) &&
+            {
+              ArkOperationStatus.admitted,
+              ArkOperationStatus.pending,
+              ArkOperationStatus.succeeded,
+            }.contains(op.status),
+      ),
+      hasLength(1),
+    );
+    native.exitDetails = [
+      ArkExit(
+        id: FakeOpener.firstId,
+        amount: Sats.fromInt(10000),
+        status: ArkExitStatus.submitted,
+      ),
+    ];
+    var observations = 0;
+    native.afterStage = (name) {
+      if (name == 'exits-observe') observations++;
+    };
+    expect(await client.progressStartedExits(account), isA<Ok>());
+    expect(observations, 1, reason: 'a submitted claim is still observed');
+    native.exitDetails = [
+      ArkExit(
+        id: FakeOpener.firstId,
+        amount: Sats.fromInt(10000),
+        status: ArkExitStatus.claimed,
+      ),
+      ArkExit(
+        id: FakeOpener.secondId,
+        amount: Sats.fromInt(10000),
+        status: ArkExitStatus.claimable,
+      ),
+    ];
+    expect(await client.progressStartedExits(account), isA<Ok>());
+    final result = await client.read(account);
+    expect(
+      (result as Ok<ArkSnapshot, ArkWalletFailure>)
+          .value
+          .exitDetails
+          .first
+          .status,
+      ArkExitStatus.claimed,
+    );
+    expect(observations, 2);
+    final opens = native.opens;
+    expect(await client.progressStartedExits(account), isA<Ok>());
+    expect(observations, 2, reason: 'confirmed claims stop being observed');
+    expect(
+      native.opens,
+      opens,
+      reason: 'the other claimable ID is not covered',
+    );
+  });
+
+  test('a failed claim observation is retried on the next poll', () async {
+    await startExit();
+    await becomeClaimable();
+    expect(await client.claimAuthorized(account), isA<Ok>());
+    native.exitDetails = [
+      ArkExit(
+        id: FakeOpener.firstId,
+        amount: Sats.fromInt(10000),
+        status: ArkExitStatus.claimed,
+      ),
+    ];
+    native.failingStage = 'exits-observe';
+    expect(await client.progressStartedExits(account), isA<Err>());
+    native.failingStage = null;
+    expect(await client.progressStartedExits(account), isA<Ok>());
+    final result = await client.read(account);
+    expect(
+      (result as Ok<ArkSnapshot, ArkWalletFailure>)
+          .value
+          .exitDetails
+          .single
+          .status,
+      ArkExitStatus.claimed,
+    );
+  });
+
   test('a background client never moves an exit forward', () async {
     await startExit();
     await exitInProgress();
