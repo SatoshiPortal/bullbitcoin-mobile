@@ -2,7 +2,7 @@
 
 `backup_metadata` owns metadata backup grouping, the encrypted local journal, retention, the BIP138 codec and restore presentation. Its screens and catalogues live in this member; `features/backups` hosts the sections and the entry, and `lib/` only composes the localization delegate.
 
-The feature is **off by default**. Nothing is written anywhere until the user turns it on and chooses a destination. It runs in the foreground only, with an unlocked inventory: after a labels change (debounced), on resume and on request. There is no background task, because the inventory projection checks each seed's presence through `Secrets.fetch`, which a background run must never do.
+The feature is **off by default**, twice. The build must define `DATA_BACKUP=true` for the shell to compose it, mount its route under the backup settings and show its entry; the default build does none of that. Even then, nothing is written anywhere until the user turns it on and chooses a destination. It runs in the foreground only, with an unlocked inventory: after a labels change (debounced), on resume and on request (`BackupMetadataFeature.trigger`). There is no background task, because the inventory projection checks each seed's presence through `Secrets.fetch`, which a background run must never do.
 
 Dependencies: `backup_storage` for account-bound byte sessions (Drive, Folder and iCloud), `secrets` for the foreground projection and the restore capabilities below, `labels` for transactional capture and restore with freeze checks against the exact wallet, `rust_bindings` for BIP138, plus `primitives` and `bull_ui`.
 
@@ -32,6 +32,15 @@ A restore never creates a wallet and never touches a seed. The user imports the 
 ## Journal
 
 One private encrypted database (SQLCipher raw key held by `secrets` under the module key `backup_metadata`) keeps the journal, the configured destination and each group's installation-stable id, partitioned by view: each view has its own selection, lineage and ids. Remote deletion only follows a journaled object id of the view's own lineage, so a lost or unreadable journal deletes nothing and a file name found at the destination is never trusted. Folder generations are recorded with a byte fingerprint, so a same-ID generation without a valid receipt never skips a write or prunes the last readable copy. If the key is unavailable the store refuses to open; it never falls back to an unencrypted file.
+
+## Destinations
+
+Google Drive (`appDataFolder`) is the only destination the app wires. iCloud and folder storages exist in `backup_storage` but need a connection store, a grant store and a container identifier that the app does not provide yet; they are not offered.
+
+## Known follow-ups
+
+- Group names for a default or unnamed wallet come from the English catalog, because the journal's owner builds them outside the widget tree; they should become keys resolved at render time.
+- The entry's status line is static (`Off`); a live status needs a read of the journal at render time.
 
 ## Qualification
 
