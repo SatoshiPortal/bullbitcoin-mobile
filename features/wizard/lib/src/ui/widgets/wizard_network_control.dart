@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAdvancedOptionsLink;
+import 'package:bull_ui/bull_ui.dart' show BullAdvancedOptionsLink, BullSwitch;
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show RegtestHostProfile;
 import 'package:settings/settings.dart'
@@ -13,10 +13,14 @@ class WizardNetworkControl extends StatefulWidget {
     super.key,
     required this.logo,
     required this.onChanged,
+    this.allowDeveloperNetwork = true,
+    required this.onPrivacyChanged,
   });
 
   final ImageProvider logo;
   final ValueChanged<Environment?> onChanged;
+  final bool allowDeveloperNetwork;
+  final ValueChanged<bool?> onPrivacyChanged;
 
   @override
   State<WizardNetworkControl> createState() => _WizardNetworkControlState();
@@ -26,6 +30,7 @@ class _WizardNetworkControlState extends State<WizardNetworkControl>
     with AutomaticKeepAliveClientMixin {
   bool _unlocked = false;
   bool _consented = false;
+  bool _screenPrivacy = true;
   Environment _network = Environment.mainnet;
 
   @override
@@ -36,6 +41,13 @@ class _WizardNetworkControlState extends State<WizardNetworkControl>
       MaterialPageRoute(
         builder: (_) => _WizardNetworkPage(
           network: _network,
+          allowDeveloperNetwork: widget.allowDeveloperNetwork,
+          screenPrivacy: _screenPrivacy,
+          onPrivacyChanged: (value) {
+            if (!mounted) return;
+            setState(() => _screenPrivacy = value);
+            widget.onPrivacyChanged(value);
+          },
           consented: _consented,
           onChanged: (network, consented) {
             if (!mounted) return;
@@ -69,9 +81,13 @@ class _WizardNetworkControlState extends State<WizardNetworkControl>
               if (!_unlocked) {
                 _consented = false;
                 _network = Environment.mainnet;
+                _screenPrivacy = true;
               }
             });
-            if (!_unlocked) widget.onChanged(null);
+            if (!_unlocked) {
+              widget.onChanged(null);
+              widget.onPrivacyChanged(null);
+            }
           },
           child: Image(image: widget.logo, width: 127, height: 127),
         ),
@@ -97,11 +113,17 @@ class _WizardNetworkControlState extends State<WizardNetworkControl>
 class _WizardNetworkPage extends StatefulWidget {
   const _WizardNetworkPage({
     required this.network,
+    required this.allowDeveloperNetwork,
+    required this.screenPrivacy,
+    required this.onPrivacyChanged,
     required this.consented,
     required this.onChanged,
   });
 
   final Environment network;
+  final bool allowDeveloperNetwork;
+  final bool screenPrivacy;
+  final ValueChanged<bool> onPrivacyChanged;
   final bool consented;
   final void Function(Environment, bool) onChanged;
 
@@ -112,6 +134,12 @@ class _WizardNetworkPage extends StatefulWidget {
 class _WizardNetworkPageState extends State<_WizardNetworkPage> {
   late Environment _network = widget.network;
   late bool _consented = widget.consented;
+  late bool _screenPrivacy = widget.screenPrivacy;
+
+  void _setScreenPrivacy(bool value) {
+    setState(() => _screenPrivacy = value);
+    widget.onPrivacyChanged(value);
+  }
 
   Future<void> _select(Environment? network) async {
     if (network == null) return;
@@ -147,33 +175,70 @@ class _WizardNetworkPageState extends State<_WizardNetworkPage> {
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.wizardAdvancedOptionsTitle)),
       body: SafeArea(
-        child: Semantics(
-          identifier: 'wizard.network.selector',
-          label: loc.networkSelectorTitle,
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (final (network, label) in [
-                (Environment.mainnet, loc.electrumMainnet),
-                (Environment.testnet, loc.electrumTestnet),
-                if (RegtestHostProfile.isConfigured)
-                  (Environment.regtest, loc.electrumRegtest),
-              ])
-                Semantics(
-                  identifier: 'wizard.network.${network.name}',
-                  label: label,
-                  button: true,
-                  selected: _network == network,
-                  onTap: () => _select(network),
-                  child: ExcludeSemantics(
-                    child: ListTile(
-                      title: Text(label),
-                      selected: _network == network,
-                      trailing: _network == network
-                          ? const Icon(Icons.check)
-                          : null,
-                      onTap: () => _select(network),
+              Semantics(
+                identifier: 'wizard.screen_privacy',
+                label: loc.settingsScreenPrivacyTitle,
+                toggled: _screenPrivacy,
+                onTap: () => _setScreenPrivacy(!_screenPrivacy),
+                child: ExcludeSemantics(
+                  child: InkWell(
+                    onTap: () => _setScreenPrivacy(!_screenPrivacy),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Expanded(child: Text(loc.settingsScreenPrivacyTitle)),
+                          SizedBox(
+                            width: 64,
+                            height: 48,
+                            child: Center(
+                              child: BullSwitch(
+                                value: _screenPrivacy,
+                                onChanged: _setScreenPrivacy,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ),
+                ),
+              ),
+              if (widget.allowDeveloperNetwork)
+                Semantics(
+                  identifier: 'wizard.network.selector',
+                  label: loc.networkSelectorTitle,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final (network, label) in [
+                        (Environment.mainnet, loc.electrumMainnet),
+                        (Environment.testnet, loc.electrumTestnet),
+                        if (RegtestHostProfile.isConfigured)
+                          (Environment.regtest, loc.electrumRegtest),
+                      ])
+                        Semantics(
+                          identifier: 'wizard.network.${network.name}',
+                          label: label,
+                          button: true,
+                          selected: _network == network,
+                          onTap: () => _select(network),
+                          child: ExcludeSemantics(
+                            child: ListTile(
+                              title: Text(label),
+                              selected: _network == network,
+                              trailing: _network == network
+                                  ? const Icon(Icons.check)
+                                  : null,
+                              onTap: () => _select(network),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
             ],

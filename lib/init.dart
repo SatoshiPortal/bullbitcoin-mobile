@@ -44,6 +44,7 @@ import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Environment, Preferences;
 import 'package:preferences/statistics.dart' show PreferencesStatisticsNetwork;
 import 'package:settings/setup.dart' show StartupNetwork;
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
@@ -377,6 +378,12 @@ class Bull {
         exchange: locator<Exchange>(),
       );
       if (applied case Err(:final failure)) return Err(failure);
+      final privacySettings = await locator<Preferences>().fetch();
+      if (privacySettings case Err(:final failure)) return Err(failure);
+      if (privacySettings case Ok(:final value)) {
+        ScreenCaptureProtection.instance.enabledByUser =
+            value.screenCaptureProtectionEnabled;
+      }
       await locator<QuickActionsCubit>().load();
       await AppLocator.setupRecoverBull(
         locator,

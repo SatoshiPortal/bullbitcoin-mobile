@@ -135,12 +135,18 @@ final class WizardFeature {
     required Exchange exchange,
   }) async {
     try {
-      await ApplyPendingWizardChoicesUsecase(
+      final result = await ApplyPendingWizardChoicesUsecase(
         wizardRepository: _repository,
         settingsRepository: preferences,
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         applyExchangeAccess: exchange.applyInitialChoice,
       ).execute();
+      if (result case Err(:final failure)) {
+        log.warning(
+          'Wizard could not apply screen privacy: ${failure.runtimeType}',
+        );
+        return const Err(WizardStorageFailure());
+      }
       return const Ok(null);
     } on Exception {
       log.warning('Wizard could not apply its pending choices');

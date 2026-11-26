@@ -26,9 +26,9 @@ class ApplyPendingWizardChoicesUsecase {
   final Future<Result<void, ExchangeFailure>> Function(bool enabled)
   _applyExchangeAccess;
 
-  Future<void> execute() async {
+  Future<Result<void, PreferencesFailure>> execute() async {
     final choices = await _wizardRepository.readPending();
-    if (choices == null) return;
+    if (choices == null) return const Ok(null);
     // The repository logged the raw reason at its boundary; what matters here
     // is which choices did not land.
     final failed = <WizardField>{};
@@ -42,6 +42,14 @@ class ApplyPendingWizardChoicesUsecase {
       }
     }
 
+    if (choices.touched.contains(WizardField.screenPrivacy)) {
+      final result = await _settingsRepository
+          .setScreenCaptureProtectionEnabled(choices.screenPrivacy);
+      if (result case Err(:final failure)) {
+        // Leave the original staged choices intact for the next launch.
+        return Err(failure);
+      }
+    }
     if (choices.touched.contains(WizardField.language)) {
       note(
         await _settingsRepository.setLanguage(choices.language),
@@ -111,6 +119,7 @@ class ApplyPendingWizardChoicesUsecase {
     } else {
       await _wizardRepository.savePending(
         WizardChoices(
+          screenPrivacy: choices.screenPrivacy,
           exchangeAccess: choices.exchangeAccess,
           backgroundTasks: choices.backgroundTasks,
           language: choices.language,
@@ -122,5 +131,6 @@ class ApplyPendingWizardChoicesUsecase {
       );
     }
     await _wizardRepository.markComplete();
+    return const Ok(null);
   }
 }
