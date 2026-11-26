@@ -1,5 +1,5 @@
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/funding/presentation/fund_flow.dart';
+import 'package:bull_exchange/src/funding/domain/fund_flow.dart';
 import 'package:bull_exchange/src/funding/ui/fund_flow_shell.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
