@@ -443,15 +443,30 @@ class Bull {
   }
 }
 
-/// Explicit regtest Ark profile supplied at build time. Builds without both
-/// endpoints keep the unavailable Ark routes; existing custody is still read.
+/// Regtest Ark profile. Without a local `BULL_REGTEST_HOST`, it defaults to
+/// the shared hosted stack (mirrored in tools/regtest/hosted.json), whose
+/// fresh profiles may create their account registry and funding authority.
+/// A local stack keeps Ark unavailable unless both endpoints are defined.
 /// BULL_ARK_REGTEST_INITIALIZE_NEW authorizes creating the account registry
 /// and funding authority of a fresh, controlled regtest profile; it is never
 /// inferred from files.
-const _arkUrl = String.fromEnvironment('BULL_ARK_REGTEST_URL');
-const _arkEsploraUrl = String.fromEnvironment('BULL_ARK_REGTEST_ESPLORA_URL');
+const _localRegtestHost = String.fromEnvironment('BULL_REGTEST_HOST');
+const _hostedRegtest = _localRegtestHost == '';
+const _arkUrl = String.fromEnvironment(
+  'BULL_ARK_REGTEST_URL',
+  defaultValue: _hostedRegtest
+      ? 'https://scuttle-regtest-ark.vibecode.casa'
+      : '',
+);
+const _arkEsploraUrl = String.fromEnvironment(
+  'BULL_ARK_REGTEST_ESPLORA_URL',
+  defaultValue: _hostedRegtest
+      ? 'https://scuttle-regtest-esplora.vibecode.casa'
+      : '',
+);
 const _arkInitializeNew = bool.fromEnvironment(
   'BULL_ARK_REGTEST_INITIALIZE_NEW',
+  defaultValue: _hostedRegtest,
 );
 const _arkProfileAdmitted = _arkUrl != '' && _arkEsploraUrl != '';
 
