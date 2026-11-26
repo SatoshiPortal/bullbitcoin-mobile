@@ -170,8 +170,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// if no subsequent lock occurred. A failed policy read or an unconfirmed
   /// drain leaves it closed.
   Future<bool> lockIfProtected() async {
+    final session = _session + 1;
     final draining = lock();
-    final session = _session;
     if (!await draining || session != _session) return true;
     final protected = await _access.isProtected();
     if (session != _session || protected is! Ok<bool, SecretFailure>) {
