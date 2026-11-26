@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../domain/payjoin_failure.dart';
+import 'payjoin_admission.dart';
 import '../domain/payjoin_policy.dart';
 import '../domain/payjoin_requests.dart';
 import '../domain/payjoin_session.dart';
@@ -152,7 +153,10 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
       try {
         final payjoin = await _admit();
         if (!_live(generation)) return Err<T, PayjoinFailure>(_revoked);
-        return await run(payjoin);
+        return await runUnderPayjoinAdmission(
+          () => _live(generation),
+          () => run(payjoin),
+        );
       } finally {
         _sensitive.remove(settled.future);
         settled.complete();
@@ -302,8 +306,7 @@ final class _RecoverablePayjoinReceiver implements PayjoinReceiver {
   Future<Result<PayjoinReceiverSession, PayjoinFailure>> start(
     StartPayjoinReceiver request,
   ) async {
-    final payjoin = await _owner._admit();
-    return payjoin.receiver.start(request);
+    return _owner._effect((payjoin) => payjoin.receiver.start(request));
   }
 
   @override
