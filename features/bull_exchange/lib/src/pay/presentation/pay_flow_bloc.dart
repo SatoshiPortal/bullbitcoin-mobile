@@ -26,9 +26,8 @@ typedef PayFlowCalls = ({
   findCreated,
   Future<ExchangeRead<Order>> Function(Order order) refresh,
   PayoutRequirementsUsecases requirements,
-  PayinCalls payin,
+  PayinUsecases payin,
   SpendOptionsCalls spend,
-  ExchangeWriteGate gate,
 });
 
 PayFlowCalls payFlowCallsOf(
@@ -96,9 +95,8 @@ PayFlowCalls payFlowCallsOf(
     refresh: (order) async =>
         readOfResult(await orders.refreshPayOrder(order.orderId)),
     requirements: PayoutRequirementsUsecases.of(exchange),
-    payin: payinCallsOf(exchange, session, wallets),
+    payin: PayinUsecases.of(exchange, wallets),
     spend: spendOptionsCallsOf(session, wallets),
-    gate: exchange.writeGate,
   );
 }
 
@@ -146,15 +144,18 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
       ) {
         if (!isClosed) add(PayRequirementsChanged(event));
       });
-      _payin = PayinRunner(calls.payin, calls.gate, session, (event) {
+      _payin = PayinRunner(calls.payin, session, (event) {
         if (!isClosed) add(PayPayinChanged(event));
       });
       _spend = SpendOptionsRunner(calls.spend, (event) {
         if (!isClosed) add(PaySpendChanged(event));
       });
-      _receipt = OutcomeWatchRunner(calls.payin.readOrder, (event) {
-        if (!isClosed) add(PayReceiptChanged(event));
-      });
+      _receipt = OutcomeWatchRunner(
+        (orderId) => calls.payin.getOrder.execute(session, orderId),
+        (event) {
+          if (!isClosed) add(PayReceiptChanged(event));
+        },
+      );
     }
     _access = accessChanges.listen((access) {
       if (!isClosed) add(PaySessionChanged(access.signedInSession));

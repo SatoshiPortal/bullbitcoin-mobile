@@ -10,6 +10,8 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../orders/order_usecase_fakes.dart';
+import '../../payin/payin_usecase_fakes.dart';
 import '../../payout/payout_requirements_fakes.dart';
 import '../sell_fixtures.dart';
 
@@ -18,17 +20,14 @@ final class _Calls {
 
   PayoutRequirementsUsecases get requirements => unusedPayoutRequirements();
 
-  PayinCalls get payin => (
-    build: (effect) async {
+  PayinUsecases get payin => fakePayin(
+    build: FakeBuildPayinUsecase((effect) async {
       log.add('build ${effect.walletId}');
       return const PayinBuildFailed(PayinBuildProblem.insufficientFunds);
-    },
-    send: (built) async => throw StateError('not sent in this test'),
-    readOrder: (orderId) async => ReadGot(sellOrder()),
-    txSeen: (txid) async => null,
-    watchPayjoin: (sessionId) => const Stream.empty(),
-    retryPayjoin: (sessionId) async {},
-    journalUnknown: (orderId, network, txid) async {},
+    }),
+    getOrder: FakeGetOrderUsecase(
+      (session, orderId) async => ReadGot<Order>(sellOrder()),
+    ),
   );
 
   SellFlowCalls of(ExchangeSession session) => (
@@ -63,7 +62,6 @@ final class _Calls {
       presets: (shape, fees) async => const {},
       custom: (shape, fee) async => const BitcoinFeePreviewSlot(),
     ),
-    gate: ExchangeWriteGate(),
   );
 }
 
