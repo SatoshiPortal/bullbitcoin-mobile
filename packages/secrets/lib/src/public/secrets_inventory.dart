@@ -203,6 +203,13 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   Future<Result<WalletRegistration, SecretFailure>> readWallet(String id) =>
       _inSession((_) => _wallets.read(defaultViewId, id));
 
+  /// Publishes a joined read only while the session that started it is live.
+  /// Exceptions from [read] propagate to the caller.
+  @useResult
+  Future<Result<T, SecretFailure>> readInSession<T>(
+    Future<T> Function() read,
+  ) => _inSession((_) async => Ok(await read()));
+
   @override
   @useResult
   Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(

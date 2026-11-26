@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -147,6 +148,27 @@ void main() {
       expect(_value(await background.list()).single.id, id);
     },
   );
+
+  test('a joined read cannot cross into a reopened session', () async {
+    final started = Completer<void>();
+    final release = Completer<void>();
+    final oldRead = inventory.readInSession(() async {
+      started.complete();
+      await release.future;
+      return 'old session';
+    });
+    await started.future;
+    inventory.lock();
+    expect(await inventory.readInSession(() async => 'locked'), isA<Err>());
+    expect(await inventory.resumeUnprotected(), isA<Ok>());
+    expect(
+      await inventory.readInSession(() async => 'new session'),
+      isA<Ok<String, SecretFailure>>(),
+    );
+    release.complete();
+    final result = await oldRead;
+    expect(result, isA<Err<String, SecretFailure>>());
+  });
 
   test('targeted lookup keeps testnet and regtest distinct', () async {
     const testId = 'wpkh([01234567/84h/1h/0h])';
