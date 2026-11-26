@@ -115,7 +115,13 @@ void main() {
         isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
           (result) => result.failure,
           'admission after owner loss',
-          isA<LegacyImportUnavailable>(),
+          isA<LegacyOwnerFailure>()
+              .having((f) => f.ownerId, 'ownerId', 'pilot')
+              .having(
+                (f) => f.cause,
+                'cause',
+                LegacyOwnerFailureCause.missingAfterAdmission,
+              ),
         ),
       );
       expect(file.existsSync(), isFalse);
@@ -126,7 +132,11 @@ void main() {
         isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
           (result) => result.failure,
           'headless admission after owner loss',
-          isA<LegacyImportUnavailable>(),
+          isA<LegacyOwnerFailure>().having(
+            (f) => f.cause,
+            'cause',
+            LegacyOwnerFailureCause.missingAfterAdmission,
+          ),
         ),
       );
     },
