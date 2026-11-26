@@ -9,3 +9,4 @@ export 'src/domain/app_startup_failure.dart'
 export 'src/ui/screens/inventory_unreadable_screen.dart'
     show InventoryUnreadableScreen;
 export 'src/inventory_recovery_for.dart' show inventoryRecoveryFor;
+export 'src/inventory_admission.dart' show AdmittedInventory, admitInventory;

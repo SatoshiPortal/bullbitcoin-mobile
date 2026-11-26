@@ -235,52 +235,47 @@ class Bull {
         ExchangeCredentialImport(file: exchangeFile, secrets: secrets),
       ],
     );
-    var admitted = await cutover.prepare();
-    while (admitted is Err<RuntimeAdmission, LegacyImportFailure>) {
-      // Only the wallet storage's own unreadable data blocks. Another owner,
-      // a locked keystore, contention and an unsupported schema keep the plain
-      // retry, and nothing here ever replaces or erases a file.
-      if (inventoryRecoveryFor(admitted.failure) case final blocked?) {
-        if (blockedInventory == null) return Err(blocked);
-        await blockedInventory(blocked);
-        admitted = await cutover.prepare();
-        continue;
-      }
-      if (retryStorage == null) return Err(admitted.failure);
-      switch (admitted.failure) {
-        case final failure
-            when failure is LegacyImportUnavailable ||
-                failure is LegacyImportDeferred ||
-                failure is LegacyOwnerFailure:
-          await retryStorage(failure);
-          admitted = await cutover.prepare();
-        case final failure:
-          return Err(failure);
-      }
-    }
-    final admission =
-        (admitted as Ok<RuntimeAdmission, LegacyImportFailure>).value;
-    locator.registerSingleton<RuntimeAdmission>(
-      admission,
-      dispose: (value) => value.close(),
-    );
+    final admittedInventory =
+        await admitInventory<RuntimeAdmission, SecretsInventory>(
+          prepare: () => cutover.prepare(),
+          openInventory: (admission) async {
+            locator.registerSingleton<RuntimeAdmission>(
+              admission,
+              dispose: (value) => value.close(),
+            );
+            return openWalletInventory(
+              locator,
+              admission: admission,
+              legacy: legacy.source,
+              inventoryFile: secretsFile,
+              signersFile: signersFile,
+              syncFile: syncFile,
+              signerKeys: signerKeys,
+              syncKeys: syncKeys,
+              recoverBull: recoverBull,
+              regtestRecoverBull: regtestRecoverBull,
+            );
+          },
+          release: (admission) async {
+            try {
+              await locator.reset();
+            } finally {
+              await admission.close();
+            }
+          },
+          retryStorage: retryStorage,
+          blockedInventory: blockedInventory,
+        );
+    if (admittedInventory case Err(:final failure)) return Err(failure);
+    final (:admission, :inventory) =
+        (admittedInventory
+                as Ok<
+                  AdmittedInventory<RuntimeAdmission, SecretsInventory>,
+                  Failure
+                >)
+            .value;
     var initialized = false;
     try {
-      final openedInventory = await openWalletInventory(
-        locator,
-        admission: admission,
-        legacy: legacy.source,
-        inventoryFile: secretsFile,
-        signersFile: signersFile,
-        syncFile: syncFile,
-        signerKeys: signerKeys,
-        syncKeys: syncKeys,
-        recoverBull: recoverBull,
-        regtestRecoverBull: regtestRecoverBull,
-      );
-      if (openedInventory case Err(:final failure)) return Err(failure);
-      final inventory =
-          (openedInventory as Ok<SecretsInventory, Failure>).value;
       final protection = await inventory.isProtected();
       if (protection case Err(:final failure)) return Err(failure);
       final pinProtected = (protection as Ok<bool, SecretFailure>).value;
