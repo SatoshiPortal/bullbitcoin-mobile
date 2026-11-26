@@ -211,6 +211,21 @@ final class BarkArkClient implements ArkClient {
       store?.close();
     }
   });
+
+  bool _hasClaimToObserve(ArkSnapshot snapshot) => snapshot.exitDetails.any(
+    (exit) =>
+        exit.status == ArkExitStatus.submitted ||
+        (exit.status == ArkExitStatus.claimable &&
+            snapshot.operations.any(
+              (operation) =>
+                  operation.kind == ArkOperationKind.claim &&
+                  (operation.status == ArkOperationStatus.admitted ||
+                      operation.status == ArkOperationStatus.pending ||
+                      operation.status == ArkOperationStatus.succeeded) &&
+                  operation.actualIds.contains(exit.id),
+            )),
+  );
+
   @override
   Future<Result<ArkOperation?, ArkWalletFailure>> progressStartedExits(
     ArkAccountId account,
@@ -225,6 +240,25 @@ final class BarkArkClient implements ArkClient {
           when !value.exitDetails.any(
             (exit) => exit.status == ArkExitStatus.pending,
           ):
+        if (_hasClaimToObserve(value)) {
+          return _exclusive<ArkOperation?>(account, (store, path) async {
+            final snapshot = store.snapshot;
+            if (snapshot == null ||
+                !_hasClaimToObserve(
+                  copySnapshot(
+                    snapshot,
+                    operations: await _verifiedOperations(store, account),
+                  ),
+                )) {
+              return const Ok(null);
+            }
+            return _session(store, path, account, (session, source, _) async {
+              await session.synchronizeStage('exits-observe');
+              await _observe(store, session, account, source);
+              return const Ok(null);
+            });
+          });
+        }
         return const Ok(null);
       case Ok():
     }
