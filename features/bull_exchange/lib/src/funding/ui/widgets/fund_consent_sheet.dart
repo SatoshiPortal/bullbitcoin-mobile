@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/funding/presentation/fund_flow.dart';
+import 'package:bull_exchange/src/funding/domain/fund_flow.dart';
 import 'package:bull_exchange/src/funding/ui/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:bull_ui/bull_ui.dart'
     show

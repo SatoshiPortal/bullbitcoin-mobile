@@ -3,7 +3,7 @@ import 'package:bull_exchange/src/exchange_landing_navigation.dart';
 import 'package:bull_exchange/src/funding/data/url_launcher_external_link_adapter.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_exchange_failure_l10n.dart';
-import 'package:bull_exchange/src/funding/presentation/fund_flow.dart';
+import 'package:bull_exchange/src/funding/domain/fund_flow.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_bloc.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_l10n.dart';
 import 'package:bull_exchange/src/funding/ui/screens/fund_cop_input_page.dart';

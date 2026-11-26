@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/funding/presentation/fund_flow.dart';
+import 'package:bull_exchange/src/funding/domain/fund_flow.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';
