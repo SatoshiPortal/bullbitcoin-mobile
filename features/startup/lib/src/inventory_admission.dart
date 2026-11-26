@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 
@@ -52,18 +53,18 @@ admitInventory<A extends Object, I extends Object>({
       opened = await openInventory(admission);
     } catch (_) {
       // A partial registration must not outlive the failed attempt, and the
-      // original exception is the one that propagates.
-      try {
-        await release(admission);
-      } catch (_) {}
+      // original exception, with its stack, is the one that propagates.
+      await _release(release, admission);
       rethrow;
     }
     switch (opened) {
       case Ok(:final value):
         return Ok((admission: admission, inventory: value));
       case Err(:final failure):
-        // Cleaned before any screen: a retry starts from nothing.
-        await release(admission);
+        // Cleaned before any screen: a retry starts from nothing. If the
+        // cleanup itself fails, nothing is retried or shown over what may be
+        // left behind, and the typed failure ends the attempt.
+        if (!await _release(release, admission)) return Err(failure);
         final owner = inventoryOpenFailureOf(failure);
         if (owner == null) return Err(failure);
         if (inventoryRecoveryFor(owner) case final blocked?) {
@@ -75,5 +76,20 @@ admitInventory<A extends Object, I extends Object>({
           return Err(failure);
         }
     }
+  }
+}
+
+/// Runs [release] once. A failure of the cleanup is logged by a fixed label,
+/// never by the raw exception, and reported to the caller as false.
+Future<bool> _release<A extends Object>(
+  Future<void> Function(A admission) release,
+  A admission,
+) async {
+  try {
+    await release(admission);
+    return true;
+  } catch (_) {
+    log.warning('Storage admission cleanup failed');
+    return false;
   }
 }
