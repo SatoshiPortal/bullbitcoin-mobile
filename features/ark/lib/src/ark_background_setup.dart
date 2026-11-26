@@ -23,6 +23,7 @@ import 'package:notifications/payment_store.dart';
 import 'package:notifications/notifications.dart'
     show ScheduledNotificationPort;
 
+import 'data/ark_exit_notification_setup.dart';
 import 'data/ark_exit_notifier.dart';
 import 'data/ark_payment_observer.dart';
 
@@ -187,17 +188,19 @@ final class _BackgroundExitObserver implements native.ArkExitObserverPort {
     if (allocator == null) {
       throw const FormatException('Notification store unavailable');
     }
-    final copy = arkExitClaimableCopy(locale);
-    final observer = ArkExitNotifier.open(
-      path: '$directory/exit-notices.sqlite',
-      foreground: false,
-      allocator: allocator,
-      notifications: notifications,
-      budget: budget,
-      title: copy.title,
-      body: copy.body,
-    );
-    _cleanup.add(() async => observer.close());
+    final observer = LazyArkExitObserver(() async {
+      final copy = arkExitClaimableCopy(locale);
+      return ArkExitNotifier.open(
+        path: '$directory/exit-notices.sqlite',
+        foreground: false,
+        allocator: allocator,
+        notifications: notifications,
+        budget: budget,
+        title: copy.title,
+        body: copy.body,
+      );
+    });
+    _cleanup.add(observer.close);
     return ArkPaymentObserver(
       notifications: allocator,
       exits: observer,

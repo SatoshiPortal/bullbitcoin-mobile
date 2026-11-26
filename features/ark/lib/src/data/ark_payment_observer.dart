@@ -14,6 +14,9 @@ import 'package:primitives/primitives.dart';
 bool isIncomingPayment(ArkMovement movement) =>
     movement.status == ArkMovementStatus.successful &&
     movement.direction == ArkMovementDirection.incoming &&
+    movement.positiveEffectiveAmount &&
+    movement.amount != null &&
+    movement.amount?.value != BigInt.zero &&
     (movement.kind == ArkMovementKind.payment ||
         movement.kind == ArkMovementKind.lightningReceive);
 
@@ -34,17 +37,16 @@ final class ArkPaymentObserver implements ArkExitObserverPort {
   final NotificationsFacade _notifications;
   final ArkExitObserverPort _exits;
   final bool _foreground;
+  final Future<void> Function()? _prepareExits;
   final ({String title, String body}) Function(int count) _copy;
 
   ArkPaymentObserver({
-    required NotificationsFacade notifications,
-    required ArkExitObserverPort exits,
-    required bool foreground,
-    required ({String title, String body}) Function(int count) copy,
-  }) : _notifications = notifications,
-       _exits = exits,
-       _foreground = foreground,
-       _copy = copy;
+    required this._notifications,
+    required this._exits,
+    required this._foreground,
+    this._prepareExits,
+    required this._copy,
+  });
 
   @override
   Future<void> observe(ArkPassOutcome outcome) async {
@@ -66,6 +68,7 @@ final class ArkPaymentObserver implements ArkExitObserverPort {
       failure ??= error;
       trace ??= stack;
     }
+    if (_foreground) await _prepareExits?.call();
     if (failure != null && trace != null) {
       Error.throwWithStackTrace(failure, trace);
     }
