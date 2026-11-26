@@ -93,6 +93,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   // Bumped by every init entry point. A post-await subscription only installs
   // while its generation is still current and the cubit is open.
   int _initGeneration = 0;
+  int _walletLoadGeneration = 0;
   String? _watchedSwapId;
 
   bool _superseded(int generation) => isClosed || generation != _initGeneration;
@@ -379,12 +380,15 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     String txId, {
     required String walletId,
   }) async {
+    final generation = ++_walletLoadGeneration;
+    bool stale() => isClosed || generation != _walletLoadGeneration;
     final List<Transaction> transactionsWithTxId;
     switch (await _getTransactionsByTxIdUsecase.execute(txId)) {
       case Ok(:final value):
+        if (stale()) return;
         transactionsWithTxId = [...value];
       case Err(:final failure):
-        if (isClosed) return;
+        if (stale()) return;
         emit(state.copyWith(failure: failure));
         return;
     }
@@ -393,7 +397,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         .where((tx) => tx.walletId == walletId)
         .firstOrNull;
     if (transaction == null) {
-      if (isClosed) return;
+      if (stale()) return;
       emit(state.copyWith(failure: const TransactionNotFoundFailure()));
       return;
     }
@@ -401,9 +405,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     final WalletRegistration? wallet;
     switch (await _getTransactionWalletUsecase.execute(walletId)) {
       case Ok(:final value):
+        if (stale()) return;
         wallet = value;
       case Err(:final failure):
-        if (isClosed) return;
+        if (stale()) return;
         emit(state.copyWith(failure: failure));
         return;
     }
@@ -435,7 +440,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
 
     final swapClaimedAmountSat = await _counterpartAmountForSwap(swap);
-    if (isClosed) return;
+    if (stale()) return;
     emit(
       state.copyWith(
         transaction: transaction,
