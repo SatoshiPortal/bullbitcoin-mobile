@@ -77,9 +77,17 @@ void main() {
     var retried = 0;
     final loc = await pump(tester, onRetry: () => retried++);
 
-    await tester.tap(find.text(loc.retry));
+    final retry = find.ancestor(
+      of: find.text(loc.retry),
+      matching: find.byType(BullButton),
+    );
+    expect(tester.widget<BullButton>(retry).disabled, isFalse);
+    final position = tester.getCenter(retry);
+    await tester.tapAt(position);
     await tester.pump();
-    await tester.tap(find.text(loc.retry));
+    expect(retried, 1);
+    expect(tester.widget<BullButton>(retry).disabled, isTrue);
+    await tester.tapAt(position);
     await tester.pump();
     expect(retried, 1);
   });
