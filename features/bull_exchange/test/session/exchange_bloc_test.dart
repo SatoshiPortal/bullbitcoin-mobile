@@ -5,6 +5,10 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
+import '../account/account_usecase_fakes.dart';
+import '../dca/dca_usecase_fakes.dart';
+import 'session_usecase_fakes.dart';
+
 const _a = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,
@@ -54,13 +58,16 @@ void main() {
   ExchangeAccess current = const ExchangeAccessDisabled();
 
   ExchangeBloc build() => ExchangeBloc(
-    getAccount: server.account,
-    getAnnouncements: (_) async => const Ok([]),
-    stopDca: server.stop,
     currentAccess: () => current,
     accessChanges: access.stream,
     accountChanges: pushes.stream,
-    reconcileUnknownWrites: () async => server.reconciliations++,
+    getAccount: FakeGetAccountUsecase(server.account),
+    getAnnouncements: FakeGetAnnouncementsUsecase((_) async => const Ok([])),
+    stopDca: FakeStopDcaUsecase(server.stop),
+    reconcileUnknownWrites: FakeReconcileUnknownWritesUsecase(() async {
+      server.reconciliations++;
+      return const Ok(UnknownWriteReconciliation(settled: 0, open: 0));
+    }),
   );
 
   Future<void> publish(ExchangeAccess value) async {
