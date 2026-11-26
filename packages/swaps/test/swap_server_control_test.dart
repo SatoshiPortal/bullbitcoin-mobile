@@ -51,6 +51,12 @@ void main() {
     when(() => swaps.ongoing()).thenAnswer((_) async => const Ok([]));
     when(() => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async {});
+    when(() => serverSettings.fetch(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer(
+          (invocation) async => SwapServer.defaultFor(
+            isTestnet: invocation.namedArguments[#isTestnet] as bool,
+          ),
+        );
     when(
       () => switcher.rebuild(
         environment: any(named: 'environment'),
@@ -263,6 +269,32 @@ void main() {
       ),
     );
   });
+
+  test(
+    'new credentials for the same server are stored while swaps are open',
+    () async {
+      when(() => swaps.ongoing()).thenAnswer(
+        (_) async =>
+            Ok([openSwap(DateTime.now().subtract(const Duration(hours: 2)))]),
+      );
+      const credentials = SwapServerCredentials(username: 'u', password: 'p');
+
+      final result = await usecase.setServer('', credentials: credentials);
+
+      expect(failureOf(result), isNull);
+      final saved = verify(
+        () => serverSettings.save(captureAny(), isTestnet: false),
+      ).captured.single;
+      expect((saved as SwapServer).host, SwapServer.mainnetDefault.host);
+      expect(saved.credentials, credentials);
+      verify(
+        () => switcher.rebuild(
+          environment: NetworkEnv.mainnet,
+          waitForCompletion: true,
+        ),
+      ).called(1);
+    },
+  );
 
   test('a swap older than a day does not pin the server', () async {
     when(() => swaps.ongoing()).thenAnswer(

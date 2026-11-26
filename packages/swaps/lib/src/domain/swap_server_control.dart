@@ -102,14 +102,19 @@ final class SwapServerControl implements SwapServerSettings {
           SwapsInvalidServerFailure('plaintext outside testnet'),
         );
       }
-      final now = DateTime.now();
-      switch (await _store.ongoing()) {
-        case Ok(value: final open)
-            when open.any((swap) => swap.mayStillNeedProvider(now)):
-          return const Err(SwapsBusyFailure());
-        case Err():
-          return const Err(SwapsStorageFailure());
-        case Ok():
+      // New credentials for the same server leave open swaps where they
+      // are, and are what lets them reach it again.
+      final stored = await _servers.fetch(isTestnet: isTestnet);
+      if (server.host != stored.host) {
+        final now = DateTime.now();
+        switch (await _store.ongoing()) {
+          case Ok(value: final open)
+              when open.any((swap) => swap.mayStillNeedProvider(now)):
+            return const Err(SwapsBusyFailure());
+          case Err():
+            return const Err(SwapsStorageFailure());
+          case Ok():
+        }
       }
       await _servers.save(server, isTestnet: isTestnet);
       return (await _switcher.rebuild(
