@@ -5,6 +5,7 @@ import 'package:bull_exchange/src/settings/domain/usecases/resolve_exchange_acce
 import 'package:bull_exchange/src/settings/domain/usecases/sign_out_of_exchange_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/watch_exchange_access_usecase.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -78,6 +79,15 @@ void main() {
     );
     expect(calls, ['signOut']);
   });
+
+  test(
+    'signing out on the exchange without access keeps the failure',
+    () async {
+      final result = await SignOutOfExchangeUsecase.of(exchangeForTesting())
+          .execute();
+      expect((result as Err).failure, isA<ExchangeSessionClearFailure>());
+    },
+  );
 
   test('retry resolves the access', () async {
     final calls = <String>[];
