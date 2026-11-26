@@ -3,35 +3,6 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart';
 import 'package:secrets/src/domain/domain.dart';
 
-/// Access-owned legacy entries. PIN comparison stays inside custody.
-final class AccessKeychain {
-  final _store = OwnerKeychain();
-  @internal
-  AccessKeychain();
-
-  Future<Result<bool, SecretFailure>> isPinSet() async =>
-      (await _store.read(OwnerKey.pin)).map((pin) => pin != null);
-
-  /// Null means absent; false means an existing PIN did not match.
-  Future<Result<bool?, SecretFailure>> verifyPin(String candidate) async =>
-      (await _store.read(OwnerKey.pin))
-          .map((pin) => pin == null ? null : pin == candidate);
-  Future<Result<void, SecretFailure>> setPin(String pin) =>
-      _store.write(OwnerKey.pin, pin);
-  Future<Result<void, SecretFailure>> deletePin() =>
-      _store.delete(OwnerKey.pin);
-  Future<Result<String?, SecretFailure>> readAttempts() =>
-      _store.read(OwnerKey.attempts);
-  Future<Result<void, SecretFailure>> writeAttempts(String value) =>
-      _store.write(OwnerKey.attempts, value);
-  Future<Result<String?, SecretFailure>> readLockedUntil() =>
-      _store.read(OwnerKey.lockedUntil);
-  Future<Result<void, SecretFailure>> writeLockedUntil(String value) =>
-      _store.write(OwnerKey.lockedUntil, value);
-  Future<Result<void, SecretFailure>> deleteLockedUntil() =>
-      _store.delete(OwnerKey.lockedUntil);
-}
-
 /// Exchange-owned credentials; environment selects one of two fixed keys.
 final class ExchangeKeychain {
   final _store = OwnerKeychain();

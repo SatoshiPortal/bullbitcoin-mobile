@@ -13,7 +13,7 @@ export 'src/domain/database_open_failure.dart';
 export 'src/domain/wallet_registration.dart'
     show WalletRegistration, WalletSelection, WalletSigner;
 export 'src/public/keychains.dart'
-    show AccessKeychain, ExchangeKeychain, SilentPaymentKeychain, SwapKeychain;
+    show ExchangeKeychain, SilentPaymentKeychain, SwapKeychain;
 export 'src/public/extensions.dart'
     show
         SecretBackup,

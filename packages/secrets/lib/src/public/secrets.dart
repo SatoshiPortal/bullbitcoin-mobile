@@ -69,7 +69,6 @@ final class Secrets {
   };
 
   /// Closed owner-scoped capabilities over unchanged legacy keychain entries.
-  AccessKeychain get accessKeychain => AccessKeychain();
   ExchangeKeychain get exchangeKeychain => ExchangeKeychain();
   SilentPaymentKeychain get silentPaymentKeychain => SilentPaymentKeychain();
   SwapKeychain get swapKeychain => SwapKeychain();

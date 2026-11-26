@@ -485,6 +485,6 @@ the caller's.
 
 ## Legacy owner keychains
 
-The owner keychain transport is private to `data/`; public final handles are constructed by `Secrets` and provide a closed keyspace. `AccessKeychain` never exposes a PIN read, only presence, comparison, replacement and deletion. Its explicit `securityKey` allowance preserves the AuthCubit-era entry. Exchange and Silent Payments select fixed keys; the swap capability validates the fixed `swap_` prefix on full keys supplied by the existing engine. There is no read-all or delete-all capability. The platform seam remains the only test substitution.
+The owner keychain transport is private to `data/`; public final handles are constructed by `Secrets` and provide a closed keyspace. The legacy PIN entries have no runtime capability; only the import and the retirement read them through `OwnerKeychain`, and the `securityKey` allowance preserves the AuthCubit-era entry. Exchange and Silent Payments select fixed keys; the swap capability validates the fixed `swap_` prefix on full keys supplied by the existing engine. There is no read-all or delete-all capability. The platform seam remains the only test substitution.
 
 Exchange keychain operations leave recoverable-error diagnostics to their consumer; access operations retain sanitized failure diagnostics in the boundary. This preserves exchange log deduplication and avoids reporting expected keychain failures twice. `boundary` still sanitizes foreign payloads and preserves the locked-versus-absent distinction.
