@@ -41,6 +41,12 @@ class SwapStorage {
   final Map<String, Lock> _masterKeyLocks;
   final bool _regtest;
 
+  /// Applied to a swap blob as it is read. The engine sets it to point a
+  /// stored swap at the server it talks to now.
+  String Function(String blob) blobOnLoad = _unchanged;
+
+  static String _unchanged(String blob) => blob;
+
   SwapStorage({required this._rows, required this._secrets})
     : _allocationLocks = {},
       _masterKeyLocks = {},
@@ -279,14 +285,16 @@ class SwapStorage {
   }
 
   Future<BtcLnSwap> fetchBtcLnSwap(String swapId) async {
-    return BtcLnSwap.fromJson(jsonStr: await _readSwapBlob(swapId));
+    return BtcLnSwap.fromJson(jsonStr: blobOnLoad(await _readSwapBlob(swapId)));
   }
 
   Future<LbtcLnSwap> fetchLbtcLnSwap(String swapId) async {
-    return LbtcLnSwap.fromJson(jsonStr: await _readSwapBlob(swapId));
+    return LbtcLnSwap.fromJson(
+      jsonStr: blobOnLoad(await _readSwapBlob(swapId)),
+    );
   }
 
   Future<ChainSwap> fetchChainSwap(String swapId) async {
-    return ChainSwap.fromJson(jsonStr: await _readSwapBlob(swapId));
+    return ChainSwap.fromJson(jsonStr: blobOnLoad(await _readSwapBlob(swapId)));
   }
 }

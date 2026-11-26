@@ -41,6 +41,38 @@ BoltzWebSocket _createBoltzWebSocket(
   onError: onError,
 );
 
+/// [blob] with its Boltz address replaced by [current] when both name the
+/// same server, credentials aside. A swap keeps the address it was created
+/// with, so without this it would go on using credentials that have since
+/// been changed, or none at all.
+@visibleForTesting
+String swapBlobOnServer(String blob, {required String current}) {
+  final Object? decoded;
+  try {
+    decoded = jsonDecode(blob);
+  } on FormatException {
+    return blob;
+  }
+  if (decoded is! Map<String, dynamic>) return blob;
+  final stored = decoded['boltz_url'];
+  if (stored is! String || stored == current) return blob;
+  if (!_isSameServer(stored, current)) return blob;
+  return jsonEncode({...decoded, 'boltz_url': current});
+}
+
+bool _isSameServer(String a, String b) {
+  Uri? parse(String url) =>
+      Uri.tryParse(url.contains('://') ? url : 'https://$url');
+  final first = parse(a);
+  final second = parse(b);
+  return first != null &&
+      second != null &&
+      first.scheme == second.scheme &&
+      first.host == second.host &&
+      first.port == second.port &&
+      first.path == second.path;
+}
+
 /// Boltz partner referral id — fixed product identity, not a backend choice.
 const boltzReferralId = 'BULL';
 
@@ -111,6 +143,8 @@ class BoltzDatasource {
         ? _baseUrl
         : 'https://$_baseUrl';
     _httpsUrl = _withUserInfo(plainUrl);
+    _boltzStore.blobOnLoad = (blob) =>
+        swapBlobOnServer(blob, current: _httpsUrl);
     _http = Dio(
       BaseOptions(
         baseUrl: plainUrl,
