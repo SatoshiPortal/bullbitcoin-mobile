@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bull_ui/app_theme.dart';
@@ -8,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 class _Settings extends Mock implements SettingsCubit {}
 
@@ -23,11 +26,122 @@ void main() {
         .load();
   });
 
+  testWidgets('does not announce before the choice is saved', (tester) async {
+    final pending = Completer<bool>();
+    final settings = _Settings();
+    when(() => settings.stream).thenAnswer((_) => const Stream.empty());
+    when(() => settings.toggleErrorReporting(true))
+        .thenAnswer((_) => pending.future);
+    await _pump(
+      tester,
+      AppThemeType.light,
+      Builder(
+        builder: (context) => BullButton.secondary(
+          label: 'Open reporting preferences',
+          onPressed: () => ErrorReportingConfirmationBottomSheet.show(context),
+        ),
+      ),
+      wrap: (child) =>
+          BlocProvider<SettingsCubit>.value(value: settings, child: child),
+    );
+    await tester.tap(find.text('Open reporting preferences'));
+    await tester.pumpAndSettle();
+    final loc = SettingsLocalizations.of(
+      tester.element(find.byType(BottomSheet)),
+    );
+    await tester.ensureVisible(find.text(loc.errorReportingAcceptButton));
+    await tester.tap(find.text(loc.errorReportingAcceptButton));
+    await tester.pump();
+    expect(find.text(loc.errorReportingRestartSnackbar), findsNothing);
+    pending.complete(true);
+    await tester.pumpAndSettle();
+    expect(find.text(loc.errorReportingRestartSnackbar), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('failed activation does not announce success', (tester) async {
+    final settings = _Settings();
+    when(() => settings.stream).thenAnswer((_) => const Stream.empty());
+    when(() => settings.toggleErrorReporting(true))
+        .thenAnswer((_) async => false);
+    await _pump(
+      tester,
+      AppThemeType.light,
+      Builder(
+        builder: (context) => BullButton.secondary(
+          label: 'Open reporting preferences',
+          onPressed: () => ErrorReportingConfirmationBottomSheet.show(context),
+        ),
+      ),
+      wrap: (child) =>
+          BlocProvider<SettingsCubit>.value(value: settings, child: child),
+    );
+    await tester.tap(find.text('Open reporting preferences'));
+    await tester.pumpAndSettle();
+    final loc = SettingsLocalizations.of(
+      tester.element(find.byType(BottomSheet)),
+    );
+    await tester.ensureVisible(find.text(loc.errorReportingAcceptButton));
+    await tester.tap(find.text(loc.errorReportingAcceptButton));
+    await tester.pumpAndSettle();
+    expect(find.text(loc.errorReportingRestartSnackbar), findsNothing);
+  });
+
+  for (final saved in [false, true]) {
+    testWidgets('withdrawal announces only when saved: $saved', (tester) async {
+      final settings = _Settings();
+      when(() => settings.stream).thenAnswer((_) => const Stream.empty());
+      when(() => settings.state).thenReturn(
+        const SettingsState(
+          storedSettings: SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+            isErrorReportingEnabled: true,
+          ),
+        ),
+      );
+      when(() => settings.toggleErrorReporting(false))
+          .thenAnswer((_) async => saved);
+      await _pump(
+        tester,
+        AppThemeType.light,
+        const ErrorReportingSwitch(),
+        wrap: (child) =>
+            BlocProvider<SettingsCubit>.value(value: settings, child: child),
+      );
+      final loc = SettingsLocalizations.of(tester.element(find.byType(Switch)));
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(loc.errorReportingRestartSnackbar),
+        saved ? findsOneWidget : findsNothing,
+      );
+      await tester.pump(const Duration(seconds: 4));
+      await tester.pumpAndSettle();
+    });
+  }
+
+  test('restart notice is localized in English and French', () async {
+    final en = await SettingsLocalizations.delegate.load(const Locale('en'));
+    final fr = await SettingsLocalizations.delegate.load(const Locale('fr'));
+    expect(
+      en.errorReportingRestartSnackbar,
+      'Close and reopen the app to apply this change.',
+    );
+    expect(
+      fr.errorReportingRestartSnackbar,
+      'Fermez et rouvrez l’application pour appliquer ce changement.',
+    );
+  });
+
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     testWidgets('error reporting sheet in ${theme.name}', (tester) async {
       final settings = _Settings();
       when(() => settings.stream).thenAnswer((_) => const Stream.empty());
-      when(() => settings.toggleErrorReporting(true)).thenAnswer((_) async {});
+      when(() => settings.toggleErrorReporting(true))
+          .thenAnswer((_) async => true);
       await _pump(
         tester,
         theme,

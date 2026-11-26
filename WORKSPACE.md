@@ -300,7 +300,7 @@ flowchart TD
 | [`receive`](features/receive/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `labels`, `preferences`, `primitives`, `secrets`, `swaps`, `sync` | — |
 | [`scanning`](features/scanning/pubspec.yaml) | `bull_logger`, `bull_ui` | — |
 | [`send`](features/send/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `electrum`, `fees`, `labels`, `preferences`, `primitives`, `rust_bindings`, `satoshifier`, `secrets`, `spend`, `swaps`, `sync` | `ark` |
-| [`settings`](features/settings/pubspec.yaml) | `background_tasks`, `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_tor`, `bull_ui`, `electrum`, `exchange`, `notifications`, `preferences`, `primitives`, `screen_privacy`, `secrets`, `swaps`, `sync` | `legacy_storage` |
+| [`settings`](features/settings/pubspec.yaml) | `background_tasks`, `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_reporting`, `bull_tor`, `bull_ui`, `electrum`, `exchange`, `notifications`, `preferences`, `primitives`, `screen_privacy`, `secrets`, `swaps`, `sync` | `legacy_storage` |
 | [`signers`](features/signers/pubspec.yaml) | `bitbox_transport`, `bull_logger`, `bull_ui`, `legacy_storage`, `primitives`, `rust_bindings`, `satoshifier`, `screen_awake`, `secrets`, `sync` | — |
 | [`silent`](features/silent/pubspec.yaml) | `bull_logger`, `bull_ui`, `mempool`, `preferences`, `primitives`, `rust_bindings`, `secrets` | — |
 | [`startup`](features/startup/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_tor`, `bull_ui`, `preferences`, `primitives`, `provisioning`, `screen_privacy`, `secrets`, `swaps` | — |

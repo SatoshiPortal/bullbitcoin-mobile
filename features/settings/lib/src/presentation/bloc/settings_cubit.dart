@@ -378,7 +378,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
-  Future<void> toggleErrorReporting(bool enabled) async {
+  Future<bool> toggleErrorReporting(bool enabled) async {
     final settings = state.storedSettings;
     log.config(
       'Error reporting toggled: $enabled was ${settings?.isErrorReportingEnabled}',
@@ -386,7 +386,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final result = await _setErrorReportingUsecase.execute(enabled);
     if (result case Err(:final failure)) {
       emit(state.copyWith(failure: failure));
-      return;
+      return false;
     }
 
     emit(
@@ -396,6 +396,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       ),
     );
+    return true;
   }
 
   Future<void> toggleScreenCaptureProtection(bool enabled) async {
