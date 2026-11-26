@@ -561,7 +561,9 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
   /// Startup must restore previously admitted alarms even while offline or
   /// before a fresh native pass. Reapply uses persisted deadlines/IDs only and
   /// cannot clear a warning or postpone an expiry from a cached observation.
-  Future<Result<void, ArkFailure>> reapplyStored() async {
+  Future<Result<void, ArkFailure>> reapplyStored({
+    Future<bool> Function(Fingerprint parent)? permitsParent,
+  }) async {
     if (_closed) return const Err(ArkFeatureStorageFailure());
     if (_active != null) return const Err(ArkOperationBusyFailure());
     final settled = Completer<void>();
@@ -577,7 +579,10 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
       _validateRows(desired);
       _db.execute('COMMIT');
       admitted = false;
-      return await _replay(desired);
+      final filter = permitsParent;
+      return await _replay(
+        filter == null ? desired : await _permittedRows(desired, filter),
+      );
     } on Exception catch (_) {
       return const Err(ArkFeatureStorageFailure());
     } finally {
@@ -592,6 +597,29 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         }
       }
     }
+  }
+
+  /// Keeps the rows whose account the caller still permits, asking once per
+  /// parent. A row whose owner cannot be read is dropped: reapplying an alarm
+  /// is never what proves the view may still see it. Dropped rows are neither
+  /// applied nor cancelled.
+  Future<List<Row>> _permittedRows(
+    List<Row> rows,
+    Future<bool> Function(Fingerprint parent) permitsParent,
+  ) async {
+    final decisions = <String, bool>{};
+    final kept = <Row>[];
+    for (final row in rows) {
+      final Fingerprint parent;
+      try {
+        parent = Fingerprint(_owner(row).split('|').first);
+      } on Object {
+        continue;
+      }
+      final allowed = decisions[parent.hex] ??= await permitsParent(parent);
+      if (allowed) kept.add(row);
+    }
+    return kept;
   }
 
   Future<void> close() async {

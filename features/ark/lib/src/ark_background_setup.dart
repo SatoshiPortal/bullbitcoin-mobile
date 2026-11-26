@@ -99,7 +99,6 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   if (opened case Ok(:final value)) {
     reminders = value;
     resources.onClose(value.close);
-    if (await value.reapplyStored() case Err()) reminderFailure = true;
   } else {
     reminderFailure = true;
   }
@@ -124,6 +123,19 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     Err() => null,
   };
   if (renewalAuthority != null) resources.onClose(renewalAuthority.close);
+  // Stored alarms are reapplied only for the accounts a view still permits to
+  // run in the background; without the inventory none can be proved, so none
+  // is reapplied and the task retries.
+  if (reminders case final SqliteArkReminderRepository stored) {
+    final authority = renewalAuthority;
+    final restored = await stored.reapplyStored(
+      permitsParent: authority == null
+          ? (_) async => false
+          : authority.mayRenew,
+    );
+    if (restored case Err()) reminderFailure = true;
+    if (authority == null) reminderFailure = true;
+  }
   // Headless work never provisions or migrates the source authority.
   final sourceAuthority = SqliteArkFundingReservations.open(
     '${documents.path}/ark-funding.sqlite',
