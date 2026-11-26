@@ -25,6 +25,28 @@ final class InventoryStore {
     LifecycleAdmission admission, {
     required bool existing,
   }) async {
+    if (existing) {
+      // An admitted inventory lives in its main file. Check it before anything
+      // can create or interpret it: a sidecar alone is not an inventory, and
+      // an empty file is not an old schema to wait out.
+      try {
+        final length = _lengthIfPresent(file);
+        if (length == null) {
+          return const Err(
+            DatabaseFileUnavailable(DatabaseFileProblem.missing),
+          );
+        }
+        if (length == 0 && _lengthIfPresent(File('${file.path}-wal')) == null) {
+          return const Err(
+            DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
+          );
+        }
+      } on FileSystemException {
+        return const Err(
+          DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
+        );
+      }
+    }
     final settled = Completer<void>();
     SecretsDatabase? database;
     final handle = admission.track(() async {
@@ -61,4 +83,13 @@ final class InventoryStore {
   }
 
   Future<void> close() => _handle.close();
+}
+
+// Only a missing path is absent: any other error propagates.
+int? _lengthIfPresent(File file) {
+  try {
+    return file.lengthSync();
+  } on PathNotFoundException {
+    return null;
+  }
 }

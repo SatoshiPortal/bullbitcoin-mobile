@@ -438,7 +438,7 @@ DatabaseOpenFailure inventoryReadinessFailure(LegacyImportFailure failure) =>
           DatabaseFileProblem.unreadable,
         ),
         LegacyOwnerFailureCause.missingAfterAdmission =>
-          const DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
+          const DatabaseFileUnavailable(DatabaseFileProblem.missing),
       },
       // A receipt this build cannot read says nothing about the file.
       LegacyImportVerificationFailed() => const DatabaseFileUnavailable(

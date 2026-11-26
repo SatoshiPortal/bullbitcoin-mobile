@@ -70,23 +70,6 @@ final class SecretsImport implements LegacyImportParticipant {
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
     RuntimeAdmission admission,
   ) async {
-    // The owner is admitted: its main file is where its data lives. A sidecar
-    // without it is not an inventory, and an empty file is not an old schema
-    // to wait out. Neither is replaced or removed here.
-    final length = _lengthIfPresent(_file);
-    if (length == null) {
-      return const Err(
-        LegacyOwnerFailure(
-          'secrets',
-          LegacyOwnerFailureCause.missingAfterAdmission,
-        ),
-      );
-    }
-    if (length == 0 && _lengthIfPresent(File('${_file.path}-wal')) == null) {
-      return const Err(
-        LegacyOwnerFailure('secrets', LegacyOwnerFailureCause.unreadable),
-      );
-    }
     final opened = await InventoryStore.open(_file, admission, existing: true);
     switch (opened) {
       case Err(:final failure):
@@ -126,6 +109,9 @@ final class SecretsImport implements LegacyImportParticipant {
         owner(LegacyOwnerFailureCause.keyLost),
       DatabaseFileUnavailable(reason: DatabaseFileProblem.unreadable) => owner(
         LegacyOwnerFailureCause.unreadable,
+      ),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.missing) => owner(
+        LegacyOwnerFailureCause.missingAfterAdmission,
       ),
       DatabaseFileUnavailable(reason: DatabaseFileProblem.schemaMismatch) =>
         owner(LegacyOwnerFailureCause.unsupportedSchema),
