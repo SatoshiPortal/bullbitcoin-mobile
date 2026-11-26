@@ -13,6 +13,7 @@ import 'package:material_ui/material_ui.dart' hide Row;
 import 'package:notifications/notifications.dart';
 import 'package:bull_ark/src/domain/ark_reminder_policy_evidence.dart';
 import 'package:bull_ark/src/domain/usecases/update_ark_expiry_warning_usecase.dart';
+import 'package:bull_ark/src/data/disabled_renewal_child_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -328,11 +329,34 @@ void main() {
 
       expect(result, isA<Ok>());
       expect(asked.toSet(), {account().parent.hex, other.parent.hex});
-      expect(gateway.actions, ['schedule:$permitted']);
+      expect(gateway.actions, ['schedule:$permitted', 'cancel:$refused']);
       expect(gateway.actions, isNot(contains('schedule:$refused')));
-      expect(gateway.actions.where((a) => a.startsWith('cancel:')), isEmpty);
+      expect(
+        rows().map((row) => row['platform_id']),
+        contains(refused),
+        reason: 'the ledger keeps the row for when the view permits it again',
+      );
     },
   );
+
+  test('renewal disabled does not stop a permitted reminder', () async {
+    expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+    final platformId = rows().single['platform_id'] as int;
+    await store.close();
+    gateway.actions.clear();
+    reopen();
+
+    // Renewal is refused for good in the headless task; notifying is a
+    // separate permission the view still grants.
+    const renewal = DisabledRenewalChildProvider();
+    expect(await renewal.admitBatch(account()), isA<Err>());
+
+    expect(
+      await store.reapplyStored(permitsParent: (_) async => true),
+      isA<Ok>(),
+    );
+    expect(gateway.actions, ['schedule:$platformId']);
+  });
 
   test(
     'transferred VTXO is not recopied after positive linked retirement',
