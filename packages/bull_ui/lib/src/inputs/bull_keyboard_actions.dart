@@ -13,6 +13,10 @@ class BullKeyboardActions extends StatelessWidget {
 
   /// Runs when Done on the accessory bar is tapped, before the keyboard
   /// closes, for a form that applies its value on Done.
+  ///
+  /// keyboard_actions runs the same dismissal for Done and for a tap outside
+  /// the field, so with [onDone] set a tap outside no longer closes the
+  /// keyboard: otherwise tapping Back or Close would apply the value too.
   final VoidCallback? onDone;
 
   const BullKeyboardActions({
@@ -29,6 +33,7 @@ class BullKeyboardActions extends StatelessWidget {
     final done = onDone;
     return KeyboardActions(
       onDismissed: done == null ? null : (_) => done(),
+      dismissOnTapOutside: done == null,
       enabled: Theme.of(context).platform == TargetPlatform.iOS,
       navigation: nextFocus ? KeyboardNavigation.auto : KeyboardNavigation.none,
       ensureVisible: !disableScroll,
