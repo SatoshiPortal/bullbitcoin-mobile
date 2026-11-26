@@ -25,7 +25,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 # Core 32 currently returns a PSBT the pinned peer cannot parse.
-bitcoin=ghcr.io/getumbrel/docker-bitcoind@sha256:75864f14cde92e35e27c49627f70b5393b90bc686a471dd1fb8f924e56497b74
+bitcoin=ghcr.io/getumbrel/docker-bitcoind@sha256:89185fc2792a9824cbe18f7ad4ead02a3a9a14adf5b34eb42f60ebec36201fa0
 electrs=ghcr.io/vulpemventures/electrs@sha256:999a2218f423c0fb167ee53b282aa7929a9d4abba38ef16f67f407acd00589d4
 runtime=docker.io/library/python@sha256:a83ba18aef0f865b1a4a611c2cf460fe446f2795673bbb9fe43be570439e3b39
 mkdir -p "$state/node" "$state/mailrooms"
