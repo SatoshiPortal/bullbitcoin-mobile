@@ -2,7 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart' show ReadProblem, StepNext;
 import 'package:meta/meta.dart';
 
-import '../domain/default_wallets_failure.dart';
+import 'default_wallets_failure.dart';
 
 /// What checking a typed address said.
 @immutable
