@@ -1,0 +1,13 @@
+import 'package:bull_exchange/src/exchange_answers.dart';
+import 'package:exchange/exchange.dart';
+
+/// Reads the limit-order rate (index and user price) in [Market]'s
+/// currency. The exchange serves it without a session.
+class GetLimitOrderRateUsecase {
+  final Exchange _exchange;
+
+  const GetLimitOrderRateUsecase(this._exchange);
+
+  Future<ExchangeRead<LimitOrderRate>> execute(Market market) async =>
+      readOfResult(await _exchange.limitOrders.getRate(market.currency.code));
+}
