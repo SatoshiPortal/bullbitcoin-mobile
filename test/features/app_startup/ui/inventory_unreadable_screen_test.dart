@@ -2,8 +2,6 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:startup/generated/l10n/startup_localizations.dart'
-    show lookupStartupLocalizations;
 import 'package:startup/setup.dart' show StartupLocalizations;
 import 'package:startup/startup.dart';
 
@@ -92,15 +90,10 @@ void main() {
     expect(retried, 1);
   });
 
-  test('is translated beyond English', () {
-    final fr = lookupStartupLocalizations(const Locale('fr'));
+  test('is translated beyond English', () async {
+    final fr = await StartupLocalizations.delegate.load(const Locale('fr'));
+    final en = await StartupLocalizations.delegate.load(const Locale('en'));
     expect(fr.inventoryUnreadableQuitButton, 'Quitter');
-    expect(
-      fr.inventoryUnreadableMessage,
-      isNot(
-        lookupStartupLocalizations(const Locale('en'))
-            .inventoryUnreadableMessage,
-      ),
-    );
+    expect(fr.inventoryUnreadableMessage, isNot(en.inventoryUnreadableMessage));
   });
 }
