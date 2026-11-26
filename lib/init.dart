@@ -61,25 +61,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-/// The only startup failure that blocks instead of retrying: the wallet
-/// storage's own data is unreadable. Another owner, a locked keystore,
-/// contention and an unsupported schema are not.
-InventoryRecoveryRequired? inventoryRecoveryFor(LegacyImportFailure failure) =>
-    switch (failure) {
-      LegacyOwnerFailure(
-        ownerId: 'secrets',
-        ownerDataLost: true,
-        :final cause,
-      ) =>
-        InventoryRecoveryRequired(switch (cause) {
-          LegacyOwnerFailureCause.keyLost => InventoryRecoveryCause.keyLost,
-          LegacyOwnerFailureCause.missingAfterAdmission =>
-            InventoryRecoveryCause.missingAfterAdmission,
-          _ => InventoryRecoveryCause.unreadable,
-        }),
-      _ => null,
-    };
-
 class Bull {
   static Future<Result<void, Failure>> init({
     Future<void> Function(LegacyImportFailure)? retryStorage,
