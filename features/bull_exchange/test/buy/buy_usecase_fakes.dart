@@ -1,9 +1,12 @@
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_flow.dart';
 import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/find_created_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/get_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/get_buy_receive_address_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/load_accelerate_quote_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/load_buy_context_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/refresh_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/release_buy_payjoin_usecase.dart';
@@ -148,4 +151,37 @@ final class FakeSettleBuyPayoutUsecase implements SettleBuyPayoutUsecase {
   @override
   Future<void> execute(BuyOrder order, String? walletId) =>
       answer(order, walletId);
+}
+
+final class FakeLoadAccelerateQuoteUsecase
+    implements LoadAccelerateQuoteUsecase {
+  final Future<ExchangeRead<AccelerateQuote>> Function(
+    ExchangeSession session,
+    String orderId,
+  )
+  answer;
+
+  FakeLoadAccelerateQuoteUsecase(this.answer);
+
+  @override
+  Future<ExchangeRead<AccelerateQuote>> execute(
+    ExchangeSession session,
+    String orderId,
+  ) => answer(session, orderId);
+}
+
+final class FakeAccelerateBuyOrderUsecase implements AccelerateBuyOrderUsecase {
+  final Future<ConfirmAnswered<AccelerateTarget, BuyOrder>> Function(
+    ExchangeSession session,
+    ConfirmSend<AccelerateTarget> effect,
+  )
+  answer;
+
+  FakeAccelerateBuyOrderUsecase(this.answer);
+
+  @override
+  Future<ConfirmAnswered<AccelerateTarget, BuyOrder>> execute(
+    ExchangeSession session,
+    ConfirmSend<AccelerateTarget> effect,
+  ) => answer(session, effect);
 }

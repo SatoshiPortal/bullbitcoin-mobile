@@ -6,7 +6,9 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../orders/order_usecase_fakes.dart';
 import '../buy_fixtures.dart';
+import '../buy_usecase_fakes.dart';
 
 final _quote = AccelerateQuote(
   buyOrder(status: OrderStatus.inProgress),
@@ -14,26 +16,40 @@ final _quote = AccelerateQuote(
   const [],
 );
 
+/// The accelerate use cases as fakes; every call is logged with the
+/// session it got.
 final class _Calls {
   final log = <String>[];
+  final sessions = <ExchangeSession>{};
   Completer<GatedWrite<ExchangeWrite<BuyOrder>>> answer = Completer();
   ExchangeRead<Order> reread = ReadGot(
     buyOrder(status: OrderStatus.inProgress),
   );
 
-  AccelerateFlowCalls of(ExchangeSession session) => (
-    load: (orderId) async {
-      log.add('load $orderId');
+  void _called(ExchangeSession session, String call) {
+    sessions.add(session);
+    log.add(call);
+  }
+
+  AccelerateFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => AccelerateFlowBloc(
+    session: session,
+    orderId: 'b-1',
+    accessChanges: accessChanges,
+    loadQuote: FakeLoadAccelerateQuoteUsecase((session, orderId) async {
+      _called(session, 'load $orderId');
       return ReadGot(_quote);
-    },
-    accelerate: (effect) async {
-      log.add('accelerate ${effect.attempt}');
+    }),
+    accelerateOrder: FakeAccelerateBuyOrderUsecase((session, effect) async {
+      _called(session, 'accelerate ${effect.attempt}');
       return ConfirmAnswered(effect.attempt, await answer.future);
-    },
-    readOrder: (orderId) async {
-      log.add('read $orderId');
+    }),
+    getOrder: FakeGetOrderUsecase((session, orderId) async {
+      _called(session, 'read $orderId');
       return reread;
-    },
+    }),
   );
 }
 
@@ -51,12 +67,7 @@ void main() {
   setUp(() {
     calls = _Calls();
     access = StreamController<ExchangeAccess>.broadcast();
-    bloc = AccelerateFlowBloc(
-      calls: calls.of,
-      session: buySession,
-      orderId: 'b-1',
-      accessChanges: access.stream,
-    );
+    bloc = calls.bloc(session: buySession, accessChanges: access.stream);
   });
 
   tearDown(() async {
@@ -78,6 +89,7 @@ void main() {
     );
     await _settle();
     expect(bloc.state, isA<AccelerateDone>());
+    expect(calls.sessions, {buySession});
   });
 
   test('an unknown accelerate re-reads, never accelerates again', () async {
@@ -101,5 +113,14 @@ void main() {
     access.add(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     await _settle();
     expect(bloc.state, isA<AccelerateSessionEnded>());
+  });
+
+  test('without a session nothing runs', () async {
+    final none = _Calls();
+    final ended = none.bloc(session: null, accessChanges: const Stream.empty());
+    addTearDown(ended.close);
+    await _settle();
+    expect(ended.state, isA<AccelerateSessionEnded>());
+    expect(none.log, isEmpty);
   });
 }
