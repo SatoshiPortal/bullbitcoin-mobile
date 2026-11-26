@@ -161,6 +161,24 @@ void main() {
     expect(inventory.isLocked, isTrue);
   });
 
+  test(
+    'a lock invoked by a synchronous listener supersedes reopening',
+    () async {
+      Future<bool>? later;
+      final subscription = inventory.lockedChanges.listen((locked) {
+        if (locked) later = inventory.lock();
+      });
+      final first = inventory.lockIfProtected();
+
+      expect(await first, isTrue);
+      final second = later;
+      expect(second, isNotNull);
+      if (second != null) expect(await second, isTrue);
+      expect(inventory.isLocked, isTrue);
+      await subscription.cancel();
+    },
+  );
+
   test('an unprotected view reopens only after the lock has drained', () async {
     final locking = inventory.lockIfProtected();
     expect(inventory.isLocked, isTrue);
