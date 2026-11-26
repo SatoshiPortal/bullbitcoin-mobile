@@ -76,10 +76,6 @@ runs:
         # Official hosted Payjoin explicitly selects its own compiler.
         rustup toolchain install "$PAYJOIN_RUST_VERSION" --profile minimal
         rustup component add --toolchain "$PAYJOIN_RUST_VERSION" clippy rustfmt
-        # Bark selects its own compiler; host std matches the runner architecture.
-        rustup toolchain install "$BARK_RUST_VERSION" --profile minimal
-        rustup component add --toolchain "$BARK_RUST_VERSION" clippy rustfmt
-        rustup run "$BARK_RUST_VERSION" rustc --version | grep -F "rustc $BARK_RUST_VERSION"
         rustup run "$RUST_VERSION" rustc --version | grep -F "rustc $RUST_VERSION"
         rustup run "$PAYJOIN_RUST_VERSION" rustc --version | grep -F "rustc $PAYJOIN_RUST_VERSION"
         echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"

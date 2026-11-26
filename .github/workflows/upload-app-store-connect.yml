@@ -167,11 +167,6 @@ jobs:
           rustup target add --toolchain "$PAYJOIN_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
           rustup run "$PAYJOIN_RUST_VERSION" rustc --version | grep -F "rustc $PAYJOIN_RUST_VERSION"
 
-          rustup toolchain install "$BARK_RUST_VERSION" --profile minimal
-          rustup component add --toolchain "$BARK_RUST_VERSION" clippy rustfmt
-          rustup target add --toolchain "$BARK_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
-          rustup run "$BARK_RUST_VERSION" rustc --version | grep -F "rustc $BARK_RUST_VERSION"
-
           rustup run "$RUST_VERSION" rustc --version | grep -F "rustc $RUST_VERSION"
           rustup run "$BDK_RUST_VERSION" rustc --version | grep -F "rustc $BDK_RUST_VERSION"
           echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
