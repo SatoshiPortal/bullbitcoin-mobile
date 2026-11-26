@@ -23,6 +23,10 @@ const _fresh = 'fresh-v1/secrets';
 const _importedWithAccess = 'split-v1/secrets/access-v2';
 const _freshWithAccess = 'fresh-v1/secrets/access-v2';
 
+/// Receipts a retirement accepts: access reconciled into the encrypted store.
+const importedWithAccessReceipt = _importedWithAccess;
+const freshWithAccessReceipt = _freshWithAccess;
+
 typedef _LegacyAccessSnapshot = ({
   String? pin,
   int failedAttempts,
@@ -60,7 +64,7 @@ final class SecretsImport implements LegacyImportParticipant {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     final opened = await InventoryStore.open(_file, admission, existing: true);
     switch (opened) {

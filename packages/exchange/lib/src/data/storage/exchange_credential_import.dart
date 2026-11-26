@@ -105,7 +105,7 @@ final class ExchangeCredentialImport implements LegacyImportParticipant {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     switch (await _open(admission, existing: true)) {
       case Err(:final failure):
