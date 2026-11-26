@@ -35,6 +35,7 @@ void main() {
 
   Future<SecretsInventory> open() async => _ok(
     await SecretsInventory.open(
+      authority: SessionAuthority(),
       file: secretsFile,
       admission: admission,
       backupVerification: RecoverBullBackupVerification(

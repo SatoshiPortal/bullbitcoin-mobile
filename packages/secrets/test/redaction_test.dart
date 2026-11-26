@@ -19,7 +19,10 @@ import 'result_helpers.dart';
 void main() {
   Secrets secretsWith(FakeSecureStoragePlatform storage) {
     storage.install();
-    return Secrets(scratchDirectory: () async => '.');
+    return Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '.',
+    );
   }
 
   group('describeSafely', () {
@@ -139,9 +142,10 @@ void redactionOfStoredContent() {
         entries: {storageKey: jsonEncode(envelope)},
       )..install();
 
-      final result = await Secrets(scratchDirectory: () async => '/tmp')
-          .databaseKeys(module: 'probe')
-          .getOrCreate(name: 'main');
+      final result = await Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      ).databaseKeys(module: 'probe').getOrCreate(name: 'main');
 
       final failure = (result as Err<DatabaseKey, SecretFailure>).failure;
       expect(failure, isA<DatabaseKeyCorruptFailure>());
@@ -168,8 +172,10 @@ void redactionOfStoredContent() {
         },
       ).install();
 
-      final result = await Secrets(scratchDirectory: () async => '/tmp')
-          .fetch(Fingerprint('00000000'));
+      final result = await Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      ).fetch(Fingerprint('00000000'));
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
       expect(failure, isA<FetchSecretFailure>());

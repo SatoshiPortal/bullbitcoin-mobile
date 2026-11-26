@@ -112,6 +112,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show SessionAuthority;
 
 Future<Result<String, SecretFailure>> createAccount(Secrets secrets) async {
   switch (await secrets.generate(wordCount: MnemonicLength.words12)) {
@@ -127,7 +128,13 @@ Future<Result<String, SecretFailure>> createAccount(Secrets secrets) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final secrets = Secrets(scratchDirectory: () async => Directory.systemTemp.path);
+  // The composition shares one authority with the inventory, which grants it
+  // after authentication; while it is locked every operation is refused.
+  final authority = SessionAuthority();
+  final secrets = Secrets(
+    scratchDirectory: () async => Directory.systemTemp.path,
+    authority: authority,
+  );
   final result = await createAccount(secrets);
   runApp(Directionality(
     textDirection: TextDirection.ltr,

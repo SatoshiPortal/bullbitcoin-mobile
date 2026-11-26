@@ -30,7 +30,10 @@ void main() {
     directory = await Directory.systemTemp.createTemp('exchange-cutover-');
     keystore = _RecordingKeystore();
     keystore.install();
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     destination = File('${directory.path}/exchange.sqlite');
     source = File('${directory.path}/legacy.sqlite');
     final legacy = sqlite3.open(source.path);

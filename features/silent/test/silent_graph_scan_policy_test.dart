@@ -23,6 +23,8 @@ import 'package:mocktail/mocktail.dart';
 
 import 'sp_fakes.dart';
 
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
+
 // The pure policy itself is covered in domain/sp_scan_policy_test.dart; this
 // file checks that the Silent graph obeys it.
 //
@@ -62,7 +64,10 @@ void main() {
     // read on this path (the fake reports a live session, so EnsureSpSession
     // returns the snapshot without reconstructing), but the graph resolves it.
     locator.registerSingleton<Secrets>(
-      Secrets(scratchDirectory: () async => '/tmp'),
+      Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      ),
     );
     settingsRepo = _MockSettingsRepository();
     // The sync tick reads GetSpWalletUsecase, which checks the feature gate.

@@ -29,8 +29,10 @@ void main() {
         await File('${directory.path}/fixture-keystore.json').readAsString(),
       ) as Map<String, dynamic>).cast<String, String>();
       FakeSecureStoragePlatform(entries: entries).install();
-      final keys = Secrets(scratchDirectory: () async => directory.path)
-          .databaseKeys(module: 'mempool');
+      final keys = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      ).databaseKeys(module: 'mempool');
       final lease = await NativeFileGate(
         File('${directory.path}/gate'),
       ).acquire(exclusive: true, timeout: Duration.zero) as ExclusiveAdmission;
@@ -75,8 +77,10 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('mempool-import-');
     keystore = FakeSecureStoragePlatform()..install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'mempool');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'mempool');
     gate = NativeFileGate(File('${directory.path}/gate'));
   });
   tearDown(() async {

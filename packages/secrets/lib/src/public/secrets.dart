@@ -36,6 +36,7 @@ final class Secrets {
   final _repository = SecretRepository();
   final DatabaseKeyRepository _databaseKeys;
   final Future<String> Function() _scratchDirectory;
+  final SessionAuthority _authority;
 
   /// Opens the store the user's secrets live in.
   ///
@@ -44,16 +45,21 @@ final class Secrets {
   /// [scratchDirectory] is a directory lwk may use as a cache while signing, since `Wallet.init` has no in-memory persister. Bitcoin signing writes nothing. It disappears the day lwk-dart binds its signer directly.
   ///
   /// Tests substitute the store below this type, at `FlutterSecureStoragePlatform.instance`.
-  factory Secrets({required Future<String> Function() scratchDirectory}) {
+  ///
+  /// [authority] is the session shared with the inventory. There is no `Secrets` without one: while it is locked every operation on stored secrets is refused, and a handle stops working when the session it was issued in ends. Database keys and the closed owner keychains do not depend on a session (D63).
+  factory Secrets({
+    required Future<String> Function() scratchDirectory,
+    required SessionAuthority authority,
+  }) {
     // A signature the process did not survive leaves its lwk cache behind;
     // sweep it now rather than at the next Liquid signature, which may never
     // come. Same age rule as the pre-signature sweep, so a second `Secrets`
     // in another isolate cannot take a signature still in flight.
     unawaited(Signer.liquid.sweepScratch(scratchDirectory));
-    return Secrets._(DatabaseKeyRepository(), scratchDirectory);
+    return Secrets._(DatabaseKeyRepository(), scratchDirectory, authority);
   }
 
-  Secrets._(this._databaseKeys, this._scratchDirectory);
+  Secrets._(this._databaseKeys, this._scratchDirectory, this._authority);
 
   /// Seed and database-key namespaces, kept for callers auditing legacy data.
   /// Owner-scoped keychains use a separate closed set of historical keys.
@@ -74,12 +80,14 @@ final class Secrets {
   @useResult
   Future<Result<Secret, SecretFailure>> generate({
     MnemonicLength wordCount = MnemonicLength.words12,
-  }) async => (await _repository.store(
-    words: Generator.mnemonic(wordCount: wordCount),
-    // bdk generates English words.
-    language: Language.english,
-    rejectExisting: true,
-  )).map(_handle);
+  }) => _write(
+    (scope) async => (await _repository.store(
+      words: Generator.mnemonic(wordCount: wordCount),
+      // bdk generates English words.
+      language: Language.english,
+      rejectExisting: true,
+    )).map((info) => _handle(info, scope)),
+  );
 
   /// Imports user-supplied words and returns a newly stored secret. The caller must release its input afterwards. Invalid words return [InvalidMnemonicFailure]; an existing secret returns [SecretAlreadyExistsFailure] without changing storage.
   ///
@@ -90,13 +98,15 @@ final class Secrets {
     required Language language,
     String? passphrase,
     Set<Fingerprint>? acceptOnly,
-  }) async => (await _repository.store(
-    words: words,
-    language: language,
-    passphrase: passphrase,
-    rejectExisting: true,
-    acceptOnly: acceptOnly,
-  )).map(_handle);
+  }) => _write(
+    (scope) async => (await _repository.store(
+      words: words,
+      language: language,
+      passphrase: passphrase,
+      rejectExisting: true,
+      acceptOnly: acceptOnly,
+    )).map((info) => _handle(info, scope)),
+  );
 
   // ----------------------------------------------------------------- queries
 
@@ -104,8 +114,10 @@ final class Secrets {
   ///
   /// Validates the stored shape without deriving a seed. A stored value that is not a secret is a [FetchSecretFailure], never a [SecretNotFoundFailure].
   @useResult
-  Future<Result<Secret, SecretFailure>> fetch(Fingerprint id) async =>
-      (await _repository.describe(id)).map(_handle);
+  Future<Result<Secret, SecretFailure>> fetch(Fingerprint id) => _read(
+    (scope) async =>
+        (await _repository.describe(id)).map((info) => _handle(info, scope)),
+  );
 
   /// Every stored entry: a usable [Secret] or an [UnreadableSecret] with its failure and, when recoverable, its fingerprint.
   ///
@@ -113,14 +125,15 @@ final class Secrets {
   ///
   /// Reads the keystore with one `readAll`, which on Android is all-or-nothing: an entry the plugin cannot decrypt — in *any* namespace — fails the whole read. A failed listing therefore says nothing about any particular seed and must not be read as one being gone. [fetch] reads one key and is unaffected.
   @useResult
-  Future<Result<List<SecretEntry>, SecretFailure>> list() async =>
-      (await _repository.describeAll()).map(
-        (listing) => List<SecretEntry>.unmodifiable([
-          ...listing.secrets.map(_handle),
-          for (final entry in listing.unreadable)
-            UnreadableSecret(id: entry.id, failure: entry.failure),
-        ]),
-      );
+  Future<Result<List<SecretEntry>, SecretFailure>> list() => _read(
+    (scope) async => (await _repository.describeAll()).map(
+      (listing) => List<SecretEntry>.unmodifiable([
+        ...listing.secrets.map((info) => _handle(info, scope)),
+        for (final entry in listing.unreadable)
+          UnreadableSecret(id: entry.id, failure: entry.failure),
+      ]),
+    ),
+  );
 
   /// Unconditional delete.
   ///
@@ -129,7 +142,7 @@ final class Secrets {
   /// package deliberately does not.
   @useResult
   Future<Result<void, SecretFailure>> trash(Fingerprint id) =>
-      _repository.trash(id);
+      _write((_) => _repository.trash(id));
 
   /// Whether a secret is already stored under [id].
   ///
@@ -137,7 +150,7 @@ final class Secrets {
   /// loop that a seed read does. Use it only for indicative checks, never to conclude that a wallet's seed has disappeared. [import] checks duplicates atomically.
   @useResult
   Future<Result<bool, SecretFailure>> exists(Fingerprint id) =>
-      _repository.exists(id);
+      _read((_) => _repository.exists(id));
 
   /// Whether these words and passphrase are already stored, comparing full seed bytes. Invalid words return [InvalidMnemonicFailure]; keystore failures remain failures. This preflight does not reserve an import.
   @useResult
@@ -158,11 +171,13 @@ final class Secrets {
     required List<String> words,
     required Language language,
     String? passphrase,
-  }) async => (await _repository.find(
-    words: words,
-    language: language,
-    passphrase: passphrase,
-  )).map((info) => info == null ? null : _handle(info));
+  }) => _read(
+    (scope) async => (await _repository.find(
+      words: words,
+      language: language,
+      passphrase: passphrase,
+    )).map((info) => info == null ? null : _handle(info, scope)),
+  );
 
   // ----------------------------------------------------------------- preview
 
@@ -241,16 +256,21 @@ final class Secrets {
     required VaultKey key,
     String? passphrase,
     bool allowUnverified = false,
-  }) async =>
-      (await _repository.restore(
-        file: vault.json,
-        key: key.hex,
-        passphrase: passphrase,
-        allowUnverified: allowUnverified,
-      )).map((restored) {
-        log.fine('secret.backup.restored');
-        return (secret: _handle(restored.info), metadata: restored.metadata);
-      });
+  }) => _write(
+    (scope) async =>
+        (await _repository.restore(
+          file: vault.json,
+          key: key.hex,
+          passphrase: passphrase,
+          allowUnverified: allowUnverified,
+        )).map((restored) {
+          log.fine('secret.backup.restored');
+          return (
+            secret: _handle(restored.info, scope),
+            metadata: restored.metadata,
+          );
+        }),
+  );
 
   /// Opens a vault and derives the fingerprint of its words without reading or writing the keystore.
   ///
@@ -303,9 +323,34 @@ final class Secrets {
     );
   }
 
-  Secret _handle(SecretInfo info) => Secret(
+  /// Reads: refused while locked, and a result that finishes after the session ended is not delivered.
+  Future<Result<T, SecretFailure>> _read<T>(
+    Future<Result<T, SecretFailure>> Function(SessionScope scope) run,
+  ) async {
+    final scope = _enter();
+    if (scope == null) return const Err(inventoryLockedFailure);
+    final result = await run(scope);
+    return scope.isCurrent ? result : const Err(inventorySessionChangedFailure);
+  }
+
+  /// Writes: refused while locked. Work already committed reports its true result; a handle it returns belongs to the session it started in.
+  Future<Result<T, SecretFailure>> _write<T>(
+    Future<Result<T, SecretFailure>> Function(SessionScope scope) run,
+  ) async {
+    final scope = _enter();
+    if (scope == null) return const Err(inventoryLockedFailure);
+    return run(scope);
+  }
+
+  SessionScope? _enter() {
+    final token = _authority.current;
+    return token == null ? null : SessionScope(_authority, token);
+  }
+
+  Secret _handle(SecretInfo info, SessionScope scope) => Secret(
     info,
     repository: _repository,
+    scope: scope,
     scratchDirectory: _scratchDirectory,
   );
 }

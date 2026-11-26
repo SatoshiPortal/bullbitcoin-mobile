@@ -38,7 +38,10 @@ void main() {
       final adapter = RecoverBullWalletAdapter(
         wallets,
         settings,
-        Secrets(scratchDirectory: () async => scratch.path),
+        Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => scratch.path,
+        ),
         provisioning,
       );
       final result = await adapter.restoreDefaults(
@@ -75,6 +78,7 @@ void main() {
       wallets,
       settings,
       Secrets(
+        authority: unlockedSessionAuthority(),
         scratchDirectory: () async => throw StateError('Unexpected access'),
       ),
       _Provisioning(),
@@ -117,7 +121,10 @@ void main() {
           final adapter = RecoverBullWalletAdapter(
             wallets,
             settings,
-            Secrets(scratchDirectory: () async => scratch.path),
+            Secrets(
+              authority: unlockedSessionAuthority(),
+              scratchDirectory: () async => scratch.path,
+            ),
             provisioning,
           );
           final captured = VaultContext(
@@ -159,7 +166,10 @@ void main() {
       final adapter = RecoverBullWalletAdapter(
         _Wallets(),
         settings,
-        Secrets(scratchDirectory: () async => scratch.path),
+        Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => scratch.path,
+        ),
         provisioning,
       );
       final result = await adapter.restoreDefaults(

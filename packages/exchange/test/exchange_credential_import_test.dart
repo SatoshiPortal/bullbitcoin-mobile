@@ -30,7 +30,10 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('exchange-import-');
     keystore = FakeSecureStoragePlatform().install();
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     gate = NativeFileGate(File('${directory.path}/lifecycle.lock'));
     destination = File('${directory.path}/exchange.sqlite');
     source = File('${directory.path}/legacy.sqlite');

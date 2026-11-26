@@ -15,8 +15,10 @@ void main() {
   late SwapKeychain keychain;
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
-    keychain = Secrets(scratchDirectory: () async => Directory.systemTemp.path)
-        .swapKeychain;
+    keychain = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => Directory.systemTemp.path,
+    ).swapKeychain;
     store = SwapStorage(rows: _Rows(), secrets: keychain);
   });
   test('the engine reaches exactly its own legacy entries', () async {

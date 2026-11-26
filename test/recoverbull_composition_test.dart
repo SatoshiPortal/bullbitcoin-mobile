@@ -95,7 +95,10 @@ void main() {
             await legacyOwner.close();
           }
         }
-        final secrets = Secrets(scratchDirectory: () async => directory.path);
+        final secrets = Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        );
         final keys = secrets.databaseKeys(module: 'preferences');
         final recoverBull = recoverBullCutoverForTesting(
           file: ownerFile,

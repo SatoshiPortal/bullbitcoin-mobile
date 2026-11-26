@@ -22,7 +22,10 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('exchange-storage-');
     FakeSecureStoragePlatform().install();
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     gate = NativeFileGate(File('${directory.path}/lifecycle.lock'));
     file = File('${directory.path}/exchange.sqlite');
   });

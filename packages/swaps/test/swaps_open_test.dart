@@ -44,7 +44,10 @@ void main() {
       database: database,
       regtestDatabase: regtest,
       preferences: prefs,
-      secrets: Secrets(scratchDirectory: () async => '/unused'),
+      secrets: Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/unused',
+      ),
       electrum: _Electrum(),
       connections: _Chain(),
       fees: _Fees(),

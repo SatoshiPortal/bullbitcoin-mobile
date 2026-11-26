@@ -26,6 +26,7 @@ import '../data/derivation_repository.dart';
 import '../data/inventory_import.dart';
 import '../data/inventory_repository.dart';
 import '../data/inventory_store.dart';
+import '../data/ready_inventory_store.dart';
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
@@ -50,30 +51,38 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   final InventoryRepository _wallets;
   final DerivationRepository _derivations;
   final BackupGuard _guard;
-  bool _unlocked;
+  final SessionAuthority _authority;
   var _session = 0;
 
   SecretsInventory._(
     this._store,
     this._access,
     this._guard,
+    this._authority,
     bool initiallyProtected,
   ) : _wallets = InventoryRepository(_store.database),
-      _derivations = DerivationRepository(_store.database),
-      _unlocked = !initiallyProtected;
+      _derivations = DerivationRepository(_store.database) {
+    if (!initiallyProtected) _authority.grant(defaultViewId);
+  }
+
+  bool get _unlocked => _authority.current != null;
 
   /// Open an existing, admitted inventory. A missing receipt blocks publication.
   ///
   /// [backupVerification] is the composition's one verifier, bound here before
   /// the capability exists. Without it the inventory refuses every decision that
   /// needs a backup proof; no operation lets a caller supply its own.
+  ///
+  /// [authority] is the session shared with `Secrets`. The inventory is the only
+  /// writer: an authentication grants a token, locking revokes it.
   @useResult
   static Future<Result<SecretsInventory, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
     InventoryBackupVerification? backupVerification,
+    required SessionAuthority authority,
   }) async {
-    final opened = await _openReady(file, admission);
+    final opened = await openReadyInventoryStore(file, admission);
     switch (opened) {
       case Err(:final failure):
         return Err(failure);
@@ -91,7 +100,9 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
             await value.close();
             return Err(failure);
           case Ok(value: final protected):
-            return Ok(SecretsInventory._(value, access, guard, protected));
+            return Ok(
+              SecretsInventory._(value, access, guard, authority, protected),
+            );
         }
     }
   }
@@ -110,13 +121,17 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     if (current != _session) {
       return const Err(inventorySessionChangedFailure);
     }
-    if (attempt case Ok(value: AccessAttempt(accepted: true))) _unlocked = true;
+    if (attempt case Ok(value: AccessAttempt(accepted: true))) {
+      // A re-authentication inside a live session keeps its handles; only a
+      // locked inventory opens a new generation.
+      if (!_unlocked) _authority.grant(defaultViewId);
+    }
     return attempt;
   }
 
   void lock() {
     _session++;
-    _unlocked = false;
+    _authority.revoke();
   }
 
   @useResult
@@ -128,7 +143,9 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
           case Ok(value: true):
             return const Err(inventoryCredentialRequiredFailure);
           case Ok(value: false):
-            if (session == _session) _unlocked = true;
+            if (session == _session && !_unlocked) {
+              _authority.grant(defaultViewId);
+            }
             return const Ok(null);
         }
       });
@@ -387,8 +404,10 @@ final class BackgroundWalletDescriptors {
   static Future<Result<BackgroundWalletDescriptors, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-  }) async =>
-      (await _openReady(file, admission)).map(BackgroundWalletDescriptors._);
+  }) async => (await openReadyInventoryStore(
+    file,
+    admission,
+  )).map(BackgroundWalletDescriptors._);
 
   @useResult
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>> list() =>

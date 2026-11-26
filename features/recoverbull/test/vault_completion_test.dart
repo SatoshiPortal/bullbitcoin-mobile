@@ -61,7 +61,10 @@ void main() {
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
-    final secrets = custody.Secrets(scratchDirectory: () async => '.');
+    final secrets = custody.Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '.',
+    );
     // Published BIP39 test vector.
     ok(
       await secrets.import(

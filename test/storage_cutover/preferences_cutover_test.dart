@@ -103,8 +103,10 @@ void main() {
         }
       }
       FakeSecureStoragePlatform().install();
-      final keys = Secrets(scratchDirectory: () async => directory.path)
-          .databaseKeys(module: 'preferences');
+      final keys = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      ).databaseKeys(module: 'preferences');
       final sourceStore = LegacySourceStore(
         source: LegacySource(source, 16),
         create: SqliteDatabase.new,

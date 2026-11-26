@@ -142,7 +142,10 @@ void main() {
 
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     inventory = _Inventory();
     accounts = _Accounts();
     environment = _Environment(NetworkEnv.mainnet);

@@ -353,7 +353,10 @@ void main() {
       );
       final storage = _SecureStorage(parent)..install();
       final result = await locator<SeedReferences>().deleteUnreferenced(
-        Secrets(scratchDirectory: () async => directory.path),
+        Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        ),
         parent,
       );
       expect(result, isA<Err>());
@@ -446,7 +449,10 @@ void main() {
           }
           await compose();
           final storage = _SecureStorage(parent)..install();
-          final secrets = Secrets(scratchDirectory: () async => directory.path);
+          final secrets = Secrets(
+            authority: unlockedSessionAuthority(),
+            scratchDirectory: () async => directory.path,
+          );
           final result = await locator<SeedReferences>().deleteUnreferenced(
             secrets,
             parent,

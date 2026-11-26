@@ -12,7 +12,10 @@ void main() {
     'selection and fetch delays cannot change the wallet certified by a flow',
     () async {
       FakeSecureStoragePlatform().install();
-      final secrets = custody.Secrets(scratchDirectory: () async => '.');
+      final secrets = custody.Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '.',
+      );
       expect(
         await secrets.import(
           words: '${'abandon ' * 11}about'.split(' '),

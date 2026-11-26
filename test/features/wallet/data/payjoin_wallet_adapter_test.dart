@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart' show BitcoinSpendStatus;
 import 'package:transactions/testing.dart';
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 class _Metadata extends Mock implements WalletInventory {}
 
@@ -15,7 +16,10 @@ void main() {
 
   PayjoinWalletAdapter adapter(BitcoinSpendStatus Function(int) status) =>
       PayjoinWalletAdapter(
-        Secrets(scratchDirectory: () async => '/tmp'),
+        Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => '/tmp',
+        ),
         (_) async => throw StateError('no wallet handle expected'),
         (_) async => status(++checks),
         metadata,

@@ -52,6 +52,8 @@ import 'package:secrets/secrets.dart';
 
 import '../secrets_derivation_vectors_test.dart' as vectors;
 
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
+
 T custodyValue<T>(Result<T, SecretFailure> result) => switch (result) {
   Ok(:final value) => value,
   Err(:final failure) => fail(
@@ -154,7 +156,10 @@ void main({bool isInitialized = false}) {
     tester,
   ) async {
     final scratch = await getTemporaryDirectory();
-    final secrets = Secrets(scratchDirectory: () async => scratch.path);
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => scratch.path,
+    );
     final random = Random.secure();
     final entropy = List<int>.generate(16, (_) => random.nextInt(256));
     final words = bip39.Mnemonic(entropy, bip39.Language.english).words;
@@ -249,7 +254,10 @@ void main({bool isInitialized = false}) {
     tester,
   ) async {
     final scratch = await getTemporaryDirectory();
-    final secrets = Secrets(scratchDirectory: () async => scratch.path);
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => scratch.path,
+    );
     final random = Random.secure();
     final words = bip39.Mnemonic(
       List<int>.generate(16, (_) => random.nextInt(256)),

@@ -223,7 +223,10 @@ void main() {
         exchangeVisible: const Stream.empty(),
       );
       final recovery = RecoverBullFeature.create(
-        secrets: Secrets(scratchDirectory: () async => directory.path),
+        secrets: Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        ),
         wallets: wallets,
       );
       locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
@@ -277,7 +280,10 @@ void main() {
       locator.registerSingleton(
         SilentFeature.mount(
           preferences: SilentPreferences(),
-          secrets: Secrets(scratchDirectory: () async => directory.path),
+          secrets: Secrets(
+            authority: unlockedSessionAuthority(),
+            scratchDirectory: () async => directory.path,
+          ),
           readDefaultFingerprint: (_) async => const Ok(null),
           readRouteAccess: (_) =>
               (environment: null, isSuperuser: false, isDevModeEnabled: false),
@@ -319,7 +325,10 @@ void main() {
           onSweep: (_, _, _) async {},
         ),
       );
-      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
       final inventory = inventoryFixture.inventory;
       final references = SeedReferences(
         _UnusedReferences(),

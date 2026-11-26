@@ -136,7 +136,10 @@ void main() {
     storage = FakeSecureStoragePlatform()..install();
     final directory = await Directory.systemTemp.createTemp('import-wallet-');
     addTearDown(() => directory.delete(recursive: true));
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     fixture = await InventoryFixture.open(directory);
     addTearDown(fixture.close);
     native = _Native();

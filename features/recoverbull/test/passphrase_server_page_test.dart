@@ -68,7 +68,10 @@ void main() {
         late Fingerprint expected;
         await tester.runAsync(() async {
           FakeSecureStoragePlatform().install();
-          final secrets = custody.Secrets(scratchDirectory: () async => '.');
+          final secrets = custody.Secrets(
+            authority: unlockedSessionAuthority(),
+            scratchDirectory: () async => '.',
+          );
           final imported = await secrets.import(
             words: [...List.filled(11, 'abandon'), 'about'],
             passphrase: 'synthetic-phrase',

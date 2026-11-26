@@ -193,7 +193,10 @@ void main() {
   }) {
     storage.install();
     hasWalletsCalls = 0;
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     return CheckForExistingDefaultWalletsUsecase(
       preferences: _StartupPreferences(settings),
       inventory: _StartupInventory(wallets),
@@ -449,7 +452,10 @@ void main() {
     final storage = FakeSecureStoragePlatform(
       entries: {'seed_$fingerprint': entry},
     )..install();
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final inventory = _RegistrationInventory([
       for (final network in [
         Network.bitcoinMainnet.shared,

@@ -56,6 +56,7 @@ final class InventoryFixture {
     ) as RuntimeAdmission;
     final backup = TestBackups();
     final opened = await SecretsInventory.open(
+      authority: SessionAuthority(),
       file: file,
       admission: admission,
       backupVerification: backup,

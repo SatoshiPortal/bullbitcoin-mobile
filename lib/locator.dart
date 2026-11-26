@@ -214,6 +214,10 @@ class AppLocator {
           secrets ??
           Secrets(
             scratchDirectory: () async => (await getTemporaryDirectory()).path,
+            // Without a composed authority nothing has authenticated: locked.
+            authority: locator.isRegistered<SessionAuthority>()
+                ? locator<SessionAuthority>()
+                : SessionAuthority(),
           ),
     );
 

@@ -25,7 +25,10 @@ void main() {
   late Secrets secrets;
   setUp(() {
     store = _Store()..install();
-    secrets = Secrets(scratchDirectory: () async => Directory.systemTemp.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => Directory.systemTemp.path,
+    );
   });
   tearDown(() => debugDefaultTargetPlatformOverride = null);
 

@@ -12,6 +12,7 @@ export 'encrypted_vault.dart' show EncryptedVault, VaultKey;
 export 'failures.dart';
 export 'revealed_mnemonic.dart' show RevealedMnemonic, RevealReason;
 export 'secret_info.dart' show SecretInfo, SecretKind;
+export 'session_authority.dart';
 export 'secret_listing.dart' show InfoListing, SecretListing;
 export 'secret_material.dart' show Mnemonic, SecretMaterial, Seed;
 export 'swap_master_key.dart' show SwapMasterKey;

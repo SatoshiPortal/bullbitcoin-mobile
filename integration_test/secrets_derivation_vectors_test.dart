@@ -16,6 +16,8 @@ import 'package:secrets/secrets.dart';
 
 import '../packages/secrets/test/fixtures/liquid_signing_fixture.dart';
 
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
+
 /// Pins what `secrets` derives, against the FFI the unit suite cannot load.
 ///
 /// Two halves. The first is funds-free and runs anywhere: fixed mnemonics in,
@@ -53,7 +55,10 @@ Future<void> main({bool isInitialized = false}) async {
 
   setUpAll(() async {
     scratch = await Directory.systemTemp.createTemp('secrets_vectors_');
-    secrets = Secrets(scratchDirectory: () async => scratch.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => scratch.path,
+    );
   });
 
   tearDownAll(() async {

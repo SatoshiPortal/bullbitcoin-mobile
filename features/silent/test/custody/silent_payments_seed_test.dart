@@ -47,7 +47,10 @@ void main() {
   ]) {
     test('${vector.language.name} with passphrase '
         '${vector.passphrase.isNotEmpty} reaches native boundary', () async {
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      );
       final words = bip39.Mnemonic(List.filled(16, 0), vector.language).words;
       final imported = await secrets.import(
         words: words,
@@ -104,7 +107,10 @@ void main() {
   }
 
   test('wipes the seed buffer after a successful native call', () async {
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final mnemonic = bip39.Mnemonic(List.filled(16, 0), bip39.Language.english);
     final imported = await secrets.import(
       words: mnemonic.words,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     show Language, MnemonicLength;
 import 'package:bull_logger/bull_logger.dart';
@@ -28,6 +30,26 @@ final class UnreadableSecret extends SecretEntry {
   String toString() => 'UnreadableSecret($id, ${failure.runtimeType})';
 }
 
+/// The repository as one handle sees it: every use of material is checked against the session the handle was issued in.
+final class _ScopedRepository {
+  final SecretRepository _inner;
+  final SessionScope _scope;
+
+  const _ScopedRepository(this._inner, this._scope);
+
+  Future<Result<T, SecretFailure>> use<T>(
+    SecretInfo info,
+    FutureOr<T> Function(SecretMaterial material) body, {
+    FutureOr<void> Function(T value)? discard,
+  }) => _inner.use(info, body, scope: _scope, discard: discard);
+
+  Future<Result<T, SecretFailure>> useMnemonic<T>(
+    SecretInfo info,
+    FutureOr<T> Function(Mnemonic material) body, {
+    FutureOr<void> Function(T value)? discard,
+  }) => _inner.useMnemonic(info, body, scope: _scope, discard: discard);
+}
+
 /// A stored secret, and everything that can be done with it.
 ///
 /// Obtained from `Secrets` — `generate`, `import` or `fetch` — and holds no key material of its own: [info] describes the secret, and every operation asks the repository to run a closure on material that exists only for that call.
@@ -41,18 +63,22 @@ final class Secret extends SecretEntry {
   /// Fingerprint and shape. A plain value: safe to log, to compare, to hold in a bloc state.
   final SecretInfo info;
 
-  final SecretRepository _repository;
+  final _ScopedRepository _repository;
 
   /// The host's scratch directory, which Liquid signing writes under.
   final Future<String> Function() _scratchDirectory;
 
   /// Built only by [Secrets] — `fetch`, `list`, `generate`, `import`. The parameter types are not exported, but a dot shorthand (`repository: .new()`) would build them from context alone, so the constructor itself is the seal.
+  ///
+  /// The handle is bound to [scope]: the session it was issued in. Once that session ends, every operation that needs key material is refused, even after a later unlock.
   @internal
-  const Secret(
+  Secret(
     this.info, {
-    required this._repository,
+    required SecretRepository repository,
+    required SessionScope scope,
     required this._scratchDirectory,
-  }) : super._();
+  }) : _repository = _ScopedRepository(repository, scope),
+       super._();
 
   @override
   Fingerprint get id => info.id;
@@ -225,6 +251,12 @@ final class Secret extends SecretEntry {
       matchConcurrencyFactor: matchConcurrencyFactor,
       headerCheckpoint: headerCheckpoint,
     ),
+    // A session that ended while the account opened must not leave a signing
+    // capability alive in native memory.
+    discard: (account) async {
+      await account.dispose();
+      await account.release();
+    },
   );
 
   // ---------------------------------------------------------------- backup

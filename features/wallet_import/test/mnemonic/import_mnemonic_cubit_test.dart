@@ -76,7 +76,10 @@ void main() {
 
   test('accepts a Japanese vector before scanning', () async {
     FakeSecureStoragePlatform().install();
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final inventory = _MockWalletInventory();
     final settings = _MockSettings();
     when(settings.fetch).thenAnswer(

@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 class _Settings extends Mock implements Preferences {}
 

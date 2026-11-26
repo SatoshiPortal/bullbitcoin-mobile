@@ -106,7 +106,10 @@ void main() {
     logDirectory = await Directory.systemTemp.createTemp('wallet-delete-log-');
     log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => logDirectory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => logDirectory.path,
+    );
     final stored = await secrets.import(
       words: words,
       language: Language.english,

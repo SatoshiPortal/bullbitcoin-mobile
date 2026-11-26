@@ -15,7 +15,10 @@ void main() {
   late Secrets secrets;
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
   });
 
   test('opens a Japanese vault without interpreting words as English', () {

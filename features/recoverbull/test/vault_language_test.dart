@@ -7,7 +7,10 @@ import 'package:secrets/testing.dart';
 void main() {
   test('a French mnemonic is sealed and restores to the same seed', () async {
     FakeSecureStoragePlatform().install();
-    final secrets = custody.Secrets(scratchDirectory: () async => '.');
+    final secrets = custody.Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '.',
+    );
     // Published BIP39 zero-entropy vector in French, never a user's wallet.
     final words = [...List.filled(11, 'abaisser'), 'abeille'];
     final secret = switch (await secrets.import(

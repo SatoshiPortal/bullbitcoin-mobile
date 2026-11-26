@@ -8,5 +8,8 @@
 library;
 
 export 'src/testing/testing.dart'
-    show FakeSecureStoragePlatform, ExchangeKeychainProbe;
+    show
+        FakeSecureStoragePlatform,
+        ExchangeKeychainProbe,
+        unlockedSessionAuthority;
 export 'src/testing/wallet_inventory_fixtures.dart';

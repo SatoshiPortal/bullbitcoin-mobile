@@ -24,7 +24,10 @@ void main() {
   int nativeAccesses = 0;
 
   PayjoinWalletAdapter payjoin() => PayjoinWalletAdapter(
-    Secrets(scratchDirectory: () async => fixture.directory.path),
+    Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => fixture.directory.path,
+    ),
     (_) async {
       nativeAccesses++;
       throw StateError('annotation must not occur');
@@ -183,7 +186,10 @@ void main() {
     );
     var opens = 0;
     final adapter = PayjoinWalletAdapter(
-      Secrets(scratchDirectory: () async => fixture.directory.path),
+      Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => fixture.directory.path,
+      ),
       (_) async {
         opens++;
         return const Err(SyncStorageFailure());

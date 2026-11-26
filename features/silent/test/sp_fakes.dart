@@ -48,7 +48,10 @@ class MockGetSpSecretUsecase extends Mock implements GetSpSecretUsecase {}
 /// be mocked, and a handle carries no words anyway.
 Future<Secret> spSecret() async {
   FakeSecureStoragePlatform().install();
-  final secrets = Secrets(scratchDirectory: () async => '/tmp');
+  final secrets = Secrets(
+    authority: unlockedSessionAuthority(),
+    scratchDirectory: () async => '/tmp',
+  );
   final imported = await secrets.import(
     words: [...List.filled(11, 'abandon'), 'about'],
     language: Language.english,
@@ -507,7 +510,10 @@ class FakeSpBackendProbe implements SpBackendProbePort {
 
 SilentPaymentKeychain spKeychain(FakeSecureStoragePlatform platform) {
   platform.install();
-  return Secrets(scratchDirectory: () async => '/tmp').silentPaymentKeychain;
+  return Secrets(
+    authority: unlockedSessionAuthority(),
+    scratchDirectory: () async => '/tmp',
+  ).silentPaymentKeychain;
 }
 
 /// In-memory fake of [SpAutoScanRepository]; the choice is not persisted in

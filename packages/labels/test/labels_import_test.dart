@@ -39,8 +39,10 @@ void main() {
     checkpoint = null;
     directory = await Directory.systemTemp.createTemp('labels-import-');
     FakeSecureStoragePlatform().install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'labels');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'labels');
     gate = NativeFileGate(File('${directory.path}/gate'));
     admission = await gate.acquire(
       exclusive: true,

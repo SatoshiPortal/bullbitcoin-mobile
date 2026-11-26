@@ -190,8 +190,13 @@ class Bull {
     final preferencesFile = File(
       p.join(support.path, 'databases', 'preferences.sqlite'),
     );
+    // One authority for the isolate: the inventory grants and revokes it,
+    // `Secrets` and every handle it issues follow it.
+    final sessionAuthority = SessionAuthority();
+    locator.registerSingleton<SessionAuthority>(sessionAuthority);
     final secrets = Secrets(
       scratchDirectory: () async => (await getTemporaryDirectory()).path,
+      authority: sessionAuthority,
     );
     final signerKeys = secrets.databaseKeys(module: 'signers');
     final syncKeys = secrets.databaseKeys(module: 'sync');
@@ -252,6 +257,7 @@ class Bull {
               locator,
               admission: admission,
               legacy: legacy.source,
+              authority: sessionAuthority,
               inventoryFile: secretsFile,
               signersFile: signersFile,
               syncFile: syncFile,

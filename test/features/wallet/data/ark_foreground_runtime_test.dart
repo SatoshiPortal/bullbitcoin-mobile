@@ -396,7 +396,10 @@ void main() {
       locator.registerSingleton<Bip85Derivations>(_Bip85());
       FakeSecureStoragePlatform().install();
       locator.registerSingleton<Secrets>(
-        Secrets(scratchDirectory: () async => directory.path),
+        Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        ),
       );
       locator.registerSingleton<ParentCustodyAdmissionPort>(_Admission());
       locator.registerSingleton<SeedReferences>(

@@ -67,6 +67,7 @@ void main() {
     InventoryBackupVerification? verifier,
   }) async => _value(
     await SecretsInventory.open(
+      authority: SessionAuthority(),
       file: file,
       admission: admission,
       backupVerification: verifier,

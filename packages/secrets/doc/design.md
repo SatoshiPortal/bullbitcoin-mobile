@@ -445,6 +445,7 @@ The host supplies one thing, and it is not a handle on anything:
 ```dart
 final secrets = Secrets(
   scratchDirectory: () async => (await getTemporaryDirectory()).path,
+  authority: sessionAuthority, // shared with the inventory
 );
 ```
 

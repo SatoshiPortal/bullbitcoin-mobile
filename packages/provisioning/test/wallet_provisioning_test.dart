@@ -122,7 +122,10 @@ void main() {
     FakeSecureStoragePlatform().install();
     directory = await Directory.systemTemp.createTemp('wallet-provisioning-');
     log = Logger.replace(directory: directory);
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     secret = switch (await secrets.import(
       words: _words,
       language: Language.english,

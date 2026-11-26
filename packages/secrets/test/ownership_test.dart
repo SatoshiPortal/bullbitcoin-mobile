@@ -90,7 +90,10 @@ void main() {
 
     test('the same, through the public API', () async {
       FakeSecureStoragePlatform().install();
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      );
       final input = [...a];
 
       final pending = secrets.import(words: input, language: Language.english);
@@ -111,7 +114,10 @@ void main() {
 
       // What B's xpub would be, imported on its own.
       FakeSecureStoragePlatform().install();
-      final other = Secrets(scratchDirectory: () async => '/tmp');
+      final other = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      );
       final secretB = switch (await other.import(
         words: [...b],
         language: Language.english,
@@ -184,7 +190,10 @@ void main() {
           },
         ).install();
 
-        final secrets = Secrets(scratchDirectory: () async => '/tmp');
+        final secrets = Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => '/tmp',
+        );
         final secret = switch (await secrets.fetch(Fingerprint('00000000'))) {
           Ok(:final value) => value,
           Err(:final failure) => fail('fetch failed: ${failure.runtimeType}'),

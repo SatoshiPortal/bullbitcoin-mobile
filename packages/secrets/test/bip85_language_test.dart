@@ -13,7 +13,10 @@ import 'result_helpers.dart';
 void main() {
   test('the child wordlist is independent of the Japanese parent', () async {
     FakeSecureStoragePlatform().install();
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final parent = ok(
       await secrets.import(
         words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],

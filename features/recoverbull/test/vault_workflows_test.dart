@@ -23,7 +23,10 @@ void main() {
 
   setUp(() async {
     storage = FakeSecureStoragePlatform().install();
-    secrets = custody.Secrets(scratchDirectory: () async => '.');
+    secrets = custody.Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '.',
+    );
     _ok(await secrets.import(words: words, language: custody.Language.english));
     repository = SecretsVaultRepository(secrets);
     wallets = _Wallets(context);

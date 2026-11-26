@@ -16,7 +16,10 @@ void main() {
 
   setUp(() {
     FakeSecureStoragePlatform().install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
   });
 
   Future<Secret> store(
