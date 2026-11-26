@@ -96,6 +96,11 @@ class AppSettingsScreen extends StatelessWidget {
       };
     }
 
+    const statistics = StatisticsConsentSwitch(
+      showRestartNotice: true,
+      contentPadding: null,
+    );
+
     return BlocListener<SettingsCubit, SettingsState>(
       // Turning dev mode off revokes the SP wallet. The revoke leaves a
       // `.revoked` sentinel even when the on-disk delete fails, so the wallet
@@ -117,11 +122,17 @@ class AppSettingsScreen extends StatelessWidget {
                   for (final item in items.inSection(
                     SettingsItemSection.app,
                   )) ...[
+                    // With the other switches, above the Permissions link.
+                    if (item.id == SettingsItemId.permissions) statistics,
                     item.buildTile(context, trailing: namedTrailingFor(item)),
                     if (item.id == SettingsItemId.currency)
                       const AmountInputModeSetting(),
                   ],
-                  const StatisticsConsentSwitch(showRestartNotice: true),
+                  // No Permissions row (it depends on the platform): last.
+                  if (!items
+                      .inSection(SettingsItemSection.app)
+                      .any((item) => item.id == SettingsItemId.permissions))
+                    statistics,
                 ],
               ),
             ),
