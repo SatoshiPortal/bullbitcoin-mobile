@@ -204,7 +204,11 @@ void main() {
           isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
             (result) => result.failure,
             'failure',
-            isA<LegacyImportUnavailable>(),
+            isA<LegacyOwnerFailure>().having(
+              (failure) => failure.cause,
+              'cause',
+              LegacyOwnerFailureCause.missingAfterAdmission,
+            ),
           ),
         );
         expect(file.existsSync(), isFalse);
