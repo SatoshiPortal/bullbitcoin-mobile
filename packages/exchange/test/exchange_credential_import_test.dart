@@ -53,9 +53,12 @@ void main() {
           as ExclusiveAdmission;
 
   test('a residual keychain record never blocks a fresh install', () async {
-    _value(await secrets.exchangeKeychain.write('', isTestnet: true));
+    _value(await LegacyExchangeKeychainFixture().write('', isTestnet: true));
     _value(
-      await secrets.exchangeKeychain.write('{"key":"old"}', isTestnet: false),
+      await LegacyExchangeKeychainFixture().write(
+        '{"key":"old"}',
+        isTestnet: false,
+      ),
     );
     final lease = await exclusive();
     try {
@@ -79,10 +82,13 @@ void main() {
       await lease.close();
     }
     expect(
-      _value(await secrets.exchangeKeychain.read(isTestnet: false)),
+      _value(await LegacyExchangeKeychainFixture().read(isTestnet: false)),
       '{"key":"old"}',
     );
-    expect(_value(await secrets.exchangeKeychain.read(isTestnet: true)), '');
+    expect(
+      _value(await LegacyExchangeKeychainFixture().read(isTestnet: true)),
+      '',
+    );
   });
 
   test(
@@ -90,9 +96,12 @@ void main() {
     () async {
       final opaqueRecord = String.fromCharCode(123);
       _value(
-        await secrets.exchangeKeychain.write(opaqueRecord, isTestnet: false),
+        await LegacyExchangeKeychainFixture().write(
+          opaqueRecord,
+          isTestnet: false,
+        ),
       );
-      _value(await secrets.exchangeKeychain.write('', isTestnet: true));
+      _value(await LegacyExchangeKeychainFixture().write('', isTestnet: true));
       final legacy = sqlite3.open(source.path);
       try {
         legacy.userVersion = 16;
@@ -171,12 +180,13 @@ void main() {
       }
       expect(await source.readAsBytes(), initialSourceBytes);
       expect(
-        _value(await secrets.exchangeKeychain.read(isTestnet: false)) ==
+        _value(await LegacyExchangeKeychainFixture().read(isTestnet: false)) ==
             opaqueRecord,
         isTrue,
       );
       expect(
-        _value(await secrets.exchangeKeychain.read(isTestnet: true)) == '',
+        _value(await LegacyExchangeKeychainFixture().read(isTestnet: true)) ==
+            '',
         isTrue,
       );
     },
@@ -186,7 +196,10 @@ void main() {
   test('a kept fresh marker imports the Settings rows but not the keychain '
       'record', () async {
     _value(
-      await secrets.exchangeKeychain.write('{"key":"old"}', isTestnet: false),
+      await LegacyExchangeKeychainFixture().write(
+        '{"key":"old"}',
+        isTestnet: false,
+      ),
     );
     final legacy = sqlite3.open(source.path);
     try {
@@ -222,7 +235,7 @@ void main() {
       await lease.close();
     }
     expect(
-      _value(await secrets.exchangeKeychain.read(isTestnet: false)),
+      _value(await LegacyExchangeKeychainFixture().read(isTestnet: false)),
       '{"key":"old"}',
     );
   });

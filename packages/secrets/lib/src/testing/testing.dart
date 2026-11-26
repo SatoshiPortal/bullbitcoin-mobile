@@ -8,4 +8,6 @@ library;
 export 'fake_secure_storage_platform.dart' show FakeSecureStoragePlatform;
 
 export 'exchange_keychain_probe.dart' show ExchangeKeychainProbe;
+export 'legacy_exchange_keychain_fixture.dart'
+    show LegacyExchangeKeychainFixture;
 export 'unlocked_session_authority.dart' show unlockedSessionAuthority;

@@ -11,5 +11,6 @@ export 'src/testing/testing.dart'
     show
         FakeSecureStoragePlatform,
         ExchangeKeychainProbe,
+        LegacyExchangeKeychainFixture,
         unlockedSessionAuthority;
 export 'src/testing/wallet_inventory_fixtures.dart';

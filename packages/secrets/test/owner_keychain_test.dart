@@ -63,8 +63,8 @@ void main() {
       final results = [
         await _LegacyPinEntries().readAttempts(),
         await _LegacyPinEntries().readLockedUntil(),
-        await secrets.exchangeKeychain.read(isTestnet: false),
-        await secrets.exchangeKeychain.read(isTestnet: true),
+        await LegacyExchangeKeychainFixture().read(isTestnet: false),
+        await LegacyExchangeKeychainFixture().read(isTestnet: true),
         await secrets.silentPaymentKeychain.readBackend(),
         await secrets.silentPaymentKeychain.readAutoScan(),
         await secrets.swapKeychain.read('swap_regtest_existing'),
@@ -87,8 +87,8 @@ void main() {
     await access.setPin('synthetic');
     await access.writeAttempts('2');
     await access.writeLockedUntil('42');
-    await secrets.exchangeKeychain.write('main', isTestnet: false);
-    await secrets.exchangeKeychain.write('test', isTestnet: true);
+    await LegacyExchangeKeychainFixture().write('main', isTestnet: false);
+    await LegacyExchangeKeychainFixture().write('test', isTestnet: true);
     await secrets.silentPaymentKeychain.writeBackend('config');
     await secrets.silentPaymentKeychain.writeAutoScan('true');
     await secrets.swapKeychain.write('swap_regtest_id', 'swap');
@@ -105,7 +105,7 @@ void main() {
     });
     await access.deletePin();
     await access.deleteLockedUntil();
-    await secrets.exchangeKeychain.delete(isTestnet: true);
+    await LegacyExchangeKeychainFixture().delete(isTestnet: true);
     await secrets.silentPaymentKeychain.deleteBackend();
     await secrets.swapKeychain.delete('swap_regtest_id');
     expect(store.entries, {
