@@ -40,14 +40,21 @@ final class SecretsImport implements LegacyImportParticipant {
   @override
   String get ownerId => 'secrets';
 
+  /// A refused access throws instead of reading as absent, so the coordinator
+  /// reports an I/O failure and never a lost inventory.
   @override
-  Future<bool> hasState() async => [
-    '',
-    '-wal',
-    '-shm',
-    '-journal',
-    '.retire-pending',
-  ].any((suffix) => File('${_file.path}$suffix').existsSync());
+  Future<bool> hasState() async {
+    for (final suffix in const [
+      '',
+      '-wal',
+      '-shm',
+      '-journal',
+      '.retire-pending',
+    ]) {
+      if (_lengthIfPresent(File('${_file.path}$suffix')) != null) return true;
+    }
+    return false;
+  }
 
   @override
   Future<Result<PreparedOwner, LegacyImportFailure>> prepare(
@@ -63,6 +70,23 @@ final class SecretsImport implements LegacyImportParticipant {
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
     RuntimeAdmission admission,
   ) async {
+    // The owner is admitted: its main file is where its data lives. A sidecar
+    // without it is not an inventory, and an empty file is not an old schema
+    // to wait out. Neither is replaced or removed here.
+    final length = _lengthIfPresent(_file);
+    if (length == null) {
+      return const Err(
+        LegacyOwnerFailure(
+          'secrets',
+          LegacyOwnerFailureCause.missingAfterAdmission,
+        ),
+      );
+    }
+    if (length == 0 && _lengthIfPresent(File('${_file.path}-wal')) == null) {
+      return const Err(
+        LegacyOwnerFailure('secrets', LegacyOwnerFailureCause.unreadable),
+      );
+    }
     final opened = await InventoryStore.open(_file, admission, existing: true);
     switch (opened) {
       case Err(:final failure):
@@ -128,14 +152,27 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
       _ => const Err(LegacyImportVerificationFailed()),
     };
   } on SqliteException catch (error) {
-    return Err(
-      admitted && databaseFileProblemOf(error) == DatabaseFileProblem.unreadable
-          ? const LegacyOwnerFailure(
-              'secrets',
-              LegacyOwnerFailureCause.unreadable,
-            )
-          : const LegacyImportUnavailable(),
-    );
+    if (!admitted) return const Err(LegacyImportUnavailable());
+    return Err(switch (databaseFileProblemOf(error)) {
+      DatabaseFileProblem.unreadable => const LegacyOwnerFailure(
+        'secrets',
+        LegacyOwnerFailureCause.unreadable,
+      ),
+      DatabaseFileProblem.contended => const LegacyOwnerFailure(
+        'secrets',
+        LegacyOwnerFailureCause.contention,
+      ),
+      _ => const LegacyImportUnavailable(),
+    });
+  }
+}
+
+// Only a missing path is absent: any other error propagates.
+int? _lengthIfPresent(File file) {
+  try {
+    return file.lengthSync();
+  } on PathNotFoundException {
+    return null;
   }
 }
 
