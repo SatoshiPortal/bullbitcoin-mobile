@@ -97,6 +97,15 @@ void main() {
       expect(temp.listSync(), isEmpty);
     },
   );
+  test('background observation without renewal never opens a child', () async {
+    expect(await client.create(config), isA<Ok>());
+    await client.close();
+    client = build(mode: ArkExecutionMode.backgroundExisting);
+    final children = child.calls;
+
+    expect(await client.synchronize(account, renew: false), isA<Err>());
+    expect(child.calls, children);
+  });
   test(
     'ambiguous payment is never replayed; read/sync reconcile after restart',
     () async {
