@@ -229,5 +229,12 @@
   "swapsFailureNetwork": "No se pudo conectar con ningún servidor. Verifique su conexión e inténtelo de nuevo.",
   "swapsFailureNotRestorable": "No se pudo reconstruir este swap desde el servidor. Contacte a soporte con su ID de swap.",
   "swapsFailureRefundNotFinal": "El reembolso aún no es gastable (timelock). Inténtelo de nuevo más tarde.",
-  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo."
+  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo.",
+  "networkRelaunchRequiredError": "La red cambió desde que abriste la app. Ciérrala, vuelve a abrirla e inténtalo de nuevo.",
+  "swapArkBelowMinimum": "El monto es demasiado bajo. El mínimo es de {amount} sats más comisiones.",
+  "swapArkFeeReview": "Podrás revisar y confirmar las comisiones y el monto que recibirás en la siguiente pantalla.",
+  "swapArkMinimum": "Monto mínimo de {amount} sats más comisiones de red",
+  "swapArkRouteUnavailable": "Esta transferencia no está disponible.",
+  "swapInternalTransferDescription": "Transfiere bitcoin fácilmente entre tus billeteras. Guarda en la Billetera de Pagos Instantáneos solo lo que necesites para tus gastos diarios.",
+  "swapTransferDirection": "Invertir el origen y el destino de la transferencia"
 }

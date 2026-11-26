@@ -265,5 +265,20 @@
   "torSettingsProxyAttemptPort": "Puerto intentado: {port}",
   "torSettingsProxyAttemptWithActivePort": "Puerto intentado: {attemptedPort} · Puerto activo: {activePort}",
   "serverEncrypted": "Cifrado",
-  "serverUnencrypted": "Sin cifrar"
+  "serverUnencrypted": "Sin cifrar",
+  "statusCheckSilentPayments": "Silent Payments",
+  "statusCheckRefresh": "Actualizar el estado de los servicios",
+  "networkSslAutoDetected": "(Detectado automáticamente)",
+  "networkDismissError": "Cerrar el mensaje de error",
+  "networkServerUrl": "URL del servidor",
+  "statusCheckInternetConnection": "Conexión a Internet",
+  "statusCheckBitcoinElectrum": "Electrum de Bitcoin",
+  "statusCheckLiquidElectrum": "Electrum de Liquid",
+  "statusCheckPayjoin": "Payjoin",
+  "statusCheckPricer": "Tipos de cambio",
+  "statusCheckMempool": "Mempool",
+  "statusCheckTor": "Tor",
+  "statusCheckRecoverBull": "RecoverBull",
+  "torCloseTooltip": "Cerrar",
+  "networkRefreshServers": "Actualizar servidores"
 }

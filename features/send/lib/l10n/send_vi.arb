@@ -181,5 +181,8 @@
   "sendErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sendErrorInvoiceExpiryTooShort": "Hóa đơn này hết hạn quá sớm. Hãy yêu cầu người nhận gửi hóa đơn mới.",
-  "closeDialogButton": "Đóng"
+  "closeDialogButton": "Đóng",
+  "sendPayjoinSpendPaused": "Khoản thanh toán Payjoin này đang tạm dừng vì ví không thể tiếp tục an toàn. Các đầu vào của nó vẫn được giữ lại. Hãy làm mới ví hoặc dùng Quét giao dịch bị thiếu, rồi thử lại đề xuất này khi nó vẫn còn hiệu lực. Nếu đã hết hạn, hãy kiểm tra khoản thanh toán trong Giao dịch trước khi thực hiện thêm.",
+  "walletSpendAwaitingObservation": "Không thể chi tiêu cho đến khi ví này được đồng bộ và thấy các khoản thanh toán trước đó trên mạng. Hãy làm mới ví hoặc dùng Quét giao dịch bị thiếu, rồi thử lại.",
+  "walletSpendBusy": "Ví đang bận. Hãy thử lại sau giây lát."
 }

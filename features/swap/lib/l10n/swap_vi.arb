@@ -140,5 +140,8 @@
   "swapRestoreKindLightningSend": "Gửi Lightning",
   "swapRestoreNoSwaps": "Không tìm thấy swap nào để khôi phục",
   "swapRestoreRecoverableSection": "Có thể khôi phục",
-  "swapRestoreTitle": "Khôi phục swap"
+  "swapRestoreTitle": "Khôi phục swap",
+  "networkFeatureUnavailable": "Tính năng này không khả dụng trên mạng đã chọn.",
+  "walletSpendAwaitingObservation": "Không thể chi tiêu cho đến khi ví này được đồng bộ và thấy các khoản thanh toán trước đó trên mạng. Hãy làm mới ví hoặc dùng Quét giao dịch bị thiếu, rồi thử lại.",
+  "walletSpendBusy": "Ví đang bận. Hãy thử lại sau giây lát."
 }

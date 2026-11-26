@@ -463,5 +463,8 @@
   "swapRestoreKindLightningSend": "Lightning भेजें",
   "swapRestoreNoSwaps": "रिस्टोर करने के लिए कोई Swap नहीं मिला",
   "swapRestoreRecoverableSection": "रिकवर करने योग्य",
-  "swapRestoreTitle": "Swap रिस्टोर"
+  "swapRestoreTitle": "Swap रिस्टोर",
+  "networkFeatureUnavailable": "यह सुविधा चुने गए नेटवर्क पर उपलब्ध नहीं है।",
+  "walletSpendAwaitingObservation": "जब तक यह वॉलेट सिंक होकर नेटवर्क पर अपने पिछले भुगतान नहीं देख लेता, तब तक खर्च करना उपलब्ध नहीं है। वॉलेट रीफ़्रेश करें या \"छूटे हुए लेनदेन स्कैन करें\" का उपयोग करें, फिर दोबारा प्रयास करें।",
+  "walletSpendBusy": "वॉलेट व्यस्त है। थोड़ी देर में फिर से प्रयास करें।"
 }

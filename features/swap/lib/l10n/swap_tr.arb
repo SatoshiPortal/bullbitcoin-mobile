@@ -460,5 +460,8 @@
   "swapRestoreKindLightningSend": "Lightning Gönderimi",
   "swapRestoreNoSwaps": "Kurtarılacak takas bulunamadı",
   "swapRestoreRecoverableSection": "Kurtarılabilir",
-  "swapRestoreTitle": "Takas Kurtarma"
+  "swapRestoreTitle": "Takas Kurtarma",
+  "networkFeatureUnavailable": "Bu özellik seçili ağda kullanılamıyor.",
+  "walletSpendAwaitingObservation": "Bu cüzdan senkronize olup önceki ödemelerini ağda görene kadar harcama yapılamaz. Cüzdanı yenileyin veya \"Eksik işlemleri tara\" özelliğini kullanın, ardından tekrar deneyin.",
+  "walletSpendBusy": "Cüzdan meşgul. Birazdan tekrar deneyin."
 }

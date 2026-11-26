@@ -80,5 +80,6 @@
   "exchangeDcaAddressLabelLightning": "Lightning ঠিকনা",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "এটা বৈধ {type} দিয়ক বা স্কেন কৰক।"
 }

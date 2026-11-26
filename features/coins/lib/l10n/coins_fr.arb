@@ -263,5 +263,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "coinsSweep": "Tout transférer"
 }

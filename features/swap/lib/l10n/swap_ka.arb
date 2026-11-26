@@ -150,5 +150,8 @@
   "swapRestoreKindLightningSend": "Lightning გაგზავნა",
   "swapRestoreNoSwaps": "აღსადგენი სვაპები ვერ მოიძებნა",
   "swapRestoreRecoverableSection": "აღსადგენი",
-  "swapRestoreTitle": "სვაპის აღდგენა"
+  "swapRestoreTitle": "სვაპის აღდგენა",
+  "networkFeatureUnavailable": "ეს ფუნქცია მიუწვდომელია არჩეულ ქსელზე.",
+  "walletSpendAwaitingObservation": "ხარჯვა მიუწვდომელია, სანამ ეს საფულე არ სინქრონიზდება და ქსელში არ დაინახავს წინა გადახდებს. განაახლეთ საფულე ან გამოიყენეთ „გამოტოვებული ტრანზაქციების სკანირება“, შემდეგ სცადეთ ხელახლა.",
+  "walletSpendBusy": "საფულე დაკავებულია. სცადეთ ცოტა ხანში."
 }

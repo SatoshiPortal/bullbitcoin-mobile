@@ -463,5 +463,8 @@
   "swapRestoreKindLightningSend": "Lightning Send",
   "swapRestoreNoSwaps": "Restore karne ke liye koi swap nahi mila",
   "swapRestoreRecoverableSection": "Recoverable",
-  "swapRestoreTitle": "Swap Restore"
+  "swapRestoreTitle": "Swap Restore",
+  "networkFeatureUnavailable": "Yeh feature chune gaye network par available nahi hai.",
+  "walletSpendAwaitingObservation": "Jab tak yeh wallet sync hokar network par apne pichhle payments nahi dekh leta, tab tak spending available nahi hai. Wallet refresh karein ya \"Scan for missing transactions\" use karein, phir dobara try karein.",
+  "walletSpendBusy": "Wallet busy hai. Thodi der mein dobara try karein."
 }

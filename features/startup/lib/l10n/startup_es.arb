@@ -57,5 +57,8 @@
   "logsExportFailedMessage": "Error al exportar los registros",
   "appStartupMissingSecretMessage": "Este dispositivo ya no guarda la frase de recuperación de tu billetera. Vuelve a introducirla para recuperar tu billetera.",
   "appStartupRestoreSecretButton": "Introducir mi frase de recuperación",
-  "appStartupRestoreMismatch": "Esta frase de recuperación pertenece a otra billetera. Introduce la frase de la billetera de este dispositivo."
+  "appStartupRestoreMismatch": "Esta frase de recuperación pertenece a otra billetera. Introduce la frase de la billetera de este dispositivo.",
+  "inventoryUnreadableTitle": "No se pueden abrir tus billeteras",
+  "inventoryUnreadableMessage": "No se puede leer el almacenamiento de tus billeteras en este dispositivo. No se borró ni se sustituyó nada. Inténtalo de nuevo o contacta con el soporte antes de desinstalar la app o cambiar algo en este dispositivo.",
+  "inventoryUnreadableQuitButton": "Salir"
 }

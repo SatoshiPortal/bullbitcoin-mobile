@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Плата за неоплату Bitcoin або Invoice",
   "exchangeDcaAddressLabelBitcoin": "Bitcoin адреса",
   "exchangeDcaAddressLabelLiquid": "Контакти",
-  "exchangeDcaAddressLabelLightning": "Адреса блискавки"
+  "exchangeDcaAddressLabelLightning": "Адреса блискавки",
+  "destinationExpectedType": "Введіть або відскануйте дійсний {type}."
 }

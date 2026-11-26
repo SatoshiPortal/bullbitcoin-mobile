@@ -216,5 +216,8 @@
   "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sendErrorInvoiceExpiryTooShort": "Esta fatura expira demasiado cedo. Peça ao destinatário uma nova fatura.",
-  "closeDialogButton": "Fechar"
+  "closeDialogButton": "Fechar",
+  "sendPayjoinSpendPaused": "Este pagamento Payjoin está em pausa porque a carteira não pode continuar em segurança. As suas entradas continuam reservadas. Atualize a carteira ou use \"Procurar transações em falta\" e volte a tentar esta proposta enquanto ainda for válida. Se tiver expirado, verifique o pagamento em Transações antes de fazer mais alguma coisa.",
+  "walletSpendAwaitingObservation": "Não é possível gastar até esta carteira estar sincronizada e ter visto os seus pagamentos anteriores na rede. Atualize a carteira ou use \"Procurar transações em falta\" e tente novamente.",
+  "walletSpendBusy": "A carteira está ocupada. Tente novamente dentro de momentos."
 }

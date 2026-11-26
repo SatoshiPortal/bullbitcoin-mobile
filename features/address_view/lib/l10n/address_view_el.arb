@@ -95,5 +95,6 @@
   "exchangeDcaAddressLabelLightning": "Lightning διεύθυνση Lightning",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "Εισαγάγετε ή σαρώστε ένα έγκυρο {type}."
 }

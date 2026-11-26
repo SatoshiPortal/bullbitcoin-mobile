@@ -47,5 +47,11 @@
       }
     }
   },
-  "@@locale": "fr"
+  "@@locale": "fr",
+  "allSeedViewDeleteSwapMnemonicMessage": "Cette action retire la clé maîtresse des swaps du stockage sécurisé. La prochaine fois que l’application en aura besoin, elle la dérivera de nouveau à partir de la graine de votre portefeuille, avec la même empreinte. Les swaps en cours ne sont pas affectés.",
+  "allSeedViewUnreadableEntries": "{count, plural, =1{1 entrée enregistrée est illisible et n’est pas affichée.} other{{count} entrées enregistrées sont illisibles et ne sont pas affichées.}}",
+  "allSeedViewSwapLinkedWallet": "Portefeuille associé : {fingerprint}",
+  "allSeedViewDeleteSwapMnemonicTitle": "Supprimer la phrase de récupération des swaps ?",
+  "allSeedViewSwapMnemonicTitle": "Phrase de récupération des swaps",
+  "allSeedViewSwapFingerprint": "Empreinte : {fingerprint} ({network})"
 }

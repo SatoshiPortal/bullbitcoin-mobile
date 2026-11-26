@@ -44,5 +44,7 @@
   "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque",
   "pinCodeLengthHint": "Introduce de {min} a {max} dígitos",
   "pinCodeShowPin": "Mostrar PIN",
-  "pinCodeHidePin": "Ocultar PIN"
+  "pinCodeHidePin": "Ocultar PIN",
+  "pinCodeBackupRequiredCount": "{count, plural, one{{count} frase de recuperación aún no tiene una copia de seguridad verificada. Haz una copia antes de configurar un PIN.} other{{count} frases de recuperación aún no tienen una copia de seguridad verificada. Haz una copia de cada una antes de configurar un PIN.}}",
+  "pinCodeBackupUnavailable": "No se pudo consultar el estado de tus copias de seguridad. Aún no puedes configurar un PIN. Inténtalo de nuevo."
 }

@@ -30,5 +30,6 @@
   "sendErrorInvalidAddressOrInvoice": "Ungültige Bitcoin-Adresse oder Invoice.",
   "exchangeDcaAddressLabelBitcoin": "Bitcoin-Adresse",
   "exchangeDcaAddressLabelLiquid": "Liquid-Adresse",
-  "exchangeDcaAddressLabelLightning": "Lightning-Adresse"
+  "exchangeDcaAddressLabelLightning": "Lightning-Adresse",
+  "destinationExpectedType": "Geben Sie eine gültige {type} ein oder scannen Sie sie."
 }

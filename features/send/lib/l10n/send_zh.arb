@@ -216,5 +216,8 @@
   "sendErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sendErrorInvoiceExpiryTooShort": "该发票即将过期，剩余时间不足。请向收款人索取新的发票。",
-  "closeDialogButton": "关闭"
+  "closeDialogButton": "关闭",
+  "sendPayjoinSpendPaused": "此 Payjoin 付款已暂停，因为钱包无法安全地继续。其输入仍处于保留状态。请刷新钱包或使用“扫描缺失的交易”，然后在此提案仍有效时重试。如果已过期，请先在“交易”中检查该付款，再采取进一步操作。",
+  "walletSpendAwaitingObservation": "在此钱包完成同步并在网络上看到之前的付款之前，无法进行支出。请刷新钱包或使用“扫描缺失的交易”，然后重试。",
+  "walletSpendBusy": "钱包正忙。请稍后重试。"
 }

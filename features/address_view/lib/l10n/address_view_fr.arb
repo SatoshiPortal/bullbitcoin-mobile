@@ -31,5 +31,6 @@
   "exchangeDcaAddressLabelBitcoin": "Adresse Bitcoin",
   "exchangeDcaAddressLabelLiquid": "Adresse Liquid",
   "exchangeDcaAddressLabelLightning": "Adresse Lightning",
-  "destinationAmountFromQr": "{type} · {amount} sats depuis le QR"
+  "destinationAmountFromQr": "{type} · {amount} sats depuis le QR",
+  "comingSoonTitle": "Fonctionnalité bientôt disponible"
 }

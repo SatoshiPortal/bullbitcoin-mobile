@@ -140,5 +140,8 @@
   "swapRestoreKindLightningSend": "Kutuma kwa Lightning",
   "swapRestoreNoSwaps": "Hakuna swaps zilizopatikana za kurejesha",
   "swapRestoreRecoverableSection": "Zinazoweza Kurejeshwa",
-  "swapRestoreTitle": "Kurejesha swap"
+  "swapRestoreTitle": "Kurejesha swap",
+  "networkFeatureUnavailable": "Kipengele hiki hakipatikani kwenye mtandao uliochaguliwa.",
+  "walletSpendAwaitingObservation": "Matumizi hayapatikani hadi pochi hii isawazishwe na ione malipo yake ya awali kwenye mtandao. Sasisha pochi au tumia Changanua miamala inayokosekana, kisha ujaribu tena.",
+  "walletSpendBusy": "Pochi ina shughuli. Jaribu tena baada ya muda mfupi."
 }

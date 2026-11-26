@@ -460,5 +460,8 @@
   "swapRestoreKindLightningSend": "ارسال Lightning",
   "swapRestoreNoSwaps": "هیچ مبادله‌ای برای بازیابی پیدا نشد",
   "swapRestoreRecoverableSection": "قابل بازیابی",
-  "swapRestoreTitle": "بازیابی مبادله"
+  "swapRestoreTitle": "بازیابی مبادله",
+  "networkFeatureUnavailable": "این قابلیت در شبکه انتخاب‌شده در دسترس نیست.",
+  "walletSpendAwaitingObservation": "تا زمانی که این کیف پول همگام‌سازی نشود و پرداخت‌های قبلی خود را در شبکه نبیند، خرج کردن در دسترس نیست. کیف پول را تازه‌سازی کنید یا از «اسکن تراکنش‌های گم‌شده» استفاده کنید، سپس دوباره تلاش کنید.",
+  "walletSpendBusy": "کیف پول مشغول است. چند لحظه دیگر دوباره تلاش کنید."
 }

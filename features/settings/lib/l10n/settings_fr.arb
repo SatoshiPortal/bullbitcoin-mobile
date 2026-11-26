@@ -193,5 +193,18 @@
   "statisticsConsentTitle": "Partager les statistiques d’utilisation",
   "statisticsConsentDescription": "Partager une observation quotidienne d’activité avec la version de l’application et l’environnement, sans identifiant d’installation permanent. Vous pouvez modifier ce choix à tout moment.",
   "statisticsConsentWriteFailed": "Impossible d’enregistrer ce choix. Le choix précédent peut revenir au redémarrage. Veuillez réessayer.",
-  "statisticsConsentRetry": "Réessayer"
+  "statisticsConsentRetry": "Réessayer",
+  "settingsBackupTitle": "Sauvegarde",
+  "settingsAppTitle": "Application",
+  "settingsWalletTitle": "Portefeuille",
+  "settingsExchangeTitle": "Plateforme d’échange",
+  "bitcoinSettingsElectrumServerTitle": "Serveur Electrum",
+  "bitcoinSettingsMempoolServerTitle": "Serveur Mempool",
+  "settingsWalletSettingsTitle": "Paramètres du portefeuille",
+  "settingsDevModeSpRevokeFailed": "Impossible de supprimer complètement le portefeuille Silent Payments. Il est désactivé et ne peut pas être rechargé. Désactivez de nouveau le mode développeur pour réessayer.",
+  "settingsSearchSwapsKeywords": "swaps|boltz|plateforme d’échange de secours|fournisseur de swaps|lightning|liquid",
+  "settingsSearchSwapRestoreKeywords": "restaurer un swap|récupérer un swap|sauver un swap|remboursement|swap bloqué|boltz",
+  "networkRestartDialogTitle": "Redémarrage requis",
+  "networkRestartDialogMessage": "L’activation ou la désactivation de regtest prend effet après le redémarrage de l’application. L’application va maintenant se fermer. Rouvrez-la pour continuer.",
+  "networkRestartDialogAction": "Fermer l’application"
 }

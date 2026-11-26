@@ -416,5 +416,8 @@
   "swapRestoreKindLightningSend": "Lightning প্ৰেৰণ",
   "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো swap পোৱা নগ'ল",
   "swapRestoreRecoverableSection": "পুনৰুদ্ধাৰযোগ্য",
-  "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ"
+  "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ",
+  "networkFeatureUnavailable": "বাছনি কৰা নেটৱৰ্কত এই সুবিধাটো উপলব্ধ নহয়।",
+  "walletSpendAwaitingObservation": "এই ৱালেটটো ছিংক হৈ নেটৱৰ্কত ইয়াৰ আগৰ পৰিশোধসমূহ নেদেখালৈকে খৰচ কৰিব নোৱাৰি। ৱালেটটো ৰিফ্ৰেছ কৰক বা \"হেৰোৱা লেনদেন স্কেন কৰক\" ব্যৱহাৰ কৰক, তাৰ পিছত পুনৰ চেষ্টা কৰক।",
+  "walletSpendBusy": "ৱালেটটো ব্যস্ত হৈ আছে। অলপ পিছত পুনৰ চেষ্টা কৰক।"
 }

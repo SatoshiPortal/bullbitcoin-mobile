@@ -1621,5 +1621,19 @@
   "walletDeletionConfirmationDeleteButton": "Poista",
   "walletDeletionFailedTitle": "Poisto epäonnistui",
   "walletDeletionErrorGeneric": "Lompakon poisto epäonnistui, yritä uudelleen.",
-  "walletDeletionFailedOkButton": "OK"
+  "walletDeletionFailedOkButton": "OK",
+  "destinationExpectedType": "Syötä tai skannaa kelvollinen {type}.",
+  "exchangeAccessSignIn": "Kirjaudu tai luo tili",
+  "importQrDevicePassportStep10": "Valitse BULL-lompakossa \"Segwit (BIP84)\"",
+  "importQrDevicePassportStep11": "Anna lompakolle tunniste ja valitse \"Tuo\"",
+  "importQrDevicePassportStep12": "Määritys valmis.",
+  "mempoolErrorTorNotRunning": ".onion-osoitetta ei voi tavoittaa. Varmista, että Tor/Orbot on käynnissä ja yritä uudelleen.",
+  "networkFeatureUnavailable": "Tämä toiminto ei ole käytettävissä valitussa verkossa.",
+  "sendPayjoinSpendPaused": "Tämä Payjoin-maksu on keskeytetty, koska lompakko ei voi jatkaa turvallisesti. Sen syötteet pysyvät varattuina. Päivitä lompakko tai käytä Etsi puuttuvia tapahtumia -toimintoa ja yritä tätä ehdotusta uudelleen, kun se on vielä voimassa. Jos se on vanhentunut, tarkista maksu Tapahtumat-näkymästä ennen muita toimia.",
+  "torSettingsDescUnknown": "Tor-tilaa ei voida määrittää. Varmista, että Orbot on asennettu ja käynnissä.",
+  "torSettingsPortHelper": "Orbotin oletusportti: 9050",
+  "walletSpendAwaitingObservation": "Kuluttaminen ei ole mahdollista, ennen kuin tämä lompakko on synkronoitu ja nähnyt aiemmat maksunsa verkossa. Päivitä lompakko tai käytä Etsi puuttuvia tapahtumia -toimintoa ja yritä sitten uudelleen.",
+  "walletSpendBusy": "Lompakko on varattu. Yritä hetken kuluttua uudelleen.",
+  "walletTypeBitcoinNetwork": "Bitcoin-verkko",
+  "walletTypeWatchOnly": "Vain katselu"
 }

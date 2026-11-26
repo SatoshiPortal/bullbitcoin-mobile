@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Endereço de pagamento Bitcoin inválido ou fatura",
   "exchangeDcaAddressLabelBitcoin": "Endereço de Bitcoin",
   "exchangeDcaAddressLabelLiquid": "Endereço líquido",
-  "exchangeDcaAddressLabelLightning": "Endereço de iluminação"
+  "exchangeDcaAddressLabelLightning": "Endereço de iluminação",
+  "destinationExpectedType": "Introduza ou digitalize um {type} válido."
 }

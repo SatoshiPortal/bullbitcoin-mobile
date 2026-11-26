@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Anwani ya Malipo ya Bitcoin au Ankara Batili",
   "exchangeDcaAddressLabelBitcoin": "Anwani ya Bitcoin",
   "exchangeDcaAddressLabelLiquid": "Anwani ya Liquid",
-  "exchangeDcaAddressLabelLightning": "Anwani ya Lightning"
+  "exchangeDcaAddressLabelLightning": "Anwani ya Lightning",
+  "destinationExpectedType": "Weka au changanua {type} halali."
 }

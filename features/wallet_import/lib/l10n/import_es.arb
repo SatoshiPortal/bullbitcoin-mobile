@@ -226,5 +226,6 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "scanNfcButton": "Escanear NFC"
+  "scanNfcButton": "Escanear NFC",
+  "importMnemonicBackupRequiredError": "Esta billetera está protegida por un PIN, por lo que solo puedes añadir una frase de recuperación si tiene una copia de seguridad verificada. Quita el PIN, importa la billetera, haz una copia de seguridad y vuelve a configurar el PIN."
 }

@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Неверный адрес оплаты Bitcoin или счет",
   "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
   "exchangeDcaAddressLabelLiquid": "Жидкий адрес",
-  "exchangeDcaAddressLabelLightning": "Адрес освещения"
+  "exchangeDcaAddressLabelLightning": "Адрес освещения",
+  "destinationExpectedType": "Введите или отсканируйте действительный {type}."
 }

@@ -1642,5 +1642,11 @@
   "walletDetailsDescriptorLabel": "说明",
   "walletDetailsSignerDeviceLabel": "信号装置",
   "walletDetailsPubkeyLabel": "Pubkey",
-  "walletDetailsNetworkLabel": "网络"
+  "walletDetailsNetworkLabel": "网络",
+  "destinationExpectedType": "请输入或扫描有效的{type}。",
+  "exchangeAccessSignIn": "登录或创建账户",
+  "networkFeatureUnavailable": "所选网络不支持此功能。",
+  "sendPayjoinSpendPaused": "此 Payjoin 付款已暂停，因为钱包无法安全地继续。其输入仍处于保留状态。请刷新钱包或使用“扫描缺失的交易”，然后在此提案仍有效时重试。如果已过期，请先在“交易”中检查该付款，再采取进一步操作。",
+  "walletSpendAwaitingObservation": "在此钱包完成同步并在网络上看到之前的付款之前，无法进行支出。请刷新钱包或使用“扫描缺失的交易”，然后重试。",
+  "walletSpendBusy": "钱包正忙。请稍后重试。"
 }

@@ -185,5 +185,8 @@
   "swapRestoreKindLightningSend": "Отправка Lightning",
   "swapRestoreNoSwaps": "Свопы для восстановления не найдены",
   "swapRestoreRecoverableSection": "Восстанавливаемые",
-  "swapRestoreTitle": "Восстановление свопов"
+  "swapRestoreTitle": "Восстановление свопов",
+  "networkFeatureUnavailable": "Эта функция недоступна в выбранной сети.",
+  "walletSpendAwaitingObservation": "Расходы недоступны, пока этот кошелёк не синхронизирован и не увидел свои предыдущие платежи в сети. Обновите кошелёк или используйте «Поиск пропущенных транзакций», затем повторите попытку.",
+  "walletSpendBusy": "Кошелёк занят. Повторите попытку через минуту."
 }

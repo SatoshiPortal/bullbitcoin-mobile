@@ -96,5 +96,6 @@
   "passphraseIncorrect": "Passphrase incorrecte.",
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "backupCardTitle": "Protégez vos bitcoins.",
-  "backupCardSubtitle": "Sauvegardez votre portefeuille maintenant."
+  "backupCardSubtitle": "Sauvegardez votre portefeuille maintenant.",
+  "settingsBackupTitle": "Sauvegarde"
 }
