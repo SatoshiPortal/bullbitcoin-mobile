@@ -160,6 +160,47 @@ void main() {
     ).called(1);
   });
 
+  test('stores the basic authentication with the server', () async {
+    const credentials = SwapServerCredentials(username: 'u', password: 'p');
+
+    final result = await usecase.setServer(
+      'boltz.example.com',
+      credentials: credentials,
+    );
+
+    expect(failureOf(result), isNull);
+    final saved = verify(
+      () => serverSettings.save(captureAny(), isTestnet: false),
+    ).captured.single;
+    expect((saved as SwapServer).host, 'boltz.example.com/v2');
+    expect(saved.credentials, credentials);
+  });
+
+  test('keeps basic authentication on the default server', () async {
+    const credentials = SwapServerCredentials(username: 'u', password: 'p');
+
+    final result = await usecase.setServer('', credentials: credentials);
+
+    expect(failureOf(result), isNull);
+    final saved = verify(
+      () => serverSettings.save(captureAny(), isTestnet: false),
+    ).captured.single;
+    expect((saved as SwapServer).host, SwapServer.mainnetDefault.host);
+    expect(saved.credentials, credentials);
+  });
+
+  test('refuses a username that basic authentication cannot carry', () async {
+    final result = await usecase.setServer(
+      'boltz.example.com',
+      credentials: const SwapServerCredentials(username: 'a:b', password: 'p'),
+    );
+
+    expect(failureOf(result), isA<SwapsInvalidServerFailure>());
+    verifyNever(
+      () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
+    );
+  });
+
   test('refuses an address it cannot parse', () async {
     final result = await usecase.setServer('not a host');
 

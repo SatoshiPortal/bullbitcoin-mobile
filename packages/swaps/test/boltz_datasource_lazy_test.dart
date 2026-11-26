@@ -22,7 +22,7 @@ void main() {
         rows: _MockRowStore(),
         secrets: ReproKeychainBackend().capability,
       ),
-      webSocketFactory: (url, {onDone, onError}) {
+      webSocketFactory: (url, {headers, onDone, onError}) {
         webSocketCreations++;
         throw StateError('Websocket should stay lazy');
       },

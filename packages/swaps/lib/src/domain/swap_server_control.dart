@@ -17,7 +17,10 @@ abstract interface class SwapServerSettings {
   readServer();
 
   @useResult
-  Future<Result<SwapServer, SwapsFailure>> setServer(String input);
+  Future<Result<SwapServer, SwapsFailure>> setServer(
+    String input, {
+    SwapServerCredentials? credentials,
+  });
 }
 
 final class SwapServerControl implements SwapServerSettings {
@@ -75,7 +78,10 @@ final class SwapServerControl implements SwapServerSettings {
 
   @override
   @useResult
-  Future<Result<SwapServer, SwapsFailure>> setServer(String input) async {
+  Future<Result<SwapServer, SwapsFailure>> setServer(
+    String input, {
+    SwapServerCredentials? credentials,
+  }) async {
     try {
       final environment = await readSwapEnvironment(_preferences);
       if (environment != NetworkEnv.mainnet &&
@@ -83,10 +89,14 @@ final class SwapServerControl implements SwapServerSettings {
         return const Err(SwapsUnsupportedNetworkFailure());
       }
       final isTestnet = environment == NetworkEnv.testnet;
-      final server = SwapServer.parse(input, isTestnet: isTestnet);
-      if (server == null) {
+      final parsed = SwapServer.parse(input, isTestnet: isTestnet);
+      if (parsed == null) {
         return const Err(SwapsInvalidServerFailure('not an address'));
       }
+      if (credentials != null && !credentials.isValid) {
+        return const Err(SwapsInvalidServerFailure('colon in username'));
+      }
+      final server = parsed.withCredentials(credentials);
       if (server.isPlaintext && !isTestnet) {
         return const Err(
           SwapsInvalidServerFailure('plaintext outside testnet'),

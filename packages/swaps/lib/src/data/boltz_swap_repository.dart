@@ -16,6 +16,7 @@ import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:swaps/src/domain/entities/restored_swap.dart';
 import 'package:swaps/src/domain/entities/swap.dart';
 import 'package:swaps/src/domain/entities/swap_master_key_info.dart';
+import 'package:swaps/src/domain/entities/swap_server.dart';
 import 'package:swaps/src/domain/entities/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:swaps/src/domain/entities/swap_tx_outspend.dart' as outspend;
@@ -111,6 +112,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   /// The Boltz provider on the backend at [url], over the shared [storage].
   factory BoltzSwapRepository.connect({
     required String url,
+    SwapServerCredentials? credentials,
     String? webSocketUrl,
     String? bitcoinExplorerUrl,
     String? liquidExplorerUrl,
@@ -127,6 +129,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }) => BoltzSwapRepository(
     boltz: BoltzDatasource(
       url: url,
+      credentials: credentials,
       environment: environment,
       webSocketUrl: webSocketUrl,
       bitcoinExplorerUrl: bitcoinExplorerUrl,

@@ -155,6 +155,51 @@ void main() {
     expect(cubit.state.isDefaultSwapServer, isFalse);
   });
 
+  test('passes typed basic authentication with the server', () async {
+    const credentials = SwapServerCredentials(username: 'u', password: 'p');
+    final custom = SwapServer.parse(
+      'boltz.example.com/v2',
+      isTestnet: false,
+    )?.withCredentials(credentials);
+    when(() => setServer.execute(any(), credentials: credentials))
+        .thenAnswer((_) async => Ok(custom ?? SwapServer.mainnetDefault));
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    expect(
+      await cubit.setSwapServer(
+        'boltz.example.com/v2',
+        username: 'u',
+        password: 'p',
+      ),
+      isNull,
+    );
+
+    expect(cubit.state.swapServer.credentials, credentials);
+    verify(() => setServer.execute(any(), credentials: credentials)).called(1);
+  });
+
+  test(
+    'basic authentication on the default server keeps it the default',
+    () async {
+      when(() => getServer.execute()).thenAnswer(
+        (_) async => Ok((
+          server: SwapServer.mainnetDefault.withCredentials(
+            const SwapServerCredentials(username: 'u', password: 'p'),
+          ),
+          environment: NetworkEnv.mainnet,
+        )),
+      );
+      final cubit = build();
+      addTearDown(cubit.close);
+
+      await cubit.load();
+
+      expect(cubit.state.isDefaultSwapServer, isTrue);
+    },
+  );
+
   test('marks the testnet default as the default on testnet', () async {
     when(() => getServer.execute()).thenAnswer(
       (_) async => const Ok((

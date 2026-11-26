@@ -17,6 +17,9 @@ class BoltzWebSocket {
   /// socket closes and [onDone] fires instead of hanging silently.
   final Duration pingInterval;
 
+  /// Sent with the connection request, on every reconnect too.
+  final Map<String, String>? headers;
+
   /// Called when the socket closes for any reason other than [dispose] or
   /// [reconnect]. Consumers should reconnect (with backoff) and re-subscribe
   /// their swap ids.
@@ -29,17 +32,24 @@ class BoltzWebSocket {
   String? _baseUrl;
   bool _disposed = false;
 
-  BoltzWebSocket._({required this.pingInterval, this.onDone, this.onError});
+  BoltzWebSocket._({
+    required this.pingInterval,
+    this.headers,
+    this.onDone,
+    this.onError,
+  });
 
   Stream<SwapStreamStatus> get stream => _broadcastController!.stream;
 
   static BoltzWebSocket create(
     String boltzUrl, {
+    Map<String, String>? headers,
     Duration pingInterval = const Duration(seconds: 30),
     void Function()? onDone,
     void Function(Object error)? onError,
   }) {
     BoltzWebSocket stream = BoltzWebSocket._(
+      headers: headers,
       pingInterval: pingInterval,
       onDone: onDone,
       onError: onError,
@@ -53,6 +63,7 @@ class BoltzWebSocket {
     _disposed = false;
     channel = IOWebSocketChannel.connect(
       wssProtocolCheck('$baseUrl/ws'),
+      headers: headers,
       pingInterval: pingInterval,
     );
     // A failed connection also completes `ready` with the error; the stream

@@ -70,6 +70,18 @@
   "@swapServerInvalid": {
     "description": "Error under the swap server input"
   },
+  "swapServerBasicAuthSubtitle": "If the server asks for HTTP basic authentication, enter it here. Leave both empty otherwise.",
+  "@swapServerBasicAuthSubtitle": {
+    "description": "Explains the optional basic authentication fields of the swap server editor"
+  },
+  "swapServerBasicAuthUsernameHint": "Username",
+  "@swapServerBasicAuthUsernameHint": {
+    "description": "Hint of the swap server basic authentication username input"
+  },
+  "swapServerBasicAuthPasswordHint": "Password",
+  "@swapServerBasicAuthPasswordHint": {
+    "description": "Hint of the swap server basic authentication password input"
+  },
   "swapServerChangedNotice": "Swaps now use this server.",
   "@swapServerChangedNotice": {
     "description": "Shown after the swap server changed"

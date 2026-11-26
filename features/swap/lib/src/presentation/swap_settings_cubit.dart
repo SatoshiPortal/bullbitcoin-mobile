@@ -89,10 +89,20 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
   /// Stores the server typed by the user. Returns the validation failure so
   /// the editor can show it next to the input; a storage failure is reported
   /// through the state like any other.
-  Future<SwapsInvalidServerFailure?> setSwapServer(String input) async {
+  Future<SwapsInvalidServerFailure?> setSwapServer(
+    String input, {
+    String username = '',
+    String password = '',
+  }) async {
     if (state.saving) return null;
     emit(state.copyWith(saving: true, failure: null));
-    final result = await _setSwapServerUsecase.execute(input);
+    final result = await _setSwapServerUsecase.execute(
+      input,
+      credentials: SwapServerCredentials.of(
+        username: username,
+        password: password,
+      ),
+    );
     if (isClosed) return null;
     switch (result) {
       case Ok(:final value):

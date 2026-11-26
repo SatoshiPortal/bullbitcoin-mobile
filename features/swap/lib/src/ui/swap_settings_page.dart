@@ -221,14 +221,24 @@ class _SwapServerEditor extends StatefulWidget {
 }
 
 class _SwapServerEditorState extends State<_SwapServerEditor> {
-  late String _input = widget.initial == widget.defaultServer
+  late String _input = widget.initial.host == widget.defaultServer.host
       ? ''
       : widget.initial.host;
+  late String _username = widget.initial.credentials?.username ?? '';
+  late String _password = widget.initial.credentials?.password ?? '';
   bool _invalid = false;
 
-  Future<void> _save(String input) async {
+  Future<void> _save(
+    String input, {
+    String username = '',
+    String password = '',
+  }) async {
     final cubit = context.read<SwapSettingsCubit>();
-    final invalid = await cubit.setSwapServer(input);
+    final invalid = await cubit.setSwapServer(
+      input,
+      username: username,
+      password: password,
+    );
     if (!mounted) return;
     if (invalid != null) {
       setState(() => _invalid = true);
@@ -282,10 +292,43 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
             color: context.bull.error,
           ),
         ],
+        const Gap(16),
+        BullText(
+          copy.swapServerBasicAuthSubtitle,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
+          color: context.bull.textMuted,
+        ),
+        const Gap(8),
+        BullInputText(
+          value: _username,
+          hint: copy.swapServerBasicAuthUsernameHint,
+          semanticLabel: copy.swapServerBasicAuthUsernameHint,
+          autocorrect: false,
+          enableSuggestions: false,
+          onChanged: (value) => setState(() {
+            _username = value;
+            _invalid = false;
+          }),
+        ),
+        const Gap(8),
+        BullInputText(
+          value: _password,
+          hint: copy.swapServerBasicAuthPasswordHint,
+          semanticLabel: copy.swapServerBasicAuthPasswordHint,
+          obscure: true,
+          autocorrect: false,
+          enableSuggestions: false,
+          onChanged: (value) => setState(() {
+            _password = value;
+            _invalid = false;
+          }),
+        ),
         const Gap(24),
         BullButton.primary(
           label: copy.save,
-          onPressed: (saving) ? null : () => _save(_input),
+          onPressed: (saving)
+              ? null
+              : () => _save(_input, username: _username, password: _password),
         ),
         const Gap(8),
         BullButton.secondary(

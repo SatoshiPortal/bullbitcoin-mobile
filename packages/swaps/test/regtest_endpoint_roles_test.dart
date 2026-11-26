@@ -80,7 +80,7 @@ void main() {
         url: 'http://fixture:9001/v2',
         webSocketUrl: 'ws://fixture:9004',
         boltzStore: _Storage(),
-        webSocketFactory: (url, {onDone, onError}) {
+        webSocketFactory: (url, {headers, onDone, onError}) {
           observed = url;
           throw StateError('Controlled websocket construction');
         },

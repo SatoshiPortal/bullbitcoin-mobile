@@ -14,6 +14,7 @@ import 'package:swaps/src/data/swap_status_mapper.dart';
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:swaps/src/domain/entities/swap.dart' as swap_entity;
+import 'package:swaps/src/domain/entities/swap_server.dart';
 import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
 import 'package:swaps/src/log.dart';
 import 'package:boltz_stream/boltz_stream.dart';
@@ -23,15 +24,22 @@ import 'package:rust_bindings/boltz.dart' as boltz;
 
 typedef BoltzWebSocketFactory = BoltzWebSocket Function(
   String boltzUrl, {
+  Map<String, String>? headers,
   void Function()? onDone,
   void Function(Object error)? onError,
 });
 
 BoltzWebSocket _createBoltzWebSocket(
   String boltzUrl, {
+  Map<String, String>? headers,
   void Function()? onDone,
   void Function(Object error)? onError,
-}) => BoltzWebSocket.create(boltzUrl, onDone: onDone, onError: onError);
+}) => BoltzWebSocket.create(
+  boltzUrl,
+  headers: headers,
+  onDone: onDone,
+  onError: onError,
+);
 
 /// Boltz partner referral id — fixed product identity, not a backend choice.
 const boltzReferralId = 'BULL';
@@ -41,6 +49,7 @@ class BoltzDatasource {
   void Function()? effectAdmission;
 
   final String _baseUrl;
+  final SwapServerCredentials? _credentials;
   final NetworkEnv environment;
   final String? _webSocketUrl;
   final String? _bitcoinExplorerUrl;
@@ -82,6 +91,7 @@ class BoltzDatasource {
 
   BoltzDatasource({
     required String url,
+    this._credentials,
     required this.environment,
     String? webSocketUrl,
     this._bitcoinExplorerUrl,
@@ -97,15 +107,36 @@ class BoltzDatasource {
     // A bare host gets https (the production default cannot be downgraded);
     // an explicit http:// is a deliberate dev/staging opt-in (SSH tunnel to
     // a local backend) and the websocket follows it as ws://.
-    _httpsUrl = _baseUrl.startsWith('http://') ? _baseUrl : 'https://$_baseUrl';
+    final plainUrl = _baseUrl.startsWith('http://')
+        ? _baseUrl
+        : 'https://$_baseUrl';
+    _httpsUrl = _withUserInfo(plainUrl);
     _http = Dio(
       BaseOptions(
-        baseUrl: _httpsUrl,
+        baseUrl: plainUrl,
+        headers: _authorizationHeaders,
         connectTimeout: const Duration(seconds: 10),
         sendTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 15),
       ),
     );
+  }
+
+  Map<String, String>? get _authorizationHeaders {
+    final credentials = _credentials;
+    return credentials == null
+        ? null
+        : {'authorization': credentials.authorization};
+  }
+
+  /// The native client takes credentials only inside the address. The
+  /// clients of this file send them as a header, so no error or log line
+  /// that quotes their address can carry them.
+  String _withUserInfo(String url) {
+    final credentials = _credentials;
+    if (credentials == null) return url;
+    final scheme = url.substring(0, url.indexOf('://') + 3);
+    return '$scheme${credentials.userInfo}@${url.substring(scheme.length)}';
   }
 
   String get _wsBaseUrl =>
@@ -1382,6 +1413,7 @@ class BoltzDatasource {
 
     final boltzWebSocket = webSocketFactory(
       _wsBaseUrl,
+      headers: _authorizationHeaders,
       onDone: () {
         swapsLog.warning('[Boltz] websocket closed unexpectedly');
         _scheduleReconnect();

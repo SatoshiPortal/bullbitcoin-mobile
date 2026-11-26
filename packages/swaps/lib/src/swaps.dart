@@ -86,7 +86,9 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
     walletTx,
     required Future<List<SwapWalletTx>> Function(String, {bool sync}) walletTxs,
   }) async {
-    final servers = SwapServerSettingRepositoryImpl();
+    final servers = SwapServerSettingRepositoryImpl(
+      secrets: secrets.swapKeychain,
+    );
     final storage = SwapStorage(
       rows: DriftSwapRowStore(database),
       secrets: secrets.swapKeychain,
@@ -112,16 +114,22 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
       }
       final profile = RegtestBoltzProfile.forNetwork(environment);
       final isTestnet = environment == NetworkEnv.testnet;
-      final url =
-          profile?.api.toString() ??
-          (await servers.fetch(isTestnet: isTestnet))
-              .forEnvironment(isTestnet: isTestnet)
-              .host;
+      final String url;
+      SwapServerCredentials? credentials;
+      if (profile == null) {
+        final server = (await servers.fetch(isTestnet: isTestnet))
+            .forEnvironment(isTestnet: isTestnet);
+        url = server.host;
+        credentials = server.credentials;
+      } else {
+        url = profile.api.toString();
+      }
       final rows = environment == NetworkEnv.regtest ? regtest : storage;
       return (
         store: SwapStoreImpl(storage: rows, environment: environment),
         boltz: BoltzSwapRepository.connect(
           url: url,
+          credentials: credentials,
           storage: rows,
           environment: environment,
           webSocketUrl: profile?.webSocket.toString(),
@@ -221,8 +229,10 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
 
   @override
   @useResult
-  Future<Result<SwapServer, SwapsFailure>> setServer(String input) =>
-      _servers.setServer(input);
+  Future<Result<SwapServer, SwapsFailure>> setServer(
+    String input, {
+    SwapServerCredentials? credentials,
+  }) => _servers.setServer(input, credentials: credentials);
 
   @override
   @useResult
