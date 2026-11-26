@@ -144,6 +144,51 @@ void main() {
       },
     );
 
+    test('suspending the session waits for the drain and a rebuild cannot '
+        'restart the driver', () async {
+      final drain = Completer<void>();
+      when(() => watcher.drained).thenAnswer((_) => drain.future);
+      when(() => watcher.suspend()).thenReturn(null);
+      var confirmed = false;
+      final suspending = switcher.suspendSession().whenComplete(
+        () => confirmed = true,
+      );
+      verify(() => watcher.suspend()).called(1);
+      final rebuilt = switcher.rebuild(
+        environment: NetworkEnv.testnet,
+        waitForCompletion: true,
+      );
+      await pumpEventQueue();
+      expect(confirmed, isFalse, reason: 'the driver has not drained yet');
+
+      drain.complete();
+      await suspending;
+      await rebuilt;
+      expect(confirmed, isTrue);
+      expect(repository.isTestnet, isTrue);
+      verifyNever(() => watcher.start());
+
+      switcher.resumeSession();
+      await pumpEventQueue();
+      verify(() => watcher.start()).called(1);
+      switcher.resumeSession();
+      await pumpEventQueue();
+      verifyNever(() => watcher.start());
+    });
+
+    test('resuming before the stop is confirmed starts nothing', () async {
+      final drain = Completer<void>();
+      when(() => watcher.drained).thenAnswer((_) => drain.future);
+      when(() => watcher.suspend()).thenReturn(null);
+      final suspending = switcher.suspendSession();
+      switcher.resumeSession();
+      await pumpEventQueue();
+      verifyNever(() => watcher.start());
+      drain.complete();
+      await suspending;
+      verifyNever(() => watcher.start());
+    });
+
     test('a switch to the network already in use does nothing', () async {
       environments.add(const Ok(settings.Environment.mainnet));
       await pumpEventQueue();
