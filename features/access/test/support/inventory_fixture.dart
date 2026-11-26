@@ -76,7 +76,7 @@ final class InventoryFixture {
         await fixture.close();
         throw StateError('inventory credential setup failed');
       }
-      inventory.lock();
+      await inventory.lock();
     }
     return fixture;
   }

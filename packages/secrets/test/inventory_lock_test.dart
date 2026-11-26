@@ -152,7 +152,7 @@ void main() {
   });
 
   test('unprotected reopening cannot supersede a later lock', () async {
-    final first = inventory.lockIfProtected();
+    final first = inventory.lock();
     expect(inventory.isLocked, isTrue);
     final second = inventory.lock();
 
@@ -168,7 +168,7 @@ void main() {
       final subscription = inventory.lockedChanges.listen((locked) {
         if (locked) later = inventory.lock();
       });
-      final first = inventory.lockIfProtected();
+      final first = inventory.lock();
 
       expect(await first, isTrue);
       final second = later;
@@ -179,12 +179,17 @@ void main() {
     },
   );
 
-  test('an unprotected view reopens only after the lock has drained', () async {
-    final locking = inventory.lockIfProtected();
-    expect(inventory.isLocked, isTrue);
-    expect(await locking, isFalse);
-    expect(inventory.isLocked, isFalse);
-  });
+  test(
+    'an unprotected view reopens explicitly after the lock has drained',
+    () async {
+      final locking = inventory.lock();
+      expect(inventory.isLocked, isTrue);
+      expect(await locking, isTrue);
+      expect(inventory.isLocked, isTrue);
+      _value(await inventory.resumeUnprotected());
+      expect(inventory.isLocked, isFalse);
+    },
+  );
 }
 
 T _value<T, F extends Failure>(Result<T, F> result) {

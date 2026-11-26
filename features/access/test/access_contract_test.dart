@@ -98,6 +98,48 @@ void main() {
     await locking;
   });
 
+  test('an unprotected session stays locked until foreground resume', () async {
+    const access = Access();
+    access.onLifecycle(AppLifecycleState.paused);
+    await access.lock();
+    expect(fixture.inventory.isLocked, isTrue);
+
+    final resumed = access.locked.firstWhere((locked) => !locked);
+    access.onLifecycle(AppLifecycleState.resumed);
+    await resumed.timeout(const Duration(seconds: 5));
+    expect(fixture.inventory.isLocked, isFalse);
+  });
+
+  test(
+    'a later foreground request survives a paused in-flight resume',
+    () async {
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      final write = fixture.inventory.registerWallet(
+        localWallet(),
+        prepareProperties: (_) async {
+          entered.complete();
+          await release.future;
+          return const Ok(null);
+        },
+      );
+      await entered.future.timeout(const Duration(seconds: 5));
+      const access = Access();
+      access.onLifecycle(AppLifecycleState.paused);
+      final locking = access.lock();
+      final reopened = access.locked.firstWhere((locked) => !locked);
+      access.onLifecycle(AppLifecycleState.resumed);
+      access.onLifecycle(AppLifecycleState.paused);
+      expect(fixture.inventory.isLocked, isTrue);
+      access.onLifecycle(AppLifecycleState.resumed);
+      release.complete();
+      await locking;
+      expect(await write, isA<Err>());
+      await reopened.timeout(const Duration(seconds: 5));
+      expect(fixture.inventory.isLocked, isFalse);
+    },
+  );
+
   testWidgets('every failure keeps its operation-specific localized message', (
     tester,
   ) async {
@@ -145,8 +187,8 @@ void main() {
     const pin = '1234';
     await tester.runAsync(() async {
       expect(await fixture.inventory.setCredential(pin), isA<Ok>());
+      await fixture.inventory.lock();
     });
-    fixture.inventory.lock();
     final grants = <AppUnlockGrant>[];
     final gate = const Access().buildReauthenticationGate(
       onSuccess: grants.add,
@@ -204,7 +246,7 @@ void main() {
     testWidgets('gate preserves $scenario authorization', (tester) async {
       await tester.runAsync(() async {
         expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
-        fixture.inventory.lock();
+        await fixture.inventory.lock();
         if (scenario == 'cooldown') {
           for (var index = 0; index < 4; index++) {
             expect(await fixture.inventory.unlock('0000'), isA<Ok>());
