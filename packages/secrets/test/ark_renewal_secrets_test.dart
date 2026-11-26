@@ -24,6 +24,8 @@ void main() {
   late InventoryStore store;
   late Secrets secrets;
   late Fingerprint parent;
+  late String expectedWords;
+  late Fingerprint expectedChild;
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('ark-renewal-secrets-');
@@ -64,6 +66,16 @@ void main() {
     );
     final secret = _value(await secrets.generate());
     parent = secret.id;
+    final handle = _value(await secrets.fetch(parent));
+    final words = _value(
+      await handle.derive.bip85.mnemonic(
+        wordCount: MnemonicLength.words12,
+        index: arkChildBip85Index,
+        language: Language.english,
+      ),
+    );
+    expectedWords = words.join(' ');
+    expectedChild = _value(await secrets.preview.arkFingerprint(words: words));
     final id = 'wpkh([${parent.hex}/84h/1h/0h]):regtest';
     _value(
       await inventory.registerWallet(
@@ -113,85 +125,75 @@ void main() {
     );
   }
 
-  Future<Result<String, Failure>> refresh({
-    Fingerprint? of,
-    void Function(ArkChild child)? onAction,
-  }) => renewal.withArkChild<String, Failure>(
-    parent: of ?? parent,
-    notPermitted: const _Refused(),
-    unavailable: const _Unavailable(),
-    action: (child) async {
-      onAction?.call(child);
-      return Ok(child.fingerprint.hex);
+  /// A consumer that checks what it receives against what the test derived
+  /// by the public API, and records only booleans: no words leave it.
+  _Consumer consumer({Completer<void>? hold, Completer<void>? entered}) =>
+      _Consumer(
+        expectedWords: expectedWords,
+        expectedChild: expectedChild,
+        parent: parent,
+        hold: hold,
+        entered: entered,
+      );
+
+  Future<ArkChildAdmission> refresh({Fingerprint? of, _Consumer? using}) =>
+      renewal.consumeChild(of ?? parent, using ?? consumer());
+
+  test(
+    'only the Ark child of the exact account reaches the consumer',
+    () async {
+      final subject = consumer();
+
+      expect(await refresh(using: subject), ArkChildAdmission.consumed);
+
+      expect(subject.calls, 1);
+      expect(subject.wasTheDedicatedChild, isTrue);
+      expect(subject.wasNotTheParent, isTrue);
     },
   );
 
-  test('only the Ark child of the exact account is handed over', () async {
-    final handle = _value(await secrets.fetch(parent));
-    final expectedWords = _value(
-      await handle.derive.bip85.mnemonic(
-        wordCount: MnemonicLength.words12,
-        index: arkChildBip85Index,
-        language: Language.english,
-      ),
-    );
-    final expectedFingerprint = _value(
-      await secrets.preview.arkFingerprint(words: expectedWords),
-    );
-
-    ArkChild? seen;
-    final result = _value(await refresh(onAction: (child) => seen = child));
-
-    expect(result, expectedFingerprint.hex);
-    expect(seen?.mnemonic, expectedWords.join(' '));
-    expect(seen?.fingerprint, expectedFingerprint);
-    expect(
-      seen?.fingerprint,
-      isNot(parent),
-      reason: 'the child is not the parent seed',
-    );
-  });
-
   test(
-    'a view protected by a PIN is renewed: the veto is lifted for refresh',
+    'a view protected by a PIN is refreshed: the veto is lifted for refresh',
     () async {
       await protect('all');
-      expect(_value(await refresh()), isNotEmpty);
+      expect(await refresh(), ArkChildAdmission.consumed);
       expect(await renewal.mayRefresh(parent), isTrue);
     },
   );
 
-  test('a seed shared with a protected view is still renewed', () async {
+  test('a seed shared with a protected view is still refreshed', () async {
     await addView('protected');
     await protect('protected');
-    expect(_value(await refresh()), isNotEmpty);
+    expect(await refresh(), ArkChildAdmission.consumed);
   });
 
   test('background access disabled refuses and reads no seed', () async {
     await sql("UPDATE views SET background_enabled = 0 WHERE id = 'all'");
     final baseline = keystore.reads;
-    var ran = false;
-    expect(
-      _failure(await refresh(onAction: (_) => ran = true)),
-      isA<_Refused>(),
-    );
-    expect(ran, isFalse);
+    final subject = consumer();
+    expect(await refresh(using: subject), ArkChildAdmission.notPermitted);
+    expect(subject.calls, 0);
     expect(keystore.reads, baseline);
     expect(await renewal.mayRefresh(parent), isFalse);
   });
 
   test(
-    'two accounts: one without membership is refused, the other renewed',
+    'two accounts: one without membership is refused, the other refreshed',
     () async {
       final stranger = Fingerprint('01234567');
       final baseline = keystore.reads;
-      expect(_failure(await refresh(of: stranger)), isA<_Refused>());
+      final refused = consumer();
+      expect(
+        await refresh(of: stranger, using: refused),
+        ArkChildAdmission.notPermitted,
+      );
+      expect(refused.calls, 0);
       expect(
         keystore.reads,
         baseline,
         reason: 'the refused account reads nothing',
       );
-      expect(_value(await refresh()), isNotEmpty);
+      expect(await refresh(), ArkChildAdmission.consumed);
     },
   );
 
@@ -200,12 +202,9 @@ void main() {
     () async {
       await sql('DROP TABLE view_members');
       final baseline = keystore.reads;
-      var ran = false;
-      expect(
-        _failure(await refresh(onAction: (_) => ran = true)),
-        isA<_Unavailable>(),
-      );
-      expect(ran, isFalse);
+      final subject = consumer();
+      expect(await refresh(using: subject), ArkChildAdmission.unavailable);
+      expect(subject.calls, 0);
       expect(keystore.reads, baseline);
       expect(await renewal.mayRefresh(parent), isFalse);
     },
@@ -213,7 +212,7 @@ void main() {
 
   test('a missing seed is unavailable, not a refusal', () async {
     _value(await secrets.trash(parent));
-    expect(_failure(await refresh()), isA<_Unavailable>());
+    expect(await refresh(), ArkChildAdmission.unavailable);
   });
 
   test(
@@ -225,64 +224,65 @@ void main() {
     },
   );
 
-  test(
-    'an admitted run is not interrupted, the next admission sees the change',
-    () async {
-      final admitted = Completer<void>();
-      final release = Completer<void>();
-      final running = renewal.withArkChild<String, Failure>(
-        parent: parent,
-        notPermitted: const _Refused(),
-        unavailable: const _Unavailable(),
-        action: (child) async {
-          admitted.complete();
-          await release.future;
-          return Ok(child.fingerprint.hex);
-        },
-      );
-      await admitted.future;
-      await sql("UPDATE views SET background_enabled = 0 WHERE id = 'all'");
-      expect(_failure(await refresh()), isA<_Refused>());
-      release.complete();
-      expect(_value(await running), isNotEmpty);
-    },
-  );
-
-  test('the SQLite write lock is not held while the action runs', () async {
-    final admitted = Completer<void>();
-    final release = Completer<void>();
-    final running = renewal.withArkChild<String, Failure>(
-      parent: parent,
-      notPermitted: const _Refused(),
-      unavailable: const _Unavailable(),
-      action: (child) async {
-        admitted.complete();
-        await release.future;
-        return Ok(child.fingerprint.hex);
-      },
+  test('an admitted consumer is not interrupted, the next admission sees the change', () async {
+    final entered = Completer<void>();
+    final hold = Completer<void>();
+    final running = renewal.consumeChild(
+      parent,
+      consumer(hold: hold, entered: entered),
     );
-    await admitted.future;
-    // A write during the "network" must not wait for the action.
+    await entered.future;
+    await sql("UPDATE views SET background_enabled = 0 WHERE id = 'all'");
+    expect(await refresh(), ArkChildAdmission.notPermitted);
+    hold.complete();
+    expect(await running, ArkChildAdmission.consumed);
+  });
+
+  test('the SQLite write lock is not held while the consumer runs', () async {
+    final entered = Completer<void>();
+    final hold = Completer<void>();
+    final running = renewal.consumeChild(
+      parent,
+      consumer(hold: hold, entered: entered),
+    );
+    await entered.future;
+    // A write during the "network" must not wait for the consumer.
     await protect('all').timeout(const Duration(seconds: 5));
-    release.complete();
-    expect(_value(await running), isNotEmpty);
+    hold.complete();
+    expect(await running, ArkChildAdmission.consumed);
   });
 }
 
-final class _Refused extends Failure {
-  const _Refused();
-}
+final class _Consumer implements ArkChildConsumer {
+  final String expectedWords;
+  final Fingerprint expectedChild;
+  final Fingerprint parent;
+  final Completer<void>? hold;
+  final Completer<void>? entered;
+  var calls = 0;
+  var wasTheDedicatedChild = false;
+  var wasNotTheParent = false;
 
-final class _Unavailable extends Failure {
-  const _Unavailable();
+  _Consumer({
+    required this.expectedWords,
+    required this.expectedChild,
+    required this.parent,
+    this.hold,
+    this.entered,
+  });
+
+  @override
+  Future<void> consume(ArkChild child) async {
+    calls++;
+    wasTheDedicatedChild =
+        child.mnemonic == expectedWords && child.fingerprint == expectedChild;
+    wasNotTheParent = child.fingerprint != parent;
+    entered?.complete();
+    await hold?.future;
+  }
 }
 
 T _value<T, F extends Failure>(Result<T, F> result) {
   expect(result, isA<Ok<T, F>>());
   return (result as Ok<T, F>).value;
-}
-
-Failure _failure<T, F extends Failure>(Result<T, F> result) {
-  expect(result, isA<Err<T, F>>());
-  return (result as Err<T, F>).failure;
 }

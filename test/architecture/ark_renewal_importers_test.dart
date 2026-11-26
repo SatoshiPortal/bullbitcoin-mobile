@@ -69,4 +69,30 @@ void main() {
     expect(source, isNot(contains('Ok(child')));
     expect(source, isNot(contains('Ok(mnemonic')));
   });
+
+  test(
+    'no public type of the trusted client can hand the words to a caller',
+    () {
+      final source = File(p.join(root, importer)).readAsStringSync();
+      // The port that carries the words is private: only the native opener the
+      // client was built with can reach it.
+      expect(source, contains('final class _ChildProvider'));
+      expect(source, isNot(contains('class ArkRenewalChildProvider')));
+      for (final declaration in RegExp(
+        r'^(?:final |abstract |base |sealed )*class (\w+)',
+        multiLine: true,
+      ).allMatches(source).map((match) => match.group(1)!)) {
+        if (declaration.startsWith('_')) continue;
+        expect(
+          ['ArkRenewalAdmission', 'ArkBackgroundRenewal'],
+          contains(declaration),
+          reason: 'public class $declaration',
+        );
+      }
+      // The public classes carry no word: no mnemonic in any signature.
+      final publicPart = source.split('final class _ChildProvider').first;
+      expect(publicPart, isNot(contains('mnemonic')));
+      expect(publicPart, isNot(contains('String Function')));
+    },
+  );
 }

@@ -95,57 +95,18 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  ArkRenewalChildProvider provider([List<ArkAccountConfig>? registered]) =>
-      ArkRenewalChildProvider(
+  ArkRenewalAdmission admission([List<ArkAccountConfig>? registered]) =>
+      ArkRenewalAdmission(
         renewal,
         _Registry(registered ?? [account, _config(stranger)]),
       );
 
-  Future<Result<String, ArkWalletFailure>> open(
-    ArkRenewalChildProvider subject,
-    ArkAccountConfig config,
-  ) => subject.withChild<String>(
-    config.id,
-    (words, fingerprint) async => Ok(fingerprint.hex),
-  );
-
-  test('the worker gets the dedicated child of the exact account, never the parent', () async {
-    final handle = switch (await secrets.fetch(parent)) {
-      Ok(:final value) => value,
-      Err() => throw StateError('seed missing'),
-    };
-    final expectedWords = switch (await handle.derive.bip85.mnemonic(
-      wordCount: MnemonicLength.words12,
-      index: arkChildBip85Index,
-      language: Language.english,
-    )) {
-      Ok(:final value) => value.join(' '),
-      Err() => throw StateError('derivation failed'),
-    };
-    String? seenWords;
-    Fingerprint? seenChild;
-
-    final result = await provider().withChild<String>(account.id, (
-      words,
-      fingerprint,
-    ) async {
-      seenWords = words;
-      seenChild = fingerprint;
-      return Ok(fingerprint.hex);
-    });
-
-    expect(result, isA<Ok<String, ArkWalletFailure>>());
-    expect(seenWords, expectedWords);
-    expect(seenChild, isNot(parent), reason: 'a child, not the parent seed');
-    expect((result as Ok<String, ArkWalletFailure>).value, seenChild?.hex);
-  });
-
-  test('a view protected by a PIN is refreshed', () async {
+  test('a view protected by a PIN is admitted for refresh', () async {
     expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
     expect(await fixture.inventory.lock(), isTrue);
-    final subject = provider();
+    final subject = admission();
 
-    expect(await open(subject, account), isA<Ok<String, ArkWalletFailure>>());
+    expect(await subject.openRefusal(account.id), isNull);
     expect(await subject.admitBatch(account.id), isA<Ok>());
   });
 
@@ -153,11 +114,9 @@ void main() {
     'an account that is not registered is refused and reads no seed',
     () async {
       final baseline = keystore.reads;
-      final result = await open(provider([_config(stranger)]), account);
-      expect(
-        (result as Err<String, ArkWalletFailure>).failure,
-        isA<ArkRecoveryRequiredFailure>(),
-      );
+      final refusal = await admission([_config(stranger)])
+          .openRefusal(account.id);
+      expect(refusal, isA<ArkRecoveryRequiredFailure>());
       expect(keystore.reads, baseline);
     },
   );
@@ -165,12 +124,12 @@ void main() {
   test(
     'two registered accounts: the one without background access is refused',
     () async {
-      final subject = provider();
+      final subject = admission();
       final baseline = keystore.reads;
 
-      final forbidden = await open(subject, _config(stranger));
+      final forbidden = await subject.admitBatch(_config(stranger).id);
       expect(
-        (forbidden as Err<String, ArkWalletFailure>).failure,
+        (forbidden as Err<void, ArkWalletFailure>).failure,
         isA<ArkRenewalNotPermittedFailure>(),
       );
       expect(
@@ -178,16 +137,16 @@ void main() {
         baseline,
         reason: 'the refused account read nothing',
       );
-      expect(await subject.admitBatch(_config(stranger).id), isA<Err>());
 
-      expect(await open(subject, account), isA<Ok<String, ArkWalletFailure>>());
+      expect(await subject.admitBatch(account.id), isA<Ok>());
+      expect(keystore.reads, baseline, reason: 'admission reads no seed');
     },
   );
 
   test(
     'background access withdrawn between two lots stops the second',
     () async {
-      final subject = provider();
+      final subject = admission();
       expect(
         await subject.admitBatch(account.id),
         isA<Ok>(),
@@ -201,10 +160,6 @@ void main() {
         (second as Err<void, ArkWalletFailure>).failure,
         isA<ArkRenewalNotPermittedFailure>(),
       );
-      expect(
-        await open(subject, account),
-        isA<Err<String, ArkWalletFailure>>(),
-      );
     },
   );
 
@@ -212,14 +167,14 @@ void main() {
     'an inventory that could not be opened leaves refresh unavailable',
     () async {
       final baseline = keystore.reads;
-      final subject = ArkRenewalChildProvider(null, _Registry([account]));
+      final subject = ArkRenewalAdmission(null, _Registry([account]));
 
-      final opened = await open(subject, account);
       expect(
-        (opened as Err<String, ArkWalletFailure>).failure,
+        await subject.openRefusal(account.id),
         isA<ArkUnavailableFailure>(),
       );
-      expect(await subject.admitBatch(account.id), isA<Err>());
+      final batch = await subject.admitBatch(account.id);
+      expect(batch, isA<Err<void, ArkWalletFailure>>());
       expect(keystore.reads, baseline);
     },
   );
