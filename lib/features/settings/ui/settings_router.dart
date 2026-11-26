@@ -1,15 +1,10 @@
-import 'package:bull_ui/bull_ui.dart' show SizedBox, Widget;
+import 'package:bull_ui/bull_ui.dart' show Widget;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:settings/settings.dart';
 import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -17,7 +12,6 @@ import 'package:bb_mobile/locator.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:swaps/swaps.dart' hide Environment;
 import 'package:bull_logs/bull_logs.dart';
 
 class SettingsRouter {
@@ -81,6 +75,7 @@ class SettingsRouter {
 
   static List<RouteBase> childRoutes({
     RouteBase? autoswapSettingsRoute,
+    required List<RouteBase> swapRecoveryRoutes,
     required List<RouteBase> priceRoutes,
     required List<RouteBase> backupRoutes,
     required List<RouteBase> accessRoutes,
@@ -99,32 +94,7 @@ class SettingsRouter {
         ),
       ),
       ...exchangeSettingsRoutes,
-      GoRoute(
-        name: SettingsRoute.swapRestore.name,
-        path: SettingsRoute.swapRestore.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<SwapRestoreCubit>()..restore(),
-          child: const SwapRestoreScreen(),
-        ),
-      ),
-      GoRoute(
-        name: SettingsRoute.swapRescue.name,
-        path: SettingsRoute.swapRescue.path,
-        redirect: (context, state) => state.extra is RestorableSwap
-            ? null
-            : state.namedLocation(SettingsRoute.swapRestore.name),
-        builder: (context, state) => switch (state.extra) {
-          final RestorableSwap restorable => BlocProvider(
-            create: (_) => SwapRescueCubit(
-              rescueSwapUsecase: locator<RescueSwapUsecase>(),
-              getRescueWalletsUsecase: locator<GetSwapRescueWalletsUsecase>(),
-              restored: restorable.swap,
-            ),
-            child: SwapRescueDetailsScreen(restorable: restorable),
-          ),
-          _ => const SizedBox.shrink(),
-        },
-      ),
+      ...swapRecoveryRoutes,
       ?autoswapSettingsRoute,
 
       ...accessRoutes,

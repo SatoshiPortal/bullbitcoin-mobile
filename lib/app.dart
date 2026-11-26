@@ -14,6 +14,7 @@ import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_receive_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_settings_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_swap_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeSessionScope;
 import 'package:btc_map/btc_map.dart';
@@ -35,6 +36,7 @@ import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network_banner.dart';
 import 'package:startup/startup.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -49,6 +51,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:novlang/novlang.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:onboarding/onboarding.dart';
 import 'package:onboarding/setup.dart';
 
@@ -180,91 +183,114 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           : AppThemeType.light;
                   }
 
-                  return MultiRepositoryProvider(
-                    providers: [
-                      RepositoryProvider<MempoolLinks>.value(
-                        value: locator<Mempool>().links,
-                      ),
-                      RepositoryProvider<Consolidation>(
-                        create: (_) => Consolidation.open(locator<Spend>()),
-                      ),
-                    ],
-                    child: MaterialApp.router(
-                      title: 'BullBitcoin Wallet',
-                      debugShowCheckedModeBanner: kDebugMode,
-                      routerConfig: AppRouter.router,
-                      theme: AppTheme.themeData(appThemeType),
-                      locale: language?.locale,
-                      localizationsDelegates: [
-                        StartupLocalizations.delegate,
-                        SendLocalizations.delegate,
-                        CoinsLocalizations.delegate,
-                        NovlangReceiveLocalizationsDelegate(novlangPolicy),
-                        AddressViewLocalizations.delegate,
-                        NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
-                        NovlangAnnouncementsLocalizationsDelegate(
-                          novlangPolicy,
-                        ),
-                        NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
-                        NovlangSettingsLocalizationsDelegate(novlangPolicy),
-                        NovlangExchangeLocalizationsDelegate(novlangPolicy),
-                        NovlangOnboardingLocalizationsDelegate(novlangPolicy),
-                        ...novlangLocalizationsDelegates(novlangPolicy),
-                        LogsLocalizations.delegate,
-                        NetworkLocalizations.delegate,
-                        BtcMapFeature.localizationsDelegate,
-                        BackupsFeature.localizationsDelegate,
-                        NovlangQuickActionsLocalizationsDelegate(
-                          novlangPolicy,
-                          const QuickActionsFallbackDelegate(),
-                        ),
-                        Bip85Localizations.delegate,
-                        NovlangAllSeedViewLocalizationsDelegate(novlangPolicy),
-                        bullUiLocalizationsDelegate,
-                        backupMetadataLocalizationsDelegate,
-                        ...RecoverBullFeature.localizationsDelegates,
-                      ],
-                      supportedLocales: AppLocalizations.supportedLocales,
-                      builder: (context, child) {
-                        if (child == null) return const SizedBox.shrink();
-                        // keyboard_actions still uses SDK Material widgets;
-                        // the official bridge supports this transition.
-                        // ignore: deprecated_member_use
-                        final app = MaterialUiCompatibilityBridge(
-                          child: Settings.amountScope(
-                            navigatorKey: AppRouter.rootNavigatorKey,
-                            child: BullSupportScope(
-                              onContactSupport: Support.contactSupport,
-                              child: locator<StartupFeature>().gate(
-                                logs: () => locator<LogsFacade>(),
-                                splash: locator<OnboardingFeature>()
-                                    .buildLoadingSplash(context),
-                                openOnboarding: () =>
-                                    OnboardingNavigation.go(AppRouter.router),
-                                onUnlocked: () =>
-                                    AppLocator.startWalletsAfterUnlock(locator),
-                                app: locator<RecoverBullFeature>().withAlerts(
-                                  child,
-                                  onOpen: () => AppRouter.router.pushNamed(
-                                    'recoverbullFlows',
+                  return AppliedNetworkBuilder(
+                    selected: Settings.networkOf(context),
+                    builder: (context, appliedNetwork) =>
+                        MultiRepositoryProvider(
+                          providers: [
+                            RepositoryProvider<MempoolLinks>.value(
+                              value: locator<Mempool>().links,
+                            ),
+                            RepositoryProvider<Consolidation>(
+                              create: (_) =>
+                                  Consolidation.open(locator<Spend>()),
+                            ),
+                          ],
+                          child: MaterialApp.router(
+                            title: 'BullBitcoin Wallet',
+                            debugShowCheckedModeBanner:
+                                kDebugMode &&
+                                appliedNetwork != NetworkEnv.testnet &&
+                                appliedNetwork != NetworkEnv.regtest,
+                            routerConfig: AppRouter.router,
+                            theme: AppTheme.themeData(appThemeType),
+                            locale: language?.locale,
+                            localizationsDelegates: [
+                              StartupLocalizations.delegate,
+                              SendLocalizations.delegate,
+                              CoinsLocalizations.delegate,
+                              NovlangReceiveLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              AddressViewLocalizations.delegate,
+                              NovlangLabelEditorLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              NovlangAnnouncementsLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              NovlangBitcoinPriceLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              NovlangSettingsLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              NovlangSwapLocalizationsDelegate(novlangPolicy),
+                              NovlangExchangeLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              NovlangOnboardingLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              ...novlangLocalizationsDelegates(novlangPolicy),
+                              LogsLocalizations.delegate,
+                              NetworkLocalizations.delegate,
+                              BtcMapFeature.localizationsDelegate,
+                              BackupsFeature.localizationsDelegate,
+                              NovlangQuickActionsLocalizationsDelegate(
+                                novlangPolicy,
+                                const QuickActionsFallbackDelegate(),
+                              ),
+                              Bip85Localizations.delegate,
+                              NovlangAllSeedViewLocalizationsDelegate(
+                                novlangPolicy,
+                              ),
+                              bullUiLocalizationsDelegate,
+                              backupMetadataLocalizationsDelegate,
+                              ...RecoverBullFeature.localizationsDelegates,
+                            ],
+                            supportedLocales: AppLocalizations.supportedLocales,
+                            builder: (context, child) {
+                              if (child == null) return const SizedBox.shrink();
+                              // keyboard_actions still uses SDK Material widgets;
+                              // the official bridge supports this transition.
+                              // ignore: deprecated_member_use
+                              final app = MaterialUiCompatibilityBridge(
+                                child: Settings.amountScope(
+                                  navigatorKey: AppRouter.rootNavigatorKey,
+                                  child: BullSupportScope(
+                                    onContactSupport: Support.contactSupport,
+                                    child: locator<StartupFeature>().gate(
+                                      logs: () => locator<LogsFacade>(),
+                                      splash: locator<OnboardingFeature>()
+                                          .buildLoadingSplash(context),
+                                      openOnboarding: () =>
+                                          OnboardingNavigation.go(
+                                            AppRouter.router,
+                                          ),
+                                      onUnlocked: () =>
+                                          AppLocator.startWalletsAfterUnlock(
+                                            locator,
+                                          ),
+                                      app: locator<RecoverBullFeature>()
+                                          .withAlerts(
+                                            child,
+                                            onOpen: () => AppRouter.router
+                                                .pushNamed('recoverbullFlows'),
+                                          ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                              return networkBanner(
+                                context: context,
+                                network: appliedNetwork,
+                                beta: appFlavor == 'beta',
+                                child: app,
+                              );
+                            },
                           ),
-                        );
-                        // Mark beta-channel builds (`make android beta`) with a
-                        // corner banner. Release mode drops the Flutter debug
-                        // banner, so this is how testers tell beta from production.
-                        if (appFlavor != 'beta') return app;
-                        return Banner(
-                          message: 'BETA',
-                          location: BannerLocation.topEnd,
-                          color: Theme.of(context).colorScheme.error,
-                          child: app,
-                        );
-                      },
-                    ),
+                        ),
                   );
                 },
               ),

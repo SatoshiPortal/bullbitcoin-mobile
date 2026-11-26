@@ -151,6 +151,30 @@ void main() {
     expect(done, 0);
   });
 
+  testWidgets('bottom replaces the skip button in its slot', (tester) async {
+    var skipped = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.dark),
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: BullPaymentTransition(
+            network: BullPaymentNetwork.lightning,
+            phase: BullPaymentPhase.sending,
+            status: 'Payment pending',
+            skipLabel: 'View details',
+            onSkip: () => skipped++,
+            bottom: const Text('Switch'),
+            onDone: () {},
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Switch'), findsOneWidget);
+    expect(find.text('View details'), findsNothing);
+    expect(skipped, 0);
+  });
+
   testWidgets('fast completion keeps the intro then plays one terminal phase', (
     tester,
   ) async {
@@ -711,6 +735,31 @@ void main() {
     expect(label.style?.color, palette.broadcast);
     expect(find.text('1 step left'), findsOneWidget);
     expect(find.text('Complete'), findsNothing);
+  });
+
+  testWidgets('the headline takes the broadcast colour with the rail text', (
+    tester,
+  ) async {
+    const palette = PaymentAnimationPalette.standard;
+    Future<Color?> headline(BullPaymentStepState state) async {
+      await tester.pumpWidget(
+        host(
+          transition(
+            network: BullPaymentNetwork.bitcoin,
+            progress: BullPaymentProgress(
+              steps: const ['Signing', 'Broadcasted', 'Confirmed'],
+              completed: 1,
+              currentState: state,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return tester.widget<Text>(find.text('Sending')).style?.color;
+    }
+
+    expect(await headline(BullPaymentStepState.broadcast), palette.broadcast);
+    expect(await headline(BullPaymentStepState.active), palette.foreground);
   });
 
   testWidgets('the last status turns green only with the success phase', (

@@ -1,4 +1,5 @@
 {
+  "wizardAdvancedOptionsTitle": "خيارات متقدمة",
   "onboardingSplashDescription": "محفظة (بيتكوين) الذاتية الملكية وخدمة التبادل فقط.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"

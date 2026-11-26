@@ -438,5 +438,30 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "आपके वॉलेट लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर से प्रयास करें।"
+  "walletLoadFailed": "आपके वॉलेट लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर से प्रयास करें।",
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+  "coreSwapsStatusCompleted": "पूर्ण",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "लंबित",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "राशि",
+  "swapRescueButton": "रिस्टोर करें",
+  "swapRescueCreatedLabel": "बनाया गया",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueRouteLabel": "मार्ग",
+  "swapRescueStatusLabel": "स्थिति",
+  "swapRescueSuccess": "Swap रिस्टोर हो गया — यह अब फिर से शुरू होगा",
+  "swapRescueTitle": "Swap बचाव",
+  "swapRescueTypeLabel": "प्रकार",
+  "swapRescueWalletHint": "एक वॉलेट चुनें",
+  "swapRescueWalletLabel": "वॉलेट में रिस्टोर करें",
+  "swapRestoreActionable": "{count, plural, =0{रिकवर करने के लिए कोई Swap नहीं} =1{आप 1 Swap रिकवर करने का प्रयास कर सकते हैं। यह पहले से ही अंतिम स्थिति में हो सकता है।} other{आप {count} Swaps रिकवर करने का प्रयास कर सकते हैं। ध्यान दें, इनमें से कुछ पहले से ही अंतिम स्थिति में हो सकते हैं।}}",
+  "swapRestoreAllSection": "सभी Swaps",
+  "swapRestoreFailed": "Swaps रिस्टोर नहीं हो सके",
+  "swapRestoreKindCrossChain": "क्रॉस-चेन",
+  "swapRestoreKindLightningReceive": "Lightning प्राप्त करें",
+  "swapRestoreKindLightningSend": "Lightning भेजें",
+  "swapRestoreNoSwaps": "रिस्टोर करने के लिए कोई Swap नहीं मिला",
+  "swapRestoreRecoverableSection": "रिकवर करने योग्य",
+  "swapRestoreTitle": "Swap रिस्टोर"
 }

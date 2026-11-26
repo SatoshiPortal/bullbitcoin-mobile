@@ -34,6 +34,8 @@ sealed class SettingsState with _$SettingsState {
       storedSettings?.isErrorReportingEnabled ?? false;
   bool get screenCaptureProtectionEnabled =>
       storedSettings?.screenCaptureProtectionEnabled ?? true;
+  bool get showPaymentAnimations =>
+      storedSettings?.showPaymentAnimations ?? true;
   String? get exchangeTestnetBasicAuthUsername =>
       storedSettings?.exchangeTestnetBasicAuthUsername;
   String? get exchangeTestnetBasicAuthPassword =>

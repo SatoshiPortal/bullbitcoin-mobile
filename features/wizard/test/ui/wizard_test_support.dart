@@ -32,6 +32,9 @@ class FakeWizardRepository implements WizardRepository {
 
   @override
   Future<void> clearPending() async => pending = null;
+
+  @override
+  Future<void> clearPendingNetwork() async {}
 }
 
 class FakeIntervals implements BackgroundSyncIntervalRepository {

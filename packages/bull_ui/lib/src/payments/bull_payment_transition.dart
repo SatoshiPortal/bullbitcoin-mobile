@@ -22,8 +22,15 @@ class BullPaymentTransition extends StatefulWidget {
   /// Translated top-left descriptor replacing the network's own.
   final String? descriptor;
   final String status;
-  final String skipLabel;
+
+  /// Label of the skip button. The button shows only when both [skipLabel] and
+  /// [onSkip] are set and [bottom] is null.
+  final String? skipLabel;
   final VoidCallback? onSkip;
+
+  /// Replaces the skip button, in its slot under the step rail, with an owner
+  /// supplied control (for example a view switch).
+  final Widget? bottom;
   final VoidCallback? onBackdropTap;
   final VoidCallback? onBack;
   final VoidCallback onDone;
@@ -37,8 +44,9 @@ class BullPaymentTransition extends StatefulWidget {
     this.statusTag,
     this.descriptor,
     required this.status,
-    required this.skipLabel,
-    required this.onSkip,
+    this.skipLabel,
+    this.onSkip,
+    this.bottom,
     this.onBackdropTap,
     this.onBack,
     required this.onDone,
@@ -112,12 +120,20 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
         Theme.of(context).extension<PaymentAnimationPalette>() ??
         PaymentAnimationPalette.standard;
     final onSkip = widget.onSkip;
+    final skipLabel = widget.skipLabel;
     final successful = !showIntro && widget.phase == BullPaymentPhase.success;
     final headline = successful
         ? widget.progress?.steps.last ?? widget.status
         : showIntro
         ? _initialStatus
         : widget.status;
+    // The rail text turns orange for a broadcast current step; the headline
+    // follows it (success stays green, failure keeps the foreground).
+    final broadcast =
+        !successful &&
+        widget.phase != BullPaymentPhase.failed &&
+        widget.progress?.failedAt == null &&
+        widget.progress?.currentState == BullPaymentStepState.broadcast;
     return Listener(
       behavior: HitTestBehavior.opaque,
       child: Material(
@@ -180,6 +196,8 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
                               fontFamily: BullTypography.brandFamily,
                               color: successful
                                   ? palette.success
+                                  : broadcast
+                                  ? palette.broadcast
                                   : palette.foreground,
                             ),
                           ),
@@ -199,14 +217,16 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
                             palette: palette,
                             reduced: _reduced,
                           ),
-                        if (onSkip != null)
+                        if (widget.bottom case final bottom?)
+                          bottom
+                        else if (onSkip != null && skipLabel != null)
                           TextButton(
                             style: TextButton.styleFrom(
                               foregroundColor: palette.foreground,
                               minimumSize: const Size(48, 48),
                             ),
                             onPressed: onSkip,
-                            child: Text(widget.skipLabel),
+                            child: Text(skipLabel),
                           ),
                       ],
                     ),

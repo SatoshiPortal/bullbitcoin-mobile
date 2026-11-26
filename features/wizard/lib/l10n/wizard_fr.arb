@@ -1,6 +1,7 @@
 {
   "@@locale": "fr",
   "settingsLanguageTitle": "Langue",
+  "wizardAdvancedOptionsTitle": "Options avancées",
   "onboardingBullBitcoin": "Bull Bitcoin",
   "onboardingOwnYourMoney": "Possédez votre argent",
   "onboardingSplashDescription": "Portefeuille Bitcoin à auto-garde souveraine et service d'échange exclusivement Bitcoin.",

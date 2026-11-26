@@ -30,8 +30,10 @@ void _expectClean(PaymentNodeLayout layout, String reason) {
   ];
   for (var i = 0; i < boxes.length; i++) {
     final r = boxes[i];
-    expect(paymentFrame.contains(r.topLeft), isTrue, reason: '$reason $r');
-    expect(paymentFrame.contains(r.bottomRight), isTrue, reason: '$reason $r');
+    // The frame edge is inclusive: a label may sit flush against it.
+    final frame = paymentFrame.inflate(.001);
+    expect(frame.contains(r.topLeft), isTrue, reason: '$reason $r');
+    expect(frame.contains(r.bottomRight), isTrue, reason: '$reason $r');
     for (final b in paymentBrackets) {
       expect(r.overlaps(b), isFalse, reason: '$reason label $r vs bracket $b');
     }
@@ -141,6 +143,59 @@ void main() {
       _expectClean(layout, 'ark exit');
     });
   }
+
+  group('bitcoin labels stay clear of the cube', () {
+    const sets = [
+      ['PAYMENT DETECTED', 'CONFIRMED'],
+      ['SIGNING', 'BROADCASTED', 'CONFIRMED'],
+      ['PAYMENT DETECTED', 'BROADCASTED', 'CONFIRMED', 'COMPLETED'],
+    ];
+    for (final labels in sets) {
+      test('${labels.length} long labels', () {
+        final layout = layoutBitcoin(count: labels.length, labels: labels);
+        expect(layout.obstacles, contains(bitcoinCubeObstacle));
+        for (final box in layout.labels) {
+          expect(box.isEmpty, isFalse);
+          expect(box.overlaps(bitcoinCubeObstacle), isFalse, reason: '$box');
+        }
+        _expectClean(layout, 'bitcoin long');
+      });
+    }
+
+    test('the obstacle covers the cube over its whole tilt travel', () {
+      // Cube silhouette: ±52 × (cos .6 + sin .6) around the centre, slid by
+      // at most the travel to the left.
+      final left =
+          bitcoinCubeCenterX -
+          bitcoinCubeTravel -
+          52 * (math.cos(.6) + math.sin(.6));
+      expect(bitcoinCubeObstacle.left, lessThanOrEqualTo(left));
+    });
+  });
+
+  test('every column scene keeps long labels off its obstacles', () {
+    const long = ['PAYMENT DETECTED', 'BROADCASTED', 'CONFIRMED', 'COMPLETED'];
+    for (final n in [2, 3, 4]) {
+      final labels = long.take(n).toList();
+      _expectClean(layoutLiquid(count: n, labels: labels), 'liquid long');
+      _expectClean(layoutArk(count: n, labels: labels), 'ark long');
+      _expectClean(layoutArkExit(count: n, labels: labels), 'exit long');
+      for (final incoming in [false, true]) {
+        _expectClean(
+          layoutLightning(count: n, incoming: incoming, labels: labels),
+          'lightning long',
+        );
+        _expectClean(
+          layoutPayjoin(count: n, incoming: incoming, labels: labels),
+          'payjoin long',
+        );
+        _expectClean(
+          layoutBoltz(count: n, incoming: incoming, labels: labels),
+          'boltz long',
+        );
+      }
+    }
+  });
 
   test('the odd count puts the padlock on the middle node', () {
     expect(layoutBoltz(count: 3, incoming: false, labels: _long).lockIndex, 1);

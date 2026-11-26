@@ -42,40 +42,59 @@ class BullToolButton extends StatelessWidget {
         ? colors.primary
         : colors.textMuted.withValues(alpha: 0.12);
 
-    return Semantics(
-      button: true,
-      label: label,
-      enabled: !disabled,
-      child: Opacity(
-        opacity: disabled ? 0.4 : 1,
-        child: IgnorePointer(
-          ignoring: disabled,
-          child: GestureDetector(
-            onTap: onPressed,
-            child: Container(
-              constraints: const BoxConstraints(minWidth: 72, minHeight: 56),
-              padding: const EdgeInsets.symmetric(
-                horizontal: BullSpacing.sm,
-                vertical: BullSpacing.sm,
-              ),
-              decoration: BoxDecoration(
-                color: bg,
-                borderRadius: BorderRadius.circular(context.bullShapes.button),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  BullIcon(icon, size: 21, color: fg),
-                  const SizedBox(height: 4),
-                  Text(
-                    label,
-                    style: context.bullType.caption.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: fg,
-                    ),
+    final radius = BorderRadius.circular(context.bullShapes.button);
+
+    // One node: the label and button role merge with the InkWell's tap and
+    // focus actions.
+    return MergeSemantics(
+      child: Semantics(
+        button: true,
+        label: label,
+        enabled: !disabled,
+        child: Opacity(
+          opacity: disabled ? 0.4 : 1,
+          child: IgnorePointer(
+            ignoring: disabled,
+            // Material + InkWell: reachable with Tab, activated with Enter or
+            // Space, and focus/hover are drawn as an overlay on the same shape.
+            child: Material(
+              color: bg,
+              borderRadius: radius,
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: disabled ? null : onPressed,
+                canRequestFocus: !disabled,
+                borderRadius: radius,
+                focusColor: fg.withValues(alpha: 0.2),
+                child: Container(
+                  constraints: const BoxConstraints(
+                    minWidth: 72,
+                    minHeight: 56,
                   ),
-                ],
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: BullSpacing.sm,
+                    vertical: BullSpacing.sm,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BullIcon(icon, size: 21, color: fg),
+                      const SizedBox(height: 4),
+                      // The label is the node's name: the visible text would
+                      // read it a second time.
+                      ExcludeSemantics(
+                        child: Text(
+                          label,
+                          style: context.bullType.caption.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: fg,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

@@ -123,6 +123,9 @@ class _SwapRoutes extends Fake implements SwapFeature {
   ];
 
   @override
+  final List<GoRoute> recoveryRoutes = const [];
+
+  @override
   GoRoute get autoswapSettingsRoute => GoRoute(
     name: 'autoswapSettings',
     path: 'autoswap-settings',
@@ -409,6 +412,7 @@ void main() {
           syncStarted: () => const Stream.empty(),
           syncFinished: () => const Stream.empty(),
           orderSwaps: () => throw StateError('Unexpected swap history read'),
+          pollSettlement: (_, {required isActive}) async {},
           actions: transactionUiActions,
           scope: (child) => child,
         ),

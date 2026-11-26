@@ -1,5 +1,5 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/recipients/presentation/payout_rail_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -18,11 +18,10 @@ Widget? payinDepositRow(
   required String label,
   required Order order,
   required PayinSource source,
-  required ExchangePayinUi ui,
 }) => switch (source.rail.rail.depositOf(order)) {
   DepositGiven(:final target) => BullDetailsTableItem(
     label: label,
-    displayWidget: ui.addressViewer(context, switch (target) {
+    displayWidget: AddressViewer(switch (target) {
       OnchainDeposit(:final address) ||
       LiquidDeposit(:final address) => address,
       LightningInvoiceDeposit(:final invoice) => invoice,

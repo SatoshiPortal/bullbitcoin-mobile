@@ -13,6 +13,7 @@ import 'domain/usecases/sync_exchange_currency_usecase.dart';
 import 'domain/usecases/load_settings_usecase.dart';
 import 'domain/usecases/set_theme_mode_usecase.dart';
 import 'domain/usecases/set_screen_capture_protection_usecase.dart';
+import 'domain/usecases/set_show_payment_animations_usecase.dart';
 import 'domain/usecases/set_currency_usecase.dart';
 import 'domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
 import 'domain/usecases/set_hide_amounts_usecase.dart';
@@ -159,6 +160,9 @@ class Settings {
           settingsRepository: preferences,
         ),
         setScreenCaptureProtectionUsecase: SetScreenCaptureProtectionUsecase(
+          settingsRepository: preferences,
+        ),
+        setShowPaymentAnimationsUsecase: SetShowPaymentAnimationsUsecase(
           settingsRepository: preferences,
         ),
         setExchangeTestnetBasicAuthUsecase: SetExchangeTestnetBasicAuthUsecase(

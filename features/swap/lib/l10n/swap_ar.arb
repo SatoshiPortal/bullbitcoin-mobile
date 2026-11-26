@@ -435,5 +435,30 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "تعذّر تحميل محافظك. تحقق من اتصالك وحاول مرة أخرى."
+  "walletLoadFailed": "تعذّر تحميل محافظك. تحقق من اتصالك وحاول مرة أخرى.",
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "coreSwapsStatusCompleted": "مكتملة",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "معلقة",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "المبلغ",
+  "swapRescueButton": "استعادة",
+  "swapRescueCreatedLabel": "تاريخ الإنشاء",
+  "swapRescueIdLabel": "معرّف المبادلة",
+  "swapRescueRouteLabel": "المسار",
+  "swapRescueStatusLabel": "الحالة",
+  "swapRescueSuccess": "تمت استعادة المبادلة — ستُستأنف الآن",
+  "swapRescueTitle": "إنقاذ المبادلة",
+  "swapRescueTypeLabel": "النوع",
+  "swapRescueWalletHint": "اختر محفظة",
+  "swapRescueWalletLabel": "استعادة إلى محفظة",
+  "swapRestoreActionable": "{count, plural, =0{لا توجد مبادلات لاستعادتها} =1{يمكنك محاولة استعادة مبادلة واحدة. قد تكون بالفعل في حالة نهائية.} other{يمكنك محاولة استعادة {count} مبادلات. لاحظ أن بعضها قد يكون بالفعل في حالة نهائية.}}",
+  "swapRestoreAllSection": "جميع المبادلات",
+  "swapRestoreFailed": "تعذّرت استعادة المبادلات",
+  "swapRestoreKindCrossChain": "عبر السلاسل",
+  "swapRestoreKindLightningReceive": "استلام عبر البرق",
+  "swapRestoreKindLightningSend": "إرسال عبر البرق",
+  "swapRestoreNoSwaps": "لم يُعثر على مبادلات لاستعادتها",
+  "swapRestoreRecoverableSection": "قابلة للاستعادة",
+  "swapRestoreTitle": "استعادة المبادلات"
 }

@@ -87,9 +87,7 @@ class WalletLocator {
     });
     locator.registerFactory<CheckBackupNeededUsecase>(
       () => CheckBackupNeededUsecase(
-        walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<ActiveEnvironmentReader>(),
-        backupStatus: locator<RecoverBullFacade>().status,
+        backupWarning: locator<RecoverBullFacade>().backupWarningNeeded,
       ),
     );
     // Usecase

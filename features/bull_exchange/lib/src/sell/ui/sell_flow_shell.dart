@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:transactions/routes.dart';
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/src/payin/ui/review_details.dart';
 import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
@@ -318,7 +319,6 @@ List<Page<void>> sellPagesFor(
                   label: context.loc.sellDepositAddress,
                   order: quoted.order,
                   source: request.source,
-                  ui: ui,
                 ),
                 ...switch (request.payout) {
                   SellToBalance() => [
@@ -345,7 +345,6 @@ List<Page<void>> sellPagesFor(
                   instantPayments: context.loc.sellInstantPayments,
                 ),
                 SpendOptionsSection(
-                  ui: ui,
                   spend: spend,
                   changes: states.map(spendOf),
                   current: () => spendOf(current?.call() ?? state),
@@ -462,7 +461,6 @@ List<Page<void>> sellPagesFor(
             builder: (context) => PayinView(
               title: context.loc.sellTitle,
               state: payin,
-              ui: ui,
               onEvent: (event) => onEvent(SellPayinChanged(event)),
               onBack: () => onEvent(const SellBackPressed()),
               externalLabels: (
@@ -498,13 +496,13 @@ List<Page<void>> sellPagesFor(
             actions: [
               BullButton.secondary(
                 label: context.loc.sellViewDetailsButton,
-                onPressed: () => txid != null && order.payjoinBip21 != null
-                    ? ui.openPayjoinTransaction(context, txid)
-                    : ui.openOrder(
-                        context,
-                        order.orderId,
-                        returnToExchange: true,
-                      ),
+                onPressed: () => TransactionsNavigation.openDetails(
+                  context,
+                  txid != null && order.payjoinBip21 != null
+                      ? TransactionDetailsTarget.payjoinByTxId(txid)
+                      : TransactionDetailsTarget.order(order.orderId),
+                  returnToExchange: true,
+                ),
               ),
             ],
           ),

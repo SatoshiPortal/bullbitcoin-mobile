@@ -9,11 +9,83 @@ import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:preferences/preferences.dart' show Environment;
+import 'package:settings/settings.dart' show SettingsLocalizations;
 
 import 'test_branding.dart';
 import 'wizard_test_support.dart';
 
 void main() {
+  testWidgets('wizard stages the confirmed network before completion', (
+    tester,
+  ) async {
+    final repository = FakeWizardRepository();
+    await pumpWizard(
+      tester,
+      BlocProvider(
+        create: (_) => buildWizardBloc(repository, FakePermissions()),
+        child: WizardScreen(
+          branding: testBranding,
+          exchangeAllowed: false,
+          backgroundTasksAvailable: false,
+          allowDeveloperNetwork: true,
+        ),
+      ),
+    );
+    final logo = find.byWidgetPredicate(
+      (widget) =>
+          widget is Semantics &&
+          widget.properties.identifier == 'wizard.superuser.unlock',
+    );
+    for (var i = 0; i < 7; i++) {
+      await tester.tap(logo);
+      await tester.pump();
+    }
+    await tester.tap(find.text('Advanced Options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Testnet'));
+    await tester.pumpAndSettle();
+    final loc = SettingsLocalizations.of(tester.element(find.text('Testnet')));
+    await tester.tap(find.text(loc.settingsDevModeUnderstandButton));
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Advanced Options'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<Semantics>(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is Semantics &&
+                  widget.properties.identifier == 'wizard.network.testnet',
+            ),
+          )
+          .properties
+          .selected,
+      isTrue,
+    );
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Skip'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("Don't send error reports"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Get started'));
+    await tester.pumpAndSettle();
+    expect(repository.pending?.network, Environment.testnet);
+    expect(repository.pending?.touched, contains(WizardField.network));
+    await tester.pump(const Duration(seconds: 4));
+  });
+
   for (final allowed in [false, true]) {
     testWidgets(
       'the exchange switch follows the platform permission $allowed',

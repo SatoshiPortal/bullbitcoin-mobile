@@ -189,6 +189,16 @@ void main() {
   );
 
   expectsLift(
+    'setShowPaymentAnimations',
+    () =>
+        when(() => repository.setShowPaymentAnimations(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetShowPaymentAnimationsUsecase(settingsRepository: repository)
+            .execute(false),
+  );
+
+  expectsLift(
     'setExchangeTestnetBasicAuth',
     () => when(
       () => repository.setExchangeTestnetBasicAuth(

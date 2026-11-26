@@ -2,8 +2,13 @@ import 'package:exchange/exchange.dart';
 import 'package:secrets/secrets.dart' show WalletSigner;
 
 import '../transaction_ui_actions.dart';
+import '../transactions_navigation.dart';
 
 import 'package:bull_ui/bull_ui.dart' show BullThemeX;
+import 'package:transactions/src/domain/transaction_settlement.dart';
+import 'package:transactions/src/presentation/blocs/transaction_status/transaction_status_cubit.dart';
+import 'package:transactions/src/presentation/transaction_payment_animation.dart';
+import 'package:transactions/src/ui/widgets/settlement_sync_poller.dart';
 import 'package:transactions/src/presentation/transactions_localizations_x.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transactions/src/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -25,24 +30,71 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullErrorState,
         BullFadingLinearProgress,
+        BullPaymentTransition,
+        BullPaymentViewSwitch,
+        BullPaymentViews,
         BullShimmerLine,
         BullSnackBar,
         BullTransactionDetailsPage,
         Gap;
 import 'package:go_router/go_router.dart';
 
-class TransactionDetailsScreen extends StatelessWidget {
+/// The transaction, as a payment status ([BullPaymentTransition]) or as its
+/// details, switched in place of the old "Transaction details" skip button.
+///
+/// A transaction with no payment animation shows its details alone. The
+/// details open first when the `view=details` query asks for it, when payment
+/// animations are turned off, or while an action only the details offer (retry
+/// or refund a swap, broadcast a Payjoin original) is pending.
+class TransactionDetailsScreen extends StatefulWidget {
   final TransactionUiActions actions;
+  final SettlementPoll pollSettlement;
 
-  const TransactionDetailsScreen({super.key, required this.actions});
+  const TransactionDetailsScreen({
+    super.key,
+    required this.actions,
+    required this.pollSettlement,
+  });
+
+  @override
+  State<TransactionDetailsScreen> createState() =>
+      _TransactionDetailsScreenState();
+}
+
+class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
+  /// Null until the transaction and the preference are known.
+  TransactionDetailsView? _view;
+
+  /// The status view is built once it is first shown, so that a user who keeps
+  /// animations off never builds a scene.
+  bool _statusBuilt = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // The details cubit may already hold a transaction when the screen opens.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final target = settlementTargetOf(
+        context.read<TransactionDetailsCubit>().state.transaction,
+      );
+      if (target != null) {
+        context.read<TransactionStatusCubit>().observeSettlement(target);
+      }
+    });
+  }
+
+  void _show(TransactionDetailsView view) {
+    if (_view == view) return;
+    setState(() => _view = view);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final returnHome =
-        GoRouterState.of(context).uri.queryParameters['returnHome'] == 'true';
-    final returnToExchange =
-        GoRouterState.of(context).uri.queryParameters['returnToExchange'] ==
-        'true';
+    final query = GoRouterState.of(context).uri.queryParameters;
+    final returnHome = query['returnHome'] == 'true';
+    final returnToExchange = query['returnToExchange'] == 'true';
+    final actions = widget.actions;
 
     void closeScreen() {
       if (returnToExchange) {
@@ -61,6 +113,109 @@ class TransactionDetailsScreen extends StatelessWidget {
     // closeScreen navigate; when there is a route below, back still pops.
     final canPopBack = context.canPop();
 
+    final detailsState = context.watch<TransactionDetailsCubit>().state;
+    final statusState = context.watch<TransactionStatusCubit>().state;
+    final animation = transactionPaymentAnimation(
+      detailsState,
+      context.loc,
+      settlement: statusState.settlement,
+    );
+
+    final animationsEnabled = statusState.animationsEnabled;
+    final loaded =
+        detailsState.transaction != null || detailsState.hasLoadError;
+    if (_view == null && loaded && animationsEnabled != null) {
+      _view =
+          TransactionDetailsView.fromQuery(query) ==
+                  TransactionDetailsView.details ||
+              !animationsEnabled ||
+              transactionHasPendingRecovery(detailsState.transaction)
+          ? TransactionDetailsView.details
+          : TransactionDetailsView.status;
+    }
+    // Animations off (or not known yet): the details alone, with no switch.
+    final switchable = animation != null && animationsEnabled == true;
+    final view = switchable
+        ? (_view ?? TransactionDetailsView.details)
+        : TransactionDetailsView.details;
+    if (view == TransactionDetailsView.status) _statusBuilt = true;
+
+    final switcher = !switchable
+        ? null
+        : BullPaymentViewSwitch(
+            showingStatus: view == TransactionDetailsView.status,
+            statusLabel: context.loc.paymentStatusViewStatus,
+            detailsLabel: context.loc.paymentStatusViewDetails,
+            semanticsLabel: context.loc.paymentStatusViewsLabel,
+            onStatus: () => _show(TransactionDetailsView.status),
+            onDetails: () => _show(TransactionDetailsView.details),
+          );
+    final target = statusState.settlementTarget;
+
+    return BlocListener<TransactionDetailsCubit, TransactionDetailsState>(
+      listenWhen: (previous, current) =>
+          previous.transaction != current.transaction,
+      listener: (context, state) => context
+          .read<TransactionStatusCubit>()
+          .observeSettlement(settlementTargetOf(state.transaction)),
+      // The single route-level back handler for both views.
+      child: PopScope(
+        canPop: canPopBack,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) closeScreen();
+        },
+        child: BullPaymentViews(
+          showingStatus: view == TransactionDetailsView.status,
+          switcher: switcher,
+          views: IndexedStack(
+            sizing: StackFit.expand,
+            index: view == TransactionDetailsView.status ? 0 : 1,
+            children: [
+              // A hidden view must not tick: its scene stops animating.
+              TickerMode(
+                enabled: view == TransactionDetailsView.status,
+                child: animation == null || !_statusBuilt
+                    ? const SizedBox.shrink()
+                    : SettlementSyncPoller(
+                        walletId: target?.walletId,
+                        active:
+                            view == TransactionDetailsView.status &&
+                            statusState.settlementPending,
+                        isLiquid: target?.isLiquid ?? false,
+                        poll: widget.pollSettlement,
+                        child: BullPaymentTransition(
+                          network: animation.network,
+                          direction: animation.direction,
+                          phase: animation.phase,
+                          progress: animation.progress,
+                          status: animation.status,
+                          statusTag: animation.status,
+                          onBack: closeScreen,
+                          onDone: () {},
+                        ),
+                      ),
+              ),
+              TickerMode(
+                enabled: view == TransactionDetailsView.details,
+                child: _details(
+                  context,
+                  closeScreen: closeScreen,
+                  canPopBack: canPopBack,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _details(
+    BuildContext context, {
+    required VoidCallback closeScreen,
+    required bool canPopBack,
+  }) {
+    final actions = widget.actions;
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -101,6 +256,7 @@ class TransactionDetailsScreen extends StatelessWidget {
       isIncoming: isIncoming ?? false,
       isSwap: isChainSwap,
       canPopBack: canPopBack,
+      handlesBack: false,
       onClose: closeScreen,
       onRefresh: () => context.read<TransactionDetailsCubit>().refresh(),
       errorContent: hasLoadError ? const _LoadErrorContent() : null,

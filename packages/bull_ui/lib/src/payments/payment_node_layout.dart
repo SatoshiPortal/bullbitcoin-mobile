@@ -567,15 +567,34 @@ List<double> paymentColumnRows(int count) => [
   for (var i = 0; i < count; i++) 330 + (i - (count - 1) / 2) * 44,
 ];
 
+/// Resting centre of the wireframe cube.
+const bitcoinCubeCenterX = 206.0;
+
+/// Half the cube's projected width (52 × (cos .6 + sin .6)), rounded up.
+const bitcoinCubeHalfWidth = 73.0;
+
+/// How far the tilt may slide the cube sideways. Bounded so that the cube
+/// never reaches the step column, whatever the device roll.
+const bitcoinCubeTravel = 10.0;
+
+/// Everything the cube can cover, over its whole travel: labels stay out of
+/// it, so they never move with the tilt.
+const bitcoinCubeObstacle = Rect.fromLTRB(
+  bitcoinCubeCenterX - bitcoinCubeTravel - bitcoinCubeHalfWidth,
+  176,
+  302,
+  446,
+);
+
 /// The block and its traces fill the right of the frame; the step column
-/// takes the left.
+/// takes the left. A label that fits nowhere at full width is shortened.
 PaymentNodeLayout layoutBitcoin({
   required int count,
   required List<String> labels,
 }) => _column(
   rows: paymentColumnRows(count),
   labels: labels,
-  obstacles: const [Rect.fromLTRB(130, 176, 302, 446)],
+  obstacles: const [bitcoinCubeObstacle],
   strokes: const [],
 );
 

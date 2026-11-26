@@ -104,6 +104,32 @@ void main() {
     verify(() => settingsCubit.changeThemeMode(AppThemeMode.dark)).called(1);
   });
 
+  testWidgets('the payment animations switch is on by default and toggles', (
+    tester,
+  ) async {
+    when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
+    when(() => settingsCubit.toggleShowPaymentAnimations(any()))
+        .thenAnswer((_) async {});
+
+    await pumpScreen(tester);
+    await tester.pump();
+
+    expect(find.text('Payment animations'), findsOneWidget);
+    expect(
+      find.text('When off, payments open their details directly.'),
+      findsOneWidget,
+    );
+    final tile = find.ancestor(
+      of: find.text('Payment animations'),
+      matching: find.byType(ListTile),
+    );
+    final toggle = find.descendant(of: tile, matching: find.byType(Switch));
+    expect(tester.widget<Switch>(toggle).value, isTrue);
+
+    await tester.tap(toggle);
+    verify(() => settingsCubit.toggleShowPaymentAnimations(false)).called(1);
+  });
+
   testWidgets('a clean dev mode toggle says nothing', (tester) async {
     when(() => settingsCubit.stream)
         .thenAnswer((_) => Stream.value(_settingsState()));

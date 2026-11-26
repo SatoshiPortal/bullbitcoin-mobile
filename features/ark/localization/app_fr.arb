@@ -385,5 +385,8 @@
   "receiveTabArk": "Ark",
   "receiveTabLightning": "Lightning",
   "receiveAddressLabel": "Adresse",
-  "receiveInvoiceLabel": "Facture"
+  "receiveInvoiceLabel": "Facture",
+  "exitViewStatus": "Statut",
+  "exitViewDetails": "Détails",
+  "exitViewsLabel": "Vues de la sortie"
 }

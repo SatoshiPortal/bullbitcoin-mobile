@@ -1,4 +1,5 @@
 import 'package:send/src/payment/domain/usecases/load_send_display_preferences_usecase.dart';
+import 'package:send/src/payment/domain/usecases/read_send_payment_animations_usecase.dart';
 
 import 'domain/usecases/watch_send_settlement_usecase.dart';
 
@@ -93,6 +94,9 @@ SendCubit createPaymentCubit({
       _ => const {},
     },
     prepareInternalRecipientUsecase: PrepareInternalRecipientUsecase(d.receive),
+    readPaymentAnimationsUsecase: ReadSendPaymentAnimationsUsecase(
+      d.preferences,
+    ),
     watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(d.native.changes),
     loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(d.labels),
     storeSendTransactionLabel: StoreSendTransactionLabelUsecase(d.labels),

@@ -406,6 +406,9 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         config: config,
         client: client,
         preferences: preferences ?? SharedPreferencesArkPreferencesRepository(),
+        paymentAnimations: locator.isRegistered<Preferences>()
+            ? locator<Preferences>()
+            : null,
         provisioning: ArkCustodyProvisioner(
           locator<ParentCustodyAdmissionPort>(),
           SecretsArkParentPresence(secrets),

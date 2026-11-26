@@ -35,6 +35,7 @@ export 'src/domain/usecases/set_payjoin_enabled_usecase.dart';
 export 'src/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 export 'src/domain/usecases/set_payjoin_min_amount_usecase.dart';
 export 'src/domain/usecases/set_screen_capture_protection_usecase.dart';
+export 'src/domain/usecases/set_show_payment_animations_usecase.dart';
 export 'src/domain/usecases/set_theme_mode_usecase.dart';
 export 'src/domain/usecases/sync_exchange_currency_usecase.dart';
 export 'src/domain/usecases/watch_payjoin_policy_usecase.dart';

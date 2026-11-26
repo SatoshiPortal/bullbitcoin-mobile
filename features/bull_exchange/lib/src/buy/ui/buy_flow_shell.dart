@@ -28,6 +28,7 @@ typedef BuyFlowUi = ({
   ExchangePayoutField payoutField,
   String bitcoinAsset,
   void Function(BuildContext context, String orderId) openOrder,
+  Future<bool> Function() showPaymentAnimations,
 });
 
 /// The buy flow's one screen: its page stack is a function of the flow
@@ -382,6 +383,7 @@ List<Page<void>> buyPagesFor(
             now: now,
             onClose: () => onEvent(const BuyDonePressed()),
             openOrder: (orderId) => ui.openOrder(context, orderId),
+            showPaymentAnimations: ui.showPaymentAnimations,
             onAccelerate: (orderId) => context.pushNamed(
               BuyRoute.buyAccelerate.name,
               pathParameters: {'orderId': orderId},

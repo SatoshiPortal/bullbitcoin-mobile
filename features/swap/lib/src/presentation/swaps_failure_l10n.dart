@@ -1,4 +1,5 @@
-import 'package:bb_mobile/localization/app_localizations_context.dart';
+import '../swap_l10n.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:swaps/swaps.dart';
 

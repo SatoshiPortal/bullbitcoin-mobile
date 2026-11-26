@@ -435,5 +435,30 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "Cüzdanlarınız yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "walletLoadFailed": "Cüzdanlarınız yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "copiedToClipboard": "Panoya kopyalandı",
+  "coreSwapsStatusCompleted": "Tamamlandı",
+  "@coreSwapsStatusCompleted": {"description": "Display name for completed swap status"},
+  "coreSwapsStatusPending": "Pending",
+  "@coreSwapsStatusPending": {"description": "Display name for pending swap status"},
+  "swapRescueAmountLabel": "Miktar",
+  "swapRescueButton": "Geri Yükle",
+  "swapRescueCreatedLabel": "Oluşturulma",
+  "swapRescueIdLabel": "Takas ID",
+  "swapRescueRouteLabel": "Rota",
+  "swapRescueStatusLabel": "Durum",
+  "swapRescueSuccess": "Takas geri yüklendi — şimdi devam edecek",
+  "swapRescueTitle": "Takası Kurtar",
+  "swapRescueTypeLabel": "Tür",
+  "swapRescueWalletHint": "Bir cüzdan seçin",
+  "swapRescueWalletLabel": "Cüzdana geri yükle",
+  "swapRestoreActionable": "{count, plural, =0{Kurtarılacak takas yok} =1{1 takası kurtarmayı deneyebilirsiniz. Zaten sonlanmış bir durumda olabilir.} other{{count} takası kurtarmayı deneyebilirsiniz. Bazılarının zaten sonlanmış bir durumda olabileceğini unutmayın.}}",
+  "swapRestoreAllSection": "Tüm takaslar",
+  "swapRestoreFailed": "Takaslar kurtarılamadı",
+  "swapRestoreKindCrossChain": "Zincirler Arası",
+  "swapRestoreKindLightningReceive": "Lightning Alımı",
+  "swapRestoreKindLightningSend": "Lightning Gönderimi",
+  "swapRestoreNoSwaps": "Kurtarılacak takas bulunamadı",
+  "swapRestoreRecoverableSection": "Kurtarılabilir",
+  "swapRestoreTitle": "Takas Kurtarma"
 }

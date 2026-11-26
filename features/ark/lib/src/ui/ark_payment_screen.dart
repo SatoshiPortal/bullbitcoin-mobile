@@ -33,6 +33,9 @@ class ArkPaymentScreen extends StatefulWidget {
   /// The app's confirmation arrow, for the review header.
   final Widget? confirmIcon;
 
+  /// Reads once whether payment transitions play; they do when absent.
+  final Future<bool> Function()? readPaymentAnimations;
+
   const ArkPaymentScreen({
     super.key,
     required this.cubit,
@@ -44,6 +47,7 @@ class ArkPaymentScreen extends StatefulWidget {
     this.onHome,
     this.onViewDetails,
     this.confirmIcon,
+    this.readPaymentAnimations,
   });
 
   @override
@@ -195,9 +199,29 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     );
   }
 
+  // Null until the preference is read: confirming waits for it, so a payment
+  // can never take the animation path against a stored "off".
+  bool? _animations;
+
+  Future<void> _readAnimations() async {
+    final read = widget.readPaymentAnimations;
+    if (read == null) {
+      _animations = true;
+      return;
+    }
+    bool value;
+    try {
+      value = await read();
+    } on Object {
+      value = true;
+    }
+    if (mounted) setState(() => _animations = value);
+  }
+
   @override
   void initState() {
     super.initState();
+    unawaited(_readAnimations());
     _destination = widget.initialDestination;
     _amountStep = _destination.trim().isNotEmpty;
     _listen();
@@ -305,6 +329,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
         state.quote.kind != ArkOperationKind.payment) {
       return;
     }
+    if (!cancel && _animations == null) return;
     if (cancel) {
       owner.edit();
     } else {
@@ -312,7 +337,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
       final submission = owner.confirm();
       if (owner.state case ArkPaymentSubmitting(:final operationId)) {
         setState(() {
-          _showTransition = true;
+          _showTransition = _animations == true;
           _transitionId = operationId;
         });
       }
@@ -496,6 +521,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
                   context,
                   l10n.confirm,
                   () => _confirm(owner, account, review),
+                  disabled: _animations == null,
                 ),
               )
             : editing && _amountStep
