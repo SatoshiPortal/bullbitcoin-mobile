@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:wizard/src/ui/screens/wizard_screen.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,12 +47,12 @@ void main() {
     await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
 
-    final statistics = find.byType(SwitchListTile);
-    expect(tester.widget<SwitchListTile>(statistics).value, isFalse);
+    final statistics = find.byType(BullSwitch);
+    expect(tester.widget<BullSwitch>(statistics).value, isFalse);
     await tester.ensureVisible(statistics);
     await tester.pumpAndSettle();
     await _toggle(tester, statistics, true);
-    expect(tester.widget<SwitchListTile>(statistics).value, isTrue);
+    expect(tester.widget<BullSwitch>(statistics).value, isTrue);
     // Statistics sits above the error-report question and its buttons.
     expect(
       tester.getTopLeft(statistics).dy <
@@ -60,7 +60,7 @@ void main() {
       isTrue,
     );
 
-    await tester.tap(find.text("Don't send error reports"));
+    await tester.tap(find.text('No'));
     await tester.pumpAndSettle();
     // Staged only on completion, never as a side effect of the answer.
     expect(repository.pending?.reportingConsent, isNull);
@@ -73,12 +73,12 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(statistics, findsOneWidget);
-    expect(tester.widget<SwitchListTile>(statistics).value, isTrue);
+    expect(tester.widget<BullSwitch>(statistics).value, isTrue);
     expect(repository.pending?.reportingConsent, isFalse);
 
     // Leave the process-wide singleton off for any later test.
     await _toggle(tester, statistics, false);
-    expect(tester.widget<SwitchListTile>(statistics).value, isFalse);
+    expect(tester.widget<BullSwitch>(statistics).value, isFalse);
     await tester.pump(const Duration(seconds: 3));
   });
 }
@@ -94,7 +94,7 @@ Future<void> _toggle(WidgetTester tester, Finder switchTile, bool on) async {
       () => Future<void>.delayed(const Duration(milliseconds: 50)),
     );
     await tester.pump();
-    final tile = tester.widget<SwitchListTile>(switchTile);
+    final tile = tester.widget<BullSwitch>(switchTile);
     if (tile.value == on && tile.onChanged != null) return;
   }
   fail('The statistics switch never settled on $on');

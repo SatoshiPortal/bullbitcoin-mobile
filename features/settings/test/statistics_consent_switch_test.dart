@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:bull_reporting/statistics.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSettingsEntryItem, BullSnackBar, BullSwitch;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -42,17 +43,16 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(
-      tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
-      true,
-    );
+    expect(find.byType(SwitchListTile), findsNothing);
+    expect(find.byType(BullSettingsEntryItem), findsOneWidget);
+    expect(tester.widget<BullSwitch>(find.byType(BullSwitch)).value, true);
 
     await tester.runAsync(() async {
       await file.delete();
       await Directory(file.path).create();
     });
     await tester.runAsync(() async {
-      await tester.tap(find.byType(SwitchListTile));
+      await tester.tap(find.byType(BullSwitch));
       await Future<void>.delayed(const Duration(milliseconds: 50));
     });
     await tester.pumpAndSettle();
@@ -74,14 +74,11 @@ void main() {
     BullSnackBar.dismiss();
     await tester.pumpAndSettle();
 
-    expect(
-      tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
-      isFalse,
-    );
+    expect(tester.widget<BullSwitch>(find.byType(BullSwitch)).value, isFalse);
 
     await tester.runAsync(() async {
       final enabled = Statistics.instance.changes.firstWhere((value) => value);
-      await tester.tap(find.byType(SwitchListTile));
+      await tester.tap(find.byType(BullSwitch));
       await enabled.timeout(const Duration(seconds: 3));
     });
     await tester.pumpAndSettle();
@@ -93,7 +90,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.runAsync(() async {
-      await tester.tap(find.byType(SwitchListTile));
+      await tester.tap(find.byType(BullSwitch));
       await Future<void>.delayed(const Duration(milliseconds: 50));
     });
     await tester.pumpAndSettle();
@@ -113,7 +110,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.runAsync(() async {
       final enabled = Statistics.instance.changes.firstWhere((value) => value);
-      await tester.tap(find.byType(SwitchListTile));
+      await tester.tap(find.byType(BullSwitch));
       await enabled.timeout(const Duration(seconds: 3));
     });
     await tester.pumpAndSettle();

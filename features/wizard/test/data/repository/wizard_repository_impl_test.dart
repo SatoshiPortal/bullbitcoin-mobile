@@ -115,9 +115,9 @@ void main() {
     test('confirmed disabled choice survives a round trip', () async {
       final repo = _build();
       await repo.savePending(
-        const WizardChoices().copyWith(
+        const WizardChoices(
           exchangeAccess: false,
-          confirmExchange: true,
+          touched: {WizardField.exchangeAccess},
         ),
       );
       final choices = await repo.readPending();
