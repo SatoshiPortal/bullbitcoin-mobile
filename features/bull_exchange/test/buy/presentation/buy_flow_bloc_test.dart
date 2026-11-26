@@ -8,65 +8,83 @@ import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
+import '../../orders/order_usecase_fakes.dart';
 import '../buy_fixtures.dart';
+import '../buy_usecase_fakes.dart';
 
+/// The buy use cases as fakes; every call is logged, with the session it
+/// got where it takes one.
 final class _Calls {
   final log = <String>[];
-  final sessions = <ExchangeSession>[];
+  final sessions = <ExchangeSession>{};
   Completer<GatedWrite<ExchangeWrite<BuyOrder>>> confirmAnswer = Completer();
   ExchangeRead<Order> reread = ReadGot(buyOrder());
 
-  BuyFlowCalls of(ExchangeSession session) {
+  void _called(ExchangeSession session, String call) {
     sessions.add(session);
-    return (
-      loadContext: () async {
-        log.add('load');
-        return ReadGot(buyContext);
-      },
-      rate: (market) async {
-        log.add('rate ${market.currency.code}');
-        return const ReadGot(50000.0);
-      },
-      receiveAddress: (option) async {
-        log.add('receive ${option.walletId}');
-        return const Ok(buyLiquidDestination);
-      },
-      validateAddress: (text) async {
-        log.add('validate $text');
-        return Ok(DestinationAddress(BtcNetwork.bitcoin, text));
-      },
-      create: (effect) async {
-        log.add('create ${effect.attempt}');
-        return OrderCreateAnswered(
-          effect.attempt,
-          GateAdmitted(WriteDone(buyOrder())),
-        );
-      },
-      findCreated: (request, sentAt) async {
-        log.add('find');
-        return const ReadMissing();
-      },
-      refresh: (orderId) async {
-        log.add('refresh $orderId');
-        return ReadGot(buyOrder());
-      },
-      confirm: (effect) async {
-        log.add('confirm ${effect.attempt}');
-        return ConfirmAnswered(effect.attempt, await confirmAnswer.future);
-      },
-      readOrder: (orderId) async {
-        log.add('read $orderId');
-        return reread;
-      },
-      watchOrder: (orderId) async {
-        log.add('watch $orderId');
-        return ReadGot(buyOrder(status: OrderStatus.inProgress));
-      },
-      release: (order) async => log.add('release ${order.orderId}'),
-      settled: (order, walletId) async =>
-          log.add('settled ${order.orderId} $walletId'),
-    );
+    log.add(call);
   }
+
+  BuyFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => BuyFlowBloc(
+    session: session,
+    accessChanges: accessChanges,
+    loadContext: FakeLoadBuyContextUsecase((session) async {
+      _called(session, 'load');
+      return ReadGot(buyContext);
+    }),
+    getMarketRate: FakeGetMarketRateUsecase((market) async {
+      log.add('rate ${market.currency.code}');
+      return const ReadGot(50000.0);
+    }),
+    getReceiveAddress: FakeGetBuyReceiveAddressUsecase((option) async {
+      log.add('receive ${option.walletId}');
+      return const Ok(buyLiquidDestination);
+    }),
+    validateAddress: FakeValidateBuyAddressUsecase((text) async {
+      log.add('validate $text');
+      return Ok(DestinationAddress(BtcNetwork.bitcoin, text));
+    }),
+    createOrder: FakeCreateBuyOrderUsecase((session, effect) async {
+      _called(session, 'create ${effect.attempt}');
+      return OrderCreateAnswered(
+        effect.attempt,
+        GateAdmitted(WriteDone(buyOrder())),
+      );
+    }),
+    findCreatedOrder: FakeFindCreatedBuyOrderUsecase((
+      session,
+      request,
+      sentAt,
+    ) async {
+      _called(session, 'find');
+      return const ReadMissing();
+    }),
+    refreshOrder: FakeRefreshBuyOrderUsecase((session, orderId) async {
+      _called(session, 'refresh $orderId');
+      return ReadGot(buyOrder());
+    }),
+    confirmOrder: FakeConfirmBuyOrderUsecase((session, effect) async {
+      _called(session, 'confirm ${effect.attempt}');
+      return ConfirmAnswered(effect.attempt, await confirmAnswer.future);
+    }),
+    getOrder: FakeGetOrderUsecase((session, orderId) async {
+      _called(session, 'read $orderId');
+      return reread;
+    }),
+    getBuyOrder: FakeGetBuyOrderUsecase((session, orderId) async {
+      _called(session, 'watch $orderId');
+      return ReadGot(buyOrder(status: OrderStatus.inProgress));
+    }),
+    releasePayjoin: FakeReleaseBuyPayjoinUsecase(
+      (order) async => log.add('release ${order.orderId}'),
+    ),
+    settlePayout: FakeSettleBuyPayoutUsecase(
+      (order, walletId) async => log.add('settled ${order.orderId} $walletId'),
+    ),
+  );
 }
 
 Future<void> _settle() async {
@@ -84,11 +102,7 @@ void main() {
       withClock(Clock.fixed(buyBeforeDeadline), () async {
         calls = _Calls();
         access = StreamController<ExchangeAccess>.broadcast();
-        bloc = BuyFlowBloc(
-          calls: calls.of,
-          session: buySession,
-          accessChanges: access.stream,
-        );
+        bloc = calls.bloc(session: buySession, accessChanges: access.stream);
         try {
           await body();
         } finally {
@@ -115,7 +129,7 @@ void main() {
   test('runs each state effect with the flow session', () async {
     await run(() async {
       await _settle();
-      expect(calls.sessions, [buySession]);
+      expect(calls.sessions, {buySession});
       expect(calls.log, ['load', 'rate CAD', 'receive w-lq']);
       expect(bloc.state, isA<BuyEntry>());
       await send(const [
@@ -222,13 +236,11 @@ void main() {
   });
 
   test('without a session nothing runs', () async {
-    final none = BuyFlowBloc(
-      calls: (_) => throw StateError('no session, no calls'),
-      session: null,
-      accessChanges: const Stream.empty(),
-    );
+    final calls = _Calls();
+    final none = calls.bloc(session: null, accessChanges: const Stream.empty());
     addTearDown(none.close);
     await _settle();
     expect(none.state, isA<BuySessionEnded>());
+    expect(calls.log, isEmpty);
   });
 }

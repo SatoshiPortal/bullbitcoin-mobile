@@ -1,0 +1,151 @@
+import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/confirm_buy_order_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/create_buy_order_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/find_created_buy_order_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/get_buy_order_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/get_buy_receive_address_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/load_buy_context_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/refresh_buy_order_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/release_buy_payjoin_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/settle_buy_payout_usecase.dart';
+import 'package:bull_exchange/src/buy/domain/usecases/validate_buy_address_usecase.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
+
+final class FakeLoadBuyContextUsecase implements LoadBuyContextUsecase {
+  final Future<ExchangeRead<BuyContext>> Function(ExchangeSession session)
+  answer;
+
+  FakeLoadBuyContextUsecase(this.answer);
+
+  @override
+  Future<ExchangeRead<BuyContext>> execute(ExchangeSession session) =>
+      answer(session);
+}
+
+final class FakeGetBuyReceiveAddressUsecase
+    implements GetBuyReceiveAddressUsecase {
+  final Future<Result<Destination, Failure>> Function(
+    DestinationOptionAppWallet option,
+  )
+  answer;
+
+  FakeGetBuyReceiveAddressUsecase(this.answer);
+
+  @override
+  Future<Result<Destination, Failure>> execute(
+    DestinationOptionAppWallet option,
+  ) => answer(option);
+}
+
+final class FakeValidateBuyAddressUsecase implements ValidateBuyAddressUsecase {
+  final Future<Result<Destination, Failure>> Function(String text) answer;
+
+  FakeValidateBuyAddressUsecase(this.answer);
+
+  @override
+  Future<Result<Destination, Failure>> execute(String text) => answer(text);
+}
+
+final class FakeCreateBuyOrderUsecase implements CreateBuyOrderUsecase {
+  final Future<OrderCreateAnswered<BuyRequest, BuyOrder>> Function(
+    ExchangeSession session,
+    OrderSendCreate<BuyRequest> effect,
+  )
+  answer;
+
+  FakeCreateBuyOrderUsecase(this.answer);
+
+  @override
+  Future<OrderCreateAnswered<BuyRequest, BuyOrder>> execute(
+    ExchangeSession session,
+    OrderSendCreate<BuyRequest> effect,
+  ) => answer(session, effect);
+}
+
+final class FakeFindCreatedBuyOrderUsecase
+    implements FindCreatedBuyOrderUsecase {
+  final Future<ExchangeRead<BuyOrder>> Function(
+    ExchangeSession session,
+    BuyRequest request,
+    DateTime sentAt,
+  )
+  answer;
+
+  FakeFindCreatedBuyOrderUsecase(this.answer);
+
+  @override
+  Future<ExchangeRead<BuyOrder>> execute(
+    ExchangeSession session,
+    BuyRequest request,
+    DateTime sentAt,
+  ) => answer(session, request, sentAt);
+}
+
+final class FakeRefreshBuyOrderUsecase implements RefreshBuyOrderUsecase {
+  final Future<ExchangeRead<BuyOrder>> Function(
+    ExchangeSession session,
+    String orderId,
+  )
+  answer;
+
+  FakeRefreshBuyOrderUsecase(this.answer);
+
+  @override
+  Future<ExchangeRead<BuyOrder>> execute(
+    ExchangeSession session,
+    String orderId,
+  ) => answer(session, orderId);
+}
+
+final class FakeConfirmBuyOrderUsecase implements ConfirmBuyOrderUsecase {
+  final Future<ConfirmAnswered<BuyConfirmTarget, BuyOrder>> Function(
+    ExchangeSession session,
+    ConfirmSend<BuyConfirmTarget> effect,
+  )
+  answer;
+
+  FakeConfirmBuyOrderUsecase(this.answer);
+
+  @override
+  Future<ConfirmAnswered<BuyConfirmTarget, BuyOrder>> execute(
+    ExchangeSession session,
+    ConfirmSend<BuyConfirmTarget> effect,
+  ) => answer(session, effect);
+}
+
+final class FakeGetBuyOrderUsecase implements GetBuyOrderUsecase {
+  final Future<ExchangeRead<BuyOrder>> Function(
+    ExchangeSession session,
+    String orderId,
+  )
+  answer;
+
+  FakeGetBuyOrderUsecase(this.answer);
+
+  @override
+  Future<ExchangeRead<BuyOrder>> execute(
+    ExchangeSession session,
+    String orderId,
+  ) => answer(session, orderId);
+}
+
+final class FakeReleaseBuyPayjoinUsecase implements ReleaseBuyPayjoinUsecase {
+  final Future<void> Function(BuyOrder order) answer;
+
+  FakeReleaseBuyPayjoinUsecase(this.answer);
+
+  @override
+  Future<void> execute(BuyOrder order) => answer(order);
+}
+
+final class FakeSettleBuyPayoutUsecase implements SettleBuyPayoutUsecase {
+  final Future<void> Function(BuyOrder order, String? walletId) answer;
+
+  FakeSettleBuyPayoutUsecase(this.answer);
+
+  @override
+  Future<void> execute(BuyOrder order, String? walletId) =>
+      answer(order, walletId);
+}
