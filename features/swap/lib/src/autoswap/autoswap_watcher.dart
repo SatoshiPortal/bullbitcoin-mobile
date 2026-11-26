@@ -10,19 +10,44 @@ class AutoswapWatcher {
   final Autoswap _executeAutoswap;
   StreamSubscription? _subscription;
   Future<void>? _execution;
+  Future<void>? _stopping;
+  int _generation = 0;
 
   AutoswapWatcher(this._finished, this._executeAutoswap);
 
   void start() {
+    if (_stopping != null || _subscription != null) return;
+    final generation = ++_generation;
     _subscription ??= _finished.listen((wallet) {
-      if (wallet.network is! LiquidNetwork || _execution != null) return;
+      if (generation != _generation ||
+          wallet.network is! LiquidNetwork ||
+          _execution != null) {
+        return;
+      }
       _execution = _run().whenComplete(() => _execution = null);
     });
   }
 
-  Future<void> dispose() async {
-    await _subscription?.cancel();
-    await _execution;
+  Future<void> dispose() {
+    final stopping = _stopping;
+    if (stopping != null) return stopping;
+    _generation++;
+    final subscription = _subscription;
+    _subscription = null;
+    final completion = Completer<void>();
+    _stopping = completion.future;
+    unawaited(() async {
+      try {
+        await subscription?.cancel();
+        await _execution;
+        _stopping = null;
+        completion.complete();
+      } catch (error, trace) {
+        // The stop was not confirmed. Keep admission closed.
+        completion.completeError(error, trace);
+      }
+    }());
+    return completion.future;
   }
 
   Future<void> _run() async {
