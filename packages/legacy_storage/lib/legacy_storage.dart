@@ -98,6 +98,43 @@ final class LegacyImportUnavailable extends LegacyImportFailure {
   const LegacyImportUnavailable();
 }
 
+/// Why an owner that was already admitted can no longer be opened.
+///
+/// Only [unreadable], [keyLost] and [missingAfterAdmission] say the owner's
+/// own data is gone or damaged. A locked keystore, contention and a schema this
+/// build does not support are conditions of the device or of the build, and
+/// say nothing about the data.
+enum LegacyOwnerFailureCause {
+  keystoreLocked,
+  contention,
+  unsupportedSchema,
+  unreadable,
+  keyLost,
+  missingAfterAdmission,
+}
+
+/// An admitted owner failed, and which one and why.
+///
+/// Carries the cause the owner's storage reported instead of folding it into
+/// [LegacyImportUnavailable]. It never carries a path or an engine message.
+final class LegacyOwnerFailure extends LegacyImportFailure {
+  final String ownerId;
+  final LegacyOwnerFailureCause cause;
+
+  const LegacyOwnerFailure(this.ownerId, this.cause);
+
+  /// The owner's stored data cannot be read back, as opposed to a condition
+  /// that retrying or updating can clear.
+  bool get ownerDataLost => switch (cause) {
+    LegacyOwnerFailureCause.unreadable ||
+    LegacyOwnerFailureCause.keyLost ||
+    LegacyOwnerFailureCause.missingAfterAdmission => true,
+    LegacyOwnerFailureCause.keystoreLocked ||
+    LegacyOwnerFailureCause.contention ||
+    LegacyOwnerFailureCause.unsupportedSchema => false,
+  };
+}
+
 final class LegacyImportVerificationFailed extends LegacyImportFailure {
   const LegacyImportVerificationFailed();
 }

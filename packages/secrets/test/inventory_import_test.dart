@@ -449,6 +449,115 @@ void main() {
     },
   );
 
+  group('inspecting an admitted inventory reports why it cannot be read', () {
+    late FakeSecureStoragePlatform keychain;
+
+    setUp(() async {
+      keychain = FakeSecureStoragePlatform()..install();
+      await admitBeforeCatalog(OwnerOrigin.fresh);
+    });
+
+    Future<Result<OwnerReadiness, LegacyImportFailure>> inspect() async {
+      final admission = await runtime();
+      try {
+        return await participant.inspect(admission);
+      } finally {
+        await admission.close();
+      }
+    }
+
+    Matcher failure(LegacyOwnerFailureCause cause) =>
+        isA<Err<OwnerReadiness, LegacyImportFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<LegacyOwnerFailure>()
+              .having((f) => f.ownerId, 'ownerId', 'secrets')
+              .having((f) => f.cause, 'cause', cause),
+        );
+
+    test('a readable inventory still inspects as initialized', () async {
+      expect(
+        await inspect(),
+        isA<Ok<OwnerReadiness, LegacyImportFailure>>().having(
+          (result) => result.value,
+          'readiness',
+          OwnerReadiness.initialized,
+        ),
+      );
+    });
+
+    test('a truncated file is unreadable and is left untouched', () async {
+      final bytes = await destination.readAsBytes();
+      final truncated = bytes.sublist(0, bytes.length ~/ 2);
+      await destination.writeAsBytes(truncated);
+      expect(await inspect(), failure(LegacyOwnerFailureCause.unreadable));
+      expect(await destination.readAsBytes(), truncated);
+    });
+
+    test('a locked keystore is not a lost inventory', () async {
+      keychain.locked = true;
+      final result = await inspect();
+      expect(result, failure(LegacyOwnerFailureCause.keystoreLocked));
+      expect(
+        ((result as Err<OwnerReadiness, LegacyImportFailure>).failure
+                as LegacyOwnerFailure)
+            .ownerDataLost,
+        isFalse,
+      );
+    });
+
+    test('a missing database key is a lost key', () async {
+      keychain.entries.clear();
+      expect(await inspect(), failure(LegacyOwnerFailureCause.keyLost));
+    });
+
+    test('a newer schema is unsupported, not lost', () async {
+      final admission = await runtime();
+      try {
+        final opened = await InventoryStore.open(
+          destination,
+          admission,
+          existing: true,
+        );
+        final store = (opened as Ok<InventoryStore, DatabaseOpenFailure>).value;
+        try {
+          await store.database.customStatement('PRAGMA user_version = 2');
+        } finally {
+          await store.close();
+        }
+      } finally {
+        await admission.close();
+      }
+      final result = await inspect();
+      expect(result, failure(LegacyOwnerFailureCause.unsupportedSchema));
+      expect(
+        ((result as Err<OwnerReadiness, LegacyImportFailure>).failure
+                as LegacyOwnerFailure)
+            .ownerDataLost,
+        isFalse,
+      );
+    });
+  });
+
+  test('an unreadable file before admission is not reported as lost', () async {
+    await destination.writeAsBytes(List.filled(4096, 7));
+    final admission = await exclusive();
+    try {
+      final opened = await participant.prepare(admission, OwnerOrigin.fresh);
+      expect(
+        opened,
+        isA<Err<PreparedOwner, LegacyImportFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<LegacyImportUnavailable>(),
+        ),
+      );
+    } finally {
+      await admission.close();
+    }
+    expect(await destination.readAsBytes(), List.filled(4096, 7));
+  });
+
   test('fresh initialization has a distinct receipt and no source', () async {
     final admission = await exclusive();
     try {

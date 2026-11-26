@@ -22,6 +22,7 @@ final _genericFailures = <AppStartupFailure>[
 final _guidingFailures = <AppStartupFailure>[
   const AppStartupMissingDefaultSecretFailure(_rawReason),
   const AppStartupRestoreMismatchFailure(_rawReason),
+  const InventoryRecoveryRequired(InventoryRecoveryCause.unreadable),
 ];
 
 final _everyFailure = [..._genericFailures, ..._guidingFailures];
@@ -92,19 +93,20 @@ void main() {
       expect(messages, hasLength(1));
     });
 
-    testWidgets('a missing secret and a refused phrase each say what to do', (
-      tester,
-    ) async {
-      // The justified exception: a missing secret has an action — entering
-      // the recovery phrase again — and a refused phrase must say why.
-      final generic = await _translate(tester, _genericFailures.first);
-      final messages = <String>{};
-      for (final failure in _guidingFailures) {
-        messages.add(await _translate(tester, failure));
-      }
+    testWidgets(
+      'a missing secret, a refused phrase and an unreadable store each say what to do',
+      (tester) async {
+        // The justified exception: a missing secret has an action — entering
+        // the recovery phrase again — and a refused phrase must say why.
+        final generic = await _translate(tester, _genericFailures.first);
+        final messages = <String>{};
+        for (final failure in _guidingFailures) {
+          messages.add(await _translate(tester, failure));
+        }
 
-      expect(messages, hasLength(_guidingFailures.length));
-      expect(messages, isNot(contains(generic)));
-    });
+        expect(messages, hasLength(_guidingFailures.length));
+        expect(messages, isNot(contains(generic)));
+      },
+    );
   });
 }

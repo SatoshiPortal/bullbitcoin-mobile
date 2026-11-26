@@ -3,12 +3,14 @@ import 'dart:math' as math;
 import 'package:meta/meta.dart';
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
+import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import '../crypto/access_verifier.dart';
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
 import 'backup_guard.dart';
 import 'boundary.dart';
+import 'encrypted_database.dart' show databaseFileProblemOf;
 import 'inventory_import.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
@@ -30,6 +32,22 @@ final class AccessRepository {
     () async => (await _credential()) != null,
     orElse: FetchSecretFailure.new,
   );
+
+  /// The read that opens an admitted inventory. Unlike [isProtected] its
+  /// failure keeps the engine's cause, so the caller can tell damaged data
+  /// from contention or an access error.
+  Future<Result<bool, DatabaseOpenFailure>> protectionAtOpen() async {
+    try {
+      return Ok((await _credential()) != null);
+    } on SqliteException catch (error) {
+      return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
+    } on Exception {
+      // Not proof that the data is damaged.
+      return const Err(
+        DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
+      );
+    }
+  }
 
   Future<Result<AccessAttempt, SecretFailure>> status() => boundary(() async {
     final state = await _state();

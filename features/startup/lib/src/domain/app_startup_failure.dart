@@ -58,3 +58,18 @@ final class AppStartupResetFailure extends AppStartupFailure {
 final class AppStartupPinCheckFailure extends AppStartupFailure {
   const AppStartupPinCheckFailure([super.logMessage]);
 }
+
+/// Why the wallet storage cannot be read. Only conditions of the stored data
+/// itself; a locked keystore, contention or an unsupported schema never reach
+/// this type.
+enum InventoryRecoveryCause { unreadable, keyLost, missingAfterAdmission }
+
+/// The storage that holds the wallets was admitted before but can no longer be
+/// read. Blocks startup: nothing is opened, replaced or erased, and the user
+/// can retry, reach support or quit.
+final class InventoryRecoveryRequired extends AppStartupFailure {
+  final InventoryRecoveryCause cause;
+
+  const InventoryRecoveryRequired(this.cause)
+    : super('inventory storage unreadable');
+}

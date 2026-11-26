@@ -1,0 +1,277 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:legacy_storage/legacy_storage.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:startup/startup.dart';
+
+/// Injects the failure between the admission and the second opening of the
+/// wallet inventory, where the storage was readable a moment earlier.
+void main() {
+  final cases = <String, ({DatabaseOpenFailure failure, bool blocks})>{
+    'corruption': (
+      failure: const DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
+      blocks: true,
+    ),
+    'a missing file': (
+      failure: const DatabaseFileUnavailable(DatabaseFileProblem.missing),
+      blocks: true,
+    ),
+    'a missing key': (
+      failure: const DatabaseKeyUnavailable(DatabaseKeyProblem.missing),
+      blocks: true,
+    ),
+    'a locked keystore': (
+      failure: const DatabaseKeyUnavailable(DatabaseKeyProblem.locked),
+      blocks: false,
+    ),
+    'contention': (
+      failure: const DatabaseFileUnavailable(DatabaseFileProblem.contended),
+      blocks: false,
+    ),
+  };
+
+  for (final MapEntry(:key, :value) in cases.entries) {
+    test('$key after admission '
+        '${value.blocks ? 'blocks' : 'retries'} once the locator is clean', () async {
+      final events = <String>[];
+      var opens = 0;
+      final result = await admitInventory<String, String>(
+        prepare: () async {
+          events.add('prepare');
+          return const Ok('admission');
+        },
+        openInventory: (admission) async {
+          events.add('open');
+          return opens++ == 0 ? Err(value.failure) : const Ok('inventory');
+        },
+        release: (admission) async => events.add('release'),
+        retryStorage: (failure) async {
+          events.add(
+            'retry:${failure is LegacyOwnerFailure ? failure.cause.name : failure.runtimeType}',
+          );
+        },
+        blockedInventory: (blocked) async =>
+            events.add('blocked:${blocked.cause.name}'),
+      );
+
+      expect(
+        events,
+        value.blocks
+            ? [
+                'prepare',
+                'open',
+                'release',
+                'blocked:${switch (key) {
+                  'corruption' => 'unreadable',
+                  'a missing file' => 'missingAfterAdmission',
+                  _ => 'keyLost',
+                }}',
+                'prepare',
+                'open',
+              ]
+            : [
+                'prepare',
+                'open',
+                'release',
+                'retry:${key == 'contention' ? 'contention' : 'keystoreLocked'}',
+                'prepare',
+                'open',
+              ],
+      );
+      expect(
+        result,
+        isA<Ok<AdmittedInventory<String, String>, Failure>>().having(
+          (r) => r.value.inventory,
+          'inventory',
+          'inventory',
+        ),
+      );
+    });
+
+    test(
+      '$key after admission ends startup when nothing can handle it',
+      () async {
+        final events = <String>[];
+        final result = await admitInventory<String, String>(
+          prepare: () async => const Ok('admission'),
+          openInventory: (admission) async => Err(value.failure),
+          release: (admission) async => events.add('release'),
+        );
+        expect(events, ['release']);
+        expect(
+          result,
+          isA<Err<AdmittedInventory<String, String>, Failure>>().having(
+            (r) => r.failure,
+            'failure',
+            value.blocks
+                ? isA<InventoryRecoveryRequired>()
+                : same(value.failure),
+          ),
+        );
+      },
+    );
+  }
+
+  test(
+    'a failure that is not about the storage is returned unchanged',
+    () async {
+      const failure = DatabaseCipherUnavailable();
+      var shown = 0;
+      final events = <String>[];
+      final result = await admitInventory<String, String>(
+        prepare: () async => const Ok('admission'),
+        openInventory: (admission) async => const Err(failure),
+        release: (admission) async => events.add('release'),
+        retryStorage: (_) async => shown++,
+        blockedInventory: (_) async => shown++,
+      );
+      expect(shown, 0);
+      expect(events, ['release']);
+      expect(
+        result,
+        isA<Err<AdmittedInventory<String, String>, Failure>>().having(
+          (r) => r.failure,
+          'failure',
+          same(failure),
+        ),
+      );
+    },
+  );
+
+  test('an unreadable inventory at admission still blocks', () async {
+    var attempts = 0;
+    final blocked = <InventoryRecoveryCause>[];
+    final result = await admitInventory<String, String>(
+      prepare: () async => attempts++ == 0
+          ? const Err(
+              LegacyOwnerFailure('secrets', LegacyOwnerFailureCause.unreadable),
+            )
+          : const Ok('admission'),
+      openInventory: (admission) async => const Ok('inventory'),
+      release: (admission) async {},
+      blockedInventory: (b) async => blocked.add(b.cause),
+    );
+    expect(blocked, [InventoryRecoveryCause.unreadable]);
+    expect(result, isA<Ok<AdmittedInventory<String, String>, Failure>>());
+  });
+
+  test(
+    'an exception after a partial registration cleans up once and propagates',
+    () async {
+      final locator = GetIt.asNewInstance();
+      final lease = _Lease();
+      var releases = 0;
+      var attempts = 0;
+      await expectLater(
+        admitInventory<_Lease, String>(
+          prepare: () async {
+            attempts++;
+            return Ok(lease);
+          },
+          openInventory: (admission) async {
+            locator.registerSingleton<_Lease>(
+              admission,
+              dispose: (value) => value.close(),
+            );
+            locator.registerSingleton<String>('partial');
+            throw StateError('boom');
+          },
+          release: (admission) async {
+            releases++;
+            try {
+              await locator.reset();
+            } finally {
+              await admission.close();
+            }
+          },
+          retryStorage: (_) async => fail('an exception is not retried'),
+          blockedInventory: (_) async => fail('an exception does not block'),
+        ),
+        throwsA(isA<StateError>().having((e) => e.message, 'message', 'boom')),
+      );
+      expect(releases, 1);
+      expect(attempts, 1);
+      expect(locator.isRegistered<String>(), isFalse);
+      expect(locator.isRegistered<_Lease>(), isFalse);
+      expect(lease.closed, isTrue);
+    },
+  );
+
+  test(
+    'a failing release keeps the original exception and ends the attempt',
+    () async {
+      var prepares = 0;
+      var releases = 0;
+      final trace = StackTrace.current;
+      final original = _Boom('original', trace);
+      Object? caught;
+      try {
+        await admitInventory<String, String>(
+          prepare: () async {
+            prepares++;
+            return const Ok('admission');
+          },
+          openInventory: (admission) async => throw original,
+          release: (admission) async {
+            releases++;
+            throw StateError('cleanup failed');
+          },
+          retryStorage: (_) async => fail('no retry after a failed cleanup'),
+          blockedInventory: (_) async =>
+              fail('no screen after a failed cleanup'),
+        );
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught, same(original));
+      expect(prepares, 1);
+      expect(releases, 1);
+    },
+  );
+
+  test(
+    'a failing release after a typed failure ends the attempt with it',
+    () async {
+      var prepares = 0;
+      var releases = 0;
+      const failure = DatabaseFileUnavailable(DatabaseFileProblem.unreadable);
+      final result = await admitInventory<String, String>(
+        prepare: () async {
+          prepares++;
+          return const Ok('admission');
+        },
+        openInventory: (admission) async => const Err(failure),
+        release: (admission) async {
+          releases++;
+          throw StateError('cleanup failed');
+        },
+        retryStorage: (_) async => fail('no retry after a failed cleanup'),
+        blockedInventory: (_) async => fail('no screen after a failed cleanup'),
+      );
+      expect(prepares, 1);
+      expect(releases, 1);
+      expect(
+        result,
+        isA<Err<AdmittedInventory<String, String>, Failure>>().having(
+          (r) => r.failure,
+          'failure',
+          same(failure),
+        ),
+      );
+    },
+  );
+}
+
+final class _Boom implements Exception {
+  final String message;
+  final StackTrace trace;
+
+  _Boom(this.message, this.trace);
+}
+
+final class _Lease {
+  bool closed = false;
+
+  Future<void> close() async => closed = true;
+}
