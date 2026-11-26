@@ -14,8 +14,8 @@ final class AppUnlockGrant {
 class Access {
   const Access();
 
-  /// Locks a protected view now: no secret can be used until the PIN is
-  /// entered again. An unprotected view stays open.
+  /// Revokes the current session immediately. A protected view requires its
+  /// PIN again; an unprotected view can reopen after admitted writes drain.
   Future<void> lock() => accessLocator<AccessLockController>().lock();
 
   /// True on every lock, false on every unlock.

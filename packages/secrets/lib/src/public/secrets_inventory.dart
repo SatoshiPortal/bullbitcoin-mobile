@@ -148,9 +148,9 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// running reports [inventorySessionChangedFailure] when it ends.
   Future<bool> lock({Duration drain = const Duration(seconds: 2)}) async {
     _session++;
-    _authority.revoke();
     final pending = inventoryWritesSettled();
     _pendingDrain = pending;
+    _authority.revoke();
     unawaited(
       pending.then((_) {
         if (identical(_pendingDrain, pending)) _pendingDrain = null;
@@ -162,6 +162,26 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     } on TimeoutException {
       return false;
     }
+  }
+
+  /// Revokes the current session before examining its protection state.
+  ///
+  /// An unprotected view may be reopened only after the write drain and only
+  /// if no subsequent lock occurred. A failed policy read or an unconfirmed
+  /// drain leaves it closed.
+  Future<bool> lockIfProtected() async {
+    final draining = lock();
+    final session = _session;
+    if (!await draining || session != _session) return true;
+    final protected = await _access.isProtected();
+    if (session != _session || protected is! Ok<bool, SecretFailure>) {
+      return true;
+    }
+    if (protected.value) return true;
+    return switch (await resumeUnprotected()) {
+      Ok() => false,
+      Err() => true,
+    };
   }
 
   @useResult
