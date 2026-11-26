@@ -6,12 +6,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
+import '../account/domain/usecases/get_account_usecase.dart';
 import '../dashboard/exchange_home_screen.dart';
+import '../dca/domain/usecases/stop_dca_usecase.dart';
 import '../recipients/recipients_scope.dart';
 import '../support_chat/presentation/support_unread_bloc.dart';
 import '../support_chat/domain/support_unread_machine.dart';
 import '../support_chat/domain/usecases/get_unread_support_count_usecase.dart';
 import '../support_chat/domain/usecases/mark_support_messages_read_usecase.dart';
+import 'domain/usecases/get_announcements_usecase.dart';
+import 'domain/usecases/reconcile_unknown_writes_usecase.dart';
 import 'exchange_bloc.dart';
 import 'exchange_event.dart';
 import 'exchange_listener.dart';
@@ -77,18 +81,13 @@ class ExchangeSessionScope extends StatefulWidget {
 class _ExchangeSessionScopeState extends State<ExchangeSessionScope> {
   late final Exchange _capability = widget.exchange();
   late final ExchangeBloc _bloc = ExchangeBloc(
-    getAccount: _capability.loadAccount,
-    getAnnouncements: _capability.loadAnnouncements,
-    stopDca: (session) => _capability.updatePreferences(
-      session,
-      const ExchangePreferencesPatch(dcaEnabled: false),
-    ),
     currentAccess: () => _capability.currentAccess,
     accessChanges: _capability.watchAccess(),
     accountChanges: _capability.watchAccountChanges(),
-    reconcileUnknownWrites: () async {
-      final _ = await _capability.reconcileUnknownWrites();
-    },
+    getAccount: GetAccountUsecase(_capability),
+    getAnnouncements: GetAnnouncementsUsecase(_capability),
+    stopDca: StopDcaUsecase(_capability),
+    reconcileUnknownWrites: ReconcileUnknownWritesUsecase(_capability),
   );
 
   late final SupportUnreadBloc _unread = SupportUnreadBloc(
