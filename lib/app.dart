@@ -111,10 +111,13 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   }
 
   /// On lock the unlock screen replaces the current page; the PIN brings the
-  /// user back to the location they left. Engines that sign or reveal are not
-  /// suspended here yet (D93, WS2b).
+  /// user back to the location they left. Engines that sign or reveal are
+  /// suspended on lock and resumed once on unlock (D93).
   void _onLockChanged(bool locked) {
     _locked = locked;
+    if (locator.isRegistered<ForegroundWalletStartup>()) {
+      locator<ForegroundWalletStartup>().onLockChanged(locked);
+    }
     if (!locked) return;
     final router = AppRouter.router;
     final here = router.routerDelegate.currentConfiguration.uri;
