@@ -22,10 +22,6 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 
 ```text
 Secrets
-|-- exchangeKeychain
-|   |-- read(isTestnet:) -> String?
-|   |-- write(value, isTestnet:) -> void
-|   `-- delete(isTestnet:) -> void
 |-- silentPaymentKeychain
 |   |-- readBackend() -> String?
 |   |-- writeBackend(value) -> void
@@ -220,7 +216,7 @@ RecoverBull creation, restoration and backup inspection use the package. Decrypt
 
 ## Legacy owner keychains
 
-`Secrets.exchangeKeychain`, `silentPaymentKeychain` and `swapKeychain` expose closed handles. The PIN entries have no runtime capability: the access verifier lives in the inventory, and the legacy entries are read only by the import and the retirement. All operations return `Result<…, SecretFailure>`. Exchange selects only mainnet or testnet; Silent Payments owns only its backend and auto-scan settings. Swaps accepts only full legacy `swap_` keys, including `swap_regtest_`, and rejects other namespaces before storage access. No capability lists the keychain or accepts a caller-selected prefix.
+`Secrets.silentPaymentKeychain` and `swapKeychain` expose closed handles. The legacy Exchange records are read only during migration under an exclusive admission. The PIN entries have no runtime capability: the access verifier lives in the inventory, and the legacy entries are read only by the import and the retirement. All operations return `Result<…, SecretFailure>`. Silent Payments owns only its backend and auto-scan settings. Swaps accepts only full legacy `swap_` keys, including `swap_regtest_`, and rejects other namespaces before storage access. No capability lists the keychain or accepts a caller-selected prefix.
 
 The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys are `failedUnlockAttemptsKey`, `unlockLockedUntilKey`, `exchange_api_key`, `exchange_api_key_testnet`, `sp_backend_config` and `sp_auto_scan_enabled`. The handles access these entries in place with Android `resetOnError: false` and `migrateOnAlgorithmChange: false`, and iOS `first_unlock_this_device`. Moving SP configuration to another store would require a separate migration. Exchange owns its diagnostics without duplicate keychain reporting.
 

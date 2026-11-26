@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/migration.dart' show readLegacyExchangeCredentials;
 import 'package:secrets/secrets.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
@@ -17,11 +18,8 @@ typedef _BasicAuth = ({int id, String? username, String? password});
 ExchangeCredentialImport exchangeCredentialImportForTesting({
   required File file,
   required Secrets secrets,
-}) => ExchangeCredentialImport._(
-  file,
-  secrets.exchangeKeychain,
-  secrets.databaseKeys(module: 'exchange'),
-);
+}) =>
+    ExchangeCredentialImport._(file, secrets.databaseKeys(module: 'exchange'));
 
 /// Copies the two fixed keychain records and the historical Settings rows.
 /// The foreground coordinator must freeze both sets of legacy writers before
@@ -29,13 +27,12 @@ ExchangeCredentialImport exchangeCredentialImportForTesting({
 final class ExchangeCredentialImport
     implements LegacyImportParticipant, SourceProvenanceCheck {
   final File _file;
-  final ExchangeKeychain _legacy;
   final DatabaseKeys? _testingKeys;
 
   ExchangeCredentialImport({required File file, required Secrets secrets})
-    : this._(file, secrets.exchangeKeychain, null);
+    : this._(file, null);
 
-  const ExchangeCredentialImport._(this._file, this._legacy, this._testingKeys);
+  const ExchangeCredentialImport._(this._file, this._testingKeys);
 
   @override
   String get ownerId => 'exchange';
@@ -81,7 +78,7 @@ final class ExchangeCredentialImport
     return (await _open(
       admission,
       existing: false,
-    )).map((store) => _PreparedExchange(store, _legacy));
+    )).map((store) => _PreparedExchange(store, admission));
   }
 
   @override
@@ -92,7 +89,7 @@ final class ExchangeCredentialImport
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
-        final owner = _PreparedExchange(value, _legacy);
+        final owner = _PreparedExchange(value, null);
         final receipt = await owner.receipt();
         return switch (await owner.close()) {
           Ok() => receipt,
@@ -102,31 +99,12 @@ final class ExchangeCredentialImport
   }
 }
 
-Future<Result<_Records, LegacyImportFailure>> _readRecords(
-  ExchangeKeychain legacy,
-) async {
-  final mainnet = await legacy.read(isTestnet: false);
-  final testnet = await legacy.read(isTestnet: true);
-  return switch ((mainnet, testnet)) {
-    (Err(failure: KeystoreLockedFailure()), _) ||
-    (
-      _,
-      Err(failure: KeystoreLockedFailure()),
-    ) => const Err(LegacyImportDeferred()),
-    (Ok(value: final main), Ok(value: final test)) => Ok((
-      mainnet: main,
-      testnet: test,
-    )),
-    _ => const Err(LegacyImportUnavailable()),
-  };
-}
-
 final class _PreparedExchange implements PreparedOwner {
   static const _emptyRecords = (mainnet: null, testnet: null);
   final ExchangeStore _store;
-  final ExchangeKeychain _legacy;
+  final ExclusiveAdmission? _admission;
 
-  const _PreparedExchange(this._store, this._legacy);
+  const _PreparedExchange(this._store, this._admission);
 
   ExchangeDatabase get _db => _store.database;
 
@@ -178,8 +156,12 @@ final class _PreparedExchange implements PreparedOwner {
   /// user signs in again. The Settings rows are always imported.
   Future<Result<_Records, LegacyImportFailure>> _recordsToImport(
     LegacySource source,
-  ) async =>
-      source.initialFresh ? const Ok(_emptyRecords) : _readRecords(_legacy);
+  ) async {
+    if (source.initialFresh) return const Ok(_emptyRecords);
+    final admission = _admission;
+    if (admission == null) return const Err(LegacyImportDeferred());
+    return readLegacyExchangeCredentials(admission);
+  }
 
   @override
   Future<Result<void, LegacyImportFailure>> initializeFresh() async {
