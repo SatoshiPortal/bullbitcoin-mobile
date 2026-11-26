@@ -13,11 +13,13 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spend/spend.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
 import 'developer_network.dart';
+import 'funded_regtest_wallet.dart';
 import 'funded_testnet_wallet.dart';
 import 'initialization_result.dart';
 
@@ -29,17 +31,34 @@ import 'initialization_result.dart';
 //      is the load-bearing persistence guarantee and runs anywhere.
 //   2. A frozen coin is never spent — freeze a real wallet outpoint, have
 //      Spend build a PSBT, assert the frozen outpoint is
-//      absent from the PSBT inputs (the D7 guarantee). Needs a funded testnet
-//      wallet (TEST_ALICE_MNEMONIC) → skipped when absent.
+//      absent from the PSBT inputs (the D7 guarantee). Uses a local regtest
+//      wallet, or a funded testnet wallet when configured.
 //   3. The list surfaces confirmed vs unconfirmed + BIP329 labels — reads the
 //      wallet's real UTXOs and asserts the confirmations/labels fields the view
-//      renders. Needs a funded testnet wallet → skipped when absent.
+//      renders. Uses the same funded wallet.
 //
 // Run via `make integration-test` (auto-aggregated by tools/gen_all_test.dart).
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    requireSuccessfulBullInitialization(await Bull.init());
+    if (localRegtest) {
+      final preferences = await SharedPreferences.getInstance();
+      if (!await preferences.setInt('wizard_pending_version', 1) ||
+          !await preferences.setString('wizard_pending_network', 'testnet')) {
+        throw StateError('Could not stage the pending network');
+      }
+    }
+    requireSuccessfulBullInitialization(
+      await Bull.init(
+        initialNetwork: localRegtest ? Environment.regtest : null,
+      ),
+    );
+    if (localRegtest) {
+      final preferences = await SharedPreferences.getInstance();
+      if (preferences.getString('wizard_pending_network') != null) {
+        throw StateError('Pending network was not cleared');
+      }
+    }
   }
 
   group('Coins / freeze persistence (funds-free)', () {
@@ -163,19 +182,19 @@ Future<void> main({bool isInitialized = false}) async {
   });
 
   // -------------------------------------------------------------------------
-  // Funded-testnet criteria (2) and (3). These need a wallet with real UTXOs,
-  // exactly like payjoin_test.dart, so they only run when TEST_ALICE_MNEMONIC
-  // is provided. Without it the structure compiles and is skipped — never
-  // silently omitted.
+  // The local profile provisions its own confirmed UTXOs. Outside that
+  // profile the existing funded-testnet fixture remains optional.
   // -------------------------------------------------------------------------
   const mnemonicDefine = String.fromEnvironment('TEST_ALICE_MNEMONIC');
-  final mnemonic = mnemonicDefine.isNotEmpty
+  final mnemonic = localRegtest
+      ? null
+      : mnemonicDefine.isNotEmpty
       ? mnemonicDefine
       : Platform.environment['TEST_ALICE_MNEMONIC'];
-  final hasFunds = mnemonic != null && mnemonic.isNotEmpty;
+  final hasFunds = localRegtest || (mnemonic != null && mnemonic.isNotEmpty);
 
   group(
-    'Coins / freeze enforcement (funded testnet)',
+    'Coins / freeze enforcement (funded wallet)',
     () {
       late final AddressView addresses;
       late final Spend spend;
@@ -184,6 +203,16 @@ Future<void> main({bool isInitialized = false}) async {
       setUpAll(() async {
         addresses = locator<AddressView>();
         spend = locator<Spend>();
+        if (localRegtest) {
+          final settings = requireValue(
+            await locator<Preferences>().fetch(),
+            'read startup environment',
+          );
+          expect(settings.environment, Environment.regtest);
+          expect(settings.activeNetwork, NetworkEnv.regtest);
+          wallet = await fundedRegtestWallet();
+          return;
+        }
         // Testnet is a developer network: enable it as a user would.
         // Restored when the group ends, even if this setup fails.
         await selectDeveloperNetwork(Environment.testnet);
@@ -219,6 +248,7 @@ Future<void> main({bool isInitialized = false}) async {
 
       test('list surfaces confirmations and labels per UTXO', () async {
         final utxos = readCoins();
+        if (localRegtest) expect(utxos, isNotEmpty);
         if (utxos.isEmpty) {
           // The mnemonic is set but the testnet wallet has no UTXOs (faucet
           // funds expire). Skip rather than hard-fail CI — the D7 exclusion
@@ -274,6 +304,7 @@ Future<void> main({bool isInitialized = false}) async {
       test('a manual drain spends exactly the selected outpoint', () async {
         final utxos = readCoins();
         final spendable = utxos.where((utxo) => !utxo.frozen).toList();
+        if (localRegtest) expect(spendable.length, greaterThanOrEqualTo(2));
         if (spendable.length < 2) {
           markTestSkipped('requires at least two testnet UTXOs');
           return;
@@ -305,6 +336,7 @@ Future<void> main({bool isInitialized = false}) async {
       test('a partly frozen manual selection fails closed', () async {
         final utxos = readCoins();
         final spendable = utxos.where((utxo) => !utxo.frozen).toList();
+        if (localRegtest) expect(spendable.length, greaterThanOrEqualTo(2));
         if (spendable.length < 2) {
           markTestSkipped('requires at least two testnet UTXOs');
           return;
@@ -335,6 +367,7 @@ Future<void> main({bool isInitialized = false}) async {
 
       test('frozen coins are excluded from every PSBT build (D7)', () async {
         final utxos = readCoins();
+        if (localRegtest) expect(utxos, isNotEmpty);
         if (utxos.isEmpty) {
           markTestSkipped('testnet wallet is unfunded');
           return;
