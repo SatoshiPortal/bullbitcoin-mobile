@@ -5,7 +5,11 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../default_wallets_payout_fields.dart';
-import '../../domain/validate_default_wallet_destination_usecase.dart';
+import '../../domain/usecases/get_session_default_wallets_usecase.dart';
+import '../../domain/usecases/save_default_wallet_usecase.dart';
+import '../../domain/usecases/unset_default_wallet_usecase.dart';
+import '../../domain/usecases/validate_default_wallet_destination_usecase.dart';
+import '../../domain/usecases/verify_default_wallets_usecase.dart';
 import '../../presentation/default_wallets_bloc.dart';
 import '../../presentation/default_wallets_failure_l10n.dart';
 import '../../domain/default_wallets_machine.dart';
@@ -35,10 +39,14 @@ class DefaultWalletsEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BlocProvider(
     create: (_) => DefaultWalletsBloc(
-      exchange: exchange,
-      validateDestination: ValidateDefaultWalletDestinationUsecase(
+      session: exchange.currentSession,
+      getWallets: GetSessionDefaultWalletsUsecase(exchange),
+      validateAddress: ValidateDefaultWalletDestinationUsecase(
         payoutFields.validate,
       ),
+      saveWallet: SaveDefaultWalletUsecase(exchange),
+      unsetWallet: UnsetDefaultWalletUsecase(exchange),
+      verifyWallets: VerifyDefaultWalletsUsecase(exchange),
     ),
     child: _SlotNotices(
       child: _EditorContent(

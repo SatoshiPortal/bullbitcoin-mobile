@@ -6,7 +6,11 @@ import 'package:exchange/exchange.dart';
 import 'src/account/domain/usecases/get_user_summary_usecase.dart';
 import 'src/autobuy/domain/autobuy_flow.dart';
 import 'src/autobuy/domain/usecases/load_autobuy_context_usecase.dart';
-import 'src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
+import 'src/default_wallets/domain/usecases/get_session_default_wallets_usecase.dart';
+import 'src/default_wallets/domain/usecases/save_default_wallet_usecase.dart';
+import 'src/default_wallets/domain/usecases/unset_default_wallet_usecase.dart';
+import 'src/default_wallets/domain/usecases/validate_default_wallet_destination_usecase.dart';
+import 'src/default_wallets/domain/usecases/verify_default_wallets_usecase.dart';
 import 'src/default_wallets/presentation/default_wallets_bloc.dart';
 import 'src/default_wallets/domain/default_wallets_machine.dart';
 
@@ -64,6 +68,9 @@ Future<DefaultWalletsEvent> defaultWalletsEffectForTesting(
   required Future<String?> Function(BtcNetwork, String) validate,
 }) => runDefaultWalletsEffect(
   effect,
-  exchange: exchange,
-  validateDestination: ValidateDefaultWalletDestinationUsecase(validate),
+  getWallets: GetSessionDefaultWalletsUsecase(exchange),
+  validateAddress: ValidateDefaultWalletDestinationUsecase(validate),
+  saveWallet: SaveDefaultWalletUsecase(exchange),
+  unsetWallet: UnsetDefaultWalletUsecase(exchange),
+  verifyWallets: VerifyDefaultWalletsUsecase(exchange),
 );
