@@ -1,4 +1,6 @@
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/steps.dart';
 
 UserSummary userSummary({
   List<UserBalance> balances = const [
@@ -63,3 +65,42 @@ DefaultWallets limitDefaultWallets() => const DefaultWallets(
     address: limitBitcoinAddress,
   ),
 );
+
+/// The create the real machine sends for a 200 CAD order at 80 000 to the
+/// default bitcoin wallet, from a loaded context through Confirm.
+ConfirmSend<LimitOrderRequest> limitCreateSend() {
+  var next = transitionLimitFlow(
+    limitFlowStart(limitSession).state,
+    LimitContextLoaded(
+      1,
+      ReadGot(
+        LimitOrderContext(
+          userSummary(),
+          limitDefaultWallets(),
+          const [],
+          const [],
+        ),
+      ),
+    ),
+  );
+  for (final event in <LimitFlowEvent>[
+    const LimitContinuePressed(),
+    LimitTargetRateArrived(ExchangeCatalog.cad, 1, ReadGot(limitOrderRate())),
+    const LimitPriceTyped(80000),
+    const LimitContinuePressed(),
+    const LimitDestinationChanged(
+      PickChose(
+        DestinationOptionDefaultWallet(BtcNetwork.bitcoin, limitBitcoinAddress),
+      ),
+    ),
+    const LimitContinuePressed(),
+    const LimitAmountChanged(AmountTyped('200')),
+    const LimitContinuePressed(),
+    LimitReviewRateArrived(1, ReadGot(limitOrderRate())),
+    const LimitConfirmPressed(),
+  ]) {
+    next = transitionLimitFlow(next.state, event);
+  }
+  return next.effects.whereType<LimitConfirmEffect>().single.effect
+      as ConfirmSend<LimitOrderRequest>;
+}

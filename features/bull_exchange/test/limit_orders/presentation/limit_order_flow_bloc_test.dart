@@ -8,51 +8,56 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import '../limit_order_fixtures.dart';
+import '../limit_order_usecase_fakes.dart';
 
+/// The limit-order use cases as fakes; every call is logged, with the
+/// session it got where it takes one.
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>[];
   Completer<GatedWrite<ExchangeWrite<LimitOrder>>> createAnswer = Completer();
   ExchangeRead<List<LimitOrder>> recent = const ReadGot([]);
 
-  LimitFlowCalls of(ExchangeSession session) {
-    sessions.add(session);
-    return (
-      loadContext: () async {
-        log.add('load');
-        return ReadGot(
-          LimitOrderContext(
-            userSummary(),
-            limitDefaultWallets(),
-            const [],
-            const [],
-          ),
-        );
-      },
-      rate: (market) async {
-        log.add('rate ${market.currency.code}');
-        return ReadGot(limitOrderRate());
-      },
-      receiveAddress: (option) async {
-        log.add('receive ${option.walletId}');
-        return Ok(
-          DestinationAppWallet(option.walletId, option.rail, 'bc1qapp'),
-        );
-      },
-      lightningAddress: (text) async {
-        log.add('lightning $text');
-        return Ok(DestinationAddress(BtcNetwork.lightning, text));
-      },
-      create: (effect) async {
-        log.add('create ${effect.attempt}');
-        return ConfirmAnswered(effect.attempt, await createAnswer.future);
-      },
-      recentOrders: () async {
-        log.add('recent');
-        return recent;
-      },
-    );
-  }
+  LimitFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => LimitFlowBloc(
+    session: session,
+    accessChanges: accessChanges,
+    loadContext: FakeLoadLimitOrderContextUsecase((session) async {
+      sessions.add(session);
+      log.add('load');
+      return ReadGot(
+        LimitOrderContext(
+          userSummary(),
+          limitDefaultWallets(),
+          const [],
+          const [],
+        ),
+      );
+    }),
+    getRate: FakeGetLimitOrderRateUsecase((market) async {
+      log.add('rate ${market.currency.code}');
+      return ReadGot(limitOrderRate());
+    }),
+    getReceiveAddress: FakeGetLimitReceiveAddressUsecase((option) async {
+      log.add('receive ${option.walletId}');
+      return Ok(DestinationAppWallet(option.walletId, option.rail, 'bc1qapp'));
+    }),
+    validateLightningAddress: FakeValidateLightningAddressUsecase((text) async {
+      log.add('lightning $text');
+      return Ok(DestinationAddress(BtcNetwork.lightning, text));
+    }),
+    createOrder: FakeCreateLimitOrderUsecase((session, effect) async {
+      sessions.add(session);
+      log.add('create ${effect.attempt}');
+      return ConfirmAnswered(effect.attempt, await createAnswer.future);
+    }),
+    getRecentOrders: FakeGetRecentLimitOrdersUsecase(() async {
+      log.add('recent');
+      return recent;
+    }),
+  );
 }
 
 Future<void> _settle() => Future<void>.delayed(Duration.zero);
@@ -65,11 +70,7 @@ void main() {
   setUp(() {
     calls = _Calls();
     access = StreamController<ExchangeAccess>.broadcast();
-    bloc = LimitFlowBloc(
-      calls: calls.of,
-      session: limitSession,
-      accessChanges: access.stream,
-    );
+    bloc = calls.bloc(session: limitSession, accessChanges: access.stream);
   });
 
   tearDown(() async {
@@ -118,6 +119,7 @@ void main() {
     await toReview();
     await send(const [LimitConfirmPressed(), LimitConfirmPressed()]);
     expect(calls.log.where((l) => l.startsWith('create')), ['create 1']);
+    expect(calls.sessions, [limitSession, limitSession]);
     final request = (bloc.state as LimitCreating).request;
     calls.recent = ReadGot([
       LimitOrder(
@@ -167,35 +169,11 @@ void main() {
   });
 
   test('without a session nothing runs', () async {
-    final before = [...calls.sessions];
-    final none = LimitFlowBloc(
-      calls: calls.of,
-      session: null,
-      accessChanges: const Stream.empty(),
-    );
+    final idle = _Calls();
+    final none = idle.bloc(session: null, accessChanges: const Stream.empty());
     addTearDown(none.close);
     await _settle();
     expect(none.state, isA<LimitSessionEnded>());
-    expect(calls.sessions, before);
-  });
-
-  group('lightningAddressOf', () {
-    test('an empty text is no address', () async {
-      expect(await lightningAddressOf('  '), isNull);
-    });
-
-    test(
-      'a parser failure is no address; a programmer error is thrown',
-      () async {
-        expect(
-          await lightningAddressOf('x', parse: (_) async => throw Exception()),
-          isNull,
-        );
-        await expectLater(
-          lightningAddressOf('x', parse: (_) async => throw StateError('bug')),
-          throwsStateError,
-        );
-      },
-    );
+    expect(idle.log, isEmpty);
   });
 }
