@@ -211,14 +211,14 @@ void main() {
     test('without a new secret needs no proof', () async {
       await protectThenLoseProof();
       _value(await inventory.setCredential('5678'));
-      inventory.lock();
+      await inventory.lock();
       expect(_value(await inventory.unlock('1234')).accepted, isFalse);
       expect(_value(await inventory.unlock('5678')).accepted, isTrue);
     });
 
     test('that fails keeps the old verifier, counter and protection', () async {
       await protectThenLoseProof();
-      inventory.lock();
+      await inventory.lock();
       expect(_value(await inventory.unlock('0000')).accepted, isFalse);
       expect(_value(await inventory.unlock('0001')).accepted, isFalse);
       expect(_value(await inventory.unlock('1234')).accepted, isTrue);
@@ -238,7 +238,7 @@ void main() {
       expect(await inventory.setCredential('5678'), isA<Err>());
       expect(_value(await inventory.isProtected()), isTrue);
       expect(_value(await inventory.accessStatus()).failedAttempts, 1);
-      inventory.lock();
+      await inventory.lock();
       expect(_value(await inventory.unlock('5678')).accepted, isFalse);
       expect(_value(await inventory.unlock('1234')).accepted, isTrue);
     });
