@@ -26,6 +26,7 @@ import '../data/backup_guard.dart';
 import '../data/derivation_repository.dart';
 import '../data/inventory_import.dart';
 import '../data/inventory_repository.dart';
+import '../data/inventory_session.dart';
 import '../data/inventory_store.dart';
 import '../data/ready_inventory_store.dart';
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
@@ -211,12 +212,17 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// view holds, judged by the verifier bound at composition.
   @useResult
   Future<Result<void, SecretFailure>> setCredential(String candidate) =>
-      _inSession((_) => _access.replaceCredential(candidate));
+      _inSession(
+        (_) => _access.replaceCredential(candidate),
+        preserveCommittedCommand: true,
+      );
 
   /// Remove access protection from an authenticated foreground session.
   @useResult
-  Future<Result<void, SecretFailure>> removeCredential() =>
-      _inSession((_) => _access.replaceCredential(null));
+  Future<Result<void, SecretFailure>> removeCredential() => _inSession(
+    (_) => _access.replaceCredential(null),
+    preserveCommittedCommand: true,
+  );
 
   /// Permit background sync to read the active view's descriptors while locked.
   @useResult
@@ -386,18 +392,17 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   Future<Result<T, SecretFailure>> _inSession<T>(
     Future<Result<T, SecretFailure>> Function(int session) run, {
     bool requireUnlocked = true,
+    bool preserveCommittedCommand = false,
   }) async {
     if (requireUnlocked && !_unlocked) {
       return const Err(inventoryLockedFailure);
     }
     final session = _session;
-    // The transaction of a write checks this just before its commit.
-    final result = await Zone.current
-        .fork(zoneValues: {inventorySessionCheck: () => session == _session})
-        .run(() => run(session));
-    return session == _session
-        ? result
-        : const Err(inventorySessionChangedFailure);
+    return runInventorySession(
+      () => run(session),
+      isCurrent: () => session == _session,
+      preserveCommittedCommand: preserveCommittedCommand,
+    );
   }
 
   Future<void> close() async {
