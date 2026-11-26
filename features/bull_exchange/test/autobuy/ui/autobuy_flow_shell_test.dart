@@ -1,5 +1,5 @@
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_flow.dart';
 import 'package:bull_exchange/src/autobuy/ui/autobuy_flow_shell.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
