@@ -131,14 +131,12 @@ class _ReceiveNavigationListenersState
               // according to the preference once it is known.
               if (state.payjoin case final payjoin?
                   when payjoin.isCompleted &&
-                      state.showPaymentAnimations != null) {
+                      state.showPaymentAnimations == false) {
                 TransactionsNavigation.goToDetails(
                   context,
                   TransactionDetailsTarget.payjoin(payjoin.id),
                   returnHome: true,
-                  view: state.showPaymentAnimations == false
-                      ? TransactionDetailsView.details
-                      : TransactionDetailsView.status,
+                  view: TransactionDetailsView.details,
                 );
               } else {
                 context.goNamed(

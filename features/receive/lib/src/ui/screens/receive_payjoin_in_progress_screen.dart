@@ -7,6 +7,7 @@ import 'package:receive/src/presentation/bloc/receive_bloc.dart';
 import 'package:receive/src/presentation/receive_failure_l10n.dart';
 import 'package:transactions/payment_status.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/setup.dart' show TransactionsLocalizations;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,9 +18,11 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullCountdown,
         BullFadingLinearProgress,
-        BullPaymentAnimation,
         BullPaymentDirection,
         BullPaymentNetwork,
+        BullPaymentTransition,
+        BullPaymentViews,
+        BullPaymentViewSwitch,
         BullTopBar,
         Gap,
         BullTypographyX;
@@ -39,6 +42,7 @@ bool _isSettled(ReceiveState state) =>
 
 class _ReceivePayjoinInProgressScreenState
     extends State<ReceivePayjoinInProgressScreen> {
+  bool _showDetailsView = false;
   void _showDetails(
     String id, {
     TransactionDetailsView view = TransactionDetailsView.status,
@@ -57,23 +61,19 @@ class _ReceivePayjoinInProgressScreenState
     final isBroadcasting = context.select(
       (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
     );
-    // This screen lives on the root navigator, so the receive ShellRoute's
-    // navigation BlocListeners are unmounted while it is shown — it has to
-    // move itself out once the session reaches its happy terminal state.
-    // Without this the user stayed on "payjoin in progress" indefinitely
-    // after the payjoin completed, with the top-bar close button as the only
-    // way out.
-    //
-    // Gated on a REAL payjoin completion (isCompleted == status completed
-    // only, in this codebase), NOT the aborted fallback: a session that
-    // completed via the plain-broadcast fallback (declined below the
-    // anti-probing minimum, a failed negotiation, or an expiry with no
-    // proposal ever exchanged) is deliberately NOT auto-navigated away from —
-    // PayjoinInProgressPage instead settles on an explanatory message (why
-    // there was no payjoin) that the user would otherwise never get to read
-    // if this immediately jumped to transaction details. Same reasoning for
-    // `expired`: it still offers the manual "receive payment normally"
-    // fallback below.
+    final payjoin = context.select((ReceiveBloc bloc) => bloc.state.payjoin);
+    final confirmed = context.select(
+      (ReceiveBloc bloc) => bloc.state.settlementConfirmed,
+    );
+    final animationsEnabled = context.select(
+      (ReceiveBloc bloc) => bloc.state.showPaymentAnimations == true,
+    );
+    final reduced =
+        MediaQuery.disableAnimationsOf(context) ||
+        MediaQuery.reduceMotionOf(context);
+    final showViews = animationsEnabled && !reduced && payjoin != null;
+    // The root route owns its handoff. A fallback or expiry stays here so the
+    // user can read the explanation and access the recovery action.
     return BlocListener<ReceiveBloc, ReceiveState>(
       // An unknown preference waits: completion hands off once it is read.
       listenWhen: (previous, current) =>
@@ -83,12 +83,8 @@ class _ReceivePayjoinInProgressScreenState
         if (payjoin == null) return;
         if (state.showPaymentAnimations == false) {
           _showDetails(payjoin.id, view: TransactionDetailsView.details);
-        } else if (MediaQuery.disableAnimationsOf(context) ||
-            MediaQuery.reduceMotionOf(context)) {
-          _showDetails(payjoin.id);
         }
-        // With animations on, the completed state stays on screen until the
-        // user leaves (close or View details).
+        // With animations on, including reduced motion, stay on this screen.
       },
       // TODO: PopScope can be removed since we can do pop here now
       child: PopScope(
@@ -98,34 +94,103 @@ class _ReceivePayjoinInProgressScreenState
 
           widget.openHome(context);
         },
-        child: Scaffold(
-          appBar: AppBar(
-            forceMaterialTransparency: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: BullTopBar(
-              title: context.loc.receiveTitle,
-              onAction: () => widget.openHome(context),
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(3.0),
-              child: BullFadingLinearProgress(
-                trigger: isBroadcasting,
-                backgroundColor: context.appColors.onPrimary,
-                foregroundColor: context.appColors.primary,
+        child: showViews
+            ? Builder(
+                builder: (context) {
+                  final steps = [
+                    context.loc.receiveStepOriginalReceived,
+                    context.loc.receiveStepProposalSent,
+                    context.loc.receiveStepPaymentDetected,
+                    context.loc.receiveStepConfirmed,
+                  ];
+                  final progress = receivePayjoinProgress(
+                    steps: steps,
+                    status: payjoin.status,
+                    hasOriginal: payjoin.hasOriginalTransaction,
+                    hasProposal: payjoin.hasProposal,
+                    confirmed: confirmed,
+                  );
+                  final status = switch (payjoin.status) {
+                    PayjoinStatus.started => context.loc.receiveStatusStarted,
+                    PayjoinStatus.requested =>
+                      context.loc.receiveStatusRequested,
+                    PayjoinStatus.proposed => context.loc.receiveStatusProposed,
+                    PayjoinStatus.completed => confirmed ? steps[3] : steps[2],
+                    PayjoinStatus.aborted =>
+                      context.loc.receivePayjoinFallbackCompleted,
+                    PayjoinStatus.expired => context.loc.receiveStatusExpired,
+                  };
+                  final labels = TransactionsLocalizations.of(context);
+                  return Scaffold(
+                    body: BullPaymentViews(
+                      showingStatus: !_showDetailsView,
+                      switcher: BullPaymentViewSwitch(
+                        showingStatus: !_showDetailsView,
+                        statusLabel: labels.paymentStatusViewTransaction,
+                        detailsLabel: labels.paymentStatusViewDetails,
+                        semanticsLabel: labels.paymentStatusViewsLabel,
+                        onStatus: () =>
+                            setState(() => _showDetailsView = false),
+                        onDetails: () =>
+                            setState(() => _showDetailsView = true),
+                      ),
+                      views: IndexedStack(
+                        sizing: StackFit.expand,
+                        index: _showDetailsView ? 1 : 0,
+                        children: [
+                          TickerMode(
+                            enabled: !_showDetailsView,
+                            child: BullPaymentTransition(
+                              network: BullPaymentNetwork.payjoin,
+                              direction: BullPaymentDirection.incoming,
+                              phase: receivePayjoinPhase(
+                                status: payjoin.status,
+                                confirmed: confirmed,
+                              ),
+                              progress: progress,
+                              status: confirmed
+                                  ? steps.last
+                                  : payjoin.isExpired
+                                  ? context.loc.receiveStatusExpired
+                                  : context.loc.receiveStepPending,
+                              statusTag: status,
+                              onBack: () => widget.openHome(context),
+                              onDone: () {},
+                            ),
+                          ),
+                          const PayjoinInProgressPage(),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              )
+            : Scaffold(
+                appBar: AppBar(
+                  forceMaterialTransparency: true,
+                  automaticallyImplyLeading: false,
+                  flexibleSpace: BullTopBar(
+                    title: context.loc.receiveTitle,
+                    onAction: () => widget.openHome(context),
+                  ),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(3.0),
+                    child: BullFadingLinearProgress(
+                      trigger: isBroadcasting,
+                      backgroundColor: context.appColors.onPrimary,
+                      foregroundColor: context.appColors.primary,
+                    ),
+                  ),
+                ),
+                body: const PayjoinInProgressPage(),
               ),
-            ),
-          ),
-          body: const PayjoinInProgressPage(),
-        ),
       ),
     );
   }
 }
 
 class PayjoinInProgressPage extends StatelessWidget {
-  final VoidCallback? onAnimationDone;
-
-  const PayjoinInProgressPage({super.key, this.onAnimationDone});
+  const PayjoinInProgressPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -162,10 +227,7 @@ class PayjoinInProgressPage extends StatelessWidget {
     final payjoinId = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.id,
     );
-    // A real payjoin: the counterparty actually completed the negotiation
-    // and its own transaction was broadcast. This screen auto-navigates
-    // away as soon as this becomes true (see the BlocListener above), so in
-    // practice this branch is only ever on screen for a brief instant.
+    // A completed negotiation is not necessarily confirmed on chain.
     final isRealPayjoin = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.isCompleted == true,
     );
@@ -229,36 +291,6 @@ class PayjoinInProgressPage extends StatelessWidget {
               mainAxisAlignment: .spaceEvenly,
               children: [
                 if (progress != null) ...[
-                  SizedBox(
-                    height: 110,
-                    child: BullPaymentAnimation(
-                      network: BullPaymentNetwork.payjoin,
-                      direction: BullPaymentDirection.incoming,
-                      statusTag: switch (payjoin?.status) {
-                        PayjoinStatus.started =>
-                          context.loc.receiveStatusStarted,
-                        PayjoinStatus.requested =>
-                          context.loc.receiveStatusRequested,
-                        PayjoinStatus.proposed =>
-                          context.loc.receiveStatusProposed,
-                        PayjoinStatus.completed =>
-                          confirmed
-                              ? context.loc.receiveStepConfirmed
-                              : context.loc.receiveStepPaymentDetected,
-                        PayjoinStatus.aborted =>
-                          context.loc.receivePayjoinFallbackCompleted,
-                        PayjoinStatus.expired =>
-                          context.loc.receiveStatusExpired,
-                        null => null,
-                      },
-                      phase: receivePayjoinPhase(
-                        status: payjoin!.status,
-                        confirmed: confirmed,
-                      ),
-                      progress: progress,
-                      onDone: onAnimationDone,
-                    ),
-                  ),
                   Semantics(
                     liveRegion: true,
                     child: Wrap(
@@ -269,7 +301,9 @@ class PayjoinInProgressPage extends StatelessWidget {
                             label: progress.steps[i],
                             value: progress.skippedAt == i
                                 ? context.loc.receiveStepSkipped
-                                : i < progress.completed
+                                : i < progress.completed ||
+                                      (confirmed &&
+                                          i == progress.steps.length - 1)
                                 ? context.loc.receiveStepComplete
                                 : progress.failedAt == i
                                 ? context.loc.receiveStepFailed
@@ -278,7 +312,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                               child: Text(
                                 '${progress.skippedAt == i
                                     ? '— '
-                                    : i < progress.completed
+                                    : i < progress.completed || (confirmed && i == progress.steps.length - 1)
                                     ? '✓ '
                                     : progress.failedAt == i
                                     ? '✕ '
@@ -337,21 +371,25 @@ class PayjoinInProgressPage extends StatelessWidget {
                         ),
                       ] else if (isRealPayjoin) ...[
                         BullText(
-                          context.loc.receivePaymentInProgress,
+                          confirmed
+                              ? context.loc.receivePaymentReceived
+                              : context.loc.receivePaymentInProgress,
                           style: context.bullType.subtitle.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                           maxLines: 2,
                           textAlign: .center,
                         ),
-                        const Gap(8),
-                        BullText(
-                          context.loc.receiveBitcoinConfirmationMessage,
-                          style: context.bullType.body,
-                          color: context.appColors.secondary,
-                          maxLines: 4,
-                          textAlign: .center,
-                        ),
+                        if (!confirmed) ...[
+                          const Gap(8),
+                          BullText(
+                            context.loc.receiveBitcoinConfirmationMessage,
+                            style: context.bullType.body,
+                            color: context.appColors.secondary,
+                            maxLines: 4,
+                            textAlign: .center,
+                          ),
+                        ],
                       ] else if (isExpired) ...[
                         BullText(
                           context.loc.receivePayjoinExpired,
