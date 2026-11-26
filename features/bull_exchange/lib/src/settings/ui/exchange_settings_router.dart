@@ -7,12 +7,14 @@ import 'package:go_router/go_router.dart';
 import '../../default_wallets/default_wallets_payout_fields.dart';
 import '../../default_wallets/ui/default_wallets_router.dart';
 import '../../session/exchange_access_builder.dart';
+import '../domain/usecases/delete_exchange_account_usecase.dart';
 import '../domain/usecases/get_account_info_usecase.dart';
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/get_exchange_statistics_usecase.dart';
 import '../domain/usecases/get_secure_file_upload_status_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
 import '../domain/usecases/pick_exchange_document_usecase.dart';
+import '../domain/usecases/sign_out_of_exchange_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
 import '../presentation/account_info_cubit.dart';
 import '../presentation/exchange_preferences_bloc.dart';
@@ -94,7 +96,8 @@ class ExchangeSettingsRouter {
         signedOutMessage: config.signedOutMessage,
         buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
           showDeleteAccount: showDeleteAccount,
-          exchange: config.exchange,
+          deleteAccount: DeleteExchangeAccountUsecase(config.exchange()),
+          signOut: SignOutOfExchangeUsecase.of(config.exchange()),
           failureMessage: config.accountFailureMessage,
           hasAccount: config.hasAccount,
         ),
