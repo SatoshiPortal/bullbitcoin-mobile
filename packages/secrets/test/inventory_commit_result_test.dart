@@ -9,6 +9,10 @@ import 'package:secrets/src/data/access_repository.dart';
 import 'package:secrets/src/data/backup_guard.dart';
 import 'package:secrets/src/data/inventory_repository.dart';
 import 'package:secrets/src/data/boundary.dart';
+import 'package:secrets/src/data/derivation_repository.dart';
+import 'package:secrets/src/data/secrets_database.drift.dart'
+    show DerivationsCompanion;
+import 'package:secrets/src/domain/registered_wallet.dart';
 import 'package:secrets/src/data/inventory_session.dart';
 import 'package:secrets/src/data/secrets_database.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -203,8 +207,101 @@ void main() {
     },
   );
 
+  test('a committed wallet registration keeps its row and result', () async {
+    final barrier = _CommitBarrier();
+    final database = await seeded(barrier);
+    final returned = await lockAfterCommit(
+      barrier,
+      () => InventoryRepository(database).register(
+        const RegisteredWallet(
+          id: 'w2',
+          secretFingerprint: null,
+          masterFingerprint: '01234567',
+          signer: 'none',
+          network: 'bitcoinMainnet',
+          xpub: 'x',
+          externalDescriptor: 'e',
+          internalDescriptor: 'i',
+          label: null,
+          birthday: null,
+          isDefault: false,
+        ),
+        view: 'all',
+        guard: BackupGuard(null),
+      ),
+    );
+    final ids = await database.customSelect('SELECT id FROM wallets').get();
+    await database.close();
+    expect(ids.map((row) => row.read<String>('id')), containsAll(['w1', 'w2']));
+    expect(returned, isA<Ok<void, SecretFailure>>());
+  });
+
   test(
-    'only commands are acknowledged after a commit, never reads or reveals',
+    'committed wallet properties keep their durable value and result',
+    () async {
+      final barrier = _CommitBarrier();
+      final database = await seeded(barrier);
+      final returned = await lockAfterCommit(
+        barrier,
+        () => InventoryRepository(database).updateProperties(
+          view: 'all',
+          id: 'w1',
+          label: 'savings',
+          birthday: null,
+          isDefault: true,
+        ),
+      );
+      final rows = await database
+          .customSelect('SELECT label, is_default FROM wallets')
+          .get();
+      await database.close();
+      expect(rows.single.read<String>('label'), 'savings');
+      expect(rows.single.read<bool>('is_default'), isTrue);
+      expect(returned, isA<Ok<void, SecretFailure>>());
+    },
+  );
+
+  for (final change in ['alias', 'status']) {
+    test(
+      'a committed derivation $change change keeps its durable value and result',
+      () async {
+        final barrier = _CommitBarrier();
+        final database = await seeded(barrier);
+        await database.customStatement(
+          "INSERT INTO view_members (view_id, member) VALUES ('all', 'secret:89abcdef')",
+        );
+        await database.customStatement(
+          "INSERT INTO derivations (parent_fingerprint, path, application, status, alias) "
+          "VALUES ('89abcdef', 'p', 'hex', 'active', NULL)",
+        );
+        final returned = await lockAfterCommit(
+          barrier,
+          () => DerivationRepository(database).update(
+            view: 'all',
+            parentFingerprint: '89abcdef',
+            path: 'p',
+            change: change == 'alias'
+                ? const DerivationsCompanion(alias: Value('renamed'))
+                : const DerivationsCompanion(status: Value('revoked')),
+          ),
+        );
+        final rows = await database
+            .customSelect('SELECT status, alias FROM derivations')
+            .get();
+        await database.close();
+        expect(
+          change == 'alias'
+              ? rows.single.read<String>('alias')
+              : rows.single.read<String>('status'),
+          change == 'alias' ? 'renamed' : 'revoked',
+        );
+        expect(returned, isA<Ok<void, SecretFailure>>());
+      },
+    );
+  }
+
+  test(
+    'only commands that return no value are acknowledged after a commit',
     () {
       final source = File('lib/src/public/secrets_inventory.dart')
           .readAsStringSync();
@@ -220,13 +317,32 @@ void main() {
           'removeCredential',
           'setBackgroundEnabled',
           'removeWallet',
+          'registerWallet',
+          'setWalletProperties',
+          '_updateDerivation',
         ]),
       );
       expect(
         'preserveCommittedCommand: true'.allMatches(source).length,
-        4,
+        7,
         reason: 'a read, a reveal or a projection must never be preserved',
       );
+      // A reservation hands a value back and may be derived next: it stays
+      // refused after a lock, whatever was committed (see `lock`).
+      for (final reservation in [
+        'reserveHexDerivation',
+        'reserveMnemonicDerivation',
+      ]) {
+        final body = RegExp(
+          '$reservation\\([^;]*?\\);',
+          dotAll: true,
+        ).firstMatch(source)!.group(0)!;
+        expect(
+          body,
+          isNot(contains('preserveCommittedCommand')),
+          reason: reservation,
+        );
+      }
     },
   );
 }
