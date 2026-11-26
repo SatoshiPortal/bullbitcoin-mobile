@@ -2,7 +2,7 @@ import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
 import 'package:bull_exchange/src/pay/ui/pay_flow_shell.dart';
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
-import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
 import 'package:bull_exchange/src/sell/ui/sell_flow_shell.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';

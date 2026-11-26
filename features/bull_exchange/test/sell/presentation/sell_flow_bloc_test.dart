@@ -4,7 +4,7 @@ import 'package:clock/clock.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
-import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
 import 'package:bull_exchange/src/sell/presentation/sell_flow_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';

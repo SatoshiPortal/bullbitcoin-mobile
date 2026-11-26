@@ -1,7 +1,7 @@
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
-import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
