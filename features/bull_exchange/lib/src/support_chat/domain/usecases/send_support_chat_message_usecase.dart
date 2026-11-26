@@ -9,14 +9,16 @@ class SendSupportChatMessageUsecase {
 
   const SendSupportChatMessageUsecase({required this._exchange});
 
+  /// Sends [text] with [attachments]; a message without attachments is sent
+  /// without the attachments field.
   @useResult
   Future<Result<void, ExchangeSupportChatFailure>> execute({
     required String text,
-    List<SupportChatMessageAttachment>? attachments,
+    List<SupportChatMessageAttachment> attachments = const [],
   }) async =>
       (await _exchange.sendSupportMessage(
         text: text,
-        attachments: attachments,
+        attachments: attachments.isEmpty ? null : attachments,
       )).mapErr(
         (failure) => switch (failure) {
           ExchangeNotAuthenticatedFailure() => const NotAuthenticatedFailure(),
