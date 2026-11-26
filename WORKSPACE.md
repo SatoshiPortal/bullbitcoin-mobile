@@ -307,4 +307,4 @@ flowchart TD
 | [`swap_feature`](features/swap/pubspec.yaml) | `bull_logger`, `bull_pricer`, `bull_ui`, `electrum`, `fees`, `labels`, `preferences`, `primitives`, `satoshifier`, `secrets`, `spend`, `swaps`, `sync` | — |
 | [`transactions`](features/transactions/pubspec.yaml) | `ark`, `bull_logger`, `bull_payjoin`, `bull_ui`, `exchange`, `fees`, `file_system`, `labels`, `legacy_storage`, `mempool`, `preferences`, `primitives`, `secrets`, `swaps`, `sync` | — |
 | [`wallet_import`](features/wallet_import/pubspec.yaml) | `bull_logger`, `bull_ui`, `electrum`, `preferences`, `primitives`, `provisioning`, `satoshifier`, `screen_privacy`, `secrets`, `sync` | `rust_bindings` |
-| [`wizard`](features/wizard/pubspec.yaml) | `background_tasks`, `bull_logger`, `bull_pricer`, `bull_ui`, `exchange`, `notifications`, `novlang`, `preferences`, `primitives` | — |
+| [`wizard`](features/wizard/pubspec.yaml) | `background_tasks`, `bull_logger`, `bull_pricer`, `bull_ui`, `exchange`, `notifications`, `novlang`, `preferences`, `primitives` | `bull_reporting` |
