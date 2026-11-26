@@ -76,6 +76,14 @@ void main() {
     expect(locks, 1);
   });
 
+  test('resume does not lock a second time when the timer already fired', () {
+    policy.onLifecycle(AppLifecycleState.paused);
+    clock = clock.add(const Duration(seconds: 61));
+    timers.scheduled.single.run();
+    policy.onLifecycle(AppLifecycleState.resumed);
+    expect(locks, 1);
+  });
+
   test('a flow that leaves the app on purpose holds the lock off', () {
     final scanner = policy.suspendAutoLock('scanner');
     policy.onLifecycle(AppLifecycleState.paused);
