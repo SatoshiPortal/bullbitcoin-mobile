@@ -1,74 +1,81 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
 import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../orders/order_usecase_fakes.dart';
 import '../../payout/payout_requirements_fakes.dart';
 import '../withdraw_fixtures.dart';
+import '../withdraw_usecase_fakes.dart';
 
-final class _Calls {
+/// Fake use cases that log each call with the session it got.
+final class _Usecases {
   final log = <String>[];
-  final sessions = <ExchangeSession>[];
+  final sessions = <ExchangeSession>{};
   Completer<GatedWrite<ExchangeWrite<WithdrawOrder>>> confirmAnswer =
       Completer();
   ExchangeRead<Order> reread = ReadGot(withdrawOrder());
 
-  PayoutRequirementsUsecases get requirements => unusedPayoutRequirements();
-
-  WithdrawFlowCalls of(ExchangeSession session) {
+  void _called(ExchangeSession session, String call) {
     sessions.add(session);
-    return (
-      loadContext: () async {
-        log.add('load');
-        return ReadGot(withdrawContext);
-      },
-      rate: (market) async {
-        log.add('rate ${market.currency.code}');
-        return const ReadGot(50000.0);
-      },
-      create: (effect) async {
-        log.add('create ${effect.attempt}');
-        return OrderCreateAnswered(
-          effect.attempt,
-          GateAdmitted(WriteDone(withdrawOrder())),
-        );
-      },
-      findCreated: (request, sentAt) async {
-        log.add('find');
-        return const ReadMissing();
-      },
-      confirm: (effect) async {
-        log.add('confirm ${effect.attempt}');
-        return ConfirmAnswered(effect.attempt, await confirmAnswer.future);
-      },
-      readOrder: (orderId) async {
-        log.add('read $orderId');
-        return reread;
-      },
-      requirements: requirements,
-    );
+    log.add(call);
   }
+
+  WithdrawFlowBloc bloc(
+    ExchangeSession? session,
+    Stream<ExchangeAccess> accessChanges,
+  ) => WithdrawFlowBloc(
+    session: session,
+    accessChanges: accessChanges,
+    loadContext: FakeLoadWithdrawContextUsecase((session) async {
+      _called(session, 'load');
+      return ReadGot(withdrawContext);
+    }),
+    getMarketRate: FakeGetMarketRateUsecase((market) async {
+      log.add('rate ${market.currency.code}');
+      return const ReadGot(50000.0);
+    }),
+    createOrder: FakeCreateWithdrawOrderUsecase((session, effect) async {
+      _called(session, 'create ${effect.attempt}');
+      return OrderCreateAnswered(
+        effect.attempt,
+        GateAdmitted(WriteDone(withdrawOrder())),
+      );
+    }),
+    findCreatedOrder: FakeFindCreatedOrderUsecase((
+      session,
+      journal,
+      sentAt,
+    ) async {
+      _called(session, 'find');
+      return const ReadMissing();
+    }),
+    confirmOrder: FakeConfirmWithdrawOrderUsecase((session, effect) async {
+      _called(session, 'confirm ${effect.attempt}');
+      return ConfirmAnswered(effect.attempt, await confirmAnswer.future);
+    }),
+    getOrder: FakeGetOrderUsecase((session, orderId) async {
+      _called(session, 'read $orderId');
+      return reread;
+    }),
+    requirements: unusedPayoutRequirements(),
+  );
 }
 
 Future<void> _settle() => Future<void>.delayed(Duration.zero);
 
 void main() {
-  late _Calls calls;
+  late _Usecases usecases;
   late StreamController<ExchangeAccess> access;
   late WithdrawFlowBloc bloc;
 
   setUp(() {
-    calls = _Calls();
+    usecases = _Usecases();
     access = StreamController<ExchangeAccess>.broadcast();
-    bloc = WithdrawFlowBloc(
-      calls: calls.of,
-      session: withdrawSession,
-      accessChanges: access.stream,
-    );
+    bloc = usecases.bloc(withdrawSession, access.stream);
   });
 
   tearDown(() async {
@@ -87,15 +94,15 @@ void main() {
   test('runs each state effect with the flow session', () async {
     await _settle();
     await _settle();
-    expect(calls.sessions, [withdrawSession]);
-    expect(calls.log, ['load', 'rate CAD']);
+    expect(usecases.log, ['load', 'rate CAD']);
     expect(bloc.state, isA<WithdrawAmount>());
     await send([
       const WithdrawAmountChanged(AmountTyped('10')),
       const WithdrawAmountChanged(AmountContinuePressed()),
       WithdrawRecipientPicked(withdrawBankRecipient),
     ]);
-    expect(calls.log, ['load', 'rate CAD', 'create 1']);
+    expect(usecases.log, ['load', 'rate CAD', 'create 1']);
+    expect(usecases.sessions, {withdrawSession});
     expect(bloc.state, isA<WithdrawReview>());
   });
 
@@ -110,16 +117,17 @@ void main() {
       const WithdrawConfirmPressed(),
       const WithdrawBackPressed(),
     ]);
-    expect(calls.log.where((l) => l.startsWith('confirm')), ['confirm 1']);
+    expect(usecases.log.where((l) => l.startsWith('confirm')), ['confirm 1']);
     expect(bloc.state, isA<WithdrawConfirming>());
-    calls.reread = ReadGot(withdrawOrder(status: OrderStatus.inProgress));
-    calls.confirmAnswer.complete(
+    usecases.reread = ReadGot(withdrawOrder(status: OrderStatus.inProgress));
+    usecases.confirmAnswer.complete(
       const GateAdmitted(WriteOutcomeUnknown('lost')),
     );
     await _settle();
     await _settle();
     await _settle();
-    expect(calls.log.last, 'read w-1');
+    expect(usecases.log.last, 'read w-1');
+    expect(usecases.sessions, {withdrawSession});
     expect(bloc.state, isA<WithdrawDone>());
   });
 
@@ -131,16 +139,11 @@ void main() {
   });
 
   test('without a session nothing runs', () async {
-    final before = [...calls.sessions];
-    final none = WithdrawFlowBloc(
-      calls: calls.of,
-      session: null,
-      accessChanges: const Stream.empty(),
-    );
-    addTearDown(none.close);
+    final none = _Usecases();
+    final bloc = none.bloc(null, const Stream.empty());
+    addTearDown(bloc.close);
     await _settle();
-    expect(none.state, isA<WithdrawSessionEnded>());
-    // Only the setUp's bloc bound calls to a session.
-    expect(calls.sessions, before);
+    expect(bloc.state, isA<WithdrawSessionEnded>());
+    expect(none.log, isEmpty);
   });
 }
