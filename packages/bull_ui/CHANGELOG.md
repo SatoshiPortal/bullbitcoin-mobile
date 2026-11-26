@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Restyle `BullOnchainSendInfoSection` like the send review: values in regular `text`, the fiat equivalent muted and `border` dividers; the fee priority action keeps its accent.
+- Add `BullKeyboardActions.onDone`, run when Done on the iOS accessory bar is tapped, so a form can apply its value there: the iOS number pad has no check key.
+- Add `BullInputText.suffixStyle`, so a large amount can show its unit smaller and muted.
+- Add `BullDropdown.trailing`, a detail such as a wallet balance drawn between the label and the chevron of the closed field, and `BullAmountInput.showUnit`: false hides the unit after a compact amount and aligns the number to the end, for a list that shows the unit once in its header.
 - Outline the `BullDropdown` field in `border`, so it stays readable on a `surface` card; the error outline is unchanged.
 - Restyle `BullPinPad` as medium-weight digits in rounded keys outlined in `text` across the full width, with no fill or keypad panel; scramble and backspace are bare icons in the bottom corners. A held digit key fills like a phone's passcode keys, scrambled or not; a reshuffle rebuilds the keys so the fill vanishes at once instead of fading over another digit. Every tap gives a light selection-click vibration. `BullKeyCap` gains `borderColor`, `pressedColor` and `BullKeyGlyph` a `weight`; the mnemonic keyboard is unchanged.
 - Add `BullPinDots`, the typed PIN as one small dot per digit in a box outlined in `text`, with a show/hide eye and an optional hint under it; it never suggests a PIN length, and the digits never reach the semantics tree.

@@ -109,4 +109,39 @@ void main() {
     expect(find.text(_done), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('iOS Done runs onDone before the keyboard closes', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetViewInsets);
+    final field = FocusNode();
+    addTearDown(field.dispose);
+    var done = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: testBullExtensions),
+        // The official bridge supports keyboard_actions' SDK widgets.
+        // ignore: deprecated_member_use
+        builder: (context, child) => MaterialUiCompatibilityBridge(
+          child: child ?? const SizedBox.shrink(),
+        ),
+        home: Scaffold(
+          body: BullKeyboardActions(
+            doneText: _done,
+            onDone: () => done++,
+            child: TextField(key: const Key('fee'), focusNode: field),
+          ),
+        ),
+      ),
+    );
+    await tester.showKeyboard(find.byKey(const Key('fee')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_done));
+    await tester.pumpAndSettle();
+    expect(done, 1);
+    expect(field.hasFocus, isFalse);
+  });
 }

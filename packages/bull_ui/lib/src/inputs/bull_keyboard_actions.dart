@@ -11,17 +11,24 @@ class BullKeyboardActions extends StatelessWidget {
   final bool nextFocus;
   final bool disableScroll;
 
+  /// Runs when Done on the accessory bar is tapped, before the keyboard
+  /// closes, for a form that applies its value on Done.
+  final VoidCallback? onDone;
+
   const BullKeyboardActions({
     super.key,
     required this.child,
     required this.doneText,
     this.nextFocus = true,
     this.disableScroll = false,
+    this.onDone,
   });
 
   @override
   Widget build(BuildContext context) {
+    final done = onDone;
     return KeyboardActions(
+      onDismissed: done == null ? null : (_) => done(),
       enabled: Theme.of(context).platform == TargetPlatform.iOS,
       navigation: nextFocus ? KeyboardNavigation.auto : KeyboardNavigation.none,
       ensureVisible: !disableScroll,

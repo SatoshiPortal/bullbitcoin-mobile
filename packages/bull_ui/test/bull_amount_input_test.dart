@@ -542,4 +542,33 @@ void main() {
     expect(find.text('Amount too low'), findsOneWidget);
     expect(withError, greaterThan(plain + 40));
   });
+
+  testWidgets('a compact amount without its unit sits at the end', (
+    tester,
+  ) async {
+    final canonical = TextEditingController(text: '2000');
+    addTearDown(canonical.dispose);
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Center(
+          child: SizedBox(
+            width: 112,
+            child: BullAmountInput(
+              canonicalUnit: BitcoinUnit.sats,
+              amountController: canonical,
+              compact: true,
+              showControls: false,
+              showUnit: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('sats'), findsNothing);
+    final field = tester.getRect(find.byType(BullAmountInput));
+    final number = tester.getRect(find.byType(EditableText));
+    expect(field.right - number.right, lessThan(24));
+    expect(number.center.dx, greaterThan(field.center.dx));
+  });
 }

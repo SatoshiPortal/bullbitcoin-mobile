@@ -42,6 +42,7 @@ class BullAmountInput extends StatefulWidget {
     this.inCard = false,
     this.framed = false,
     this.showControls = true,
+    this.showUnit = true,
   });
 
   final BitcoinUnit canonicalUnit;
@@ -76,6 +77,10 @@ class BullAmountInput extends StatefulWidget {
   /// Implies the in-card headline size; do not wrap it in another card.
   final bool framed;
   final bool showControls;
+
+  /// False hides the unit after a compact amount and aligns the number to the
+  /// end, for a list whose unit is shown once in its header.
+  final bool showUnit;
 
   @override
   State<BullAmountInput> createState() => _BullAmountInputState();
@@ -640,7 +645,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
             ? constraints.maxWidth - BullSpacing.xxs
             : constraints.maxWidth - BullSpacing.xs - caretMargin;
         final numberWidth = measure(number).width;
-        final unitWidth = measure(_unitCode).width;
+        final unitWidth = widget.showUnit ? measure(_unitCode).width : 0.0;
         final needed = numberWidth + unitWidth;
         var scale = constraints.maxWidth.isFinite && needed > 0
             ? math.min(1.0, math.max(0.0, available - unitPadding) / needed)
@@ -678,7 +683,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
         final centerControls = !widget.compact && widget.showControls;
         return Row(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: widget.showUnit
+              ? MainAxisAlignment.center
+              : MainAxisAlignment.end,
           children: [
             // Keep the editor at a stable child index as the number changes.
             SizedBox(
@@ -713,7 +720,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
                       readOnly: widget.readOnly,
                       style: style,
                       cursorWidth: cursorWidth,
-                      textAlign: widget.compact
+                      textAlign: widget.compact && widget.showUnit
                           ? TextAlign.center
                           : TextAlign.end,
                       decoration: InputDecoration(
@@ -730,7 +737,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
                             : EdgeInsets.symmetric(vertical: verticalPadding),
                         isDense: true,
                         hint: Row(
-                          mainAxisAlignment: widget.compact
+                          mainAxisAlignment: widget.compact && widget.showUnit
                               ? MainAxisAlignment.center
                               : MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -758,7 +765,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
                 ),
               ),
             ),
-            if (!widget.showControls)
+            if (!widget.showControls && widget.showUnit)
               Text(
                 _unitCode,
                 style: context.bullType.body.copyWith(
