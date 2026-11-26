@@ -3,7 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import 'domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'domain/usecases/cancel_limit_order_usecase.dart';
+import 'domain/usecases/get_active_limit_orders_usecase.dart';
 import 'domain/usecases/get_limit_order_usecase.dart';
 import 'limit_orders_navigation.dart';
 import 'presentation/limit_order_details_bloc.dart';
@@ -48,7 +50,9 @@ class LimitOrdersManagementCard extends StatelessWidget {
     create: (_) {
       final capability = exchange();
       return LimitOrdersListBloc(
-        calls: limitOrdersListCallsOf(capability, capability.currentSession),
+        session: capability.currentSession,
+        getActiveOrders: GetActiveLimitOrdersUsecase(capability),
+        cancelAllOrders: CancelAllLimitOrdersUsecase(capability),
         notifications: capability.notifications,
         refreshRequests: refreshRequests,
       );
