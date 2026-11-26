@@ -49,6 +49,8 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   Future<Result<void, PayjoinFailure>>? _resuming;
   bool _openAttempted = false;
   bool _disposed = false;
+  bool _suspended = false;
+  Future<void>? _suspension;
 
   RecoverablePayjoin(this._open, {this._isCurrent});
 
@@ -72,7 +74,7 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   }
 
   Future<Result<void, PayjoinFailure>> _resume() async {
-    if (_disposed) return Err(_failure);
+    if (_disposed || _suspended) return Err(_failure);
 
     // Unlike a role call, a resume retries an open that already failed: it is
     // the app's periodic recovery point (startup and every foreground return).
@@ -93,7 +95,7 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   /// Returns immediately once an open has been attempted and failed — retrying
   /// per call would hammer unreadable storage; [resume] owns the retry.
   Future<void> _readyForRoleCall() async {
-    if (_disposed) return;
+    if (_disposed || _suspended) return;
     if (_lifecycle == null) {
       final opening = _opening;
       if (opening != null) {
@@ -113,7 +115,9 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   }
 
   Future<void> _ensureOpened() {
-    if (_disposed || _lifecycle != null) return Future<void>.value();
+    if (_disposed || _suspended || _lifecycle != null) {
+      return Future<void>.value();
+    }
     final inFlight = _opening;
     if (inFlight != null) return inFlight;
 
@@ -124,7 +128,7 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
     try {
       switch (await _tryOpen()) {
         case Ok(:final value):
-          if (_disposed) {
+          if (_disposed || _suspended) {
             await value.dispose();
             return;
           }
@@ -159,6 +163,43 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
     await _resuming;
     await _lifecycle?.dispose();
     _lifecycle = null;
+    _delegate = Payjoin.unavailable(_failure);
+  }
+
+  @override
+  Future<void> suspend() {
+    if (_disposed) return Future<void>.value();
+    _suspended = true;
+    _failure = const PayjoinUnavailableFailure('Payjoin is suspended');
+    _delegate = Payjoin.unavailable(_failure);
+    return _suspension ??= _suspendAndClear();
+  }
+
+  Future<void> _suspendAndClear() async {
+    try {
+      // An open or resume already started owns the lifecycle it will produce:
+      // let it settle so the storage is closed rather than leaked.
+      await _opening;
+      await _resuming;
+      final lifecycle = _lifecycle;
+      _lifecycle = null;
+      _delegate = Payjoin.unavailable(_failure);
+      await lifecycle?.dispose();
+    } finally {
+      _suspension = null;
+    }
+  }
+
+  @override
+  void reopen() {
+    // Only a confirmed stop lifts the suspension; no second instance opens
+    // beside one that is still closing.
+    if (!_suspended || _suspension != null) return;
+    _suspended = false;
+    _openAttempted = false;
+    _failure = const PayjoinUnavailableFailure(
+      'Payjoin storage is still opening',
+    );
     _delegate = Payjoin.unavailable(_failure);
   }
 }

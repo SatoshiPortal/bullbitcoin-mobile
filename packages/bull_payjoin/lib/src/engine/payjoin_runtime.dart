@@ -277,6 +277,14 @@ final class _PayjoinLifecycle implements PayjoinLifecycle {
     await _transport?.close();
     await _closeDatabase();
   }
+
+  // The wrapper that reopens storage owns suspension; this lifecycle only
+  // closes for good.
+  @override
+  Future<void> suspend() => dispose();
+
+  @override
+  void reopen() {}
 }
 
 abstract interface class _PayjoinRuntimeContract {
