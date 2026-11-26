@@ -1,5 +1,4 @@
 {
-  "wizardAdvancedOptionsTitle": "উন্নত বিকল্প",
   "getStartedButton": "আৰম্ভ কৰক",
   "@getStartedButton": {
     "description": "Final call-to-action button that finishes the install/upgrade wizard"

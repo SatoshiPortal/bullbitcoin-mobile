@@ -1388,8 +1388,6 @@
   "exchangeBitcoinWalletsCheckAgain": "फिर से जाँचें",
   "exchangeBitcoinWalletsSessionEnded": "आप अब एक्सचेंज में साइन इन नहीं हैं। अपने डिफ़ॉल्ट वॉलेट संपादित करने के लिए फिर से साइन इन करें।",
   "destinationExpectedType": "एक मान्य {type} दर्ज करें या स्कैन करें।",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "अपने वॉलेट से ही Bull Bitcoin के साथ खरीदें, बेचें और भुगतान करें।",
   "exchangeTradingUnavailable": "ट्रेडिंग उपलब्ध नहीं है।",
   "priceChartShowTooltip": "मूल्य चार्ट दिखाएँ",
   "recipientsErrorSaveOutcomeUnknown": "हम पता नहीं लगा सके कि यह प्राप्तकर्ता सहेजा गया या नहीं। इसे फिर से जोड़ने से पहले अपने प्राप्तकर्ता जाँच लें।",

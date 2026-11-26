@@ -1388,8 +1388,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Dobara check karein",
   "exchangeBitcoinWalletsSessionEnded": "Aap ab exchange mein signed in nahi hain. Apne default wallets edit karne ke liye dobara sign in karein.",
   "destinationExpectedType": "Ek valid {type} enter ya scan karein.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Apne wallet se hi Bull Bitcoin ke saath kharidein, bechein aur pay karein.",
   "exchangeTradingUnavailable": "Trading available nahi hai.",
   "priceChartShowTooltip": "Price chart dikhayein",
   "recipientsErrorSaveOutcomeUnknown": "Hum pata nahi laga sake ki yeh recipient save hua ya nahi. Ise dobara add karne se pehle apne recipients check karein.",

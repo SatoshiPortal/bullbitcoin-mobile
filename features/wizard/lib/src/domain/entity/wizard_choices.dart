@@ -86,7 +86,6 @@ class WizardChoices {
     AppThemeMode? themeMode,
     String? defaultCurrency,
     ConsentArg reportingConsent = _consentUnset,
-    bool? exchangeAccess,
     bool confirmExchange = false,
     bool? backgroundTasks,
     Environment? network,
@@ -108,7 +107,7 @@ class WizardChoices {
     if (screenPrivacy != null) t.add(WizardField.screenPrivacy);
     if (clearScreenPrivacy) t.remove(WizardField.screenPrivacy);
     return WizardChoices(
-      exchangeAccess: exchangeAccess ?? this.exchangeAccess,
+      exchangeAccess: exchangeAccess,
       backgroundTasks: backgroundTasks ?? this.backgroundTasks,
       network: clearNetwork ? null : network ?? this.network,
       screenPrivacy: clearScreenPrivacy

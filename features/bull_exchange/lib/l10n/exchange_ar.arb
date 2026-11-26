@@ -1385,8 +1385,6 @@
   "exchangeBitcoinWalletsCheckAgain": "تحقّق مرة أخرى",
   "exchangeBitcoinWalletsSessionEnded": "لم تعد مسجّلًا الدخول إلى المنصة. سجّل الدخول مرة أخرى لتعديل محافظك الافتراضية.",
   "destinationExpectedType": "أدخل أو امسح {type} صالحًا.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "اشترِ وبِع وادفع باستخدام Bull Bitcoin مباشرةً من محفظتك.",
   "exchangeTradingUnavailable": "التداول غير متاح.",
   "priceChartShowTooltip": "عرض مخطط السعر",
   "recipientsErrorSaveOutcomeUnknown": "لم نتمكن من معرفة ما إذا كان هذا المستلم قد حُفظ. تحقّق من قائمة المستلمين قبل إضافته مرة أخرى.",

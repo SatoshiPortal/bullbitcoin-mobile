@@ -1385,8 +1385,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Tekrar kontrol et",
   "exchangeBitcoinWalletsSessionEnded": "Artık borsada oturumunuz açık değil. Varsayılan cüzdanlarınızı düzenlemek için tekrar giriş yapın.",
   "destinationExpectedType": "Geçerli bir {type} girin veya tarayın.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Bull Bitcoin ile doğrudan cüzdanınızdan alın, satın ve ödeme yapın.",
   "exchangeTradingUnavailable": "Alım satım kullanılamıyor.",
   "priceChartShowTooltip": "Fiyat grafiğini göster",
   "recipientsErrorSaveOutcomeUnknown": "Bu alıcının kaydedilip kaydedilmediğini anlayamadık. Tekrar eklemeden önce alıcılarınızı kontrol edin.",

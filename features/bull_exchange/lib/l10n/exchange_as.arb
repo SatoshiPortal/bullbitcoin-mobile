@@ -1117,8 +1117,6 @@
   "exchangeBitcoinWalletsCheckAgain": "পুনৰ পৰীক্ষা কৰক",
   "exchangeBitcoinWalletsSessionEnded": "আপুনি এতিয়া Exchange-ত ছাইন ইন কৰা অৱস্থাত নাই। আপোনাৰ ডিফল্ট ৱালেট সম্পাদনা কৰিবলৈ পুনৰ ছাইন ইন কৰক।",
   "destinationExpectedType": "এটা বৈধ {type} দিয়ক বা স্কেন কৰক।",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "আপোনাৰ ৱালেটৰ পৰাই পোনপটীয়াকৈ Bull Bitcoin-ৰ সৈতে কিনক, বিক্ৰী কৰক আৰু পৰিশোধ কৰক।",
   "exchangeTradingUnavailable": "ট্ৰেডিং উপলব্ধ নহয়।",
   "priceChartShowTooltip": "মূল্যৰ চাৰ্ট দেখুৱাওক",
   "recipientsErrorSaveOutcomeUnknown": "এই প্ৰাপকজনক সংৰক্ষণ কৰা হ'ল নে নাই আমি জানিব নোৱাৰিলোঁ। পুনৰ যোগ কৰাৰ আগতে আপোনাৰ প্ৰাপকৰ তালিকা পৰীক্ষা কৰক।",

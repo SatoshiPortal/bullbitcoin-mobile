@@ -1206,8 +1206,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Провери отново",
   "exchangeBitcoinWalletsSessionEnded": "Вече не сте влезли в борсата. Влезте отново, за да редактирате портфейлите си по подразбиране.",
   "destinationExpectedType": "Въведете или сканирайте валиден {type}.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Купувайте, продавайте и плащайте с Bull Bitcoin директно от портфейла си.",
   "exchangeTradingUnavailable": "Търговията не е налична.",
   "priceChartShowTooltip": "Показване на графиката на цената",
   "recipientsErrorSaveOutcomeUnknown": "Не можахме да разберем дали този получател е запазен. Проверете получателите си, преди да го добавите отново.",

@@ -1388,8 +1388,6 @@
   "exchangeBitcoinWalletsCheckAgain": "আবার যাচাই করুন",
   "exchangeBitcoinWalletsSessionEnded": "আপনি আর এক্সচেঞ্জে সাইন ইন করা নেই। আপনার ডিফল্ট ওয়ালেট সম্পাদনা করতে আবার সাইন ইন করুন।",
   "destinationExpectedType": "একটি বৈধ {type} লিখুন বা স্ক্যান করুন।",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "আপনার ওয়ালেট থেকেই সরাসরি Bull Bitcoin দিয়ে কিনুন, বিক্রি করুন ও পেমেন্ট করুন।",
   "exchangeTradingUnavailable": "ট্রেডিং উপলব্ধ নয়।",
   "priceChartShowTooltip": "দামের চার্ট দেখান",
   "recipientsErrorSaveOutcomeUnknown": "এই প্রাপককে সংরক্ষণ করা হয়েছে কি না আমরা বুঝতে পারিনি। আবার যোগ করার আগে আপনার প্রাপকদের তালিকা যাচাই করুন।",

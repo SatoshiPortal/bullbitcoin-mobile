@@ -1,5 +1,4 @@
 {
-  "wizardAdvancedOptionsTitle": "Advanced Options",
   "@@locale": "hi_Latn",
   "settingsLanguageTitle": "Bhaasha",
   "@settingsLanguageTitle": {
@@ -73,7 +72,7 @@
   "@wizardMissionYes": {
     "description": "Affirmative response button on the wizard error-reporting page"
   },
-  "wizardMissionNo": "Nahi",
+  "wizardMissionNo": "Nahin",
   "@wizardMissionNo": {
     "description": "Negative response button on the wizard error-reporting page"
   },

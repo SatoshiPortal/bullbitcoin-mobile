@@ -819,8 +819,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Angalia tena",
   "exchangeBitcoinWalletsSessionEnded": "Hujaingia tena kwenye exchange. Ingia tena ili kuhariri pochi zako chaguo-msingi.",
   "destinationExpectedType": "Weka au changanua {type} halali.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Nunua, uza na ulipe kwa Bull Bitcoin moja kwa moja kutoka kwenye pochi yako.",
   "exchangeTradingUnavailable": "Biashara haipatikani.",
   "priceChartShowTooltip": "Onyesha chati ya bei",
   "recipientsErrorSaveOutcomeUnknown": "Hatukuweza kujua kama mpokeaji huyu alihifadhiwa. Angalia wapokeaji wako kabla ya kumwongeza tena.",

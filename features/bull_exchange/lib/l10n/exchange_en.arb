@@ -1323,14 +1323,6 @@
       }
     }
   },
-  "wizardExchangeTitle": "BULL Exchange",
-  "@wizardExchangeTitle": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
-  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet.",
-  "@wizardExchangeDescription": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
   "settingsTermsOfServiceTitle": "Terms of Service",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"

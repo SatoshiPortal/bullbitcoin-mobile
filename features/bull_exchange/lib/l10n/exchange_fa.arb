@@ -1385,8 +1385,6 @@
   "exchangeBitcoinWalletsCheckAgain": "بررسی دوباره",
   "exchangeBitcoinWalletsSessionEnded": "دیگر وارد صرافی نیستید. برای ویرایش کیف پول‌های پیش‌فرض دوباره وارد شوید.",
   "destinationExpectedType": "یک {type} معتبر وارد یا اسکن کنید.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "مستقیماً از کیف پول خود با Bull Bitcoin بخرید، بفروشید و پرداخت کنید.",
   "exchangeTradingUnavailable": "معامله در دسترس نیست.",
   "priceChartShowTooltip": "نمایش نمودار قیمت",
   "recipientsErrorSaveOutcomeUnknown": "نتوانستیم بفهمیم این گیرنده ذخیره شده است یا نه. پیش از افزودن دوباره، فهرست گیرندگان خود را بررسی کنید.",
