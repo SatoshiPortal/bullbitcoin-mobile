@@ -2426,12 +2426,21 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
               );
             } catch (e) {
               if (e is SwapsFailure) rethrow;
-              if (_isLockupNotVisible(e)) rethrow;
-              swapsLog.severe(
-                'SWAPS: coop claim failed for ${swap.id} '
-                '(${_errorMessage(e)}); trying script path',
-                error: e,
-              );
+              // A cooperative failure can carry text Boltz wrote, after it
+              // was sent the preimage. Only the script path, which never
+              // asks Boltz, may conclude that the lockup is not there.
+              if (_isLockupNotVisible(e)) {
+                swapsLog.fine(
+                  'SWAPS: coop claim for ${swap.id} reports no lockup; '
+                  'checking on the script path',
+                );
+              } else {
+                swapsLog.severe(
+                  'SWAPS: coop claim failed for ${swap.id} '
+                  '(${_errorMessage(e)}); trying script path',
+                  error: e,
+                );
+              }
               // The script-path claim is a larger transaction: price it on
               // its own size so it does not go out under the rate.
               absoluteFees = await feesFor(cooperative: false);
