@@ -322,7 +322,7 @@ void main() {
     for (final MapEntry(key: name, value: (event, changes)) in _table.entries) {
       for (final (index, state) in _states.indexed) {
         test('$name from state $index', () {
-          final next = transitionSupportChat(state, event);
+          final next = state.next(event);
           if (changes[index] case final expected?) {
             expect(next.state, expected);
           } else {
@@ -350,98 +350,64 @@ void main() {
     });
 
     test('a push refreshes page 1, older asks for the next page', () {
-      expect(
-        transitionSupportChat(_states[2], const ChatPushed()).effects,
-        const [ChatFetchPage(4, 1)],
-      );
-      expect(
-        transitionSupportChat(_states[2], const ChatOlderRequested()).effects,
-        const [ChatFetchPage(4, 2)],
-      );
+      expect((_states[2]).next(const ChatPushed()).effects, const [
+        ChatFetchPage(4, 1),
+      ]);
+      expect((_states[2]).next(const ChatOlderRequested()).effects, const [
+        ChatFetchPage(4, 2),
+      ]);
     });
 
     test('the newest page on screen tells that every message was seen', () {
+      expect((_states[0]).next(ChatPageLoaded(1, Ok([_m1]))).effects, const [
+        ChatNewestShown(),
+      ]);
       expect(
-        transitionSupportChat(_states[0], ChatPageLoaded(1, Ok([_m1]))).effects,
-        const [ChatNewestShown()],
-      );
-      expect(
-        transitionSupportChat(
-          _states[0],
-          const ChatPageLoaded(1, Err(_loadFailure)),
-        ).effects,
+        (_states[0]).next(const ChatPageLoaded(1, Err(_loadFailure))).effects,
         isEmpty,
       );
-      final refreshing = transitionSupportChat(
-        _states[2],
-        const ChatPushed(),
-      ).state;
+      final refreshing = (_states[2]).next(const ChatPushed()).state;
+      expect(refreshing.next(ChatPageLoaded(4, Ok([_m2, _m1]))).effects, const [
+        ChatNewestShown(),
+      ]);
       expect(
-        transitionSupportChat(
-          refreshing,
-          ChatPageLoaded(4, Ok([_m2, _m1])),
-        ).effects,
-        const [ChatNewestShown()],
-      );
-      expect(
-        transitionSupportChat(
-          refreshing,
-          const ChatPageLoaded(4, Err(_loadFailure)),
-        ).effects,
+        refreshing.next(const ChatPageLoaded(4, Err(_loadFailure))).effects,
         isNot(contains(const ChatNewestShown())),
       );
       expect(
-        transitionSupportChat(
-          _states[5],
-          ChatPageLoaded(3, Ok([_m2, _m1])),
-        ).effects,
+        (_states[5]).next(ChatPageLoaded(3, Ok([_m2, _m1]))).effects,
         isEmpty,
         reason: 'an older page is not the newest one',
       );
     });
 
     test('send, pick, logs and open start their effect', () {
-      expect(
-        transitionSupportChat(_states[13], const ChatSendPressed()).effects,
-        const [
-          ChatSend('local-4', 'hi', [_att]),
-        ],
-      );
-      expect(
-        transitionSupportChat(_states[2], const ChatAttachPressed()).effects,
-        const [ChatPickImages()],
-      );
-      expect(
-        transitionSupportChat(_states[2], const ChatLogsPressed(_line)).effects,
-        const [ChatBuildLogs()],
-      );
-      expect(
-        transitionSupportChat(_states[2], const ChatOpenPressed('a1')).effects,
-        const [ChatOpenAttachment('a1')],
-      );
+      expect((_states[13]).next(const ChatSendPressed()).effects, const [
+        ChatSend('local-4', 'hi', [_att]),
+      ]);
+      expect((_states[2]).next(const ChatAttachPressed()).effects, const [
+        ChatPickImages(),
+      ]);
+      expect((_states[2]).next(const ChatLogsPressed(_line)).effects, const [
+        ChatBuildLogs(),
+      ]);
+      expect((_states[2]).next(const ChatOpenPressed('a1')).effects, const [
+        ChatOpenAttachment('a1'),
+      ]);
     });
   });
 
   group('the thread', () {
     test('a sent message leaves the outgoing list when the thread shows it '
         '(CHAT-6)', () {
-      final refreshing = transitionSupportChat(
-        _states[11],
-        const ChatPushed(),
-      ).state;
-      final merged = transitionSupportChat(
-        refreshing,
-        ChatPageLoaded(4, Ok([_m3, _m2])),
-      ).state;
+      final refreshing = (_states[11]).next(const ChatPushed()).state;
+      final merged = refreshing.next(ChatPageLoaded(4, Ok([_m3, _m2]))).state;
       expect(merged.outgoing, isEmpty);
       expect((merged.thread as ChatThreadLoaded).messages, [_m3, _m2, _m1]);
     });
 
     test('an overlapping older page adds no duplicates (CHAT-3)', () {
-      final older = transitionSupportChat(
-        _states[5],
-        ChatPageLoaded(3, Ok([_m2, _m1])),
-      ).state;
+      final older = (_states[5]).next(ChatPageLoaded(3, Ok([_m2, _m1]))).state;
       expect((older.thread as ChatThreadLoaded).messages, [_m2, _m1]);
     });
 
@@ -454,10 +420,7 @@ void main() {
             createdAt: DateTime(2025, 1, 1, i),
           ),
       ];
-      final loaded = transitionSupportChat(
-        _states[0],
-        ChatPageLoaded(1, Ok(page)),
-      ).state;
+      final loaded = (_states[0]).next(ChatPageLoaded(1, Ok(page))).state;
       expect((loaded.thread as ChatThreadLoaded).nextPage, 2);
     });
 
@@ -468,10 +431,9 @@ void main() {
         isAdmin: true,
         createdAt: DateTime(2026, 2, 1),
       );
-      final loaded = transitionSupportChat(
-        _states[0],
-        ChatPageLoaded(1, Ok([anonymous])),
-      ).state;
+      final loaded = (_states[0])
+          .next(ChatPageLoaded(1, Ok([anonymous])))
+          .state;
       expect((loaded.thread as ChatThreadLoaded).messages, [anonymous]);
     });
   });
@@ -491,7 +453,7 @@ void main() {
         ..._userEvents,
         for (final e in effects) ..._answers(e),
       ]) {
-        final next = transitionSupportChat(state, event);
+        final next = state.next(event);
         if (!identical(next.state, state)) {
           queue.add((next.state, next.effects));
         }

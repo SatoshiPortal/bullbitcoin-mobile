@@ -287,7 +287,7 @@ void main() {
   for (final (s, state) in _states.indexed) {
     for (final (e, event) in _events.indexed) {
       test('#$s $state + #$e ${event.runtimeType}', () {
-        final next = transitionFundFlow(state, event);
+        final next = state.next(event);
         final expected = _table[s]![e];
         if (expected == null) {
           expect(identical(next.state, state), isTrue, reason: '$next');
@@ -308,7 +308,7 @@ void main() {
       final next = <FundFlowState>[];
       for (final state in frontier) {
         for (final event in _events) {
-          final target = transitionFundFlow(state, event).state;
+          final target = state.next(event).state;
           if (seen.add(target)) next.add(target);
         }
       }
@@ -333,18 +333,20 @@ void main() {
 
     test('consent already on the account opens the rail without the sheet', () {
       final open = FundOpen(_session, _account(consented: true), _cleared);
-      final next = transitionFundFlow(
-        FundPicking(open, Jurisdiction.canada, null),
-        const FundRailPicked(_eTransfer),
-      );
+      final next = FundPicking(
+        open,
+        Jurisdiction.canada,
+        null,
+      ).next(const FundRailPicked(_eTransfer));
       expect(next.state, isA<FundFetching>());
     });
 
     test('Confidential SEPA asks for consent too (FUND-4)', () {
-      final next = transitionFundFlow(
-        FundPicking(_open, Jurisdiction.europe, null),
-        const FundRailPicked(ConfidentialSepaFundingRail()),
-      );
+      final next = FundPicking(
+        _open,
+        Jurisdiction.europe,
+        null,
+      ).next(const FundRailPicked(ConfidentialSepaFundingRail()));
       expect(
         next.state,
         FundConsenting(
@@ -386,7 +388,7 @@ void main() {
         expect(picking.rails, isEmpty);
         expect(
           identical(
-            transitionFundFlow(picking, const FundRailPicked(_eTransfer)).state,
+            picking.next(const FundRailPicked(_eTransfer)).state,
             picking,
           ),
           isTrue,
@@ -395,17 +397,15 @@ void main() {
     );
 
     test('a late answer for an earlier rail is ignored (FUND-5)', () {
-      final back = transitionFundFlow(
-        FundFetching(_open, _req, const FundFromPicking(), 1),
-        const FundBackPressed(),
-      ).state;
-      final wire = transitionFundFlow(
-        back,
-        const FundRailPicked(BankWireFundingRail()),
-      ).state;
+      final back = FundFetching(
+        _open,
+        _req,
+        const FundFromPicking(),
+        1,
+      ).next(const FundBackPressed()).state;
+      final wire = back.next(const FundRailPicked(BankWireFundingRail())).state;
       expect(wire, isA<FundFetching>());
-      final late = transitionFundFlow(
-        wire,
+      final late = wire.next(
         FundInstructionsLoaded(
           1,
           _req,
@@ -418,17 +418,13 @@ void main() {
     test('the consent sheet cannot be left while the consent is sent', () {
       final submitting = _states[6];
       expect(
-        identical(
-          transitionFundFlow(submitting, const FundBackPressed()).state,
-          submitting,
-        ),
+        identical(submitting.next(const FundBackPressed()).state, submitting),
         isTrue,
       );
     });
 
     test('an unknown consent outcome re-reads, never re-sends', () {
-      final next = transitionFundFlow(
-        _states[6],
+      final next = (_states[6]).next(
         const FundConsentSubmitted(
           1,
           Err(ExchangeWriteOutcomeUnknownFailure('timeout')),

@@ -313,7 +313,7 @@ void main() {
     for (final MapEntry(key: name, value: (event, changes)) in _table.entries) {
       for (final (index, state) in _states.indexed) {
         test('$name from state $index', () {
-          final next = transitionDefaultWallets(state, event);
+          final next = state.next(event);
           if (changes[index] case final expected?) {
             expect(next.state, expected);
           } else {
@@ -338,31 +338,22 @@ void main() {
     });
 
     test('retry reads again with a new attempt', () {
-      expect(
-        transitionDefaultWallets(
-          _states[1],
-          const WalletsRetryPressed(),
-        ).effects,
-        const [FetchDefaultWallets(_s, 2)],
-      );
+      expect((_states[1]).next(const WalletsRetryPressed()).effects, const [
+        FetchDefaultWallets(_s, 2),
+      ]);
     });
 
     test('save checks the typed address first', () {
-      expect(
-        transitionDefaultWallets(
-          _states[4],
-          const SlotSavePressed(_btc),
-        ).effects,
-        const [CheckWalletAddress(_btc, 6, 'bc1qnew')],
-      );
+      expect((_states[4]).next(const SlotSavePressed(_btc)).effects, const [
+        CheckWalletAddress(_btc, 6, 'bc1qnew'),
+      ]);
     });
 
     test('a valid address is saved over the existing recipient (DW-2)', () {
       expect(
-        transitionDefaultWallets(
-          _states[6],
-          const SlotChecked(_btc, 5, WalletAddressValid('bc1qnorm')),
-        ).effects,
+        (_states[6])
+            .next(const SlotChecked(_btc, 5, WalletAddressValid('bc1qnorm')))
+            .effects,
         const [
           SaveDefaultWallet(_s, _btc, 5, 'bc1qnorm', existingRecipientId: 'r1'),
         ],
@@ -371,34 +362,31 @@ void main() {
 
     test('an unknown outcome re-reads, never saves again', () {
       expect(
-        transitionDefaultWallets(
-          _states[7],
-          SlotSaveAnswered(
-            _btc,
-            5,
-            _saveAnswer(const Err(ExchangeWriteOutcomeUnknownFailure('504'))),
-          ),
-        ).effects,
+        (_states[7])
+            .next(
+              SlotSaveAnswered(
+                _btc,
+                5,
+                _saveAnswer(
+                  const Err(ExchangeWriteOutcomeUnknownFailure('504')),
+                ),
+              ),
+            )
+            .effects,
         const [VerifyDefaultWallets(_s, _btc, 6)],
       );
     });
 
     test('unset names the saved recipient', () {
-      expect(
-        transitionDefaultWallets(
-          _states[3],
-          const SlotUnsetPressed(_btc),
-        ).effects,
-        const [
-          UnsetDefaultWallet(
-            _s,
-            _btc,
-            6,
-            recipientId: 'r1',
-            address: 'bc1qsaved',
-          ),
-        ],
-      );
+      expect((_states[3]).next(const SlotUnsetPressed(_btc)).effects, const [
+        UnsetDefaultWallet(
+          _s,
+          _btc,
+          6,
+          recipientId: 'r1',
+          address: 'bc1qsaved',
+        ),
+      ]);
     });
   });
 
@@ -406,18 +394,12 @@ void main() {
     test('another slot can not save or unset while one saves', () {
       final state = _ready(const SlotShowing(), lightning: _lnSaving);
       expect(
-        identical(
-          transitionDefaultWallets(state, const SlotUnsetPressed(_btc)).state,
-          state,
-        ),
+        identical(state.next(const SlotUnsetPressed(_btc)).state, state),
         isTrue,
       );
       final editing = _states[11];
       expect(
-        identical(
-          transitionDefaultWallets(editing, const SlotSavePressed(_btc)).state,
-          editing,
-        ),
+        identical(editing.next(const SlotSavePressed(_btc)).state, editing),
         isTrue,
       );
     });
@@ -425,20 +407,14 @@ void main() {
     test('an unset verified as applied empties the slot', () {
       final verifying = _ready(const SlotVerifying(SlotUnsetIntent(), 5));
       expect(
-        transitionDefaultWallets(
-          verifying,
-          const SlotVerified(_btc, 5, Ok(DefaultWallets())),
-        ).state,
+        verifying.next(const SlotVerified(_btc, 5, Ok(DefaultWallets()))).state,
         _ready(
           const SlotShowing(notice: SlotNoticeUnset()),
           saved: const DefaultWallets(),
         ),
       );
       expect(
-        transitionDefaultWallets(
-          verifying,
-          const SlotVerified(_btc, 5, Ok(_saved)),
-        ).state,
+        verifying.next(const SlotVerified(_btc, 5, Ok(_saved))).state,
         _ready(
           const SlotShowing(
             notice: SlotNoticeFailed(ExchangeDefaultWalletDeleteFailure()),
@@ -450,10 +426,7 @@ void main() {
     test('a slot without a saved recipient offers no unset', () {
       final state = _ready(const SlotShowing(), saved: const DefaultWallets());
       expect(
-        identical(
-          transitionDefaultWallets(state, const SlotUnsetPressed(_btc)).state,
-          state,
-        ),
+        identical(state.next(const SlotUnsetPressed(_btc)).state, state),
         isTrue,
       );
     });
@@ -474,7 +447,7 @@ void main() {
         ..._userEvents,
         for (final e in effects) ..._answers(e),
       ]) {
-        final next = transitionDefaultWallets(state, event);
+        final next = state.next(event);
         if (!identical(next.state, state)) {
           queue.add((next.state, next.effects));
         }

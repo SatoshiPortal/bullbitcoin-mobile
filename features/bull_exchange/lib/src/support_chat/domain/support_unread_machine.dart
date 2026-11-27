@@ -12,6 +12,123 @@ enum UnreadProblem { missing, unreachable, malformed, sessionRejected }
 @immutable
 sealed class SupportUnreadState {
   const SupportUnreadState();
+
+  /// The unread count table. A new session always starts from
+  /// [UnreadReading]; a count read before the chat was shown can't bring the
+  /// badge back, because marking starts a new attempt.
+  SupportUnreadState next(SupportUnreadEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (UnreadSignedOut(), UnreadAccessChanged(:final access)) =>
+        switch (access.signedInSession) {
+          null => state,
+          final session => UnreadReading(session, 0),
+        },
+      (UnreadSession(:final session), UnreadAccessChanged(:final access)) =>
+        switch (access.signedInSession) {
+          null => const UnreadSignedOut(),
+          final next when next == session => state,
+          final next => UnreadReading(next, 0),
+        },
+
+      (UnreadSignedOut(), UnreadRecheckRequested()) => state,
+      (
+        UnreadReading(:final session, :final attempt),
+        UnreadRecheckRequested(),
+      ) =>
+        UnreadReading(session, attempt + 1),
+      (
+        UnreadUnavailable(:final session, :final attempt),
+        UnreadRecheckRequested(),
+      ) =>
+        UnreadReading(session, attempt + 1),
+      (
+        UnreadKnown(:final session, :final attempt, :final count) ||
+            UnreadRefreshing(:final session, :final attempt, :final count) ||
+            UnreadStale(:final session, :final attempt, :final count),
+        UnreadRecheckRequested(),
+      ) =>
+        UnreadRefreshing(session, attempt + 1, count),
+      // The read after marking sees whatever arrived meanwhile.
+      (UnreadMarking(), UnreadRecheckRequested()) => state,
+
+      (UnreadSignedOut(), UnreadChatShown()) => state,
+      (UnreadSession(:final session, :final attempt), UnreadChatShown()) =>
+        UnreadMarking(session, attempt + 1),
+
+      (
+        UnreadReading(:final session, :final attempt),
+        UnreadCountAnswered(
+          session: final from,
+          attempt: final at,
+          :final read,
+        ),
+      )
+          when from == session && at == attempt =>
+        _answered(
+          read,
+          got: (count) => UnreadKnown(session, attempt, count),
+          failed: (problem) => UnreadUnavailable(session, attempt, problem),
+        ),
+      (
+        UnreadRefreshing(:final session, :final attempt, :final count),
+        UnreadCountAnswered(
+          session: final from,
+          attempt: final at,
+          :final read,
+        ),
+      )
+          when from == session && at == attempt =>
+        _answered(
+          read,
+          got: (value) => UnreadKnown(session, attempt, value),
+          failed: (problem) => UnreadStale(session, attempt, count, problem),
+        ),
+      (
+        UnreadSignedOut() ||
+            UnreadReading() ||
+            UnreadUnavailable() ||
+            UnreadKnown() ||
+            UnreadRefreshing() ||
+            UnreadStale() ||
+            UnreadMarking(),
+        UnreadCountAnswered(),
+      ) =>
+        state,
+
+      (
+        UnreadMarking(:final session, :final attempt),
+        UnreadMarkAnswered(
+          session: final from,
+          attempt: final at,
+          :final write,
+        ),
+      )
+          when from == session && at == attempt =>
+        switch (write) {
+          // Confirmed with the server; the badge stays clear meanwhile.
+          Ok() => UnreadRefreshing(session, attempt + 1, 0),
+          // Not marked, or not known to be: read the real count.
+          Err(failure: ExchangeWriteRefusedFailure()) ||
+          Err(failure: ExchangeWriteOutcomeUnknownFailure()) ||
+          Err(failure: ExchangeWriteNotSentFailure()) ||
+          Err(
+            failure: ExchangeSessionRejectedFailure(),
+          ) => UnreadReading(session, attempt + 1),
+        },
+      (
+        UnreadSignedOut() ||
+            UnreadReading() ||
+            UnreadUnavailable() ||
+            UnreadKnown() ||
+            UnreadRefreshing() ||
+            UnreadStale() ||
+            UnreadMarking(),
+        UnreadMarkAnswered(),
+      ) =>
+        state,
+    };
+  }
 }
 
 final class UnreadSignedOut extends SupportUnreadState {
@@ -168,108 +285,6 @@ final class UnreadMarkAnswered extends SupportUnreadEvent {
 
   const UnreadMarkAnswered(this.session, this.attempt, this.write);
 }
-
-/// The unread count table. A new session always starts from
-/// [UnreadReading]; a count read before the chat was shown can't bring the
-/// badge back, because marking starts a new attempt.
-SupportUnreadState transitionSupportUnread(
-  SupportUnreadState state,
-  SupportUnreadEvent event,
-) => switch ((state, event)) {
-  (UnreadSignedOut(), UnreadAccessChanged(:final access)) =>
-    switch (access.signedInSession) {
-      null => state,
-      final session => UnreadReading(session, 0),
-    },
-  (UnreadSession(:final session), UnreadAccessChanged(:final access)) =>
-    switch (access.signedInSession) {
-      null => const UnreadSignedOut(),
-      final next when next == session => state,
-      final next => UnreadReading(next, 0),
-    },
-
-  (UnreadSignedOut(), UnreadRecheckRequested()) => state,
-  (UnreadReading(:final session, :final attempt), UnreadRecheckRequested()) =>
-    UnreadReading(session, attempt + 1),
-  (
-    UnreadUnavailable(:final session, :final attempt),
-    UnreadRecheckRequested(),
-  ) =>
-    UnreadReading(session, attempt + 1),
-  (
-    UnreadKnown(:final session, :final attempt, :final count) ||
-        UnreadRefreshing(:final session, :final attempt, :final count) ||
-        UnreadStale(:final session, :final attempt, :final count),
-    UnreadRecheckRequested(),
-  ) =>
-    UnreadRefreshing(session, attempt + 1, count),
-  // The read after marking sees whatever arrived meanwhile.
-  (UnreadMarking(), UnreadRecheckRequested()) => state,
-
-  (UnreadSignedOut(), UnreadChatShown()) => state,
-  (UnreadSession(:final session, :final attempt), UnreadChatShown()) =>
-    UnreadMarking(session, attempt + 1),
-
-  (
-    UnreadReading(:final session, :final attempt),
-    UnreadCountAnswered(session: final from, attempt: final at, :final read),
-  )
-      when from == session && at == attempt =>
-    _answered(
-      read,
-      got: (count) => UnreadKnown(session, attempt, count),
-      failed: (problem) => UnreadUnavailable(session, attempt, problem),
-    ),
-  (
-    UnreadRefreshing(:final session, :final attempt, :final count),
-    UnreadCountAnswered(session: final from, attempt: final at, :final read),
-  )
-      when from == session && at == attempt =>
-    _answered(
-      read,
-      got: (value) => UnreadKnown(session, attempt, value),
-      failed: (problem) => UnreadStale(session, attempt, count, problem),
-    ),
-  (
-    UnreadSignedOut() ||
-        UnreadReading() ||
-        UnreadUnavailable() ||
-        UnreadKnown() ||
-        UnreadRefreshing() ||
-        UnreadStale() ||
-        UnreadMarking(),
-    UnreadCountAnswered(),
-  ) =>
-    state,
-
-  (
-    UnreadMarking(:final session, :final attempt),
-    UnreadMarkAnswered(session: final from, attempt: final at, :final write),
-  )
-      when from == session && at == attempt =>
-    switch (write) {
-      // Confirmed with the server; the badge stays clear meanwhile.
-      Ok() => UnreadRefreshing(session, attempt + 1, 0),
-      // Not marked, or not known to be: read the real count.
-      Err(failure: ExchangeWriteRefusedFailure()) ||
-      Err(failure: ExchangeWriteOutcomeUnknownFailure()) ||
-      Err(failure: ExchangeWriteNotSentFailure()) ||
-      Err(
-        failure: ExchangeSessionRejectedFailure(),
-      ) => UnreadReading(session, attempt + 1),
-    },
-  (
-    UnreadSignedOut() ||
-        UnreadReading() ||
-        UnreadUnavailable() ||
-        UnreadKnown() ||
-        UnreadRefreshing() ||
-        UnreadStale() ||
-        UnreadMarking(),
-    UnreadMarkAnswered(),
-  ) =>
-    state,
-};
 
 SupportUnreadState _answered(
   Result<int, ExchangeReadFailure> read, {

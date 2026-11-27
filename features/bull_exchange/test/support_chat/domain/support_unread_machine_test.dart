@@ -112,10 +112,7 @@ void main() {
     for (final MapEntry(key: name, value: (event, changes)) in _table.entries) {
       for (final (index, state) in _states.indexed) {
         test('$name from state $index', () {
-          expect(
-            transitionSupportUnread(state, event),
-            changes[index] ?? state,
-          );
+          expect(state.next(event), changes[index] ?? state);
         });
       }
     }
@@ -124,15 +121,13 @@ void main() {
   test(
     'a count read before the chat was shown cannot bring the badge back',
     () {
-      var state = transitionSupportUnread(
-        const UnreadKnown(_a, 2, 4),
-        const UnreadRecheckRequested(),
-      );
-      state = transitionSupportUnread(state, const UnreadChatShown());
-      state = transitionSupportUnread(
-        state,
-        const UnreadCountAnswered(_a, 3, Ok(4)),
-      );
+      var state = (const UnreadKnown(
+        _a,
+        2,
+        4,
+      )).next(const UnreadRecheckRequested());
+      state = state.next(const UnreadChatShown());
+      state = state.next(const UnreadCountAnswered(_a, 3, Ok(4)));
       expect(supportUnreadBadge(state), 0);
     },
   );
@@ -177,7 +172,7 @@ void main() {
         const UnreadChatShown(),
         ...answers,
       ]) {
-        queue.add(transitionSupportUnread(state, event));
+        queue.add(state.next(event));
       }
     }
     expect(seen, {for (final state in _states) state.runtimeType});

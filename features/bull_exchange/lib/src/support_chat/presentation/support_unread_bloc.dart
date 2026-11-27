@@ -8,7 +8,7 @@ import '../domain/support_unread_machine.dart';
 import '../domain/usecases/get_unread_support_count_usecase.dart';
 import '../domain/usecases/mark_support_messages_read_usecase.dart';
 
-/// Shell of [transitionSupportUnread]: applies events one at a time and
+/// Shell of [SupportUnreadState.next]: applies events one at a time and
 /// starts the read or the mark of the state it enters. Each answer carries
 /// the session and attempt that started it.
 class SupportUnreadBloc extends Bloc<SupportUnreadEvent, SupportUnreadState> {
@@ -36,7 +36,7 @@ class SupportUnreadBloc extends Bloc<SupportUnreadEvent, SupportUnreadState> {
 
   void _onEvent(SupportUnreadEvent event, Emitter<SupportUnreadState> emit) {
     final previous = state;
-    final next = transitionSupportUnread(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     emit(next);
     switch (next) {

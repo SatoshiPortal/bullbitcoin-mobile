@@ -948,7 +948,7 @@ PayFlowNext _ordering(PayOrdering state, PayFlowEvent event) {
     case PayOrderChanged(:final event):
       stepEvent = event;
     case PaySpendChanged(:final event):
-      var spend = transitionSpendOptions(state.spend, event);
+      var spend = state.spend.next(event);
       if (state.order case OrderQuoted(:final quoted)) {
         final synced = spendTargetFor(
           spend.state,

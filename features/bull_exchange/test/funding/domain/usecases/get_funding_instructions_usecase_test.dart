@@ -15,12 +15,10 @@ const _rows = FundingInstructionRows([
 
 /// The e-Transfer request the real machine fetches for a consented account.
 FundingRequest _request() {
-  final loaded = transitionFundFlow(
-    fundFlowStart(fundingSession).state,
-    FundAccountLoaded(1, Ok(fundingAccount())),
-  );
-  final picked = transitionFundFlow(
-    loaded.state,
+  final loaded = (fundFlowStart(
+    fundingSession,
+  ).state).next(FundAccountLoaded(1, Ok(fundingAccount())));
+  final picked = loaded.state.next(
     const FundRailPicked(EmailETransferFundingRail()),
   );
   return picked.effects.whereType<FundFetchInstructions>().single.request;

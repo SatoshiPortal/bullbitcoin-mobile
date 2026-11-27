@@ -25,6 +25,46 @@ sealed class FundFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  FundFlowNext next(FundFlowEvent event) {
+    final state = this;
+    if (event case FundSessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? _ended
+          : FundFlowNext.stay(state);
+    }
+    return switch (state) {
+      FundLoading() => _loading(state, event),
+      FundRestricted() => _restricted(state, event),
+      FundPicking() => _picking(state, event),
+      FundConsenting() => _consenting(state, event),
+      FundInstitutions() => _institutions(state, event),
+      FundCopInput() => _copInput(state, event),
+      FundVirtualIban() => _virtualIban(state, event),
+      FundFetching() => _fetching(state, event),
+      FundShowing() => _showing(state, event),
+      FundRefused() => _refused(state, event),
+      FundFetchFailed() => _fetchFailed(state, event),
+      // The session-ended page's Back and Done leave the flow.
+      FundSessionEnded() => switch (event) {
+        FundBackPressed() || FundDonePressed() => _closed,
+        FundAccountLoaded() ||
+        FundRetryPressed() ||
+        FundJurisdictionPicked() ||
+        FundRailPicked() ||
+        FundConsentAccepted() ||
+        FundConsentSubmitted() ||
+        FundConsentVerified() ||
+        FundInstitutionsLoaded() ||
+        FundCopSubmitted() ||
+        FundRegularSepaChosen() ||
+        FundInstructionsLoaded() ||
+        FundSessionChanged() => FundFlowNext.stay(state),
+      },
+      FundClosed() => FundFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -448,45 +488,6 @@ FundFlowNext fundFlowStart(ExchangeSession? session) => switch (session) {
   ),
   null => _ended,
 };
-
-FundFlowNext transitionFundFlow(FundFlowState state, FundFlowEvent event) {
-  if (event case FundSessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? _ended
-        : FundFlowNext.stay(state);
-  }
-  return switch (state) {
-    FundLoading() => _loading(state, event),
-    FundRestricted() => _restricted(state, event),
-    FundPicking() => _picking(state, event),
-    FundConsenting() => _consenting(state, event),
-    FundInstitutions() => _institutions(state, event),
-    FundCopInput() => _copInput(state, event),
-    FundVirtualIban() => _virtualIban(state, event),
-    FundFetching() => _fetching(state, event),
-    FundShowing() => _showing(state, event),
-    FundRefused() => _refused(state, event),
-    FundFetchFailed() => _fetchFailed(state, event),
-    // The session-ended page's Back and Done leave the flow.
-    FundSessionEnded() => switch (event) {
-      FundBackPressed() || FundDonePressed() => _closed,
-      FundAccountLoaded() ||
-      FundRetryPressed() ||
-      FundJurisdictionPicked() ||
-      FundRailPicked() ||
-      FundConsentAccepted() ||
-      FundConsentSubmitted() ||
-      FundConsentVerified() ||
-      FundInstitutionsLoaded() ||
-      FundCopSubmitted() ||
-      FundRegularSepaChosen() ||
-      FundInstructionsLoaded() ||
-      FundSessionChanged() => FundFlowNext.stay(state),
-    },
-    FundClosed() => FundFlowNext.stay(state),
-  };
-}
 
 ExchangeSession? _sessionOf(FundFlowState state) => switch (state) {
   FundLoading(:final session) || FundRestricted(:final session) => session,

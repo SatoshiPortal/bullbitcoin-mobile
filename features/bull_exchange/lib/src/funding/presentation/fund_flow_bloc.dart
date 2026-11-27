@@ -10,7 +10,7 @@ import 'package:bull_exchange/src/funding/domain/usecases/save_funding_consent_u
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionFundFlow]: applies events one at a time and runs the
+/// Shell of [FundFlowState.next]: applies events one at a time and runs the
 /// effects of the state it enters through their use cases with the flow's
 /// session. Every answer carries the attempt (and request) that asked for
 /// it; the machine drops stale ones.
@@ -61,7 +61,7 @@ class FundFlowBloc extends Bloc<FundFlowEvent, FundFlowState> {
   late final StreamSubscription<ExchangeAccess> _access;
 
   void _onEvent(FundFlowEvent event, Emitter<FundFlowState> emit) {
-    final next = transitionFundFlow(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

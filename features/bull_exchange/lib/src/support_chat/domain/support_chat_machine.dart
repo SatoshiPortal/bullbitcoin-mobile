@@ -343,6 +343,73 @@ final class SupportChatState {
     notice,
     tickets,
   );
+
+  SupportChatNext next(SupportChatEvent event) {
+    final state = this;
+    return switch ((state.thread, event)) {
+      (final ChatThreadLoading loading, ChatPageLoaded loaded)
+          when loaded.ticket == loading.ticket =>
+        switch (loaded.result) {
+          Ok(:final value) => StepNext(
+            _withThread(
+              state,
+              ChatThreadLoaded(
+                const [],
+                nextPage: value.length < supportChatPageSize ? null : 2,
+              ),
+              value,
+            ),
+            const [ChatNewestShown()],
+          ),
+          Err(:final failure) => StepNext(
+            state.copyWith(thread: ChatThreadLoadFailed(failure)),
+          ),
+        },
+      (final ChatThreadLoaded thread, ChatPageLoaded loaded) => _pageLoaded(
+        state,
+        thread,
+        loaded,
+      ),
+      (ChatThreadLoading() || ChatThreadLoadFailed(), ChatPageLoaded()) =>
+        StepNext.stay(state),
+      (ChatThreadLoadFailed(), ChatRetryPressed()) => StepNext(
+        state.copyWith(
+          thread: ChatThreadLoading(state.tickets + 1),
+          tickets: state.tickets + 1,
+        ),
+        [ChatFetchPage(state.tickets + 1, 1)],
+      ),
+      (ChatThreadLoading() || ChatThreadLoaded(), ChatRetryPressed()) =>
+        StepNext.stay(state),
+      (final ChatThreadLoaded thread, ChatPushed()) => _refresh(state, thread),
+      (ChatThreadLoading() || ChatThreadLoadFailed(), ChatPushed()) =>
+        StepNext.stay(state),
+      (
+        final ChatThreadLoaded thread &&
+            ChatThreadLoaded(:final nextPage?, older: ChatOlderIdle()),
+        ChatOlderRequested(),
+      ) =>
+        StepNext(
+          state.copyWith(
+            thread: thread.copyWith(
+              older: ChatOlderLoading(state.tickets + 1, nextPage),
+            ),
+            tickets: state.tickets + 1,
+          ),
+          [ChatFetchPage(state.tickets + 1, nextPage)],
+        ),
+      (
+        ChatThreadLoading() || ChatThreadLoadFailed() || ChatThreadLoaded(),
+        ChatOlderRequested(),
+      ) =>
+        StepNext.stay(state),
+      (
+        ChatThreadLoading() || ChatThreadLoadFailed() || ChatThreadLoaded(),
+        final SupportChatEvent event,
+      ) =>
+        _composerEvent(state, event),
+    };
+  }
 }
 
 @immutable
@@ -522,73 +589,6 @@ SupportChatNext supportChatStart({String? draft}) => StepNext(
   ),
   const [ChatFetchPage(1, 1)],
 );
-
-SupportChatNext transitionSupportChat(
-  SupportChatState state,
-  SupportChatEvent event,
-) => switch ((state.thread, event)) {
-  (final ChatThreadLoading loading, ChatPageLoaded loaded)
-      when loaded.ticket == loading.ticket =>
-    switch (loaded.result) {
-      Ok(:final value) => StepNext(
-        _withThread(
-          state,
-          ChatThreadLoaded(
-            const [],
-            nextPage: value.length < supportChatPageSize ? null : 2,
-          ),
-          value,
-        ),
-        const [ChatNewestShown()],
-      ),
-      Err(:final failure) => StepNext(
-        state.copyWith(thread: ChatThreadLoadFailed(failure)),
-      ),
-    },
-  (final ChatThreadLoaded thread, ChatPageLoaded loaded) => _pageLoaded(
-    state,
-    thread,
-    loaded,
-  ),
-  (ChatThreadLoading() || ChatThreadLoadFailed(), ChatPageLoaded()) =>
-    StepNext.stay(state),
-  (ChatThreadLoadFailed(), ChatRetryPressed()) => StepNext(
-    state.copyWith(
-      thread: ChatThreadLoading(state.tickets + 1),
-      tickets: state.tickets + 1,
-    ),
-    [ChatFetchPage(state.tickets + 1, 1)],
-  ),
-  (ChatThreadLoading() || ChatThreadLoaded(), ChatRetryPressed()) =>
-    StepNext.stay(state),
-  (final ChatThreadLoaded thread, ChatPushed()) => _refresh(state, thread),
-  (ChatThreadLoading() || ChatThreadLoadFailed(), ChatPushed()) =>
-    StepNext.stay(state),
-  (
-    final ChatThreadLoaded thread &&
-        ChatThreadLoaded(:final nextPage?, older: ChatOlderIdle()),
-    ChatOlderRequested(),
-  ) =>
-    StepNext(
-      state.copyWith(
-        thread: thread.copyWith(
-          older: ChatOlderLoading(state.tickets + 1, nextPage),
-        ),
-        tickets: state.tickets + 1,
-      ),
-      [ChatFetchPage(state.tickets + 1, nextPage)],
-    ),
-  (
-    ChatThreadLoading() || ChatThreadLoadFailed() || ChatThreadLoaded(),
-    ChatOlderRequested(),
-  ) =>
-    StepNext.stay(state),
-  (
-    ChatThreadLoading() || ChatThreadLoadFailed() || ChatThreadLoaded(),
-    final SupportChatEvent event,
-  ) =>
-    _composerEvent(state, event),
-};
 
 SupportChatNext _composerEvent(SupportChatState state, SupportChatEvent event) {
   final composer = state.composer;

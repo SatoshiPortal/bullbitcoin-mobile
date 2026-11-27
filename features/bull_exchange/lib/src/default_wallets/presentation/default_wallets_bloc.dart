@@ -11,7 +11,7 @@ import '../domain/usecases/unset_default_wallet_usecase.dart';
 import '../domain/usecases/validate_default_wallet_destination_usecase.dart';
 import '../domain/usecases/verify_default_wallets_usecase.dart';
 
-/// Runs one effect of [transitionDefaultWallets] through its use case and
+/// Runs one effect of [DefaultWalletsState.next] through its use case and
 /// answers with the event that carries its result and the attempt that
 /// started it.
 Future<DefaultWalletsEvent> runDefaultWalletsEffect(
@@ -66,7 +66,7 @@ Future<DefaultWalletsEvent> runDefaultWalletsEffect(
     SlotVerified(network, attempt, await verifyWallets.execute(session)),
 };
 
-/// Shell of [transitionDefaultWallets]: one event at a time, emits the next
+/// Shell of [DefaultWalletsState.next]: one event at a time, emits the next
 /// state, starts its effects. Results arriving after close are dropped.
 class DefaultWalletsBloc
     extends Bloc<DefaultWalletsEvent, DefaultWalletsState> {
@@ -105,7 +105,7 @@ class DefaultWalletsBloc
   final VerifyDefaultWalletsUsecase _verifyWallets;
 
   void _onEvent(DefaultWalletsEvent event, Emitter<DefaultWalletsState> emit) {
-    final next = transitionDefaultWallets(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

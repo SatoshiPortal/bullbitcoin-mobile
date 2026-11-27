@@ -28,6 +28,16 @@ sealed class SpendOptionsState {
 
   @override
   String toString() => '$runtimeType';
+
+  SpendOptionsNext next(SpendOptionsEvent event) {
+    final state = this;
+    return switch (state) {
+      SpendOptionsNone() || SpendOptionsFixed() => SpendOptionsNext.stay(state),
+      SpendFeesLoading() => _loading(state, event),
+      SpendFeesUnavailable() => _unavailable(state, event),
+      SpendOptionsReady() => _ready(state, event),
+    };
+  }
 }
 
 bool _same(List<Object?> a, List<Object?> b) {
@@ -484,13 +494,11 @@ SpendOptionsNext spendTargetFor(
   Order order,
   PayinSource source,
 ) => switch (source.rail.rail.depositOf(order)) {
-  DepositGiven(target: OnchainDeposit(:final address)) =>
-    transitionSpendOptions(
-      spend,
-      SpendTargetSet(
-        SpendPreviewTarget(address, (order.payinAmount * 100000000).round()),
-      ),
+  DepositGiven(target: OnchainDeposit(:final address)) => spend.next(
+    SpendTargetSet(
+      SpendPreviewTarget(address, (order.payinAmount * 100000000).round()),
     ),
+  ),
   DepositGiven() ||
   DepositNotGiven() ||
   DepositOnOtherRail() => SpendOptionsNext.stay(spend),
@@ -529,16 +537,6 @@ SpendChoice spendOptionsChosen(SpendOptionsState state) => switch (state) {
     ),
     null => const SpendNotChosen(),
   },
-};
-
-SpendOptionsNext transitionSpendOptions(
-  SpendOptionsState state,
-  SpendOptionsEvent event,
-) => switch (state) {
-  SpendOptionsNone() || SpendOptionsFixed() => SpendOptionsNext.stay(state),
-  SpendFeesLoading() => _loading(state, event),
-  SpendFeesUnavailable() => _unavailable(state, event),
-  SpendOptionsReady() => _ready(state, event),
 };
 
 SpendOptionsNext _loading(SpendFeesLoading state, SpendOptionsEvent event) {

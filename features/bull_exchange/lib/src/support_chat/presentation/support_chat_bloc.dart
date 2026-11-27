@@ -12,7 +12,7 @@ import '../domain/usecases/pick_image_attachments_usecase.dart';
 import '../domain/usecases/send_support_chat_message_usecase.dart';
 import '../domain/usecases/watch_support_chat_pushes_usecase.dart';
 
-/// Shell of [transitionSupportChat]. Effect results arriving after close are
+/// Shell of [SupportChatState.next]. Effect results arriving after close are
 /// dropped (CHAT-1).
 class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
   SupportChatBloc({
@@ -68,7 +68,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
   late final StreamSubscription<NotificationMessage> _pushes;
 
   void _onEvent(SupportChatEvent event, Emitter<SupportChatState> emit) {
-    final next = transitionSupportChat(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

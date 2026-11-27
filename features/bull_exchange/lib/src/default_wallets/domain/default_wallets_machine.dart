@@ -253,6 +253,190 @@ bool slotMutating(WalletSlot slot) => switch (slot) {
 @immutable
 sealed class DefaultWalletsState {
   const DefaultWalletsState();
+
+  DefaultWalletsNext next(DefaultWalletsEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        WalletsSessionEnded(),
+        WalletsLoaded() ||
+            WalletsRetryPressed() ||
+            SlotTyped() ||
+            SlotCancelPressed() ||
+            SlotSavePressed() ||
+            SlotChecked() ||
+            SlotSaveAnswered() ||
+            SlotUnsetPressed() ||
+            SlotUnsetAnswered() ||
+            SlotVerified() ||
+            SlotVerifyRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (WalletsLoading(:final session, :final attempt), WalletsLoaded loaded)
+          when loaded.attempt == attempt =>
+        switch (loaded.read) {
+          Ok(:final value) => StepNext(
+            WalletsReady(session, value, attempts: attempt),
+          ),
+          Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+            const WalletsSessionEnded(),
+          ),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(failure: ExchangeMalformedFailure()) => StepNext(
+            WalletsLoadFailed(session, attempt, ReadProblem.of(loaded.read)!),
+          ),
+        },
+      (
+        WalletsLoading(),
+        WalletsLoaded() ||
+            WalletsRetryPressed() ||
+            SlotTyped() ||
+            SlotCancelPressed() ||
+            SlotSavePressed() ||
+            SlotChecked() ||
+            SlotSaveAnswered() ||
+            SlotUnsetPressed() ||
+            SlotUnsetAnswered() ||
+            SlotVerified() ||
+            SlotVerifyRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        WalletsLoadFailed(:final session, :final attempt),
+        WalletsRetryPressed(),
+      ) =>
+        StepNext(WalletsLoading(session, attempt + 1), [
+          FetchDefaultWallets(session, attempt + 1),
+        ]),
+      (
+        WalletsLoadFailed(),
+        WalletsLoaded() ||
+            SlotTyped() ||
+            SlotCancelPressed() ||
+            SlotSavePressed() ||
+            SlotChecked() ||
+            SlotSaveAnswered() ||
+            SlotUnsetPressed() ||
+            SlotUnsetAnswered() ||
+            SlotVerified() ||
+            SlotVerifyRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (WalletsReady(), WalletsLoaded() || WalletsRetryPressed()) =>
+        StepNext.stay(state),
+      (final WalletsReady ready, SlotTyped(:final network, :final text)) =>
+        switch (ready.slots.of(network)) {
+          SlotShowing() ||
+          SlotEditing() => _slot(ready, network, SlotEditing(text)),
+          SlotChecking() ||
+          SlotSaving() ||
+          SlotUnsetting() ||
+          SlotVerifying() ||
+          SlotUnverified() => StepNext.stay(state),
+        },
+      (final WalletsReady ready, SlotCancelPressed(:final network)) =>
+        switch (ready.slots.of(network)) {
+          SlotEditing() => _slot(ready, network, const SlotShowing()),
+          SlotShowing() ||
+          SlotChecking() ||
+          SlotSaving() ||
+          SlotUnsetting() ||
+          SlotVerifying() ||
+          SlotUnverified() => StepNext.stay(state),
+        },
+      (final WalletsReady ready, SlotSavePressed(:final network)) =>
+        switch (ready.slots.of(network)) {
+          SlotEditing(:final draft) => _savePressed(ready, network, draft),
+          SlotShowing() ||
+          SlotChecking() ||
+          SlotSaving() ||
+          SlotUnsetting() ||
+          SlotVerifying() ||
+          SlotUnverified() => StepNext.stay(state),
+        },
+      (final WalletsReady ready, SlotChecked checked) => switch (ready.slots.of(
+        checked.network,
+      )) {
+        SlotChecking(:final draft, :final attempt)
+            when attempt == checked.attempt =>
+          _checked(ready, checked.network, draft, attempt, checked.check),
+        SlotChecking() ||
+        SlotShowing() ||
+        SlotEditing() ||
+        SlotSaving() ||
+        SlotUnsetting() ||
+        SlotVerifying() ||
+        SlotUnverified() => StepNext.stay(state),
+      },
+      (final WalletsReady ready, SlotSaveAnswered answered) => switch (ready
+          .slots
+          .of(answered.network)) {
+        SlotSaving(:final draft, :final address, :final attempt)
+            when attempt == answered.attempt =>
+          _saveAnswered(
+            ready,
+            answered.network,
+            draft,
+            address,
+            answered.answer,
+          ),
+        SlotSaving() ||
+        SlotShowing() ||
+        SlotEditing() ||
+        SlotChecking() ||
+        SlotUnsetting() ||
+        SlotVerifying() ||
+        SlotUnverified() => StepNext.stay(state),
+      },
+      (final WalletsReady ready, SlotUnsetPressed(:final network)) =>
+        switch (ready.slots.of(network)) {
+          SlotShowing() => _unsetPressed(ready, network),
+          SlotEditing() ||
+          SlotChecking() ||
+          SlotSaving() ||
+          SlotUnsetting() ||
+          SlotVerifying() ||
+          SlotUnverified() => StepNext.stay(state),
+        },
+      (final WalletsReady ready, SlotUnsetAnswered answered) => switch (ready
+          .slots
+          .of(answered.network)) {
+        SlotUnsetting(:final attempt) when attempt == answered.attempt =>
+          _unsetAnswered(ready, answered.network, answered.answer),
+        SlotUnsetting() ||
+        SlotShowing() ||
+        SlotEditing() ||
+        SlotChecking() ||
+        SlotSaving() ||
+        SlotVerifying() ||
+        SlotUnverified() => StepNext.stay(state),
+      },
+      (final WalletsReady ready, SlotVerified verified) => switch (ready.slots
+          .of(verified.network)) {
+        SlotVerifying(:final intent, :final attempt)
+            when attempt == verified.attempt =>
+          _verified(ready, verified.network, intent, verified.read),
+        SlotVerifying() ||
+        SlotShowing() ||
+        SlotEditing() ||
+        SlotChecking() ||
+        SlotSaving() ||
+        SlotUnsetting() ||
+        SlotUnverified() => StepNext.stay(state),
+      },
+      (final WalletsReady ready, SlotVerifyRetryPressed(:final network)) =>
+        switch (ready.slots.of(network)) {
+          SlotUnverified(:final intent) => _verify(ready, network, intent),
+          SlotShowing() ||
+          SlotEditing() ||
+          SlotChecking() ||
+          SlotSaving() ||
+          SlotUnsetting() ||
+          SlotVerifying() => StepNext.stay(state),
+        },
+    };
+  }
 }
 
 final class WalletsLoading extends DefaultWalletsState {
@@ -569,184 +753,6 @@ DefaultWallets withDefaultWallet(
   lightning: network == BtcNetwork.lightning ? wallet : wallets.lightning,
   liquid: network == BtcNetwork.liquid ? wallet : wallets.liquid,
 );
-
-DefaultWalletsNext transitionDefaultWallets(
-  DefaultWalletsState state,
-  DefaultWalletsEvent event,
-) => switch ((state, event)) {
-  (
-    WalletsSessionEnded(),
-    WalletsLoaded() ||
-        WalletsRetryPressed() ||
-        SlotTyped() ||
-        SlotCancelPressed() ||
-        SlotSavePressed() ||
-        SlotChecked() ||
-        SlotSaveAnswered() ||
-        SlotUnsetPressed() ||
-        SlotUnsetAnswered() ||
-        SlotVerified() ||
-        SlotVerifyRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (WalletsLoading(:final session, :final attempt), WalletsLoaded loaded)
-      when loaded.attempt == attempt =>
-    switch (loaded.read) {
-      Ok(:final value) => StepNext(
-        WalletsReady(session, value, attempts: attempt),
-      ),
-      Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
-        const WalletsSessionEnded(),
-      ),
-      Err(failure: ExchangeMissingFailure()) ||
-      Err(failure: ExchangeUnreachableFailure()) ||
-      Err(failure: ExchangeMalformedFailure()) => StepNext(
-        WalletsLoadFailed(session, attempt, ReadProblem.of(loaded.read)!),
-      ),
-    },
-  (
-    WalletsLoading(),
-    WalletsLoaded() ||
-        WalletsRetryPressed() ||
-        SlotTyped() ||
-        SlotCancelPressed() ||
-        SlotSavePressed() ||
-        SlotChecked() ||
-        SlotSaveAnswered() ||
-        SlotUnsetPressed() ||
-        SlotUnsetAnswered() ||
-        SlotVerified() ||
-        SlotVerifyRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (WalletsLoadFailed(:final session, :final attempt), WalletsRetryPressed()) =>
-    StepNext(WalletsLoading(session, attempt + 1), [
-      FetchDefaultWallets(session, attempt + 1),
-    ]),
-  (
-    WalletsLoadFailed(),
-    WalletsLoaded() ||
-        SlotTyped() ||
-        SlotCancelPressed() ||
-        SlotSavePressed() ||
-        SlotChecked() ||
-        SlotSaveAnswered() ||
-        SlotUnsetPressed() ||
-        SlotUnsetAnswered() ||
-        SlotVerified() ||
-        SlotVerifyRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (WalletsReady(), WalletsLoaded() || WalletsRetryPressed()) => StepNext.stay(
-    state,
-  ),
-  (final WalletsReady ready, SlotTyped(:final network, :final text)) =>
-    switch (ready.slots.of(network)) {
-      SlotShowing() ||
-      SlotEditing() => _slot(ready, network, SlotEditing(text)),
-      SlotChecking() ||
-      SlotSaving() ||
-      SlotUnsetting() ||
-      SlotVerifying() ||
-      SlotUnverified() => StepNext.stay(state),
-    },
-  (final WalletsReady ready, SlotCancelPressed(:final network)) => switch (ready
-      .slots
-      .of(network)) {
-    SlotEditing() => _slot(ready, network, const SlotShowing()),
-    SlotShowing() ||
-    SlotChecking() ||
-    SlotSaving() ||
-    SlotUnsetting() ||
-    SlotVerifying() ||
-    SlotUnverified() => StepNext.stay(state),
-  },
-  (final WalletsReady ready, SlotSavePressed(:final network)) => switch (ready
-      .slots
-      .of(network)) {
-    SlotEditing(:final draft) => _savePressed(ready, network, draft),
-    SlotShowing() ||
-    SlotChecking() ||
-    SlotSaving() ||
-    SlotUnsetting() ||
-    SlotVerifying() ||
-    SlotUnverified() => StepNext.stay(state),
-  },
-  (final WalletsReady ready, SlotChecked checked) => switch (ready.slots.of(
-    checked.network,
-  )) {
-    SlotChecking(:final draft, :final attempt)
-        when attempt == checked.attempt =>
-      _checked(ready, checked.network, draft, attempt, checked.check),
-    SlotChecking() ||
-    SlotShowing() ||
-    SlotEditing() ||
-    SlotSaving() ||
-    SlotUnsetting() ||
-    SlotVerifying() ||
-    SlotUnverified() => StepNext.stay(state),
-  },
-  (final WalletsReady ready, SlotSaveAnswered answered) => switch (ready.slots
-      .of(answered.network)) {
-    SlotSaving(:final draft, :final address, :final attempt)
-        when attempt == answered.attempt =>
-      _saveAnswered(ready, answered.network, draft, address, answered.answer),
-    SlotSaving() ||
-    SlotShowing() ||
-    SlotEditing() ||
-    SlotChecking() ||
-    SlotUnsetting() ||
-    SlotVerifying() ||
-    SlotUnverified() => StepNext.stay(state),
-  },
-  (final WalletsReady ready, SlotUnsetPressed(:final network)) => switch (ready
-      .slots
-      .of(network)) {
-    SlotShowing() => _unsetPressed(ready, network),
-    SlotEditing() ||
-    SlotChecking() ||
-    SlotSaving() ||
-    SlotUnsetting() ||
-    SlotVerifying() ||
-    SlotUnverified() => StepNext.stay(state),
-  },
-  (final WalletsReady ready, SlotUnsetAnswered answered) => switch (ready.slots
-      .of(answered.network)) {
-    SlotUnsetting(:final attempt) when attempt == answered.attempt =>
-      _unsetAnswered(ready, answered.network, answered.answer),
-    SlotUnsetting() ||
-    SlotShowing() ||
-    SlotEditing() ||
-    SlotChecking() ||
-    SlotSaving() ||
-    SlotVerifying() ||
-    SlotUnverified() => StepNext.stay(state),
-  },
-  (final WalletsReady ready, SlotVerified verified) => switch (ready.slots.of(
-    verified.network,
-  )) {
-    SlotVerifying(:final intent, :final attempt)
-        when attempt == verified.attempt =>
-      _verified(ready, verified.network, intent, verified.read),
-    SlotVerifying() ||
-    SlotShowing() ||
-    SlotEditing() ||
-    SlotChecking() ||
-    SlotSaving() ||
-    SlotUnsetting() ||
-    SlotUnverified() => StepNext.stay(state),
-  },
-  (final WalletsReady ready, SlotVerifyRetryPressed(:final network)) =>
-    switch (ready.slots.of(network)) {
-      SlotUnverified(:final intent) => _verify(ready, network, intent),
-      SlotShowing() ||
-      SlotEditing() ||
-      SlotChecking() ||
-      SlotSaving() ||
-      SlotUnsetting() ||
-      SlotVerifying() => StepNext.stay(state),
-    },
-};
 
 DefaultWalletsNext _savePressed(
   WalletsReady ready,

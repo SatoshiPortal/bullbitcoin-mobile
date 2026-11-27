@@ -132,7 +132,7 @@ const _moves = <(String, String), Type>{
 };
 
 SpendOptionsState _apply(SpendOptionsState state, SpendOptionsEvent event) =>
-    transitionSpendOptions(state, event).state;
+    state.next(event).state;
 
 void main() {
   group('every (state, event) pair', () {
@@ -140,7 +140,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionSpendOptions(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(next.state, state, reason: '$next');
             expect(next.effects, isEmpty);
@@ -212,7 +212,7 @@ void main() {
         const SpendFeesFailed(1),
       );
       expect(spendOptionsChosen(failed), isA<SpendNotChosen>());
-      final retried = transitionSpendOptions(failed, const SpendRetryPressed());
+      final retried = failed.next(const SpendRetryPressed());
       expect(retried.state, const SpendFeesLoading('w1', 2));
       expect(retried.effects, [const SpendLoadFees(2)]);
     });
@@ -298,10 +298,7 @@ void main() {
     });
 
     test('a valid value is kept and priced', () {
-      final next = transitionSpendOptions(
-        _armed,
-        const SpendCustomFeeFinalized(),
-      );
+      final next = _armed.next(const SpendCustomFeeFinalized());
       final state = next.state as SpendOptionsReady;
       expect(state.selection, FeeSelection.custom);
       expect(state.arm, isNull);
@@ -324,10 +321,7 @@ void main() {
 
   group('previews', () {
     test('a new quote drops the previews and prices the presets again', () {
-      final next = transitionSpendOptions(
-        _ready,
-        const SpendTargetSet(_target),
-      );
+      final next = _ready.next(const SpendTargetSet(_target));
       final state = next.state as SpendOptionsReady;
       expect(state.epoch, 1);
       expect(state.previews.presetsLoading, isTrue);
@@ -352,7 +346,7 @@ void main() {
     });
 
     test('RBF and the coins change the shape priced', () {
-      final next = transitionSpendOptions(_targeted, SpendCoinsPicked([_coin]));
+      final next = _targeted.next(SpendCoinsPicked([_coin]));
       expect(next.effects.single, isA<SpendPreviewPresets>());
       expect((next.effects.single as SpendPreviewPresets).shape.coins, {
         (txId: 'c1', vout: 0),
@@ -364,10 +358,7 @@ void main() {
     test(
       'opening the selection reads the coins once; frozen ones are hidden',
       () {
-        final next = transitionSpendOptions(
-          _ready,
-          const SpendCoinsRequested(),
-        );
+        final next = _ready.next(const SpendCoinsRequested());
         expect(next.effects, [const SpendLoadCoins('w1')]);
         final loaded = _apply(next.state, SpendCoinsRead([_coin, _frozen]));
         expect((loaded as SpendOptionsReady).coins, SpendCoinsLoaded([_coin]));
@@ -381,10 +372,9 @@ void main() {
         (failed as SpendOptionsReady).coins,
         const SpendCoinsUnavailable(),
       );
-      expect(
-        transitionSpendOptions(failed, const SpendCoinsRequested()).effects,
-        [const SpendLoadCoins('w1')],
-      );
+      expect(failed.next(const SpendCoinsRequested()).effects, [
+        const SpendLoadCoins('w1'),
+      ]);
     });
   });
 }
