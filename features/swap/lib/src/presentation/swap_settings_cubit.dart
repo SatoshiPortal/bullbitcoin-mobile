@@ -3,6 +3,7 @@ import 'package:primitives/primitives.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../domain/usecases/check_swap_server_usecase.dart';
 import '../domain/usecases/get_swap_route_settings_usecase.dart';
 import '../domain/usecases/get_swap_server_usecase.dart';
 import '../domain/usecases/set_swap_exchange_fallback_usecase.dart';
@@ -19,6 +20,7 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
     required this._setSwapRouteOverrideUsecase,
     required this._getSwapServerUsecase,
     required this._setSwapServerUsecase,
+    required this._checkSwapServerUsecase,
   }) : super(const SwapSettingsState());
 
   final GetSwapRouteSettingsUsecase _getSwapRouteSettingsUsecase;
@@ -26,6 +28,7 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
   final SetSwapRouteOverrideUsecase _setSwapRouteOverrideUsecase;
   final GetSwapServerUsecase _getSwapServerUsecase;
   final SetSwapServerUsecase _setSwapServerUsecase;
+  final CheckSwapServerUsecase _checkSwapServerUsecase;
 
   Future<void> load() async {
     final swapServer = await _getSwapServerUsecase.execute();
@@ -85,6 +88,14 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
         emit(state.copyWith(saving: false, failure: failure));
     }
   }
+
+  /// Null when the stored server answered. The failure is returned, not
+  /// put in the state: the test reports its own outcome either way.
+  Future<SwapsFailure?> checkSwapServer() async =>
+      switch (await _checkSwapServerUsecase.execute()) {
+        Ok() => null,
+        Err(:final failure) => failure,
+      };
 
   /// Stores the server typed by the user. Returns the validation failure so
   /// the editor can show it next to the input; a storage failure is reported

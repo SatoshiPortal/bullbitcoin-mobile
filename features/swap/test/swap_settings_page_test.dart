@@ -1,5 +1,11 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:swaps/swaps.dart' show SwapServer, SwapServerCredentials;
+import 'package:swaps/swaps.dart'
+    show
+        SwapServer,
+        SwapServerCredentials,
+        SwapsBoltzRejectedFailure,
+        SwapsBoltzUnavailableFailure,
+        SwapsFailure;
 import 'package:bull_ui/bull_ui.dart' show BullBorderedTile;
 import 'package:bull_ui/testing.dart' show testBullExtensions;
 
@@ -91,6 +97,54 @@ void main() {
           cubit.setSwapServer('other.example.com', username: '', password: ''),
     ).called(1);
   });
+
+  for (final (failure, title, detail) in <(SwapsFailure?, String, String)>[
+    (
+      null,
+      'Connected',
+      'The swap server accepted the request. Swaps can use it.',
+    ),
+    (
+      const SwapsBoltzRejectedFailure('401'),
+      'Refused by the server',
+      'The swap server rejected the request. Check the username and password.',
+    ),
+    (
+      const SwapsBoltzUnavailableFailure('offline'),
+      'No answer',
+      'The swap server could not be reached. Check the address and your '
+          'connection.',
+    ),
+  ]) {
+    testWidgets('the connection test stays on the page as "$title"', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        const SwapSettingsState(
+          loaded: true,
+          swapServerEnvironment: NetworkEnv.mainnet,
+        ),
+      );
+      final answer = Completer<SwapsFailure?>();
+      when(() => cubit.checkSwapServer()).thenAnswer((_) => answer.future);
+
+      await tester.tap(find.text('Test connection'));
+      await tester.pump();
+
+      expect(find.text('Testing…'), findsOneWidget);
+      expect(find.text(SwapServer.mainnetDefault.host), findsOneWidget);
+
+      answer.complete(failure);
+      await tester.pumpAndSettle();
+
+      verify(() => cubit.checkSwapServer()).called(1);
+      expect(find.text(title), findsOneWidget);
+      expect(find.text(detail), findsOneWidget);
+      expect(find.text(SwapServer.mainnetDefault.host), findsOneWidget);
+      expect(find.text('Test connection'), findsOneWidget);
+    });
+  }
 
   testWidgets('the provider override is offered only in dev mode', (
     tester,

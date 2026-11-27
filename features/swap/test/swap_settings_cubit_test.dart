@@ -4,6 +4,7 @@ import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:swap_feature/src/domain/usecases/check_swap_server_usecase.dart';
 import 'package:swap_feature/src/domain/usecases/get_swap_route_settings_usecase.dart';
 import 'package:swap_feature/src/domain/usecases/get_swap_server_usecase.dart';
 import 'package:swap_feature/src/domain/usecases/set_swap_exchange_fallback_usecase.dart';
@@ -24,12 +25,16 @@ class _MockGetSwapServerUsecase extends Mock implements GetSwapServerUsecase {}
 
 class _MockSetSwapServerUsecase extends Mock implements SetSwapServerUsecase {}
 
+class _MockCheckSwapServerUsecase extends Mock
+    implements CheckSwapServerUsecase {}
+
 void main() {
   late _MockGetSwapRouteSettingsUsecase getSettings;
   late _MockSetSwapExchangeFallbackUsecase setFallback;
   late _MockSetSwapRouteOverrideUsecase setOverride;
   late _MockGetSwapServerUsecase getServer;
   late _MockSetSwapServerUsecase setServer;
+  late _MockCheckSwapServerUsecase checkServer;
 
   setUpAll(() => registerFallbackValue(SwapRouteOverride.auto));
 
@@ -39,6 +44,7 @@ void main() {
     setOverride = _MockSetSwapRouteOverrideUsecase();
     getServer = _MockGetSwapServerUsecase();
     setServer = _MockSetSwapServerUsecase();
+    checkServer = _MockCheckSwapServerUsecase();
     when(() => getServer.execute()).thenAnswer(
       (_) async => const Ok((
         server: SwapServer.mainnetDefault,
@@ -64,6 +70,7 @@ void main() {
     setSwapRouteOverrideUsecase: setOverride,
     getSwapServerUsecase: getServer,
     setSwapServerUsecase: setServer,
+    checkSwapServerUsecase: checkServer,
   );
 
   test('a save finishing after the screen closed emits nothing', () async {
@@ -199,6 +206,31 @@ void main() {
       expect(cubit.state.isDefaultSwapServer, isTrue);
     },
   );
+
+  test(
+    'a server check reports the answer without touching the state',
+    () async {
+      when(() => checkServer.execute()).thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+      await cubit.load();
+      final before = cubit.state;
+
+      expect(await cubit.checkSwapServer(), isNull);
+      expect(cubit.state, before);
+    },
+  );
+
+  test('a refused server check returns its failure', () async {
+    when(() => checkServer.execute())
+        .thenAnswer((_) async => const Err(SwapsBoltzRejectedFailure('401')));
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    expect(await cubit.checkSwapServer(), isA<SwapsBoltzRejectedFailure>());
+    expect(cubit.state.failure, isNull);
+  });
 
   test('marks the testnet default as the default on testnet', () async {
     when(() => getServer.execute()).thenAnswer(

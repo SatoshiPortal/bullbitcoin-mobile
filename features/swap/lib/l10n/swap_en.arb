@@ -86,6 +86,38 @@
   "@swapServerChangedNotice": {
     "description": "Shown after the swap server changed"
   },
+  "swapServerTest": "Test connection",
+  "@swapServerTest": {
+    "description": "Button that checks the swap server answers with the stored address and credentials"
+  },
+  "swapServerTesting": "Testing…",
+  "@swapServerTesting": {
+    "description": "Label of the swap server test button while the test runs"
+  },
+  "swapServerTestOkTitle": "Connected",
+  "@swapServerTestOkTitle": {
+    "description": "Title shown when the swap server test succeeded"
+  },
+  "swapServerTestOk": "The swap server accepted the request. Swaps can use it.",
+  "@swapServerTestOk": {
+    "description": "Detail shown when the swap server test succeeded"
+  },
+  "swapServerTestRejectedTitle": "Refused by the server",
+  "@swapServerTestRejectedTitle": {
+    "description": "Title shown when the swap server refused the test request, for example for wrong credentials"
+  },
+  "swapServerTestRejected": "The swap server rejected the request. Check the username and password.",
+  "@swapServerTestRejected": {
+    "description": "Detail shown when the swap server refused the test request"
+  },
+  "swapServerTestUnreachableTitle": "No answer",
+  "@swapServerTestUnreachableTitle": {
+    "description": "Title shown when the swap server test got no usable answer"
+  },
+  "swapServerTestUnreachable": "The swap server could not be reached. Check the address and your connection.",
+  "@swapServerTestUnreachable": {
+    "description": "Detail shown when the swap server test got no usable answer"
+  },
   "swapServerBusyError": "Finish your ongoing swaps before changing the swap server.",
   "@swapServerBusyError": {
     "description": "Error when the user changes the swap server while swaps on the current server are still in progress"

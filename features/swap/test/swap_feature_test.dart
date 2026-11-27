@@ -15,6 +15,8 @@ class _MockSwapRouting extends Mock implements SwapRouting {}
 
 class _MockSwapServerSettings extends Mock implements SwapServerSettings {}
 
+class _MockBoltzSwaps extends Mock implements BoltzSwaps {}
+
 void main() {
   test('resolves existing locale variants and falls back to English', () {
     expect(SwapNavigation.settingsTitle('es_MX'), 'Intercambios');
@@ -67,7 +69,7 @@ void main() {
       when(() => routing.setExchangeFallbackEnabled(true))
           .thenAnswer((_) async => const Ok(null));
 
-      final settings = swapSettingsRoute(routing, servers);
+      final settings = swapSettingsRoute(routing, servers, _MockBoltzSwaps());
       final router = GoRouter(
         routes: [
           GoRoute(

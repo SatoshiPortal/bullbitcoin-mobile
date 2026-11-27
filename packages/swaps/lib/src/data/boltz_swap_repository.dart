@@ -2006,6 +2006,12 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     classify: classifySwapCreationFailure,
   );
 
+  @override
+  Future<Result<void, SwapsFailure>> checkServer() => _guard(
+    () => _boltz.updateFees(swapType: SwapType.bitcoinToLightning),
+    classify: classifySwapCreationFailure,
+  );
+
   Future<ElectrumConnection> _electrumConnection({required bool isLiquid}) =>
       _electrum.run(
         isLiquid: isLiquid,

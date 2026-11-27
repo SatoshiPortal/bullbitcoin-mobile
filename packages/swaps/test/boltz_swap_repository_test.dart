@@ -564,6 +564,62 @@ void main() {
     });
   });
 
+  group('checkServer', () {
+    test('asks the server for fresh fees every time', () async {
+      when(() => boltz.updateFees(swapType: any(named: 'swapType')))
+          .thenAnswer((_) async {});
+
+      expect(
+        await repo(fastest: 1).checkServer(),
+        isA<Ok<void, SwapsFailure>>(),
+      );
+      expect(
+        await repo(fastest: 1).checkServer(),
+        isA<Ok<void, SwapsFailure>>(),
+      );
+
+      verify(() => boltz.updateFees(swapType: SwapType.bitcoinToLightning))
+          .called(2);
+    });
+
+    test(
+      'a refused request is a rejection, an unanswered one is not',
+      () async {
+        when(() => boltz.updateFees(swapType: any(named: 'swapType')))
+            .thenThrow(
+              BoltzApiException(
+                kind: 'HTTPStatusNotSuccess',
+                message: 'HTTP Status Not Success: 401 Unauthorized, ',
+              ),
+            );
+        expect(
+          (await repo(fastest: 1).checkServer()),
+          isA<Err<void, SwapsFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SwapsBoltzRejectedFailure>(),
+          ),
+        );
+
+        when(() => boltz.updateFees(swapType: any(named: 'swapType')))
+            .thenThrow(
+              BoltzApiException(
+                kind: 'HTTPStatusNotSuccess',
+                message: 'HTTP Status Not Success: 503 Service Unavailable, ',
+              ),
+            );
+        expect(
+          (await repo(fastest: 1).checkServer()),
+          isA<Err<void, SwapsFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SwapsBoltzUnavailableFailure>(),
+          ),
+        );
+      },
+    );
+  });
+
   group('claim', () {
     void stubClaimBroadcast() {
       when(
