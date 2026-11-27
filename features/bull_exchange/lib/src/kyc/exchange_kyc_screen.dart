@@ -61,7 +61,8 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   Future<void> _load() async {
     final result = await widget.host.loadConfiguration();
     if (!mounted) return;
-    final ExchangeKycConfiguration configuration;
+    // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+    ExchangeKycConfiguration configuration;
     switch (result) {
       case Ok(:final value):
         configuration = value;
