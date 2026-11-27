@@ -68,6 +68,7 @@ void main() {
         adapter: network,
         readActiveApiKey: readKey,
       ),
+      access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
     );
     orders = user.orders(ExchangeEnvironment.testnet);
   });
@@ -215,7 +216,7 @@ void main() {
         ),
       );
       expect(
-        await limits.listActive(),
+        await limits.listActive(_session),
         isA<Err>().having(
           (r) => r.failure,
           'limit orders',
@@ -240,7 +241,7 @@ void main() {
         ),
       );
       expect(
-        await limits.listActive(),
+        await limits.listActive(_session),
         isA<Err>().having(
           (r) => r.failure,
           'limit orders unavailable',

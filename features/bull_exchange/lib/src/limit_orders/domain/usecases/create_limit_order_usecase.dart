@@ -18,8 +18,6 @@ class CreateLimitOrderUsecase {
     session: session,
     policy: limitOrderCreatePolicy,
     effect: effect,
-    confirm: (request) async => _exchange.currentSession != session
-        ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
-        : await _exchange.limitOrders.create(request.draft),
+    confirm: (request) => _exchange.limitOrders.create(session, request.draft),
   );
 }

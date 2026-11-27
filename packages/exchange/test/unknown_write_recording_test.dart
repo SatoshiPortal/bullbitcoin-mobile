@@ -115,6 +115,12 @@ final Map<UnknownWriteKind, (_Call, Map<String, String>, String?)> _calls = {
   ),
 };
 
+const _limitSession = ExchangeSession(
+  environment: ExchangeEnvironment.testnet,
+  epoch: 7,
+  sessionId: 'limit',
+);
+
 void main() {
   JournalingOrdersRepository journaling(
     OrdersRepository orders,
@@ -367,6 +373,9 @@ void main() {
             readActiveApiKey: readKey,
           ),
           unknownWrites: journal,
+          access: fixedAccessForTesting(
+            const ExchangeAccessSignedIn(_limitSession),
+          ),
         );
 
     test('a buy confirm that times out after sending is journaled', () async {
@@ -395,6 +404,7 @@ void main() {
       );
 
       final result = await exchange.limitOrders.create(
+        _limitSession,
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,
@@ -428,6 +438,7 @@ void main() {
       );
 
       final _ = await exchange.limitOrders.create(
+        _limitSession,
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,

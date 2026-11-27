@@ -94,4 +94,71 @@ void main() {
       );
     });
   });
+
+  group('limit orders', () {
+    // A client is opened only for the current session; an old one opens none.
+    Exchange exchange(List<String> opened) => exchangeWithTransportForTesting(
+      readSession: () async => const Ok((
+        environment: ExchangeEnvironment.mainnet,
+        epoch: 3,
+        apiKey: 'k',
+      )),
+      openClient: (endpoint, _) {
+        opened.add('$endpoint');
+        throw StateError('no client in this test');
+      },
+      access: _signedIn(),
+    );
+
+    test('a read for an old session is refused before any client', () async {
+      final opened = <String>[];
+      final orders = exchange(opened).limitOrders;
+      for (final read in [
+        orders.listActive(_old),
+        orders.listRecent(_old),
+        orders.get(_old, 'lo-1'),
+        orders.cancel(_old, 'lo-1'),
+        orders.cancelAll(_old),
+      ]) {
+        expect(
+          await read,
+          isA<Err<Object, ExchangeFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeOperationStaleFailure>(),
+          ),
+        );
+      }
+      expect(
+        await orders.getRate(_old, 'CAD'),
+        isA<Err<LimitOrderRate, ExchangeFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeOperationStaleFailure>(),
+        ),
+      );
+      expect(opened, isEmpty);
+    });
+
+    test('a create for an old session is not sent', () async {
+      final opened = <String>[];
+      expect(
+        await exchange(opened).limitOrders.create(
+          _old,
+          LimitOrderDraft(
+            limitPrice: 90000,
+            fiatAmount: 100,
+            currency: FiatCurrency.cad,
+            address: 'bc1qaddress',
+          ),
+        ),
+        isA<WriteNotSent<LimitOrder>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.sessionChanged,
+        ),
+      );
+      expect(opened, isEmpty);
+    });
+  });
 }

@@ -58,8 +58,25 @@ Matcher _problem(ExchangeLimitOrderProblem problem) =>
 
 void main() {
   late _MockSettingsRepository settings;
+  // The signed-in session of the environment in use: every call names it.
+  var current = const ExchangeSession(
+    environment: ExchangeEnvironment.mainnet,
+    epoch: 1,
+    sessionId: 'mainnet',
+  );
 
   void useEnvironment(Environment environment) {
+    current = environment == Environment.testnet
+        ? const ExchangeSession(
+            environment: ExchangeEnvironment.testnet,
+            epoch: 1,
+            sessionId: 'testnet',
+          )
+        : const ExchangeSession(
+            environment: ExchangeEnvironment.mainnet,
+            epoch: 1,
+            sessionId: 'mainnet',
+          );
     when(() => settings.fetch()).thenAnswer(
       (_) async => Ok(
         SettingsEntity(
@@ -84,6 +101,7 @@ void main() {
           readKey: ({required isTestnet}) async => const Ok('synthetic-key'),
         ),
         openClient: (endpoint, _) => openClient(endpoint),
+        access: _SignedInAccess(current),
       ).limitOrders;
 
   LimitOrdersRepository repository(
@@ -110,7 +128,7 @@ void main() {
           'result': {'elements': <Object>[]},
         },
       );
-      final _ = await repository(http).listActive();
+      final _ = await repository(http).listActive(current);
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"listLimitOrders","params":'
@@ -121,7 +139,7 @@ void main() {
 
     test('get sends the old request', () async {
       final http = FakeBbxHttp(body: {'result': _order});
-      final _ = await repository(http).get('lo-1');
+      final _ = await repository(http).get(current, 'lo-1');
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"getLimitOrder","params":'
@@ -132,6 +150,7 @@ void main() {
     test('create sends COP amounts without decimals', () async {
       final http = FakeBbxHttp(body: {'result': _order});
       final _ = await repository(http).create(
+        current,
         LimitOrderDraft(
           limitPrice: 400000000.4,
           fiatAmount: 200000.6,
@@ -150,6 +169,7 @@ void main() {
     test('create sends the old request with the old rounding', () async {
       final http = FakeBbxHttp(body: {'result': _order});
       final _ = await repository(http).create(
+        current,
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,
@@ -168,7 +188,7 @@ void main() {
 
     test('cancel sends the old request', () async {
       final http = FakeBbxHttp(body: {'result': _order});
-      final _ = await repository(http).cancel('lo-1');
+      final _ = await repository(http).cancel(current, 'lo-1');
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"cancelLimitOrder","params":'
@@ -178,7 +198,7 @@ void main() {
 
     test('cancelAll sends the old request', () async {
       final http = FakeBbxHttp(body: {'result': <String, Object?>{}});
-      final _ = await repository(http).cancelAll();
+      final _ = await repository(http).cancelAll(current);
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"cancelAllLimitOrders",'
@@ -194,7 +214,7 @@ void main() {
           },
         },
       );
-      final _ = await repository(http).getRate('EUR');
+      final _ = await repository(http).getRate(current, 'EUR');
       expect(
         sent(http, path: '/public/price'),
         '{"jsonrpc":"2.0","id":"0","method":"getUserRate","params":'
@@ -206,7 +226,8 @@ void main() {
   group('mapping', () {
     test('maps a limit order', () async {
       final order = _valueOf(
-        await repository(FakeBbxHttp(body: {'result': _order})).get('lo-1'),
+        await repository(FakeBbxHttp(body: {'result': _order}))
+            .get(current, 'lo-1'),
       );
 
       expect(order.id, 'lo-1');
@@ -234,7 +255,7 @@ void main() {
                 ..remove('address'),
             },
           ),
-        ).get('lo-1'),
+        ).get(current, 'lo-1'),
       );
 
       expect(order.number, '');
@@ -255,7 +276,7 @@ void main() {
               },
             },
           ),
-        ).listActive(),
+        ).listActive(current),
       );
 
       expect(orders.map((o) => o.id), ['lo-1']);
@@ -275,7 +296,7 @@ void main() {
               },
             },
           ),
-        ).listActive(),
+        ).listActive(current),
       );
 
       expect(orders.map((o) => o.id), ['lo-1']);
@@ -298,7 +319,7 @@ void main() {
               },
             },
           ),
-        ).listRecent(),
+        ).listRecent(current),
       );
 
       expect(orders.map((o) => o.id), ['lo-1', 'lo-2', 'lo-3', 'lo-4']);
@@ -318,7 +339,7 @@ void main() {
               },
             },
           ),
-        ).cancelAll(),
+        ).cancelAll(current),
       );
 
       expect(orders.map((o) => o.id), ['lo-1', 'lo-2']);
@@ -339,7 +360,7 @@ void main() {
               },
             },
           ),
-        ).getRate('CAD'),
+        ).getRate(current, 'CAD'),
       );
 
       expect(rate.currencyCode, 'CAD');
@@ -359,7 +380,7 @@ void main() {
               },
             },
           ),
-        ).getRate('CAD'),
+        ).getRate(current, 'CAD'),
       );
 
       expect(rate.indexPrice, 5);
@@ -382,7 +403,7 @@ void main() {
         ]) {
           final failure = _failureOf(
             await repository(FakeBbxHttp(body: {'result': element}))
-                .getRate('CAD'),
+                .getRate(current, 'CAD'),
           );
           expect(
             failure,
@@ -408,7 +429,7 @@ void main() {
         },
       );
 
-      _valueOf(await repository(mainnet, testnet: testnet).listActive());
+      _valueOf(await repository(mainnet, testnet: testnet).listActive(current));
 
       expect(mainnet.requests, isEmpty);
       expect(testnet.requests, hasLength(1));
@@ -420,7 +441,9 @@ void main() {
       final testnet = FakeBbxHttp();
 
       expect(
-        _failureOf(await repository(mainnet, testnet: testnet).listActive()),
+        _failureOf(
+          await repository(mainnet, testnet: testnet).listActive(current),
+        ),
         isA<ExchangeUnsupportedNetworkFailure>(),
       );
       expect(mainnet.requests, isEmpty);
@@ -440,7 +463,7 @@ void main() {
       test('a timeout after sending is an unknown outcome', () async {
         expect(
           await repository(FakeBbxHttp(error: DioExceptionType.receiveTimeout))
-              .create(draft),
+              .create(current, draft),
           isA<WriteOutcomeUnknown<LimitOrder>>(),
         );
       });
@@ -453,7 +476,7 @@ void main() {
               'result': {..._order, 'fiatAmount': 'fixture-sensitive-amount'},
             },
           ),
-        ).create(draft);
+        ).create(current, draft);
         expect(
           write,
           isA<WriteOutcomeUnknown<LimitOrder>>().having(
@@ -468,14 +491,15 @@ void main() {
         expect(
           await repository(
             FakeBbxHttp(error: DioExceptionType.connectionTimeout),
-          ).create(draft),
+          ).create(current, draft),
           isA<WriteNotSent<LimitOrder>>(),
         );
       });
 
       test('a 401 is a rejected session', () async {
         expect(
-          await repository(FakeBbxHttp(status: 401, body: {})).create(draft),
+          await repository(FakeBbxHttp(status: 401, body: {}))
+              .create(current, draft),
           isA<WriteSessionRejected<LimitOrder>>(),
         );
       });
@@ -483,7 +507,7 @@ void main() {
       test('a refusal keeps its code, which names the reason', () async {
         Future<LimitOrderRefusal> refusalOf(String code) async =>
             switch (await repository(FakeBbxHttp(body: _refusal(code)))
-                .create(draft)) {
+                .create(current, draft)) {
               WriteRefused(:final reason) => limitOrderRefusalOf(reason),
               final other => fail('not a refusal: $other'),
             };
@@ -503,7 +527,7 @@ void main() {
       expect(
         _failureOf(
           await repository(FakeBbxHttp(body: _refusal('ERR_ORDTRG_LO404')))
-              .get('lo-1'),
+              .get(current, 'lo-1'),
         ),
         _problem(ExchangeLimitOrderProblem.notFound),
       );
@@ -514,7 +538,7 @@ void main() {
       () async {
         final load = _failureOf(
           await repository(FakeBbxHttp(body: _refusal('ERR_SOMETHING_NEW')))
-              .listActive(),
+              .listActive(current),
         );
         expect(load, _problem(ExchangeLimitOrderProblem.load));
         expect(load.logMessage, isNot(contains('sat@example.com')));
@@ -523,7 +547,7 @@ void main() {
         expect(
           _failureOf(
             await repository(FakeBbxHttp(body: _refusal('ERR_SOMETHING_NEW')))
-                .cancel('lo-1'),
+                .cancel(current, 'lo-1'),
           ),
           _problem(ExchangeLimitOrderProblem.cancel),
         );
@@ -533,13 +557,15 @@ void main() {
     test('a non-200 status or a malformed result is the fallback', () async {
       expect(
         _failureOf(
-          await repository(FakeBbxHttp(status: 204, body: {})).cancelAll(),
+          await repository(FakeBbxHttp(status: 204, body: {}))
+              .cancelAll(current),
         ),
         _problem(ExchangeLimitOrderProblem.cancel),
       );
       expect(
         _failureOf(
-          await repository(FakeBbxHttp(body: {'result': 'nope'})).get('lo-1'),
+          await repository(FakeBbxHttp(body: {'result': 'nope'}))
+              .get(current, 'lo-1'),
         ),
         _problem(ExchangeLimitOrderProblem.load),
       );
@@ -556,7 +582,7 @@ void main() {
                 'result': {..._order, 'fiatAmount': 'fixture-sensitive-amount'},
               },
             ),
-          ).get('lo-1'),
+          ).get(current, 'lo-1'),
         );
 
         expect(failure, isA<ExchangeUnexpectedFailure>());
@@ -579,7 +605,7 @@ void main() {
                 'result': {..._order, 'fiatAmount': 'abc'},
               },
             ),
-          ).get('lo-1'),
+          ).get(current, 'lo-1'),
         ),
         isA<ExchangeUnexpectedFailure>(),
       );
@@ -588,7 +614,8 @@ void main() {
     test('a 401 is an unavailable account', () async {
       expect(
         _failureOf(
-          await repository(FakeBbxHttp(status: 401, body: {})).listActive(),
+          await repository(FakeBbxHttp(status: 401, body: {}))
+              .listActive(current),
         ),
         isA<ExchangeSessionRejectedFailure>(),
       );
@@ -599,7 +626,7 @@ void main() {
         _failureOf(
           await repository(
             FakeBbxHttp(error: DioExceptionType.connectionTimeout),
-          ).listActive(),
+          ).listActive(current),
         ),
         isA<ExchangeUnexpectedFailure>(),
       );
@@ -610,7 +637,7 @@ void main() {
       expect(
         _failureOf(
           await withClient(http.client(readApiKey: () async => const Ok(null)))
-              .listActive(),
+              .listActive(current),
         ),
         isA<ExchangeNotAuthenticatedFailure>(),
       );
@@ -625,11 +652,28 @@ void main() {
             readApiKey: () async =>
                 const Err(BbxCredentialUnavailableFailure()),
           ),
-        ).cancelAll(),
+        ).cancelAll(current),
       );
       expect(failure, _problem(ExchangeLimitOrderProblem.cancel));
       expect(failure.logMessage, 'Exchange credential unavailable');
       expect(http.requests, isEmpty);
     });
   });
+}
+
+/// Signed in to [session]; a rejected key's expiry is accepted and ignored.
+final class _SignedInAccess extends Fake implements ExchangeAccessLifecycle {
+  @override
+  final ExchangeSession session;
+
+  _SignedInAccess(this.session);
+
+  @override
+  ExchangeAccess get current => ExchangeAccessSignedIn(session);
+
+  @override
+  Future<Result<void, ExchangeFailure>> expireSession({
+    required int epoch,
+    required bool isTestnet,
+  }) async => const Ok(null);
 }

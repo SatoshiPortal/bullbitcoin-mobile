@@ -42,6 +42,7 @@ final class _LimitOrders extends Fake implements LimitOrdersRepository {
 
   @override
   Future<Result<LimitOrderRate, ExchangeFailure>> getRate(
+    ExchangeSession session,
     String currencyCode,
   ) async {
     asked.add(currencyCode);

@@ -8,6 +8,10 @@ class GetLimitOrderRateUsecase {
 
   const GetLimitOrderRateUsecase(this._exchange);
 
-  Future<ExchangeRead<LimitOrderRate>> execute(Market market) async =>
-      readOfResult(await _exchange.limitOrders.getRate(market.currency.code));
+  Future<ExchangeRead<LimitOrderRate>> execute(
+    ExchangeSession session,
+    Market market,
+  ) async => readOfResult(
+    await _exchange.limitOrders.getRate(session, market.currency.code),
+  );
 }

@@ -127,7 +127,7 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
         case PayFetchRate(:final market):
           _answer(
             _getMarketRate
-                .execute(market)
+                .execute(session, market)
                 .then((r) => PayAmountChanged(AmountRateArrived(market, r))),
           );
         case PayRequirementsEffect(:final effect):

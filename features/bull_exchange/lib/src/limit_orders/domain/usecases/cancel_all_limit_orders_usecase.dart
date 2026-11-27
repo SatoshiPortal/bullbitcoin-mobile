@@ -17,11 +17,7 @@ class CancelAllLimitOrdersUsecase {
     final gated = await _exchange.writeGate.run(
       session,
       FinancialWriteKind.limitOrderCancel,
-      () async => _exchange.currentSession != session
-          ? const Err<List<LimitOrder>, ExchangeFailure>(
-              ExchangeOperationStaleFailure(),
-            )
-          : await _exchange.limitOrders.cancelAll(),
+      () => _exchange.limitOrders.cancelAll(session),
     );
     return switch (gated) {
       GateRefused(:final refusal) => CancelAllGateRefused(refusal),

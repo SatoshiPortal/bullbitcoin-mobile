@@ -53,7 +53,7 @@ void main() {
   });
 
   test('after a sign-in to another account the cancel is not sent', () async {
-    final orders = LimitTestOrders();
+    final orders = LimitTestOrders()..current = limitOtherSession;
     final answer = await _cancel(orders, signedIn: limitOtherSession);
     expect(answer, isNot(isA<CancelAnsweredOrder>()));
     expect(orders.log, isEmpty);

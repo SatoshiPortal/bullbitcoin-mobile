@@ -7,21 +7,26 @@ import 'package:primitives/primitives.dart';
 import '../domain/entities/limit_order.dart';
 import '../domain/entities/limit_order_draft.dart';
 import '../domain/entities/limit_order_rate.dart';
+import '../domain/exchange_access.dart';
 import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/repositories/limit_orders_repository.dart';
 import 'exchange_call_classifier.dart';
 import 'limit_order_status_wire.dart';
 
-/// Runs a limit-order read on a client of the current session; a credential
-/// that can't be read answers a [ExchangeLimitOrderFailure] of [problem].
+/// Runs a limit-order read on a client of [session], only while it is the
+/// current session; a credential that can't be read answers a
+/// [ExchangeLimitOrderFailure] of [problem].
 typedef RunLimitOrderRead = Future<Result<T, ExchangeFailure>> Function<T>(
+  ExchangeSession session,
   ExchangeLimitOrderProblem problem,
   Future<Result<T, ExchangeFailure>> Function(bbx.Bbx) operation,
 );
 
-/// Runs a limit-order write on a client of the current session.
+/// Runs a limit-order write on a client of [session], only while it is the
+/// current session.
 typedef RunLimitOrderWrite = Future<Result<T, ExchangeFailure>> Function<T>(
+  ExchangeSession session,
   Future<Result<T, ExchangeFailure>> Function(bbx.Bbx) operation,
 );
 
@@ -31,7 +36,8 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
   final RunLimitOrderWrite _write;
 
   /// Records a create whose outcome is unknown before it is returned.
-  final Future<void> Function(LimitOrderDraft draft) _journalUnknownCreate;
+  final Future<void> Function(ExchangeSession session, LimitOrderDraft draft)
+  _journalUnknownCreate;
 
   const BbxApiLimitOrdersRepository({
     required this._read,
@@ -43,7 +49,10 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
   /// this build doesn't know, so an unknown status neither hides an order nor
   /// frees a slot of the open-order cap.
   @override
-  Future<Result<List<LimitOrder>, ExchangeFailure>> listActive() => _guard(
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listActive(
+    ExchangeSession session,
+  ) => _guard(
+    session,
     'list the active limit orders',
     ExchangeLimitOrderProblem.load,
     (api) => api.orderTriggers.listLimitOrders(),
@@ -53,7 +62,10 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
 
   /// The most recent page of limit orders, every status (newest first).
   @override
-  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent() => _guard(
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent(
+    ExchangeSession session,
+  ) => _guard(
+    session,
     'list the recent limit orders',
     ExchangeLimitOrderProblem.load,
     (api) => api.orderTriggers.listLimitOrders(),
@@ -61,7 +73,11 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
   );
 
   @override
-  Future<Result<LimitOrder, ExchangeFailure>> get(String id) => _guard(
+  Future<Result<LimitOrder, ExchangeFailure>> get(
+    ExchangeSession session,
+    String id,
+  ) => _guard(
+    session,
     'read the limit order',
     ExchangeLimitOrderProblem.load,
     (api) => api.orderTriggers.getLimitOrder(id),
@@ -73,8 +89,12 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
   /// never a plain failure the user could retry into a second order. A
   /// refusal keeps its code (see `limitOrderRefusalOf`).
   @override
-  Future<ExchangeWrite<LimitOrder>> create(LimitOrderDraft draft) async {
+  Future<ExchangeWrite<LimitOrder>> create(
+    ExchangeSession session,
+    LimitOrderDraft draft,
+  ) async {
     final write = switch (await _write<ExchangeWrite<LimitOrder>>(
+      session,
       (api) async => Ok(
         await exchangeWrite<bbx.LimitOrder, LimitOrder>(
           'create the limit order',
@@ -97,13 +117,17 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
       Err(:final failure) => writeNotRun<LimitOrder>(failure),
     };
     if (write is WriteOutcomeUnknown<LimitOrder>) {
-      await _journalUnknownCreate(draft);
+      await _journalUnknownCreate(session, draft);
     }
     return write;
   }
 
   @override
-  Future<Result<LimitOrder, ExchangeFailure>> cancel(String id) => _guard(
+  Future<Result<LimitOrder, ExchangeFailure>> cancel(
+    ExchangeSession session,
+    String id,
+  ) => _guard(
+    session,
     'cancel the limit order',
     ExchangeLimitOrderProblem.cancel,
     (api) => api.orderTriggers.cancelLimitOrder(id),
@@ -111,7 +135,10 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
   );
 
   @override
-  Future<Result<List<LimitOrder>, ExchangeFailure>> cancelAll() => _guard(
+  Future<Result<List<LimitOrder>, ExchangeFailure>> cancelAll(
+    ExchangeSession session,
+  ) => _guard(
+    session,
     'cancel every limit order',
     ExchangeLimitOrderProblem.cancel,
     (api) => api.orderTriggers.cancelAllLimitOrders(),
@@ -120,8 +147,10 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
 
   @override
   Future<Result<LimitOrderRate, ExchangeFailure>> getRate(
+    ExchangeSession session,
     String currencyCode,
   ) => _guard(
+    session,
     'read the limit order rate',
     ExchangeLimitOrderProblem.load,
     (api) =>
@@ -180,11 +209,13 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
   }
 
   Future<Result<T, ExchangeFailure>> _guard<T, R>(
+    ExchangeSession session,
     String operation,
     ExchangeLimitOrderProblem fallback,
     Future<Result<R, bbx.BbxFailure>> Function(bbx.Bbx api) request,
     T Function(R value) read,
   ) => _read(
+    session,
     fallback,
     (api) => _guarded(api, operation, fallback, request, read),
   );

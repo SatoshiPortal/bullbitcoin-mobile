@@ -9,9 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
 /// Shell of [transitionLimitOrdersList]. Limit-order notifications and the
-/// dashboard's refresh requests are events. The list reads the current
-/// session's account; the cancel-all runs with the session the list opened
-/// with ([session], null when signed out).
+/// dashboard's refresh requests are events. The list read and the cancel-all
+/// run with the session the list opened with ([session], null when signed
+/// out).
 class LimitOrdersListBloc
     extends Bloc<LimitOrdersListEvent, LimitOrdersListState> {
   LimitOrdersListBloc({
@@ -56,9 +56,10 @@ class LimitOrdersListBloc
   void _run(List<LimitOrdersListEffect> effects) {
     for (final effect in effects) {
       final Future<LimitOrdersListEvent> answer = switch (effect) {
-        ListFetch(:final attempt) => _getActiveOrders.execute().then(
-          (read) => ListLoaded(attempt, read),
-        ),
+        ListFetch(:final attempt) =>
+          _getActiveOrders
+              .execute(_session)
+              .then((read) => ListLoaded(attempt, read)),
         ListCancelAll(:final attempt) =>
           _cancelAllOrders
               .execute(_session)

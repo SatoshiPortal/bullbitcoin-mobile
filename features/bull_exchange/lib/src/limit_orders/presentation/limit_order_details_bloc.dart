@@ -60,7 +60,9 @@ class LimitDetailsBloc extends Bloc<LimitDetailsEvent, LimitDetailsState> {
       switch (effect) {
         case DetailsRead(:final orderId, :final attempt):
           _answer(
-            _getOrder.execute(orderId).then((r) => DetailsLoaded(attempt, r)),
+            _getOrder
+                .execute(session, orderId)
+                .then((r) => DetailsLoaded(attempt, r)),
           );
         case DetailsCancelEffect(
           effect: CancelSend(:final orderId, :final attempt),
@@ -75,7 +77,7 @@ class LimitDetailsBloc extends Bloc<LimitDetailsEvent, LimitDetailsState> {
         ):
           _answer(
             _getOrder
-                .execute(orderId)
+                .execute(session, orderId)
                 .then((r) => DetailsCancelChanged(CancelChecked(attempt, r))),
           );
       }

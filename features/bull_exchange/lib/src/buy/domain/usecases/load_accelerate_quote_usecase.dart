@@ -49,7 +49,7 @@ class LoadAccelerateQuoteUsecase {
         return const ReadUnreachable('network fees', isNetwork: false);
     }
     final double fiatPerBitcoin;
-    switch (await _exchange.limitOrders.getRate(order.payinCurrency)) {
+    switch (await _exchange.limitOrders.getRate(session, order.payinCurrency)) {
       case Ok(:final value):
         fiatPerBitcoin = value.indexPrice;
       case Err(:final failure):

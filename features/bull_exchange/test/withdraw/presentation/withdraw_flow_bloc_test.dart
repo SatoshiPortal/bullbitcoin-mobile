@@ -34,7 +34,7 @@ final class _Usecases {
       _called(session, 'load');
       return ReadGot(withdrawContext);
     }),
-    getMarketRate: FakeGetMarketRateUsecase((market) async {
+    getMarketRate: FakeGetMarketRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
       return const ReadGot(50000.0);
     }),

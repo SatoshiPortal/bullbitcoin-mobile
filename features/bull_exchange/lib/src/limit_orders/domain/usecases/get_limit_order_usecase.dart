@@ -9,15 +9,17 @@ class GetLimitOrderUsecase {
 
   const GetLimitOrderUsecase(this._exchange);
 
-  Future<ExchangeRead<LimitOrder>> execute(String orderId) async =>
-      switch (await _exchange.limitOrders.get(orderId)) {
-        Ok(:final value) => ReadGot(value),
-        Err(
-          failure: ExchangeLimitOrderFailure(
-            problem: ExchangeLimitOrderProblem.notFound,
-          ),
-        ) =>
-          const ReadMissing(),
-        Err(:final failure) => readOfExchangeFailure(failure),
-      };
+  Future<ExchangeRead<LimitOrder>> execute(
+    ExchangeSession session,
+    String orderId,
+  ) async => switch (await _exchange.limitOrders.get(session, orderId)) {
+    Ok(:final value) => ReadGot(value),
+    Err(
+      failure: ExchangeLimitOrderFailure(
+        problem: ExchangeLimitOrderProblem.notFound,
+      ),
+    ) =>
+      const ReadMissing(),
+    Err(:final failure) => readOfExchangeFailure(failure),
+  };
 }

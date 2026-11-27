@@ -20,7 +20,7 @@ void main() {
           return const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1));
         },
       ),
-    ).execute();
+    ).execute(limitSession);
     expect((read as ReadGot<List<LimitOrder>>).value.single.id, 'lo-7');
     expect(points, ['point']);
     expect(orders.log, ['recent']);
@@ -32,7 +32,7 @@ void main() {
         limitOrders: LimitTestOrders()
           ..recent = const Err(ExchangeSessionRejectedFailure()),
       ),
-    ).execute();
+    ).execute(limitSession);
     expect(read, isA<ReadSessionRejected<List<LimitOrder>>>());
   });
 }

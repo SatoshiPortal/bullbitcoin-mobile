@@ -9,7 +9,7 @@ import '../../limit_test_orders.dart';
 
 Future<ExchangeRead<LimitOrder>> _read(LimitTestOrders orders) =>
     GetLimitOrderUsecase(exchangeForTesting(limitOrders: orders))
-        .execute('lo-1');
+        .execute(limitSession, 'lo-1');
 
 void main() {
   test('reads the order by id', () async {

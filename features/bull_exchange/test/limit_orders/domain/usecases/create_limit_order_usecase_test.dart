@@ -31,7 +31,7 @@ void main() {
   });
 
   test('after a sign-in to another account the create is not sent', () async {
-    final orders = LimitTestOrders();
+    final orders = LimitTestOrders()..current = limitOtherSession;
     final answer = await CreateLimitOrderUsecase(
       _exchange(orders, limitOtherSession),
     ).execute(limitSession, limitCreateSend());

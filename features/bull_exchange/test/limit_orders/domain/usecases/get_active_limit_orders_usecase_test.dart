@@ -12,9 +12,19 @@ void main() {
     final orders = LimitTestOrders()..active = Ok([limitOrder()]);
     final read = await GetActiveLimitOrdersUsecase(
       exchangeForTesting(limitOrders: orders),
-    ).execute();
+    ).execute(limitSession);
     expect((read as ReadGot<List<LimitOrder>>).value.single.id, 'lo-1');
     expect(orders.log, ['active']);
+    expect(orders.sessions, [limitSession]);
+  });
+
+  test('without a session the answer is the signed-out one', () async {
+    final orders = LimitTestOrders();
+    final read = await GetActiveLimitOrdersUsecase(
+      exchangeForTesting(limitOrders: orders),
+    ).execute(null);
+    expect(read, isA<ReadSessionRejected<List<LimitOrder>>>());
+    expect(orders.log, isEmpty);
   });
 
   test('a failed read is never a list', () async {
@@ -23,7 +33,7 @@ void main() {
         limitOrders: LimitTestOrders()
           ..active = const Err(ExchangeNetworkFailure()),
       ),
-    ).execute();
+    ).execute(limitSession);
     expect(read, isA<ReadUnreachable<List<LimitOrder>>>());
   });
 }

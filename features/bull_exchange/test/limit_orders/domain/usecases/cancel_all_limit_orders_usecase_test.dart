@@ -47,7 +47,7 @@ void main() {
 
   test('without a session, or after a sign-in to another account, nothing '
       'is sent', () async {
-    final orders = LimitTestOrders();
+    final orders = LimitTestOrders()..current = limitOtherSession;
     expect(
       await _cancelAll(orders, session: null),
       isA<CancelAllSessionRejected>(),

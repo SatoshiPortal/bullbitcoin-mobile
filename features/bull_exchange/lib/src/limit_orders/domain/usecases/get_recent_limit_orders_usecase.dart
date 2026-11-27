@@ -10,8 +10,10 @@ class GetRecentLimitOrdersUsecase {
 
   const GetRecentLimitOrdersUsecase(this._exchange);
 
-  Future<ExchangeRead<List<LimitOrder>>> execute() async {
+  Future<ExchangeRead<List<LimitOrder>>> execute(
+    ExchangeSession session,
+  ) async {
     final _ = await _exchange.reconcileUnknownWrites();
-    return readOfResult(await _exchange.limitOrders.listRecent());
+    return readOfResult(await _exchange.limitOrders.listRecent(session));
   }
 }

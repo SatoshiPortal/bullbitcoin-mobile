@@ -558,16 +558,25 @@ final class Exchange {
         },
       ),
       BbxApiLimitOrdersRepository(
-        read: <T>(problem, operation) => withClient<T>(
-          operation,
-          credentialReadFailure: () => ExchangeLimitOrderFailure(
-            problem,
-            'Exchange credential unavailable',
-          ),
-        ),
-        write: <T>(operation) =>
-            withClient<T>(operation, completionCheck: _CompletionCheck.write),
-        journalUnknownCreate: (draft) async {
+        read: <T>(session, problem, operation) async =>
+            access?.session != session
+            ? Err<T, ExchangeFailure>(const ExchangeOperationStaleFailure())
+            : await withClient<T>(
+                operation,
+                environment: session.environment,
+                credentialReadFailure: () => ExchangeLimitOrderFailure(
+                  problem,
+                  'Exchange credential unavailable',
+                ),
+              ),
+        write: <T>(session, operation) async => access?.session != session
+            ? Err<T, ExchangeFailure>(const ExchangeOperationStaleFailure())
+            : await withClient<T>(
+                operation,
+                environment: session.environment,
+                completionCheck: _CompletionCheck.write,
+              ),
+        journalUnknownCreate: (_, draft) async {
           if (recorder == null) return;
           if (await sessionSnapshot() case Ok(:final value)) {
             await recorder.record(
@@ -1051,7 +1060,10 @@ final class Exchange {
           journal: journal,
           orders: _orders,
           getUserSummary: (environment) => _getUserSummary(environment),
-          listRecentLimitOrders: limitOrders.listRecent,
+          listRecentLimitOrders: () async => switch (_access?.session) {
+            null => const Err(ExchangeNotAuthenticatedFailure()),
+            final session => await limitOrders.listRecent(session),
+          },
           getDefaultWallets: _defaultWallets.get,
           recipients: recipients,
         ).execute(value.environment);
@@ -1393,31 +1405,41 @@ final class _UnexpectedLimitOrders implements LimitOrdersRepository {
   const _UnexpectedLimitOrders();
 
   @override
-  Future<Result<List<LimitOrder>, ExchangeFailure>> listActive() =>
-      throw StateError('Unexpected limit order listing');
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listActive(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected limit order listing');
 
   @override
-  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent() =>
-      throw StateError('Unexpected limit order listing');
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected limit order listing');
 
   @override
-  Future<Result<LimitOrder, ExchangeFailure>> get(String id) =>
-      throw StateError('Unexpected limit order read');
+  Future<Result<LimitOrder, ExchangeFailure>> get(
+    ExchangeSession session,
+    String id,
+  ) => throw StateError('Unexpected limit order read');
 
   @override
-  Future<ExchangeWrite<LimitOrder>> create(LimitOrderDraft draft) =>
-      throw StateError('Unexpected limit order create');
+  Future<ExchangeWrite<LimitOrder>> create(
+    ExchangeSession session,
+    LimitOrderDraft draft,
+  ) => throw StateError('Unexpected limit order create');
 
   @override
-  Future<Result<LimitOrder, ExchangeFailure>> cancel(String id) =>
-      throw StateError('Unexpected limit order cancel');
+  Future<Result<LimitOrder, ExchangeFailure>> cancel(
+    ExchangeSession session,
+    String id,
+  ) => throw StateError('Unexpected limit order cancel');
 
   @override
-  Future<Result<List<LimitOrder>, ExchangeFailure>> cancelAll() =>
-      throw StateError('Unexpected limit order bulk cancel');
+  Future<Result<List<LimitOrder>, ExchangeFailure>> cancelAll(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected limit order bulk cancel');
 
   @override
   Future<Result<LimitOrderRate, ExchangeFailure>> getRate(
+    ExchangeSession session,
     String currencyCode,
   ) => throw StateError('Unexpected limit order rate');
 }

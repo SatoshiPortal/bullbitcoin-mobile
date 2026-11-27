@@ -4,12 +4,19 @@ import 'package:bull_exchange/src/orders/domain/usecases/get_order_usecase.dart'
 import 'package:exchange/exchange.dart';
 
 final class FakeGetMarketRateUsecase implements GetMarketRateUsecase {
-  final Future<ExchangeRead<double>> Function(Market market) answer;
+  final Future<ExchangeRead<double>> Function(
+    ExchangeSession session,
+    Market market,
+  )
+  answer;
 
   FakeGetMarketRateUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<double>> execute(Market market) => answer(market);
+  Future<ExchangeRead<double>> execute(
+    ExchangeSession session,
+    Market market,
+  ) => answer(session, market);
 }
 
 final class FakeGetOrderUsecase implements GetOrderUsecase {

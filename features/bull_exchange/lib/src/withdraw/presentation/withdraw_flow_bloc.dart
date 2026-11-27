@@ -104,7 +104,7 @@ class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
         case WithdrawFetchRate(:final market):
           _answer(
             _getMarketRate
-                .execute(market)
+                .execute(session, market)
                 .then(
                   (r) => WithdrawAmountChanged(AmountRateArrived(market, r)),
                 ),

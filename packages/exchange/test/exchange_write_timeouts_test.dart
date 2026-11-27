@@ -18,6 +18,13 @@ void main() {
           network: FakeBbxHttp(error: DioExceptionType.connectionError),
       };
 
+      final session = ExchangeSession(
+        environment: environment == Environment.testnet
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet,
+        epoch: 0,
+        sessionId: 's',
+      );
       final exchange = exchangeWithTransportForTesting(
         readSession: () async => Ok((
           environment: environment == Environment.testnet
@@ -37,9 +44,11 @@ void main() {
             timeouts: BbxTimeouts.standard,
           );
         },
+        access: fixedAccessForTesting(ExchangeAccessSignedIn(session)),
       );
       final isTestnet = environment == Environment.testnet;
       final limitOrder = exchange.limitOrders.create(
+        session,
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,

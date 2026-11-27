@@ -91,13 +91,13 @@ class LimitFlowBloc extends Bloc<LimitFlowEvent, LimitFlowState> {
         case LimitFetchTargetRate(:final market, :final attempt):
           _answer(
             _getRate
-                .execute(market)
+                .execute(session, market)
                 .then((r) => LimitTargetRateArrived(market, attempt, r)),
           );
         case LimitFetchReviewRate(:final market, :final attempt):
           _answer(
             _getRate
-                .execute(market)
+                .execute(session, market)
                 .then((r) => LimitReviewRateArrived(attempt, r)),
           );
         case LimitDestinationEffect(:final effect):
@@ -144,11 +144,13 @@ class LimitFlowBloc extends Bloc<LimitFlowEvent, LimitFlowState> {
         );
       case ConfirmVerify(:final target, :final attempt):
         _answer(
-          _getRecentOrders.execute().then(
-            (read) => LimitConfirmChanged(
-              ConfirmVerified(attempt, limitOrderCreateCheck(target, read)),
-            ),
-          ),
+          _getRecentOrders
+              .execute(session)
+              .then(
+                (read) => LimitConfirmChanged(
+                  ConfirmVerified(attempt, limitOrderCreateCheck(target, read)),
+                ),
+              ),
         );
     }
   }

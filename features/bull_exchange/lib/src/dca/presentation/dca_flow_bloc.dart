@@ -90,7 +90,7 @@ class DcaFlowBloc extends Bloc<DcaFlowEvent, DcaFlowState> {
         case DcaFetchRate(:final market):
           _answer(
             _getMarketRate
-                .execute(market)
+                .execute(session, market)
                 .then((r) => DcaAmountChanged(AmountRateArrived(market, r))),
           );
         case DcaLoadDefaultWallets(:final ticket):

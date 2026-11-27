@@ -9,9 +9,14 @@ class GetMarketRateUsecase {
 
   const GetMarketRateUsecase(this._exchange);
 
-  Future<ExchangeRead<double>> execute(Market market) async =>
-      switch (await _exchange.limitOrders.getRate(market.currency.code)) {
-        Ok(:final value) => ReadGot(value.indexPrice),
-        Err(:final failure) => readOfExchangeFailure(failure),
-      };
+  Future<ExchangeRead<double>> execute(
+    ExchangeSession session,
+    Market market,
+  ) async => switch (await _exchange.limitOrders.getRate(
+    session,
+    market.currency.code,
+  )) {
+    Ok(:final value) => ReadGot(value.indexPrice),
+    Err(:final failure) => readOfExchangeFailure(failure),
+  };
 }

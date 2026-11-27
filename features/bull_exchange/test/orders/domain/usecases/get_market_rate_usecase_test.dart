@@ -12,12 +12,19 @@ final class _LimitOrders extends Fake implements LimitOrdersRepository {
 
   @override
   Future<Result<LimitOrderRate, ExchangeFailure>> getRate(
+    ExchangeSession session,
     String currencyCode,
   ) async {
     asked.add(currencyCode);
     return answer;
   }
 }
+
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 's',
+);
 
 void main() {
   test('the rate is the index price in the market currency', () async {
@@ -32,7 +39,7 @@ void main() {
     );
     final read = await GetMarketRateUsecase(
       exchangeForTesting(limitOrders: orders),
-    ).execute(ExchangeCatalog.eur);
+    ).execute(_session, ExchangeCatalog.eur);
     expect(read, isA<ReadGot<double>>().having((r) => r.value, 'value', 90000));
     expect(orders.asked, ['EUR']);
   });
@@ -42,7 +49,7 @@ void main() {
       exchangeForTesting(
         limitOrders: _LimitOrders(const Err(ExchangeNetworkFailure())),
       ),
-    ).execute(ExchangeCatalog.cad);
+    ).execute(_session, ExchangeCatalog.cad);
     expect(read, isA<ReadUnreachable<double>>());
   });
 }

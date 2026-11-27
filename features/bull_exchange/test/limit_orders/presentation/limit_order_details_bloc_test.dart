@@ -31,7 +31,7 @@ final class _Calls {
         session: session,
         orderId: 'lo-1',
         accessChanges: const Stream.empty(),
-        getOrder: FakeGetLimitOrderUsecase((orderId) async {
+        getOrder: FakeGetLimitOrderUsecase((_, orderId) async {
           log.add('get $orderId');
           return reads.length > 1 ? reads.removeAt(0) : reads.single;
         }),

@@ -36,7 +36,7 @@ final class _Calls {
         ),
       );
     }),
-    getRate: FakeGetLimitOrderRateUsecase((market) async {
+    getRate: FakeGetLimitOrderRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
       return ReadGot(limitOrderRate());
     }),
@@ -53,7 +53,7 @@ final class _Calls {
       log.add('create ${effect.attempt}');
       return ConfirmAnswered(effect.attempt, await createAnswer.future);
     }),
-    getRecentOrders: FakeGetRecentLimitOrdersUsecase(() async {
+    getRecentOrders: FakeGetRecentLimitOrdersUsecase((_) async {
       log.add('recent');
       return recent;
     }),

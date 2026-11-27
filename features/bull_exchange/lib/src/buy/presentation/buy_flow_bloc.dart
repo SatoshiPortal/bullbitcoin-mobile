@@ -145,7 +145,7 @@ class BuyFlowBloc extends Bloc<BuyFlowEvent, BuyFlowState> {
         case BuyFetchRate(:final market):
           _answer(
             _getMarketRate
-                .execute(market)
+                .execute(session, market)
                 .then((r) => BuyAmountChanged(AmountRateArrived(market, r))),
           );
         case BuyDestinationEffect(:final effect):

@@ -115,7 +115,7 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
         case SellFetchRate(:final market):
           _answer(
             _getMarketRate
-                .execute(market)
+                .execute(session, market)
                 .then((r) => SellAmountChanged(AmountRateArrived(market, r))),
           );
         case SellRequirementsEffect(:final effect):

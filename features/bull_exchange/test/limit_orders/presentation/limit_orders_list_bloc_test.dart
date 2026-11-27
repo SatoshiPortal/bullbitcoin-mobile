@@ -38,7 +38,7 @@ void main() {
     var reads = 0;
     return LimitOrdersListBloc(
       session: limitSession,
-      getActiveOrders: FakeGetActiveLimitOrdersUsecase(() async {
+      getActiveOrders: FakeGetActiveLimitOrdersUsecase((_) async {
         log.add('list');
         return ReadGot(orders(++reads));
       }),
