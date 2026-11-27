@@ -362,7 +362,7 @@ void main() {
         fault.code = code;
         final result = await AccessRepository(
           database,
-          BackupGuard(null),
+          BackupGuard(null, database),
         ).protectionAtOpen();
         expect(
           result,

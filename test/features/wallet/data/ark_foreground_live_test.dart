@@ -120,7 +120,11 @@ void main() {
         ..registerSingleton<Secrets>(secrets)
         ..registerSingleton<ParentCustodyAdmissionPort>(admission)
         ..registerSingleton<SeedReferences>(
-          SeedReferences(_WalletCatalog(), admission: admission),
+          SeedReferences(
+            _WalletCatalog(),
+            admission: admission,
+            backupVerification: const FakeInventoryBackups(),
+          ),
         );
 
       final opened = await openArkForeground(

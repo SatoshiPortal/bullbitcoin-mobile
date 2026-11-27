@@ -337,6 +337,8 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'ParentCustodyMetadataFailure', 'ParentCustodySeedUnavailableFailure',
       'ParentCustodyReferencedFailure', 'ParentCustodyInventoryFailure',
       'ParentCustodyDeletionFailure',
+      'ParentCustodyBackupRequiredFailure',
+      'ParentCustodyBackupUnavailableFailure',
       // the grouped spelling: forwards, holds nothing
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
       'SecretSigning', 'SecretBackup', 'SecretVerification',
