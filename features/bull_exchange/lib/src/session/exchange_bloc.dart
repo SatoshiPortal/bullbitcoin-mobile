@@ -10,10 +10,9 @@ import '../dca/domain/usecases/stop_dca_usecase.dart';
 import 'domain/usecases/get_announcements_usecase.dart';
 import 'domain/usecases/reconcile_unknown_writes_usecase.dart';
 import 'exchange_event.dart';
-import 'exchange_machine.dart';
 import 'exchange_state.dart';
 
-/// Shell of [transitionExchange]: applies events one at a time and starts
+/// Shell of [ExchangeState.next]: applies events one at a time and starts
 /// the effects of the state it enters. Each effect result carries the
 /// session that started it.
 class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
@@ -45,7 +44,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
 
   void _onEvent(ExchangeEvent event, Emitter<ExchangeState> emit) {
     final previous = state;
-    final next = transitionExchange(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     emit(next);
     _runEffects(previous, next);

@@ -9,6 +9,128 @@ import 'entities/exchange_preferences.dart';
 @immutable
 sealed class PreferencesState {
   const PreferencesState();
+
+  PreferencesNext next(PreferencesEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (PreferencesLoading(:final attempt), PreferencesLoaded loaded)
+          when loaded.attempt == attempt =>
+        StepNext(switch (loaded.result) {
+          Ok(:final value) => PreferencesEditing(value, value),
+          Err(failure: ExchangeNotAuthenticatedFailure()) =>
+            const PreferencesSignedOut(),
+          Err(:final failure) => PreferencesLoadFailed(attempt, failure),
+        }),
+      (
+        PreferencesLoading() ||
+            PreferencesLoadFailed() ||
+            PreferencesSignedOut() ||
+            PreferencesEditing() ||
+            PreferencesSaving() ||
+            PreferencesSaved() ||
+            PreferencesSaveFailed(),
+        PreferencesLoaded(),
+      ) =>
+        StepNext.stay(state),
+      (PreferencesLoadFailed(:final attempt), PreferencesRetryPressed()) =>
+        StepNext(PreferencesLoading(attempt + 1), [
+          FetchPreferences(attempt + 1),
+        ]),
+      (
+        PreferencesLoading() ||
+            PreferencesSignedOut() ||
+            PreferencesEditing() ||
+            PreferencesSaving() ||
+            PreferencesSaved() ||
+            PreferencesSaveFailed(),
+        PreferencesRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        PreferencesEditing(:final saved, :final draft) ||
+            PreferencesSaveFailed(:final saved, :final draft),
+        PreferencesLanguageChosen() ||
+            PreferencesCurrencyChosen() ||
+            PreferencesEmailToggled(),
+      ) =>
+        StepNext(PreferencesEditing(saved, _edit(draft, event))),
+      (
+        PreferencesSaved(:final saved),
+        PreferencesLanguageChosen() ||
+            PreferencesCurrencyChosen() ||
+            PreferencesEmailToggled(),
+      ) =>
+        StepNext(PreferencesEditing(saved, _edit(saved, event))),
+      (
+        PreferencesSaving(:final saved, :final inFlight, :final draft),
+        PreferencesLanguageChosen() ||
+            PreferencesCurrencyChosen() ||
+            PreferencesEmailToggled(),
+      ) =>
+        StepNext(PreferencesSaving(saved, inFlight, _edit(draft, event))),
+      (
+        PreferencesLoading() ||
+            PreferencesLoadFailed() ||
+            PreferencesSignedOut(),
+        PreferencesLanguageChosen() ||
+            PreferencesCurrencyChosen() ||
+            PreferencesEmailToggled(),
+      ) =>
+        StepNext.stay(state),
+      (
+        PreferencesEditing(:final saved, :final draft) ||
+            PreferencesSaveFailed(:final saved, :final draft),
+        PreferencesSavePressed(),
+      )
+          when draft.isComplete && draft != saved =>
+        _save(saved, draft),
+      (
+        PreferencesLoading() ||
+            PreferencesLoadFailed() ||
+            PreferencesSignedOut() ||
+            PreferencesEditing() ||
+            PreferencesSaving() ||
+            PreferencesSaved() ||
+            PreferencesSaveFailed(),
+        PreferencesSavePressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        PreferencesSaving(:final saved, :final inFlight, :final draft),
+        PreferencesSaveAnswered(:final answer),
+      ) =>
+        StepNext(switch (answer) {
+          GateAdmitted(result: Ok()) =>
+            draft == inFlight
+                ? PreferencesSaved(inFlight)
+                : PreferencesEditing(inFlight, draft),
+          GateAdmitted(
+            result: Err(failure: ExchangeNotAuthenticatedFailure()),
+          ) =>
+            const PreferencesSignedOut(),
+          GateAdmitted(result: Err(:final failure)) => PreferencesSaveFailed(
+            saved,
+            draft,
+            failure,
+          ),
+          GateRefused() => PreferencesSaveFailed(
+            saved,
+            draft,
+            const ExchangeWriteBusyFailure(),
+          ),
+        }),
+      (
+        PreferencesLoading() ||
+            PreferencesLoadFailed() ||
+            PreferencesSignedOut() ||
+            PreferencesEditing() ||
+            PreferencesSaved() ||
+            PreferencesSaveFailed(),
+        PreferencesSaveAnswered(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class PreferencesLoading extends PreferencesState {
@@ -227,122 +349,6 @@ PreferencesNext _save(ExchangePreferences saved, ExchangePreferences draft) =>
     StepNext(PreferencesSaving(saved, draft, draft), [
       SavePreferences(saved, draft),
     ]);
-
-PreferencesNext transitionPreferences(
-  PreferencesState state,
-  PreferencesEvent event,
-) => switch ((state, event)) {
-  (PreferencesLoading(:final attempt), PreferencesLoaded loaded)
-      when loaded.attempt == attempt =>
-    StepNext(switch (loaded.result) {
-      Ok(:final value) => PreferencesEditing(value, value),
-      Err(failure: ExchangeNotAuthenticatedFailure()) =>
-        const PreferencesSignedOut(),
-      Err(:final failure) => PreferencesLoadFailed(attempt, failure),
-    }),
-  (
-    PreferencesLoading() ||
-        PreferencesLoadFailed() ||
-        PreferencesSignedOut() ||
-        PreferencesEditing() ||
-        PreferencesSaving() ||
-        PreferencesSaved() ||
-        PreferencesSaveFailed(),
-    PreferencesLoaded(),
-  ) =>
-    StepNext.stay(state),
-  (PreferencesLoadFailed(:final attempt), PreferencesRetryPressed()) =>
-    StepNext(PreferencesLoading(attempt + 1), [FetchPreferences(attempt + 1)]),
-  (
-    PreferencesLoading() ||
-        PreferencesSignedOut() ||
-        PreferencesEditing() ||
-        PreferencesSaving() ||
-        PreferencesSaved() ||
-        PreferencesSaveFailed(),
-    PreferencesRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (
-    PreferencesEditing(:final saved, :final draft) ||
-        PreferencesSaveFailed(:final saved, :final draft),
-    PreferencesLanguageChosen() ||
-        PreferencesCurrencyChosen() ||
-        PreferencesEmailToggled(),
-  ) =>
-    StepNext(PreferencesEditing(saved, _edit(draft, event))),
-  (
-    PreferencesSaved(:final saved),
-    PreferencesLanguageChosen() ||
-        PreferencesCurrencyChosen() ||
-        PreferencesEmailToggled(),
-  ) =>
-    StepNext(PreferencesEditing(saved, _edit(saved, event))),
-  (
-    PreferencesSaving(:final saved, :final inFlight, :final draft),
-    PreferencesLanguageChosen() ||
-        PreferencesCurrencyChosen() ||
-        PreferencesEmailToggled(),
-  ) =>
-    StepNext(PreferencesSaving(saved, inFlight, _edit(draft, event))),
-  (
-    PreferencesLoading() || PreferencesLoadFailed() || PreferencesSignedOut(),
-    PreferencesLanguageChosen() ||
-        PreferencesCurrencyChosen() ||
-        PreferencesEmailToggled(),
-  ) =>
-    StepNext.stay(state),
-  (
-    PreferencesEditing(:final saved, :final draft) ||
-        PreferencesSaveFailed(:final saved, :final draft),
-    PreferencesSavePressed(),
-  )
-      when draft.isComplete && draft != saved =>
-    _save(saved, draft),
-  (
-    PreferencesLoading() ||
-        PreferencesLoadFailed() ||
-        PreferencesSignedOut() ||
-        PreferencesEditing() ||
-        PreferencesSaving() ||
-        PreferencesSaved() ||
-        PreferencesSaveFailed(),
-    PreferencesSavePressed(),
-  ) =>
-    StepNext.stay(state),
-  (
-    PreferencesSaving(:final saved, :final inFlight, :final draft),
-    PreferencesSaveAnswered(:final answer),
-  ) =>
-    StepNext(switch (answer) {
-      GateAdmitted(result: Ok()) =>
-        draft == inFlight
-            ? PreferencesSaved(inFlight)
-            : PreferencesEditing(inFlight, draft),
-      GateAdmitted(result: Err(failure: ExchangeNotAuthenticatedFailure())) =>
-        const PreferencesSignedOut(),
-      GateAdmitted(result: Err(:final failure)) => PreferencesSaveFailed(
-        saved,
-        draft,
-        failure,
-      ),
-      GateRefused() => PreferencesSaveFailed(
-        saved,
-        draft,
-        const ExchangeWriteBusyFailure(),
-      ),
-    }),
-  (
-    PreferencesLoading() ||
-        PreferencesLoadFailed() ||
-        PreferencesSignedOut() ||
-        PreferencesEditing() ||
-        PreferencesSaved() ||
-        PreferencesSaveFailed(),
-    PreferencesSaveAnswered(),
-  ) =>
-    StepNext.stay(state),
-};
 
 /// What the screen shows, for every state that has preferences.
 ExchangePreferences? shownPreferences(PreferencesState state) =>

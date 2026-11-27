@@ -9,6 +9,78 @@ enum ExchangeAccessAttempt { enable, signOut, retry }
 sealed class ExchangeAccessSettingsState {
   const ExchangeAccessSettingsState();
   ExchangeAccess get access;
+
+  /// One attempt at a time: a request while one runs is a stay, and only the
+  /// running attempt's result has a pair to land on.
+  ExchangeAccessSettingsState next(ExchangeAccessSettingsEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      // Access changes: the attempt keeps running; anything it left is dropped.
+      (
+        AccessSettingsWorking(:final attempt),
+        AccessSettingsAccessChanged(:final access),
+      ) =>
+        AccessSettingsWorking(access, attempt),
+      (
+        AccessSettingsIdle() ||
+            AccessSettingsSucceeded() ||
+            AccessSettingsFailed(),
+        AccessSettingsAccessChanged(:final access),
+      ) =>
+        sameAccess(access, state.access) ? state : AccessSettingsIdle(access),
+
+      // Requests start an attempt from any state that has none running.
+      (
+        AccessSettingsWorking(),
+        AccessSettingsEnableRequested() ||
+            AccessSettingsSignOutRequested() ||
+            AccessSettingsRetryRequested(),
+      ) =>
+        state,
+      (
+        AccessSettingsIdle() ||
+            AccessSettingsSucceeded() ||
+            AccessSettingsFailed(),
+        AccessSettingsEnableRequested(),
+      ) =>
+        accessSettingsCanEnable(state.access)
+            ? AccessSettingsWorking(state.access, ExchangeAccessAttempt.enable)
+            : state,
+      (
+        AccessSettingsIdle() ||
+            AccessSettingsSucceeded() ||
+            AccessSettingsFailed(),
+        AccessSettingsSignOutRequested(),
+      ) =>
+        AccessSettingsWorking(state.access, ExchangeAccessAttempt.signOut),
+      (
+        AccessSettingsIdle() ||
+            AccessSettingsSucceeded() ||
+            AccessSettingsFailed(),
+        AccessSettingsRetryRequested(),
+      ) =>
+        AccessSettingsWorking(state.access, ExchangeAccessAttempt.retry),
+
+      // Results.
+      (
+        AccessSettingsWorking(:final attempt),
+        AccessSettingsAttemptSucceeded(:final access),
+      ) =>
+        AccessSettingsSucceeded(access, attempt),
+      (
+        AccessSettingsWorking(:final access, :final attempt),
+        AccessSettingsAttemptFailed(:final failure),
+      ) =>
+        AccessSettingsFailed(access, attempt, failure),
+      (
+        AccessSettingsIdle() ||
+            AccessSettingsSucceeded() ||
+            AccessSettingsFailed(),
+        AccessSettingsAttemptSucceeded() || AccessSettingsAttemptFailed(),
+      ) =>
+        state,
+    };
+  }
 }
 
 final class AccessSettingsIdle extends ExchangeAccessSettingsState {
@@ -129,66 +201,4 @@ bool accessSettingsCanEnable(ExchangeAccess access) => switch (access) {
   ExchangeAccessSignedIn() ||
   ExchangeAccessExpiring() ||
   ExchangeAccessCredentialUnreadable() => true,
-};
-
-/// One attempt at a time: a request while one runs is a stay, and only the
-/// running attempt's result has a pair to land on.
-ExchangeAccessSettingsState transitionAccessSettings(
-  ExchangeAccessSettingsState state,
-  ExchangeAccessSettingsEvent event,
-) => switch ((state, event)) {
-  // Access changes: the attempt keeps running; anything it left is dropped.
-  (
-    AccessSettingsWorking(:final attempt),
-    AccessSettingsAccessChanged(:final access),
-  ) =>
-    AccessSettingsWorking(access, attempt),
-  (
-    AccessSettingsIdle() || AccessSettingsSucceeded() || AccessSettingsFailed(),
-    AccessSettingsAccessChanged(:final access),
-  ) =>
-    sameAccess(access, state.access) ? state : AccessSettingsIdle(access),
-
-  // Requests start an attempt from any state that has none running.
-  (
-    AccessSettingsWorking(),
-    AccessSettingsEnableRequested() ||
-        AccessSettingsSignOutRequested() ||
-        AccessSettingsRetryRequested(),
-  ) =>
-    state,
-  (
-    AccessSettingsIdle() || AccessSettingsSucceeded() || AccessSettingsFailed(),
-    AccessSettingsEnableRequested(),
-  ) =>
-    accessSettingsCanEnable(state.access)
-        ? AccessSettingsWorking(state.access, ExchangeAccessAttempt.enable)
-        : state,
-  (
-    AccessSettingsIdle() || AccessSettingsSucceeded() || AccessSettingsFailed(),
-    AccessSettingsSignOutRequested(),
-  ) =>
-    AccessSettingsWorking(state.access, ExchangeAccessAttempt.signOut),
-  (
-    AccessSettingsIdle() || AccessSettingsSucceeded() || AccessSettingsFailed(),
-    AccessSettingsRetryRequested(),
-  ) =>
-    AccessSettingsWorking(state.access, ExchangeAccessAttempt.retry),
-
-  // Results.
-  (
-    AccessSettingsWorking(:final attempt),
-    AccessSettingsAttemptSucceeded(:final access),
-  ) =>
-    AccessSettingsSucceeded(access, attempt),
-  (
-    AccessSettingsWorking(:final access, :final attempt),
-    AccessSettingsAttemptFailed(:final failure),
-  ) =>
-    AccessSettingsFailed(access, attempt, failure),
-  (
-    AccessSettingsIdle() || AccessSettingsSucceeded() || AccessSettingsFailed(),
-    AccessSettingsAttemptSucceeded() || AccessSettingsAttemptFailed(),
-  ) =>
-    state,
 };

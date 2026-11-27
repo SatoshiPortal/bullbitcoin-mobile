@@ -114,28 +114,17 @@ void main() {
     for (var i = 0; i < eventNames.length; i++) {
       final eventName = eventNames[i];
       test('$stateName x $eventName', () {
-        expect(
-          transitionAccessSettings(state, events[eventName]!),
-          table[stateName]![i],
-        );
+        expect(state.next(events[eventName]!), table[stateName]![i]);
       });
     }
   }
 
   test('a working attempt keeps running across access changes', () {
-    var state = transitionAccessSettings(
-      const AccessSettingsIdle(_signedOut),
-      const AccessSettingsSignOutRequested(),
-    );
-    state = transitionAccessSettings(
-      state,
-      const AccessSettingsAccessChanged(_incomplete),
-    );
+    var state = (const AccessSettingsIdle(_signedOut))
+        .next(const AccessSettingsSignOutRequested());
+    state = state.next(const AccessSettingsAccessChanged(_incomplete));
     expect(state, const AccessSettingsWorking(_incomplete, _signOut));
-    state = transitionAccessSettings(
-      state,
-      const AccessSettingsAttemptSucceeded(_off),
-    );
+    state = state.next(const AccessSettingsAttemptSucceeded(_off));
     expect(state, const AccessSettingsSucceeded(_off, _signOut));
   });
 

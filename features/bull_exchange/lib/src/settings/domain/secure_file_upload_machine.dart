@@ -32,6 +32,121 @@ SecureUploadStatus secureUploadStatusOf(KycDocumentStatus? status) =>
 @immutable
 sealed class SecureUploadState {
   const SecureUploadState();
+
+  SecureUploadNext next(SecureUploadEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        UploadStatusLoading(:final attempt) || UploadDone(:final attempt),
+        UploadStatusLoaded loaded,
+      )
+          when loaded.attempt == attempt =>
+        StepNext(switch (loaded.result) {
+          Ok(:final value) => _fromAccount(value, attempt),
+          Err(:final failure) => UploadStatusFailed(attempt, failure),
+        }),
+      (
+        UploadStatusLoading() ||
+            UploadDone() ||
+            UploadStatusFailed() ||
+            UploadReady() ||
+            UploadBlocked() ||
+            UploadPicking() ||
+            UploadSending(),
+        UploadStatusLoaded(),
+      ) =>
+        StepNext.stay(state),
+      (UploadStatusFailed(:final attempt), UploadRetryPressed()) => StepNext(
+        UploadStatusLoading(attempt + 1),
+        [FetchUploadStatus(attempt + 1)],
+      ),
+      (
+        UploadStatusLoading() ||
+            UploadDone() ||
+            UploadReady() ||
+            UploadBlocked() ||
+            UploadPicking() ||
+            UploadSending(),
+        UploadRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (UploadReady(:final account, :final attempts), UploadPressed()) =>
+        StepNext(UploadPicking(account, attempts), [
+          PickUploadDocument(account.userId),
+        ]),
+      (
+        UploadStatusLoading() ||
+            UploadDone() ||
+            UploadStatusFailed() ||
+            UploadBlocked() ||
+            UploadPicking() ||
+            UploadSending(),
+        UploadPressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        UploadPicking(:final account, :final attempts),
+        UploadPicked(:final result),
+      ) =>
+        switch (result) {
+          Ok(value: null) => StepNext(UploadReady(account, attempts)),
+          Ok(value: final ExchangeDocumentToUpload document) => StepNext(
+            UploadSending(account, attempts + 1),
+            [SendUploadDocument(attempts + 1, document)],
+          ),
+          Err(:final failure) => StepNext(
+            UploadReady(account, attempts, problem: failure),
+          ),
+        },
+      (
+        UploadStatusLoading() ||
+            UploadDone() ||
+            UploadStatusFailed() ||
+            UploadReady() ||
+            UploadBlocked() ||
+            UploadSending(),
+        UploadPicked(),
+      ) =>
+        StepNext.stay(state),
+      (UploadSending(:final account, :final attempt), UploadAnswered answered)
+          when answered.attempt == attempt =>
+        switch (answered.result) {
+          Ok() => StepNext(UploadDone(attempt + 1), [
+            FetchUploadStatus(attempt + 1),
+          ]),
+          Err(:final failure) => StepNext(
+            UploadReady(account, attempt, problem: failure),
+          ),
+        },
+      (
+        UploadStatusLoading() ||
+            UploadDone() ||
+            UploadStatusFailed() ||
+            UploadReady() ||
+            UploadBlocked() ||
+            UploadPicking() ||
+            UploadSending(),
+        UploadAnswered(),
+      ) =>
+        StepNext.stay(state),
+      (
+        UploadReady(:final account, :final attempts, problem: _?),
+        UploadProblemDismissed(),
+      ) =>
+        StepNext(UploadReady(account, attempts)),
+      (
+        UploadStatusLoading() ||
+            UploadDone() ||
+            UploadStatusFailed() ||
+            UploadReady() ||
+            UploadBlocked() ||
+            UploadPicking() ||
+            UploadSending(),
+        UploadProblemDismissed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class UploadStatusLoading extends SecureUploadState {
@@ -260,118 +375,3 @@ SecureUploadState _fromAccount(SecureFileUpload account, int attempts) =>
               SecureUploadStatus.unknown) =>
         UploadBlocked(status),
     };
-
-SecureUploadNext transitionSecureUpload(
-  SecureUploadState state,
-  SecureUploadEvent event,
-) => switch ((state, event)) {
-  (
-    UploadStatusLoading(:final attempt) || UploadDone(:final attempt),
-    UploadStatusLoaded loaded,
-  )
-      when loaded.attempt == attempt =>
-    StepNext(switch (loaded.result) {
-      Ok(:final value) => _fromAccount(value, attempt),
-      Err(:final failure) => UploadStatusFailed(attempt, failure),
-    }),
-  (
-    UploadStatusLoading() ||
-        UploadDone() ||
-        UploadStatusFailed() ||
-        UploadReady() ||
-        UploadBlocked() ||
-        UploadPicking() ||
-        UploadSending(),
-    UploadStatusLoaded(),
-  ) =>
-    StepNext.stay(state),
-  (UploadStatusFailed(:final attempt), UploadRetryPressed()) => StepNext(
-    UploadStatusLoading(attempt + 1),
-    [FetchUploadStatus(attempt + 1)],
-  ),
-  (
-    UploadStatusLoading() ||
-        UploadDone() ||
-        UploadReady() ||
-        UploadBlocked() ||
-        UploadPicking() ||
-        UploadSending(),
-    UploadRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (UploadReady(:final account, :final attempts), UploadPressed()) => StepNext(
-    UploadPicking(account, attempts),
-    [PickUploadDocument(account.userId)],
-  ),
-  (
-    UploadStatusLoading() ||
-        UploadDone() ||
-        UploadStatusFailed() ||
-        UploadBlocked() ||
-        UploadPicking() ||
-        UploadSending(),
-    UploadPressed(),
-  ) =>
-    StepNext.stay(state),
-  (
-    UploadPicking(:final account, :final attempts),
-    UploadPicked(:final result),
-  ) =>
-    switch (result) {
-      Ok(value: null) => StepNext(UploadReady(account, attempts)),
-      Ok(value: final ExchangeDocumentToUpload document) => StepNext(
-        UploadSending(account, attempts + 1),
-        [SendUploadDocument(attempts + 1, document)],
-      ),
-      Err(:final failure) => StepNext(
-        UploadReady(account, attempts, problem: failure),
-      ),
-    },
-  (
-    UploadStatusLoading() ||
-        UploadDone() ||
-        UploadStatusFailed() ||
-        UploadReady() ||
-        UploadBlocked() ||
-        UploadSending(),
-    UploadPicked(),
-  ) =>
-    StepNext.stay(state),
-  (UploadSending(:final account, :final attempt), UploadAnswered answered)
-      when answered.attempt == attempt =>
-    switch (answered.result) {
-      Ok() => StepNext(UploadDone(attempt + 1), [
-        FetchUploadStatus(attempt + 1),
-      ]),
-      Err(:final failure) => StepNext(
-        UploadReady(account, attempt, problem: failure),
-      ),
-    },
-  (
-    UploadStatusLoading() ||
-        UploadDone() ||
-        UploadStatusFailed() ||
-        UploadReady() ||
-        UploadBlocked() ||
-        UploadPicking() ||
-        UploadSending(),
-    UploadAnswered(),
-  ) =>
-    StepNext.stay(state),
-  (
-    UploadReady(:final account, :final attempts, problem: _?),
-    UploadProblemDismissed(),
-  ) =>
-    StepNext(UploadReady(account, attempts)),
-  (
-    UploadStatusLoading() ||
-        UploadDone() ||
-        UploadStatusFailed() ||
-        UploadReady() ||
-        UploadBlocked() ||
-        UploadPicking() ||
-        UploadSending(),
-    UploadProblemDismissed(),
-  ) =>
-    StepNext.stay(state),
-};

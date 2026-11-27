@@ -9,7 +9,7 @@ import '../domain/usecases/pick_exchange_document_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
 import '../domain/secure_file_upload_machine.dart';
 
-/// Shell of [transitionSecureUpload]; results after close are dropped.
+/// Shell of [SecureUploadState.next]; results after close are dropped.
 class SecureUploadBloc extends Bloc<SecureUploadEvent, SecureUploadState> {
   SecureUploadBloc({
     required ExchangeSession? session,
@@ -41,7 +41,7 @@ class SecureUploadBloc extends Bloc<SecureUploadEvent, SecureUploadState> {
   final UploadExchangeDocumentUsecase _uploadDocument;
 
   void _onEvent(SecureUploadEvent event, Emitter<SecureUploadState> emit) {
-    final next = transitionSecureUpload(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

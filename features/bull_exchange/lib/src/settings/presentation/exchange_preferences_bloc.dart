@@ -8,7 +8,7 @@ import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
 import '../domain/exchange_preferences_machine.dart';
 
-/// Shell of [transitionPreferences]. The save is answered for the session
+/// Shell of [PreferencesState.next]. The save is answered for the session
 /// the screen opened for.
 class ExchangePreferencesBloc extends Bloc<PreferencesEvent, PreferencesState> {
   ExchangePreferencesBloc({
@@ -37,7 +37,7 @@ class ExchangePreferencesBloc extends Bloc<PreferencesEvent, PreferencesState> {
   final UpdateExchangePreferencesUsecase _updatePreferences;
 
   void _onEvent(PreferencesEvent event, Emitter<PreferencesState> emit) {
-    final next = transitionPreferences(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

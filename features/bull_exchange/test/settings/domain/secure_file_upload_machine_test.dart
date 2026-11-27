@@ -89,7 +89,7 @@ void main() {
     for (final MapEntry(key: name, value: (event, changes)) in _table.entries) {
       for (final (index, state) in _states.indexed) {
         test('$name from state $index', () {
-          final next = transitionSecureUpload(state, event);
+          final next = state.next(event);
           if (changes[index] case final expected?) {
             expect(next.state, expected);
           } else {
@@ -103,25 +103,18 @@ void main() {
 
   test('effects', () {
     expect(secureUploadStart().effects, const [FetchUploadStatus(1)]);
-    expect(
-      transitionSecureUpload(_states[1], const UploadRetryPressed()).effects,
-      const [FetchUploadStatus(2)],
-    );
-    expect(
-      transitionSecureUpload(_states[2], const UploadPressed()).effects,
-      const [PickUploadDocument('u')],
-    );
-    expect(
-      transitionSecureUpload(_states[5], const UploadPicked(Ok(_doc))).effects,
-      const [SendUploadDocument(2, _doc)],
-    );
-    expect(
-      transitionSecureUpload(
-        _states[6],
-        const UploadAnswered(2, Ok(null)),
-      ).effects,
-      const [FetchUploadStatus(3)],
-    );
+    expect((_states[1]).next(const UploadRetryPressed()).effects, const [
+      FetchUploadStatus(2),
+    ]);
+    expect((_states[2]).next(const UploadPressed()).effects, const [
+      PickUploadDocument('u'),
+    ]);
+    expect((_states[5]).next(const UploadPicked(Ok(_doc))).effects, const [
+      SendUploadDocument(2, _doc),
+    ]);
+    expect((_states[6]).next(const UploadAnswered(2, Ok(null))).effects, const [
+      FetchUploadStatus(3),
+    ]);
   });
 
   group('document status', () {
@@ -138,13 +131,14 @@ void main() {
     for (final MapEntry(key: status, value: ui) in table.entries) {
       test('$status shows $ui', () {
         expect(secureUploadStatusOf(status), ui);
-        final next = transitionSecureUpload(
-          const UploadStatusLoading(1),
-          UploadStatusLoaded(
-            1,
-            Ok(SecureFileUpload(userId: 'u', status: status)),
-          ),
-        ).state;
+        final next = (const UploadStatusLoading(1))
+            .next(
+              UploadStatusLoaded(
+                1,
+                Ok(SecureFileUpload(userId: 'u', status: status)),
+              ),
+            )
+            .state;
         expect(
           next is UploadReady,
           ui == SecureUploadStatus.upload || ui == SecureUploadStatus.rejected,
@@ -181,7 +175,7 @@ void main() {
         UploadAnswered(attempt, const Ok(null)),
         const UploadProblemDismissed(),
       ]) {
-        final next = transitionSecureUpload(state, event).state;
+        final next = state.next(event).state;
         if (!identical(next, state)) queue.add(next);
       }
     }

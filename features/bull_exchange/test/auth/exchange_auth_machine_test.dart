@@ -122,7 +122,7 @@ void main() {
     });
     for (var i = 0; i < names.length; i++) {
       test('${names[i]} + $row', () {
-        expect(transitionAuth(_states[names[i]]!, event), next[i]);
+        expect((_states[names[i]]!).next(event), next[i]);
       });
     }
   }
@@ -135,7 +135,7 @@ void main() {
       final next = <ExchangeAuthState>[];
       for (final state in frontier) {
         for (final event in events) {
-          final target = transitionAuth(state, event);
+          final target = state.next(event);
           if (seen.add(target)) next.add(target);
         }
       }
@@ -171,7 +171,7 @@ void main() {
           ),
         ]) {
       test('${state.name} + ${event.runtimeType}', () {
-        expect(transitionKyc(state, event), next);
+        expect(state.next(event), next);
       });
     }
   });

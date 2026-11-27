@@ -37,7 +37,6 @@ export 'src/settings/ui/widgets/exchange_account_sheets.dart'
     show ExchangeAccountSheets;
 export 'src/session/exchange_bloc.dart' show ExchangeBloc;
 export 'src/session/exchange_event.dart';
-export 'src/session/exchange_machine.dart' show transitionExchange;
 export 'src/session/exchange_state.dart';
 export 'src/settings/ui/screens/exchange_settings_screen.dart'
     show ExchangeSettingsScreen;

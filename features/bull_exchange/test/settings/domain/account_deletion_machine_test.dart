@@ -57,7 +57,7 @@ void main() {
     final eventNames = events.keys.toList();
     for (var i = 0; i < eventNames.length; i++) {
       test('$stateName x ${eventNames[i]}', () {
-        final next = transitionAccountDeletion(state, events[eventNames[i]]!);
+        final next = state.next(events[eventNames[i]]!);
         final expected = table[stateName]![i];
         expect(next.runtimeType, expected.runtimeType);
         expect(next, expected);
@@ -72,7 +72,7 @@ void main() {
       final next = <AccountDeletionState>[];
       for (final state in frontier) {
         for (final event in events.values) {
-          final to = transitionAccountDeletion(state, event);
+          final to = state.next(event);
           if (seen.add(to.runtimeType)) next.add(to);
         }
       }
@@ -82,16 +82,12 @@ void main() {
   });
 
   test('a double confirm sends one request', () {
-    var state = transitionAccountDeletion(
-      const AccountDeletionIdle(),
+    var state = (const AccountDeletionIdle()).next(
       const AccountDeletionConfirmed(),
     );
-    final afterSecond = transitionAccountDeletion(
-      state,
-      const AccountDeletionConfirmed(),
-    );
+    final afterSecond = state.next(const AccountDeletionConfirmed());
     expect(identical(afterSecond, state), isTrue);
-    state = transitionAccountDeletion(state, const AccountDeletionSent());
+    state = state.next(const AccountDeletionSent());
     expect(state, isA<AccountDeletionRequested>());
   });
 }

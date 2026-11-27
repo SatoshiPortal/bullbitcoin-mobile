@@ -28,6 +28,70 @@ final class ExchangeAuthConfig {
 @immutable
 sealed class ExchangeAuthState {
   const ExchangeAuthState();
+
+  ExchangeAuthState next(ExchangeAuthEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        AuthDone() || AuthClosing(),
+        AuthConfigLoaded() ||
+            AuthConfigUnavailable() ||
+            AuthRetryRequested() ||
+            AuthWebSessionSeen() ||
+            AuthKeyStored() ||
+            AuthKeyDeferred() ||
+            AuthKeyNotStored() ||
+            AuthErrorAcknowledged() ||
+            AuthCloseRequested(),
+      ) =>
+        state,
+      (
+        AuthLoadingConfig() ||
+            AuthConfigFailed() ||
+            AuthBrowsing() ||
+            AuthGeneratingKey() ||
+            AuthKeyFailed(),
+        AuthCloseRequested(),
+      ) =>
+        const AuthClosing(),
+
+      (AuthLoadingConfig(), AuthConfigLoaded(:final config)) => AuthBrowsing(
+        config,
+      ),
+      (AuthLoadingConfig(), AuthConfigUnavailable(:final failure)) =>
+        AuthConfigFailed(failure),
+      (AuthConfigFailed(), AuthRetryRequested()) => const AuthLoadingConfig(),
+      (AuthBrowsing(:final config), AuthWebSessionSeen()) => AuthGeneratingKey(
+        config,
+      ),
+      (AuthGeneratingKey(), AuthKeyStored()) => const AuthDone(),
+      (AuthGeneratingKey(:final config), AuthKeyDeferred()) => AuthBrowsing(
+        config,
+      ),
+      (AuthGeneratingKey(:final config), AuthKeyNotStored(:final failure)) =>
+        AuthKeyFailed(config, failure),
+      (AuthKeyFailed(:final config), AuthErrorAcknowledged()) => AuthBrowsing(
+        config,
+      ),
+
+      (
+        AuthLoadingConfig() ||
+            AuthConfigFailed() ||
+            AuthBrowsing() ||
+            AuthGeneratingKey() ||
+            AuthKeyFailed(),
+        AuthConfigLoaded() ||
+            AuthConfigUnavailable() ||
+            AuthRetryRequested() ||
+            AuthWebSessionSeen() ||
+            AuthKeyStored() ||
+            AuthKeyDeferred() ||
+            AuthKeyNotStored() ||
+            AuthErrorAcknowledged(),
+      ) =>
+        state,
+    };
+  }
 }
 
 final class AuthLoadingConfig extends ExchangeAuthState {
@@ -168,70 +232,20 @@ final class AuthCloseRequested extends ExchangeAuthEvent {
   const AuthCloseRequested();
 }
 
-ExchangeAuthState transitionAuth(
-  ExchangeAuthState state,
-  ExchangeAuthEvent event,
-) => switch ((state, event)) {
-  (
-    AuthDone() || AuthClosing(),
-    AuthConfigLoaded() ||
-        AuthConfigUnavailable() ||
-        AuthRetryRequested() ||
-        AuthWebSessionSeen() ||
-        AuthKeyStored() ||
-        AuthKeyDeferred() ||
-        AuthKeyNotStored() ||
-        AuthErrorAcknowledged() ||
-        AuthCloseRequested(),
-  ) =>
-    state,
-  (
-    AuthLoadingConfig() ||
-        AuthConfigFailed() ||
-        AuthBrowsing() ||
-        AuthGeneratingKey() ||
-        AuthKeyFailed(),
-    AuthCloseRequested(),
-  ) =>
-    const AuthClosing(),
-
-  (AuthLoadingConfig(), AuthConfigLoaded(:final config)) => AuthBrowsing(
-    config,
-  ),
-  (AuthLoadingConfig(), AuthConfigUnavailable(:final failure)) =>
-    AuthConfigFailed(failure),
-  (AuthConfigFailed(), AuthRetryRequested()) => const AuthLoadingConfig(),
-  (AuthBrowsing(:final config), AuthWebSessionSeen()) => AuthGeneratingKey(
-    config,
-  ),
-  (AuthGeneratingKey(), AuthKeyStored()) => const AuthDone(),
-  (AuthGeneratingKey(:final config), AuthKeyDeferred()) => AuthBrowsing(config),
-  (AuthGeneratingKey(:final config), AuthKeyNotStored(:final failure)) =>
-    AuthKeyFailed(config, failure),
-  (AuthKeyFailed(:final config), AuthErrorAcknowledged()) => AuthBrowsing(
-    config,
-  ),
-
-  (
-    AuthLoadingConfig() ||
-        AuthConfigFailed() ||
-        AuthBrowsing() ||
-        AuthGeneratingKey() ||
-        AuthKeyFailed(),
-    AuthConfigLoaded() ||
-        AuthConfigUnavailable() ||
-        AuthRetryRequested() ||
-        AuthWebSessionSeen() ||
-        AuthKeyStored() ||
-        AuthKeyDeferred() ||
-        AuthKeyNotStored() ||
-        AuthErrorAcknowledged(),
-  ) =>
-    state,
-};
-
 /// KYC WebView: once it starts leaving, further redirects are a stay (B15).
-enum ExchangeKycState { browsing, leaving }
+enum ExchangeKycState {
+  browsing,
+  leaving;
+
+  ExchangeKycState next(ExchangeKycEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (ExchangeKycState.browsing, KycLeftFlow() || KycCloseRequested()) =>
+        ExchangeKycState.leaving,
+      (ExchangeKycState.leaving, KycLeftFlow() || KycCloseRequested()) => state,
+    };
+  }
+}
 
 sealed class ExchangeKycEvent {
   const ExchangeKycEvent();
@@ -245,12 +259,3 @@ final class KycLeftFlow extends ExchangeKycEvent {
 final class KycCloseRequested extends ExchangeKycEvent {
   const KycCloseRequested();
 }
-
-ExchangeKycState transitionKyc(
-  ExchangeKycState state,
-  ExchangeKycEvent event,
-) => switch ((state, event)) {
-  (ExchangeKycState.browsing, KycLeftFlow() || KycCloseRequested()) =>
-    ExchangeKycState.leaving,
-  (ExchangeKycState.leaving, KycLeftFlow() || KycCloseRequested()) => state,
-};

@@ -355,17 +355,14 @@ void main() {
   for (final MapEntry(key: row, value: (event, next)) in _table.entries) {
     for (var i = 0; i < names.length; i++) {
       test('${names[i]} + $row', () {
-        expect(transitionExchange(_states[names[i]]!, event), next[i]);
+        expect((_states[names[i]]!).next(event), next[i]);
       });
     }
   }
 
   test('signed out from signed out stays signed out', () {
     expect(
-      transitionExchange(
-        _signedOut,
-        const ExchangeAccessChanged(ExchangeAccessDisabled()),
-      ),
+      _signedOut.next(const ExchangeAccessChanged(ExchangeAccessDisabled())),
       _signedOut,
     );
   });
@@ -380,7 +377,7 @@ void main() {
       for (final state in frontier) {
         reached.add(state.runtimeType);
         for (final event in events) {
-          final target = transitionExchange(state, event);
+          final target = state.next(event);
           if (seen.add(target)) next.add(target);
         }
       }

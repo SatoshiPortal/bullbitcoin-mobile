@@ -39,7 +39,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   }
 
   void _leave(ExchangeKycEvent event) {
-    final next = transitionKyc(_kyc, event);
+    final next = _kyc.next(event);
     if (next == _kyc) return;
     _kyc = next;
     switch (next) {

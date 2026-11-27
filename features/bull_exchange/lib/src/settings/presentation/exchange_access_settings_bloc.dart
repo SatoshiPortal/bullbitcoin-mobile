@@ -12,7 +12,7 @@ import '../domain/usecases/resolve_exchange_access_usecase.dart';
 import '../domain/usecases/sign_out_of_exchange_usecase.dart';
 import '../domain/usecases/watch_exchange_access_usecase.dart';
 
-/// Shell of [transitionAccessSettings]: applies events in order and runs
+/// Shell of [ExchangeAccessSettingsState.next]: applies events in order and runs
 /// the attempt of the [AccessSettingsWorking] state it enters.
 class ExchangeAccessSettingsBloc
     extends Bloc<ExchangeAccessSettingsEvent, ExchangeAccessSettingsState> {
@@ -40,7 +40,7 @@ class ExchangeAccessSettingsBloc
     Emitter<ExchangeAccessSettingsState> emit,
   ) {
     final previous = state;
-    final next = transitionAccessSettings(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     emit(next);
     if (previous is! AccessSettingsWorking && next is AccessSettingsWorking) {

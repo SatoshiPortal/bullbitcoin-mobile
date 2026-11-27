@@ -152,7 +152,7 @@ void main() {
     for (final MapEntry(key: name, value: (event, changes)) in _table.entries) {
       for (final (index, state) in _states.indexed) {
         test('$name from state $index', () {
-          final next = transitionPreferences(state, event);
+          final next = state.next(event);
           if (changes[index] case final expected?) {
             expect(next.state, expected);
           } else {
@@ -172,17 +172,12 @@ void main() {
       preferencesStart(signedIn: false).state,
       const PreferencesSignedOut(),
     );
-    expect(
-      transitionPreferences(
-        _states[1],
-        const PreferencesRetryPressed(),
-      ).effects,
-      const [FetchPreferences(2)],
-    );
-    expect(
-      transitionPreferences(_states[4], const PreferencesSavePressed()).effects,
-      const [SavePreferences(_a, _b)],
-    );
+    expect((_states[1]).next(const PreferencesRetryPressed()).effects, const [
+      FetchPreferences(2),
+    ]);
+    expect((_states[4]).next(const PreferencesSavePressed()).effects, const [
+      SavePreferences(_a, _b),
+    ]);
   });
 
   test('every state is reachable from the start', () {
@@ -212,7 +207,7 @@ void main() {
         const PreferencesSaveAnswered(GateAdmitted(Ok(null))),
         const PreferencesSaveAnswered(GateAdmitted(Err(_saveFailure))),
       ]) {
-        final next = transitionPreferences(state, event).state;
+        final next = state.next(event).state;
         if (!identical(next, state)) queue.add(next);
       }
     }

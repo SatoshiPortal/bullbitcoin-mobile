@@ -44,7 +44,7 @@ class _ExchangeAccountActionsState extends State<ExchangeAccountActions> {
 
   void _addDeletion(AccountDeletionEvent event) {
     if (!mounted) return;
-    final next = transitionAccountDeletion(_deletion, event);
+    final next = _deletion.next(event);
     if (next == _deletion) return;
     setState(() => _deletion = next);
     switch (next) {
