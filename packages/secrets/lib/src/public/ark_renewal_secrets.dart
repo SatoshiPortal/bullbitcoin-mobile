@@ -57,12 +57,12 @@ enum ArkChildAdmission {
 /// the background (D105).
 ///
 /// The parent mnemonic never leaves this library. The stored entry is read
-/// twice: once by `describe`, which returns only its public description
-/// (fingerprint, kind) and materializes nothing, and once inside the single
-/// `useMnemonic` call that derives the account's dedicated BIP85 child (index
-/// [arkChildBip85Index], 12 English words). The parent words reach nothing but
-/// that derivation. Only the child reaches a caller, and only through
-/// [consumeChild], to a fixed [ArkChildConsumer].
+/// twice: once by `describe`, which reads and validates the words internally
+/// but returns only their public description (fingerprint, kind), and once
+/// inside the single `useMnemonic` call that derives the account's dedicated
+/// BIP85 child (index [arkChildBip85Index], 12 English words). Only the child
+/// reaches a caller, and only through [consumeChild], to a fixed
+/// [ArkChildConsumer].
 ///
 /// This library is not exported by `package:secrets/secrets.dart`. Its single
 /// importer is `features/ark/lib/src/data/ark_renewal_client.dart`; an
@@ -109,9 +109,9 @@ final class ArkRenewalSecrets {
   /// the inventory's write lock, which is released before [consumer] starts: no
   /// SQLite lock is held while it runs, network included. A refusal returns
   /// [ArkChildAdmission.notPermitted]; an unreadable policy, a missing seed or a
-  /// failed derivation return [ArkChildAdmission.unavailable]. Neither reads or
-  /// derives anything. A consumer already admitted is not interrupted by a later
-  /// change.
+  /// failed derivation return [ArkChildAdmission.unavailable]. Only a refusal
+  /// before `describe` guarantees that the parent was not read. A consumer
+  /// already admitted is not interrupted by a later change.
   @useResult
   Future<ArkChildAdmission> consumeChild(
     Fingerprint parent,
@@ -139,8 +139,8 @@ final class ArkRenewalSecrets {
         if (info is! Ok<SecretInfo, SecretFailure>) {
           return unavailable;
         }
-        // The parent mnemonic is exposed here and only here, inside the one
-        // derivation of the child. It reaches nothing else.
+        // `describe` already read and validated the words internally; this
+        // second read supplies them to the child derivation.
         final words = await _repository.useMnemonic(
           info.value,
           (m) => Deriver.bip85.mnemonic(
