@@ -150,16 +150,21 @@ final class OverviewCatalogue {
     final row = _rows[stamp.key];
     if (row == null) return;
     final current = row.entry.revision;
-    if (stamp.generation != current.generation ||
-        stamp.revision <= current.revision) {
+    if (stamp.generation < current.generation ||
+        (stamp.generation == current.generation &&
+            stamp.revision < current.revision)) {
       return;
     }
-    if (revision.lifecycle != WalletLifecycle.active) {
+    // A pending write can keep the same stamp. A new native generation
+    // requires a new catalogue grant, even when it is already active.
+    if (revision.lifecycle != WalletLifecycle.active ||
+        stamp.generation != current.generation) {
       _rows.remove(stamp.key);
       _status = OverviewCatalogueStatus.partial;
       _changes.add(null);
       return;
     }
+    if (stamp.revision == current.revision) return;
     final next = _pending(grant, (
       revision: stamp,
       label: row.entry.label,
