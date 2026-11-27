@@ -83,10 +83,12 @@ for test in integration_test/coins_test.dart integration_test/exchange_rate_test
   chmod 700 "$test_home/runtime"
   printf 'XDG_DOCUMENTS_DIR="%s/home/Documents"\n' "$test_home" > "$test_home/config/user-dirs.dirs"
   echo "=== $test ==="
+  # sudo drops the CI environment; do not let rustup fetch unrelated targets offline.
   net_exec env HOME="$test_home/home" XDG_DOCUMENTS_DIR="$test_home/home/Documents" \
     XDG_DATA_HOME="$test_home/data" XDG_CONFIG_HOME="$test_home/config" \
     XDG_CACHE_HOME="$test_home/cache" XDG_RUNTIME_DIR="$test_home/runtime" TMPDIR="$test_home/tmp" \
-    FVM_CACHE_PATH="$FVM_CACHE_PATH" PUB_CACHE="$PUB_CACHE" RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" PATH="$PATH" \
+    FVM_CACHE_PATH="$FVM_CACHE_PATH" PUB_CACHE="$PUB_CACHE" RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" \
+    RUSTUP_AUTO_INSTALL=0 PATH="$PATH" \
     xvfb-run -a dbus-run-session -- bash -c \
     'echo -n ci | gnome-keyring-daemon --unlock --daemonize --components=secrets >/dev/null; exec "$@"' _ \
     fvm flutter test "$test" -d linux --no-pub --reporter expanded \

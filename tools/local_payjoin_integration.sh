@@ -119,11 +119,13 @@ test_home="$state/app"
 mkdir -p "$test_home"/{home/Documents,data,config,cache,tmp,runtime}
 chmod 700 "$test_home/runtime"
 printf 'XDG_DOCUMENTS_DIR="%s/home/Documents"\n' "$test_home" > "$test_home/config/user-dirs.dirs"
+# sudo drops the CI environment; do not let rustup fetch unrelated targets offline.
 net_exec env BULL_PAYJOIN_TEST_PEER="$BULL_PAYJOIN_TEST_PEER" BULL_PAYJOIN_TEST_CERT="$state/mailrooms/cert.der" \
   HOME="$test_home/home" XDG_DOCUMENTS_DIR="$test_home/home/Documents" \
   XDG_DATA_HOME="$test_home/data" XDG_CONFIG_HOME="$test_home/config" \
   XDG_CACHE_HOME="$test_home/cache" XDG_RUNTIME_DIR="$test_home/runtime" TMPDIR="$test_home/tmp" \
-  FVM_CACHE_PATH="$FVM_CACHE_PATH" PUB_CACHE="$PUB_CACHE" RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" PATH="$PATH" \
+  FVM_CACHE_PATH="$FVM_CACHE_PATH" PUB_CACHE="$PUB_CACHE" RUSTUP_HOME="$RUSTUP_HOME" CARGO_HOME="$CARGO_HOME" \
+  RUSTUP_AUTO_INSTALL=0 PATH="$PATH" \
   xvfb-run -a dbus-run-session -- bash -c \
   'echo -n ci | gnome-keyring-daemon --unlock --daemonize --components=secrets >/dev/null; exec "$@"' _ \
   fvm flutter test integration_test/payjoin_test.dart -d linux --no-pub --reporter expanded \
