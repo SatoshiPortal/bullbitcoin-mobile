@@ -1,6 +1,7 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:overview/overview.dart';
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/features/wallet/presentation/wallet_type_l10n.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSizes, Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sync/sync.dart' show WalletKey;
 
 class WalletCards extends StatelessWidget {
   const WalletCards({
@@ -20,6 +22,21 @@ class WalletCards extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool localSignersOnly;
   final Function(Wallet wallet)? onTap;
+
+  static Widget pickLocalSigner(
+    BuildContext context,
+    ValueChanged<({WalletKey key, String? label, bool isDefault})>? onSelected,
+  ) => WalletCards(
+    padding: EdgeInsets.zero,
+    localSignersOnly: true,
+    onTap: onSelected == null
+        ? null
+        : (wallet) => onSelected((
+            key: WalletKey(id: wallet.id, network: wallet.network.shared),
+            label: wallet.label,
+            isDefault: wallet.isDefault,
+          )),
+  );
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
     final isTestnet = !wallet.network.isMainnet;

@@ -36,7 +36,7 @@ import 'package:bull_exchange/bull_exchange.dart'
         ExchangeRouteGuard,
         PayRoute,
         SellRoute;
-import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:settings/settings.dart';
@@ -77,7 +77,12 @@ import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
 import 'package:overview/setup.dart' show OverviewSynchronization;
 import 'package:bull_payjoin/bull_payjoin.dart'
-    show Payjoin, PayjoinPolicyAccess, PayjoinReceiver, PayjoinSessions;
+    show
+        Payjoin,
+        PayjoinPolicyAccess,
+        PayjoinReceiver,
+        PayjoinSender,
+        PayjoinSessions;
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -249,7 +254,24 @@ class AppRouter {
       bitcoinAsset: Assets.icons.btc.path,
       onClose: (context) => context.goNamed(WalletRoute.walletHome.name),
     ),
-    payins: exchangePayinHost(locator),
+    payins: (
+      exchange: () => locator<Exchange>(),
+      preferences: () => locator<Preferences>(),
+      inventory: () => locator<SecretsInventory>(),
+      native: () => locator<WalletNativeRuntime>(),
+      spend: () => locator<Spend>(),
+      fees: () => locator<Fees>(),
+      payjoinPolicy: () => locator<PayjoinPolicyAccess>(),
+      payjoinSender: () => locator<PayjoinSender>(),
+      payjoinSessions: () => locator<PayjoinSessions>(),
+      labels: () => locator<Labels>(),
+      ui: (
+        walletCards: WalletCards.pickLocalSigner,
+        openWalletHome: exitExchange,
+        brandAsset: Assets.logos.bbLogoSmall.path,
+        successAsset: Assets.animations.successTick.path,
+      ),
+    ),
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {

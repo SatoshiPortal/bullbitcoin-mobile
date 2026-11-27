@@ -23,7 +23,7 @@ import 'package:path/path.dart' as p;
 // Wallet reader ownership (2026-11-22): see ARCHITECTURE.md, "Wallet readers".
 // Exchange workspace UI consumers use the published routes. Bull Exchange
 // builds its destination fields with Address View and opens order details
-// through Transactions; the app keeps only the wallet-card payin binding.
+// through Transactions; the shell supplies the Wallet picker to Pay and Sell.
 // Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
 // Settings consumes Receive's disclaimer and typed Wallet Import navigation.
 // Wallet details read device associations through Signers' public storage API.
@@ -35,7 +35,6 @@ const _allowedTargets = <String, String>{
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'address_view bitcoin_price coins fees transactions',
   'coins': 'address_view bitcoin_price',
-  'exchange': 'bull_exchange wallet',
   'network': 'recoverbull silent',
   'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
   'overview': 'bitcoin_price quick_actions silent swap',
