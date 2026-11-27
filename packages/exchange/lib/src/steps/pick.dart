@@ -3,6 +3,7 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/entities/btc_network.dart';
 import 'step_next.dart';
+import 'payin_wallet_admission.dart';
 
 /// Picking where bitcoin comes from or goes to (composition §4.6):
 /// `PayinSourcePick` and `DestinationPick` are this machine with their own
@@ -408,13 +409,42 @@ final class PayinFromAppWallet extends PayinSource {
   /// the app's setup wallets [isDefault].
   final String? label;
   final bool isDefault;
+  final PayinWalletWitness? witness;
+  final PayinWalletAttempt? attempt;
 
   const PayinFromAppWallet(
     this.walletId,
     this.rail, {
     this.label,
     this.isDefault = false,
-  });
+  }) : witness = null,
+       attempt = null;
+
+  PayinFromAppWallet.witnessed(
+    PayinWalletWitness witness, {
+    this.label,
+    this.isDefault = false,
+  }) : witness = witness,
+       attempt = null,
+       walletId = witness.walletId,
+       rail = witness.network is LiquidNetwork
+           ? BtcNetwork.liquid
+           : BtcNetwork.bitcoin;
+
+  PayinFromAppWallet._bound(PayinFromAppWallet source, this.attempt)
+    : walletId = source.walletId,
+      rail = source.rail,
+      label = source.label,
+      isDefault = source.isDefault,
+      witness = source.witness;
+
+  PayinFromAppWallet? bindAttempt() {
+    final choice = witness;
+    if (choice == null) return this;
+    return attempt == null && choice.isCurrent
+        ? PayinFromAppWallet._bound(this, PayinWalletAttempt(choice))
+        : null;
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -422,11 +452,20 @@ final class PayinFromAppWallet extends PayinSource {
       other.walletId == walletId &&
       other.rail == rail &&
       other.label == label &&
-      other.isDefault == isDefault;
+      other.isDefault == isDefault &&
+      identical(other.witness, witness) &&
+      identical(other.attempt, attempt);
 
   @override
-  int get hashCode =>
-      Object.hash(PayinFromAppWallet, walletId, rail, label, isDefault);
+  int get hashCode => Object.hash(
+    PayinFromAppWallet,
+    walletId,
+    rail,
+    label,
+    isDefault,
+    witness,
+    attempt,
+  );
 }
 
 final class PayinFromExternal extends PayinSource {

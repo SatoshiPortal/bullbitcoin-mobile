@@ -66,6 +66,9 @@ SellFlowCalls sellFlowCallsOf(
       session: session,
       effect: effect,
       create: (request) async {
+        if (request.source case PayinFromAppWallet(witness: _?)) {
+          return const WriteNotSent(ExchangeNotSentReason.sessionChanged);
+        }
         final usePayjoin = await _payjoinAsked(wallets, request.source);
         return switch (request.payout) {
           SellToBalance() => orders.placeSellOrder(
@@ -178,9 +181,30 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
   late final StreamSubscription<ExchangeAccess> _access;
   final Map<int, DateTime> _sentAt = {};
   final Map<String, Timer> _quoteTimers = {};
+  PayinWalletAttempt? _walletAttempt;
 
   void _onEvent(SellFlowEvent event, Emitter<SellFlowState> emit) {
-    final next = transitionSellFlow(state, event);
+    var admitted = event;
+    if (state is SellSource && event is SellSourcePicked) {
+      if (event.source case final PayinFromAppWallet source) {
+        final bound = source.bindAttempt();
+        if (bound == null) return;
+        _walletAttempt?.retire();
+        _walletAttempt = bound.attempt;
+        if (bound.attempt != null) _payin?.useWitnessedWallet();
+        admitted = SellSourcePicked(bound);
+      } else {
+        _walletAttempt?.retire();
+        _walletAttempt = null;
+      }
+    }
+    final next = transitionSellFlow(state, admitted);
+    if (next.state is SellClosed ||
+        next.state is SellSessionEnded ||
+        (next.state is SellSource && state is! SellSource)) {
+      _walletAttempt?.retire();
+      _walletAttempt = null;
+    }
     if (identical(next.state, state) && next.effects.isEmpty) return;
     if (!identical(next.state, state)) emit(next.state);
     _run(next.effects);
@@ -308,6 +332,7 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
 
   @override
   Future<void> close() async {
+    _walletAttempt?.retire();
     _requirements?.close();
     _payin?.close();
     _spend?.close();

@@ -10,6 +10,7 @@ import '../domain/exchange_write_gate.dart';
 import '../domain/payin_broadcast.dart';
 import '../domain/unknown_write_journal.dart';
 import 'outcome_watch.dart';
+import 'payin_wallet_admission.dart';
 import 'pick.dart';
 import 'server_confirm.dart';
 import 'step_next.dart';
@@ -209,11 +210,12 @@ int _byOutpoint(Outpoint a, Outpoint b) {
 final class PayinWalletSpend extends _PayinValue {
   final String walletId;
   final PayinSpendOptions options;
+  final PayinWalletAttempt? walletAttempt;
 
-  const PayinWalletSpend(this.walletId, this.options);
+  const PayinWalletSpend(this.walletId, this.options, {this.walletAttempt});
 
   @override
-  List<Object?> get props => [walletId, options];
+  List<Object?> get props => [walletId, options, walletAttempt];
 }
 
 /// A signed payin ready to send: [payload] is the wallet's own signed spend
@@ -970,12 +972,16 @@ PayinNext<P> payinStart<P>(
   if (order.orderStatus.isTerminal) return StepNext(PayinOrderEnded<P>(order));
   if (_pastDeadline(order, now)) return StepNext(PayinQuoteLapsed<P>(order));
   return switch (source) {
-    PayinFromAppWallet(:final walletId) when rail.canBeAppWallet =>
+    PayinFromAppWallet(:final witness, :final attempt)
+        when witness != null && attempt?.isCurrent != true =>
+      StepNext(PayinDepositRefused<P>(order)),
+    PayinFromAppWallet(:final walletId, :final attempt)
+        when rail.canBeAppWallet =>
       switch (options) {
         final options? => _building(
           order,
           target,
-          PayinWalletSpend(walletId, options),
+          PayinWalletSpend(walletId, options, walletAttempt: attempt),
           1,
         ),
         null => throw ArgumentError.notNull('options'),
@@ -1006,6 +1012,10 @@ Future<PayinSendAnswered<P>> runPayinSend<P>({
 }) async => PayinSendAnswered(
   effect.attempt,
   await gate.run(session, FinancialWriteKind.payin, () async {
+    if (effect.built.spend.walletAttempt case final attempt?
+        when !attempt.isCurrent) {
+      return const PayinBroadcastNotSent(PayinNotSentReason.walletBusy);
+    }
     if (_pastDeadline(effect.order, now())) {
       return const PayinBroadcastNotSent(PayinNotSentReason.deadlinePassed);
     }

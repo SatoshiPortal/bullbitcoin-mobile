@@ -466,6 +466,9 @@ typedef SpendOptionsNext = StepNext<SpendOptionsState, SpendOptionsEffect>;
 /// The options of a payin from [source].
 SpendOptionsNext spendOptionsStart(PayinSource source) => switch (source) {
   PayinFromExternal() => const SpendOptionsNext(SpendOptionsNone()),
+  // The ID-only preview owner cannot bind this selection. Do not prepare or
+  // preview against a replacement wallet while the UI migration is pending.
+  PayinFromAppWallet(witness: _?) => const SpendOptionsNext(SpendOptionsNone()),
   PayinFromAppWallet(:final walletId, rail: BtcNetwork.bitcoin) =>
     SpendOptionsNext(SpendFeesLoading(walletId, 1), const [SpendLoadFees(1)]),
   PayinFromAppWallet(rail: BtcNetwork.liquid) => const SpendOptionsNext(

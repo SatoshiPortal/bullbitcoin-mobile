@@ -66,18 +66,25 @@ PayFlowCalls payFlowCallsOf(
       gate: exchange.writeGate,
       session: session,
       effect: effect,
-      create: (request) async => orders.placePayOrder(
-        orderAmount: FiatAmount(request.amount.fiat),
-        recipientId: request.payout.recipientId,
-        network: request.source.rail,
-        paymentDescription: request.amount.description.isEmpty
-            ? null
-            : request.amount.description,
-        paymentProcessor: request.payout.paymentProcessor,
-        usePayjoin: await _payjoinAsked(wallets, request.source),
-        securityQuestion: request.payout.interacAnswer?.question,
-        securityAnswer: request.payout.interacAnswer?.answer,
-      ),
+      create: (request) async {
+        // BBX currently prepares credentials/transport after this callback.
+        // Until that owner can check the attempt at dispatch, refuse here.
+        if (request.source case PayinFromAppWallet(witness: _?)) {
+          return const WriteNotSent(ExchangeNotSentReason.sessionChanged);
+        }
+        return orders.placePayOrder(
+          orderAmount: FiatAmount(request.amount.fiat),
+          recipientId: request.payout.recipientId,
+          network: request.source.rail,
+          paymentDescription: request.amount.description.isEmpty
+              ? null
+              : request.amount.description,
+          paymentProcessor: request.payout.paymentProcessor,
+          usePayjoin: await _payjoinAsked(wallets, request.source),
+          securityQuestion: request.payout.interacAnswer?.question,
+          securityAnswer: request.payout.interacAnswer?.answer,
+        );
+      },
       journalUnknown: (request) =>
           exchange.journalUnknownOrderCreate(session, request.journal),
     ),
@@ -168,9 +175,30 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
   late final StreamSubscription<ExchangeAccess> _access;
   final Map<int, DateTime> _sentAt = {};
   final Map<String, Timer> _quoteTimers = {};
+  PayinWalletAttempt? _walletAttempt;
 
   void _onEvent(PayFlowEvent event, Emitter<PayFlowState> emit) {
-    final next = transitionPayFlow(state, event);
+    var admitted = event;
+    if (state is PaySource && event is PaySourcePicked) {
+      if (event.source case final PayinFromAppWallet source) {
+        final bound = source.bindAttempt();
+        if (bound == null) return;
+        _walletAttempt?.retire();
+        _walletAttempt = bound.attempt;
+        if (bound.attempt != null) _payin?.useWitnessedWallet();
+        admitted = PaySourcePicked(bound);
+      } else {
+        _walletAttempt?.retire();
+        _walletAttempt = null;
+      }
+    }
+    final next = transitionPayFlow(state, admitted);
+    if (next.state is PayClosed ||
+        next.state is PaySessionEnded ||
+        (next.state is PaySource && state is! PaySource)) {
+      _walletAttempt?.retire();
+      _walletAttempt = null;
+    }
     if (identical(next.state, state) && next.effects.isEmpty) return;
     if (!identical(next.state, state)) emit(next.state);
     _run(next.effects);
@@ -298,6 +326,7 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
 
   @override
   Future<void> close() async {
+    _walletAttempt?.retire();
     _requirements?.close();
     _payin?.close();
     _spend?.close();
