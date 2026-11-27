@@ -79,7 +79,7 @@ void main() {
     ).execute(_testnet);
     expect(
       read,
-      isA<ReadGot<VirtualIbanContext>>().having(
+      isA<Ok<VirtualIbanContext, ExchangeReadFailure>>().having(
         (r) => r.value,
         'value',
         const VirtualIbanContext(virtualIban: null, ownerName: 'Ada Lovelace'),
@@ -95,7 +95,14 @@ void main() {
         ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
       ),
     ).execute(_testnet);
-    expect(read, isA<ReadSessionRejected<VirtualIbanContext>>());
+    expect(
+      read,
+      isA<Err<VirtualIbanContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 
   test('any other failed read is the answer, never a context', () async {
@@ -105,16 +112,27 @@ void main() {
     ).execute(_testnet);
     expect(
       summaryFailed,
-      isA<ReadUnreachable<VirtualIbanContext>>().having(
-        (r) => r.isNetwork,
-        'isNetwork',
-        true,
+      isA<Err<VirtualIbanContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>().having(
+          (r) => r.isNetwork,
+          'isNetwork',
+          true,
+        ),
       ),
     );
     final ibanFailed = await _usecase(
       summary: Ok(_summary('Ada', 'Lovelace')),
       iban: const Err(ExchangeUnexpectedFailure()),
     ).execute(_testnet);
-    expect(ibanFailed, isA<ReadUnreachable<VirtualIbanContext>>());
+    expect(
+      ibanFailed,
+      isA<Err<VirtualIbanContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

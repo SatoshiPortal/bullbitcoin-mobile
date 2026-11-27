@@ -40,7 +40,14 @@ void main() {
     final read = await GetMarketRateUsecase(
       exchangeForTesting(limitOrders: orders),
     ).execute(_session, ExchangeCatalog.eur);
-    expect(read, isA<ReadGot<double>>().having((r) => r.value, 'value', 90000));
+    expect(
+      read,
+      isA<Ok<double, ExchangeReadFailure>>().having(
+        (r) => r.value,
+        'value',
+        90000,
+      ),
+    );
     expect(orders.asked, ['EUR']);
   });
 
@@ -50,6 +57,13 @@ void main() {
         limitOrders: _LimitOrders(const Err(ExchangeNetworkFailure())),
       ),
     ).execute(_session, ExchangeCatalog.cad);
-    expect(read, isA<ReadUnreachable<double>>());
+    expect(
+      read,
+      isA<Err<double, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

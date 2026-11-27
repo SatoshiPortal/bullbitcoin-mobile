@@ -14,6 +14,8 @@ import 'src/default_wallets/domain/usecases/verify_default_wallets_usecase.dart'
 import 'src/default_wallets/presentation/default_wallets_bloc.dart';
 import 'src/default_wallets/domain/default_wallets_machine.dart';
 
+import 'package:primitives/primitives.dart';
+
 export 'src/default_wallets/presentation/default_wallets_bloc.dart'
     show DefaultWalletsBloc;
 export 'src/default_wallets/domain/default_wallets_machine.dart';
@@ -54,7 +56,7 @@ export 'src/support_chat/domain/support_unread_machine.dart'
     show SupportUnreadEvent, SupportUnreadState, UnreadSignedOut;
 
 /// The AutoBuy flow's account load for [session].
-Future<ExchangeRead<AutoBuyContext>> autoBuyContextForTesting(
+Future<Result<AutoBuyContext, ExchangeReadFailure>> autoBuyContextForTesting(
   Exchange exchange,
   ExchangeSession session,
 ) => LoadAutoBuyContextUsecase(

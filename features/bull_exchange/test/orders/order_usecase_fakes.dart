@@ -2,9 +2,10 @@ import 'package:bull_exchange/src/orders/domain/usecases/find_created_order_usec
 import 'package:bull_exchange/src/orders/domain/usecases/get_market_rate_usecase.dart';
 import 'package:bull_exchange/src/orders/domain/usecases/get_order_usecase.dart';
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 final class FakeGetMarketRateUsecase implements GetMarketRateUsecase {
-  final Future<ExchangeRead<double>> Function(
+  final Future<Result<double, ExchangeReadFailure>> Function(
     ExchangeSession session,
     Market market,
   )
@@ -13,14 +14,14 @@ final class FakeGetMarketRateUsecase implements GetMarketRateUsecase {
   FakeGetMarketRateUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<double>> execute(
+  Future<Result<double, ExchangeReadFailure>> execute(
     ExchangeSession session,
     Market market,
   ) => answer(session, market);
 }
 
 final class FakeGetOrderUsecase implements GetOrderUsecase {
-  final Future<ExchangeRead<Order>> Function(
+  final Future<Result<Order, ExchangeReadFailure>> Function(
     ExchangeSession session,
     String orderId,
   )
@@ -29,7 +30,7 @@ final class FakeGetOrderUsecase implements GetOrderUsecase {
   FakeGetOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<Order>> execute(
+  Future<Result<Order, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) => answer(session, orderId);
@@ -38,7 +39,7 @@ final class FakeGetOrderUsecase implements GetOrderUsecase {
 /// Answers any order type; a found order that is not the type the flow
 /// asks for fails the test, as the real use case would never return it.
 final class FakeFindCreatedOrderUsecase implements FindCreatedOrderUsecase {
-  final Future<ExchangeRead<Order>> Function(
+  final Future<Result<Order, ExchangeReadFailure>> Function(
     ExchangeSession session,
     OrderCreateJournalRequest journal,
     DateTime sentAt,
@@ -48,21 +49,25 @@ final class FakeFindCreatedOrderUsecase implements FindCreatedOrderUsecase {
   FakeFindCreatedOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<O>> execute<O extends Order>(
+  Future<Result<O, ExchangeReadFailure>> execute<O extends Order>(
     ExchangeSession session,
     OrderCreateJournalRequest journal,
     DateTime sentAt,
   ) async => switch (await answer(session, journal, sentAt)) {
-    ReadGot(value: final O order) => ReadGot(order),
-    ReadGot(:final value) => throw StateError(
+    Ok(value: final O order) => Ok(order),
+    Ok(:final value) => throw StateError(
       'fake found a ${value.runtimeType}, flow asked for $O',
     ),
-    ReadMissing() => const ReadMissing(),
-    ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable(
-      reason,
-      isNetwork: isNetwork,
+    Err(failure: ExchangeMissingFailure()) => const Err(
+      ExchangeMissingFailure(),
     ),
-    ReadSessionRejected(:final why) => ReadSessionRejected(why),
-    ReadMalformed(:final reason) => ReadMalformed(reason),
+    Err(failure: ExchangeUnreachableFailure(:final reason, :final isNetwork)) =>
+      Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork)),
+    Err(failure: ExchangeSessionRejectedFailure(:final why)) => Err(
+      ExchangeSessionRejectedFailure(why),
+    ),
+    Err(failure: ExchangeMalformedFailure(:final reason)) => Err(
+      ExchangeMalformedFailure(reason),
+    ),
   };
 }

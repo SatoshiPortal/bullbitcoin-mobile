@@ -4,14 +4,17 @@ import 'package:bull_exchange/src/account/domain/usecases/get_account_usecase.da
 import 'package:primitives/primitives.dart';
 
 final class FakeGetUserSummaryUsecase implements GetUserSummaryUsecase {
-  final Future<ExchangeRead<UserSummary>> Function(ExchangeSession session)
+  final Future<Result<UserSummary, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeGetUserSummaryUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<UserSummary>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<UserSummary, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeGetAccountUsecase implements GetAccountUsecase {

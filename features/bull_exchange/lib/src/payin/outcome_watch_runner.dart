@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 /// Runs an outcome watch's effects (composition §4.9) for a flow's bloc: one
 /// poll timer and one deadline timer per order id; WatchStop and [close]
 /// end them. Answers carry the order id and ticket of the effect, so the
 /// watch drops a poll that a pause made stale.
 final class OutcomeWatchRunner<O> {
-  final Future<ExchangeRead<O>> Function(String orderId) _read;
+  final Future<Result<O, ExchangeReadFailure>> Function(String orderId) _read;
   final void Function(OutcomeWatchEvent<O> event) _emit;
   final Duration _pollEvery;
 

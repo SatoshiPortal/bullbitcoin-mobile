@@ -10,6 +10,8 @@ import '../orders/order_usecase_fakes.dart';
 import 'payin_fixtures.dart';
 import 'payin_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 void main() {
   late List<String> calls;
   late List<PayinEvent<PayinSpend>> events;
@@ -37,7 +39,7 @@ void main() {
         }),
         getOrder: FakeGetOrderUsecase((session, orderId) async {
           calls.add('read $orderId ${session.sessionId}');
-          return ReadGot(order);
+          return Ok(order);
         }),
         transactionSeen: FakeCheckTransactionSeenUsecase((txid) async {
           calls.add('seen $txid');

@@ -22,7 +22,7 @@ void main() {
         },
       ),
     ).execute(testnet);
-    expect((read as ReadGot<UserSummary>).value, buySummary);
+    expect((read as Ok<UserSummary, ExchangeReadFailure>).value, buySummary);
     expect(asked, [ExchangeEnvironment.testnet]);
   });
 
@@ -32,6 +32,13 @@ void main() {
         getUserSummary: (_) async => const Err(ExchangeNetworkFailure()),
       ),
     ).execute(buySession);
-    expect(read, isA<ReadUnreachable<UserSummary>>());
+    expect(
+      read,
+      isA<Err<UserSummary, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

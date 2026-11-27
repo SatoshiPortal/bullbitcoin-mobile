@@ -135,10 +135,14 @@ void main() {
 
     expect(
       read,
-      isA<ReadUnreachable<Order>>().having(
-        (r) => r.isNetwork,
-        'isNetwork',
-        isTrue,
+      isA<Err<Order, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>().having(
+          (r) => r.isNetwork,
+          'isNetwork',
+          isTrue,
+        ),
       ),
     );
     expect(transport.requests, hasLength(1));
@@ -152,7 +156,12 @@ void main() {
     final disk = await log.logsFile.exists()
         ? await log.logsFile.readAsString()
         : '';
-    expect((read as ReadUnreachable<Order>).reason, 'ExchangeNetworkFailure');
+    expect(
+      ((read as Err<Order, ExchangeReadFailure>).failure
+              as ExchangeUnreachableFailure)
+          .reason,
+      'ExchangeNetworkFailure',
+    );
     final diagnostics = '$disk\n${reporter.reports.join('\n')}\n$read';
     for (final sentinel in [
       _host,

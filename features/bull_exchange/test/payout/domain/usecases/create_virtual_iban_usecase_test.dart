@@ -55,7 +55,11 @@ void main() {
     final write = await _usecase(Ok(iban), asked).execute(_testnet);
     expect(
       write,
-      isA<WriteDone<VirtualIban>>().having((w) => w.value, 'value', iban),
+      isA<Ok<VirtualIban, ExchangeWriteFailure>>().having(
+        (w) => w.value,
+        'value',
+        iban,
+      ),
     );
     expect(asked, [ExchangeEnvironment.testnet]);
   });
@@ -64,12 +68,20 @@ void main() {
       'is refused', () async {
     expect(
       await _usecase(const Err(ExchangeNetworkFailure())).execute(_testnet),
-      isA<WriteOutcomeUnknown<VirtualIban>>(),
+      isA<Err<VirtualIban, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
     );
     expect(
       await _usecase(const Err(ExchangeVirtualIbanNotAvailableFailure()))
           .execute(_testnet),
-      isA<WriteRefused<VirtualIban>>(),
+      isA<Err<VirtualIban, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteRefusedFailure>(),
+      ),
     );
   });
 }

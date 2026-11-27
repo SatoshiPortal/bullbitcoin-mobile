@@ -54,7 +54,7 @@ void main() {
         .execute<WithdrawOrder>(_session, _journal, _sentAt);
     expect(
       read,
-      isA<ReadGot<WithdrawOrder>>().having(
+      isA<Ok<WithdrawOrder, ExchangeReadFailure>>().having(
         (r) => r.value.orderId,
         'orderId',
         'w-1',
@@ -73,20 +73,41 @@ void main() {
           _journal,
           _sentAt.add(const Duration(days: 2)),
         );
-    expect(read, isA<ReadMissing<WithdrawOrder>>());
+    expect(
+      read,
+      isA<Err<WithdrawOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeMissingFailure>(),
+      ),
+    );
   });
 
   test('a match of another order class is missing', () async {
     final read = await FindCreatedOrderUsecase(
       _exchange(_Orders(list: Ok([withdrawOrder()])), []),
     ).execute<BuyOrder>(_session, _journal, _sentAt);
-    expect(read, isA<ReadMissing<BuyOrder>>());
+    expect(
+      read,
+      isA<Err<BuyOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeMissingFailure>(),
+      ),
+    );
   });
 
   test('a failed listing is never read as no order', () async {
     final read = await FindCreatedOrderUsecase(
       _exchange(_Orders(list: const Err(ExchangeNetworkFailure())), []),
     ).execute<WithdrawOrder>(_session, _journal, _sentAt);
-    expect(read, isA<ReadUnreachable<WithdrawOrder>>());
+    expect(
+      read,
+      isA<Err<WithdrawOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

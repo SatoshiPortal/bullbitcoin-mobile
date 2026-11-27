@@ -36,7 +36,7 @@ void main() {
     ).execute(_testnet, 'r-1');
     expect(
       read,
-      isA<ReadGot<SepaVirtualPayeeStatus>>().having(
+      isA<Ok<SepaVirtualPayeeStatus, ExchangeReadFailure>>().having(
         (r) => r.value,
         'value',
         SepaVirtualPayeeStatus.active,
@@ -49,7 +49,14 @@ void main() {
     final read = await GetVirtualPayeeStatusUsecase(
       exchangeForTesting(recipients: _Recipients(status: const Ok(null))),
     ).execute(_testnet, 'r-1');
-    expect(read, isA<ReadMissing<SepaVirtualPayeeStatus>>());
+    expect(
+      read,
+      isA<Err<SepaVirtualPayeeStatus, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeMissingFailure>(),
+      ),
+    );
   });
 
   test('a failed read is unreachable', () async {
@@ -60,10 +67,14 @@ void main() {
     ).execute(_testnet, 'r-1');
     expect(
       read,
-      isA<ReadUnreachable<SepaVirtualPayeeStatus>>().having(
-        (r) => r.isNetwork,
-        'isNetwork',
-        true,
+      isA<Err<SepaVirtualPayeeStatus, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>().having(
+          (r) => r.isNetwork,
+          'isNetwork',
+          true,
+        ),
       ),
     );
   });

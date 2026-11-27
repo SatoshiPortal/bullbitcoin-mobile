@@ -55,7 +55,11 @@ void main() {
     final read = await _usecase(const Ok(null), asked).execute(_testnet);
     expect(
       read,
-      isA<ReadGot<VirtualIban?>>().having((r) => r.value, 'value', isNull),
+      isA<Ok<VirtualIban?, ExchangeReadFailure>>().having(
+        (r) => r.value,
+        'value',
+        isNull,
+      ),
     );
     expect(asked, [ExchangeEnvironment.testnet]);
   });
@@ -63,7 +67,11 @@ void main() {
   test('a failed lookup is never read as no IBAN', () async {
     expect(
       await _usecase(const Err(ExchangeNetworkFailure())).execute(_testnet),
-      isA<ReadUnreachable<VirtualIban?>>(),
+      isA<Err<VirtualIban?, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
     );
   });
 }

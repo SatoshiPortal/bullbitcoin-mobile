@@ -34,7 +34,7 @@ void main() {
     ).execute(_mainnet, 'r-1');
     expect(
       write,
-      isA<WriteDone<SepaVirtualPayeeStatus>>().having(
+      isA<Ok<SepaVirtualPayeeStatus, ExchangeWriteFailure>>().having(
         (w) => w.value,
         'value',
         SepaVirtualPayeeStatus.pending,
@@ -51,6 +51,13 @@ void main() {
         ),
       ),
     ).execute(_mainnet, 'r-1');
-    expect(write, isA<WriteOutcomeUnknown<SepaVirtualPayeeStatus>>());
+    expect(
+      write,
+      isA<Err<SepaVirtualPayeeStatus, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
+    );
   });
 }

@@ -24,29 +24,29 @@ void main() {
     loadVirtualIban: FakeLoadVirtualIbanContextUsecase((session) async {
       sessions.add(session);
       calls.add('load');
-      return const ReadGot(
+      return const Ok(
         VirtualIbanContext(virtualIban: null, ownerName: 'Ada Lovelace'),
       );
     }),
     createVirtualIban: FakeCreateVirtualIbanUsecase((session) async {
       sessions.add(session);
       calls.add('create');
-      return const WriteOutcomeUnknown('lost');
+      return const Err(ExchangeWriteOutcomeUnknownFailure('lost'));
     }),
     findVirtualIban: FakeFindVirtualIbanUsecase((session) async {
       sessions.add(session);
       calls.add('find');
-      return const ReadGot(null);
+      return const Ok(null);
     }),
     payeeStatus: FakeGetVirtualPayeeStatusUsecase((session, id) async {
       sessions.add(session);
       calls.add('status $id');
-      return const ReadGot(SepaVirtualPayeeStatus.pending);
+      return const Ok(SepaVirtualPayeeStatus.pending);
     }),
     activatePayee: FakeActivateVirtualPayeeUsecase((session, id) async {
       sessions.add(session);
       calls.add('activate $id');
-      return const WriteDone(SepaVirtualPayeeStatus.pending);
+      return const Ok(SepaVirtualPayeeStatus.pending);
     }),
   );
 
@@ -154,7 +154,15 @@ void main() {
     test('a failure is never read as a value', () {
       expect(
         readOfResult<int>(const Err(ExchangeNetworkFailure())),
-        isA<ReadUnreachable<int>>().having((r) => r.isNetwork, 'net', true),
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>().having(
+            (r) => r.isNetwork,
+            'net',
+            true,
+          ),
+        ),
       );
       expect(
         readOfResult<int>(
@@ -162,32 +170,52 @@ void main() {
             ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
           ),
         ),
-        isA<ReadSessionRejected<int>>(),
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
       );
       expect(
         readOfResult<int>(const Ok(1)),
-        isA<ReadGot<int>>().having((r) => r.value, 'value', 1),
+        isA<Ok<int, ExchangeReadFailure>>().having((r) => r.value, 'value', 1),
       );
     });
 
     test('a write failure that may have reached the server is unknown', () {
       expect(
         writeOfResult<int>(const Err(ExchangeNetworkFailure())),
-        isA<WriteOutcomeUnknown<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
       expect(
         writeOfResult<int>(const Err(ExchangeUnexpectedFailure())),
-        isA<WriteOutcomeUnknown<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
       expect(
         writeOfResult<int>(const Err(ExchangeNotAuthenticatedFailure())),
-        isA<WriteNotSent<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>(),
+        ),
       );
       expect(
         writeOfResult<int>(
           const Err(ExchangeOrderRejectedFailure(apiCode: 'X')),
         ),
-        isA<WriteRefused<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteRefusedFailure>(),
+        ),
       );
     });
   });

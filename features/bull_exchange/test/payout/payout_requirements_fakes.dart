@@ -6,10 +6,11 @@ import 'package:bull_exchange/src/payout/domain/usecases/load_virtual_iban_conte
 import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 final class FakeLoadVirtualIbanContextUsecase
     implements LoadVirtualIbanContextUsecase {
-  final Future<ExchangeRead<VirtualIbanContext>> Function(
+  final Future<Result<VirtualIbanContext, ExchangeReadFailure>> Function(
     ExchangeSession session,
   )
   answer;
@@ -17,35 +18,42 @@ final class FakeLoadVirtualIbanContextUsecase
   FakeLoadVirtualIbanContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<VirtualIbanContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<VirtualIbanContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeCreateVirtualIbanUsecase implements CreateVirtualIbanUsecase {
-  final Future<ExchangeWrite<VirtualIban>> Function(ExchangeSession session)
+  final Future<Result<VirtualIban, ExchangeWriteFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeCreateVirtualIbanUsecase(this.answer);
 
   @override
-  Future<ExchangeWrite<VirtualIban>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<VirtualIban, ExchangeWriteFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeFindVirtualIbanUsecase implements FindVirtualIbanUsecase {
-  final Future<ExchangeRead<VirtualIban?>> Function(ExchangeSession session)
+  final Future<Result<VirtualIban?, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeFindVirtualIbanUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<VirtualIban?>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<VirtualIban?, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeGetVirtualPayeeStatusUsecase
     implements GetVirtualPayeeStatusUsecase {
-  final Future<ExchangeRead<SepaVirtualPayeeStatus>> Function(
+  final Future<Result<SepaVirtualPayeeStatus, ExchangeReadFailure>> Function(
     ExchangeSession session,
     String recipientId,
   )
@@ -54,7 +62,7 @@ final class FakeGetVirtualPayeeStatusUsecase
   FakeGetVirtualPayeeStatusUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<SepaVirtualPayeeStatus>> execute(
+  Future<Result<SepaVirtualPayeeStatus, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String recipientId,
   ) => answer(session, recipientId);
@@ -62,7 +70,7 @@ final class FakeGetVirtualPayeeStatusUsecase
 
 final class FakeActivateVirtualPayeeUsecase
     implements ActivateVirtualPayeeUsecase {
-  final Future<ExchangeWrite<SepaVirtualPayeeStatus>> Function(
+  final Future<Result<SepaVirtualPayeeStatus, ExchangeWriteFailure>> Function(
     ExchangeSession session,
     String recipientId,
   )
@@ -71,7 +79,7 @@ final class FakeActivateVirtualPayeeUsecase
   FakeActivateVirtualPayeeUsecase(this.answer);
 
   @override
-  Future<ExchangeWrite<SepaVirtualPayeeStatus>> execute(
+  Future<Result<SepaVirtualPayeeStatus, ExchangeWriteFailure>> execute(
     ExchangeSession session,
     String recipientId,
   ) => answer(session, recipientId);

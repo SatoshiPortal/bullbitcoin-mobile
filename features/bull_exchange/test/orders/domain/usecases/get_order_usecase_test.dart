@@ -41,7 +41,11 @@ void main() {
         .execute(_session, 'w-1');
     expect(
       read,
-      isA<ReadGot<Order>>().having((r) => r.value.orderId, 'orderId', 'w-1'),
+      isA<Ok<Order, ExchangeReadFailure>>().having(
+        (r) => r.value.orderId,
+        'orderId',
+        'w-1',
+      ),
     );
     expect(orders.asked, ['get w-1']);
     expect(environments, [ExchangeEnvironment.testnet]);
@@ -58,6 +62,13 @@ void main() {
         [],
       ),
     ).execute(_session, 'w-1');
-    expect(read, isA<ReadSessionRejected<Order>>());
+    expect(
+      read,
+      isA<Err<Order, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 }
