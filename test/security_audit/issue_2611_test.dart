@@ -29,14 +29,14 @@ void main() {
       expect("await _initSentry(dsn);".allMatches(source), hasLength(1));
     });
 
-    test('the native bridge owns initialization and shutdown', () {
+    test('the Flutter SDK owns native initialization and shutdown', () {
       final source = File('packages/bull_reporting/lib/src/report.dart')
           .readAsStringSync();
 
-      expect(source, contains('options.autoInitializeNativeSdk = false;'));
-      expect(source, contains("invokeMethod<void>('start', dsn)"));
-      expect(source, contains("invokeMethod<void>('close')"));
+      expect(source, contains('await SentryFlutter.init('));
+      expect(source, contains('options.autoInitializeNativeSdk = true;'));
       expect(source, contains('if (!enabled) await _stopReporting();'));
+      expect(source, contains('await Sentry.close();'));
     });
   });
 }

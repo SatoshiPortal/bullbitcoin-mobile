@@ -26,7 +26,7 @@ void main() {
       );
       final event = SentryEvent(throwable: Exception('test exception'));
 
-      expect(options.autoInitializeNativeSdk, isFalse);
+      expect(options.autoInitializeNativeSdk, isTrue);
       expect(options.captureNativeFailedRequests, isFalse);
       expect(options.beforeSendLog, isNotNull);
       expect(options.beforeSendMetric, isNotNull);
