@@ -10,7 +10,7 @@ class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}
 
 class _FakeSepaVirtualPayeeRepository extends Fake
-    implements ExchangeRecipients {
+    implements RecipientsRepository {
   final List<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findResults;
   final Result<SepaVirtualPayeeStatus, RecipientsFailure> activateResult;
   int finds = 0;

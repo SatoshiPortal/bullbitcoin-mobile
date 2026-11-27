@@ -160,8 +160,8 @@ final _newRecipients = <RecipientDetails>[
     ).toDomain(),
 ];
 
-BbxApiRecipientsRepository _repository(FakeBbxHttp http) =>
-    BbxApiRecipientsRepository(api: http.client());
+BbxApiRecipientsDatasource _repository(FakeBbxHttp http) =>
+    BbxApiRecipientsDatasource(api: http.client());
 
 /// The path, the JSON text and the `x-api-version` header of each request.
 List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
@@ -174,7 +174,7 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
 Future<(List<Object?>, List<(String, String, Object?)>)> _bothSend(
   String id,
   Object? body,
-  Future<void> Function(RecipientsRepository repository) call,
+  Future<void> Function(BbxApiRecipientsDatasource repository) call,
 ) async {
   final http = FakeBbxHttp(body: body);
   await call(_repository(http));
@@ -471,28 +471,29 @@ void main() {
       );
     });
 
-    final listCalls = <String, Future<void> Function(RecipientsRepository)>{
-      'default': (r) => r.listRecipients(isTestnet: true),
-      'all recipients': (r) =>
-          r.listRecipients(isTestnet: true, fiatOnly: false),
-      'every filter': (r) => r.listRecipients(
-        isTestnet: true,
-        page: 3,
-        pageSize: 20,
-        recipientTypes: [
-          RecipientType.sepaEur,
-          RecipientType.confidentialSepaEur,
-          RecipientType.interacEmailCad,
-        ],
-        isOwner: false,
-        search: 'Ada',
-      ),
-      'empty filters': (r) => r.listRecipients(
-        isTestnet: true,
-        recipientTypes: const [],
-        search: '',
-      ),
-    };
+    final listCalls =
+        <String, Future<void> Function(BbxApiRecipientsDatasource)>{
+          'default': (r) => r.listRecipients(isTestnet: true),
+          'all recipients': (r) =>
+              r.listRecipients(isTestnet: true, fiatOnly: false),
+          'every filter': (r) => r.listRecipients(
+            isTestnet: true,
+            page: 3,
+            pageSize: 20,
+            recipientTypes: [
+              RecipientType.sepaEur,
+              RecipientType.confidentialSepaEur,
+              RecipientType.interacEmailCad,
+            ],
+            isOwner: false,
+            search: 'Ada',
+          ),
+          'empty filters': (r) => r.listRecipients(
+            isTestnet: true,
+            recipientTypes: const [],
+            search: '',
+          ),
+        };
     for (final MapEntry(key: name, value: call) in listCalls.entries) {
       test('listRecipients with $name', () async {
         final (old, sent) = await _bothSend('list $name', {
@@ -543,7 +544,7 @@ void main() {
 
   group('responses are mapped like the old repository did, as recorded', () {
     Future<List<Map<String, Object?>>> listWith(
-      RecipientsRepository repository,
+      BbxApiRecipientsDatasource repository,
       List<RecipientType>? types,
     ) async => _valueOf(
       await repository.listRecipients(isTestnet: true, recipientTypes: types),
@@ -838,7 +839,7 @@ void main() {
         <
           String,
           Future<Result<Object?, RecipientsFailure>> Function(
-            RecipientsRepository,
+            BbxApiRecipientsDatasource,
           )
         >{
           'saveRecipient': (r) =>
@@ -931,7 +932,7 @@ void main() {
 
       test('$name: no credential is not authenticated', () async {
         final http = FakeBbxHttp(body: {'result': <String, Object?>{}});
-        final repository = BbxApiRecipientsRepository(
+        final repository = BbxApiRecipientsDatasource(
           api: http.client(readApiKey: () async => const Ok(null)),
         );
 
@@ -946,7 +947,7 @@ void main() {
         '$name: an unreadable credential is the operation failure',
         () async {
           final http = FakeBbxHttp(body: {'result': <String, Object?>{}});
-          final repository = BbxApiRecipientsRepository(
+          final repository = BbxApiRecipientsDatasource(
             api: http.client(
               readApiKey: () async =>
                   const Err(BbxCredentialUnavailableFailure()),

@@ -6,10 +6,10 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockRepository extends Mock implements ExchangeRecipients {}
+class _MockRepository extends Mock implements RecipientsRepository {}
 
 class _MockSepaVirtualPayeeRepository extends Mock
-    implements ExchangeRecipients {}
+    implements RecipientsRepository {}
 
 class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}

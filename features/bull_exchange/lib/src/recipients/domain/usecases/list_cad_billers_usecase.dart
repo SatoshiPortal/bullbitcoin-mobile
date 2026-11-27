@@ -17,7 +17,7 @@ class ListCadBillersResult {
 }
 
 class ListCadBillersUsecase {
-  final ExchangeRecipients _recipientsRepository;
+  final RecipientsRepository _recipientsRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   ListCadBillersUsecase({

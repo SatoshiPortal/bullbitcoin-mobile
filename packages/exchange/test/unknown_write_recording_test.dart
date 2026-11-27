@@ -2,7 +2,7 @@ import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/src/data/journaling_orders_repository.dart';
-import 'package:exchange/src/data/journaling_exchange_recipients.dart';
+import 'package:exchange/src/data/journaling_recipients_repository.dart';
 import 'package:exchange/testing.dart';
 import 'package:mocktail/mocktail.dart' show Fake;
 import 'package:primitives/primitives.dart';
@@ -53,7 +53,7 @@ final class _Orders extends Fake implements OrdersRepository {
   }) async => _write();
 }
 
-final class _Recipients extends Fake implements ExchangeRecipients {
+final class _Recipients extends Fake implements RecipientsRepository {
   final Result<Recipient, RecipientsFailure> answer;
   final saved = <RecipientDetails>[];
 
@@ -186,10 +186,10 @@ void main() {
       securityAnswer: 'orange',
     );
 
-    JournalingExchangeRecipients journaling(
+    JournalingRecipientsRepository journaling(
       _Recipients recipients,
       UnknownWriteJournal journal,
-    ) => JournalingExchangeRecipients(
+    ) => JournalingRecipientsRepository(
       recipients,
       UnknownWriteRecorder(journal),
       readEpoch: (environment) async =>

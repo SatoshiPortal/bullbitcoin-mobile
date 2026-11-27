@@ -10,7 +10,7 @@ const _mainnet = ExchangeSession(
   sessionId: 's',
 );
 
-final class _Recipients extends Fake implements ExchangeRecipients {
+final class _Recipients extends Fake implements RecipientsRepository {
   final Result<SepaVirtualPayeeStatus, RecipientsFailure> activation;
   final asked = <(String, bool)>[];
 

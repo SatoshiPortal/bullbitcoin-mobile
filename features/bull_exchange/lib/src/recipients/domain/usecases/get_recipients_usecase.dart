@@ -32,7 +32,7 @@ class GetRecipientsResult {
 }
 
 class GetRecipientsUsecase {
-  final ExchangeRecipients _recipientsRepository;
+  final RecipientsRepository _recipientsRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   GetRecipientsUsecase({

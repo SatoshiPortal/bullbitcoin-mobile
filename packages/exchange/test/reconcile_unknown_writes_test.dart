@@ -91,7 +91,7 @@ Recipient _recipient(RecipientDetails details, {String id = 'r-1'}) =>
       details: details,
     );
 
-final class _Recipients extends Fake implements ExchangeRecipients {
+final class _Recipients extends Fake implements RecipientsRepository {
   final List<Result<RecipientPage, RecipientsFailure>> pages;
   final reads = <int>[];
 

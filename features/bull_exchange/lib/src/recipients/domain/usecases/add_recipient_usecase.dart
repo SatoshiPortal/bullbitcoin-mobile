@@ -17,8 +17,8 @@ class AddRecipientResult {
 }
 
 class AddRecipientUsecase {
-  final ExchangeRecipients _recipientsRepository;
-  final ExchangeRecipients _sepaVirtualPayeeRepository;
+  final RecipientsRepository _recipientsRepository;
+  final RecipientsRepository _sepaVirtualPayeeRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   AddRecipientUsecase({

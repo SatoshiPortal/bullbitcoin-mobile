@@ -8,7 +8,7 @@ import 'package:exchange/exchange.dart';
 /// failure, an active status or a status this build doesn't know is the last
 /// event.
 class WatchSepaVirtualPayeeActivationUsecase {
-  final ExchangeRecipients _sepaVirtualPayeeRepository;
+  final RecipientsRepository _sepaVirtualPayeeRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
   final Duration _initialPollInterval;
   final int _initialPolls;

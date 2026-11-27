@@ -126,7 +126,7 @@ void main() {
   }
 
   test('malformed SINPE response remains a typed lookup failure', () async {
-    final repository = BbxApiRecipientsRepository(
+    final repository = BbxApiRecipientsDatasource(
       api: FakeBbxHttp(
         body: {
           'result': {'ownerName': 42},

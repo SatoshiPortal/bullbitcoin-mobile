@@ -1,19 +1,45 @@
-import 'package:primitives/primitives.dart';
-import 'package:exchange/src/recipients/domain/entities/recipient.dart';
-import 'package:exchange/src/domain/exchange_failure.dart';
-import 'package:exchange/src/recipients/domain/entities/cad_biller.dart';
-import 'package:exchange/src/recipients/domain/entities/recipient_details.dart';
-import 'package:exchange/src/recipients/domain/entities/recipient_type.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
-/// The repository is this feature's data boundary: it is the only place allowed
-/// to catch, and it returns [Result] so nothing above it can receive — or
-/// re-wrap — a raw exception.
+import '../../../domain/exchange_failure.dart';
+import '../entities/cad_biller.dart';
+import '../entities/recipient.dart';
+import '../entities/recipient_details.dart';
+import '../entities/recipient_type.dart';
+import '../entities/sepa_virtual_payee_status.dart';
+
+typedef RecipientPage = ({List<Recipient> recipients, int totalRecipients});
+
+/// Fiat recipients and their payment details in the current Exchange session.
+/// An explicit environment limits a multi-step journey to that environment.
 abstract interface class RecipientsRepository {
   @useResult
   Future<Result<Recipient, RecipientsFailure>> saveRecipient(
-    RecipientDetails recipientDetails, {
+    RecipientDetails details, {
     bool isFiatRecipient = true,
+    required bool isTestnet,
+  });
+
+  @useResult
+  Future<Result<RecipientPage, RecipientsFailure>> listRecipients({
+    required bool isTestnet,
+    bool fiatOnly = true,
+    int page = 1,
+    int pageSize = 50,
+    List<RecipientType>? recipientTypes,
+    bool? isOwner,
+    String? search,
+  });
+
+  @useResult
+  Future<Result<String, RecipientsFailure>> checkSinpe({
+    required String phoneNumber,
+    required bool isTestnet,
+  });
+
+  @useResult
+  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
+    required String searchTerm,
     required bool isTestnet,
   });
 
@@ -27,31 +53,14 @@ abstract interface class RecipientsRepository {
   });
 
   @useResult
-  Future<
-    Result<
-      ({List<Recipient> recipients, int totalRecipients}),
-      RecipientsFailure
-    >
-  >
-  listRecipients({
-    bool fiatOnly = true,
-    required bool isTestnet,
-    int page = 1,
-    int pageSize = 50,
-    List<RecipientType>? recipientTypes,
-    bool? isOwner,
-    String? search,
-  });
-
-  @useResult
-  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
-    required String searchTerm,
+  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activate({
+    required String recipientId,
     required bool isTestnet,
   });
 
   @useResult
-  Future<Result<String, RecipientsFailure>> checkSinpe({
-    required String phoneNumber,
+  Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
+    required String recipientId,
     required bool isTestnet,
   });
 }

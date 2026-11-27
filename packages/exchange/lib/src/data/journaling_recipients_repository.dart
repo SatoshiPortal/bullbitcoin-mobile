@@ -9,17 +9,17 @@ import '../recipients/domain/entities/recipient_details.dart';
 import '../recipients/domain/entities/recipient_type.dart';
 import '../recipients/domain/entities/sepa_virtual_payee_status.dart';
 import '../recipients/domain/recipient_identity.dart';
-import '../recipients/exchange_recipients.dart';
+import '../recipients/domain/repositories/recipients_repository.dart';
 import 'journaling_orders_repository.dart';
 
-/// [ExchangeRecipients] whose recipient create is journaled when its outcome
+/// [RecipientsRepository] whose recipient create is journaled when its outcome
 /// is unknown. Everything else is passed through.
-final class JournalingExchangeRecipients implements ExchangeRecipients {
-  final ExchangeRecipients _recipients;
+final class JournalingRecipientsRepository implements RecipientsRepository {
+  final RecipientsRepository _recipients;
   final UnknownWriteRecorder _recorder;
   final Future<int?> Function(ExchangeEnvironment) _readEpoch;
 
-  const JournalingExchangeRecipients(
+  const JournalingRecipientsRepository(
     this._recipients,
     this._recorder, {
     required this._readEpoch,

@@ -196,7 +196,7 @@ void main() {
     'shared Dio features distinguish missing credentials from read failures',
     () async {
       final funding = user.funding;
-      final recipients = BbxApiRecipientsRepository(api: api);
+      final recipients = BbxApiRecipientsDatasource(api: api);
       final limits = user.limitOrders;
       expect(
         await funding.institutions(_session, Jurisdiction.canada),

@@ -21,7 +21,7 @@ import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/journaling_orders_repository.dart';
-import 'data/journaling_exchange_recipients.dart';
+import 'data/journaling_recipients_repository.dart';
 import 'data/pending_orders.dart';
 import 'domain/catalog/jurisdiction.dart';
 import 'domain/entities/announcement.dart';
@@ -55,7 +55,8 @@ import 'domain/repositories/virtual_ibans_repository.dart';
 import 'domain/order_create_journal.dart';
 import 'domain/unknown_write_journal.dart';
 import 'setup/exchange_access_lifecycle.dart';
-import 'recipients/exchange_recipients.dart';
+import 'recipients/data/bbx_api_recipients_repository.dart';
+import 'recipients/domain/repositories/recipients_repository.dart';
 import 'session/complete_exchange_authentication_usecase.dart';
 import 'session/exchange_auth_repository_impl.dart';
 import 'session/exchange_web_auth_datasource.dart';
@@ -172,7 +173,7 @@ final class Exchange {
   final Preferences? _sessionPreferences;
   final ExchangeWebAuthEndpoints? _webAuthEndpoints;
   final ExchangeBasicAuthStore? _basicAuth;
-  final ExchangeRecipients recipients;
+  final RecipientsRepository recipients;
   final UnknownWriteJournal? _unknownWrites;
   final Future<Result<_SessionPoint, ExchangeFailure>> Function()
   _readSessionPoint;
@@ -621,7 +622,7 @@ final class Exchange {
       }, completionCheck: _CompletionCheck.read),
       access,
       _journalRecipients(
-        ExchangeRecipientsImpl(
+        BbxApiRecipientsRepository(
           read: <T>(environment, operation) => withClient<T>(
             (client) => operation(client),
             environment: environment,
@@ -1222,13 +1223,13 @@ final class Exchange {
   Future<void> close() => _notifications.close();
 }
 
-ExchangeRecipients _journalRecipients(
-  ExchangeRecipients recipients,
+RecipientsRepository _journalRecipients(
+  RecipientsRepository recipients,
   UnknownWriteRecorder? recorder,
   Future<Result<_SessionPoint, ExchangeFailure>> Function() readSessionPoint,
 ) => switch (recorder) {
   null => recipients,
-  final recorder => JournalingExchangeRecipients(
+  final recorder => JournalingRecipientsRepository(
     recipients,
     recorder,
     readEpoch: (environment) async => switch (await readSessionPoint()) {
@@ -1285,7 +1286,7 @@ Exchange exchangeForTesting({
   VirtualIbansRepository? virtualIbans,
   Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
   getConfidentialSepaAvailability,
-  ExchangeRecipients? recipients,
+  RecipientsRepository? recipients,
   ExchangeAccessLifecycle? access,
   Preferences? sessionPreferences,
   ExchangeBasicAuthStore? basicAuth,
@@ -1358,7 +1359,7 @@ Exchange exchangeForTesting({
   access,
   _journalRecipients(
     recipients ??
-        ExchangeRecipientsImpl(
+        BbxApiRecipientsRepository(
           read: <T>(_, _) => throw StateError('Unexpected fiat recipient read'),
           write: <T>(_, _) =>
               throw StateError('Unexpected fiat recipient write'),

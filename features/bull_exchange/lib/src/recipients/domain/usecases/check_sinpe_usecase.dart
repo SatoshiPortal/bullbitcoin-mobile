@@ -16,7 +16,7 @@ class CheckSinpeResult {
 }
 
 class CheckSinpeUsecase {
-  final ExchangeRecipients _recipientsRepository;
+  final RecipientsRepository _recipientsRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   CheckSinpeUsecase({

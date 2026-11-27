@@ -15,7 +15,7 @@ import '../domain/order_create_journal.dart';
 import '../domain/unknown_write_journal.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/recipient_identity.dart';
-import '../recipients/exchange_recipients.dart';
+import '../recipients/domain/repositories/recipients_repository.dart';
 
 /// What one reconciliation did: how many open entries it settled and how
 /// many are still open (a re-read failed or could not decide).
@@ -55,7 +55,7 @@ final class ReconcileUnknownWritesUsecase {
   _listRecentLimitOrders;
   final Future<Result<DefaultWallets, ExchangeFailure>> Function()
   _getDefaultWallets;
-  final ExchangeRecipients _recipients;
+  final RecipientsRepository _recipients;
 
   const ReconcileUnknownWritesUsecase({
     required this._journal,
