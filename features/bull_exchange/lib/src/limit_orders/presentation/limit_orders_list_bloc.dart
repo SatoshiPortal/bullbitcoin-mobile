@@ -8,7 +8,7 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-/// Shell of [transitionLimitOrdersList]. Limit-order notifications and the
+/// Shell of [LimitOrdersListState.next]. Limit-order notifications and the
 /// dashboard's refresh requests are events. The list read and the cancel-all
 /// run with the session the list opened with ([session], null when signed
 /// out).
@@ -47,7 +47,7 @@ class LimitOrdersListBloc
     LimitOrdersListEvent event,
     Emitter<LimitOrdersListState> emit,
   ) {
-    final next = transitionLimitOrdersList(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

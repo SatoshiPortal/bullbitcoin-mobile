@@ -15,6 +15,92 @@ sealed class LimitCancelState {
 
   /// The last cancel attempt; the next one is [attempt] + 1.
   int get attempt;
+
+  /// The cancel step's transition.
+  LimitCancelNext next(LimitCancelEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (CancelIdle(:final order, :final attempt), CancelPressed())
+          when order.isActive =>
+        StepNext(CancelSending(order, attempt + 1), [
+          CancelSend(order.id, attempt + 1),
+        ]),
+      (
+        CancelIdle(),
+        CancelPressed() ||
+            CancelAnswered() ||
+            CancelChecked() ||
+            CancelRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        CancelSending(:final order, :final attempt),
+        CancelAnswered(attempt: final answered, :final answer),
+      )
+          when answered == attempt =>
+        switch (answer) {
+          CancelAnsweredOrder(order: final read) => _settled(read, attempt),
+          CancelAnsweredGateRefused(:final refusal) => StepNext(
+            CancelIdle(
+              order,
+              attempt: attempt,
+              problem: CancelGateProblem(refusal),
+            ),
+          ),
+          CancelAnsweredUnsure() => _checking(order, attempt),
+          CancelAnsweredSessionRejected() => StepNext(
+            CancelSessionEnded(order, attempt),
+          ),
+        },
+      (
+        CancelSending(),
+        CancelPressed() ||
+            CancelAnswered() ||
+            CancelChecked() ||
+            CancelRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        CancelChecking(:final order, :final attempt),
+        CancelChecked(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        switch (read) {
+          Ok(value: final reread) => _settled(reread, attempt),
+          Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+            CancelSessionEnded(order, attempt),
+          ),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(failure: ExchangeMalformedFailure()) => StepNext(
+            CancelUnverified(order, attempt, ReadProblem.of(read)!),
+          ),
+        },
+      (
+        CancelChecking(),
+        CancelPressed() ||
+            CancelAnswered() ||
+            CancelChecked() ||
+            CancelRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (CancelUnverified(:final order, :final attempt), CancelRetryPressed()) =>
+        _checking(order, attempt),
+      (
+        CancelUnverified(),
+        CancelPressed() || CancelAnswered() || CancelChecked(),
+      ) =>
+        StepNext.stay(state),
+      (
+        CancelDone() || CancelSessionEnded(),
+        CancelPressed() ||
+            CancelAnswered() ||
+            CancelChecked() ||
+            CancelRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 /// Why the last cancel did not cancel the order.
@@ -270,92 +356,6 @@ LimitCancelNext _settled(LimitOrder order, int attempt) =>
     : StepNext(
         CancelIdle(order, attempt: attempt, problem: const CancelNotApplied()),
       );
-
-/// The cancel step's transition.
-LimitCancelNext transitionLimitCancel(
-  LimitCancelState state,
-  LimitCancelEvent event,
-) => switch ((state, event)) {
-  (CancelIdle(:final order, :final attempt), CancelPressed())
-      when order.isActive =>
-    StepNext(CancelSending(order, attempt + 1), [
-      CancelSend(order.id, attempt + 1),
-    ]),
-  (
-    CancelIdle(),
-    CancelPressed() ||
-        CancelAnswered() ||
-        CancelChecked() ||
-        CancelRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (
-    CancelSending(:final order, :final attempt),
-    CancelAnswered(attempt: final answered, :final answer),
-  )
-      when answered == attempt =>
-    switch (answer) {
-      CancelAnsweredOrder(order: final read) => _settled(read, attempt),
-      CancelAnsweredGateRefused(:final refusal) => StepNext(
-        CancelIdle(
-          order,
-          attempt: attempt,
-          problem: CancelGateProblem(refusal),
-        ),
-      ),
-      CancelAnsweredUnsure() => _checking(order, attempt),
-      CancelAnsweredSessionRejected() => StepNext(
-        CancelSessionEnded(order, attempt),
-      ),
-    },
-  (
-    CancelSending(),
-    CancelPressed() ||
-        CancelAnswered() ||
-        CancelChecked() ||
-        CancelRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (
-    CancelChecking(:final order, :final attempt),
-    CancelChecked(attempt: final answered, :final read),
-  )
-      when answered == attempt =>
-    switch (read) {
-      Ok(value: final reread) => _settled(reread, attempt),
-      Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
-        CancelSessionEnded(order, attempt),
-      ),
-      Err(failure: ExchangeMissingFailure()) ||
-      Err(failure: ExchangeUnreachableFailure()) ||
-      Err(
-        failure: ExchangeMalformedFailure(),
-      ) => StepNext(CancelUnverified(order, attempt, ReadProblem.of(read)!)),
-    },
-  (
-    CancelChecking(),
-    CancelPressed() ||
-        CancelAnswered() ||
-        CancelChecked() ||
-        CancelRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (CancelUnverified(:final order, :final attempt), CancelRetryPressed()) =>
-    _checking(order, attempt),
-  (
-    CancelUnverified(),
-    CancelPressed() || CancelAnswered() || CancelChecked(),
-  ) =>
-    StepNext.stay(state),
-  (
-    CancelDone() || CancelSessionEnded(),
-    CancelPressed() ||
-        CancelAnswered() ||
-        CancelChecked() ||
-        CancelRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-};
 
 /// Whether a cancel may be in flight: the page keeps Back as a stay.
 bool limitCancelRunning(LimitCancelState state) => switch (state) {

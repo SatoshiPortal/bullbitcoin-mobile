@@ -32,7 +32,7 @@ const _liquidOption = DestinationOptionAppWallet('w-liquid', BtcNetwork.liquid);
 LimitFlowNext _apply(LimitFlowState state, List<LimitFlowEvent> events) {
   var next = LimitFlowNext.stay(state);
   for (final event in events) {
-    next = transitionLimitFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next;
 }
@@ -182,7 +182,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionLimitFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -200,7 +200,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionLimitFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -225,8 +225,7 @@ void main() {
     });
 
     test('a failed load has a Retry that loads again', () {
-      final failed = transitionLimitFlow(
-        _loading,
+      final failed = _loading.next(
         const LimitContextLoaded(
           1,
           Err(ExchangeUnreachableFailure('down', isNetwork: true)),
@@ -236,10 +235,9 @@ void main() {
         (failed.state as LimitLoading).load,
         isA<ContextFailed<LimitOrderContext>>(),
       );
-      expect(
-        transitionLimitFlow(failed.state, const LimitRetryPressed()).effects,
-        [const LimitLoadContext(2)],
-      );
+      expect(failed.state.next(const LimitRetryPressed()).effects, [
+        const LimitLoadContext(2),
+      ]);
     });
 
     test('the intro uses the account currency when it is funded', () {
@@ -248,15 +246,18 @@ void main() {
 
     test('an expired session on the load ends the flow', () {
       expect(
-        transitionLimitFlow(
-          _loading,
-          const LimitContextLoaded(
-            1,
-            Err(
-              ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
-            ),
-          ),
-        ).state,
+        _loading
+            .next(
+              const LimitContextLoaded(
+                1,
+                Err(
+                  ExchangeSessionRejectedFailure(
+                    ExchangeSessionRejection.server,
+                  ),
+                ),
+              ),
+            )
+            .state,
         isA<LimitSessionEnded>(),
       );
     });
@@ -264,10 +265,9 @@ void main() {
 
   group('target', () {
     test('Continue on the intro reads the rate of its market', () {
-      expect(
-        transitionLimitFlow(_intro, const LimitContinuePressed()).effects,
-        [const LimitFetchTargetRate(ExchangeCatalog.cad, 1)],
-      );
+      expect(_intro.next(const LimitContinuePressed()).effects, [
+        const LimitFetchTargetRate(ExchangeCatalog.cad, 1),
+      ]);
     });
 
     test('the first rate starts 1 % under the index price', () {
@@ -277,21 +277,21 @@ void main() {
     });
 
     test('a failed switch keeps the old target and says why (LIM-1)', () {
-      final switching = transitionLimitFlow(
-        _target,
+      final switching = _target.next(
         const LimitCurrencyChosen(ExchangeCatalog.eur),
       );
       expect(switching.effects, [
         const LimitFetchTargetRate(ExchangeCatalog.eur, 2),
       ]);
-      final failed = transitionLimitFlow(
-        switching.state,
-        const LimitTargetRateArrived(
-          ExchangeCatalog.eur,
-          2,
-          Err(ExchangeUnreachableFailure('down', isNetwork: true)),
-        ),
-      ).state;
+      final failed = switching.state
+          .next(
+            const LimitTargetRateArrived(
+              ExchangeCatalog.eur,
+              2,
+              Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+            ),
+          )
+          .state;
       final step = (failed as LimitTarget).step as TargetReady;
       expect(step.target.market, ExchangeCatalog.cad);
       expect(step.target.rate.currencyCode, 'CAD');
@@ -299,18 +299,14 @@ void main() {
     });
 
     test('a rate answer for another attempt or market is a stay', () {
-      final switching = transitionLimitFlow(
-        _target,
-        const LimitCurrencyChosen(ExchangeCatalog.eur),
-      ).state;
+      final switching = _target
+          .next(const LimitCurrencyChosen(ExchangeCatalog.eur))
+          .state;
       for (final stale in [
         LimitTargetRateArrived(ExchangeCatalog.eur, 1, Ok(_rate)),
         LimitTargetRateArrived(ExchangeCatalog.cad, 2, Ok(_rate)),
       ]) {
-        expect(
-          identical(transitionLimitFlow(switching, stale).state, switching),
-          isTrue,
-        );
+        expect(identical(switching.next(stale).state, switching), isTrue);
       }
     });
 
@@ -326,15 +322,14 @@ void main() {
       expect((failed.state as LimitTarget).step, isA<TargetFailed>());
       expect(
         identical(
-          transitionLimitFlow(failed.state, const LimitContinuePressed()).state,
+          failed.state.next(const LimitContinuePressed()).state,
           failed.state,
         ),
         isTrue,
       );
-      expect(
-        transitionLimitFlow(failed.state, const LimitRetryPressed()).effects,
-        [const LimitFetchTargetRate(ExchangeCatalog.cad, 2)],
-      );
+      expect(failed.state.next(const LimitRetryPressed()).effects, [
+        const LimitFetchTargetRate(ExchangeCatalog.cad, 2),
+      ]);
     });
 
     test('price and discount move together and stay within 1–99 %', () {
@@ -359,10 +354,7 @@ void main() {
     test('a currency without a funded balance is not offered', () {
       expect(
         identical(
-          transitionLimitFlow(
-            _target,
-            const LimitCurrencyChosen(ExchangeCatalog.mxn),
-          ).state,
+          _target.next(const LimitCurrencyChosen(ExchangeCatalog.mxn)).state,
           _target,
         ),
         isTrue,
@@ -377,8 +369,7 @@ void main() {
     });
 
     test('an app wallet reads its receive address', () {
-      final next = transitionLimitFlow(
-        _destination,
+      final next = _destination.next(
         const LimitDestinationChanged(PickChose(_liquidOption)),
       );
       expect(next.effects, [
@@ -387,8 +378,7 @@ void main() {
     });
 
     test('a typed Lightning address is validated', () {
-      final next = transitionLimitFlow(
-        _destination,
+      final next = _destination.next(
         const LimitDestinationChanged(PickTyped('me@example.com')),
       );
       expect(next.effects, [
@@ -400,8 +390,7 @@ void main() {
       final chosen = _apply(_destination, const [
         LimitDestinationChanged(PickChose(_btcOption)),
       ]).state;
-      final next = transitionLimitFlow(
-        chosen,
+      final next = chosen.next(
         const LimitDestinationChanged(PickChose(_liquidOption)),
       );
       expect(
@@ -413,7 +402,7 @@ void main() {
     test('Continue waits for a destination', () {
       expect(
         identical(
-          transitionLimitFlow(_destination, const LimitContinuePressed()).state,
+          _destination.next(const LimitContinuePressed()).state,
           _destination,
         ),
         isTrue,
@@ -503,12 +492,9 @@ void main() {
         const [LimitAmountChanged(AmountTyped('200')), LimitContinuePressed()],
       ).state;
       expect((detour as LimitAmount).amount, isA<AmountKycDetour>());
-      final returned = transitionLimitFlow(detour, const LimitKycReturned());
+      final returned = detour.next(const LimitKycReturned());
       expect(returned.effects, [const LimitReloadForDetour()]);
-      final reloaded = transitionLimitFlow(
-        detour,
-        LimitDetourLoaded(Ok(_ctx)),
-      ).state;
+      final reloaded = detour.next(LimitDetourLoaded(Ok(_ctx))).state;
       expect((reloaded as LimitAmount).amount, isA<AmountEditing>());
     });
   });
@@ -525,35 +511,34 @@ void main() {
     });
 
     test('a target at or above the new index price offers no Confirm', () {
-      final above = transitionLimitFlow(
-        _review,
-        LimitReviewRateArrived(1, Ok(limitOrderRate(indexPrice: 90000))),
-      ).state;
+      final above = _review
+          .next(
+            LimitReviewRateArrived(1, Ok(limitOrderRate(indexPrice: 90000))),
+          )
+          .state;
       expect((above as LimitReview).check, isA<ReviewTargetAbove>());
       expect(
-        identical(
-          transitionLimitFlow(above, const LimitConfirmPressed()).state,
-          above,
-        ),
+        identical(above.next(const LimitConfirmPressed()).state, above),
         isTrue,
       );
     });
 
     test('a failed read has a Retry with a new attempt', () {
-      final failed = transitionLimitFlow(
-        _review,
-        const LimitReviewRateArrived(
-          1,
-          Err(ExchangeUnreachableFailure('x', isNetwork: true)),
-        ),
-      ).state;
-      expect(transitionLimitFlow(failed, const LimitRetryPressed()).effects, [
+      final failed = _review
+          .next(
+            const LimitReviewRateArrived(
+              1,
+              Err(ExchangeUnreachableFailure('x', isNetwork: true)),
+            ),
+          )
+          .state;
+      expect(failed.next(const LimitRetryPressed()).effects, [
         const LimitFetchReviewRate(ExchangeCatalog.cad, 2),
       ]);
     });
 
     test('Confirm sends the create once', () {
-      final next = transitionLimitFlow(_live, const LimitConfirmPressed());
+      final next = _live.next(const LimitConfirmPressed());
       expect(next.effects, hasLength(1));
       final effect = next.effects.single as LimitConfirmEffect;
       final send = effect.effect as ConfirmSend<LimitOrderRequest>;
@@ -561,7 +546,7 @@ void main() {
       expect(send.target.draft.fiatAmount, 200);
       expect(
         identical(
-          transitionLimitFlow(next.state, const LimitConfirmPressed()).state,
+          next.state.next(const LimitConfirmPressed()).state,
           next.state,
         ),
         isTrue,
@@ -578,15 +563,12 @@ void main() {
         request: live.request.draft.journalRequest,
         recordedAt: DateTime.utc(2026, 11, 24),
       );
-      final next = transitionLimitFlow(
-        LimitReview(
-          LimitOpen(live.open.session, _context(entries: [entry])),
-          live.request,
-          live.attempt,
-          live.check,
-        ),
-        const LimitConfirmPressed(),
-      );
+      final next = LimitReview(
+        LimitOpen(live.open.session, _context(entries: [entry])),
+        live.request,
+        live.attempt,
+        live.check,
+      ).next(const LimitConfirmPressed());
       expect(
         (next.state as LimitCreating).confirm,
         isA<ConfirmVerifying<LimitOrderRequest, LimitOrder>>(),
@@ -596,8 +578,7 @@ void main() {
 
   group('create', () {
     test('an unknown outcome re-reads and never sends again', () {
-      final unknown = transitionLimitFlow(
-        _creating,
+      final unknown = _creating.next(
         const LimitConfirmChanged(
           ConfirmAnswered(
             1,
@@ -616,10 +597,7 @@ void main() {
         LimitBackPressed(),
       ]) {
         expect(
-          identical(
-            transitionLimitFlow(unknown.state, event).state,
-            unknown.state,
-          ),
+          identical(unknown.state.next(event).state, unknown.state),
           isTrue,
         );
       }
@@ -654,34 +632,32 @@ void main() {
     });
 
     test('Back from a refused create ends the flow', () {
-      final refused = transitionLimitFlow(
-        _creating,
-        const LimitConfirmChanged(
-          ConfirmAnswered(
-            1,
-            GateAdmitted(
-              Err(
-                ExchangeWriteRefusedFailure(
-                  ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
+      final refused = _creating
+          .next(
+            const LimitConfirmChanged(
+              ConfirmAnswered(
+                1,
+                GateAdmitted(
+                  Err(
+                    ExchangeWriteRefusedFailure(
+                      ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ).state;
+          )
+          .state;
       expect(
         (refused as LimitCreating).confirm,
         isA<ConfirmFailed<LimitOrderRequest, LimitOrder>>(),
       );
-      expect(
-        transitionLimitFlow(refused, const LimitBackPressed()).state,
-        isA<LimitClosed>(),
-      );
+      expect(refused.next(const LimitBackPressed()).state, isA<LimitClosed>());
     });
 
     test('the done page leaves with the order, and can open it', () {
       expect(
-        transitionLimitFlow(_doneState, const LimitViewOrderPressed()).state,
+        _doneState.next(const LimitViewOrderPressed()).state,
         isA<LimitClosed>()
             .having((s) => s.openDetails, 'openDetails', isTrue)
             .having((s) => s.created?.id, 'created', 'lo-1'),

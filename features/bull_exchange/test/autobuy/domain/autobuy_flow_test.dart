@@ -10,7 +10,7 @@ import 'package:primitives/primitives.dart';
 AutoBuyFlowState _apply(AutoBuyFlowState state, List<AutoBuyFlowEvent> events) {
   var next = state;
   for (final event in events) {
-    next = transitionAutoBuyFlow(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }
@@ -102,7 +102,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionAutoBuyFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -120,7 +120,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionAutoBuyFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -137,18 +137,19 @@ void main() {
   });
 
   test('a load failure is its own state with a Retry (AB-1)', () {
-    final failed = transitionAutoBuyFlow(
-      _loading,
-      const AutoBuyContextLoaded(
-        1,
-        Err(ExchangeUnreachableFailure('x', isNetwork: true)),
-      ),
-    ).state;
+    final failed = _loading
+        .next(
+          const AutoBuyContextLoaded(
+            1,
+            Err(ExchangeUnreachableFailure('x', isNetwork: true)),
+          ),
+        )
+        .state;
     expect(
       (failed as AutoBuyLoading).load,
       isA<ContextFailed<AutoBuyContext>>(),
     );
-    expect(transitionAutoBuyFlow(failed, const AutoBuyRetryPressed()).effects, [
+    expect(failed.next(const AutoBuyRetryPressed()).effects, [
       const AutoBuyLoadContext(2),
     ]);
   });
@@ -167,10 +168,7 @@ void main() {
     expect((restricted as AutoBuyIntro).gate, isA<RestrictionRestricted>());
     expect(
       identical(
-        transitionAutoBuyFlow(
-          restricted,
-          const AutoBuyGetStartedPressed(),
-        ).state,
+        restricted.next(const AutoBuyGetStartedPressed()).state,
         restricted,
       ),
       isTrue,
@@ -178,17 +176,16 @@ void main() {
   });
 
   test('KYC: returning reads the account again and passes when allowed', () {
-    final returned = transitionAutoBuyFlow(_kyc, const AutoBuyKycReturned());
+    final returned = _kyc.next(const AutoBuyKycReturned());
     expect(returned.effects, [const AutoBuyReloadForKyc()]);
     expect(
-      transitionAutoBuyFlow(returned.state, AutoBuyKycReloaded(Ok(_ctx))).state,
+      returned.state.next(AutoBuyKycReloaded(Ok(_ctx))).state,
       isA<AutoBuyWallets>(),
     );
     expect(
-      transitionAutoBuyFlow(
-        returned.state,
-        AutoBuyKycReloaded(Ok(autoBuyContext(groups: const []))),
-      ).state,
+      returned.state
+          .next(AutoBuyKycReloaded(Ok(autoBuyContext(groups: const []))))
+          .state,
       isA<AutoBuyKyc>(),
     );
   });
@@ -196,10 +193,7 @@ void main() {
   test('no saved wallet: Continue is a stay', () {
     expect(
       identical(
-        transitionAutoBuyFlow(
-          _wallets,
-          const AutoBuyWalletsContinued(DefaultWallets()),
-        ).state,
+        _wallets.next(const AutoBuyWalletsContinued(DefaultWallets())).state,
         _wallets,
       ),
       isTrue,
@@ -216,26 +210,22 @@ void main() {
       ]);
       expect((active as AutoBuyReview).alreadyActive, isTrue);
       expect(
-        identical(
-          transitionAutoBuyFlow(active, const AutoBuyActivatePressed()).state,
-          active,
-        ),
+        identical(active.next(const AutoBuyActivatePressed()).state, active),
         isTrue,
       );
       expect(
-        transitionAutoBuyFlow(active, const AutoBuyDonePressed()).state,
+        active.next(const AutoBuyDonePressed()).state,
         isA<AutoBuyClosed>(),
       );
     },
   );
 
   test('Activate sends once; an unknown outcome re-reads, then verifies', () {
-    final next = transitionAutoBuyFlow(_review, const AutoBuyActivatePressed());
+    final next = _review.next(const AutoBuyActivatePressed());
     expect(next.effects, [
       const AutoBuyConfirmEffect(ConfirmSend(AutoBuyTarget(enabled: true), 1)),
     ]);
-    final unknown = transitionAutoBuyFlow(
-      next.state,
+    final unknown = next.state.next(
       const AutoBuyConfirmChanged(
         ConfirmAnswered(
           1,
@@ -250,7 +240,7 @@ void main() {
     ]);
     expect(
       identical(
-        transitionAutoBuyFlow(unknown.state, const AutoBuyBackPressed()).state,
+        unknown.state.next(const AutoBuyBackPressed()).state,
         unknown.state,
       ),
       isTrue,
@@ -280,10 +270,7 @@ void main() {
         const AutoBuyGetStartedPressed(),
         const AutoBuyWalletsContinued(autoBuyWallets),
       ]);
-      final next = transitionAutoBuyFlow(
-        review,
-        const AutoBuyActivatePressed(),
-      );
+      final next = review.next(const AutoBuyActivatePressed());
       expect(
         (next.state as AutoBuyActivating).confirm,
         isA<ConfirmVerifying<AutoBuyTarget, bool>>(),

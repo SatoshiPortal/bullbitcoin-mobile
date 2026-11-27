@@ -14,6 +14,127 @@ sealed class LimitOrdersListState {
   const LimitOrdersListState();
 
   int get attempt;
+
+  LimitOrdersListNext next(LimitOrdersListEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        ListLoading(:final attempt),
+        ListLoaded(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        LimitOrdersListNext(switch (read) {
+          Ok(:final value) => ListShown(value, attempt),
+          Err(failure: ExchangeSessionRejectedFailure()) => ListSignedOut(
+            attempt,
+          ),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(
+            failure: ExchangeMalformedFailure(),
+          ) => ListFailed(attempt, ReadProblem.of(read)!),
+        }),
+      (
+        ListLoading(),
+        ListLoaded() ||
+            ListRefreshRequested() ||
+            ListRetryPressed() ||
+            ListCancelAllPressed() ||
+            ListCancelAllAnswered(),
+      ) =>
+        LimitOrdersListNext.stay(state),
+      (
+        ListFailed(:final attempt) || ListSignedOut(:final attempt),
+        ListRetryPressed() || ListRefreshRequested(),
+      ) =>
+        _reload(attempt),
+      (
+        ListFailed() || ListSignedOut(),
+        ListLoaded() || ListCancelAllPressed() || ListCancelAllAnswered(),
+      ) =>
+        LimitOrdersListNext.stay(state),
+      (
+        ListShown(:final orders, :final attempt),
+        ListRefreshRequested() || ListRetryPressed(),
+      ) =>
+        _refresh(orders, attempt),
+      (ListShown(:final orders, :final attempt), ListCancelAllPressed())
+          when orders.isNotEmpty =>
+        LimitOrdersListNext(ListCancellingAll(orders, attempt + 1), [
+          ListCancelAll(attempt + 1),
+        ]),
+      (
+        ListShown(),
+        ListLoaded() || ListCancelAllPressed() || ListCancelAllAnswered(),
+      ) =>
+        LimitOrdersListNext.stay(state),
+      (
+        ListRefreshing(:final orders, :final attempt, :final pending),
+        ListLoaded(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        LimitOrdersListNext(switch (read) {
+          Ok(:final value) => ListShown(
+            value,
+            attempt,
+            problem: value.isEmpty ? null : pending,
+          ),
+          Err(failure: ExchangeSessionRejectedFailure()) => ListSignedOut(
+            attempt,
+          ),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(failure: ExchangeMalformedFailure()) => ListShown(
+            orders,
+            attempt,
+            problem: ListRefreshFailed(ReadProblem.of(read)!),
+          ),
+        }),
+      // A change seen while reading: the read in flight may predate it.
+      (
+        ListRefreshing(:final orders, :final attempt, :final pending),
+        ListRefreshRequested(),
+      ) =>
+        _refresh(orders, attempt, pending: pending),
+      (
+        ListRefreshing(),
+        ListLoaded() ||
+            ListRetryPressed() ||
+            ListCancelAllPressed() ||
+            ListCancelAllAnswered(),
+      ) =>
+        LimitOrdersListNext.stay(state),
+      (
+        ListCancellingAll(:final orders, :final attempt),
+        ListCancelAllAnswered(attempt: final answered, :final answer),
+      )
+          when answered == attempt =>
+        switch (answer) {
+          CancelAllDone() => _refresh(const [], attempt),
+          CancelAllGateRefused(:final refusal) => LimitOrdersListNext(
+            ListShown(orders, attempt, problem: ListCancelAllRefused(refusal)),
+          ),
+          CancelAllUnsure() => _refresh(
+            orders,
+            attempt,
+            pending: const ListCancelAllNotApplied(),
+          ),
+          CancelAllSessionRejected() => LimitOrdersListNext(
+            ListSignedOut(attempt),
+          ),
+        },
+      // The list is read again once the cancel-all answers.
+      (
+        ListCancellingAll(),
+        ListLoaded() ||
+            ListRefreshRequested() ||
+            ListRetryPressed() ||
+            ListCancelAllPressed() ||
+            ListCancelAllAnswered(),
+      ) =>
+        LimitOrdersListNext.stay(state),
+    };
+  }
 }
 
 /// Why the shown list may not be current.
@@ -278,118 +399,3 @@ LimitOrdersListNext _refresh(
 
 LimitOrdersListNext _reload(int attempt) =>
     LimitOrdersListNext(ListLoading(attempt + 1), [ListFetch(attempt + 1)]);
-
-LimitOrdersListNext transitionLimitOrdersList(
-  LimitOrdersListState state,
-  LimitOrdersListEvent event,
-) => switch ((state, event)) {
-  (
-    ListLoading(:final attempt),
-    ListLoaded(attempt: final answered, :final read),
-  )
-      when answered == attempt =>
-    LimitOrdersListNext(switch (read) {
-      Ok(:final value) => ListShown(value, attempt),
-      Err(failure: ExchangeSessionRejectedFailure()) => ListSignedOut(attempt),
-      Err(failure: ExchangeMissingFailure()) ||
-      Err(failure: ExchangeUnreachableFailure()) ||
-      Err(
-        failure: ExchangeMalformedFailure(),
-      ) => ListFailed(attempt, ReadProblem.of(read)!),
-    }),
-  (
-    ListLoading(),
-    ListLoaded() ||
-        ListRefreshRequested() ||
-        ListRetryPressed() ||
-        ListCancelAllPressed() ||
-        ListCancelAllAnswered(),
-  ) =>
-    LimitOrdersListNext.stay(state),
-  (
-    ListFailed(:final attempt) || ListSignedOut(:final attempt),
-    ListRetryPressed() || ListRefreshRequested(),
-  ) =>
-    _reload(attempt),
-  (
-    ListFailed() || ListSignedOut(),
-    ListLoaded() || ListCancelAllPressed() || ListCancelAllAnswered(),
-  ) =>
-    LimitOrdersListNext.stay(state),
-  (
-    ListShown(:final orders, :final attempt),
-    ListRefreshRequested() || ListRetryPressed(),
-  ) =>
-    _refresh(orders, attempt),
-  (ListShown(:final orders, :final attempt), ListCancelAllPressed())
-      when orders.isNotEmpty =>
-    LimitOrdersListNext(ListCancellingAll(orders, attempt + 1), [
-      ListCancelAll(attempt + 1),
-    ]),
-  (
-    ListShown(),
-    ListLoaded() || ListCancelAllPressed() || ListCancelAllAnswered(),
-  ) =>
-    LimitOrdersListNext.stay(state),
-  (
-    ListRefreshing(:final orders, :final attempt, :final pending),
-    ListLoaded(attempt: final answered, :final read),
-  )
-      when answered == attempt =>
-    LimitOrdersListNext(switch (read) {
-      Ok(:final value) => ListShown(
-        value,
-        attempt,
-        problem: value.isEmpty ? null : pending,
-      ),
-      Err(failure: ExchangeSessionRejectedFailure()) => ListSignedOut(attempt),
-      Err(failure: ExchangeMissingFailure()) ||
-      Err(failure: ExchangeUnreachableFailure()) ||
-      Err(failure: ExchangeMalformedFailure()) => ListShown(
-        orders,
-        attempt,
-        problem: ListRefreshFailed(ReadProblem.of(read)!),
-      ),
-    }),
-  // A change seen while reading: the read in flight may predate it.
-  (
-    ListRefreshing(:final orders, :final attempt, :final pending),
-    ListRefreshRequested(),
-  ) =>
-    _refresh(orders, attempt, pending: pending),
-  (
-    ListRefreshing(),
-    ListLoaded() ||
-        ListRetryPressed() ||
-        ListCancelAllPressed() ||
-        ListCancelAllAnswered(),
-  ) =>
-    LimitOrdersListNext.stay(state),
-  (
-    ListCancellingAll(:final orders, :final attempt),
-    ListCancelAllAnswered(attempt: final answered, :final answer),
-  )
-      when answered == attempt =>
-    switch (answer) {
-      CancelAllDone() => _refresh(const [], attempt),
-      CancelAllGateRefused(:final refusal) => LimitOrdersListNext(
-        ListShown(orders, attempt, problem: ListCancelAllRefused(refusal)),
-      ),
-      CancelAllUnsure() => _refresh(
-        orders,
-        attempt,
-        pending: const ListCancelAllNotApplied(),
-      ),
-      CancelAllSessionRejected() => LimitOrdersListNext(ListSignedOut(attempt)),
-    },
-  // The list is read again once the cancel-all answers.
-  (
-    ListCancellingAll(),
-    ListLoaded() ||
-        ListRefreshRequested() ||
-        ListRetryPressed() ||
-        ListCancelAllPressed() ||
-        ListCancelAllAnswered(),
-  ) =>
-    LimitOrdersListNext.stay(state),
-};

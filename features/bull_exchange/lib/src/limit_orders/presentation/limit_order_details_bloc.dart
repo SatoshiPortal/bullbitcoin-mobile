@@ -8,7 +8,7 @@ import 'package:bull_exchange/src/limit_orders/domain/usecases/get_limit_order_u
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionLimitDetails]: applies events one at a time, emits
+/// Shell of [LimitDetailsState.next]: applies events one at a time, emits
 /// the new state and runs each effect through its use case with the
 /// details' session, each answer tagged with its attempt.
 class LimitDetailsBloc extends Bloc<LimitDetailsEvent, LimitDetailsState> {
@@ -47,7 +47,7 @@ class LimitDetailsBloc extends Bloc<LimitDetailsEvent, LimitDetailsState> {
   late final StreamSubscription<ExchangeAccess> _access;
 
   void _onEvent(LimitDetailsEvent event, Emitter<LimitDetailsState> emit) {
-    final next = transitionLimitDetails(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

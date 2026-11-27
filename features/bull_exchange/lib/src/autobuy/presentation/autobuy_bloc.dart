@@ -10,7 +10,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionAutoBuyFlow]: runs each effect through its use case
+/// Shell of [AutoBuyFlowState.next]: runs each effect through its use case
 /// with the flow's session.
 class AutoBuyFlowBloc extends Bloc<AutoBuyFlowEvent, AutoBuyFlowState> {
   AutoBuyFlowBloc({
@@ -52,7 +52,7 @@ class AutoBuyFlowBloc extends Bloc<AutoBuyFlowEvent, AutoBuyFlowState> {
   late final StreamSubscription<ExchangeAccess> _access;
 
   void _onEvent(AutoBuyFlowEvent event, Emitter<AutoBuyFlowState> emit) {
-    final next = transitionAutoBuyFlow(state, event);
+    final next = state.next(event);
     if (identical(next.state, state) && next.effects.isEmpty) return;
     if (!identical(next.state, state)) emit(next.state);
     _run(next.effects);
@@ -97,7 +97,7 @@ class AutoBuyFlowBloc extends Bloc<AutoBuyFlowEvent, AutoBuyFlowState> {
   }
 }
 
-/// Shell of [transitionAutoBuySwitch]. Without a session the switch only
+/// Shell of [AutoBuySwitchState.next]. Without a session the switch only
 /// shows the summary.
 class AutoBuySwitchBloc extends Bloc<AutoBuySwitchEvent, AutoBuySwitchState> {
   AutoBuySwitchBloc({
@@ -119,7 +119,7 @@ class AutoBuySwitchBloc extends Bloc<AutoBuySwitchEvent, AutoBuySwitchState> {
 
   void _onEvent(AutoBuySwitchEvent event, Emitter<AutoBuySwitchState> emit) {
     if (_session == null && event is SwitchDeactivatePressed) return;
-    final next = transitionAutoBuySwitch(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

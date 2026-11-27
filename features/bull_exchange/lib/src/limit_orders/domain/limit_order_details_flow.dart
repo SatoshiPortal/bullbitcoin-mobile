@@ -12,6 +12,92 @@ import 'package:primitives/primitives.dart';
 @immutable
 sealed class LimitDetailsState {
   const LimitDetailsState();
+
+  LimitDetailsNext next(LimitDetailsEvent event) {
+    final state = this;
+    if (event case DetailsSessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? LimitDetailsNext(DetailsSessionEnded(changed: _changed(state)))
+          : LimitDetailsNext.stay(state);
+    }
+    return switch ((state, event)) {
+      (
+        DetailsLoading(:final session, :final orderId, :final attempt),
+        DetailsLoaded(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        switch (read) {
+          Ok(value: final order) => LimitDetailsNext(
+            DetailsShown(session, CancelIdle(order)),
+          ),
+          Err(failure: ExchangeSessionRejectedFailure()) =>
+            const LimitDetailsNext(DetailsSessionEnded(changed: false)),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(failure: ExchangeMalformedFailure()) => LimitDetailsNext(
+            DetailsFailed(session, orderId, attempt, ReadProblem.of(read)!),
+          ),
+        },
+      (DetailsLoading() || DetailsFailed(), DetailsBackPressed()) =>
+        const LimitDetailsNext(DetailsClosed(changed: false)),
+      (
+        DetailsLoading(),
+        DetailsLoaded() || DetailsRetryPressed() || DetailsCancelChanged(),
+      ) =>
+        LimitDetailsNext.stay(state),
+      (
+        DetailsFailed(:final session, :final orderId, :final attempt),
+        DetailsRetryPressed(),
+      ) =>
+        LimitDetailsNext(DetailsLoading(session, orderId, attempt + 1), [
+          DetailsRead(orderId, attempt + 1),
+        ]),
+      (DetailsFailed(), DetailsLoaded() || DetailsCancelChanged()) =>
+        LimitDetailsNext.stay(state),
+      (
+        DetailsShown(:final session, :final cancel),
+        DetailsCancelChanged(:final event),
+      ) =>
+        _stepped(state, cancel.next(event), cancel, session),
+      (DetailsShown(:final session, :final cancel), DetailsRetryPressed()) =>
+        _stepped(
+          state,
+          cancel.next(const CancelRetryPressed()),
+          cancel,
+          session,
+        ),
+      (DetailsShown(:final cancel), DetailsBackPressed()) =>
+        limitCancelRunning(cancel)
+            ? LimitDetailsNext.stay(state)
+            : LimitDetailsNext(DetailsClosed(changed: _changed(state))),
+      (DetailsShown(), DetailsLoaded()) => LimitDetailsNext.stay(state),
+      (DetailsSessionEnded(:final changed), DetailsBackPressed()) =>
+        LimitDetailsNext(DetailsClosed(changed: changed)),
+      (
+        DetailsSessionEnded(),
+        DetailsLoaded() || DetailsRetryPressed() || DetailsCancelChanged(),
+      ) =>
+        LimitDetailsNext.stay(state),
+      (
+        DetailsClosed(),
+        DetailsLoaded() ||
+            DetailsRetryPressed() ||
+            DetailsCancelChanged() ||
+            DetailsBackPressed(),
+      ) =>
+        LimitDetailsNext.stay(state),
+      (
+        DetailsLoading() ||
+            DetailsFailed() ||
+            DetailsShown() ||
+            DetailsSessionEnded() ||
+            DetailsClosed(),
+        DetailsSessionChanged(),
+      ) =>
+        LimitDetailsNext.stay(state),
+    };
+  }
 }
 
 final class DetailsLoading extends LimitDetailsState {
@@ -209,94 +295,6 @@ LimitDetailsNext _cancelNext(ExchangeSession session, LimitCancelNext next) =>
         for (final effect in next.effects) DetailsCancelEffect(effect),
       ]),
     };
-
-LimitDetailsNext transitionLimitDetails(
-  LimitDetailsState state,
-  LimitDetailsEvent event,
-) {
-  if (event case DetailsSessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? LimitDetailsNext(DetailsSessionEnded(changed: _changed(state)))
-        : LimitDetailsNext.stay(state);
-  }
-  return switch ((state, event)) {
-    (
-      DetailsLoading(:final session, :final orderId, :final attempt),
-      DetailsLoaded(attempt: final answered, :final read),
-    )
-        when answered == attempt =>
-      switch (read) {
-        Ok(value: final order) => LimitDetailsNext(
-          DetailsShown(session, CancelIdle(order)),
-        ),
-        Err(failure: ExchangeSessionRejectedFailure()) =>
-          const LimitDetailsNext(DetailsSessionEnded(changed: false)),
-        Err(failure: ExchangeMissingFailure()) ||
-        Err(failure: ExchangeUnreachableFailure()) ||
-        Err(failure: ExchangeMalformedFailure()) => LimitDetailsNext(
-          DetailsFailed(session, orderId, attempt, ReadProblem.of(read)!),
-        ),
-      },
-    (DetailsLoading() || DetailsFailed(), DetailsBackPressed()) =>
-      const LimitDetailsNext(DetailsClosed(changed: false)),
-    (
-      DetailsLoading(),
-      DetailsLoaded() || DetailsRetryPressed() || DetailsCancelChanged(),
-    ) =>
-      LimitDetailsNext.stay(state),
-    (
-      DetailsFailed(:final session, :final orderId, :final attempt),
-      DetailsRetryPressed(),
-    ) =>
-      LimitDetailsNext(DetailsLoading(session, orderId, attempt + 1), [
-        DetailsRead(orderId, attempt + 1),
-      ]),
-    (DetailsFailed(), DetailsLoaded() || DetailsCancelChanged()) =>
-      LimitDetailsNext.stay(state),
-    (
-      DetailsShown(:final session, :final cancel),
-      DetailsCancelChanged(:final event),
-    ) =>
-      _stepped(state, transitionLimitCancel(cancel, event), cancel, session),
-    (DetailsShown(:final session, :final cancel), DetailsRetryPressed()) =>
-      _stepped(
-        state,
-        transitionLimitCancel(cancel, const CancelRetryPressed()),
-        cancel,
-        session,
-      ),
-    (DetailsShown(:final cancel), DetailsBackPressed()) =>
-      limitCancelRunning(cancel)
-          ? LimitDetailsNext.stay(state)
-          : LimitDetailsNext(DetailsClosed(changed: _changed(state))),
-    (DetailsShown(), DetailsLoaded()) => LimitDetailsNext.stay(state),
-    (DetailsSessionEnded(:final changed), DetailsBackPressed()) =>
-      LimitDetailsNext(DetailsClosed(changed: changed)),
-    (
-      DetailsSessionEnded(),
-      DetailsLoaded() || DetailsRetryPressed() || DetailsCancelChanged(),
-    ) =>
-      LimitDetailsNext.stay(state),
-    (
-      DetailsClosed(),
-      DetailsLoaded() ||
-          DetailsRetryPressed() ||
-          DetailsCancelChanged() ||
-          DetailsBackPressed(),
-    ) =>
-      LimitDetailsNext.stay(state),
-    (
-      DetailsLoading() ||
-          DetailsFailed() ||
-          DetailsShown() ||
-          DetailsSessionEnded() ||
-          DetailsClosed(),
-      DetailsSessionChanged(),
-    ) =>
-      LimitDetailsNext.stay(state),
-  };
-}
 
 LimitDetailsNext _stepped(
   LimitDetailsState state,

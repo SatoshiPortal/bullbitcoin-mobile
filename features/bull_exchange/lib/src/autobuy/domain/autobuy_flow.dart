@@ -24,6 +24,26 @@ sealed class AutoBuyFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  AutoBuyFlowNext next(AutoBuyFlowEvent event) {
+    final state = this;
+    if (event case AutoBuySessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? _ended
+          : AutoBuyFlowNext.stay(state);
+    }
+    return switch (state) {
+      AutoBuyLoading() => _loading(state, event),
+      AutoBuyIntro() => _intro(state, event),
+      AutoBuyKyc() => _kyc(state, event),
+      AutoBuyWallets() => _wallets(state, event),
+      AutoBuyReview() => _review(state, event),
+      AutoBuyActivating() => _activating(state, event),
+      AutoBuyDone() || AutoBuySessionEnded() => _end(state, event),
+      AutoBuyClosed() => AutoBuyFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -370,28 +390,6 @@ AutoBuyFlowNext autoBuyFlowStart(ExchangeSession? session) => switch (session) {
   ),
   null => _ended,
 };
-
-AutoBuyFlowNext transitionAutoBuyFlow(
-  AutoBuyFlowState state,
-  AutoBuyFlowEvent event,
-) {
-  if (event case AutoBuySessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? _ended
-        : AutoBuyFlowNext.stay(state);
-  }
-  return switch (state) {
-    AutoBuyLoading() => _loading(state, event),
-    AutoBuyIntro() => _intro(state, event),
-    AutoBuyKyc() => _kyc(state, event),
-    AutoBuyWallets() => _wallets(state, event),
-    AutoBuyReview() => _review(state, event),
-    AutoBuyActivating() => _activating(state, event),
-    AutoBuyDone() || AutoBuySessionEnded() => _end(state, event),
-    AutoBuyClosed() => AutoBuyFlowNext.stay(state),
-  };
-}
 
 ExchangeSession? _sessionOf(AutoBuyFlowState state) => switch (state) {
   AutoBuyLoading(:final session) => session,

@@ -16,7 +16,7 @@ LimitDetailsState _apply(
 ) {
   var next = state;
   for (final event in events) {
-    next = transitionLimitDetails(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }
@@ -85,7 +85,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionLimitDetails(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -102,7 +102,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionLimitDetails(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -118,16 +118,15 @@ void main() {
     expect(limitDetailsStart(limitSession, 'lo-1').effects, [
       const DetailsRead('lo-1', 1),
     ]);
-    expect(
-      transitionLimitDetails(_failed, const DetailsRetryPressed()).effects,
-      [const DetailsRead('lo-1', 2)],
-    );
+    expect(_failed.next(const DetailsRetryPressed()).effects, [
+      const DetailsRead('lo-1', 2),
+    ]);
   });
 
   test('Back while the cancel runs is a stay', () {
     expect(
       identical(
-        transitionLimitDetails(_cancelling, const DetailsBackPressed()).state,
+        _cancelling.next(const DetailsBackPressed()).state,
         _cancelling,
       ),
       isTrue,
@@ -136,25 +135,26 @@ void main() {
 
   test('leaving after a cancel says the order changed', () {
     expect(
-      transitionLimitDetails(_cancelledShown, const DetailsBackPressed()).state,
+      _cancelledShown.next(const DetailsBackPressed()).state,
       const DetailsClosed(changed: true),
     );
     expect(
-      transitionLimitDetails(_shown, const DetailsBackPressed()).state,
+      _shown.next(const DetailsBackPressed()).state,
       const DetailsClosed(changed: false),
     );
   });
 
   test('a session ended during the cancel reloads the list on leaving', () {
-    final ended = transitionLimitDetails(
-      _cancelling,
-      const DetailsCancelChanged(
-        CancelAnswered(1, CancelAnsweredSessionRejected()),
-      ),
-    ).state;
+    final ended = _cancelling
+        .next(
+          const DetailsCancelChanged(
+            CancelAnswered(1, CancelAnsweredSessionRejected()),
+          ),
+        )
+        .state;
     expect(ended, const DetailsSessionEnded(changed: true));
     expect(
-      transitionLimitDetails(ended, const DetailsBackPressed()).state,
+      ended.next(const DetailsBackPressed()).state,
       const DetailsClosed(changed: true),
     );
   });

@@ -16,7 +16,7 @@ import 'package:primitives/primitives.dart';
 LimitFlowState _apply(LimitFlowState state, List<LimitFlowEvent> events) {
   var next = state;
   for (final event in events) {
-    next = transitionLimitFlow(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }

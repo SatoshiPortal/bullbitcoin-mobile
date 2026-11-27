@@ -10,16 +10,15 @@ import '../../autobuy_fixtures.dart';
 
 /// The activate the real machine sends from a loaded context.
 ConfirmSend<AutoBuyTarget> _send() {
-  var next = transitionAutoBuyFlow(
-    autoBuyFlowStart(autoBuySession).state,
-    AutoBuyContextLoaded(1, Ok(autoBuyContext())),
-  );
+  var next = (autoBuyFlowStart(
+    autoBuySession,
+  ).state).next(AutoBuyContextLoaded(1, Ok(autoBuyContext())));
   for (final event in const <AutoBuyFlowEvent>[
     AutoBuyGetStartedPressed(),
     AutoBuyWalletsContinued(autoBuyWallets),
     AutoBuyActivatePressed(),
   ]) {
-    next = transitionAutoBuyFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next.effects.whereType<AutoBuyConfirmEffect>().single.effect
       as ConfirmSend<AutoBuyTarget>;

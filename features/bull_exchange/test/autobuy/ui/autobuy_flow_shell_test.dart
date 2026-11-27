@@ -15,7 +15,7 @@ import 'package:primitives/primitives.dart';
 AutoBuyFlowState _apply(AutoBuyFlowState state, List<AutoBuyFlowEvent> events) {
   var next = state;
   for (final event in events) {
-    next = transitionAutoBuyFlow(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }

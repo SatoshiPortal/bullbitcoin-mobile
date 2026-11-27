@@ -28,6 +28,29 @@ sealed class LimitFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  LimitFlowNext next(LimitFlowEvent event) {
+    final state = this;
+    if (event case LimitSessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? _ended
+          : LimitFlowNext.stay(state);
+    }
+    return switch (state) {
+      LimitLoading() => _loading(state, event),
+      LimitNoFundedBalance() => _noBalance(state, event),
+      LimitIntro() => _intro(state, event),
+      LimitTarget() => _target(state, event),
+      LimitDestination() => _destination(state, event),
+      LimitAmount() => _amount(state, event),
+      LimitReview() => _review(state, event),
+      LimitCreating() => _creating(state, event),
+      LimitDone() => _done(state, event),
+      LimitSessionEnded() => _sessionEnded(state, event),
+      LimitClosed() => LimitFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -802,28 +825,6 @@ LimitFlowNext limitFlowStart(ExchangeSession? session) => switch (session) {
   ),
   null => _ended,
 };
-
-LimitFlowNext transitionLimitFlow(LimitFlowState state, LimitFlowEvent event) {
-  if (event case LimitSessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? _ended
-        : LimitFlowNext.stay(state);
-  }
-  return switch (state) {
-    LimitLoading() => _loading(state, event),
-    LimitNoFundedBalance() => _noBalance(state, event),
-    LimitIntro() => _intro(state, event),
-    LimitTarget() => _target(state, event),
-    LimitDestination() => _destination(state, event),
-    LimitAmount() => _amount(state, event),
-    LimitReview() => _review(state, event),
-    LimitCreating() => _creating(state, event),
-    LimitDone() => _done(state, event),
-    LimitSessionEnded() => _sessionEnded(state, event),
-    LimitClosed() => LimitFlowNext.stay(state),
-  };
-}
 
 ExchangeSession? _sessionOf(LimitFlowState state) => switch (state) {
   LimitLoading(:final session) => session,

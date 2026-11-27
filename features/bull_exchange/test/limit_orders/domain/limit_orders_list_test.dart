@@ -17,7 +17,7 @@ LimitOrdersListState _apply(
 ) {
   var next = state;
   for (final event in events) {
-    next = transitionLimitOrdersList(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }
@@ -80,7 +80,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionLimitOrdersList(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -97,7 +97,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionLimitOrdersList(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -112,16 +112,13 @@ void main() {
 
   test('a list read that started before a cancel-all is a stay (LIM-7)', () {
     final refreshing = _refreshing as ListRefreshing;
-    final cancelling = transitionLimitOrdersList(
-      ListShown(refreshing.orders, refreshing.attempt),
-      const ListCancelAllPressed(),
-    ).state;
+    final cancelling = ListShown(
+      refreshing.orders,
+      refreshing.attempt,
+    ).next(const ListCancelAllPressed()).state;
     expect(
       identical(
-        transitionLimitOrdersList(
-          cancelling,
-          ListLoaded(refreshing.attempt, Ok(_two)),
-        ).state,
+        cancelling.next(ListLoaded(refreshing.attempt, Ok(_two))).state,
         cancelling,
       ),
       isTrue,
@@ -131,8 +128,7 @@ void main() {
   test('a cancel-all reads the list again after any answer', () {
     final cancelling = _cancelling as ListCancellingAll;
     for (final answer in const [CancelAllDone(), CancelAllUnsure()]) {
-      final next = transitionLimitOrdersList(
-        cancelling,
+      final next = cancelling.next(
         ListCancelAllAnswered(cancelling.attempt, answer),
       );
       expect(next.state, isA<ListRefreshing>());
@@ -142,14 +138,14 @@ void main() {
 
   test('orders left after an unsure cancel-all are said so', () {
     final cancelling = _cancelling as ListCancellingAll;
-    final refreshing = transitionLimitOrdersList(
-      cancelling,
-      ListCancelAllAnswered(cancelling.attempt, const CancelAllUnsure()),
-    ).state;
-    final shown = transitionLimitOrdersList(
-      refreshing,
-      ListLoaded(refreshing.attempt, Ok(_two)),
-    ).state;
+    final refreshing = cancelling
+        .next(
+          ListCancelAllAnswered(cancelling.attempt, const CancelAllUnsure()),
+        )
+        .state;
+    final shown = refreshing
+        .next(ListLoaded(refreshing.attempt, Ok(_two)))
+        .state;
     expect(
       shown,
       isA<ListShown>().having(
@@ -163,13 +159,14 @@ void main() {
   test('a refused cancel-all keeps the orders and says why', () {
     final cancelling = _cancelling as ListCancellingAll;
     expect(
-      transitionLimitOrdersList(
-        cancelling,
-        ListCancelAllAnswered(
-          cancelling.attempt,
-          const CancelAllGateRefused(WriteGateJournalUnreadable()),
-        ),
-      ).state,
+      cancelling
+          .next(
+            ListCancelAllAnswered(
+              cancelling.attempt,
+              const CancelAllGateRefused(WriteGateJournalUnreadable()),
+            ),
+          )
+          .state,
       isA<ListShown>().having(
         (s) => s.problem,
         'problem',
@@ -181,13 +178,14 @@ void main() {
   test('a failed refresh keeps the orders shown', () {
     final refreshing = _refreshing as ListRefreshing;
     expect(
-      transitionLimitOrdersList(
-        refreshing,
-        ListLoaded(
-          refreshing.attempt,
-          const Err(ExchangeUnreachableFailure('down', isNetwork: true)),
-        ),
-      ).state,
+      refreshing
+          .next(
+            ListLoaded(
+              refreshing.attempt,
+              const Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+            ),
+          )
+          .state,
       isA<ListShown>()
           .having((s) => s.orders, 'orders', same(_two))
           .having((s) => s.problem, 'problem', isA<ListRefreshFailed>()),

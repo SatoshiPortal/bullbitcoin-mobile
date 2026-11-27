@@ -13,7 +13,7 @@ final _executed = limitOrder(status: LimitOrderStatus.executed);
 LimitCancelState _apply(LimitCancelState state, List<LimitCancelEvent> events) {
   var next = state;
   for (final event in events) {
-    next = transitionLimitCancel(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }
@@ -70,7 +70,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionLimitCancel(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -87,7 +87,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionLimitCancel(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -101,35 +101,23 @@ void main() {
   });
 
   test('Cancel sends once, with a new attempt each time', () {
-    final next = transitionLimitCancel(_idle, const CancelPressed());
+    final next = _idle.next(const CancelPressed());
     expect(next.effects, [CancelSend(_active.id, 1)]);
     expect(
-      identical(
-        transitionLimitCancel(next.state, const CancelPressed()).state,
-        next.state,
-      ),
+      identical(next.state.next(const CancelPressed()).state, next.state),
       isTrue,
     );
   });
 
   test('a non-active order offers no cancel', () {
     final idle = CancelIdle(_executed);
-    expect(
-      identical(transitionLimitCancel(idle, const CancelPressed()).state, idle),
-      isTrue,
-    );
+    expect(identical(idle.next(const CancelPressed()).state, idle), isTrue);
   });
 
   test('an unsure answer re-reads; the re-read decides (LIM-3)', () {
-    final next = transitionLimitCancel(
-      _sending,
-      const CancelAnswered(1, CancelAnsweredUnsure()),
-    );
+    final next = _sending.next(const CancelAnswered(1, CancelAnsweredUnsure()));
     expect(next.effects, [CancelRead(_active.id, 1)]);
-    final executed = transitionLimitCancel(
-      next.state,
-      CancelChecked(1, Ok(_executed)),
-    ).state;
+    final executed = next.state.next(CancelChecked(1, Ok(_executed))).state;
     expect(
       executed,
       isA<CancelIdle>()
@@ -139,13 +127,14 @@ void main() {
   });
 
   test('a gate refusal keeps the order and says why', () {
-    final next = transitionLimitCancel(
-      _sending,
-      const CancelAnswered(
-        1,
-        CancelAnsweredGateRefused(WriteGateBusy(FinancialWriteKind.payin)),
-      ),
-    ).state;
+    final next = _sending
+        .next(
+          const CancelAnswered(
+            1,
+            CancelAnsweredGateRefused(WriteGateBusy(FinancialWriteKind.payin)),
+          ),
+        )
+        .state;
     expect(
       next,
       isA<CancelIdle>().having(
@@ -154,7 +143,7 @@ void main() {
         isA<CancelGateProblem>(),
       ),
     );
-    expect(transitionLimitCancel(next, const CancelPressed()).effects, [
+    expect(next.next(const CancelPressed()).effects, [
       CancelSend(_active.id, 2),
     ]);
   });
@@ -162,10 +151,7 @@ void main() {
   test('an answer for another attempt is a stay', () {
     expect(
       identical(
-        transitionLimitCancel(
-          _sending,
-          CancelAnswered(2, CancelAnsweredOrder(_cancelled)),
-        ).state,
+        _sending.next(CancelAnswered(2, CancelAnsweredOrder(_cancelled))).state,
         _sending,
       ),
       isTrue,

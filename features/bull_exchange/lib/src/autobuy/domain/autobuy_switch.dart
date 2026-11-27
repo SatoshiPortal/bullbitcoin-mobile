@@ -14,6 +14,59 @@ sealed class AutoBuySwitchState {
 
   bool get active;
   bool get restricted;
+
+  AutoBuySwitchNext next(AutoBuySwitchEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        SwitchShown(:final active, :final restricted, :final problem),
+        SwitchSummaryChanged(active: final now, restricted: final r),
+      ) =>
+        now == active && r == restricted
+            ? StepNext.stay(state)
+            : StepNext(
+                SwitchShown(active: now, restricted: r, problem: problem),
+              ),
+      (SwitchShown(:final active), SwitchDeactivatePressed()) when active =>
+        _confirmNext(state, serverConfirmStart<AutoBuyTarget, bool>(_off)),
+      (
+        SwitchShown(),
+        SwitchDeactivatePressed() ||
+            SwitchRetryPressed() ||
+            SwitchConfirmChanged(),
+      ) =>
+        StepNext.stay(state),
+      (
+        final SwitchDeactivating deactivating,
+        SwitchConfirmChanged(:final event),
+      ) =>
+        _stepped(
+          deactivating,
+          deactivating.confirm.next(autoBuyWritePolicy, event),
+        ),
+      (final SwitchDeactivating deactivating, SwitchRetryPressed()) => _stepped(
+        deactivating,
+        deactivating.confirm.next(
+          autoBuyWritePolicy,
+          const ConfirmRetryPressed(),
+        ),
+      ),
+      // A write is in flight or unverified: the summary may predate it.
+      (
+        SwitchDeactivating(),
+        SwitchSummaryChanged() || SwitchDeactivatePressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        SwitchSessionEnded(),
+        SwitchSummaryChanged() ||
+            SwitchDeactivatePressed() ||
+            SwitchRetryPressed() ||
+            SwitchConfirmChanged(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 /// Why the last deactivation did not take effect, shown under the switch.
@@ -215,46 +268,6 @@ AutoBuySwitchNext _confirmNext(
     SwitchDeactivating(state.active, state.restricted, next.state),
     [for (final effect in next.effects) SwitchConfirmEffect(effect)],
   ),
-};
-
-AutoBuySwitchNext transitionAutoBuySwitch(
-  AutoBuySwitchState state,
-  AutoBuySwitchEvent event,
-) => switch ((state, event)) {
-  (
-    SwitchShown(:final active, :final restricted, :final problem),
-    SwitchSummaryChanged(active: final now, restricted: final r),
-  ) =>
-    now == active && r == restricted
-        ? StepNext.stay(state)
-        : StepNext(SwitchShown(active: now, restricted: r, problem: problem)),
-  (SwitchShown(:final active), SwitchDeactivatePressed()) when active =>
-    _confirmNext(state, serverConfirmStart<AutoBuyTarget, bool>(_off)),
-  (
-    SwitchShown(),
-    SwitchDeactivatePressed() || SwitchRetryPressed() || SwitchConfirmChanged(),
-  ) =>
-    StepNext.stay(state),
-  (final SwitchDeactivating deactivating, SwitchConfirmChanged(:final event)) =>
-    _stepped(
-      deactivating,
-      deactivating.confirm.next(autoBuyWritePolicy, event),
-    ),
-  (final SwitchDeactivating deactivating, SwitchRetryPressed()) => _stepped(
-    deactivating,
-    deactivating.confirm.next(autoBuyWritePolicy, const ConfirmRetryPressed()),
-  ),
-  // A write is in flight or unverified: the summary may predate it.
-  (SwitchDeactivating(), SwitchSummaryChanged() || SwitchDeactivatePressed()) =>
-    StepNext.stay(state),
-  (
-    SwitchSessionEnded(),
-    SwitchSummaryChanged() ||
-        SwitchDeactivatePressed() ||
-        SwitchRetryPressed() ||
-        SwitchConfirmChanged(),
-  ) =>
-    StepNext.stay(state),
 };
 
 AutoBuySwitchNext _stepped(

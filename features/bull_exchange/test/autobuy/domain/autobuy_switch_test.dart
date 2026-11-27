@@ -11,7 +11,7 @@ AutoBuySwitchState _apply(
 ) {
   var next = state;
   for (final event in events) {
-    next = transitionAutoBuySwitch(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }
@@ -71,7 +71,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionAutoBuySwitch(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -101,23 +101,20 @@ void main() {
           ),
         ),
       ]) {
-        reached.add(transitionAutoBuySwitch(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {SwitchShown, SwitchDeactivating, SwitchSessionEnded});
   });
 
   test('deactivating writes off once, then verifies by re-reading', () {
-    final next = transitionAutoBuySwitch(_on, const SwitchDeactivatePressed());
+    final next = _on.next(const SwitchDeactivatePressed());
     expect(next.effects, [
       const SwitchConfirmEffect(ConfirmSend(AutoBuyTarget(enabled: false), 1)),
     ]);
     expect(
       identical(
-        transitionAutoBuySwitch(
-          next.state,
-          const SwitchDeactivatePressed(),
-        ).state,
+        next.state.next(const SwitchDeactivatePressed()).state,
         next.state,
       ),
       isTrue,
@@ -127,8 +124,7 @@ void main() {
   test(
     'a verified write shows the re-read and refreshes the account (AB-3)',
     () {
-      final verified = transitionAutoBuySwitch(
-        _deactivating,
+      final verified = _deactivating.next(
         const SwitchConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(false)))),
       );
       expect(
@@ -142,10 +138,9 @@ void main() {
   test('a summary that arrives while writing is a stay', () {
     expect(
       identical(
-        transitionAutoBuySwitch(
-          _deactivating,
-          const SwitchSummaryChanged(active: true, restricted: false),
-        ).state,
+        _deactivating
+            .next(const SwitchSummaryChanged(active: true, restricted: false))
+            .state,
         _deactivating,
       ),
       isTrue,
@@ -173,10 +168,7 @@ void main() {
   test('an inactive switch offers no deactivation', () {
     const off = SwitchShown(active: false, restricted: false);
     expect(
-      identical(
-        transitionAutoBuySwitch(off, const SwitchDeactivatePressed()).state,
-        off,
-      ),
+      identical(off.next(const SwitchDeactivatePressed()).state, off),
       isTrue,
     );
   });

@@ -13,7 +13,7 @@ import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-/// Shell of [transitionLimitFlow]: applies events one at a time, emits the
+/// Shell of [LimitFlowState.next]: applies events one at a time, emits the
 /// new state and runs each effect through its use case with the flow's
 /// session. Every answer carries the attempt, market or option that asked
 /// for it; the machine drops stale ones.
@@ -69,7 +69,7 @@ class LimitFlowBloc extends Bloc<LimitFlowEvent, LimitFlowState> {
   late final StreamSubscription<ExchangeAccess> _access;
 
   void _onEvent(LimitFlowEvent event, Emitter<LimitFlowState> emit) {
-    final next = transitionLimitFlow(state, event);
+    final next = state.next(event);
     if (identical(next.state, state) && next.effects.isEmpty) return;
     if (!identical(next.state, state)) emit(next.state);
     _run(next.effects);

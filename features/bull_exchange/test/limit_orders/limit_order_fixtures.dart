@@ -70,8 +70,7 @@ DefaultWallets limitDefaultWallets() => const DefaultWallets(
 /// The create the real machine sends for a 200 CAD order at 80 000 to the
 /// default bitcoin wallet, from a loaded context through Confirm.
 ConfirmSend<LimitOrderRequest> limitCreateSend() {
-  var next = transitionLimitFlow(
-    limitFlowStart(limitSession).state,
+  var next = (limitFlowStart(limitSession).state).next(
     LimitContextLoaded(
       1,
       Ok(
@@ -100,7 +99,7 @@ ConfirmSend<LimitOrderRequest> limitCreateSend() {
     LimitReviewRateArrived(1, Ok(limitOrderRate())),
     const LimitConfirmPressed(),
   ]) {
-    next = transitionLimitFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next.effects.whereType<LimitConfirmEffect>().single.effect
       as ConfirmSend<LimitOrderRequest>;
